@@ -2,9 +2,9 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Invoice {
-    title: String,
-    description: String,
-    start_parameter: String,
-    currency: String,
-    total_amount: i64,
+    pub title: String,
+    pub description: String,
+    pub start_parameter: String,
+    pub currency: String,
+    pub total_amount: i64,
 }

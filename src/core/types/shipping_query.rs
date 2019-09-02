@@ -1,10 +1,11 @@
 use serde::Deserialize;
-use crate::core::types::{User, ShippingAddress};
+
+use crate::core::types::{ShippingAddress, User};
 
 #[derive(Debug, Deserialize)]
 pub struct ShippingQuery {
-    id: String,
-    from: User,
-    invoice_payload: String,
-    shipping_address: ShippingAddress,
+    pub id: String,
+    pub from: User,
+    pub invoice_payload: String,
+    pub shipping_address: ShippingAddress,
 }

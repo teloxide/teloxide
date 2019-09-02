@@ -2,9 +2,9 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Document {
-    file_id: String,
-    thumb: Option<PhotoSize>,
-    file_name: Option<String>,
-    mime_type: Option<String>,
-    file_size: Option<i64>,
+    pub file_id: String,
+    pub thumb: Option<PhotoSize>,
+    pub file_name: Option<String>,
+    pub mime_type: Option<String>,
+    pub file_size: Option<i64>,
 }

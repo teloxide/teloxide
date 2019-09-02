@@ -2,6 +2,6 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct LabeledPrice {
-    label: String,
-    amount: i64,
+    pub label: String,
+    pub amount: i64,
 }

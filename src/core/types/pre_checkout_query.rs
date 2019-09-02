@@ -1,13 +1,14 @@
 use serde::Deserialize;
-use crate::core::types::{User, OrderInfo};
+
+use crate::core::types::{OrderInfo, User};
 
 #[derive(Debug, Deserialize)]
 pub struct PreCheckoutQuery {
-    id: String,
-    from: User,
-    currency: String,
-    total_amount: i64,
-    invoice_payload: String,
-    shipping_option_id: Option<String>,
-    order_info: Option<OrderInfo>,
+    pub id: String,
+    pub from: User,
+    pub currency: String,
+    pub total_amount: i64,
+    pub invoice_payload: String,
+    pub shipping_option_id: Option<String>,
+    pub order_info: Option<OrderInfo>,
 }

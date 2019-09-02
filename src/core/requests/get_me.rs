@@ -1,7 +1,8 @@
-use super::Request;
-
 use reqwest::r#async::multipart::Form;
+
 use crate::core::types::User;
+
+use super::Request;
 
 #[derive(Debug, Constructor, PartialEq, Eq)]
 pub struct GetMe {

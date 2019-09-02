@@ -1,19 +1,20 @@
 use serde::Deserialize;
-use crate::core::types::{ChatPhoto, ChatPermissions, Message};
+
+use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
 #[derive(Debug, Deserialize)]
 pub struct Chat {
-    id: i64,
-    chat_type: String,
-    title: Option<String>,
-    username: Option<String>,
-    first_name: Option<String>,
-    last_name: Option<String>,
-    photo: Option<ChatPhoto>,
-    description: Option<String>,
-    invite_link: Option<String>,
-    pinned_message: Option<Box<Message>>,
-    permissions: Option<ChatPermissions>,
-    sticker_set_name: Option<String>,
-    can_set_sticker_set: Option<bool>,
+    pub id: i64,
+    pub chat_type: String,
+    pub title: Option<String>,
+    pub username: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub photo: Option<ChatPhoto>,
+    pub description: Option<String>,
+    pub invite_link: Option<String>,
+    pub pinned_message: Option<Box<Message>>,
+    pub permissions: Option<ChatPermissions>,
+    pub sticker_set_name: Option<String>,
+    pub can_set_sticker_set: Option<bool>,
 }

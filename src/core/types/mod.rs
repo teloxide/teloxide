@@ -2,8 +2,9 @@ pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery, answer_shipping_query::AnswerShippingQuery,
     chat::Chat, chat_permissions::ChatPermissions, chat_photo::ChatPhoto, document::Document,
     invoice::Invoice, label_price::LabeledPrice, message::Message, order_info::OrderInfo,
-    pre_checkout_query::PreCheckoutQuery, send_invoice::SendInvoice, shipping_address::ShippingAddress,
-    shipping_option::ShippingOption, shipping_query::ShippingQuery, successful_payment::SuccessfulPayment, user::User,
+    pre_checkout_query::PreCheckoutQuery, send_invoice::SendInvoice,
+    shipping_address::ShippingAddress, shipping_option::ShippingOption,
+    shipping_query::ShippingQuery, successful_payment::SuccessfulPayment, user::User,
 };
 
 mod answer_pre_checkout_query;

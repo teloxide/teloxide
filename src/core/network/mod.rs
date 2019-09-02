@@ -1,10 +1,11 @@
-use super::requests::Request;
 use apply::Apply;
 use futures::compat::Future01CompatExt;
 use reqwest::r#async::Client;
 use reqwest::StatusCode;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
+
+use super::requests::Request;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -43,7 +44,11 @@ pub async fn request<T: DeserializeOwned, R: Request<ReturnValue = T>>(
     request: R,
 ) -> ResponseResult<T> {
     let mut response = client
-        .post(&method_url(TELEGRAM_API_URL, request.token(), request.name()))
+        .post(&method_url(
+            TELEGRAM_API_URL,
+            request.token(),
+            request.name(),
+        ))
         .apply(|request_builder| {
             if let Some(params) = request.params() {
                 request_builder.multipart(params)
@@ -84,7 +89,7 @@ mod tests {
         let url = method_url(
             TELEGRAM_API_URL,
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
-            "methodName"
+            "methodName",
         );
 
         assert_eq!(
@@ -98,7 +103,7 @@ mod tests {
         let url = file_url(
             TELEGRAM_API_URL,
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
-            "AgADAgADyqoxG2g8aEsu_KjjVsGF4-zetw8ABAEAAwIAA20AA_8QAwABFgQ"
+            "AgADAgADyqoxG2g8aEsu_KjjVsGF4-zetw8ABAEAAwIAA20AA_8QAwABFgQ",
         );
 
         assert_eq!(

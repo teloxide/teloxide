@@ -1,7 +1,8 @@
-use super::{ChatId, Request};
+use reqwest::r#async::multipart::Form;
+
 use crate::core::types::Message;
 
-use reqwest::r#async::multipart::Form;
+use super::{ChatId, Request};
 
 #[derive(Debug, TypedBuilder, PartialEq, Eq)]
 pub struct SendMessage {
@@ -10,7 +11,8 @@ pub struct SendMessage {
     text: String,
 
     #[builder(default)]
-    parse_mode: Option<String>, // TODO: enum
+    parse_mode: Option<String>,
+    // TODO: enum
     #[builder(default)]
     disable_web_page_preview: Option<bool>,
     #[builder(default)]
