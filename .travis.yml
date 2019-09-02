@@ -1,0 +1,9 @@
+language: Rust
+
+
+env:
+  - RUST_BACKTRACE=1
+
+script:
+  - cargo build --all --verbose
+  - cargo test --all
