@@ -26,3 +26,9 @@ pub struct Chat {
     sticker_set_name: Option<String>,
     can_set_sticker_set: Option<Bool>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct ChatPhoto {
+    small_file_id: String,
+    big_file_id: String,
+}
