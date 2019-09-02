@@ -1,5 +1,3 @@
-use reqwest::r#async::Client;
-
 mod games;
 mod getting_updates;
 mod inline_mode;

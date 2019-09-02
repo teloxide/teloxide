@@ -19,14 +19,14 @@ pub struct SendInvoice {
     photo_size: Option<i64>,
     photo_width: Option<i64>,
     photo_height: Option<i64>,
-    need_name: Option<Bool>,
-    need_phone_number: Option<Bool>,
-    need_email: Option<Bool>,
-    need_shipping_address: Option<Bool>,
-    send_phone_number_to_provider: Option<Bool>,
-    send_email_to_provider: Option<Bool>,
-    is_flexible: Option<Bool>,
-    disable_notification: Option<Bool>,
+    need_name: Option<bool>,
+    need_phone_number: Option<bool>,
+    need_email: Option<bool>,
+    need_shipping_address: Option<bool>,
+    send_phone_number_to_provider: Option<bool>,
+    send_email_to_provider: Option<bool>,
+    is_flexible: Option<bool>,
+    disable_notification: Option<bool>,
     reply_to_message_id: Option<i64>,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
@@ -34,7 +34,7 @@ pub struct SendInvoice {
 #[derive(Debug, Deserialize)]
 pub struct AnswerShippingQuery {
     shipping_query_id: String,
-    ok: Bool,
+    ok: bool,
     shipping_options: Option<Vec<ShippingOption>>,
     error_message: Option<String>,
 }
@@ -42,7 +42,7 @@ pub struct AnswerShippingQuery {
 #[derive(Debug, Deserialize)]
 pub struct  AnswerPreCheckoutQuery {
     pre_checkout_query_id: String,
-    ok: Bool,
+    ok: bool,
     error_message: Option<String>,
 }
 
