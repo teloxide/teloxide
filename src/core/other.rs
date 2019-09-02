@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use crate::core::payments::{SuccessfulPayment, Invoice};
 
 #[derive(Debug, Deserialize)]
 pub struct User {
