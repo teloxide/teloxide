@@ -15,7 +15,7 @@ pub trait Request<R: serde::de::DeserializeOwned> {
 }
 
 /// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-#[derive(Debug, Serialize, From)]
+#[derive(Debug, Serialize, From, PartialEq, Eq)]
 pub enum ChatId {
     /// chat identifier
     Id(i32), // 32?

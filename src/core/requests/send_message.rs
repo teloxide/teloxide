@@ -4,7 +4,7 @@ use super::{ChatId, Request};
 use reqwest::r#async::multipart::Form;
 
 
-#[derive(Debug, TypedBuilder)]
+#[derive(Debug, TypedBuilder, PartialEq, Eq)]
 pub struct SendMessage {
     token: String,
     chat_id: ChatId,
@@ -64,7 +64,7 @@ mod test {
 
     #[test]
     fn default() {
-        let sm = SendMessage::builder().token("TOKEN").chat_id(123456.into()).text("text");
+        let sm = SendMessage::builder().token("TOKEN").chat_id(123456.into()).text("text").build();
         let r = SendMessage {
             token: String::from("TOKEN"),
             chat_id: ChatId::Id(123456),

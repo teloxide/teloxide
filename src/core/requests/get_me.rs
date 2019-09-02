@@ -4,7 +4,7 @@ use super::Request;
 use reqwest::r#async::multipart::Form;
 
 
-#[derive(Debug, Constructor)]
+#[derive(Debug, Constructor, PartialEq, Eq)]
 pub struct GetMe<'a> {
     token: &'a str,
 }
