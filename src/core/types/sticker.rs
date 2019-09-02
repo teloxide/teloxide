@@ -5,8 +5,8 @@ use crate::core::types::{PhotoSize, MaskPosition};
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Sticker {
     pub file_id: String,
-    pub width: i32,
-    pub height: i32,
+    pub width: u16,
+    pub height: u16,
     pub is_animated: bool,
     pub thumb: Option<PhotoSize>,
     pub emoji: Option<String>,
