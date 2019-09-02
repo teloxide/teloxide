@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/async-telegram-bot/async-telegram-bot.svg?branch=dev)](https://travis-ci.com/async-telegram-bot/async-telegram-bot)
 <div align="center">
   <h1>async-telegram-bot</h1>
   <a href="https://travis-ci.com/async-telegram-bot/async-telegram-bot">
