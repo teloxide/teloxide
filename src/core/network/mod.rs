@@ -2,9 +2,9 @@ use reqwest::StatusCode;
 use reqwest::r#async::Client;
 use serde_json::Value;
 use futures::compat::Future01CompatExt;
-use reqwest::r#async::multipart::Form;
 use apply::Apply;
-
+use serde::de::DeserializeOwned;
+use super::requests::Request;
 
 const TELEGRAM_URL_START: &str = "https://api.telegram.org/bot";
 
@@ -20,20 +20,18 @@ pub enum Error {
 
 pub type Response<T> = Result<T, Error>;
 
-pub async fn request<T: serde::de::DeserializeOwned>(
+pub async fn request<R: DeserializeOwned, Req: Request<R>>(
     client: &Client,
-    token: &str,
-    method_name: &str,
-    params: Option<Form>,
+    request: Req,
 ) -> Response<T> {
     let mut response = client
         .post(&format!(
             "{}{token}/{method}",
             TELEGRAM_URL_START,
-            token = token,
-            method = method_name,
+            token = request.token(),
+            method = request.name(),
         ))
-        .apply(|req| if let Some(params) = params {
+        .apply(|req| if let Some(params) = request.params() {
             req.multipart(params)
         } else { req })
         .send()
