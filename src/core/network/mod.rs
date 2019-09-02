@@ -27,14 +27,29 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display, PartialEq, Eq)]
 pub enum RequestError {
+    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
     ApiError {
         status_code: StatusCode,
         description: String,
     },
+
+    #[display(fmt = "Network error: {err}", err = _0)]
     NetworkError(reqwest::Error),
+
+    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
     InvalidJson(serde_json::Error),
+}
+
+impl std::error::Error for RequestError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            RequestError::ApiError { .. } => None,
+            RequestError::NetworkError(err) => err,
+            RequestError::InvalidJson(err) => err,
+        }
+    }
 }
 
 pub type ResponseResult<T> = Result<T, RequestError>;
