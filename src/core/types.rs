@@ -24,11 +24,23 @@ pub struct Chat {
     pinned_message: Option<Message>,
     permissions: Option<ChatPermissions>,
     sticker_set_name: Option<String>,
-    can_set_sticker_set: Option<Bool>,
+    can_set_sticker_set: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ChatPhoto {
     small_file_id: String,
     big_file_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChatPermissions {
+    can_send_messages: Option<bool>,
+    can_send_media_messages: Option<bool>,
+    can_send_polls: Option<bool>,
+    can_send_other_messages: Option<bool>,
+    can_add_web_page_previews: Option<bool>,
+    can_change_info: Option<bool>,
+    can_invite_users: Option<bool>,
+    can_pin_messages: Option<bool>,
 }
