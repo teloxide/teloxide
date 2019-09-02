@@ -72,7 +72,7 @@ pub struct Message {
     migrate_from_chat_id: Option<i64>,
     pinned_message: Optional<Message>,
     invoice: Option<Invoice>,
-    successful_payment: Optiona<SuccessfulPayment>,
+    successful_payment: Option<SuccessfulPayment>,
     connected_website: Option<String>,
     passport_data: Option<PassportData>,
     reply_markup: Option<InlineKeyboardMarkup>,
