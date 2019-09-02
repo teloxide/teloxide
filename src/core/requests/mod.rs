@@ -18,9 +18,9 @@ pub trait Request<R: serde::de::DeserializeOwned> {
 #[derive(Debug, Serialize, From, PartialEq, Eq)]
 pub enum ChatId {
     /// chat identifier
-    Id(i32), // 32?
+    Id(i64),
     /// _channel_ username (in the format @channelusername)
-    ChannelUsername(String)
+    ChannelUsername(String),
 }
 
 pub mod get_me;

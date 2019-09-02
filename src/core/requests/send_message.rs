@@ -17,7 +17,7 @@ pub struct SendMessage {
     #[builder(default)]
     disable_notification: Option<bool>,
     #[builder(default)]
-    reply_to_message_id: Option<i32>,
+    reply_to_message_id: Option<i64>,
     #[builder(default)]
     reply_markup: Option<()>, // TODO: ReplyMarkup enum
 }
