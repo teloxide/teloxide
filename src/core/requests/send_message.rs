@@ -21,7 +21,9 @@ pub struct SendMessage {
     reply_markup: Option<()>, // TODO: ReplyMarkup enum
 }
 
-impl Request<Message> for SendMessage {
+impl Request for SendMessage {
+    type ReturnValue = Message;
+
     fn name(&self) -> &str {
         "getMe"
     }

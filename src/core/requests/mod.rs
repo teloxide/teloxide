@@ -1,8 +1,11 @@
 use reqwest::r#async::multipart::Form;
+use serde::de::DeserializeOwned;
 
 /// Request that can be sended to telegram.
-/// `R` - return type.
-pub trait Request<R: serde::de::DeserializeOwned> {
+/// `ReturnValue` - a type that will be returned from Telegram.
+pub trait Request {
+    type ReturnValue: DeserializeOwned;
+
     /// Get name of the request (e.g. "getMe" or "sendMessage")
     fn name(&self) -> &str;
 

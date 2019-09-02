@@ -20,7 +20,7 @@ pub enum RequestError {
 
 pub type ResponseResult<T> = Result<T, RequestError>;
 
-pub async fn request<T: DeserializeOwned, R: Request<T>>(
+pub async fn request<T: DeserializeOwned, R: Request<ReturnValue = T>>(
     client: &Client,
     request: R,
 ) -> ResponseResult<T> {
