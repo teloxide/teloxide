@@ -38,8 +38,7 @@ impl Request for SendMessage {
             .text("text", self.text)
             .apply(|f| {
                 if let Some(parse_mode) = self.parse_mode {
-                    f.text("parse_mode", parse_mode);
-                    f
+                    f.text("parse_mode", parse_mode)
                 } else {
                     f
                 }
@@ -49,8 +48,7 @@ impl Request for SendMessage {
                     f.text(
                         "disable_web_page_preview",
                         format!("{:?}", disable_web_page_preview),
-                    );
-                    f
+                    )
                 } else {
                     f
                 }
@@ -60,16 +58,14 @@ impl Request for SendMessage {
                     f.text(
                         "disable_notification",
                         format!("{:?}", disable_notification),
-                    );
-                    f
+                    )
                 } else {
                     f
                 }
             })
             .apply(|f| {
                 if let Some(reply_to_message_id) = self.reply_to_message_id {
-                    f.text("reply_to_message_id", format!("{:?}", reply_to_message_id));
-                    f
+                    f.text("reply_to_message_id", format!("{:?}", reply_to_message_id))
                 } else {
                     f
                 }
