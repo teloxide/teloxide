@@ -2,8 +2,14 @@ use reqwest::r#async::Client;
 
 use reqwest::StatusCode;
 
-mod functions;
-mod types;
+mod games;
+mod getting_updates;
+mod inline_mode;
+mod other;
+mod payments;
+mod stickers;
+mod telegram_passport;
+mod updating_messages;
 
 lazy_static! {
     static ref REQWEST_CLIENT: Client = Client::new();
