@@ -1,6 +1,5 @@
 use reqwest::r#async::multipart::Form;
 
-
 /// Request that can be sended to telegram.
 /// `R` - return type.
 pub trait Request<R: serde::de::DeserializeOwned> {

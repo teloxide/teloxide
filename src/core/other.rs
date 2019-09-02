@@ -1,5 +1,5 @@
+use crate::core::payments::{Invoice, SuccessfulPayment};
 use serde::Deserialize;
-use crate::core::payments::{SuccessfulPayment, Invoice};
 
 #[derive(Debug, Deserialize)]
 pub struct User {
@@ -16,7 +16,7 @@ pub struct Chat {
     id: i64,
     chat_type: String,
     title: Option<String>,
-    username:Option<String>,
+    username: Option<String>,
     first_name: Option<String>,
     last_name: Option<String>,
     photo: Option<ChatPhoto>,
@@ -55,7 +55,7 @@ pub struct Message {
     sticker: Option<Stickers>,
     video: Option<Video>,
     voice: Option<Voice>,
-    video_note: Option<	VideoNote>,
+    video_note: Option<VideoNote>,
     caption: Option<String>,
     contact: Option<Contact>,
     location: Option<Location>,

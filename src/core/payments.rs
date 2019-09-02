@@ -1,8 +1,5 @@
-use serde::Deserialize;
 use crate::core::other::User;
-
-
-
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct SendInvoice {
@@ -40,7 +37,7 @@ pub struct AnswerShippingQuery {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct  AnswerPreCheckoutQuery {
+pub struct AnswerPreCheckoutQuery {
     pre_checkout_query_id: String,
     ok: bool,
     error_message: Option<String>,
@@ -76,7 +73,7 @@ pub struct OrderInfo {
     name: String,
     phone_number: String,
     email: String,
-    shipping_address: ShippingAddress
+    shipping_address: ShippingAddress,
 }
 
 #[derive(Debug, Deserialize)]
@@ -113,5 +110,5 @@ pub struct PreCheckoutQuery {
     total_amount: i64,
     invoice_payload: String,
     shipping_option_id: Option<String>,
-    order_info: Option<OrderInfo>
+    order_info: Option<OrderInfo>,
 }

@@ -1,59 +1,63 @@
-use reqwest::StatusCode;
-use reqwest::r#async::Client;
-use serde_json::Value;
-use futures::compat::Future01CompatExt;
-use apply::Apply;
-use serde::de::DeserializeOwned;
 use super::requests::Request;
+use apply::Apply;
+use futures::compat::Future01CompatExt;
+use reqwest::r#async::Client;
+use reqwest::StatusCode;
+use serde::de::DeserializeOwned;
+use serde_json::Value;
 
-const TELEGRAM_URL_START: &str = "https://api.telegram.org/bot";
+const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
 #[derive(Debug)]
-pub enum Error {
-    Api {
+pub enum RequestError {
+    ApiError {
         status_code: StatusCode,
-        description: Option<String>,
+        description: String,
     },
-    Send(reqwest::Error),
-    InvalidJson(reqwest::Error),
+    NetworkError(reqwest::Error),
+    InvalidJson(serde_json::Error),
 }
 
-pub type Response<T> = Result<T, Error>;
+pub type ResponseResult<T> = Result<T, RequestError>;
 
-pub async fn request<R: DeserializeOwned, Req: Request<R>>(
+pub async fn request<T: DeserializeOwned, R: Request<T>>(
     client: &Client,
-    request: Req,
-) -> Response<T> {
+    request: R,
+) -> ResponseResult<T> {
     let mut response = client
         .post(&format!(
-            "{}{token}/{method}",
-            TELEGRAM_URL_START,
+            "{url}/bot{token}/{method}",
+            url = TELEGRAM_API_URL,
             token = request.token(),
             method = request.name(),
         ))
-        .apply(|req| if let Some(params) = request.params() {
-            req.multipart(params)
-        } else { req })
+        .apply(|request_builder| {
+            if let Some(params) = request.params() {
+                request_builder.multipart(params)
+            } else {
+                request_builder
+            }
+        })
         .send()
         .compat()
         .await
-        .map_err(Error::Send)?;
+        .map_err(RequestError::NetworkError)?;
 
-    let response_json = response
-        .json::<Value>()
-        .compat()
-        .await
-        .map_err(Error::InvalidJson)?;
+    let response_json = serde_json::from_str::<Value>(
+        &response
+            .text()
+            .compat()
+            .await
+            .map_err(RequestError::NetworkError)?,
+    )
+    .map_err(RequestError::InvalidJson)?;
 
     if response_json["ok"] == "false" {
-        return Err(Error::Api {
+        Err(RequestError::ApiError {
             status_code: response.status(),
-            description: match response_json.get("description") {
-                None => None,
-                Some(description) => Some(description.to_string()),
-            },
-        });
+            description: response_json["description"].to_string(),
+        })
+    } else {
+        Ok(serde_json::from_value(response_json["result"].clone()).unwrap())
     }
-
-    Ok(serde_json::from_value(response_json["result"].clone()).unwrap())
 }
