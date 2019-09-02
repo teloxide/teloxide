@@ -12,5 +12,5 @@ pub struct Sticker {
     pub emoji: Option<String>,
     pub set_name: Option<String>,
     pub mask_position: Option<MaskPosition>,
-    pub file_size: Option<i64>,
+    pub file_size: Option<u32>,
 }
