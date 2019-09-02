@@ -5,12 +5,12 @@ use reqwest::r#async::multipart::Form;
 
 
 #[derive(Debug, Constructor, PartialEq, Eq)]
-pub struct GetMe<'a> {
-    token: &'a str,
+pub struct GetMe {
+    token: String,
 }
 
-impl Request<User> for GetMe<'_> {
+impl Request<User> for GetMe {
     fn name(&self) -> &str { "getMe" }
     fn params(self) -> Option<Form> { None }
-    fn token(&self) -> &str { self.token }
+    fn token(&self) -> &str { &self.token }
 }
