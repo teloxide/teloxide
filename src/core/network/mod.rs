@@ -9,6 +9,7 @@ use super::requests::Request;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
+/// Create url for macking requests, see [telegram docs](https://core.telegram.org/bots/api#making-requests)
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
     format!(
         "{url}/bot{token}/{method}",
@@ -18,6 +19,7 @@ fn method_url(base: &str, token: &str, method_name: &str) -> String {
     )
 }
 
+/// Create url for downloading file, see [telegram docs](https://core.telegram.org/bots/api#file)
 fn file_url(base: &str, token: &str, file_path: &str) -> String {
     format!(
         "{url}/file/bot{token}/{file}",
@@ -27,14 +29,29 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display, PartialEq, Eq)]
 pub enum RequestError {
+    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
     ApiError {
         status_code: StatusCode,
         description: String,
     },
+
+    #[display(fmt = "Network error: {err}", err = _0)]
     NetworkError(reqwest::Error),
+
+    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
     InvalidJson(serde_json::Error),
+}
+
+impl std::error::Error for RequestError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            RequestError::ApiError { .. } => None,
+            RequestError::NetworkError(err) => err,
+            RequestError::InvalidJson(err) => err,
+        }
+    }
 }
 
 pub type ResponseResult<T> = Result<T, RequestError>;
