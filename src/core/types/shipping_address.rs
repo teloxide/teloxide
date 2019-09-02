@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ShippingAddress {
     pub country_code: String,
     pub state: String,

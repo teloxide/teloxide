@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::{Chat, Document, Invoice, SuccessfulPayment, User};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Message {
     pub message_id: i64,
     pub from: Option<Box<User>>,

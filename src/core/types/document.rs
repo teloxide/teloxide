@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Document {
     pub file_id: String,
     pub thumb: Option<PhotoSize>,

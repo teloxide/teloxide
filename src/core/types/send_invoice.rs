@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::LabeledPrice;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct SendInvoice {
     pub chat_id: i64,
     pub title: String,

@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ChatPermissions {
     pub can_send_messages: Option<bool>,
     pub can_send_media_messages: Option<bool>,

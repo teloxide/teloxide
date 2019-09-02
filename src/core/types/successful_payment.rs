@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::OrderInfo;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct SuccessfulPayment {
     pub currency: String,
     pub total_amount: i64,

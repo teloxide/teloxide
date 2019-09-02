@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Chat {
     pub id: i64,
     pub chat_type: String,

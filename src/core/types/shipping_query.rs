@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::{ShippingAddress, User};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ShippingQuery {
     pub id: String,
     pub from: User,

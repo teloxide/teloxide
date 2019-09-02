@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::{OrderInfo, User};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct PreCheckoutQuery {
     pub id: String,
     pub from: User,
