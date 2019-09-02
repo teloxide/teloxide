@@ -9,6 +9,7 @@ use super::requests::Request;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
+/// Create url for macking requests, see [telegram docs](https://core.telegram.org/bots/api#making-requests)
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
     format!(
         "{url}/bot{token}/{method}",
@@ -18,6 +19,7 @@ fn method_url(base: &str, token: &str, method_name: &str) -> String {
     )
 }
 
+/// Create url for downloading file, see [telegram docs](https://core.telegram.org/bots/api#file)
 fn file_url(base: &str, token: &str, file_path: &str) -> String {
     format!(
         "{url}/file/bot{token}/{file}",
