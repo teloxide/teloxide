@@ -1,5 +1,5 @@
 use super::{ChatId, Request};
-use crate::core::other::Message;
+use crate::core::types::Message;
 
 use reqwest::r#async::multipart::Form;
 

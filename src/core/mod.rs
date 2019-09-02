@@ -1,5 +1,3 @@
 mod network;
-mod requests;
-
-mod other;
-mod payments;
+pub mod requests;
+pub mod types;
