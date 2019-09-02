@@ -1,0 +1,10 @@
+language: Rust
+
+
+env:
+  - RUST_BACKTRACE=1
+
+script:
+  - rustup override set nightly
+  - cargo build --all --verbose
+  - cargo test --all
