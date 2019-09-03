@@ -40,11 +40,9 @@ pub async fn request<T: DeserializeOwned>(
 ) -> ResponseResult<T> {
     let mut response = client
         .post(&method_url(TELEGRAM_API_URL, token, method_name))
-        .apply(|request_builder| {
-            params.map_or_else(
-                || request_builder,
-                |params| request_builder.multipart(params),
-            )
+        .apply(|request_builder| match params {
+            Some(params) => request_builder.multipart(params),
+            None => request_builder,
         })
         .send()
         .compat()
