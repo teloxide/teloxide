@@ -1,7 +1,7 @@
-mod helpers;
-
 use reqwest::r#async::multipart::Form;
 use serde::de::DeserializeOwned;
+
+mod form_builder;
 
 /// Request that can be sended to telegram.
 /// `ReturnValue` - a type that will be returned from Telegram.

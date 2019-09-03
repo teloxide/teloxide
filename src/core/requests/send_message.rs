@@ -1,8 +1,8 @@
 use reqwest::r#async::multipart::Form;
 
-use super::helpers;
 use crate::core::types::Message;
 
+use super::form_builder::FormBuilder;
 use super::{ChatId, Request};
 
 #[derive(Debug, TypedBuilder, PartialEq, Eq)]
@@ -31,34 +31,23 @@ impl Request for SendMessage {
         "getMe"
     }
     fn params(self) -> Option<Form> {
-        let params = Form::new()
-            .text("chat_id", serde_json::to_string(&self.chat_id).unwrap())
-            .text("text", self.text);
-        let params = helpers::add_to_form_if_some(params, "parse_mode", self.parse_mode.as_ref());
-        let params = helpers::add_to_form_if_some(
-            params,
-            "disable_web_page_preview",
-            self.disable_web_page_preview.as_ref(),
-        );
-        let params = helpers::add_to_form_if_some(
-            params,
-            "disable_notification",
-            self.disable_notification.as_ref(),
-        );
-        let params = helpers::add_to_form_if_some(
-            params,
-            "reply_to_message_id",
-            self.reply_to_message_id.as_ref(),
-        );
+        Some(
+            FormBuilder::new()
+                .add("chat_id", &self.chat_id)
+                .add("text", &self.text)
+                .add_if_some("parse_mode", self.parse_mode.as_ref())
+                .add_if_some(
+                    "disable_web_page_preview",
+                    self.disable_web_page_preview.as_ref(),
+                )
+                .add_if_some("disable_notification", self.disable_notification.as_ref())
+                .add_if_some("reply_to_message_id", self.reply_to_message_id.as_ref())
+                .build(),
+        )
 
         // TODO:
-        // helpers::add_to_form_if_some(
-        //     f,
-        //     "reply_markup",
-        //     self.reply_markup,
-        // )
-
-        Some(params)
+        // .add_if_some("reply_markup",
+        //              self.reply_markup.as_ref()))
     }
     fn token(&self) -> &str {
         &self.token
