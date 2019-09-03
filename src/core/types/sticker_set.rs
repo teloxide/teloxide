@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::core::types::{Sticker};
+use crate::core::types::Sticker;
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Sticker {

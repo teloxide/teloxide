@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::core::types::{PhotoSize, MaskPosition};
+use crate::core::types::{MaskPosition, PhotoSize};
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Sticker {

@@ -29,7 +29,7 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-#[derive(Debug, Display, PartialEq, Eq)]
+#[derive(Debug, Display)]
 pub enum RequestError {
     #[display(fmt = "Telegram error #{}: {}", status_code, description)]
     ApiError {
@@ -48,8 +48,8 @@ impl std::error::Error for RequestError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             RequestError::ApiError { .. } => None,
-            RequestError::NetworkError(err) => err,
-            RequestError::InvalidJson(err) => err,
+            RequestError::NetworkError(err) => Some(err),
+            RequestError::InvalidJson(err) => Some(err),
         }
     }
 }
