@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use crate::core::types::InputFile;
 
 pub enum InputMedia {
     InputMediaPhoto(InputMediaPhoto),
@@ -13,7 +14,7 @@ pub enum ThumbKind {
     String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct  InputMediaPhoto {
     type_: String,
     media: String,
@@ -21,7 +22,7 @@ pub struct  InputMediaPhoto {
     parse_mode: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize), Deserialize]
 pub struct InputMediaVideo {
     type_: String,
     media: String,
@@ -34,7 +35,7 @@ pub struct InputMediaVideo {
     supports_streaming: Option<bool>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InputMediaAnimation {
     type_: String,
     media: String,
@@ -46,7 +47,7 @@ pub struct InputMediaAnimation {
     duration: Option<i64>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InputMediaAudio {
     type_: String,
     media: String,
@@ -58,7 +59,7 @@ pub struct InputMediaAudio {
     title: Option<String>
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InputMediaDocument {
     type_: String,
     media: String,
