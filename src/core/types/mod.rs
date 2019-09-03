@@ -22,6 +22,9 @@ pub use self::{
     sticker::Sticker,
     successful_payment::SuccessfulPayment,
     user::User,
+    input_file::InputFile,
+    input_media::InputMedia,
+    parse_mode::ParseMode,
 };
 
 mod answer_pre_checkout_query;
@@ -43,3 +46,6 @@ mod shipping_query;
 mod sticker;
 mod successful_payment;
 mod user;
+mod input_file;
+mod input_media;
+mod parse_mode;
