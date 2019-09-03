@@ -3,9 +3,9 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 use reqwest::{
     r#async::{Client, multipart::Form},
-    StatusCode,
 };
 use apply::Apply;
+use crate::core::requests::{RequestError, ResponseResult};
 
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
@@ -31,32 +31,6 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-#[derive(Debug, Display)]
-pub enum RequestError {
-    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
-    ApiError {
-        status_code: StatusCode,
-        description: String,
-    },
-
-    #[display(fmt = "Network error: {err}", err = _0)]
-    NetworkError(reqwest::Error),
-
-    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
-    InvalidJson(serde_json::Error),
-}
-
-impl std::error::Error for RequestError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            RequestError::ApiError { .. } => None,
-            RequestError::NetworkError(err) => Some(err),
-            RequestError::InvalidJson(err) => Some(err),
-        }
-    }
-}
-
-pub type ResponseResult<T> = Result<T, RequestError>;
 
 pub async fn request<T: DeserializeOwned>(
     client: &Client,

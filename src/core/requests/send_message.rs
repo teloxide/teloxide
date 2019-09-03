@@ -1,7 +1,7 @@
 use crate::core::{
     types::Message,
     network::{
-        request, ResponseResult,
+        request,
     },
     requests::{
         form_builder::FormBuilder,
@@ -11,6 +11,7 @@ use crate::core::{
         RequestFuture,
     }
 };
+use crate::core::requests::ResponseResult;
 
 
 #[derive(Debug, TypedBuilder)]

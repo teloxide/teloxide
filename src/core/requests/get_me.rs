@@ -1,12 +1,13 @@
 use crate::core::{
     types::User,
     network::{
-        request, ResponseResult,
+        request,
     },
     requests::{
         Request, RequestInfo, RequestFuture,
     }
 };
+use crate::core::requests::ResponseResult;
 
 
 #[derive(Debug, Constructor)]
