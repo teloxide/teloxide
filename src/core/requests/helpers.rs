@@ -9,6 +9,11 @@ where
 {
     value.map_or_else(
         || form,
-        |value| form.text(name.to_owned(), serde_json::to_string(value).expect("Failed to serialize a value to JSON")),
+        |value| {
+            form.text(
+                name.to_owned(),
+                serde_json::to_string(value).expect("serde_json::to_string failed"),
+            )
+        },
     )
 }

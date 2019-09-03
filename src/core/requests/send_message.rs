@@ -32,18 +32,24 @@ impl Request for SendMessage {
     }
     fn params(self) -> Option<Form> {
         let params = Form::new()
-            .text("chat_id", format!("{}", self.chat_id))
+            .text("chat_id", serde_json::to_string(&self.chat_id).unwrap())
             .text("text", self.text);
-        let params = helpers::add_to_form_if_some(params, "parse_mode",self.parse_mode.as_ref());
+        let params = helpers::add_to_form_if_some(params, "parse_mode", self.parse_mode.as_ref());
         let params = helpers::add_to_form_if_some(
             params,
             "disable_web_page_preview",
             self.disable_web_page_preview.as_ref(),
         );
-        let params =
-            helpers::add_to_form_if_some(params, "disable_notification", self.disable_notification.as_ref());
-        let params =
-            helpers::add_to_form_if_some(params, "reply_to_message_id", self.reply_to_message_id.as_ref());
+        let params = helpers::add_to_form_if_some(
+            params,
+            "disable_notification",
+            self.disable_notification.as_ref(),
+        );
+        let params = helpers::add_to_form_if_some(
+            params,
+            "reply_to_message_id",
+            self.reply_to_message_id.as_ref(),
+        );
 
         // TODO:
         // helpers::add_to_form_if_some(
