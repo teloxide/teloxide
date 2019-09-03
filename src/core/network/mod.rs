@@ -1,15 +1,12 @@
+use apply::Apply;
 use futures::compat::Future01CompatExt;
+use reqwest::r#async::{multipart::Form, Client};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
-use reqwest::{
-    r#async::{Client, multipart::Form},
-};
-use apply::Apply;
+
 use crate::core::requests::{RequestError, ResponseResult};
 
-
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
-
 
 /// Create url for macking requests, see [telegram docs](https://core.telegram.org/bots/api#making-requests)
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
@@ -30,7 +27,6 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
         file = file_path,
     )
 }
-
 
 pub async fn request<T: DeserializeOwned>(
     client: &Client,

@@ -1,9 +1,8 @@
 use std::future::Future;
 
-use serde::de::DeserializeOwned;
 use reqwest::r#async::Client;
 use reqwest::StatusCode;
-
+use serde::de::DeserializeOwned;
 
 mod form_builder;
 

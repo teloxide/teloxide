@@ -1,18 +1,5 @@
-use crate::core::{
-    types::Message,
-    network::{
-        request,
-    },
-    requests::{
-        form_builder::FormBuilder,
-        ChatId,
-        Request,
-        RequestInfo,
-        RequestFuture,
-    }
-};
 use crate::core::requests::ResponseResult;
-
+use crate::core::{network::request, network::request, types::Message};
 
 #[derive(Debug, TypedBuilder)]
 pub struct SendMessage {
@@ -36,7 +23,6 @@ pub struct SendMessage {
 impl Request for SendMessage {
     type ReturnValue = Message;
 
-
     fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
         Box::new(async move {
             let params = FormBuilder::new()
@@ -51,7 +37,13 @@ impl Request for SendMessage {
                 .add_if_some("reply_to_message_id", self.reply_to_message_id.as_ref())
                 .build();
 
-            request(&self.info.client, &self.info.token, "sendMessage", Some(params)).await
+            request(
+                &self.info.client,
+                &self.info.token,
+                "sendMessage",
+                Some(params),
+            )
+            .await
         })
     }
 }
