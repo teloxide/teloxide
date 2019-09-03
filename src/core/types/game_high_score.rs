@@ -3,8 +3,8 @@ use serde::Deserialize;
 use crate::core::types::user::User;
 
 #[derive(Debug, Deserialize)]
-struct GameHighScore {
-    position: i32,
-    user: User,
-    score: i32,
+pub struct GameHighScore {
+    pub position: i32,
+    pub user: User,
+    pub score: i32,
 }
