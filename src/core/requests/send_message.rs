@@ -37,47 +37,48 @@ impl Request for SendMessage {
             .text("chat_id", format!("{:?}", self.chat_id))
             .text("text", self.text)
             .apply(|f| {
-                if let Some(parse_mode) = self.parse_mode {
-                    f.text("parse_mode", parse_mode)
-                } else {
-                    f
-                }
+                self.parse_mode
+                    .map_or_else(|| f, |parse_mode| f.text("parse_mode", parse_mode))
             })
             .apply(|f| {
-                if let Some(disable_web_page_preview) = self.disable_web_page_preview {
-                    f.text(
-                        "disable_web_page_preview",
-                        format!("{:?}", disable_web_page_preview),
-                    )
-                } else {
-                    f
-                }
+                self.disable_web_page_preview.map_or_else(
+                    || f,
+                    |disable_web_page_preview| {
+                        f.text(
+                            "disable_web_page_preview",
+                            format!("{:?}", disable_web_page_preview),
+                        )
+                    },
+                )
             })
             .apply(|f| {
-                if let Some(disable_notification) = self.disable_notification {
-                    f.text(
-                        "disable_notification",
-                        format!("{:?}", disable_notification),
-                    )
-                } else {
-                    f
-                }
+                self.disable_notification.map_or_else(
+                    || f,
+                    |disable_notification| {
+                        f.text(
+                            "disable_notification",
+                            format!("{:?}", disable_notification),
+                        )
+                    },
+                )
             })
             .apply(|f| {
-                if let Some(reply_to_message_id) = self.reply_to_message_id {
-                    f.text("reply_to_message_id", format!("{:?}", reply_to_message_id))
-                } else {
-                    f
-                }
+                self.reply_to_message_id.map_or_else(
+                    || f,
+                    |reply_to_message_id| {
+                        f.text("reply_to_message_id", format!("{:?}", reply_to_message_id))
+                    },
+                )
             })
             .apply(|f| {
-                if let Some(reply_markup) = self.reply_markup {
-                    unimplemented!();
-                    //f.text("reply_markup", );
-                    f
-                } else {
-                    f
-                }
+                self.reply_markup.map_or_else(
+                    || f,
+                    |reply_markup| {
+                        unimplemented!();
+                        //f.text("reply_markup", );
+                        f
+                    },
+                )
             });
 
         Some(params)
