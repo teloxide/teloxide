@@ -1,17 +1,16 @@
+use apply::Apply;
 use futures::compat::Future01CompatExt;
+use reqwest::r#async::{multipart::Form, Client};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
-use reqwest::{
-    r#async::{Client, multipart::Form},
-    StatusCode,
-};
-use apply::Apply;
 
+use crate::core::requests::{RequestError, ResponseResult};
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
-
-/// Create url for macking requests, see [telegram docs](https://core.telegram.org/bots/api#making-requests)
+/// Creates URL for making HTTPS requests. See the [Telegram documentation].
+///
+/// [Telegram documentation]: https://core.telegram.org/bots/api#making-requests
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
     format!(
         "{url}/bot{token}/{method}",
@@ -21,7 +20,9 @@ fn method_url(base: &str, token: &str, method_name: &str) -> String {
     )
 }
 
-/// Create url for downloading file, see [telegram docs](https://core.telegram.org/bots/api#file)
+/// Creates URL for downloading a file. See the [Telegram documentation].
+///
+/// [Telegram documentation] (https://core.telegram.org/bots/api#file)
 fn file_url(base: &str, token: &str, file_path: &str) -> String {
     format!(
         "{url}/file/bot{token}/{file}",
@@ -31,33 +32,6 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-#[derive(Debug, Display)]
-pub enum RequestError {
-    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
-    ApiError {
-        status_code: StatusCode,
-        description: String,
-    },
-
-    #[display(fmt = "Network error: {err}", err = _0)]
-    NetworkError(reqwest::Error),
-
-    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
-    InvalidJson(serde_json::Error),
-}
-
-impl std::error::Error for RequestError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            RequestError::ApiError { .. } => None,
-            RequestError::NetworkError(err) => Some(err),
-            RequestError::InvalidJson(err) => Some(err),
-        }
-    }
-}
-
-pub type ResponseResult<T> = Result<T, RequestError>;
-
 pub async fn request<T: DeserializeOwned>(
     client: &Client,
     token: &str,
@@ -66,12 +40,9 @@ pub async fn request<T: DeserializeOwned>(
 ) -> ResponseResult<T> {
     let mut response = client
         .post(&method_url(TELEGRAM_API_URL, token, method_name))
-        .apply(|request_builder| {
-            if let Some(params) = params {
-                request_builder.multipart(params)
-            } else {
-                request_builder
-            }
+        .apply(|request_builder| match params {
+            Some(params) => request_builder.multipart(params),
+            None => request_builder,
         })
         .send()
         .compat()

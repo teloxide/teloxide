@@ -38,8 +38,8 @@ impl FormBuilder {
                 form: self.form.text(
                     name.to_owned(),
                     serde_json::to_string(value).expect("serde_json::to_string failed"),
-                )
-            }
+                ),
+            },
         }
     }
 

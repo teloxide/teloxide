@@ -1,4 +1,5 @@
 use serde::Serialize;
+
 use crate::core::parse_mode::ParseMode;
 
 pub enum InputMessageContent {

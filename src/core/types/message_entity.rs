@@ -1,6 +1,5 @@
 use crate::core::types::User;
 
-
 #[derive(Deserialize, Debug, PartialEq, Hash, Eq)]
 pub struct MessageEntity {
     #[serde(flatten)]
@@ -13,10 +12,19 @@ pub struct MessageEntity {
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageEntityKind {
-    Mention, Hashtag, Cashtag, BotCommand, Url, Email, PhoneNumber,
-    Bold, Italic, Code, Pre,
+    Mention,
+    Hashtag,
+    Cashtag,
+    BotCommand,
+    Url,
+    Email,
+    PhoneNumber,
+    Bold,
+    Italic,
+    Code,
+    Pre,
     TextLink { url: String },
-    TextMention { user: User }
+    TextMention { user: User },
 }
 
 #[test]
@@ -25,12 +33,13 @@ fn recursive_kind() {
 
     assert_eq!(
         MessageEntity {
-            kind: MessageEntityKind::TextLink { url: "ya.ru".into() },
+            kind: MessageEntityKind::TextLink {
+                url: "ya.ru".into()
+            },
             offset: 1,
             length: 2
         },
-        from_str::<MessageEntity>(
-            r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#
-        ).unwrap()
+        from_str::<MessageEntity>(r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#)
+            .unwrap()
     );
 }

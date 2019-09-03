@@ -1,17 +1,10 @@
-use crate::core::{
-    types::User,
-    network::{
-        request, ResponseResult,
-    },
-    requests::{
-        Request, RequestInfo, RequestFuture,
-    }
-};
-
+use crate::core::network;
+use crate::core::requests::{Request, RequestFuture, RequestInfo, ResponseResult};
+use crate::core::types::User;
 
 #[derive(Debug, Constructor)]
 pub struct GetMe {
-    info: RequestInfo
+    info: RequestInfo,
 }
 
 impl Request for GetMe {
@@ -19,7 +12,7 @@ impl Request for GetMe {
 
     fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
         Box::new(async move {
-            request(&self.info.client, &self.info.token, "getMe", None).await
+            network::request(&self.info.client, &self.info.token, "getMe", None).await
         })
     }
 }

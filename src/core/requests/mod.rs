@@ -1,13 +1,37 @@
 use std::future::Future;
 
-use crate::core::network::ResponseResult;
-
-use serde::de::DeserializeOwned;
 use reqwest::r#async::Client;
-
+use reqwest::StatusCode;
+use serde::de::DeserializeOwned;
 
 mod form_builder;
 
+#[derive(Debug, Display)]
+pub enum RequestError {
+    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
+    ApiError {
+        status_code: StatusCode,
+        description: String,
+    },
+
+    #[display(fmt = "Network error: {err}", err = _0)]
+    NetworkError(reqwest::Error),
+
+    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
+    InvalidJson(serde_json::Error),
+}
+
+impl std::error::Error for RequestError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            RequestError::ApiError { .. } => None,
+            RequestError::NetworkError(err) => Some(err),
+            RequestError::InvalidJson(err) => Some(err),
+        }
+    }
+}
+
+pub type ResponseResult<T> = Result<T, RequestError>;
 
 /// Request that can be sent to telegram.
 /// `ReturnValue` - a type that will be returned from Telegram.
