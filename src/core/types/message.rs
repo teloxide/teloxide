@@ -1,6 +1,12 @@
-use serde::Deserialize;
+// use serde::Deserialize;
 
-use crate::core::types::{Chat, Document, Invoice, SuccessfulPayment, User};
+use crate::core::types::{
+    Animation, Audio, Chat, Contact,
+    Document, Game, Invoice, InlineKeyboardMarkup,
+    PhotoSize, MessageEntity, Location, PassportData, Poll,
+    Sticker, SuccessfulPayment,
+    User, Video, VideoNote, Venue, Voice,
+};
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct Message {
@@ -26,7 +32,7 @@ pub struct Message {
     pub animation: Option<Animation>,
     pub game: Option<Game>,
     pub photo: Option<Vec<PhotoSize>>,
-    pub sticker: Option<Stickers>,
+    pub sticker: Option<Sticker>,
     pub video: Option<Video>,
     pub voice: Option<Voice>,
     pub video_note: Option<VideoNote>,
