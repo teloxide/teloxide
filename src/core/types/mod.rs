@@ -19,6 +19,7 @@ pub use self::{
     message::Message,
     message_entity::MessageEntity,
     order_info::OrderInfo,
+    photo_size::PhotoSize,
     pre_checkout_query::PreCheckoutQuery,
     send_invoice::SendInvoice,
     shipping_address::ShippingAddress,
@@ -46,6 +47,7 @@ mod message;
 mod message_entity;
 mod not_implemented_types;
 mod order_info;
+mod photo_size;
 mod pre_checkout_query;
 mod send_invoice;
 mod shipping_address;

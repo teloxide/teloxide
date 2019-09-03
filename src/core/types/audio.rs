@@ -1,7 +1,7 @@
 use crate::core::types::PhotoSize;
 
 
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Audio {
     pub file_id: String,
     pub duration: u32,

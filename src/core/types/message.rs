@@ -1,5 +1,3 @@
-// use serde::Deserialize;
-
 use crate::core::types::{
     Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
     MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, User, Venue, Video,

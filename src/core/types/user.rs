@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct User {
     pub id: i64,

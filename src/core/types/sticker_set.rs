@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 use crate::core::types::Sticker;
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]

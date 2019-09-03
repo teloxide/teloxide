@@ -1,7 +1,4 @@
 #[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
-pub struct PhotoSize;
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
 pub struct Location;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]

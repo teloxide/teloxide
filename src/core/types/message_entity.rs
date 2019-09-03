@@ -1,12 +1,14 @@
 use crate::core::types::User;
 
-#[derive(Deserialize, Debug, PartialEq, Hash, Eq)]
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct MessageEntity {
     #[serde(flatten)]
     pub kind: MessageEntityKind,
     pub offset: usize,
     pub length: usize,
 }
+
 
 #[derive(Deserialize, Debug, PartialEq, Hash, Eq)]
 #[serde(rename_all = "snake_case")]

@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 /// This object represents a custom keyboard with reply options.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ReplyKeyboardMarkup {
