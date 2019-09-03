@@ -1,4 +1,5 @@
 use std::future::Future;
+use std::pin::Pin;
 
 use reqwest::r#async::Client;
 use reqwest::StatusCode;
@@ -42,7 +43,9 @@ pub trait Request {
     fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>>;
 }
 
-pub type RequestFuture<T> = Box<dyn Future<Output = T>>;
+pub type RequestFuture<T> = Pin<Box<dyn Future<Output = T> + Send>>;
+
+
 
 // todo: better name?
 #[derive(Debug)]
@@ -65,3 +68,7 @@ pub enum ChatId {
 
 pub mod get_me;
 pub mod send_message;
+
+fn a() {
+    use futures;
+}
