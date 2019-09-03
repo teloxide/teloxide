@@ -1,5 +1,6 @@
 use reqwest::r#async::multipart::Form;
 
+use super::helpers;
 use crate::core::types::Message;
 
 use super::{ChatId, Request};
@@ -30,56 +31,26 @@ impl Request for SendMessage {
         "getMe"
     }
     fn params(self) -> Option<Form> {
-        use apply::Apply;
-
-        // TODO: we need better serialization
         let params = Form::new()
-            .text("chat_id", format!("{:?}", self.chat_id))
-            .text("text", self.text)
-            .apply(|f| {
-                self.parse_mode
-                    .map_or_else(|| f, |parse_mode| f.text("parse_mode", parse_mode))
-            })
-            .apply(|f| {
-                self.disable_web_page_preview.map_or_else(
-                    || f,
-                    |disable_web_page_preview| {
-                        f.text(
-                            "disable_web_page_preview",
-                            format!("{:?}", disable_web_page_preview),
-                        )
-                    },
-                )
-            })
-            .apply(|f| {
-                self.disable_notification.map_or_else(
-                    || f,
-                    |disable_notification| {
-                        f.text(
-                            "disable_notification",
-                            format!("{:?}", disable_notification),
-                        )
-                    },
-                )
-            })
-            .apply(|f| {
-                self.reply_to_message_id.map_or_else(
-                    || f,
-                    |reply_to_message_id| {
-                        f.text("reply_to_message_id", format!("{:?}", reply_to_message_id))
-                    },
-                )
-            })
-            .apply(|f| {
-                self.reply_markup.map_or_else(
-                    || f,
-                    |reply_markup| {
-                        unimplemented!();
-                        //f.text("reply_markup", );
-                        f
-                    },
-                )
-            });
+            .text("chat_id", format!("{}", self.chat_id))
+            .text("text", self.text);
+        let params = helpers::add_to_form_if_some(params, "parse_mode", self.parse_mode);
+        let params = helpers::add_to_form_if_some(
+            params,
+            "disable_web_page_preview",
+            self.disable_web_page_preview,
+        );
+        let params =
+            helpers::add_to_form_if_some(params, "disable_notification", self.disable_notification);
+        let params =
+            helpers::add_to_form_if_some(params, "reply_to_message_id", self.reply_to_message_id);
+
+        // TODO:
+        // helpers::add_to_form_if_some(
+        //     f,
+        //     "reply_markup",
+        //     self.reply_markup,
+        // )
 
         Some(params)
     }

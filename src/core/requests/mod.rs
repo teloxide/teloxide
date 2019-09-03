@@ -1,3 +1,5 @@
+mod helpers;
+
 use reqwest::r#async::multipart::Form;
 use serde::de::DeserializeOwned;
 
@@ -17,11 +19,13 @@ pub trait Request {
 }
 
 /// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-#[derive(Debug, Serialize, From, PartialEq, Eq)]
+#[derive(Debug, Display, Serialize, From, PartialEq, Eq)]
 pub enum ChatId {
     /// chat identifier
+    #[display(fmt = "{}", _0)]
     Id(i64),
     /// _channel_ username (in the format @channelusername)
+    #[display(fmt = "{}", _0)]
     ChannelUsername(String),
 }
 
