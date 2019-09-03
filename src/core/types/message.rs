@@ -4,7 +4,7 @@ use crate::core::types::{
     VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Message {
     pub message_id: i64,
     pub from: Option<Box<User>>,

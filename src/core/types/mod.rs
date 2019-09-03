@@ -31,6 +31,7 @@ pub use self::{
     input_file::InputFile,
     input_media::InputMedia,
     parse_mode::ParseMode,
+    video::Video
 };
 
 mod answer_pre_checkout_query;
@@ -59,3 +60,4 @@ mod user;
 mod input_file;
 mod input_media;
 mod parse_mode;
+mod video;

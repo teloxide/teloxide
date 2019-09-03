@@ -10,7 +10,7 @@ pub struct MessageEntity {
 }
 
 
-#[derive(Deserialize, Debug, PartialEq, Hash, Eq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageEntityKind {
