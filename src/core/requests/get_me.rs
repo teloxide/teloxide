@@ -1,24 +1,25 @@
-use reqwest::r#async::multipart::Form;
+use crate::core::{
+    types::User,
+    network::{
+        request, ResponseResult,
+    },
+    requests::{
+        Request, RequestInfo, RequestFuture,
+    }
+};
 
-use crate::core::types::User;
 
-use super::Request;
-
-#[derive(Debug, Constructor, PartialEq, Eq)]
+#[derive(Debug, Constructor)]
 pub struct GetMe {
-    token: String,
+    info: RequestInfo
 }
 
 impl Request for GetMe {
     type ReturnValue = User;
 
-    fn name(&self) -> &str {
-        "getMe"
-    }
-    fn params(self) -> Option<Form> {
-        None
-    }
-    fn token(&self) -> &str {
-        &self.token
+    fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
+        Box::new(async {
+            request(&self.info.client, &self.info.token, "getMe", None).await
+        })
     }
 }

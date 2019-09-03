@@ -1,13 +1,15 @@
-use apply::Apply;
 use futures::compat::Future01CompatExt;
-use reqwest::r#async::Client;
-use reqwest::StatusCode;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
+use reqwest::{
+    r#async::{Client, multipart::Form},
+    StatusCode,
+};
+use apply::Apply;
 
-use super::requests::Request;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
+
 
 /// Create url for macking requests, see [telegram docs](https://core.telegram.org/bots/api#making-requests)
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
@@ -56,18 +58,16 @@ impl std::error::Error for RequestError {
 
 pub type ResponseResult<T> = Result<T, RequestError>;
 
-pub async fn request<T: DeserializeOwned, R: Request<ReturnValue = T>>(
+pub async fn request<T: DeserializeOwned>(
     client: &Client,
-    request: R,
+    token: &str,
+    method_name: &str,
+    params: Option<Form>,
 ) -> ResponseResult<T> {
     let mut response = client
-        .post(&method_url(
-            TELEGRAM_API_URL,
-            request.token(),
-            request.name(),
-        ))
+        .post(&method_url(TELEGRAM_API_URL, token, method_name))
         .apply(|request_builder| {
-            if let Some(params) = request.params() {
+            if let Some(params) = params {
                 request_builder.multipart(params)
             } else {
                 request_builder

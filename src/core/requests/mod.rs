@@ -1,21 +1,30 @@
-use reqwest::r#async::multipart::Form;
+use std::future::Future;
+
+use crate::core::network::ResponseResult;
+
 use serde::de::DeserializeOwned;
+use reqwest::r#async::Client;
+
 
 mod form_builder;
 
-/// Request that can be sended to telegram.
+
+/// Request that can be sent to telegram.
 /// `ReturnValue` - a type that will be returned from Telegram.
 pub trait Request {
     type ReturnValue: DeserializeOwned;
 
-    /// Get name of the request (e.g. "getMe" or "sendMessage")
-    fn name(&self) -> &str;
+    /// Send request to telegram
+    fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>>;
+}
 
-    /// Form with params
-    fn params(self) -> Option<Form>;
+pub type RequestFuture<T> = Box<dyn Future<Output = T>>;
 
-    /// Bot token
-    fn token(&self) -> &str;
+// todo: better name?
+#[derive(Debug)]
+pub(crate) struct RequestInfo {
+    pub(crate) client: Client,
+    pub(crate) token: String,
 }
 
 /// Unique identifier for the target chat or username of the target channel (in
