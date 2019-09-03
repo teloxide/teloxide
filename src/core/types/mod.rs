@@ -1,4 +1,3 @@
-mod not_implemented_types;
 use self::not_implemented_types::*;
 
 
@@ -28,6 +27,9 @@ pub use self::{
     sticker::Sticker,
     successful_payment::SuccessfulPayment,
     user::User,
+    input_file::InputFile,
+    input_media::InputMedia,
+    parse_mode::ParseMode,
 };
 
 mod answer_pre_checkout_query;
@@ -42,6 +44,7 @@ mod invoice;
 mod label_price;
 mod message;
 mod message_entity;
+mod not_implemented_types;
 mod order_info;
 mod pre_checkout_query;
 mod send_invoice;
@@ -51,3 +54,6 @@ mod shipping_query;
 mod sticker;
 mod successful_payment;
 mod user;
+mod input_file;
+mod input_media;
+mod parse_mode;

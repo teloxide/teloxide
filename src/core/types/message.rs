@@ -1,11 +1,9 @@
 // use serde::Deserialize;
 
 use crate::core::types::{
-    Animation, Audio, Chat, Contact,
-    Document, Game, Invoice, InlineKeyboardMarkup,
-    PhotoSize, MessageEntity, Location, PassportData, Poll,
-    Sticker, SuccessfulPayment,
-    User, Video, VideoNote, Venue, Voice,
+    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
+    MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, User, Venue, Video,
+    VideoNote, Voice,
 };
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]

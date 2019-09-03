@@ -1,3 +1,3 @@
-pub mod network;
+mod network;
 pub mod requests;
 pub mod types;

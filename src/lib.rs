@@ -5,4 +5,4 @@ extern crate serde;
 #[macro_use]
 extern crate typed_builder;
 
-mod core;
+pub mod core;
