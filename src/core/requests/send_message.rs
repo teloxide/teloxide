@@ -37,7 +37,7 @@ impl Request for SendMessage {
 
 
     fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
-        Box::new(async {
+        Box::new(async move {
             let params = FormBuilder::new()
                 .add("chat_id", &self.chat_id)
                 .add("text", &self.text)

@@ -1,6 +1,4 @@
-use serde::Deserialize;
-
-use crate::core::types::LabeledPrice;
+use crate::core::types::{InlineKeyboardMarkup, LabeledPrice};
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct SendInvoice {
