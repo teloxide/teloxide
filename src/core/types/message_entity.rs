@@ -12,15 +12,15 @@ pub struct MessageEntity {
 #[derive(Deserialize, Debug, PartialEq, Hash, Eq)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-enum MessageEntityKind {
+pub enum MessageEntityKind {
     Mention, Hashtag, Cashtag, BotCommand, Url, Email, PhoneNumber,
     Bold, Italic, Code, Pre,
     TextLink { url: String },
     TextMention { user: User }
 }
 
-#[cfg(test)]
-fn test() {
+#[test]
+fn recursive_kind() {
     use serde_json::from_str;
 
     assert_eq!(

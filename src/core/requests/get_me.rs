@@ -18,7 +18,7 @@ impl Request for GetMe {
     type ReturnValue = User;
 
     fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
-        Box::new(async {
+        Box::new(async move {
             request(&self.info.client, &self.info.token, "getMe", None).await
         })
     }

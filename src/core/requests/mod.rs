@@ -22,9 +22,9 @@ pub type RequestFuture<T> = Box<dyn Future<Output = T>>;
 
 // todo: better name?
 #[derive(Debug)]
-pub(crate) struct RequestInfo {
-    pub(crate) client: Client,
-    pub(crate) token: String,
+pub struct RequestInfo {
+    pub client: Client,
+    pub token: String,
 }
 
 /// Unique identifier for the target chat or username of the target channel (in

@@ -32,16 +32,14 @@ impl FormBuilder {
     where
         T: Serialize,
     {
-        Self {
-            form: value.map_or_else(
-                || self.form,
-                |value| {
-                    self.form.text(
-                        name.to_owned(),
-                        serde_json::to_string(value).expect("serde_json::to_string failed"),
-                    )
-                },
-            ),
+        match value {
+            None => Self { form: self.form },
+            Some(value) => Self {
+                form: self.form.text(
+                    name.to_owned(),
+                    serde_json::to_string(value).expect("serde_json::to_string failed"),
+                )
+            }
         }
     }
 
