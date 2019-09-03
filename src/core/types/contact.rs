@@ -1,3 +1,6 @@
+use serde::Deserialization;
+
+#[derive(Debug, Deserialization)]
 struct Contact {
     phone_number: String,
     first_name: String,
