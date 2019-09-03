@@ -2,12 +2,18 @@ mod not_implemented_types;
 use self::not_implemented_types::*;
 
 
+pub type Integer = i32;
+pub type UnsignedInteger = u32;
+
+
 pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,
+    audio::Audio,
     chat::Chat,
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
+    chat_member::ChatMember,
     document::Document,
     invoice::Invoice,
     label_price::LabeledPrice,
@@ -26,9 +32,11 @@ pub use self::{
 
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
+mod audio;
 mod chat;
 mod chat_permissions;
 mod chat_photo;
+mod chat_member;
 mod document;
 mod invoice;
 mod label_price;

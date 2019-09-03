@@ -17,9 +17,6 @@ pub struct Poll;
 pub struct Animation;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
-pub struct Audio;
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
 pub struct Game;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
@@ -39,3 +36,6 @@ pub struct Voice;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
 pub struct MaskPosition;
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Hash, Eq)]
+pub struct ChatMemberStatus;
