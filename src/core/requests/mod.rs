@@ -18,7 +18,8 @@ pub trait Request {
     fn token(&self) -> &str;
 }
 
-/// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+/// Unique identifier for the target chat or username of the target channel (in
+/// the format @channelusername)
 #[derive(Debug, Display, Serialize, From, PartialEq, Eq)]
 pub enum ChatId {
     /// chat identifier
