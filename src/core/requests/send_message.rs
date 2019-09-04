@@ -3,8 +3,8 @@ use crate::core::requests::{ChatId, Request, RequestFuture, RequestInfo, Respons
 use crate::core::{network, types::Message};
 
 #[derive(Debug, TypedBuilder)]
-pub struct SendMessage {
-    info: RequestInfo,
+pub struct SendMessage<'a> {
+    info: RequestInfo<'a>,
 
     chat_id: ChatId,
     text: String,
@@ -21,10 +21,10 @@ pub struct SendMessage {
     reply_markup: Option<()>, // TODO: ReplyMarkup enum
 }
 
-impl Request for SendMessage {
+impl<'a> Request<'a> for SendMessage<'a> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>> {
+    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
             let params = FormBuilder::new()
                 .add("chat_id", &self.chat_id)

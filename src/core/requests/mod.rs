@@ -36,22 +36,22 @@ pub type ResponseResult<T> = Result<T, RequestError>;
 
 /// Request that can be sent to telegram.
 /// `ReturnValue` - a type that will be returned from Telegram.
-pub trait Request {
+pub trait Request<'a> {
     type ReturnValue: DeserializeOwned;
 
     /// Send request to telegram
-    fn send(self) -> RequestFuture<ResponseResult<Self::ReturnValue>>;
+    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>>;
 }
 
-pub type RequestFuture<T> = Pin<Box<dyn Future<Output = T> + Send>>;
+pub type RequestFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 
 
 // todo: better name?
 #[derive(Debug)]
-pub struct RequestInfo {
-    pub client: Client,
-    pub token: String,
+pub struct RequestInfo<'a> {
+    pub client: &'a Client,
+    pub token: &'a str,
 }
 
 /// Unique identifier for the target chat or username of the target channel (in
