@@ -1,11 +1,12 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Chat {
     #[serde(rename = "chat_id")]
     pub id: i32,
     #[serde(flatten)]
     pub type_: ChatType,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub photo: Option<ChatPhoto>,
 }
 
@@ -38,30 +39,45 @@ fn assert_private_field<'de, D: serde::Deserializer<'de>>(
     des.deserialize_str(PrivateChatTypeVisitor)
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+fn serialize_private_field<S: serde::Serializer>(
+    _: &(),
+    ser: S,
+) -> Result<S::Ok, S::Error> {
+    ser.serialize_str("private")
+}
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(untagged)]
 pub enum ChatType {
     NotPrivate {
+        #[serde(skip_serializing_if = "Option::is_none")]
         title: Option<String>,
         #[serde(flatten)]
         type_: NotPrivateChatType,
+        #[serde(skip_serializing_if = "Option::is_none")]
         description: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
         invite_link: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
         pinned_message: Option<Box<Message>>,
     },
     Private {
         /// Dummy field. Used to ensure that "type" field is equal to "private"
         #[serde(rename = "type")]
         #[serde(deserialize_with = "assert_private_field")]
+        #[serde(serialize_with = "serialize_private_field")]
         type_: (),
+        #[serde(skip_serializing_if = "Option::is_none")]
         username: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
         first_name: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
         last_name: Option<String>,
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NotPrivateChatType {
@@ -82,7 +98,7 @@ pub enum NotPrivateChatType {
 #[cfg(test)]
 mod tests {
     use crate::core::types::*;
-    use serde_json::from_str;
+    use serde_json::{from_str, to_string};
 
     #[test]
     fn channel_de() {
@@ -128,5 +144,23 @@ mod tests {
     #[test]
     fn private_chat_de_wrong_type_field() {
         assert!(from_str::<Chat>(r#"{"chat_id":0,"type":"WRONG"}"#).is_err());
+    }
+
+    #[test]
+    fn private_chat_ser() {
+        assert_eq!(
+            to_string(&Chat {
+                id: 0,
+                type_: ChatType::Private {
+                    type_: (),
+                    username: None,
+                    first_name: None,
+                    last_name: None
+                },
+                photo: None
+            })
+            .unwrap(),
+            r#"{"chat_id":0,"type":"private"}"#.to_owned()
+        );
     }
 }

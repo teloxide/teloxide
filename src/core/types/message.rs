@@ -1,56 +1,20 @@
 use crate::core::types::{
-    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
-    MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, User, Venue, Video,
-    VideoNote, Voice,
+    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
+    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
+    SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Message {
-    pub message_id: i64,
-    pub from: Option<Box<User>>,
-    pub date: i64,
+    #[serde(rename = "message_id")]
+    pub id: i32,
+    pub date: i32,
     pub chat: Chat,
-    pub forward_from: Option<User>,
-    pub forward_from_chat: Option<Chat>,
-    pub forward_from_message_id: Option<i64>,
-    pub forward_signature: Option<String>,
-    pub forward_sender_name: Option<String>,
-    pub forward_date: Option<i64>,
-    pub reply_to_message: Option<Box<Message>>,
-    pub edit_date: Option<i64>,
-    pub media_group_id: Option<String>,
-    pub author_signature: Option<String>,
-    pub text: Option<String>,
-    pub entities: Option<Vec<MessageEntity>>,
-    pub caption_entities: Option<Vec<MessageEntity>>,
-    pub audio: Option<Audio>,
-    pub document: Option<Document>,
-    pub animation: Option<Animation>,
-    pub game: Option<Game>,
-    pub photo: Option<Vec<PhotoSize>>,
-    pub sticker: Option<Sticker>,
-    pub video: Option<Video>,
-    pub voice: Option<Voice>,
-    pub video_note: Option<VideoNote>,
-    pub caption: Option<String>,
-    pub contact: Option<Contact>,
-    pub location: Option<Location>,
-    pub venue: Option<Venue>,
-    pub poll: Option<Poll>,
-    pub new_chat_members: Option<Vec<User>>,
-    pub left_chat_member: Option<User>,
-    pub new_chat_title: Option<String>,
-    pub new_chat_photo: Option<Vec<PhotoSize>>,
-    pub delete_chat_photo: Option<bool>,
-    pub group_chat_created: Option<bool>,
-    pub supergroup_chat_created: Option<bool>,
-    pub channel_chat_created: Option<bool>,
-    pub migrate_to_chat_id: Option<i64>,
-    pub migrate_from_chat_id: Option<i64>,
-    pub pinned_message: Option<Box<Message>>,
-    pub invoice: Option<Invoice>,
-    pub successful_payment: Option<SuccessfulPayment>,
-    pub connected_website: Option<String>,
-    pub passport_data: Option<PassportData>,
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    #[serde(flatten)]
+    pub type_: MessageType,
 }
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+#[serde(untagged)]
+pub enum MessageType {}
