@@ -12,10 +12,14 @@ impl serde::Serialize for InputFile {
     {
         match self {
             InputFile::File(path) => {
-                // NOTE: file should be actually attached with multipart/form-data
+                // NOTE: file should be actually attached with
+                // multipart/form-data
                 serializer.serialize_str(
                     // TODO: remove unwrap (?)
-                    &format!("attach://{}", path.file_name().unwrap().to_string_lossy()),
+                    &format!(
+                        "attach://{}",
+                        path.file_name().unwrap().to_string_lossy()
+                    ),
                 )
             }
             InputFile::Url(url) => serializer.serialize_str(url),

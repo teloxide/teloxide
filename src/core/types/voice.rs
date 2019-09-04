@@ -10,5 +10,5 @@ struct Voice {
     /// Optional. MIME type of the file as defined by sender
     pub mime_type: Option<String>,
     /// Optional. File size
-    pub file_size: Option<u64>
+    pub file_size: Option<u64>,
 }

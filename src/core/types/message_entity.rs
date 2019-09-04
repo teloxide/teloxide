@@ -37,9 +37,11 @@ fn recursive_kind() {
                 url: "ya.ru".into()
             },
             offset: 1,
-            length: 2
+            length: 2,
         },
-        from_str::<MessageEntity>(r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#)
-            .unwrap()
+        from_str::<MessageEntity>(
+            r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#
+        )
+        .unwrap()
     );
 }

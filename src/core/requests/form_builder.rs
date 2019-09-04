@@ -21,7 +21,8 @@ impl FormBuilder {
         Self {
             form: self.form.text(
                 name.to_owned(),
-                serde_json::to_string(value).expect("serde_json::to_string failed"),
+                serde_json::to_string(value)
+                    .expect("serde_json::to_string failed"),
             ),
         }
     }
@@ -37,7 +38,8 @@ impl FormBuilder {
             Some(value) => Self {
                 form: self.form.text(
                     name.to_owned(),
-                    serde_json::to_string(value).expect("serde_json::to_string failed"),
+                    serde_json::to_string(value)
+                        .expect("serde_json::to_string failed"),
                 ),
             },
         }

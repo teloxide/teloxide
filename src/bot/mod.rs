@@ -1,11 +1,8 @@
 use reqwest::r#async::Client;
-use crate::core::requests::{
-    get_me::GetMe,
-    send_message::SendMessage,
-    RequestInfo,
-    ChatId,
-};
 
+use crate::core::requests::{
+    get_me::GetMe, send_message::SendMessage, ChatId, RequestInfo,
+};
 
 pub struct Bot {
     token: String,
@@ -23,7 +20,7 @@ impl Bot {
     pub fn with_client(token: &str, client: Client) -> Self {
         Bot {
             token: String::from(token),
-            client
+            client,
         }
     }
 }
@@ -31,14 +28,22 @@ impl Bot {
 /// Telegram functions
 impl Bot {
     pub fn get_me(&self) -> GetMe {
-        GetMe::new(RequestInfo { token: &self.token, client: &self.client })
+        GetMe::new(RequestInfo {
+            token: &self.token,
+            client: &self.client,
+        })
     }
 
     pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
-    where C: Into<ChatId>, T: Into<String>
+    where
+        C: Into<ChatId>,
+        T: Into<String>,
     {
         SendMessage::new(
-            RequestInfo { token: &self.token, client: &self.client },
+            RequestInfo {
+                token: &self.token,
+                client: &self.client,
+            },
             chat_id.into(),
             text.into(),
         )

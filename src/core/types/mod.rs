@@ -1,5 +1,4 @@
 use self::not_implemented_types::*;
-
 pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,

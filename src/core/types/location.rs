@@ -1,4 +1,4 @@
-use serde::{Serialization, Deserialization};
+use serde::{Deserialization, Serialization};
 
 #[derive(Debug, Serialization, Deserialization)]
 /// This object represents a point on the map.
