@@ -1,11 +1,11 @@
 /// This object represents a custom keyboard with reply options.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ReplyKeyboardMarkup {
-    keyboard: Vec<Vec<KeyboardButton>>,
+    pub keyboard: Vec<Vec<KeyboardButton>>,
     #[serde(skip_serializing_if = "Not::not")]
-    resize_keyboard: bool,
+    pub resize_keyboard: bool,
     #[serde(skip_serializing_if = "Not::not")]
-    one_time_keyboard: bool,
+    pub one_time_keyboard: bool,
     #[serde(skip_serializing_if = "Not::not")]
-    selective: bool,
+    pub selective: bool,
 }

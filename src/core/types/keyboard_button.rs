@@ -1,9 +1,9 @@
 /// This object represents one button of the reply keyboard.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct KeyboardButton {
-    text: String,
+    pub text: String,
     #[serde(skip_serializing_if = "Not::not")]
-    request_contact: bool,
+    pub request_contact: bool,
     #[serde(skip_serializing_if = "Not::not")]
-    request_location: bool,
+    pub request_location: bool,
 }

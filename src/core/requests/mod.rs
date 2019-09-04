@@ -45,8 +45,6 @@ pub trait Request<'a> {
 
 pub type RequestFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
-
-
 // todo: better name?
 #[derive(Debug)]
 pub struct RequestInfo<'a> {

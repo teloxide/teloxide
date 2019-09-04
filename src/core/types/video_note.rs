@@ -5,13 +5,13 @@ use serde::Deserialize;
 /// (available in Telegram apps as of v.4.0).
 struct VideoNote {
     /// Identifier for this file
-    file_id: String,
+    pub file_id: String,
     /// Video width and height (diameter of the video message) as defined by sender
-    length: u32,
+    pub length: u32,
     /// Duration of the video in seconds as defined by sender
-    duration: u32,
+    pub duration: u32,
     /// Optional. Video thumbnail
-    thumb: Option<PhotoSize>,
+    pub thumb: Option<PhotoSize>,
     /// Optional. File size
-    file_size: Option<u32>,
+    pub file_size: Option<u32>,
 }
