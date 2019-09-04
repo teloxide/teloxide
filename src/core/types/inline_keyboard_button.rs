@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 /// This object represents one button of an inline keyboard.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct InlineKeyboardButton {

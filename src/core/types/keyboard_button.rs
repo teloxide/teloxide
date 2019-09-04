@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 /// This object represents one button of the reply keyboard.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct KeyboardButton {

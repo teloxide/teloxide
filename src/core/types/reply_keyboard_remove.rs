@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 /// Upon receiving a message with this object, Telegram clients will remove
 /// the current custom keyboard and display the default letter-keyboard.
 /// By default, custom keyboards are displayed until a new keyboard is sent

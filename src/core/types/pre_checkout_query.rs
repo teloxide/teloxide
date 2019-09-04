@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 use crate::core::types::{OrderInfo, User};
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
