@@ -5,7 +5,7 @@
 /// interfaces without having to sacrifice privacy mod
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ForceReply {
-    force_reply: True,
+    pub force_reply: True,
     #[serde(skip_serializing_if = "Not::not")]
-    selective: bool,
+    pub selective: bool,
 }

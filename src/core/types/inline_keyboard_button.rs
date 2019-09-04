@@ -1,9 +1,9 @@
 /// This object represents one button of an inline keyboard.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct InlineKeyboardButton {
-    text: String,
+    pub text: String,
     #[serde(flatten)]
-    kind: InlineKeyboardButtonKind,
+    pub kind: InlineKeyboardButtonKind,
 }
 
 #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]

@@ -15,12 +15,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text or
+        /// inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },
@@ -28,8 +29,8 @@ pub enum InputMedia {
         /// File to send.File to send.
         media: InputFile,
         #[serde(skip_serializing_if = "Option::is_none")]
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is
-        /// supported server-side.
+        /// Thumbnail of the file sent; can be ignored if thumbnail generation
+        /// for the file is supported server-side.
         /// The thumbnail should be in JPEG format and less than 200 kB in size.
         /// A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
@@ -40,12 +41,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text or
+        /// inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
         /// Video width
@@ -61,12 +63,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         supports_streaming: Option<bool>,
     },
-    /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
+    /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
+    /// sound) to be sent.
     Animation {
         /// File to send.
         media: InputFile,
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is
-        /// supported server-side.
+        /// Thumbnail of the file sent; can be ignored if thumbnail generation
+        /// for the file is supported server-side.
         /// The thumbnail should be in JPEG format and less than 200 kB in size.
         /// A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
@@ -78,12 +81,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text or
+        /// inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
         /// Animation width
@@ -100,8 +104,8 @@ pub enum InputMedia {
     Audio {
         /// File to send,
         media: InputFile,
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is
-        /// supported server-side.
+        /// Thumbnail of the file sent; can be ignored if thumbnail generation
+        /// for the file is supported server-side.
         /// The thumbnail should be in JPEG format and less than 200 kB in size.
         /// A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
@@ -113,12 +117,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text or
+        /// inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<String>,
         /// Duration of the audio in seconds
@@ -129,14 +134,14 @@ pub enum InputMedia {
         performer: Option<String>,
         /// Title of the audio
         #[serde(skip_serializing_if = "Option::is_none")]
-        title: Option<String>
+        title: Option<String>,
     },
     /// Represents a general file to be sent.
     Document {
         /// File to send.
         media: InputFile,
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is
-        /// supported server-side.
+        /// Thumbnail of the file sent; can be ignored if thumbnail generation
+        /// for the file is supported server-side.
         /// The thumbnail should be in JPEG format and less than 200 kB in size.
         /// A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
@@ -148,12 +153,13 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text or
+        /// inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },
@@ -221,7 +227,7 @@ mod tests {
             parse_mode: None,
             duration: None,
             performer: None,
-            title: None
+            title: None,
         };
 
         let actual_json = serde_json::to_string(&video).unwrap();

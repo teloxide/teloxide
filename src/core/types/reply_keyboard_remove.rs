@@ -5,7 +5,7 @@
 /// immediately after the user presses a button (see ReplyKeyboardMarkup).
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct ReplyKeyboardRemove {
-    remove_keyboard: True,
+    pub remove_keyboard: True,
     #[serde(skip_serializing_if = "Not::not")]
-    selective: bool,
+    pub selective: bool,
 }
