@@ -1,12 +1,10 @@
-// use serde::Deserialize;
-
 use crate::core::types::{
     Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
     MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, User, Venue, Video,
     VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Message {
     pub message_id: i64,
     pub from: Option<Box<User>>,

@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 /// This object represents an incoming callback query from a callback button in an inline keyboard.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 pub struct CallbackQuery {

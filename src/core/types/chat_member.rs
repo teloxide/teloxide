@@ -1,4 +1,6 @@
-use serde::Deserialize;
+use crate::core::types::{
+    User, ChatMemberStatus, Integer
+};
 
 /// This object contains information about one member of the chat.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]

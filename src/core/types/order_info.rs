@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 use crate::core::types::ShippingAddress;
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]

@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub enum InputFile {
     File(std::path::PathBuf),
