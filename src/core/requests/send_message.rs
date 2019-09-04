@@ -1,12 +1,12 @@
 use crate::core::requests::form_builder::FormBuilder;
 use crate::core::requests::{
-    ChatId, Request, RequestFuture, RequestInfo, ResponseResult,
+    ChatId, Request, RequestFuture, RequestContext, ResponseResult,
 };
 use crate::core::{network, types::Message};
 
 #[derive(Debug)]
 pub struct SendMessage<'a> {
-    info: RequestInfo<'a>,
+    info: RequestContext<'a>,
 
     pub chat_id: ChatId,
     pub text: String,
@@ -55,7 +55,7 @@ impl<'a> Request<'a> for SendMessage<'a> {
 
 impl<'a> SendMessage<'a> {
     pub(crate) fn new(
-        info: RequestInfo<'a>,
+        info: RequestContext<'a>,
         chat_id: ChatId,
         text: String,
     ) -> Self {

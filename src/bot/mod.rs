@@ -1,7 +1,7 @@
 use reqwest::r#async::Client;
 
 use crate::core::requests::{
-    get_me::GetMe, send_message::SendMessage, ChatId, RequestInfo,
+    get_me::GetMe, send_message::SendMessage, ChatId, RequestContext,
 };
 
 pub struct Bot {
@@ -28,7 +28,7 @@ impl Bot {
 /// Telegram functions
 impl Bot {
     pub fn get_me(&self) -> GetMe {
-        GetMe::new(RequestInfo {
+        GetMe::new(RequestContext {
             token: &self.token,
             client: &self.client,
         })
@@ -40,7 +40,7 @@ impl Bot {
         T: Into<String>,
     {
         SendMessage::new(
-            RequestInfo {
+            RequestContext {
                 token: &self.token,
                 client: &self.client,
             },
