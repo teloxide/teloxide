@@ -1,6 +1,4 @@
-use crate::core::types::{
-    User, ChatMemberStatus, Integer
-};
+use crate::core::types::{User, ChatMemberStatus};
 
 /// This object contains information about one member of the chat.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
@@ -10,7 +8,7 @@ pub struct ChatMember {
     /// The member's status in the chat.
     pub status: ChatMemberStatus,
     ///Optional. Restricted and kicked only. Date when restrictions will be lifted for this user, unix time
-    pub until_date: Option<Integer>,
+    pub until_date: Option<i32>,
     ///Optional. Administrators only. True, if the bot is allowed to edit administrator privileges of that user
     pub can_be_edited: Option<bool>,
     ///Optional. Administrators only. True, if the administrator can change the chat title, photo and other settings

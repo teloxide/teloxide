@@ -1,9 +1,9 @@
-use crate::core::types::{ChatPermissions, ChatPhoto, Message, Integer};
+use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Chat {
-    pub id: Integer,
+    pub id: i32,
     #[serde(flatten)]
     pub type_: ChatType,
     pub photo: Option<ChatPhoto>,

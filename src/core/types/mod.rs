@@ -1,10 +1,6 @@
 use self::not_implemented_types::*;
 
 
-pub type Integer = i32;
-pub type UnsignedInteger = u32;
-
-
 pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,

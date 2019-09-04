@@ -1,4 +1,4 @@
-use crate::core::types::{PhotoSize, UnsignedInteger};
+use crate::core::types::PhotoSize;
 
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
@@ -7,5 +7,5 @@ pub struct Document {
     pub thumb: Option<PhotoSize>,
     pub file_name: Option<String>,
     pub mime_type: Option<String>,
-    pub file_size: Option<UnsignedInteger>,
+    pub file_size: Option<u32>,
 }
