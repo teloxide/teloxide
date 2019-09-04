@@ -15,8 +15,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or
-        /// inline URLs] in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
@@ -31,8 +31,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
         /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in size.
-        /// A thumbnail‘s width and height should not exceed 320.
+        /// The thumbnail should be in JPEG format and less than 200 kB in
+        /// size. A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
         ///
         /// [InputFile::File]: crate::core::types::InputFile::File
@@ -41,8 +41,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or
-        /// inline URLs] in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
@@ -70,8 +70,8 @@ pub enum InputMedia {
         media: InputFile,
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
         /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in size.
-        /// A thumbnail‘s width and height should not exceed 320.
+        /// The thumbnail should be in JPEG format and less than 200 kB in
+        /// size. A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
         ///
         /// [InputFile::File]: crate::core::types::InputFile::File
@@ -81,8 +81,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or
-        /// inline URLs] in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
@@ -106,8 +106,8 @@ pub enum InputMedia {
         media: InputFile,
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
         /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in size.
-        /// A thumbnail‘s width and height should not exceed 320.
+        /// The thumbnail should be in JPEG format and less than 200 kB in
+        /// size. A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
         ///
         /// [InputFile::File]: crate::core::types::InputFile::File
@@ -117,8 +117,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or
-        /// inline URLs] in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
@@ -142,8 +142,8 @@ pub enum InputMedia {
         media: InputFile,
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
         /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in size.
-        /// A thumbnail‘s width and height should not exceed 320.
+        /// The thumbnail should be in JPEG format and less than 200 kB in
+        /// size. A thumbnail‘s width and height should not exceed 320.
         /// Ignored if the file is not uploaded using [InputFile::File].
         ///
         /// [InputFile::File]: crate::core::types::InputFile::File
@@ -153,8 +153,8 @@ pub enum InputMedia {
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or
-        /// inline URLs] in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html

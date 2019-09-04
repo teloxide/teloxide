@@ -1,15 +1,16 @@
 use self::not_implemented_types::*;
-
 pub use self::{
-    answer_pre_checkout_query::AnswerPreCheckoutQuery, answer_shipping_query::AnswerShippingQuery,
-    audio::Audio, chat::Chat, chat_member::ChatMember, chat_permissions::ChatPermissions,
-    chat_photo::ChatPhoto, document::Document, input_file::InputFile, input_media::InputMedia,
-    invoice::Invoice, label_price::LabeledPrice, message::Message, message_entity::MessageEntity,
-    order_info::OrderInfo, parse_mode::ParseMode, photo_size::PhotoSize,
+    answer_pre_checkout_query::AnswerPreCheckoutQuery,
+    answer_shipping_query::AnswerShippingQuery, audio::Audio, chat::Chat,
+    chat_member::ChatMember, chat_permissions::ChatPermissions,
+    chat_photo::ChatPhoto, document::Document, input_file::InputFile,
+    input_media::InputMedia, invoice::Invoice, label_price::LabeledPrice,
+    message::Message, message_entity::MessageEntity, order_info::OrderInfo,
+    parse_mode::ParseMode, photo_size::PhotoSize,
     pre_checkout_query::PreCheckoutQuery, send_invoice::SendInvoice,
     shipping_address::ShippingAddress, shipping_option::ShippingOption,
-    shipping_query::ShippingQuery, sticker::Sticker, successful_payment::SuccessfulPayment,
-    user::User, video::Video,
+    shipping_query::ShippingQuery, sticker::Sticker,
+    successful_payment::SuccessfulPayment, user::User, video::Video,
 };
 
 mod answer_pre_checkout_query;

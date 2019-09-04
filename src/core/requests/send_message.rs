@@ -1,5 +1,7 @@
 use crate::core::requests::form_builder::FormBuilder;
-use crate::core::requests::{ChatId, Request, RequestFuture, RequestInfo, ResponseResult};
+use crate::core::requests::{
+    ChatId, Request, RequestFuture, RequestInfo, ResponseResult,
+};
 use crate::core::{network, types::Message};
 
 #[derive(Debug)]
@@ -9,7 +11,8 @@ pub struct SendMessage<'a> {
     pub chat_id: ChatId,
     pub text: String,
 
-    pub parse_mode: Option<String>, // TODO: ParseMode enum
+    pub parse_mode: Option<String>,
+    // TODO: ParseMode enum
     pub disable_web_page_preview: Option<bool>,
     pub disable_notification: Option<bool>,
     pub reply_to_message_id: Option<i64>,
@@ -29,8 +32,14 @@ impl<'a> Request<'a> for SendMessage<'a> {
                     "disable_web_page_preview",
                     self.disable_web_page_preview.as_ref(),
                 )
-                .add_if_some("disable_notification", self.disable_notification.as_ref())
-                .add_if_some("reply_to_message_id", self.reply_to_message_id.as_ref())
+                .add_if_some(
+                    "disable_notification",
+                    self.disable_notification.as_ref(),
+                )
+                .add_if_some(
+                    "reply_to_message_id",
+                    self.reply_to_message_id.as_ref(),
+                )
                 .build();
 
             network::request(
@@ -45,7 +54,11 @@ impl<'a> Request<'a> for SendMessage<'a> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new(info: RequestInfo<'a>, chat_id: ChatId, text: String) -> Self {
+    pub(crate) fn new(
+        info: RequestInfo<'a>,
+        chat_id: ChatId,
+        text: String,
+    ) -> Self {
         SendMessage {
             info,
             chat_id,

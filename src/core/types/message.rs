@@ -1,7 +1,7 @@
 use crate::core::types::{
-    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
-    MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, User, Venue, Video,
-    VideoNote, Voice,
+    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
+    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
+    SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]

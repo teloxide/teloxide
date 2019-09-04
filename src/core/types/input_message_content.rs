@@ -36,7 +36,7 @@ pub enum InputMessageContent {
 
         /// Period in seconds for which the location can be updated, should be between 60 and 86400.
         #[serde(skip_serializing_if = "Option::is_none")]
-        live_period: Option<u32>
+        live_period: Option<u32>,
     },
     /// Represents the content of a venue message to be sent as the result of an inline query.
     Venue {
@@ -86,24 +86,26 @@ mod tests {
         let text_content = InputMessageContent::Text {
             message_text: String::from("text"),
             parse_mode: None,
-            disable_web_page_preview: None
+            disable_web_page_preview: None,
         };
 
         let actual_json = serde_json::to_string(&text_content).unwrap();
         assert_eq!(expected_json, actual_json);
     }
+
     #[test]
     fn location_serialize() {
         let expected_json = r#"{"latitude":59.08,"longitude":38.4326}"#;
         let location_content = InputMessageContent::Location {
             latitude: 59.08,
             longitude: 38.4326,
-            live_period: None
+            live_period: None,
         };
 
         let actual_json = serde_json::to_string(&location_content).unwrap();
         assert_eq!(expected_json, actual_json);
     }
+
     #[test]
     fn venue_serialize() {
         let expected_json = r#"{"latitude":59.08,"longitude":38.4326,"title":"some title",
@@ -114,12 +116,13 @@ mod tests {
             title: String::from("some title"),
             address: String::from("some address"),
             foursquare_id: None,
-            foursquare_type: None
+            foursquare_type: None,
         };
 
         let actual_json = serde_json::to_string(&venue_content).unwrap();
         assert_eq!(expected_json, actual_json);
     }
+
     #[test]
     fn contact_serialize() {
         let expected_json = r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
@@ -127,7 +130,7 @@ mod tests {
             phone_number: String::from("+3800000000"),
             first_name: String::from("jhon"),
             last_name: None,
-            vcard: None
+            vcard: None,
         };
 
         let actual_json = serde_json::to_string(&contact_content).unwrap();

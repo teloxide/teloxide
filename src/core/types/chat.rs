@@ -59,10 +59,11 @@ fn test_chat_de() {
                 },
                 description: None,
                 invite_link: None,
-                pinned_message: None
+                pinned_message: None,
             },
             photo: None,
         },
-        from_str(r#"{"id":0,"type":"channel","username":"channelname"}"#).unwrap()
+        from_str(r#"{"id":0,"type":"channel","username":"channelname"}"#)
+            .unwrap()
     );
 }
