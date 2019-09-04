@@ -2,10 +2,40 @@ use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Chat {
+    #[serde(rename = "chat_id")]
     pub id: i32,
     #[serde(flatten)]
     pub type_: ChatType,
     pub photo: Option<ChatPhoto>,
+}
+
+struct PrivateChatTypeVisitor;
+
+impl<'de> serde::de::Visitor<'de> for PrivateChatTypeVisitor {
+    type Value = ();
+
+    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, r#"field equal to "private""#)
+    }
+
+    fn visit_borrowed_str<E: serde::de::Error>(
+        self,
+        v: &'de str,
+    ) -> Result<Self::Value, E> {
+        match v {
+            "private" => Ok(()),
+            _ => Err(E::invalid_value(
+                serde::de::Unexpected::Str(v),
+                &r#""private""#,
+            )),
+        }
+    }
+}
+
+fn assert_private_field<'de, D: serde::Deserializer<'de>>(
+    des: D,
+) -> Result<(), D::Error> {
+    des.deserialize_str(PrivateChatTypeVisitor)
 }
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
@@ -21,6 +51,10 @@ pub enum ChatType {
         pinned_message: Option<Box<Message>>,
     },
     Private {
+        /// Dummy field. Used to ensure that "type" field is equal to "private"
+        #[serde(rename = "type")]
+        #[serde(deserialize_with = "assert_private_field")]
+        type_: (),
         username: Option<String>,
         first_name: Option<String>,
         last_name: Option<String>,
@@ -45,24 +79,54 @@ pub enum NotPrivateChatType {
     },
 }
 
-#[test]
-fn test_chat_de() {
+#[cfg(test)]
+mod tests {
+    use crate::core::types::*;
     use serde_json::from_str;
 
-    assert_eq!(
-        Chat {
-            id: 0,
-            type_: ChatType::NotPrivate {
-                title: None,
-                type_: NotPrivateChatType::Channel {
-                    username: Some("channelname".into())
+    #[test]
+    fn channel_de() {
+        assert_eq!(
+            Chat {
+                id: -1,
+                type_: ChatType::NotPrivate {
+                    title: None,
+                    type_: NotPrivateChatType::Channel {
+                        username: Some("channelname".into())
+                    },
+                    description: None,
+                    invite_link: None,
+                    pinned_message: None
                 },
-                description: None,
-                invite_link: None,
-                pinned_message: None
+                photo: None,
             },
-            photo: None,
-        },
-        from_str(r#"{"id":0,"type":"channel","username":"channelname"}"#).unwrap()
-    );
+            from_str(
+                r#"{"chat_id":-1,"type":"channel","username":"channelname"}"#
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn private_chat_de() {
+        assert_eq!(
+            Chat {
+                id: 0,
+                type_: ChatType::Private {
+                    type_: (),
+                    username: Some("username".into()),
+                    first_name: Some("Anon".into()),
+                    last_name: None
+                },
+                photo: None
+            },
+            from_str(
+                r#"{"chat_id":0,"type":"private","username":"username","first_name":"Anon"}"#
+            ).unwrap());
+    }
+
+    #[test]
+    fn private_chat_de_wrong_type_field() {
+        assert!(from_str::<Chat>(r#"{"chat_id":0,"type":"WRONG"}"#).is_err());
+    }
 }
