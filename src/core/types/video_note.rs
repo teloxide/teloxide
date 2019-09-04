@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// This object represents a [video message](https://telegram.org/blog/video-messages-and-telescope)
 /// (available in Telegram apps as of v.4.0).
 struct VideoNote {

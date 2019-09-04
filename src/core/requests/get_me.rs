@@ -4,7 +4,7 @@ use crate::core::requests::{
 };
 use crate::core::types::User;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GetMe<'a> {
     info: RequestContext<'a>,
 }

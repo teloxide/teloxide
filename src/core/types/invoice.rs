@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct Invoice {
     pub title: String,
     pub description: String,

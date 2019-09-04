@@ -1,6 +1,6 @@
 use crate::core::types::ShippingOption;
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct AnswerShippingQuery {
     pub shipping_query_id: String,
     pub ok: bool,

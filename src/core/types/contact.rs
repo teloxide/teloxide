@@ -1,6 +1,6 @@
 use serde::Deserialization;
 
-#[derive(Debug, Deserialization)]
+#[derive(Debug, Deserialization, Clone)]
 /// This object represents a phone contact.
 struct Contact {
     /// Contact's phone number

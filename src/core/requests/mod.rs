@@ -45,7 +45,7 @@ pub trait Request<'a> {
 
 pub type RequestFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct RequestContext<'a> {
     pub client: &'a Client,
     pub token: &'a str,
@@ -53,7 +53,7 @@ pub struct RequestContext<'a> {
 
 /// Unique identifier for the target chat or username of the target channel (in
 /// the format @channelusername)
-#[derive(Debug, Display, Serialize, From, PartialEq, Eq)]
+#[derive(Debug, Display, Serialize, From, PartialEq, Eq, Clone)]
 pub enum ChatId {
     /// chat identifier
     #[display(fmt = "{}", _0)]

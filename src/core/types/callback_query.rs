@@ -1,5 +1,5 @@
 /// This object represents an incoming callback query from a callback button in an inline keyboard.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct CallbackQuery {
     /// Unique identifier for this query
     pub id: CallbackQueryId,

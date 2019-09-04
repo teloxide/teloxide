@@ -3,7 +3,7 @@
 /// selected the bot‘s message and tapped ’Reply'). This can be
 /// extremely useful if you want to create user-friendly step-by-step
 /// interfaces without having to sacrifice privacy mod
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ForceReply {
     pub force_reply: True,
     #[serde(skip_serializing_if = "Not::not")]

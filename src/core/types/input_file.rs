@@ -1,4 +1,4 @@
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub enum InputFile {
     File(std::path::PathBuf),
     Url(String),

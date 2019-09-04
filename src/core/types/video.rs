@@ -1,6 +1,6 @@
 use crate::core::types::PhotoSize;
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 pub struct Video {
     pub file_id: String,
     pub width: u32,

@@ -1,6 +1,6 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 pub struct Chat {
     #[serde(rename = "chat_id")]
     pub id: i32,
@@ -46,7 +46,7 @@ fn serialize_private_field<S: serde::Serializer>(
     ser.serialize_str("private")
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "snake_case")]
 #[serde(untagged)]
 pub enum ChatType {
@@ -77,7 +77,7 @@ pub enum ChatType {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NotPrivateChatType {

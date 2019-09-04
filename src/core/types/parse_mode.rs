@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages.
 /// You can use **bold** and *italic* text, as well as [inline links](https://example.com) and `pre-formatted code` in

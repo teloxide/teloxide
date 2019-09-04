@@ -4,7 +4,7 @@ use crate::core::requests::{
 };
 use crate::core::{network, types::Message};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SendMessage<'a> {
     info: RequestContext<'a>,
 

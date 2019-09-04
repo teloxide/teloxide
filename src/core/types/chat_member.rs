@@ -1,7 +1,7 @@
 use crate::core::types::{ChatMemberStatus, User};
 
 /// This object contains information about one member of the chat.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ChatMember {
     /// Information about the user.
     pub user: User,

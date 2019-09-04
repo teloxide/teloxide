@@ -1,5 +1,5 @@
 /// This object represents a custom keyboard with reply options.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ReplyKeyboardMarkup {
     pub keyboard: Vec<Vec<KeyboardButton>>,
     #[serde(skip_serializing_if = "Not::not")]
