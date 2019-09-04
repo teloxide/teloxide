@@ -4,3 +4,4 @@ extern crate derive_more;
 extern crate serde;
 
 pub mod core;
+pub mod bot;
