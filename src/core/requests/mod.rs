@@ -68,7 +68,3 @@ pub enum ChatId {
 
 pub mod get_me;
 pub mod send_message;
-
-fn a() {
-    use futures;
-}
