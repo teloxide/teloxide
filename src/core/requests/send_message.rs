@@ -25,7 +25,7 @@ impl<'a> Request<'a> for SendMessage<'a> {
         Box::pin(async move {
             let params = FormBuilder::new()
                 .add("chat_id", &self.chat_id)
-                .add_raw("text", &self.text)
+                .add::<str>("text", &self.text)
                 .add_if_some("parse_mode", self.parse_mode.as_ref())
                 .add_if_some(
                     "disable_web_page_preview",

@@ -1,5 +1,7 @@
 use reqwest::r#async::multipart::Form;
 use serde::Serialize;
+use crate::core::types::ParseMode;
+use crate::core::requests::ChatId;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.
@@ -12,51 +14,74 @@ impl FormBuilder {
         Self { form: Form::new() }
     }
 
-    /// Add the supplied key-value pair to this `FormBuilder`. Don't forget to
-    /// implement `serde::Serialize` for `T`!
+    /// Add the supplied key-value pair to this `FormBuilder`.
     pub fn add<T>(self, name: &str, value: &T) -> Self
-    where
-        T: Serialize,
+    where T: ToFormValue + ?Sized
     {
         Self {
             form: self.form.text(
                 name.to_owned(),
-                serde_json::to_string(value)
-                    .expect("serde_json::to_string failed"),
-            ),
+                value.to_form_value()
+            )
         }
     }
 
     /// Adds a key-value pair to the supplied `FormBuilder` if `value` is some.
     /// Don't forget to implement `serde::Serialize` for `T`!
     pub fn add_if_some<T>(self, name: &str, value: Option<&T>) -> Self
-    where
-        T: Serialize,
+    where T: ToFormValue + ?Sized
     {
         match value {
             None => Self { form: self.form },
-            Some(value) => Self {
-                form: self.form.text(
-                    name.to_owned(),
-                    serde_json::to_string(value)
-                        .expect("serde_json::to_string failed"),
-                ),
-            },
-        }
-    }
-
-    /// Add the supplied key-value pair to this `FormBuilder`.
-    /// With raw str value, so `serde_json` will not add redundant `""`
-    pub fn add_raw(self, name: &str, value: &str) -> Self {
-        Self {
-            form: self.form.text(
-                name.to_owned(),
-                value.to_owned(),
-            ),
+            Some(value) => self.add(name, value),
         }
     }
 
     pub fn build(self) -> Form {
         self.form
+    }
+}
+
+pub trait ToFormValue {
+    fn to_form_value(&self) -> String;
+}
+
+macro_rules! impl_for_struct {
+    ($($name:ident),*) => {
+        $(
+            impl ToFormValue for $name {
+                fn to_form_value(&self) -> String {
+                    serde_json::to_string(self).expect("serde_json::to_string failed")
+                }
+            }
+        )*
+    };
+}
+
+impl_for_struct!(
+    bool, i32, i64
+);
+
+impl ToFormValue for str {
+    fn to_form_value(&self) -> String {
+        self.to_owned()
+    }
+}
+
+impl ToFormValue for ParseMode {
+    fn to_form_value(&self) -> String {
+        match self {
+            ParseMode::HTML => String::from("HTML"),
+            ParseMode::Markdown => String::from("Markdown"),
+        }
+    }
+}
+
+impl ToFormValue for ChatId {
+    fn to_form_value(&self) -> String {
+        match self {
+            ChatId::Id(id) => id.to_string(),
+            ChatId::ChannelUsername(username) => username.clone(),
+        }
     }
 }
