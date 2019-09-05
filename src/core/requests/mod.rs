@@ -65,3 +65,4 @@ pub enum ChatId {
 
 pub mod get_me;
 pub mod send_message;
+pub mod forward_message;
