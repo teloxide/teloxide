@@ -80,7 +80,7 @@ impl<'a> SendMessage<'a> {
         self
     }
 
-    pub fn parse_mode<T: Into<String>>(mut self, val: T) -> Self {
+    pub fn parse_mode<T: Into<ParseMode>>(mut self, val: T) -> Self {
         self.parse_mode = Some(val.into());
         self
     }

@@ -18,7 +18,7 @@ struct ForwardMessage<'a> {
     pub disable_notification: Option<bool>,
 }
 
-impl<'a> Request<'a> for ForwardMessage {
+impl<'a> Request<'a> for ForwardMessage<'a> {
     type ReturnValue = Message;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
@@ -29,7 +29,7 @@ impl<'a> Request<'a> for ForwardMessage {
                 .add("message_id", &self.message_id)
                 .add_if_some(
                     "disable_notification",
-                    &self.disable_notification.as_ref()
+                    self.disable_notification.as_ref()
                 )
                 .build();
 
@@ -43,8 +43,8 @@ impl<'a> Request<'a> for ForwardMessage {
     }
 }
 
-impl ForwardMessage {
-    pub(crate) fn new(info: RequestContext,
+impl<'a> ForwardMessage<'a> {
+    pub(crate) fn new(info: RequestContext<'a>,
                chat_id: ChatId,
                from_chat_id: ChatId,
                message_id: i64) -> Self {
