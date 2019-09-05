@@ -45,6 +45,17 @@ impl FormBuilder {
         }
     }
 
+    /// Add the supplied key-value pair to this `FormBuilder`.
+    /// With raw str value, so `serde_json` will not add redundant `""`
+    pub fn add_raw(self, name: &str, value: &str) -> Self {
+        Self {
+            form: self.form.text(
+                name.to_owned(),
+                value.to_owned(),
+            ),
+        }
+    }
+
     pub fn build(self) -> Form {
         self.form
     }
