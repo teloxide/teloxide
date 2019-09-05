@@ -54,6 +54,7 @@ pub struct RequestContext<'a> {
 /// Unique identifier for the target chat or username of the target channel (in
 /// the format @channelusername)
 #[derive(Debug, Display, Serialize, From, PartialEq, Eq, Clone)]
+#[serde(untagged)]
 pub enum ChatId {
     /// chat identifier
     #[display(fmt = "{}", _0)]
