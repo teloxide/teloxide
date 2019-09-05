@@ -6,10 +6,14 @@ use crate::core::network;
 #[derive(Debug, Clone)]
 /// Use this method to forward messages of any kind. On success, the sent
 /// [Message]: crate::core::types::message::Message is returned.
-struct ForwardMessage<'a> {
-    info: RequestContext<'a>,
+pub struct ForwardMessage<'a> {
+    ctx: RequestContext<'a>,
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format @channelusername)
     pub chat_id: ChatId,
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format @channelusername)
     pub from_chat_id: ChatId,
     /// Message identifier in the chat specified in from_chat_id
     pub message_id: i64,
@@ -34,9 +38,9 @@ impl<'a> Request<'a> for ForwardMessage<'a> {
                 .build();
 
             network::request(
-                &self.info.client,
-                &self.info.token,
-                "ForwardMessage",
+                &self.ctx.client,
+                &self.ctx.token,
+                "forwardMessage",
                 Some(params),
             ).await
         })
@@ -44,12 +48,12 @@ impl<'a> Request<'a> for ForwardMessage<'a> {
 }
 
 impl<'a> ForwardMessage<'a> {
-    pub(crate) fn new(info: RequestContext<'a>,
+    pub(crate) fn new(ctx: RequestContext<'a>,
                chat_id: ChatId,
                from_chat_id: ChatId,
                message_id: i64) -> Self {
         Self {
-            info,
+            ctx,
             chat_id,
             from_chat_id,
             message_id,
