@@ -64,6 +64,27 @@ pub enum ChatId {
     ChannelUsername(String),
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn chat_id_id_serialization() {
+        let expected_json = String::from(r#"123456"#);
+        let actual_json = serde_json::to_string(&ChatId::Id(123456)).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
+
+    #[test]
+    fn chat_id_channel_username_serialization() {
+        let expected_json = String::from(r#""@username""#);
+        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(String::from("@username"))).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
+}
+
 pub mod get_me;
 pub mod send_message;
 pub mod forward_message;
