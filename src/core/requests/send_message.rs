@@ -2,7 +2,7 @@ use crate::core::requests::form_builder::FormBuilder;
 use crate::core::requests::{
     ChatId, Request, RequestFuture, RequestContext, ResponseResult,
 };
-use crate::core::{network, types::Message};
+use crate::core::{network, types::Message, types::ParseMode};
 
 #[derive(Debug, Clone)]
 pub struct SendMessage<'a> {
@@ -11,8 +11,7 @@ pub struct SendMessage<'a> {
     pub chat_id: ChatId,
     pub text: String,
 
-    pub parse_mode: Option<String>,
-    // TODO: ParseMode enum
+    pub parse_mode: Option<ParseMode>,
     pub disable_web_page_preview: Option<bool>,
     pub disable_notification: Option<bool>,
     pub reply_to_message_id: Option<i64>,
