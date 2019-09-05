@@ -5,7 +5,7 @@ use crate::core::network;
 
 #[derive(Debug, Clone)]
 /// Use this method to forward messages of any kind. On success, the sent
-/// [Message]: crate::core::types::message::Message is returned.
+/// [`Message`] is returned.
 pub struct ForwardMessage<'a> {
     ctx: RequestContext<'a>,
 
