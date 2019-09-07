@@ -1,8 +1,14 @@
-use crate::core::network;
-use crate::core::requests::{
-    Request, RequestFuture, RequestContext, ResponseResult,
+use crate::core::{
+    network,
+    types::User,
+    requests::{
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult
+    },
 };
-use crate::core::types::User;
+
 
 #[derive(Debug, Clone)]
 /// A simple method for testing your bot's auth token. Requires no parameters.

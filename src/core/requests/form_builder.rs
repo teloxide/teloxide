@@ -1,10 +1,13 @@
+use std::path::PathBuf;
+
+use crate::core::{
+    types::{ParseMode, InputMedia},
+    requests::{ChatId, utils},
+};
+
 use reqwest::r#async::multipart::Form;
 use serde::Serialize;
-use crate::core::types::ParseMode;
-use crate::core::requests::ChatId;
-use crate::core::requests::utils;
-use crate::core::types::InputMedia;
-use std::path::PathBuf;
+
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.

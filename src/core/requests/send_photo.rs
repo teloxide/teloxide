@@ -1,9 +1,18 @@
 use std::path::Path;
 
-use crate::core::requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult};
-use crate::core::types::{ParseMode, Message, InputFile};
-use crate::core::requests::form_builder::FormBuilder;
-use crate::core::network;
+use crate::core::{
+    network,
+    types::{ParseMode, Message, InputFile},
+    requests::{
+        ChatId,
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult,
+        form_builder::FormBuilder,
+    },
+};
+
 
 #[derive(Debug, Clone)]
 /// Use this method to send photos. On success, the sent [`Message`] is returned.

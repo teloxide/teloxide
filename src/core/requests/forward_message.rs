@@ -1,7 +1,16 @@
-use crate::core::requests::form_builder::FormBuilder;
-use crate::core::requests::{ChatId, RequestContext, Request, RequestFuture, ResponseResult};
-use crate::core::types::Message;
-use crate::core::network;
+use crate::core::{
+    network,
+    types::Message,
+    requests::{
+        ChatId,
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult,
+        form_builder::FormBuilder,
+    },
+};
+
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to forward messages of any kind. On success, the sent

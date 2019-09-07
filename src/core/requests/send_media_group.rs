@@ -1,13 +1,13 @@
 use crate::core::{
-    types::{Message, InputMedia, InputFile},
     network::request_multipart,
+    types::{Message, InputMedia, InputFile},
     requests::{
-        form_builder::FormBuilder,
         ChatId,
         Request,
-        RequestContext,
         RequestFuture,
+        RequestContext,
         ResponseResult,
+        form_builder::FormBuilder,
     }
 };
 use apply::Apply;

@@ -1,11 +1,14 @@
-use std::future::Future;
 use std::pin::Pin;
+use std::future::Future;
 
-use reqwest::r#async::Client;
-use reqwest::StatusCode;
+use reqwest::{
+    r#async::Client, StatusCode
+};
 use serde::de::DeserializeOwned;
 
+
 mod form_builder;
+mod utils;
 
 #[derive(Debug, Display)]
 pub enum RequestError {
@@ -90,4 +93,3 @@ pub mod send_message;
 pub mod forward_message;
 pub mod send_photo;
 pub mod send_media_group;
-mod utils;
