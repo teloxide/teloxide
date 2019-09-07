@@ -86,25 +86,24 @@ mod tests {
 
     #[test]
     fn channel_de() {
-        assert_eq!(
-            Chat {
-                id: -1,
-                kind: ChatKind::NonPrivate {
-                    title: None,
-                    kind: NonPrivateChatKind::Channel {
-                        username: Some("channelname".into())
-                    },
-                    description: None,
-                    invite_link: None,
-                    pinned_message: None
+        let expected = Chat {
+            id: -1,
+            kind: ChatKind::NonPrivate {
+                title: None,
+                kind: NonPrivateChatKind::Channel {
+                    username: Some("channelname".into()),
                 },
-                photo: None,
+                description: None,
+                invite_link: None,
+                pinned_message: None,
             },
-            from_str(
-                r#"{"chat_id":-1,"type":"channel","username":"channelname"}"#
-            )
-            .unwrap()
-        );
+            photo: None,
+        };
+        let actual = from_str(
+            r#"{"chat_id":-1,"type":"channel","username":"channelname"}"#,
+        )
+        .unwrap();
+        assert_eq!(expected, actual);
     }
 
     #[test]
@@ -129,22 +128,4 @@ mod tests {
     fn private_chat_de_wrong_type_field() {
         assert!(from_str::<Chat>(r#"{"chat_id":0,"type":"WRONG"}"#).is_err());
     }
-
-    /*#[test]
-    fn private_chat_ser() {
-        assert_eq!(
-            to_string(&Chat {
-                id: 0,
-                type_: ChatKind::Private {
-                    type_: (),
-                    username: None,
-                    first_name: None,
-                    last_name: None
-                },
-                photo: None
-            })
-            .unwrap(),
-            r#"{"chat_id":0,"type":"private"}"#.to_owned()
-        );
-    }*/
 }
