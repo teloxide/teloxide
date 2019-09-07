@@ -23,6 +23,7 @@ pub fn file_to_part(path_to_file: &PathBuf) -> Part {
     let file = tokio::fs::File::open(path_to_file.clone())
         .map(|file| FramedRead::new(file, FileDecoder))
         .flatten_stream();
-    let part = Part::stream(file).file_name(path_to_file.file_name().unwrap().to_str().unwrap().to_string());
+    let part = Part::stream(file)
+        .file_name(path_to_file.file_name().unwrap().to_string_lossy().into_owned());
     part
 }

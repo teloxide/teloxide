@@ -5,6 +5,8 @@ use crate::core::requests::{
 use crate::core::types::User;
 
 #[derive(Debug, Clone)]
+/// A simple method for testing your bot's auth token. Requires no parameters.
+/// Returns basic information about the bot in form of a [`User`] object.
 pub struct GetMe<'a> {
     info: RequestContext<'a>,
 }

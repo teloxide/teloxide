@@ -6,14 +6,34 @@ use crate::core::requests::form_builder::FormBuilder;
 use crate::core::network;
 
 #[derive(Debug, Clone)]
+/// Use this method to send photos. On success, the sent [`Message`] is returned.
 pub struct SendPhoto<'a> {
     ctx: RequestContext<'a>,
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format @channelusername)
     pub chat_id: ChatId,
+    /// Photo to send.
+    /// [`InputFile::FileId`] - Pass a file_id as String to send a photo that exists on the
+    /// Telegram servers (recommended)
+    /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
+    /// to get a photo from the Internet
+    /// [`InputFile::File`] - Upload a new photo.
     pub photo: InputFile,
+    /// Photo caption (may also be used when resending photos by file_id), 0-1024 characters
     pub caption: Option<String>,
+    /// Send [Markdown] or [HTML],
+    /// if you want Telegram apps to show [bold, italic, fixed-width text
+    /// or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::core::types::ParseMode::Markdown
+    /// [Html]: crate::core::types::ParseMode::Html
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::core::types::ParseMode
     pub parse_mode: Option<ParseMode>,
+    /// Sends the message silently. Users will receive a notification with no sound.
     pub disable_notification: Option<bool>,
+    /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i64>,
 
     // TODO: add reply_markup
