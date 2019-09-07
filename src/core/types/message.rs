@@ -89,7 +89,7 @@ pub enum ForwardKind {
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
-pub enum UserOrSenderName {
+pub enum ForwardedFrom {
     User { from: User },
     SenderName { sender_name: String },
 }
