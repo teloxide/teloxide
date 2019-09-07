@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::core::types::ParseMode;
 use crate::core::requests::ChatId;
 use crate::core::requests::utils;
+use crate::core::types::InputMedia;
 use std::path::PathBuf;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
@@ -55,7 +56,7 @@ pub trait ToFormValue {
 }
 
 macro_rules! impl_for_struct {
-    ($($name:ident),*) => {
+    ($($name:ty),*) => {
         $(
             impl ToFormValue for $name {
                 fn to_form_value(&self) -> String {
@@ -67,7 +68,7 @@ macro_rules! impl_for_struct {
 }
 
 impl_for_struct!(
-    bool, i32, i64
+    bool, i32, i64, Vec<InputMedia>
 );
 
 impl ToFormValue for str {
