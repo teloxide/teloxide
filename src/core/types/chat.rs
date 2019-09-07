@@ -3,7 +3,6 @@ use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub struct Chat {
-    #[serde(rename = "chat_id")]
     pub id: i64,
     #[serde(flatten)]
     pub kind: ChatKind,
@@ -103,7 +102,7 @@ mod tests {
             photo: None,
         };
         let actual = from_str(
-            r#"{"chat_id":-1,"type":"channel","username":"channelname"}"#,
+            r#"{"id":-1,"type":"channel","username":"channelname"}"#,
         )
         .unwrap();
         assert_eq!(expected, actual);
@@ -123,12 +122,12 @@ mod tests {
                 photo: None
             },
             from_str(
-                r#"{"chat_id":0,"type":"private","username":"username","first_name":"Anon"}"#
+                r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#
             ).unwrap());
     }
 
     #[test]
     fn private_chat_de_wrong_type_field() {
-        assert!(from_str::<Chat>(r#"{"chat_id":0,"type":"WRONG"}"#).is_err());
+        assert!(from_str::<Chat>(r#"{"id":0,"type":"WRONG"}"#).is_err());
     }
 }

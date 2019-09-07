@@ -190,7 +190,7 @@ mod tests {
                 reply_markup: None,
             },
         };
-        let actual = from_str::<Message>(r#"{"message_id":0,"date":0,"chat":{"chat_id":0,"type":"private"},"text":"Hello","entities":[]}"#).unwrap();
+        let actual = from_str::<Message>(r#"{"message_id":0,"date":0,"chat":{"id":0,"type":"private"},"text":"Hello","entities":[]}"#).unwrap();
         assert_eq!(expected, actual);
     }
 
@@ -230,9 +230,17 @@ mod tests {
             },
         };
         let actual = from_str::<Message>(
-            r#"{"message_id":1,"date":1,"chat":{"chat_id":1,"type":"private"},"forward_date":1,"forward_from":{"id":123,"is_bot":false,"first_name":"Name"},"text":"Message","entities":[]}"#,
+            r#"{"message_id":1,"date":1,"chat":{"id":1,"type":"private"},"forward_date":1,"forward_from":{"id":123,"is_bot":false,"first_name":"Name"},"text":"Message","entities":[]}"#,
         )
         .unwrap();
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn sent_message_de() {
+        // actual message from telegram
+        let json = "{\"message_id\":6534,\"from\":{\"id\":457569668,\"is_bot\":true,\"first_name\":\"\\u0424\\u044b\\u0440\\u044c\\u043a\",\"username\":\"BloodyTestBot\"},\"chat\":{\"id\":218485655,\"first_name\":\"\\u0412\\u0430\\u0444\\u0435\\u043b\\u044c\",\"username\":\"WaffleLapkin\",\"type\":\"private\"},\"date\":1567898953,\"text\":\"text\"}";
+        let actual: Result<Message, _>= from_str(json);
+        assert!(actual.is_ok());
     }
 }

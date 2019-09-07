@@ -37,14 +37,14 @@ impl<'a> Request<'a> for ForwardMessage<'a> {
     type ReturnValue = Message;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(
+        Box::pin(async move {
             network::request_json(
                 self.ctx.client,
                 self.ctx.token,
                 "forwardMessage",
                 &self,
-            )
-        )
+            ).await
+        })
     }
 }
 

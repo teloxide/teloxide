@@ -26,6 +26,7 @@ pub use self::{
     successful_payment::SuccessfulPayment,
     user::User,
     video::Video,
+    response_parameters::ResponseParameters
 };
 
 mod answer_pre_checkout_query;
@@ -55,3 +56,4 @@ mod sticker;
 mod successful_payment;
 mod user;
 mod video;
+mod response_parameters;

@@ -1,10 +1,19 @@
-use apply::Apply;
-use reqwest::r#async::{multipart::Form, Client};
-use serde::de::DeserializeOwned;
-use serde_json::Value;
+use crate::core::{
+    requests::{RequestError, ResponseResult},
+    types::ResponseParameters,
+};
 
-use crate::core::requests::{RequestError, ResponseResult};
-use serde::Serialize;
+use apply::Apply;
+use serde_json::Value;
+use serde::{
+    Serialize,
+    de::DeserializeOwned
+};
+use reqwest::{
+    StatusCode,
+    r#async::{Client, multipart::Form},
+};
+
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -48,21 +57,22 @@ pub async fn request_multipart<T: DeserializeOwned>(
         .await
         .map_err(RequestError::NetworkError)?;
 
-    let response_json = serde_json::from_str::<Value>(
+    let response = serde_json::from_str::<TelegramResponse<T>>(
         &response
             .text()
             .await
             .map_err(RequestError::NetworkError)?,
     )
-    .map_err(RequestError::InvalidJson)?;
+        .map_err(RequestError::InvalidJson)?;
 
-    if response_json["ok"] == "false" {
-        Err(RequestError::ApiError {
-            status_code: response.status(),
-            description: response_json["description"].to_string(),
-        })
-    } else {
-        Ok(serde_json::from_value(response_json["result"].clone()).unwrap())
+    match response {
+        TelegramResponse::Ok { result, .. } => Ok(result),
+        TelegramResponse::Err {
+            description,
+            error_code,
+            response_parameters,
+            ..
+        } => Err(RequestError::ApiError { description, status_code: StatusCode::from_u16(error_code).unwrap() })
     }
 }
 
@@ -79,22 +89,38 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
         .await
         .map_err(RequestError::NetworkError)?;
 
-    let response_json = serde_json::from_str::<Value>(
+    let response = serde_json::from_str::<TelegramResponse<T>>(
         &response
             .text()
             .await
             .map_err(RequestError::NetworkError)?,
     )
-        .map_err(RequestError::InvalidJson)?;
+    .map_err(RequestError::InvalidJson)?;
 
-    if response_json["ok"] == "false" {
-        Err(RequestError::ApiError {
-            status_code: response.status(),
-            description: response_json["description"].to_string(),
-        })
-    } else {
-        Ok(serde_json::from_value(response_json["result"].clone()).unwrap())
+    match response {
+        TelegramResponse::Ok { result, .. } => Ok(result),
+        TelegramResponse::Err {
+            description,
+            error_code,
+            response_parameters,
+            ..
+        } => Err(RequestError::ApiError { description, status_code: StatusCode::from_u16(error_code).unwrap() })
     }
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum TelegramResponse<R> {
+    Ok {
+        ok: bool, // true
+        result: R,
+    },
+    Err {
+        ok: bool, // false
+        description: String,
+        error_code: u16,
+        response_parameters: Option<ResponseParameters>,
+    },
 }
 
 #[cfg(test)]

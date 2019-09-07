@@ -13,7 +13,7 @@ mod utils;
 #[derive(Debug, Display)]
 pub enum RequestError {
     #[display(fmt = "Telegram error #{}: {}", status_code, description)]
-    ApiError {
+    ApiError { // TODO: add response parameters
         status_code: StatusCode,
         description: String,
     },

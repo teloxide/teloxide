@@ -52,25 +52,25 @@ impl<'a> Request<'a> for SendMessage<'a> {
     type ReturnValue = Message;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(
+        Box::pin(async move {
             network::request_json(
                 self.ctx.client,
                 self.ctx.token,
                 "sendMessage",
                 &self,
-            )
-        )
+            ).await
+        })
     }
 }
 
 impl<'a> SendMessage<'a> {
     pub(crate) fn new(
-        info: RequestContext<'a>,
+        ctx: RequestContext<'a>,
         chat_id: ChatId,
         text: String,
     ) -> Self {
         SendMessage {
-            ctx: info,
+            ctx,
             chat_id,
             text,
             parse_mode: None,
