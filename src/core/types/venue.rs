@@ -1,7 +1,6 @@
 use crate::core::types::Location;
 
-
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 pub struct Venue {
     pub location: Location,
     pub title: String,
@@ -9,5 +8,5 @@ pub struct Venue {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub foursquare_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub foursquare_type: Option<String>
+    pub foursquare_type: Option<String>,
 }

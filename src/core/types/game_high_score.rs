@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::user::User;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// This object represents one row of the high scores table for a game.
 pub struct GameHighScore {
     /// Position in high score table for the game

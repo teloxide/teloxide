@@ -1,6 +1,6 @@
 use crate::core::types::{ShippingAddress, User};
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ShippingQuery {
     pub id: String,
     pub from: User,

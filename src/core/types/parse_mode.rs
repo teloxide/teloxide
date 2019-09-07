@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages.
 /// You can use **bold** and *italic* text, as well as [inline links](https://example.com) and `pre-formatted code` in
@@ -67,4 +67,26 @@ use serde::{Deserialize, Serialize};
 pub enum ParseMode {
     HTML,
     Markdown,
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn html_serialization() {
+        let expected_json = String::from(r#""HTML""#);
+        let actual_json = serde_json::to_string(&ParseMode::HTML).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
+
+    #[test]
+    fn markdown_serialization() {
+        let expected_json = String::from(r#""Markdown""#);
+        let actual_json = serde_json::to_string(&ParseMode::Markdown).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
 }

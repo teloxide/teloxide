@@ -4,7 +4,8 @@ use crate::core::types::{
     SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub struct Message {
     #[serde(rename = "message_id")]
     pub id: i64,
@@ -14,7 +15,8 @@ pub struct Message {
     pub message_kind: MessageKind,
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MessageKind {
     IncomingMessage {

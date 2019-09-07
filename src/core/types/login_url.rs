@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct LoginUrl {
     pub url: String,
     #[serde(skip_serializing_if = "Option::is_none")]

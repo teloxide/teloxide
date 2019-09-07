@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 /// Contains information about the current status of a webhook.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct WebhookInfo {
     /// Webhook URL, may be empty if webhook is not set up
     pub url: String,

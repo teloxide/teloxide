@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// This object represents a voice note.
 struct Voice {
     /// Identifier for this file
@@ -10,5 +10,5 @@ struct Voice {
     /// Optional. MIME type of the file as defined by sender
     pub mime_type: Option<String>,
     /// Optional. File size
-    pub file_size: Option<u64>
+    pub file_size: Option<u64>,
 }

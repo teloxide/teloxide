@@ -1,17 +1,34 @@
 use crate::core::requests::form_builder::FormBuilder;
-use crate::core::requests::{ChatId, Request, RequestFuture, RequestInfo, ResponseResult};
-use crate::core::{network, types::Message};
+use crate::core::requests::{
+    ChatId, Request, RequestFuture, RequestContext, ResponseResult,
+};
+use crate::core::{network, types::Message, types::ParseMode};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+/// Use this method to send text messages. On success, the sent [`Message`] is returned.
 pub struct SendMessage<'a> {
-    info: RequestInfo<'a>,
+    info: RequestContext<'a>,
 
+    ///	Unique identifier for the target chat or username of the target channel
+    /// (in the format @channelusername)
     pub chat_id: ChatId,
+    /// Text of the message to be sent
     pub text: String,
 
-    pub parse_mode: Option<String>, // TODO: ParseMode enum
+    /// Send [Markdown] or [HTML],
+    /// if you want Telegram apps to show [bold, italic, fixed-width text
+    /// or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::core::types::ParseMode::Markdown
+    /// [Html]: crate::core::types::ParseMode::Html
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::core::types::ParseMode
+    pub parse_mode: Option<ParseMode>,
+    /// Disables link previews for links in this message
     pub disable_web_page_preview: Option<bool>,
+    /// Sends the message silently. Users will receive a notification with no sound.
     pub disable_notification: Option<bool>,
+    /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i64>,
     pub reply_markup: Option<()>, // TODO: ReplyMarkup enum
 }
@@ -23,14 +40,20 @@ impl<'a> Request<'a> for SendMessage<'a> {
         Box::pin(async move {
             let params = FormBuilder::new()
                 .add("chat_id", &self.chat_id)
-                .add("text", &self.text)
+                .add::<str>("text", &self.text)
                 .add_if_some("parse_mode", self.parse_mode.as_ref())
                 .add_if_some(
                     "disable_web_page_preview",
                     self.disable_web_page_preview.as_ref(),
                 )
-                .add_if_some("disable_notification", self.disable_notification.as_ref())
-                .add_if_some("reply_to_message_id", self.reply_to_message_id.as_ref())
+                .add_if_some(
+                    "disable_notification",
+                    self.disable_notification.as_ref(),
+                )
+                .add_if_some(
+                    "reply_to_message_id",
+                    self.reply_to_message_id.as_ref(),
+                )
                 .build();
 
             network::request(
@@ -45,7 +68,11 @@ impl<'a> Request<'a> for SendMessage<'a> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new(info: RequestInfo<'a>, chat_id: ChatId, text: String) -> Self {
+    pub(crate) fn new(
+        info: RequestContext<'a>,
+        chat_id: ChatId,
+        text: String,
+    ) -> Self {
         SendMessage {
             info,
             chat_id,
@@ -68,7 +95,7 @@ impl<'a> SendMessage<'a> {
         self
     }
 
-    pub fn parse_mode<T: Into<String>>(mut self, val: T) -> Self {
+    pub fn parse_mode<T: Into<ParseMode>>(mut self, val: T) -> Self {
         self.parse_mode = Some(val.into());
         self
     }

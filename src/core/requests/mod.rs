@@ -45,16 +45,16 @@ pub trait Request<'a> {
 
 pub type RequestFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
-// todo: better name?
-#[derive(Debug)]
-pub struct RequestInfo<'a> {
+#[derive(Debug, Clone)]
+pub struct RequestContext<'a> {
     pub client: &'a Client,
     pub token: &'a str,
 }
 
 /// Unique identifier for the target chat or username of the target channel (in
 /// the format @channelusername)
-#[derive(Debug, Display, Serialize, From, PartialEq, Eq)]
+#[derive(Debug, Display, Serialize, From, PartialEq, Eq, Clone)]
+#[serde(untagged)]
 pub enum ChatId {
     /// chat identifier
     #[display(fmt = "{}", _0)]
@@ -64,5 +64,29 @@ pub enum ChatId {
     ChannelUsername(String),
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn chat_id_id_serialization() {
+        let expected_json = String::from(r#"123456"#);
+        let actual_json = serde_json::to_string(&ChatId::Id(123456)).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
+
+    #[test]
+    fn chat_id_channel_username_serialization() {
+        let expected_json = String::from(r#""@username""#);
+        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(String::from("@username"))).unwrap();
+
+        assert_eq!(expected_json, actual_json)
+    }
+}
+
 pub mod get_me;
 pub mod send_message;
+pub mod forward_message;
+pub mod send_photo;
+mod utils;

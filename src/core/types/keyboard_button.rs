@@ -1,5 +1,5 @@
 /// This object represents one button of the reply keyboard.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct KeyboardButton {
     pub text: String,
     #[serde(skip_serializing_if = "Not::not")]

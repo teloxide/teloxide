@@ -1,6 +1,7 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub struct Chat {
     #[serde(rename = "chat_id")]
     pub id: i64,
@@ -8,6 +9,7 @@ pub struct Chat {
     pub kind: ChatKind,
     pub photo: Option<ChatPhoto>,
 }
+
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
@@ -31,7 +33,8 @@ pub enum ChatKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NonPrivateChatKind {

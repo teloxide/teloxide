@@ -1,6 +1,6 @@
 use crate::core::types::PhotoSize;
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub struct Document {
     pub file_id: String,
     pub thumb: Option<PhotoSize>,

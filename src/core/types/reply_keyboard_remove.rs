@@ -3,7 +3,7 @@
 /// By default, custom keyboards are displayed until a new keyboard is sent
 /// by a bot. An exception is made for one-time keyboards that are hidden
 /// immediately after the user presses a button (see ReplyKeyboardMarkup).
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ReplyKeyboardRemove {
     pub remove_keyboard: True,
     #[serde(skip_serializing_if = "Not::not")]
