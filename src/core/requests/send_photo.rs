@@ -121,33 +121,3 @@ impl<'a> SendPhoto<'a> {
         self
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use reqwest::r#async::Client;
-
-    const TOKEN: &str = "882997251:AAGImZKe4cO6vDzluWzCgYqebziIMroN7uU";
-    const USER_ID: i64 = 268486177;
-
-    #[test]
-    fn send_photo() {
-        use futures::FutureExt;
-        use futures::TryFutureExt;
-        tokio::run(async_send_photo().boxed().unit_error().compat())
-    }
-
-    async fn async_send_photo() {
-        let client = Client::new();
-        let req = SendPhoto::new(
-            RequestContext {
-                client: &client,
-                token: TOKEN,
-            },
-            ChatId::Id(USER_ID),
-            InputFile::File("D:\\Снимок.png".to_string().parse().unwrap()),
-        );
-
-        println!("{:?}", req.send().await);
-    }
-}
