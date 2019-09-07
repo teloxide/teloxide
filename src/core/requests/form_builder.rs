@@ -2,6 +2,7 @@ use reqwest::r#async::multipart::Form;
 use serde::Serialize;
 use crate::core::types::ParseMode;
 use crate::core::requests::ChatId;
+use crate::core::requests::utils;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.
@@ -34,6 +35,12 @@ impl FormBuilder {
         match value {
             None => Self { form: self.form },
             Some(value) => self.add(name, value),
+        }
+    }
+
+    pub fn add_file(self, name: &str, path_to_file: &String) -> Self {
+        Self {
+            form: self.form.part(name.to_owned(), utils::file_to_part(path_to_file))
         }
     }
 
@@ -83,5 +90,11 @@ impl ToFormValue for ChatId {
             ChatId::Id(id) => id.to_string(),
             ChatId::ChannelUsername(username) => username.clone(),
         }
+    }
+}
+
+impl ToFormValue for String {
+    fn to_form_value(&self) -> String {
+        self.to_owned()
     }
 }

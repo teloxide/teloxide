@@ -13,5 +13,5 @@ serde = {version = "1.0.92", features = ["derive"] }
 lazy_static = "1.3"
 apply = "0.2.2"
 derive_more = "0.15.0"
-
 tokio = "0.1"
+bytes = "0.4.12"
