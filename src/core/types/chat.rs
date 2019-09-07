@@ -1,18 +1,18 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Chat {
     #[serde(rename = "chat_id")]
-    pub id: i32,
+    pub id: i64,
     #[serde(flatten)]
-    pub type_: ChatType,
+    pub chat_kind: ChatKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub photo: Option<ChatPhoto>,
 }
 
-struct PrivateChatTypeVisitor;
+struct PrivateChatKindVisitor;
 
-impl<'de> serde::de::Visitor<'de> for PrivateChatTypeVisitor {
+impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
     type Value = ();
 
     fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -36,51 +36,43 @@ impl<'de> serde::de::Visitor<'de> for PrivateChatTypeVisitor {
 fn assert_private_field<'de, D: serde::Deserializer<'de>>(
     des: D,
 ) -> Result<(), D::Error> {
-    des.deserialize_str(PrivateChatTypeVisitor)
+    des.deserialize_str(PrivateChatKindVisitor)
 }
 
-fn serialize_private_field<S: serde::Serializer>(
+/*fn serialize_private_field<S: serde::Serializer>(
     _: &(),
     ser: S,
 ) -> Result<S::Ok, S::Error> {
     ser.serialize_str("private")
-}
+}*/
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
-pub enum ChatType {
-    NotPrivate {
-        #[serde(skip_serializing_if = "Option::is_none")]
+pub enum ChatKind {
+    NonPrivate {
         title: Option<String>,
         #[serde(flatten)]
-        type_: NotPrivateChatType,
-        #[serde(skip_serializing_if = "Option::is_none")]
+        non_private_chat_kind: NonPrivateChatKind,
         description: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
         invite_link: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
         pinned_message: Option<Box<Message>>,
     },
     Private {
         /// Dummy field. Used to ensure that "type" field is equal to "private"
         #[serde(rename = "type")]
         #[serde(deserialize_with = "assert_private_field")]
-        #[serde(serialize_with = "serialize_private_field")]
+        // #[serde(serialize_with = "serialize_private_field")]
         type_: (),
-        #[serde(skip_serializing_if = "Option::is_none")]
         username: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
         first_name: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
         last_name: Option<String>,
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-pub enum NotPrivateChatType {
+pub enum NonPrivateChatKind {
     Channel {
         username: Option<String>,
     },
@@ -98,16 +90,16 @@ pub enum NotPrivateChatType {
 #[cfg(test)]
 mod tests {
     use crate::core::types::*;
-    use serde_json::{from_str, to_string};
+    use serde_json::from_str;
 
     #[test]
     fn channel_de() {
         assert_eq!(
             Chat {
                 id: -1,
-                type_: ChatType::NotPrivate {
+                chat_kind: ChatKind::NonPrivate {
                     title: None,
-                    type_: NotPrivateChatType::Channel {
+                    non_private_chat_kind: NonPrivateChatKind::Channel {
                         username: Some("channelname".into())
                     },
                     description: None,
@@ -128,7 +120,7 @@ mod tests {
         assert_eq!(
             Chat {
                 id: 0,
-                type_: ChatType::Private {
+                chat_kind: ChatKind::Private {
                     type_: (),
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
@@ -146,12 +138,12 @@ mod tests {
         assert!(from_str::<Chat>(r#"{"chat_id":0,"type":"WRONG"}"#).is_err());
     }
 
-    #[test]
+    /*#[test]
     fn private_chat_ser() {
         assert_eq!(
             to_string(&Chat {
                 id: 0,
-                type_: ChatType::Private {
+                type_: ChatKind::Private {
                     type_: (),
                     username: None,
                     first_name: None,
@@ -162,5 +154,5 @@ mod tests {
             .unwrap(),
             r#"{"chat_id":0,"type":"private"}"#.to_owned()
         );
-    }
+    }*/
 }
