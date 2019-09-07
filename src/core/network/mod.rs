@@ -5,6 +5,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use crate::core::requests::{RequestError, ResponseResult};
+use serde::Serialize;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -32,7 +33,7 @@ fn file_url(base: &str, token: &str, file_path: &str) -> String {
     )
 }
 
-pub async fn request<T: DeserializeOwned>(
+pub async fn request_multipart<T: DeserializeOwned>(
     client: &Client,
     token: &str,
     method_name: &str,
@@ -57,6 +58,39 @@ pub async fn request<T: DeserializeOwned>(
             .map_err(RequestError::NetworkError)?,
     )
     .map_err(RequestError::InvalidJson)?;
+
+    if response_json["ok"] == "false" {
+        Err(RequestError::ApiError {
+            status_code: response.status(),
+            description: response_json["description"].to_string(),
+        })
+    } else {
+        Ok(serde_json::from_value(response_json["result"].clone()).unwrap())
+    }
+}
+
+pub async fn request_json<T: DeserializeOwned, P: Serialize>(
+    client: &Client,
+    token: &str,
+    method_name: &str,
+    params: &P,
+) -> ResponseResult<T> {
+    let mut response = client
+        .post(&method_url(TELEGRAM_API_URL, token, method_name))
+        .json(params)
+        .send()
+        .compat()
+        .await
+        .map_err(RequestError::NetworkError)?;
+
+    let response_json = serde_json::from_str::<Value>(
+        &response
+            .text()
+            .compat()
+            .await
+            .map_err(RequestError::NetworkError)?,
+    )
+        .map_err(RequestError::InvalidJson)?;
 
     if response_json["ok"] == "false" {
         Err(RequestError::ApiError {

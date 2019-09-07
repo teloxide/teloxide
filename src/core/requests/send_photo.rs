@@ -64,7 +64,7 @@ impl<'a> Request<'a> for SendPhoto<'a> {
             };
             let params = params.build();
 
-            network::request(
+            network::request_multipart(
                 &self.ctx.client,
                 &self.ctx.token,
                 "sendPhoto",

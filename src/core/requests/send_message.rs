@@ -4,10 +4,12 @@ use crate::core::requests::{
 };
 use crate::core::{network, types::Message, types::ParseMode};
 
-#[derive(Debug, Clone)]
+
+#[derive(Debug, Clone, Serialize)]
 /// Use this method to send text messages. On success, the sent [`Message`] is returned.
 pub struct SendMessage<'a> {
-    info: RequestContext<'a>,
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
 
     ///	Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
@@ -23,13 +25,18 @@ pub struct SendMessage<'a> {
     /// [Html]: crate::core::types::ParseMode::Html
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::core::types::ParseMode
+    #[serde(skip_serializing_if="Option::is_none")]
     pub parse_mode: Option<ParseMode>,
     /// Disables link previews for links in this message
+    #[serde(skip_serializing_if="Option::is_none")]
     pub disable_web_page_preview: Option<bool>,
     /// Sends the message silently. Users will receive a notification with no sound.
+    #[serde(skip_serializing_if="Option::is_none")]
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
+    #[serde(skip_serializing_if="Option::is_none")]
     pub reply_to_message_id: Option<i64>,
+    #[serde(skip_serializing_if="Option::is_none")]
     pub reply_markup: Option<()>, // TODO: ReplyMarkup enum
 }
 
@@ -38,29 +45,11 @@ impl<'a> Request<'a> for SendMessage<'a> {
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
-            let params = FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .add::<str>("text", &self.text)
-                .add_if_some("parse_mode", self.parse_mode.as_ref())
-                .add_if_some(
-                    "disable_web_page_preview",
-                    self.disable_web_page_preview.as_ref(),
-                )
-                .add_if_some(
-                    "disable_notification",
-                    self.disable_notification.as_ref(),
-                )
-                .add_if_some(
-                    "reply_to_message_id",
-                    self.reply_to_message_id.as_ref(),
-                )
-                .build();
-
-            network::request(
-                &self.info.client,
-                &self.info.token,
+            network::request_json(
+                &self.ctx.client,
+                &self.ctx.token,
                 "sendMessage",
-                Some(params),
+                &self,
             )
             .await
         })
@@ -74,7 +63,7 @@ impl<'a> SendMessage<'a> {
         text: String,
     ) -> Self {
         SendMessage {
-            info,
+            ctx: info,
             chat_id,
             text,
             parse_mode: None,
