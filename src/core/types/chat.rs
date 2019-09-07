@@ -5,7 +5,7 @@ pub struct Chat {
     #[serde(rename = "chat_id")]
     pub id: i64,
     #[serde(flatten)]
-    pub chat_kind: ChatKind,
+    pub kind: ChatKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub photo: Option<ChatPhoto>,
 }
