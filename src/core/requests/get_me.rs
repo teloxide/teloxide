@@ -8,22 +8,26 @@ use crate::core::types::User;
 /// A simple method for testing your bot's auth token. Requires no parameters.
 /// Returns basic information about the bot in form of a [`User`] object.
 pub struct GetMe<'a> {
-    info: RequestContext<'a>,
+    ctx: RequestContext<'a>,
 }
 
 impl<'a> Request<'a> for GetMe<'a> {
     type ReturnValue = User;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_multipart(self.info.client, self.info.token, "getMe", None)
-                .await
-        })
+        Box::pin(
+            network::request_multipart(
+                self.ctx.client,
+                self.ctx.token,
+                "getMe",
+                None
+            )
+        )
     }
 }
 
 impl<'a> GetMe<'a> {
-    pub(crate) fn new(info: RequestContext<'a>) -> Self {
-        GetMe { info }
+    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
+        GetMe { ctx }
     }
 }

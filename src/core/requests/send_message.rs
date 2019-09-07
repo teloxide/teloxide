@@ -2,7 +2,6 @@ use crate::core::requests::form_builder::FormBuilder;
 use crate::core::requests::{
     ChatId, Request, RequestFuture, RequestContext, ResponseResult,
 };
-use crate::core::{network, types::Message, types::ParseMode};
 
 
 #[derive(Debug, Clone, Serialize)]
@@ -44,15 +43,14 @@ impl<'a> Request<'a> for SendMessage<'a> {
     type ReturnValue = Message;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
+        Box::pin(
             network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
+                self.ctx.client,
+                self.ctx.token,
                 "sendMessage",
                 &self,
             )
-            .await
-        })
+        )
     }
 }
 
