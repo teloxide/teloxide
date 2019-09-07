@@ -13,7 +13,7 @@ pub use self::{
     input_media::InputMedia,
     invoice::Invoice,
     label_price::LabeledPrice,
-    message::{ForwardKind, MediaKind, Message, MessageKind, UserOrSenderName},
+    message::{ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind},
     message_entity::MessageEntity,
     order_info::OrderInfo,
     parse_mode::ParseMode,

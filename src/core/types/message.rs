@@ -74,13 +74,20 @@ pub enum MessageKind {
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
-        forward_from_channel: Box<Chat>,
-        forward_from_message_id: i64,
-        forward_signature: String,
+        #[serde(rename = "forward_date")]
+        date: i32,
+        #[serde(rename = "forward_from_chat")]
+        chat: Box<Chat>,
+        #[serde(rename = "forward_from_message_id")]
+        message_id: i64,
+        #[serde(rename = "forward_signature")]
+        signature: Option<String>,
     },
     NonChannelForward {
+        #[serde(rename = "forward_date")]
+        date: i32,
         #[serde(flatten)]
-        forward: UserOrSenderName,
+        from: ForwardedFrom,
     },
     Origin {
         reply_to_message: Option<Box<Message>>,
@@ -90,8 +97,14 @@ pub enum ForwardKind {
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
 pub enum ForwardedFrom {
-    User { from: User },
-    SenderName { sender_name: String },
+    User {
+        #[serde(rename = "forward_from")]
+        user: User,
+    },
+    SenderName {
+        #[serde(rename = "forward_sender_name")]
+        sender_name: String,
+    },
 }
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
@@ -155,26 +168,32 @@ mod tests {
 
     #[test]
     fn incoming_origin_de() {
-        assert_eq!(Message {
+        let expected = Message {
             id: 0,
             date: 0,
             chat: Box::new(Chat {
                 id: 0,
-                chat_kind: ChatKind::Private {
+                kind: ChatKind::Private {
                     type_: (),
                     username: None,
                     first_name: None,
-                    last_name: None
+                    last_name: None,
                 },
-                photo: None
+                photo: None,
             }),
             message_kind: MessageKind::IncomingMessage {
-                forward_kind: ForwardKind::Origin { reply_to_message: None },
+                forward_kind: ForwardKind::Origin {
+                    reply_to_message: None,
+                },
                 edit_date: None,
-                media_kind: MediaKind::Text { text: "Hello".to_string(), entities: vec![] },
-                reply_markup: None
-            }
-        },
-        from_str(r#"{"message_id":0,"date":0,"chat":{"chat_id":0,"type":"private"},"text":"Hello","entities":[]}"#).unwrap());
+                media_kind: MediaKind::Text {
+                    text: "Hello".to_string(),
+                    entities: vec![],
+                },
+                reply_markup: None,
+            },
+        };
+        let actual = from_str(r#"{"message_id":0,"date":0,"chat":{"chat_id":0,"type":"private"},"text":"Hello","entities":[]}"#).unwrap();
+        assert_eq!(expected, actual);
     }
 }

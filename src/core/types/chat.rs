@@ -6,45 +6,8 @@ pub struct Chat {
     pub id: i64,
     #[serde(flatten)]
     pub kind: ChatKind,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub photo: Option<ChatPhoto>,
 }
-
-struct PrivateChatKindVisitor;
-
-impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
-    type Value = ();
-
-    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, r#"field equal to "private""#)
-    }
-
-    fn visit_borrowed_str<E: serde::de::Error>(
-        self,
-        v: &'de str,
-    ) -> Result<Self::Value, E> {
-        match v {
-            "private" => Ok(()),
-            _ => Err(E::invalid_value(
-                serde::de::Unexpected::Str(v),
-                &r#""private""#,
-            )),
-        }
-    }
-}
-
-fn assert_private_field<'de, D: serde::Deserializer<'de>>(
-    des: D,
-) -> Result<(), D::Error> {
-    des.deserialize_str(PrivateChatKindVisitor)
-}
-
-/*fn serialize_private_field<S: serde::Serializer>(
-    _: &(),
-    ser: S,
-) -> Result<S::Ok, S::Error> {
-    ser.serialize_str("private")
-}*/
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
@@ -61,7 +24,6 @@ pub enum ChatKind {
         /// Dummy field. Used to ensure that "type" field is equal to "private"
         #[serde(rename = "type")]
         #[serde(deserialize_with = "assert_private_field")]
-        // #[serde(serialize_with = "serialize_private_field")]
         type_: (),
         username: Option<String>,
         first_name: Option<String>,
@@ -87,6 +49,36 @@ pub enum NonPrivateChatKind {
     },
 }
 
+struct PrivateChatKindVisitor;
+
+impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
+    type Value = ();
+
+    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, r#"field equal to "private""#)
+    }
+
+    fn visit_borrowed_str<E: serde::de::Error>(
+        self,
+        v: &'de str,
+    ) -> Result<Self::Value, E> {
+        match v {
+            "private" => Ok(()),
+            _ => Err(E::invalid_value(
+                serde::de::Unexpected::Str(v),
+                &r#""private""#,
+            )),
+        }
+    }
+}
+
+fn assert_private_field<'de, D>(des: D) -> Result<(), D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    des.deserialize_str(PrivateChatKindVisitor)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::core::types::*;
@@ -97,9 +89,9 @@ mod tests {
         assert_eq!(
             Chat {
                 id: -1,
-                chat_kind: ChatKind::NonPrivate {
+                kind: ChatKind::NonPrivate {
                     title: None,
-                    non_private_chat_kind: NonPrivateChatKind::Channel {
+                    kind: NonPrivateChatKind::Channel {
                         username: Some("channelname".into())
                     },
                     description: None,
@@ -120,7 +112,7 @@ mod tests {
         assert_eq!(
             Chat {
                 id: 0,
-                chat_kind: ChatKind::Private {
+                kind: ChatKind::Private {
                     type_: (),
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
