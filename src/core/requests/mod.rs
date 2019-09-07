@@ -88,3 +88,5 @@ mod tests {
 pub mod get_me;
 pub mod send_message;
 pub mod forward_message;
+pub mod send_photo;
+mod utils;
