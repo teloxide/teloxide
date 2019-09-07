@@ -1,5 +1,4 @@
 use apply::Apply;
-use futures::compat::Future01CompatExt;
 use reqwest::r#async::{multipart::Form, Client};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -46,14 +45,12 @@ pub async fn request_multipart<T: DeserializeOwned>(
             None => request_builder,
         })
         .send()
-        .compat()
         .await
         .map_err(RequestError::NetworkError)?;
 
     let response_json = serde_json::from_str::<Value>(
         &response
             .text()
-            .compat()
             .await
             .map_err(RequestError::NetworkError)?,
     )
@@ -79,14 +76,12 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
         .post(&method_url(TELEGRAM_API_URL, token, method_name))
         .json(params)
         .send()
-        .compat()
         .await
         .map_err(RequestError::NetworkError)?;
 
     let response_json = serde_json::from_str::<Value>(
         &response
             .text()
-            .compat()
             .await
             .map_err(RequestError::NetworkError)?,
     )

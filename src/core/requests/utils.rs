@@ -21,7 +21,7 @@ impl tokio::codec::Decoder for FileDecoder {
 
 pub fn file_to_part(path_to_file: &PathBuf) -> Part {
     let file = tokio::fs::File::open(path_to_file.clone())
-        .map(|file| FramedRead::new(file, FileDecoder))
+        .map(|file| FramedRead::new(file.unwrap() /* TODO: this can cause panics */, FileDecoder))
         .flatten_stream();
     let part = Part::stream(file)
         .file_name(path_to_file.file_name().unwrap().to_string_lossy().into_owned());
