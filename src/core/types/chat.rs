@@ -52,7 +52,7 @@ pub enum ChatKind {
     NonPrivate {
         title: Option<String>,
         #[serde(flatten)]
-        non_private_chat_kind: NonPrivateChatKind,
+        kind: NonPrivateChatKind,
         description: Option<String>,
         invite_link: Option<String>,
         pinned_message: Option<Box<Message>>,
