@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use crate::core::requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult};
-use crate::core::types::{ParseMode, Message};
+use crate::core::types::{ParseMode, Message, InputFile};
 use crate::core::requests::form_builder::FormBuilder;
 use crate::core::network;
 
@@ -10,8 +10,7 @@ pub struct SendPhoto<'a> {
     ctx: RequestContext<'a>,
 
     pub chat_id: ChatId,
-    // TODO: add enum Photo
-    pub photo: String,
+    pub photo: InputFile,
     pub caption: Option<String>,
     pub parse_mode: Option<ParseMode>,
     pub disable_notification: Option<bool>,
@@ -25,9 +24,8 @@ impl<'a> Request<'a> for SendPhoto<'a> {
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
-            let params = FormBuilder::new()
+            let mut params = FormBuilder::new()
                 .add("chat_id", &self.chat_id)
-                .add_file("photo", &self.photo)
                 .add_if_some("caption", self.caption.as_ref())
                 .add_if_some("parse_mode", self.parse_mode.as_ref())
                 .add_if_some(
@@ -37,8 +35,14 @@ impl<'a> Request<'a> for SendPhoto<'a> {
                 .add_if_some(
                     "reply_to_message_id",
                     self.reply_to_message_id.as_ref()
-                )
-                .build();
+                );
+            
+            params = match self.photo {
+                InputFile::File(path) => params.add_file("photo", &path),
+                InputFile::Url(url) => params.add("photo", &url),
+                InputFile::FileId(file_id) => params.add("photo", &file_id),
+            };
+            let params = params.build();
 
             network::request(
                 &self.ctx.client,
@@ -54,7 +58,7 @@ impl<'a> SendPhoto<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,
         chat_id: ChatId,
-        photo: String
+        photo: InputFile
     ) -> Self {
         Self {
             ctx,
@@ -72,7 +76,7 @@ impl<'a> SendPhoto<'a> {
         self
     }
 
-    pub fn photo<T: Into<String>>(mut self, photo: T) -> Self {
+    pub fn photo<T: Into<InputFile>>(mut self, photo: T) -> Self {
         self.photo = photo.into();
         self
     }
@@ -121,7 +125,7 @@ mod tests {
                 token: TOKEN,
             },
             ChatId::Id(USER_ID),
-            "D:\\Снимок.png".to_string(),
+            InputFile::File("D:\\Снимок.png".to_string().parse().unwrap()),
         );
 
         println!("{:?}", req.send().await);

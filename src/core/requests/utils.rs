@@ -3,6 +3,7 @@ use std::fs::File;
 use bytes::{Bytes, BytesMut};
 use tokio::prelude::*;
 use reqwest::r#async::multipart::Part;
+use std::path::PathBuf;
 
 struct FileDecoder;
 
@@ -18,10 +19,10 @@ impl tokio::codec::Decoder for FileDecoder {
     }
 }
 
-pub fn file_to_part(path_to_file: &String) -> Part {
+pub fn file_to_part(path_to_file: &PathBuf) -> Part {
     let file = tokio::fs::File::open(path_to_file.clone())
         .map(|file| FramedRead::new(file, FileDecoder))
         .flatten_stream();
-    let part = Part::stream(file).file_name("file");
+    let part = Part::stream(file).file_name(path_to_file.file_name().unwrap().to_str().unwrap().to_string());
     part
 }

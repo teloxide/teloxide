@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::core::types::ParseMode;
 use crate::core::requests::ChatId;
 use crate::core::requests::utils;
+use std::path::PathBuf;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.
@@ -38,7 +39,7 @@ impl FormBuilder {
         }
     }
 
-    pub fn add_file(self, name: &str, path_to_file: &String) -> Self {
+    pub fn add_file(self, name: &str, path_to_file: &PathBuf) -> Self {
         Self {
             form: self.form.part(name.to_owned(), utils::file_to_part(path_to_file))
         }
