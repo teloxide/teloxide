@@ -11,7 +11,7 @@ pub struct Chat {
 }
 
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ChatKind {
     NonPrivate {

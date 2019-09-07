@@ -72,7 +72,7 @@ pub enum MessageKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -96,7 +96,7 @@ pub enum ForwardKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub enum ForwardedFrom {
     #[serde(rename = "forward_from")]
     User(User),
@@ -104,7 +104,7 @@ pub enum ForwardedFrom {
     SenderName(String),
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MediaKind {
     Animation {
