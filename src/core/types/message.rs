@@ -4,7 +4,6 @@ use crate::core::types::{
     SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
-
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 pub struct Message {
     #[serde(rename = "message_id")]
@@ -15,11 +14,12 @@ pub struct Message {
     pub message_kind: MessageKind,
 }
 
-
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MessageKind {
     IncomingMessage {
+        #[serde(flatten)]
+        from: Sender,
         #[serde(flatten)]
         forward_kind: ForwardKind,
         edit_date: Option<i32>,
@@ -73,6 +73,16 @@ pub enum MessageKind {
 }
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
+pub enum Sender {
+    /// If message is sent from Chat
+    #[serde(rename = "from")]
+    User(User),
+    /// If message is sent from Channel
+    #[serde(rename = "author_signature")]
+    Signature(String),
+}
+
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -109,11 +119,18 @@ pub enum ForwardedFrom {
 pub enum MediaKind {
     Animation {
         animation: Animation,
+        /// "For backward compatibility" (c) Telegram Docs
+        #[serde(skip)]
+        document: (),
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>
     },
     Audio {
         audio: Audio,
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>
     },
     Contact {
         contact: Contact,
@@ -121,6 +138,8 @@ pub enum MediaKind {
     Document {
         document: Document,
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>
     },
     Game {
         game: Game,
@@ -131,6 +150,9 @@ pub enum MediaKind {
     Photo {
         sizes: Vec<PhotoSize>,
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>,
+        media_group_id: Option<i32>,
     },
     Poll {
         poll: Poll,
@@ -140,11 +162,15 @@ pub enum MediaKind {
     },
     Text {
         text: String,
+        #[serde(default = "Vec::new")]
         entities: Vec<MessageEntity>,
     },
     Video {
         video: Video,
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>,
+        media_group_id: Option<i32>,
     },
     VideoNote {
         video_note: VideoNote,
@@ -152,6 +178,8 @@ pub enum MediaKind {
     Voice {
         voice: Voice,
         caption: Option<String>,
+        #[serde(default = "Vec::new")]
+        caption_entities: Vec<MessageEntity>,
     },
     Venue {
         venue: Venue,
@@ -164,83 +192,43 @@ mod tests {
     use serde_json::from_str;
 
     #[test]
-    fn origin_de() {
+    fn sent_message_de() {
         let expected = Message {
-            id: 0,
-            date: 0,
+            id: 6534,
+            date: 1567898953,
             chat: Chat {
-                id: 0,
+                id: 218485655,
+                photo: None,
                 kind: ChatKind::Private {
                     type_: (),
-                    username: None,
-                    first_name: None,
+                    first_name: Some("W".to_string()),
                     last_name: None,
+                    username: Some("WaffleLapkin".to_string()),
                 },
-                photo: None,
             },
             message_kind: MessageKind::IncomingMessage {
+                from: Sender::User(User {
+                    id: 457569668,
+                    is_bot: true,
+                    first_name: "BT".to_string(),
+                    last_name: None,
+                    username: Some("BloodyTestBot".to_string()),
+                    language_code: None,
+                }),
                 forward_kind: ForwardKind::Origin {
                     reply_to_message: None,
                 },
                 edit_date: None,
                 media_kind: MediaKind::Text {
-                    text: "Hello".to_string(),
+                    text: "text".to_string(),
                     entities: vec![],
                 },
                 reply_markup: None,
             },
         };
-        let actual = from_str::<Message>(r#"{"message_id":0,"date":0,"chat":{"id":0,"type":"private"},"text":"Hello","entities":[]}"#).unwrap();
-        assert_eq!(expected, actual);
-    }
-
-    #[test]
-    fn forward_de() {
-        let expected = Message {
-            id: 1,
-            date: 1,
-            chat: Chat {
-                id: 1,
-                kind: ChatKind::Private {
-                    type_: (),
-                    username: None,
-                    first_name: None,
-                    last_name: None,
-                },
-                photo: None,
-            },
-            message_kind: MessageKind::IncomingMessage {
-                forward_kind: ForwardKind::NonChannelForward {
-                    date: 1,
-                    from: ForwardedFrom::User(User {
-                        id: 123,
-                        is_bot: false,
-                        first_name: "Name".to_string(),
-                        last_name: None,
-                        username: None,
-                        language_code: None,
-                    }),
-                },
-                edit_date: None,
-                media_kind: MediaKind::Text {
-                    text: "Message".into(),
-                    entities: vec![],
-                },
-                reply_markup: None,
-            },
-        };
-        let actual = from_str::<Message>(
-            r#"{"message_id":1,"date":1,"chat":{"id":1,"type":"private"},"forward_date":1,"forward_from":{"id":123,"is_bot":false,"first_name":"Name"},"text":"Message","entities":[]}"#,
-        )
-        .unwrap();
-        assert_eq!(expected, actual);
-    }
-
-    #[test]
-    fn sent_message_de() {
         // actual message from telegram
-        let json = "{\"message_id\":6534,\"from\":{\"id\":457569668,\"is_bot\":true,\"first_name\":\"\\u0424\\u044b\\u0440\\u044c\\u043a\",\"username\":\"BloodyTestBot\"},\"chat\":{\"id\":218485655,\"first_name\":\"\\u0412\\u0430\\u0444\\u0435\\u043b\\u044c\",\"username\":\"WaffleLapkin\",\"type\":\"private\"},\"date\":1567898953,\"text\":\"text\"}";
-        let actual: Result<Message, _>= from_str(json);
-        assert!(actual.is_ok());
+        let json = r#"{"message_id":6534,"from":{"id":457569668,"is_bot":true,"first_name":"BT","username":"BloodyTestBot"},"chat":{"id":218485655,"first_name":"W","username":"WaffleLapkin","type":"private"},"date":1567898953,"text":"text"}"#;
+        let actual = from_str::<Message>(json).unwrap();
+        assert_eq!(expected, actual);
     }
 }

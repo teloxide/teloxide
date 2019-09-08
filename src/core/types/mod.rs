@@ -12,12 +12,15 @@ pub use self::{
     input_media::InputMedia,
     invoice::Invoice,
     label_price::LabeledPrice,
-    message::{ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind},
+    message::{
+        ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind, Sender,
+    },
     message_entity::MessageEntity,
     order_info::OrderInfo,
     parse_mode::ParseMode,
     photo_size::PhotoSize,
     pre_checkout_query::PreCheckoutQuery,
+    response_parameters::ResponseParameters,
     send_invoice::SendInvoice,
     shipping_address::ShippingAddress,
     shipping_option::ShippingOption,
@@ -26,7 +29,6 @@ pub use self::{
     successful_payment::SuccessfulPayment,
     user::User,
     video::Video,
-    response_parameters::ResponseParameters
 };
 
 mod answer_pre_checkout_query;
@@ -48,6 +50,7 @@ mod order_info;
 mod parse_mode;
 mod photo_size;
 mod pre_checkout_query;
+mod response_parameters;
 mod send_invoice;
 mod shipping_address;
 mod shipping_option;
@@ -56,4 +59,3 @@ mod sticker;
 mod successful_payment;
 mod user;
 mod video;
-mod response_parameters;
