@@ -1,6 +1,6 @@
 use crate::core::types::User;
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 pub struct MessageEntity {
     #[serde(flatten)]
     pub kind: MessageEntityKind,
@@ -8,7 +8,7 @@ pub struct MessageEntity {
     pub length: usize,
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
+#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageEntityKind {
