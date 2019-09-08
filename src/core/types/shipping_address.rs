@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone, Serialize)]
 pub struct ShippingAddress {
     pub country_code: String,
     pub state: String,

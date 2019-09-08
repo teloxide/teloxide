@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone, Serialize)]
 pub struct User {
     pub id: i64,
     pub is_bot: bool,
