@@ -1,22 +1,60 @@
-use crate::core::requests::{ChatId, Request, RequestFuture, ResponseResult, RequestContext};
-use crate::core::types::{InputFile, ParseMode, Message};
-use crate::core::requests::form_builder::FormBuilder;
-use crate::core::network;
+use crate::core::{
+    network,
+    requests::{ChatId, Request, RequestFuture, ResponseResult, RequestContext},
+    requests::form_builder::FormBuilder,
+    types::{InputFile, ParseMode, Message},
+};
 
+/// Use this method to send audio files, if you want Telegram clients to display
+/// them in the music player. Your audio must be in the .mp3 format. On success,
+/// the sent [`Message`] is returned. Bots can currently send audio files of up
+/// to 50 MB in size, this limit may be changed in the future.
+///
+/// For sending voice messages, use the [`SendVoice`] method instead.
 pub struct SendAudio<'a> {
     ctx: RequestContext<'a>,
 
-    chat_id: ChatId,
-    audio: InputFile,
-    caption: Option<String>,
-    parse_mode: Option<ParseMode>,
-    duration: Option<i32>,
-    performer: Option<String>,
-    title: Option<String>,
-    thumb: Option<InputFile>,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i64>,
-    reply_markup: Option<()> // TODO: add reply_markup
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format @channelusername)
+    pub chat_id: ChatId,
+    /// Audio to send.
+    /// [`InputFile::FileId`] - Pass a file_id as String to send an audio that
+    /// exists on the Telegram servers (recommended).
+    /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
+    /// to get an audio from the Internet.
+    /// [`InputFile::File`] - Upload a new audio.
+    pub audio: InputFile,
+    /// Audio caption, 0-1024 characters
+    pub caption: Option<String>,
+    /// Send [Markdown] or [HTML],
+    /// if you want Telegram apps to show [bold, italic, fixed-width text
+    /// or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::core::types::ParseMode::Markdown
+    /// [Html]: crate::core::types::ParseMode::Html
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::core::types::ParseMode
+    pub parse_mode: Option<ParseMode>,
+    /// Duration of the audio in seconds
+    pub duration: Option<i32>,
+    /// Performer
+    pub performer: Option<String>,
+    /// Track name
+    pub title: Option<String>,
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation for
+    /// the file is supported server-side. The thumbnail should be in JPEG
+    /// format and less than 200 kB in size. A thumbnail‘s width and height
+    /// should not exceed 320. Thumbnails can’t be reused and can be only
+    /// uploaded as a new file, so you can pass “attach://<file_attach_name>”
+    /// if the thumbnail was uploaded using multipart/form-data under
+    /// <file_attach_name>
+    pub thumb: Option<InputFile>,
+    /// Sends the message silently. Users will receive a notification with no
+    /// sound.
+    pub disable_notification: Option<bool>,
+    /// If the message is a reply, ID of the original message
+    pub reply_to_message_id: Option<i64>,
+    pub reply_markup: Option<()> // TODO: add reply_markup
 }
 
 impl<'a> Request<'a> for SendAudio<'a> {
