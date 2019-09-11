@@ -95,3 +95,4 @@ pub mod send_photo;
 pub mod send_media_group;
 pub mod send_audio;
 pub mod send_location;
+pub mod edit_message_live_location;
