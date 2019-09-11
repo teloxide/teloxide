@@ -29,6 +29,13 @@ pub use self::{
     successful_payment::SuccessfulPayment,
     user::User,
     video::Video,
+    reply_markup::ReplyMarkup,
+    force_reply::ForceReply,
+    inline_keyboard_button::InlineKeyboardButton,
+    inline_keyboard_markup::InlineKeyboardMarkup,
+    reply_keyboard_remove::ReplyKeyboardRemove,
+    reply_keyboard_markup::ReplyKeyboardMarkup,
+    keyboard_button::KeyboardButton,
 };
 
 mod answer_pre_checkout_query;
@@ -39,9 +46,13 @@ mod chat_member;
 mod chat_permissions;
 mod chat_photo;
 mod document;
+mod force_reply;
+mod inline_keyboard_markup;
+mod inline_keyboard_button;
 mod input_file;
 mod input_media;
 mod invoice;
+mod keyboard_button;
 mod label_price;
 mod message;
 mod message_entity;
@@ -51,6 +62,9 @@ mod parse_mode;
 mod photo_size;
 mod pre_checkout_query;
 mod response_parameters;
+mod reply_markup;
+mod reply_keyboard_markup;
+mod reply_keyboard_remove;
 mod send_invoice;
 mod shipping_address;
 mod shipping_option;
