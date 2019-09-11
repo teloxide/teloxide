@@ -82,12 +82,12 @@ impl<'a> Request<'a> for SendAudio<'a> {
                 InputFile::Url(url) => params.add("audio", &url),
                 InputFile::FileId(file_id) => params.add("audio", &file_id),
             };
-            if self.thumb.is_some() {
-                params = match self.thumb.unwrap() {
+            if let Some(thumb) = self.thumb {
+                params = match thumb {
                     InputFile::File(file) => params.add_file("thumb", &file),
                     InputFile::Url(url) => params.add("thumb", &url),
                     InputFile::FileId(file_id) => params.add("thumb", &file_id),
-                };
+                }
             }
             let params = params.build();
 
