@@ -1,8 +1,6 @@
-use serde::{Deserialization, Serialization};
-
-#[derive(Debug, Serialization, Deserialization, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 /// This object represents a point on the map.
-struct Location {
+pub struct Location {
     /// Longitude as defined by sender
     pub longitude: f64,
     /// Latitude as defined by sender

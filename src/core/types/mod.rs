@@ -36,6 +36,10 @@ pub use self::{
     reply_keyboard_remove::ReplyKeyboardRemove,
     reply_keyboard_markup::ReplyKeyboardMarkup,
     keyboard_button::KeyboardButton,
+    update::{Update, UpdateKind},
+    chosen_inline_result::ChosenInlineResult,
+    location::Location,
+    callback_query::CallbackQuery,
 };
 
 mod answer_pre_checkout_query;
@@ -73,3 +77,7 @@ mod sticker;
 mod successful_payment;
 mod user;
 mod video;
+mod update;
+mod chosen_inline_result;
+mod location;
+mod callback_query;

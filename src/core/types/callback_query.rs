@@ -1,8 +1,10 @@
+use crate::core::types::{User, Message};
+
 /// This object represents an incoming callback query from a callback button in an inline keyboard.
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct CallbackQuery {
     /// Unique identifier for this query
-    pub id: CallbackQueryId,
+    pub id: String,
     /// Sender
     pub from: User,
     /// Message with the callback button that originated the query.

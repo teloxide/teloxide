@@ -1,6 +1,6 @@
-use crate::core::types::user::User;
+use crate::core::types::{User, Location};
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 /// Represents a result of an inline query that was chosen by the user and
 /// sent to their chat partner.
 /// https://core.telegram.org/bots/api#inputtextmessagecontent
