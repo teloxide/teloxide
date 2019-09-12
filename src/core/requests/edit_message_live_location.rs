@@ -1,6 +1,6 @@
 use serde::Serialize;
 use crate::core::requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult};
-use crate::core::types::Message;
+use crate::core::types::{Message, ReplyMarkup};
 use crate::core::network;
 
 #[derive(Debug, Clone, Serialize)]
@@ -32,7 +32,7 @@ pub struct EditMessageLiveLocation<'a> {
     longitude: f64,
     #[serde(skip_serializing_if="Option::is_none")]
     /// A JSON-serialized object for a new inline keyboard.
-    reply_markup: Option<()> // TODO: add reply_markup
+    reply_markup: Option<ReplyMarkup>
 }
 
 impl<'a> Request<'a> for EditMessageLiveLocation<'a> {
