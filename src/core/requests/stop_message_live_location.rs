@@ -19,19 +19,19 @@ struct StopMessageLiveLocation<'a> {
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
     #[serde(skip_serializing_if="Option::is_none")]
-    chat_id: Option<ChatId>,
+    pub chat_id: Option<ChatId>,
     /// Required if inline_message_id is not specified. Identifier of the
     /// message with live location to stop
     #[serde(skip_serializing_if="Option::is_none")]
-    message_id: Option<i32>,
+    pub message_id: Option<i32>,
     /// Required if chat_id and message_id are not specified. Identifier of the
     /// inline message
     #[serde(skip_serializing_if="Option::is_none")]
-    inline_message_id: Option<String>,
+    pub inline_message_id: Option<String>,
     /// A JSON-serialized object InlineKeyboardMarkup for a new inline
     /// keyboard.
     #[serde(skip_serializing_if="Option::is_none")]
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
@@ -53,7 +53,6 @@ impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
 impl<'a> StopMessageLiveLocation<'a> {
     fn new(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
     ) -> Self {
         Self {
             ctx,
