@@ -1,7 +1,6 @@
 use crate::core::{
     network,
-    types::Message,
-    types::ParseMode,
+    types::{Message, ParseMode, ReplyMarkup},
     requests::{
         form_builder::FormBuilder,
         ChatId,
@@ -45,7 +44,7 @@ pub struct SendMessage<'a> {
     #[serde(skip_serializing_if="Option::is_none")]
     pub reply_to_message_id: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub reply_markup: Option<()>, // TODO: ReplyMarkup enum
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 impl<'a> Request<'a> for SendMessage<'a> {
@@ -111,7 +110,7 @@ impl<'a> SendMessage<'a> {
         self
     }
 
-    pub fn reply_markup<T: Into<()>>(mut self, val: T) -> Self {
+    pub fn reply_markup<T: Into<ReplyMarkup>>(mut self, val: T) -> Self {
         self.reply_markup = Some(val.into());
         self
     }
