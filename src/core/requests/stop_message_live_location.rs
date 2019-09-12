@@ -53,7 +53,7 @@ impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
 }
 
 impl<'a> StopMessageLiveLocation<'a> {
-    fn new(ctx: RequestContext<'a>) -> Self {
+    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
         Self {
             ctx,
             chat_id: None,
