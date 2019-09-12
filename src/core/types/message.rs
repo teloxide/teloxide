@@ -125,13 +125,13 @@ pub enum MediaKind {
         document: (),
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Audio {
         audio: Audio,
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Contact {
         contact: Contact,
@@ -140,7 +140,7 @@ pub enum MediaKind {
         document: Document,
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Game {
         game: Game,

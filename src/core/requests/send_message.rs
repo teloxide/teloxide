@@ -1,19 +1,15 @@
 use crate::core::{
     network,
-    types::{Message, ParseMode, ReplyMarkup},
     requests::{
-        form_builder::FormBuilder,
-        ChatId,
-        Request,
-        RequestFuture,
-        RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, ChatId, Request, RequestContext,
+        RequestFuture, ResponseResult,
     },
+    types::{Message, ParseMode, ReplyMarkup},
 };
 
-
 #[derive(Debug, Clone, Serialize)]
-/// Use this method to send text messages. On success, the sent [`Message`] is returned.
+/// Use this method to send text messages. On success, the sent [`Message`] is
+/// returned.
 pub struct SendMessage<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
@@ -32,18 +28,19 @@ pub struct SendMessage<'a> {
     /// [Html]: crate::core::types::ParseMode::Html
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::core::types::ParseMode
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_mode: Option<ParseMode>,
     /// Disables link previews for links in this message
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_web_page_preview: Option<bool>,
-    /// Sends the message silently. Users will receive a notification with no sound.
-    #[serde(skip_serializing_if="Option::is_none")]
+    /// Sends the message silently. Users will receive a notification with no
+    /// sound.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<ReplyMarkup>,
 }
 
@@ -57,7 +54,8 @@ impl<'a> Request<'a> for SendMessage<'a> {
                 self.ctx.token,
                 "sendMessage",
                 &self,
-            ).await
+            )
+            .await
         })
     }
 }

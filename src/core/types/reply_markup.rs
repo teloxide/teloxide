@@ -1,8 +1,5 @@
 use crate::core::types::{
-    InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove,
-    ForceReply,
+    ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,7 +1,9 @@
-use serde::Serialize;
-use crate::core::requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult};
-use crate::core::types::{Message, ReplyMarkup};
 use crate::core::network;
+use crate::core::requests::{
+    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+};
+use crate::core::types::{Message, ReplyMarkup};
+use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
@@ -13,16 +15,16 @@ pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
 
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if inline_message_id is not specified. Unique identifier for
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
     chat_id: Option<ChatId>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if inline_message_id is not specified. Identifier of the
     /// message to edit
     message_id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if chat_id and message_id are not specified. Identifier of
     /// the inline message
     inline_message_id: Option<String>,
@@ -30,9 +32,9 @@ pub struct EditMessageLiveLocation<'a> {
     latitude: f64,
     /// Longitude of new location
     longitude: f64,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// A JSON-serialized object for a new inline keyboard.
-    reply_markup: Option<ReplyMarkup>
+    reply_markup: Option<ReplyMarkup>,
 }
 
 impl<'a> Request<'a> for EditMessageLiveLocation<'a> {
@@ -44,14 +46,15 @@ impl<'a> Request<'a> for EditMessageLiveLocation<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "editMessageLiveLocation",
-                &self
-            ).await
+                &self,
+            )
+            .await
         })
     }
 }
 
 impl<'a> EditMessageLiveLocation<'a> {
-    pub(crate) fn new (
+    pub(crate) fn new(
         ctx: RequestContext<'a>,
         latitude: f64,
         longitude: f64,
@@ -63,7 +66,7 @@ impl<'a> EditMessageLiveLocation<'a> {
             inline_message_id: None,
             latitude,
             longitude,
-            reply_markup: None
+            reply_markup: None,
         }
     }
 
@@ -78,7 +81,8 @@ impl<'a> EditMessageLiveLocation<'a> {
     }
 
     pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
-        where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.inline_message_id = Some(inline_message_id.into());
         self
