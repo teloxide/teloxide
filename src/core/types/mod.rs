@@ -4,10 +4,12 @@ pub use self::{
     answer_shipping_query::AnswerShippingQuery,
     animation::Animation,
     audio::Audio,
+    callback_query::CallbackQuery,
     chat::{Chat, ChatKind, NonPrivateChatKind},
     chat_member::ChatMember,
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
+    chosen_inline_result::ChosenInlineResult,
     contact::Contact,
     document::Document,
     force_reply::ForceReply,
@@ -40,6 +42,7 @@ pub use self::{
     shipping_query::ShippingQuery,
     sticker::Sticker,
     successful_payment::SuccessfulPayment,
+    update::{Update, UpdateKind},
     user::User,
     venue::Venue,
     video::Video,
@@ -51,10 +54,12 @@ mod animation;
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
 mod audio;
+mod callback_query;
 mod chat;
 mod chat_member;
 mod chat_permissions;
 mod chat_photo;
+mod chosen_inline_result;
 mod contact;
 mod document;
 mod force_reply;
@@ -86,6 +91,7 @@ mod shipping_option;
 mod shipping_query;
 mod sticker;
 mod successful_payment;
+mod update;
 mod user;
 mod venue;
 mod video;
