@@ -9,7 +9,6 @@ use reqwest::{
     StatusCode,
 };
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::Value;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -63,7 +62,7 @@ pub async fn request_multipart<T: DeserializeOwned>(
         TelegramResponse::Err {
             description,
             error_code,
-            response_parameters,
+            response_parameters: _,
             ..
         } => Err(RequestError::ApiError {
             description,
@@ -95,7 +94,7 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
         TelegramResponse::Err {
             description,
             error_code,
-            response_parameters,
+            response_parameters: _,
             ..
         } => Err(RequestError::ApiError {
             description,
@@ -108,11 +107,17 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
 #[serde(untagged)]
 enum TelegramResponse<R> {
     Ok {
-        ok: bool, // true
+        /// Dummy field. Used for deserialization.
+        #[allow(dead_code)]
+        ok: bool, // TODO: True type
+
         result: R,
     },
     Err {
-        ok: bool, // false
+        /// Dummy field. Used for deserialization.
+        #[allow(dead_code)]
+        ok: bool, // TODO: False type
+
         description: String,
         error_code: u16,
         response_parameters: Option<ResponseParameters>,

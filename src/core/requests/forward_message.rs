@@ -1,8 +1,11 @@
 use crate::core::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ChatId,
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult,
     },
     types::Message,
 };

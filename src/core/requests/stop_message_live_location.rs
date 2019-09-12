@@ -1,12 +1,13 @@
-use std::path::Path;
-
 use crate::core::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ChatId,
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult,
     },
-    types::{InlineKeyboardMarkup, Message, ParseMode},
+    types::{InlineKeyboardMarkup, Message},
 };
 
 /// Use this method to stop updating a live location message before live_period
