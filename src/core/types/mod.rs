@@ -19,6 +19,7 @@ pub use self::{
     order_info::OrderInfo,
     parse_mode::ParseMode,
     photo_size::PhotoSize,
+    poll::{Poll, PollOption},
     pre_checkout_query::PreCheckoutQuery,
     response_parameters::ResponseParameters,
     send_invoice::SendInvoice,
@@ -60,6 +61,7 @@ mod not_implemented_types;
 mod order_info;
 mod parse_mode;
 mod photo_size;
+mod poll;
 mod pre_checkout_query;
 mod response_parameters;
 mod reply_markup;
