@@ -1,3 +1,8 @@
+use crate::core::requests::RequestContext;
+//TODO:: need implementation
 
-//TODO: need implementation
-struct KickChatMember<'a>{}
+#[derive(Debug, Clone, Serialize)]
+struct KickChatMember<'a> {
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
+}

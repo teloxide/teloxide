@@ -14,6 +14,7 @@ use crate::core::{
 /// returned, otherwise True is returned.
 #[derive(Debug, Clone, Serialize)]
 struct StopMessageLiveLocation<'a> {
+    #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Required if inline_message_id is not specified. Unique identifier for
     /// the target chat or username of the target channel (in the format
@@ -65,7 +66,7 @@ impl<'a> StopMessageLiveLocation<'a> {
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = Some(chat_id.into());
         self
     }
 
@@ -89,7 +90,7 @@ impl<'a> StopMessageLiveLocation<'a> {
     where
         T: Into<InlineKeyboardMarkup>,
     {
-        self.inline_message_id = Some(reply_markup.into());
+        self.reply_markup = Some(reply_markup.into());
         self
     }
 }

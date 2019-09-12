@@ -1,3 +1,8 @@
+use crate::core::requests::RequestContext;
+//TODO:: need implementation
 
-//TODO: need implementation
-struct GetUserProfilePhotos<'a>{}
+#[derive(Debug, Clone, Serialize)]
+struct GetUserProfilePhotos<'a> {
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
+}

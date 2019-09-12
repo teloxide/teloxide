@@ -91,19 +91,19 @@ mod tests {
 
 pub mod edit_message_live_location;
 pub mod forward_message;
+pub mod get_file;
 pub mod get_me;
+pub mod get_user_profile_photos;
+pub mod kick_chat_member;
+pub mod restrict_chat_member;
 pub mod send_audio;
+pub mod send_chat_action;
+pub mod send_contact;
 pub mod send_location;
 pub mod send_media_group;
 pub mod send_message;
 pub mod send_photo;
-pub mod stop_message_live_location;
-pub mod send_venue;
-pub mod send_contact;
 pub mod send_poll;
-pub mod send_chat_action;
-pub mod get_user_profile_photos;
-pub mod get_file;
-pub mod kick_chat_member;
+pub mod send_venue;
+pub mod stop_message_live_location;
 pub mod unban_chat_member;
-pub mod restrict_chat_member;

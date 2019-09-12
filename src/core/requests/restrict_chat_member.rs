@@ -1,3 +1,8 @@
+use crate::core::requests::RequestContext;
+//TODO:: need implementation
 
-//TODO: need implementation
-struct RestrictChatMember<'a>{}
+#[derive(Debug, Clone, Serialize)]
+struct RestrictChatMember<'a> {
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
+}
