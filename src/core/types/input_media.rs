@@ -168,11 +168,11 @@ pub enum InputMedia {
 impl InputMedia {
     pub fn media(&self) -> &InputFile {
         match self {
-            InputMedia::Photo { media, .. } |
-            InputMedia::Document { media, .. } |
-            InputMedia::Audio { media, .. } |
-            InputMedia::Animation { media, .. } |
-            InputMedia::Video { media, .. } => media,
+            InputMedia::Photo { media, .. }
+            | InputMedia::Document { media, .. }
+            | InputMedia::Audio { media, .. }
+            | InputMedia::Animation { media, .. }
+            | InputMedia::Video { media, .. } => media,
         }
     }
 }

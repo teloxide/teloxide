@@ -1,6 +1,5 @@
 use crate::core::types::PhotoSize;
 
-
 /// This object represents a video file.
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
 pub struct Video {

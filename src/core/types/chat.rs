@@ -1,6 +1,5 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 pub struct Chat {
     pub id: i64,
@@ -8,7 +7,6 @@ pub struct Chat {
     pub kind: ChatKind,
     pub photo: Option<ChatPhoto>,
 }
-
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 #[serde(untagged)]
@@ -31,7 +29,6 @@ pub enum ChatKind {
         last_name: Option<String>,
     },
 }
-
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -101,10 +98,9 @@ mod tests {
             },
             photo: None,
         };
-        let actual = from_str(
-            r#"{"id":-1,"type":"channel","username":"channelname"}"#,
-        )
-        .unwrap();
+        let actual =
+            from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#)
+                .unwrap();
         assert_eq!(expected, actual);
     }
 

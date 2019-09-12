@@ -1,16 +1,11 @@
 use crate::core::{
     network,
-    types::Message,
     requests::{
-        ChatId,
-        Request,
-        RequestFuture,
-        RequestContext,
-        ResponseResult,
-        form_builder::FormBuilder,
+        form_builder::FormBuilder, ChatId, Request, RequestContext,
+        RequestFuture, ResponseResult,
     },
+    types::Message,
 };
-
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to forward messages of any kind. On success, the sent
@@ -28,8 +23,9 @@ pub struct ForwardMessage<'a> {
     /// Message identifier in the chat specified in from_chat_id
     pub message_id: i64,
 
-    /// Sends the message silently. Users will receive a notification with no sound.
-    #[serde(skip_serializing_if="Option::is_none")]
+    /// Sends the message silently. Users will receive a notification with no
+    /// sound.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
 }
 
@@ -43,22 +39,25 @@ impl<'a> Request<'a> for ForwardMessage<'a> {
                 self.ctx.token,
                 "forwardMessage",
                 &self,
-            ).await
+            )
+            .await
         })
     }
 }
 
 impl<'a> ForwardMessage<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>,
-               chat_id: ChatId,
-               from_chat_id: ChatId,
-               message_id: i64) -> Self {
+    pub(crate) fn new(
+        ctx: RequestContext<'a>,
+        chat_id: ChatId,
+        from_chat_id: ChatId,
+        message_id: i64,
+    ) -> Self {
         Self {
             ctx,
             chat_id,
             from_chat_id,
             message_id,
-            disable_notification: None
+            disable_notification: None,
         }
     }
 

@@ -1,8 +1,10 @@
 use crate::core::{
     network,
-    requests::{ChatId, Request, RequestFuture, ResponseResult, RequestContext},
     requests::form_builder::FormBuilder,
-    types::{InputFile, ParseMode, Message, ReplyMarkup},
+    requests::{
+        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+    },
+    types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 /// Use this method to send audio files, if you want Telegram clients to display
@@ -71,11 +73,11 @@ impl<'a> Request<'a> for SendAudio<'a> {
                 .add_if_some("title", self.title.as_ref())
                 .add_if_some(
                     "disable_notification",
-                    self.disable_notification.as_ref()
+                    self.disable_notification.as_ref(),
                 )
                 .add_if_some(
                     "reply_to_message_id",
-                    self.reply_to_message_id.as_ref()
+                    self.reply_to_message_id.as_ref(),
                 );
             params = match self.audio {
                 InputFile::File(file) => params.add_file("audio", &file),
@@ -95,8 +97,9 @@ impl<'a> Request<'a> for SendAudio<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "sendAudio",
-                Some(params)
-            ).await
+                Some(params),
+            )
+            .await
         })
     }
 }
@@ -119,7 +122,7 @@ impl<'a> SendAudio<'a> {
             thumb: None,
             disable_notification: None,
             reply_to_message_id: None,
-            reply_markup: None
+            reply_markup: None,
         }
     }
 
@@ -163,12 +166,18 @@ impl<'a> SendAudio<'a> {
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, disable_notification: T) -> Self {
+    pub fn disable_notification<T: Into<bool>>(
+        mut self,
+        disable_notification: T,
+    ) -> Self {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i64>>(mut self, reply_to_message_id: T) -> Self {
+    pub fn reply_to_message_id<T: Into<i64>>(
+        mut self,
+        reply_to_message_id: T,
+    ) -> Self {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

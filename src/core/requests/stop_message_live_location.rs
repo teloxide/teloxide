@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::core::{
     network,
     requests::{
-        ChatId, form_builder::FormBuilder, Request, RequestContext,
+        form_builder::FormBuilder, ChatId, Request, RequestContext,
         RequestFuture, ResponseResult,
     },
     types::{InlineKeyboardMarkup, Message, ParseMode},
@@ -18,19 +18,19 @@ struct StopMessageLiveLocation<'a> {
     /// Required if inline_message_id is not specified. Unique identifier for
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub chat_id: Option<ChatId>,
     /// Required if inline_message_id is not specified. Identifier of the
     /// message with live location to stop
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub message_id: Option<i32>,
     /// Required if chat_id and message_id are not specified. Identifier of the
     /// inline message
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub inline_message_id: Option<String>,
     /// A JSON-serialized object InlineKeyboardMarkup for a new inline
     /// keyboard.
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -51,9 +51,7 @@ impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
 }
 
 impl<'a> StopMessageLiveLocation<'a> {
-    fn new(
-        ctx: RequestContext<'a>,
-    ) -> Self {
+    fn new(ctx: RequestContext<'a>) -> Self {
         Self {
             ctx,
             chat_id: None,
@@ -64,28 +62,32 @@ impl<'a> StopMessageLiveLocation<'a> {
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-    where T: Into<ChatId>
+    where
+        T: Into<ChatId>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
     pub fn message_id<T>(mut self, message_id: T) -> Self
-    where T: Into<i32>
+    where
+        T: Into<i32>,
     {
         self.message_id = Some(message_id.into());
         self
     }
 
     pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
-    where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.inline_message_id = Some(inline_message_id.into());
         self
     }
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
-    where T: Into<InlineKeyboardMarkup>
+    where
+        T: Into<InlineKeyboardMarkup>,
     {
         self.inline_message_id = Some(reply_markup.into());
         self
