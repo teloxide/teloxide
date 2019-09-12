@@ -86,7 +86,7 @@ impl<'a> StopMessageLiveLocation<'a> {
     }
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
-        where T: Into<InlineKeyboardMarkup>
+    where T: Into<InlineKeyboardMarkup>
     {
         self.inline_message_id = Some(reply_markup.into());
         self
