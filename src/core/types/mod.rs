@@ -2,13 +2,16 @@ use self::not_implemented_types::*;
 pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,
+    animation::Animation,
     audio::Audio,
     chat::{Chat, ChatKind, NonPrivateChatKind},
     chat_member::ChatMember,
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
+    contact::Contact,
     document::Document,
     force_reply::ForceReply,
+    game::Game,
     inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
     inline_keyboard_markup::InlineKeyboardMarkup,
     input_file::InputFile,
@@ -16,6 +19,8 @@ pub use self::{
     invoice::Invoice,
     keyboard_button::KeyboardButton,
     label_price::LabeledPrice,
+    location::Location,
+    mask_position::MaskPosition,
     message::{
         ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind, Sender,
     },
@@ -36,20 +41,13 @@ pub use self::{
     sticker::Sticker,
     successful_payment::SuccessfulPayment,
     user::User,
+    venue::Venue,
     video::Video,
-    reply_markup::ReplyMarkup,
-    force_reply::ForceReply,
-    inline_keyboard_button::InlineKeyboardButton,
-    inline_keyboard_markup::InlineKeyboardMarkup,
-    reply_keyboard_remove::ReplyKeyboardRemove,
-    reply_keyboard_markup::ReplyKeyboardMarkup,
-    keyboard_button::KeyboardButton,
-    update::{Update, UpdateKind},
-    chosen_inline_result::ChosenInlineResult,
-    location::Location,
-    callback_query::CallbackQuery,
+    video_note::VideoNote,
+    voice::Voice,
 };
 
+mod animation;
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
 mod audio;
@@ -57,8 +55,10 @@ mod chat;
 mod chat_member;
 mod chat_permissions;
 mod chat_photo;
+mod contact;
 mod document;
 mod force_reply;
+mod game;
 mod inline_keyboard_button;
 mod inline_keyboard_markup;
 mod input_file;
@@ -66,6 +66,8 @@ mod input_media;
 mod invoice;
 mod keyboard_button;
 mod label_price;
+mod location;
+mod mask_position;
 mod message;
 mod message_entity;
 mod not_implemented_types;
@@ -85,8 +87,7 @@ mod shipping_query;
 mod sticker;
 mod successful_payment;
 mod user;
+mod venue;
 mod video;
-mod update;
-mod chosen_inline_result;
-mod location;
-mod callback_query;
+mod video_note;
+mod voice;

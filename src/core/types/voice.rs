@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]
 /// This object represents a voice note.
-struct Voice {
+pub struct Voice {
     /// Identifier for this file
     pub file_id: String,
     /// Duration of the audio in seconds as defined by sender
