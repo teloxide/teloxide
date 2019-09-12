@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct GetUserProfilePhotos<'a>{}
+struct GetUserProfilePhotos<'a> {}

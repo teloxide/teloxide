@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct SendChatAction<'a>{}
+struct SendChatAction<'a> {}

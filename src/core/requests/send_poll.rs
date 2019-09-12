@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct SendPoll<'a>{}
+struct SendPoll<'a> {}

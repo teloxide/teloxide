@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct UnbanChatMember<'a>{}
+struct UnbanChatMember<'a> {}

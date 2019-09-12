@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct SendContact<'a>{}
+struct SendContact<'a> {}

@@ -1,3 +1,2 @@
-
 //TODO: need implementation
-struct KickChatMember<'a>{}
+struct KickChatMember<'a> {}

@@ -1,3 +1,2 @@
-
 //TODO:need implementation
-struct SendVenue<'a>{}
+struct SendVenue<'a> {}
