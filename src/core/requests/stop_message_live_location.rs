@@ -14,7 +14,7 @@ use crate::core::{
 /// expires. On success, if the message was sent by the bot, the sent Message is
 /// returned, otherwise True is returned.
 #[derive(Debug, Clone, Serialize)]
-struct StopMessageLiveLocation<'a> {
+pub struct StopMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Required if inline_message_id is not specified. Unique identifier for
