@@ -23,15 +23,19 @@ impl Bot {
             client,
         }
     }
+
+    fn ctx(&self) -> RequestContext {
+        RequestContext {
+            token: &self.token,
+            client: &self.client,
+        }
+    }
 }
 
 /// Telegram functions
 impl Bot {
     pub fn get_me(&self) -> GetMe {
-        GetMe::new(RequestContext {
-            token: &self.token,
-            client: &self.client,
-        })
+        GetMe::new(self.ctx())
     }
 
     pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
@@ -40,10 +44,7 @@ impl Bot {
         T: Into<String>,
     {
         SendMessage::new(
-            RequestContext {
-                token: &self.token,
-                client: &self.client,
-            },
+            self.ctx(),
             chat_id.into(),
             text.into(),
         )
