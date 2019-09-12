@@ -45,7 +45,7 @@ impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
                 "stopMessageLiveLocation",
                 &self,
             )
-                .await
+            .await
         })
     }
 }
