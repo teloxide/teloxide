@@ -9,7 +9,7 @@ pub use self::{
     chat_photo::ChatPhoto,
     document::Document,
     force_reply::ForceReply,
-    inline_keyboard_button::InlineKeyboardButton,
+    inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
     inline_keyboard_markup::InlineKeyboardMarkup,
     input_file::InputFile,
     input_media::InputMedia,
