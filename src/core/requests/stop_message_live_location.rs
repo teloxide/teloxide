@@ -72,7 +72,7 @@ impl<'a> StopMessageLiveLocation<'a> {
     }
 
     pub fn message_id<T>(mut self, message_id: T) -> Self
-        where T: Into<i32>
+    where T: Into<i32>
     {
         self.message_id = Some(message_id.into());
         self
