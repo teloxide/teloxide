@@ -4,7 +4,7 @@ use crate::core::types::{
     SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Message {
     #[serde(rename = "message_id")]
     pub id: i64,
@@ -14,7 +14,7 @@ pub struct Message {
     pub message_kind: MessageKind,
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MessageKind {
     IncomingMessage {
@@ -72,7 +72,7 @@ pub enum MessageKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum Sender {
     /// If message is sent from Chat
     #[serde(rename = "from")]
@@ -82,7 +82,7 @@ pub enum Sender {
     Signature(String),
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -106,7 +106,7 @@ pub enum ForwardKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum ForwardedFrom {
     #[serde(rename = "forward_from")]
     User(User),
@@ -114,7 +114,7 @@ pub enum ForwardedFrom {
     SenderName(String),
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MediaKind {
     Animation {
