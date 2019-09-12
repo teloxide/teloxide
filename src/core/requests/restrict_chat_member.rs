@@ -1,3 +1,3 @@
 
 //TODO: need implementation
-struct RestrictChatMember{}
+struct RestrictChatMember<'a>{}

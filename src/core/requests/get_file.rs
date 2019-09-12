@@ -1,3 +1,3 @@
 
 //TODO: need implementation
-struct GetFile{}
+struct GetFile<'a>{}
