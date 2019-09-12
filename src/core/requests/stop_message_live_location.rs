@@ -65,7 +65,7 @@ impl<'a> StopMessageLiveLocation<'a> {
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where T: Into<ChatId>
+    where T: Into<ChatId>
     {
         self.chat_id = chat_id.into();
         self
