@@ -1,14 +1,8 @@
 use crate::core::{
     network,
+    requests::{Request, RequestContext, RequestFuture, ResponseResult},
     types::User,
-    requests::{
-        Request,
-        RequestFuture,
-        RequestContext,
-        ResponseResult
-    },
 };
-
 
 #[derive(Debug, Clone)]
 /// A simple method for testing your bot's auth token. Requires no parameters.
@@ -21,14 +15,12 @@ impl<'a> Request<'a> for GetMe<'a> {
     type ReturnValue = User;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(
-            network::request_multipart(
-                self.ctx.client,
-                self.ctx.token,
-                "getMe",
-                None
-            )
-        )
+        Box::pin(network::request_multipart(
+            self.ctx.client,
+            self.ctx.token,
+            "getMe",
+            None,
+        ))
     }
 }
 

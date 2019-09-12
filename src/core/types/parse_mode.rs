@@ -69,7 +69,6 @@ pub enum ParseMode {
     Markdown,
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

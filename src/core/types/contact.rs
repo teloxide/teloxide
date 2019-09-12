@@ -1,8 +1,6 @@
-use serde::Deserialization;
-
-#[derive(Debug, Deserialization, Clone)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 /// This object represents a phone contact.
-struct Contact {
+pub struct Contact {
     /// Contact's phone number
     pub phone_number: String,
     /// Contact's first name

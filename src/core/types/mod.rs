@@ -8,9 +8,13 @@ pub use self::{
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
     document::Document,
+    force_reply::ForceReply,
+    inline_keyboard_button::InlineKeyboardButton,
+    inline_keyboard_markup::InlineKeyboardMarkup,
     input_file::InputFile,
     input_media::InputMedia,
     invoice::Invoice,
+    keyboard_button::KeyboardButton,
     label_price::LabeledPrice,
     message::{
         ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind, Sender,
@@ -19,7 +23,11 @@ pub use self::{
     order_info::OrderInfo,
     parse_mode::ParseMode,
     photo_size::PhotoSize,
+    poll::{Poll, PollOption},
     pre_checkout_query::PreCheckoutQuery,
+    reply_keyboard_markup::ReplyKeyboardMarkup,
+    reply_keyboard_remove::ReplyKeyboardRemove,
+    reply_markup::ReplyMarkup,
     response_parameters::ResponseParameters,
     send_invoice::SendInvoice,
     shipping_address::ShippingAddress,
@@ -51,8 +59,8 @@ mod chat_permissions;
 mod chat_photo;
 mod document;
 mod force_reply;
-mod inline_keyboard_markup;
 mod inline_keyboard_button;
+mod inline_keyboard_markup;
 mod input_file;
 mod input_media;
 mod invoice;
@@ -64,11 +72,12 @@ mod not_implemented_types;
 mod order_info;
 mod parse_mode;
 mod photo_size;
+mod poll;
 mod pre_checkout_query;
-mod response_parameters;
-mod reply_markup;
 mod reply_keyboard_markup;
 mod reply_keyboard_remove;
+mod reply_markup;
+mod response_parameters;
 mod send_invoice;
 mod shipping_address;
 mod shipping_option;

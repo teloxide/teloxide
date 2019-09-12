@@ -32,7 +32,6 @@ pub enum ChatKind {
     },
 }
 
-
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
@@ -101,10 +100,9 @@ mod tests {
             },
             photo: None,
         };
-        let actual = from_str(
-            r#"{"id":-1,"type":"channel","username":"channelname"}"#,
-        )
-        .unwrap();
+        let actual =
+            from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#)
+                .unwrap();
         assert_eq!(expected, actual);
     }
 

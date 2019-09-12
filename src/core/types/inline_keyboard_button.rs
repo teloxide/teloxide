@@ -8,7 +8,9 @@ pub struct InlineKeyboardButton {
     pub kind: InlineKeyboardButtonKind,
 }
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Eq, Hash, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, PartialOrd, Serialize, Eq, Hash, Deserialize,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
     /// HTTP or tg:// url to be opened when button is pressed
@@ -27,13 +29,14 @@ pub enum InlineKeyboardButtonKind {
     /// the user will be automatically returned to the chat they switched from,
     /// skipping the chat selection screen.
     SwitchInlineQuery(String),
-    /// Optional. If set, pressing the button will insert the bot‘s username and
-    /// the specified inline query in the current chat's input field. Can be
-    /// empty, in which case only the bot’s username will be inserted.
+    /// Optional. If set, pressing the button will insert the bot‘s username
+    /// and the specified inline query in the current chat's input field.
+    /// Can be empty, in which case only the bot’s username will be
+    /// inserted.
     ///
     ///This offers a quick way for the user to open your bot in inline mode in
     /// the same chat – good for selecting something from multiple options.
     SwitchInlineQueryCurrentChat(String),
-    // CallbackGame(CallbackGame), TODO: разобраться, что с этим делать
-    // TODO: add LoginUrl, pay
+    /* CallbackGame(CallbackGame), TODO: разобраться, что с этим делать
+     * TODO: add LoginUrl, pay */
 }

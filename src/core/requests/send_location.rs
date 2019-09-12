@@ -1,7 +1,9 @@
 use crate::core::{
-    requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult},
-    types::{Message, ReplyMarkup},
     network,
+    requests::{
+        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+    },
+    types::{Message, ReplyMarkup},
 };
 
 use serde::Serialize;
@@ -20,19 +22,19 @@ pub struct SendLocation<'a> {
     latitude: f64,
     /// Longitude of the location
     longitude: f64,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// Period in seconds for which the location will be updated
     /// (see [Live Locations](https://telegram.org/blog/live-locations)),
     /// should be between 60 and 86400.
     live_period: Option<i32>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// Sends the message silently. Users will receive a notification with
     /// no sound.
     disable_notification: Option<bool>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i64>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     reply_markup: Option<ReplyMarkup>,
 }
 
@@ -45,8 +47,9 @@ impl<'a> Request<'a> for SendLocation<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "sendLocation",
-                &self
-            ).await
+                &self,
+            )
+            .await
         })
     }
 }
@@ -66,7 +69,7 @@ impl<'a> SendLocation<'a> {
             live_period: None,
             disable_notification: None,
             reply_to_message_id: None,
-            reply_markup: None
+            reply_markup: None,
         }
     }
 

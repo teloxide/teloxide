@@ -1,11 +1,8 @@
-use std::pin::Pin;
 use std::future::Future;
+use std::pin::Pin;
 
-use reqwest::{
-    r#async::Client, StatusCode
-};
+use reqwest::{r#async::Client, StatusCode};
 use serde::de::DeserializeOwned;
-
 
 mod form_builder;
 mod utils;
@@ -13,7 +10,8 @@ mod utils;
 #[derive(Debug, Display)]
 pub enum RequestError {
     #[display(fmt = "Telegram error #{}: {}", status_code, description)]
-    ApiError { // TODO: add response parameters
+    ApiError {
+        // TODO: add response parameters
         status_code: StatusCode,
         description: String,
     },
@@ -82,18 +80,30 @@ mod tests {
     #[test]
     fn chat_id_channel_username_serialization() {
         let expected_json = String::from(r#""@username""#);
-        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(String::from("@username"))).unwrap();
+        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(
+            String::from("@username"),
+        ))
+        .unwrap();
 
         assert_eq!(expected_json, actual_json)
     }
 }
 
-pub mod get_me;
-pub mod send_message;
-pub mod forward_message;
-pub mod send_photo;
-pub mod send_media_group;
-pub mod send_audio;
-pub mod send_location;
 pub mod edit_message_live_location;
+pub mod forward_message;
+pub mod get_file;
+pub mod get_me;
+pub mod get_user_profile_photos;
+pub mod kick_chat_member;
+pub mod restrict_chat_member;
+pub mod send_audio;
+pub mod send_chat_action;
+pub mod send_contact;
+pub mod send_location;
+pub mod send_media_group;
+pub mod send_message;
+pub mod send_photo;
+pub mod send_poll;
+pub mod send_venue;
 pub mod stop_message_live_location;
+pub mod unban_chat_member;

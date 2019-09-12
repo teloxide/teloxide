@@ -72,7 +72,7 @@ pub enum MessageKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum Sender {
     /// If message is sent from Chat
     #[serde(rename = "from")]
@@ -106,7 +106,7 @@ pub enum ForwardKind {
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum ForwardedFrom {
     #[serde(rename = "forward_from")]
     User(User),
@@ -125,13 +125,13 @@ pub enum MediaKind {
         document: (),
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Audio {
         audio: Audio,
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Contact {
         contact: Contact,
@@ -140,7 +140,7 @@ pub enum MediaKind {
         document: Document,
         caption: Option<String>,
         #[serde(default = "Vec::new")]
-        caption_entities: Vec<MessageEntity>
+        caption_entities: Vec<MessageEntity>,
     },
     Game {
         game: Game,
@@ -193,232 +193,192 @@ mod tests {
     use serde_json::from_str;
 
     #[test]
-    fn sent_message_de() {
-        let expected = Message {
-            id: 6534,
-            date: 1567898953,
-            chat: Chat {
-                id: 218485655,
-                photo: None,
-                kind: ChatKind::Private {
-                    type_: (),
-                    first_name: Some("W".to_string()),
-                    last_name: None,
-                    username: Some("WaffleLapkin".to_string()),
-                },
-            },
-            message_kind: MessageKind::IncomingMessage {
-                from: Sender::User(User {
-                    id: 457569668,
-                    is_bot: true,
-                    first_name: "BT".to_string(),
-                    last_name: None,
-                    username: Some("BloodyTestBot".to_string()),
-                    language_code: None,
-                }),
-                forward_kind: ForwardKind::Origin {
-                    reply_to_message: None,
-                },
-                edit_date: None,
-                media_kind: MediaKind::Text {
-                    text: "text".to_string(),
-                    entities: vec![],
-                },
-                reply_markup: None,
-            },
-        };
-        // actual message from telegram
+    fn de_media_forwarded() {
         let json = r#"{
-  "message_id": 6534,
-  "from": {
-    "id": 457569668,
-    "is_bot": true,
-    "first_name": "BT",
-    "username": "BloodyTestBot"
-  },
-  "chat": {
-    "id": 218485655,
-    "first_name": "W",
-    "username": "WaffleLapkin",
-    "type": "private"
-  },
-  "date": 1567898953,
-  "text": "text"
-}"#;
-        let actual = from_str::<Message>(json).unwrap();
-        assert_eq!(expected, actual);
+          "message_id": 198283,
+          "from": {
+            "id": 250918540,
+            "is_bot": false,
+            "first_name": "Андрей",
+            "last_name": "Власов",
+            "username": "aka_dude",
+            "language_code": "en"
+          },
+          "chat": {
+            "id": 250918540,
+            "first_name": "Андрей",
+            "last_name": "Власов",
+            "username": "aka_dude",
+            "type": "private"
+          },
+          "date": 1567927221,
+          "video": {
+            "duration": 13,
+            "width": 512,
+            "height": 640,
+            "mime_type": "video/mp4",
+            "thumb": {
+              "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
+              "file_size": 10339,
+              "width": 256,
+              "height": 320
+            },
+            "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
+            "file_size": 1381334
+          }
+        }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
     }
 
     #[test]
-    fn media_message_de() {
+    fn de_media_group_forwarded() {
         let json = r#"{
-  "message_id": 198283,
-  "from": {
-    "id": 250918540,
-    "is_bot": false,
-    "first_name": "Андрей",
-    "last_name": "Власов",
-    "username": "aka_dude",
-    "language_code": "en"
-  },
-  "chat": {
-    "id": 250918540,
-    "first_name": "Андрей",
-    "last_name": "Власов",
-    "username": "aka_dude",
-    "type": "private"
-  },
-  "date": 1567927221,
-  "video": {
-    "duration": 13,
-    "width": 512,
-    "height": 640,
-    "mime_type": "video/mp4",
-    "thumb": {
-      "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
-      "file_size": 10339,
-      "width": 256,
-      "height": 320
-    },
-    "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
-    "file_size": 1381334
-  }
-}"#;
-        let actual = from_str::<Message>(json).unwrap();
-        let expected = Message {
-            id: 198283,
-            date: 1567927221,
-            chat: Chat {
-                id: 250918540,
-                photo: None,
-                kind: ChatKind::Private {
-                    first_name: Some("Андрей".to_string()),
-                    last_name: Some("Власов".to_string()),
-                    username: Some("aka_dude".to_string()),
-                    type_: ()
-                }
+          "message_id": 198283,
+          "from": {
+            "id": 250918540,
+            "is_bot": false,
+            "first_name": "Андрей",
+            "last_name": "Власов",
+            "username": "aka_dude",
+            "language_code": "en"
+          },
+          "chat": {
+            "id": 250918540,
+            "first_name": "Андрей",
+            "last_name": "Власов",
+            "username": "aka_dude",
+            "type": "private"
+          },
+          "date": 1567927221,
+          "media_group_id": "12543417770506682",
+          "video": {
+            "duration": 13,
+            "width": 512,
+            "height": 640,
+            "mime_type": "video/mp4",
+            "thumb": {
+              "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
+              "file_size": 10339,
+              "width": 256,
+              "height": 320
             },
-            message_kind: MessageKind::IncomingMessage {
-                from: Sender::User(User {
-                    id: 250918540,
-                    is_bot: false,
-                    first_name: "Андрей".to_string(),
-                    last_name: Some("Власов".to_string()),
-                    username: Some("aka_dude".to_string()),
-                    language_code: Some("en".to_string())
-                }),
-                forward_kind: ForwardKind::Origin { reply_to_message: None },
-                edit_date: None,
-                media_kind: MediaKind::Video {
-                    video: Video {
-                        duration: 13,
-                        width: 512,
-                        height: 640,
-                        mime_type: Some("video/mp4".to_string()),
-                        thumb: Some(PhotoSize {
-                            file_id: "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE".to_string(),
-                            file_size: Some(10339),
-                            width: 256,
-                            height: 320
-                        }),
-                        file_id: "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE".to_string(),
-                        file_size: Some(1381334)
-                    },
-                    caption: None,
-                    caption_entities: vec![],
-                    media_group_id: None
-                },
-                reply_markup: None
-            },
-            
-        };
-        assert_eq!(actual, expected);
+            "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
+            "file_size": 1381334
+          }
+        }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
     }
 
     #[test]
-    fn media_group_message_de() {
+    fn de_text() {
         let json = r#"{
-  "message_id": 198283,
-  "from": {
-    "id": 250918540,
-    "is_bot": false,
-    "first_name": "Андрей",
-    "last_name": "Власов",
-    "username": "aka_dude",
-    "language_code": "en"
-  },
-  "chat": {
-    "id": 250918540,
-    "first_name": "Андрей",
-    "last_name": "Власов",
-    "username": "aka_dude",
-    "type": "private"
-  },
-  "date": 1567927221,
-  "media_group_id": "12543417770506682",
-  "video": {
-    "duration": 13,
-    "width": 512,
-    "height": 640,
-    "mime_type": "video/mp4",
-    "thumb": {
-      "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
-      "file_size": 10339,
-      "width": 256,
-      "height": 320
-    },
-    "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
-    "file_size": 1381334
-  }
-}"#;
-        let actual = from_str::<Message>(json).unwrap();
-        let expected = Message {
-            id: 198283,
-            date: 1567927221,
-            chat: Chat {
-                id: 250918540,
-                photo: None,
-                kind: ChatKind::Private {
-                    first_name: Some("Андрей".to_string()),
-                    last_name: Some("Власов".to_string()),
-                    username: Some("aka_dude".to_string()),
-                    type_: ()
-                }
-            },
-            message_kind: MessageKind::IncomingMessage {
-                from: Sender::User(User {
-                    id: 250918540,
-                    is_bot: false,
-                    first_name: "Андрей".to_string(),
-                    last_name: Some("Власов".to_string()),
-                    username: Some("aka_dude".to_string()),
-                    language_code: Some("en".to_string())
-                }),
-                forward_kind: ForwardKind::Origin { reply_to_message: None },
-                edit_date: None,
-                media_kind: MediaKind::Video {
-                    video: Video {
-                        duration: 13,
-                        width: 512,
-                        height: 640,
-                        mime_type: Some("video/mp4".to_string()),
-                        thumb: Some(PhotoSize {
-                            file_id: "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE".to_string(),
-                            file_size: Some(10339),
-                            width: 256,
-                            height: 320
-                        }),
-                        file_id: "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE".to_string(),
-                        file_size: Some(1381334)
-                    },
-                    caption: None,
-                    caption_entities: vec![],
-                    media_group_id: Some("12543417770506682".to_string())
-                },
-                reply_markup: None
-            },
-            
-        };
-        assert_eq!(actual, expected);
+          "message_id": 199785,
+          "from": {
+           "id": 250918540,
+           "is_bot": false,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "language_code": "en"
+          },
+          "chat": {
+           "id": 250918540,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "type": "private"
+          },
+          "date": 1568289890,
+          "text": "Лол кек 😂"
+         }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
+    }
+
+    #[test]
+    fn de_sticker() {
+        let json = r#"{
+          "message_id": 199787,
+          "from": {
+           "id": 250918540,
+           "is_bot": false,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "language_code": "en"
+          },
+          "chat": {
+           "id": 250918540,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "type": "private"
+          },
+          "date": 1568290188,
+          "sticker": {
+           "width": 512,
+           "height": 512,
+           "emoji": "😡",
+           "set_name": "AdvenTimeAnim",
+           "is_animated": true,
+           "thumb": {
+            "file_id": "AAQCAAMjAAOw0PgMaabKAcaXKCBLubkPAAQBAAdtAAPGKwACFgQ",
+            "file_size": 4118,
+            "width": 128,
+            "height": 128
+           },
+           "file_id": "CAADAgADIwADsND4DGmmygHGlyggFgQ",
+           "file_size": 16639
+          }
+         }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
+    }
+
+    #[test]
+    fn de_image() {
+        let json = r#"{
+          "message_id": 199791,
+          "from": {
+           "id": 250918540,
+           "is_bot": false,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "language_code": "en"
+          },
+          "chat": {
+           "id": 250918540,
+           "first_name": "Андрей",
+           "last_name": "Власов",
+           "username": "aka_dude",
+           "type": "private"
+          },
+          "date": 1568290622,
+          "photo": [
+           {
+            "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA20AAybcBAABFgQ",
+            "file_size": 18188,
+            "width": 320,
+            "height": 239
+           },
+           {
+            "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA3gAAyfcBAABFgQ",
+            "file_size": 62123,
+            "width": 800,
+            "height": 598
+           },
+           {
+            "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA3kAAyTcBAABFgQ",
+            "file_size": 75245,
+            "width": 962,
+            "height": 719
+           }
+          ]
+         }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
     }
 }

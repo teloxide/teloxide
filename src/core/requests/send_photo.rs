@@ -2,20 +2,16 @@ use std::path::Path;
 
 use crate::core::{
     network,
-    types::{ParseMode, Message, InputFile, ReplyMarkup},
     requests::{
-        ChatId,
-        Request,
-        RequestFuture,
-        RequestContext,
-        ResponseResult,
-        form_builder::FormBuilder,
+        form_builder::FormBuilder, ChatId, Request, RequestContext,
+        RequestFuture, ResponseResult,
     },
+    types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
 
-
 #[derive(Debug, Clone)]
-/// Use this method to send photos. On success, the sent [`Message`] is returned.
+/// Use this method to send photos. On success, the sent [`Message`] is
+/// returned.
 pub struct SendPhoto<'a> {
     ctx: RequestContext<'a>,
 
@@ -23,13 +19,14 @@ pub struct SendPhoto<'a> {
     /// (in the format @channelusername)
     pub chat_id: ChatId,
     /// Photo to send.
-    /// [`InputFile::FileId`] - Pass a file_id as String to send a photo that exists on the
-    /// Telegram servers (recommended)
+    /// [`InputFile::FileId`] - Pass a file_id as String to send a photo that
+    /// exists on the Telegram servers (recommended)
     /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
     /// to get a photo from the Internet
     /// [`InputFile::File`] - Upload a new photo.
     pub photo: InputFile,
-    /// Photo caption (may also be used when resending photos by file_id), 0-1024 characters
+    /// Photo caption (may also be used when resending photos by file_id),
+    /// 0-1024 characters
     pub caption: Option<String>,
     /// Send [Markdown] or [HTML],
     /// if you want Telegram apps to show [bold, italic, fixed-width text
@@ -40,7 +37,8 @@ pub struct SendPhoto<'a> {
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::core::types::ParseMode
     pub parse_mode: Option<ParseMode>,
-    /// Sends the message silently. Users will receive a notification with no sound.
+    /// Sends the message silently. Users will receive a notification with no
+    /// sound.
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i64>,
@@ -58,13 +56,13 @@ impl<'a> Request<'a> for SendPhoto<'a> {
                 .add_if_some("parse_mode", self.parse_mode.as_ref())
                 .add_if_some(
                     "disable_notification",
-                    self.disable_notification.as_ref()
+                    self.disable_notification.as_ref(),
                 )
                 .add_if_some(
                     "reply_to_message_id",
-                    self.reply_to_message_id.as_ref()
+                    self.reply_to_message_id.as_ref(),
                 );
-            
+
             params = match self.photo {
                 InputFile::File(path) => params.add_file("photo", &path),
                 InputFile::Url(url) => params.add("photo", &url),
@@ -76,8 +74,9 @@ impl<'a> Request<'a> for SendPhoto<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "sendPhoto",
-                Some(params)
-            ).await
+                Some(params),
+            )
+            .await
         })
     }
 }
@@ -86,7 +85,7 @@ impl<'a> SendPhoto<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,
         chat_id: ChatId,
-        photo: InputFile
+        photo: InputFile,
     ) -> Self {
         Self {
             ctx,
@@ -96,7 +95,7 @@ impl<'a> SendPhoto<'a> {
             parse_mode: None,
             disable_notification: None,
             reply_to_message_id: None,
-            reply_markup: None
+            reply_markup: None,
         }
     }
 
@@ -120,12 +119,18 @@ impl<'a> SendPhoto<'a> {
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, disable_notification: T) -> Self {
+    pub fn disable_notification<T: Into<bool>>(
+        mut self,
+        disable_notification: T,
+    ) -> Self {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i64>>(mut self, reply_to_message_id: T) -> Self {
+    pub fn reply_to_message_id<T: Into<i64>>(
+        mut self,
+        reply_to_message_id: T,
+    ) -> Self {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

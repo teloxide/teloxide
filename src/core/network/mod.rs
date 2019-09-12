@@ -4,16 +4,12 @@ use crate::core::{
 };
 
 use apply::Apply;
-use serde_json::Value;
-use serde::{
-    Serialize,
-    de::DeserializeOwned
-};
 use reqwest::{
+    r#async::{multipart::Form, Client},
     StatusCode,
-    r#async::{Client, multipart::Form},
 };
-
+use serde::{de::DeserializeOwned, Serialize};
+use serde_json::Value;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -58,12 +54,9 @@ pub async fn request_multipart<T: DeserializeOwned>(
         .map_err(RequestError::NetworkError)?;
 
     let response = serde_json::from_str::<TelegramResponse<T>>(
-        &response
-            .text()
-            .await
-            .map_err(RequestError::NetworkError)?,
+        &response.text().await.map_err(RequestError::NetworkError)?,
     )
-        .map_err(RequestError::InvalidJson)?;
+    .map_err(RequestError::InvalidJson)?;
 
     match response {
         TelegramResponse::Ok { result, .. } => Ok(result),
@@ -72,7 +65,10 @@ pub async fn request_multipart<T: DeserializeOwned>(
             error_code,
             response_parameters,
             ..
-        } => Err(RequestError::ApiError { description, status_code: StatusCode::from_u16(error_code).unwrap() })
+        } => Err(RequestError::ApiError {
+            description,
+            status_code: StatusCode::from_u16(error_code).unwrap(),
+        }),
     }
 }
 
@@ -90,10 +86,7 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
         .map_err(RequestError::NetworkError)?;
 
     let response = serde_json::from_str::<TelegramResponse<T>>(
-        &response
-            .text()
-            .await
-            .map_err(RequestError::NetworkError)?,
+        &response.text().await.map_err(RequestError::NetworkError)?,
     )
     .map_err(RequestError::InvalidJson)?;
 
@@ -104,7 +97,10 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
             error_code,
             response_parameters,
             ..
-        } => Err(RequestError::ApiError { description, status_code: StatusCode::from_u16(error_code).unwrap() })
+        } => Err(RequestError::ApiError {
+            description,
+            status_code: StatusCode::from_u16(error_code).unwrap(),
+        }),
     }
 }
 
