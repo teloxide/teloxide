@@ -2,7 +2,7 @@ use std::path::Path;
 
 use crate::core::{
     network,
-    types::{ParseMode, Message, InputFile},
+    types::{ParseMode, Message, InputFile, InlineKeyboardMarkup},
     requests::{
         ChatId,
         Request,
@@ -44,8 +44,7 @@ pub struct SendPhoto<'a> {
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i64>,
-
-    // TODO: add reply_markup
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 impl<'a> Request<'a> for SendPhoto<'a> {
@@ -96,7 +95,8 @@ impl<'a> SendPhoto<'a> {
             caption: None,
             parse_mode: None,
             disable_notification: None,
-            reply_to_message_id: None
+            reply_to_message_id: None,
+            reply_markup: None
         }
     }
 

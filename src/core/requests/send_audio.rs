@@ -2,7 +2,7 @@ use crate::core::{
     network,
     requests::{ChatId, Request, RequestFuture, ResponseResult, RequestContext},
     requests::form_builder::FormBuilder,
-    types::{InputFile, ParseMode, Message},
+    types::{InputFile, ParseMode, Message, InlineKeyboardMarkup},
 };
 
 /// Use this method to send audio files, if you want Telegram clients to display
@@ -54,7 +54,7 @@ pub struct SendAudio<'a> {
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i64>,
-    pub reply_markup: Option<()> // TODO: add reply_markup
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 impl<'a> Request<'a> for SendAudio<'a> {

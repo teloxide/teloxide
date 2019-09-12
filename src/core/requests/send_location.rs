@@ -1,6 +1,6 @@
 use crate::core::{
     requests::{RequestContext, ChatId, Request, RequestFuture, ResponseResult},
-    types::Message,
+    types::{Message, InlineKeyboardMarkup},
     network,
 };
 
@@ -33,7 +33,7 @@ pub struct SendLocation<'a> {
     /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
-    reply_markup: Option<()>,
+    reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 impl<'a> Request<'a> for SendLocation<'a> {
