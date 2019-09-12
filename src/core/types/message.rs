@@ -4,7 +4,7 @@ use crate::core::types::{
     SuccessfulPayment, User, Venue, Video, VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, PartialEq, Clone, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Message {
     #[serde(rename = "message_id")]
     pub id: i64,
@@ -14,7 +14,7 @@ pub struct Message {
     pub message_kind: MessageKind,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MessageKind {
     IncomingMessage {
@@ -82,7 +82,7 @@ pub enum Sender {
     Signature(String),
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -114,7 +114,7 @@ pub enum ForwardedFrom {
     SenderName(String),
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MediaKind {
     Animation {

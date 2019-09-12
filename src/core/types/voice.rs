@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq, Hash)]
 /// This object represents a voice note.
 pub struct Voice {
     /// Identifier for this file

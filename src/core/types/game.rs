@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::core::types::{MessageEntity, PhotoSize, Animation};
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq, Hash)]
 /// This object represents a game. Use BotFather to create and edit games, their short names
 /// will act as unique identifiers.
 pub struct Game {

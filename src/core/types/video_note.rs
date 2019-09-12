@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use crate::core::types::PhotoSize;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq, Hash)]
 /// This object represents a [video message](https://telegram.org/blog/video-messages-and-telescope)
 /// (available in Telegram apps as of v.4.0).
 pub struct VideoNote {

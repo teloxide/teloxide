@@ -1,6 +1,6 @@
 use crate::core::types::{MaskPosition, PhotoSize};
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Sticker {
     pub file_id: String,
     pub width: u16,
