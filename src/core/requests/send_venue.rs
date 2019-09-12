@@ -1,5 +1,6 @@
 use crate::core::requests::{ChatId, RequestContext};
 
+//TODO:: need implementation
 ///Use this method to send information about a venue. On success, the sent
 /// Message is returned.
 #[derive(Debug, Clone, Serialize)]
@@ -40,5 +41,3 @@ struct SendVenue<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     reply_markup: Option<()>, //TODO: need concrete type
 }
-
-
