@@ -1,2 +1,7 @@
-//TODO: need implementation
-struct SendChatAction<'a> {}
+use crate::core::requests::RequestContext;
+
+#[derive(Debug, Clone, Serialize)]
+struct SendChatAction<'a> {
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
+}

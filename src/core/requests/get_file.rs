@@ -1,2 +1,7 @@
-//TODO: need implementation
-struct GetFile<'a> {}
+use crate::core::requests::RequestContext;
+
+#[derive(Debug, Clone, Serialize)]
+struct GetFile<'a> {
+    #[serde(skip_serializing)]
+    ctx: RequestContext<'a>,
+}
