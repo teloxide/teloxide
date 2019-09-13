@@ -1,37 +1,142 @@
-use crate::core::requests::{ChatId, RequestContext};
-use crate::core::types::ReplyMarkup;
+use crate::core::network;
+use crate::core::requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult};
+use crate::core::types::{Message, ReplyMarkup};
 
-//TODO:: need implementation
 #[derive(Debug, Clone, Serialize)]
 struct SendContact<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     ///    Integer or String 	Yes 	Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
-    chat_id: ChatId,
+    pub chat_id: ChatId,
     ///    String 	Yes 	Contact's phone number
-    phone_number: String,
+    pub phone_number: String,
     ///    String 	Yes 	Contact's first name
-    first_name: String,
+    pub first_name: String,
     ///    String  	Optional 	Contact's last name
     #[serde(skip_serializing_if = "Option::is_none")]
-    last_name: Option<String>,
+    pub last_name: Option<String>,
     ///   	String Optional 	Additional data about the contact in the form of a
     /// vCard, 0-2048 bytes
     #[serde(skip_serializing_if = "Option::is_none")]
-    vcard: Option<String>,
+    pub vcard: Option<String>,
     ///    Boolean 	Optional 	Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
-    disable_notification: Option<bool>,
+    pub disable_notification: Option<bool>,
     ///    Integer 	Optional 	If the message is a reply, ID of the original
     /// message
     #[serde(skip_serializing_if = "Option::is_none")]
-    reply_to_message_id: Option<i32>,
+    pub reply_to_message_id: Option<i32>,
     ///    InlineKeyboardMarkup or ReplyKeyboardMarkup or ReplyKeyboardRemove
     /// or ForceReply 	Optional 	Additional interface options. A JSON-serialized
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<ReplyMarkup>,
+}
+
+
+impl<'a> Request<'a> for SendContact<'a> {
+    type ReturnValue = Message;
+
+    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
+        Box::pin(async move {
+            network::request_json(
+                &self.ctx.client,
+                &self.ctx.token,
+                "sendContact",
+                &self,
+            )
+                .await
+        })
+    }
+}
+
+
+impl<'a> SendContact<'a> {
+    pub(crate) fn new(
+        ctx: RequestContext<'a>,
+        chat_id: ChatId,
+        phone_number: String,
+        first_name: String,
+    ) -> Self {
+        Self {
+            ctx,
+            chat_id,
+            phone_number,
+            first_name,
+            last_name: None,
+            vcard: None,
+            disable_notification: None,
+            reply_to_message_id: None,
+            reply_markup: None,
+        }
+    }
+
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+        where
+            T: Into<ChatId>,
+    {
+        self.chat_id = chat_id.into();
+        self
+    }
+
+    pub fn phone_number<T>(mut self, phone_number: T) -> Self
+        where
+            T: Into<String>,
+    {
+        self.phone_number = phone_number.into();
+        self
+    }
+
+    pub fn first_name<T>(mut self, first_name: T) -> Self
+        where
+            T: Into<String>,
+    {
+        self.first_name = first_name.into();
+        self
+    }
+
+    pub fn last_name<T>(mut self, last_name: T) -> Self
+        where
+            T: Into<String>,
+    {
+        self.last_name = Some(last_name.into());
+        self
+    }
+
+    pub fn vcard<T>(mut self, vcard: T) -> Self
+        where
+            T: Into<String>,
+    {
+        self.vcard = Some(vcard.into());
+        self
+    }
+
+    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+        where
+            T: Into<bool>,
+    {
+        self.disable_notification = Some(disable_notification.into());
+        self
+    }
+
+
+    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+        where
+            T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self
+    }
+
+
+    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+        where
+            T: Into<ReplyMarkup>,
+    {
+        self.reply_markup = Some(reply_markup.into());
+        self
+    }
 }
