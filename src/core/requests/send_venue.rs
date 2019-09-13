@@ -148,4 +148,13 @@ impl<'a> SendVenue<'a> {
         self.foursquare_type = Some(foursquare_type.into());
         self
     }
+
+
+    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+        where
+            T: Into<ReplyMarkup>,
+    {
+        self.reply_markup = Some(ReplyMarkup.into());
+        self
+    }
 }
