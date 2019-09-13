@@ -1,8 +1,11 @@
 use crate::core::network;
-use crate::core::requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult};
+use crate::core::requests::{
+    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+};
 use crate::core::types::{Message, ReplyMarkup};
 
-///Use this method to send phone contacts. On success, the sent Message is returned.
+///Use this method to send phone contacts. On success, the sent Message is
+/// returned.
 #[derive(Debug, Clone, Serialize)]
 struct SendContact<'a> {
     #[serde(skip_serializing)]
@@ -37,7 +40,6 @@ struct SendContact<'a> {
     pub reply_markup: Option<ReplyMarkup>,
 }
 
-
 impl<'a> Request<'a> for SendContact<'a> {
     type ReturnValue = Message;
 
@@ -49,11 +51,10 @@ impl<'a> Request<'a> for SendContact<'a> {
                 "sendContact",
                 &self,
             )
-                .await
+            .await
         })
     }
 }
-
 
 impl<'a> SendContact<'a> {
     pub(crate) fn new(
@@ -76,66 +77,64 @@ impl<'a> SendContact<'a> {
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
-            T: Into<ChatId>,
+    where
+        T: Into<ChatId>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
     pub fn phone_number<T>(mut self, phone_number: T) -> Self
-        where
-            T: Into<String>,
+    where
+        T: Into<String>,
     {
         self.phone_number = phone_number.into();
         self
     }
 
     pub fn first_name<T>(mut self, first_name: T) -> Self
-        where
-            T: Into<String>,
+    where
+        T: Into<String>,
     {
         self.first_name = first_name.into();
         self
     }
 
     pub fn last_name<T>(mut self, last_name: T) -> Self
-        where
-            T: Into<String>,
+    where
+        T: Into<String>,
     {
         self.last_name = Some(last_name.into());
         self
     }
 
     pub fn vcard<T>(mut self, vcard: T) -> Self
-        where
-            T: Into<String>,
+    where
+        T: Into<String>,
     {
         self.vcard = Some(vcard.into());
         self
     }
 
     pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
-        where
-            T: Into<bool>,
+    where
+        T: Into<bool>,
     {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-
     pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
-        where
-            T: Into<i32>,
+    where
+        T: Into<i32>,
     {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }
 
-
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
-        where
-            T: Into<ReplyMarkup>,
+    where
+        T: Into<ReplyMarkup>,
     {
         self.reply_markup = Some(reply_markup.into());
         self
