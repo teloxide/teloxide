@@ -19,7 +19,7 @@ struct SendVenue<'a> {
     pub longitude: f64,
     /// Name of the venue
     pub title: String,
-    ///	Address of the venue
+    /// Address of the venue
     pub address: String,
     /// Foursquare identifier of the venue
     #[serde(skip_serializing_if = "Option::is_none")]
