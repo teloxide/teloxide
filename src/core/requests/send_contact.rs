@@ -10,21 +10,21 @@ use crate::core::types::{Message, ReplyMarkup};
 struct SendContact<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
-    ///   		Unique identifier for the target chat or
+    /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
-    ///    	Contact's phone number
+    /// Contact's phone number
     pub phone_number: String,
-    ///  	Contact's first name
+    /// Contact's first name
     pub first_name: String,
-    ///  	Contact's last name
+    /// Contact's last name
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
-    ///  Additional data about the contact in the form of a
+    /// Additional data about the contact in the form of a
     /// vCard, 0-2048 bytes
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vcard: Option<String>,
-    ///  Sends the message silently. Users will receive a
+    /// Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
@@ -32,7 +32,7 @@ struct SendContact<'a> {
     /// message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
-    ///    InlineKeyboardMarkup or ReplyKeyboardMarkup or ReplyKeyboardRemove
+    /// InlineKeyboardMarkup or ReplyKeyboardMarkup or ReplyKeyboardRemove
     /// or ForceReply 	Optional 	Additional interface options. A JSON-serialized
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove keyboard or to force a reply from the user.
