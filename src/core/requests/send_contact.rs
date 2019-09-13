@@ -2,6 +2,7 @@ use crate::core::network;
 use crate::core::requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult};
 use crate::core::types::{Message, ReplyMarkup};
 
+///Use this method to send phone contacts. On success, the sent Message is returned.
 #[derive(Debug, Clone, Serialize)]
 struct SendContact<'a> {
     #[serde(skip_serializing)]
