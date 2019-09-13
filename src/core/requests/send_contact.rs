@@ -4,7 +4,7 @@ use crate::core::requests::{
 };
 use crate::core::types::{Message, ReplyMarkup};
 
-///Use this method to send phone contacts. On success, the sent Message is
+/// Use this method to send phone contacts.
 /// returned.
 #[derive(Debug, Clone, Serialize)]
 struct SendContact<'a> {
