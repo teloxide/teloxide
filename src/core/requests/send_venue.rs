@@ -4,7 +4,7 @@ use crate::core::requests::{
 };
 use crate::core::types::{Message, ReplyMarkup};
 
-///Use this method to send information about a venue. On success, the sent
+/// Use this method to send information about a venue.
 /// Message is returned.
 #[derive(Debug, Clone, Serialize)]
 struct SendVenue<'a> {
