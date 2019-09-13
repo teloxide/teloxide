@@ -15,7 +15,7 @@ struct SendVenue<'a> {
     pub chat_id: ChatId,
     /// Latitude of the venue
     pub latitude: f64,
-    ///	Longitude of the venue
+    /// Longitude of the venue
     pub longitude: f64,
     /// Name of the venue
     pub title: String,
