@@ -10,10 +10,10 @@ use crate::core::types::{Message, ReplyMarkup};
 struct SendVenue<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
-    ///Unique identifier for the target chat or
+    /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
-    /// Yes 	Latitude of the venue
+    /// Latitude of the venue
     pub latitude: f64,
     ///	Longitude of the venue
     pub longitude: f64,
