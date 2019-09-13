@@ -7,25 +7,25 @@ use crate::core::types::{Message, ReplyMarkup};
 struct SendContact<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
-    ///    Integer or String 	Yes 	Unique identifier for the target chat or
+    ///   		Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
-    ///    String 	Yes 	Contact's phone number
+    ///    	Contact's phone number
     pub phone_number: String,
-    ///    String 	Yes 	Contact's first name
+    ///  	Contact's first name
     pub first_name: String,
-    ///    String  	Optional 	Contact's last name
+    ///  	Contact's last name
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
-    ///   	String Optional 	Additional data about the contact in the form of a
+    ///  Additional data about the contact in the form of a
     /// vCard, 0-2048 bytes
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vcard: Option<String>,
-    ///    Boolean 	Optional 	Sends the message silently. Users will receive a
+    ///  Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
-    ///    Integer 	Optional 	If the message is a reply, ID of the original
+    /// If the message is a reply, ID of the original
     /// message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
