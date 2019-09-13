@@ -241,3 +241,71 @@ macro_rules! any {
         )
     };
 }
+
+
+/// Simple wrapper around `Filter` that adds `|` and `&` operators.
+///
+/// ## Examples
+/// ```
+/// use async_telegram_bot::dispatcher::filter::{Filter, f, F, And, Or};
+///
+/// let flt1 = |i: &i32| -> bool { *i > 17 };
+/// let flt2 = |i: &i32| -> bool { *i < 42 };
+/// let flt3 = |i: &i32| -> bool { *i % 2 == 0 };
+///
+/// let and = f(flt1) & flt2;
+/// assert!(and.test(&19)); // both filters pass
+///
+/// assert_eq!(and.test(&50), false); // `flt2` doesn't pass
+/// assert_eq!(and.test(&16), false); // `flt1` doesn't pass
+///
+///
+/// let or = f(flt1) | flt3;
+/// assert!(or.test(&19)); // `flt1` passes
+/// assert!(or.test(&16)); // `flt2` passes
+/// assert!(or.test(&20)); // both pass
+///
+/// assert_eq!(or.test(&17), false); // both don't pass
+///
+///
+/// // Note: only first filter in chain should be wrapped in `f(...)`
+/// let complicated: F<Or<And<_, _>, _>>= f(flt1) & flt2 | flt3;
+/// assert!(complicated.test(&2)); // `flt3` passes
+/// assert!(complicated.test(&21)); // `flt1` and `flt2` pass
+///
+/// assert_eq!(complicated.test(&15), false); // `flt1` and `flt3` don't pass
+/// assert_eq!(complicated.test(&43), false); // `flt2` and `flt3` don't pass
+/// ```
+pub struct F<A>(A);
+
+/// Constructor fn for [F]
+///
+/// [F]: crate::dispatcher::filter::F;
+pub fn f<A>(a: A) -> F<A> {
+    F(a)
+}
+
+impl<T, A> Filter<T> for F<A>
+where
+    A: Filter<T>
+{
+    fn test(&self, value: &T) -> bool {
+        self.0.test(value)
+    }
+}
+
+impl<A, B> std::ops::BitAnd<B> for F<A> {
+    type Output = F<And<A, B>>;
+
+    fn bitand(self, other: B) -> Self::Output {
+        f(and(self.0, other))
+    }
+}
+
+impl<A, B> std::ops::BitOr<B> for F<A> {
+    type Output = F<Or<A, B>>;
+
+    fn bitor(self, other: B) -> Self::Output {
+        f(or(self.0, other))
+    }
+}
