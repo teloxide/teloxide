@@ -4,37 +4,36 @@ use crate::core::requests::{
 };
 use crate::core::types::{Message, ReplyMarkup};
 
-//TODO:: need implementation
 ///Use this method to send information about a venue. On success, the sent
 /// Message is returned.
 #[derive(Debug, Clone, Serialize)]
 struct SendVenue<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
-    ///    Integer or String 	Yes 	Unique identifier for the target chat or
+    ///Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
-    ///    Float number 	Yes 	Latitude of the venue
+    /// Yes 	Latitude of the venue
     pub latitude: f64,
-    ///Float number 	Yes 	Longitude of the venue
+    ///	Longitude of the venue
     pub longitude: f64,
-    ///    Yes 	Name of the venue
+    /// Name of the venue
     pub title: String,
-    ///String 	Yes 	Address of the venue
+    ///	Address of the venue
     pub address: String,
-    ///    String 	Optional 	Foursquare identifier of the venue
+    /// Foursquare identifier of the venue
     #[serde(skip_serializing_if = "Option::is_none")]
     pub foursquare_id: Option<String>,
-    ///    String 	Optional 	Foursquare type of the venue, if known. (For
+    /// Foursquare type of the venue, if known. (For
     /// example, “arts_entertainment/default”, “arts_entertainment/aquarium” or
     /// “food/icecream”.)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub foursquare_type: Option<String>,
-    ///    Boolean 	Optional 	Sends the message silently. Users will receive a
+    /// Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
-    ///    Integer 	Optional 	If the message is a reply, ID of the original
+    /// If the message is a reply, ID of the original
     /// message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
