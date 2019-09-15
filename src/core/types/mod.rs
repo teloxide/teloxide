@@ -1,6 +1,5 @@
 use self::not_implemented_types::*;
 pub use self::{
-    answer_shipping_query::AnswerShippingQuery,
     animation::Animation,
     audio::Audio,
     callback_query::CallbackQuery,
@@ -50,7 +49,6 @@ pub use self::{
 };
 
 mod animation;
-mod answer_shipping_query;
 mod audio;
 mod callback_query;
 mod chat;

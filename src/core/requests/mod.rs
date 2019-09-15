@@ -90,6 +90,7 @@ mod tests {
 }
 
 pub mod answer_pre_checkout_query;
+pub mod answer_shipping_query;
 pub mod edit_message_live_location;
 pub mod forward_message;
 pub mod get_file;
