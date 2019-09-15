@@ -54,7 +54,7 @@ impl<'a> Request<'a> for SendVenue<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "sendVenue",
-                Some(&self),
+                &self,
             )
             .await
         })
@@ -142,7 +142,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn foursquare_type<T>(mut self, foursquare_type: T) -> Self
     where
-        T: Into<bool>,
+        T: Into<String>,
     {
         self.foursquare_type = Some(foursquare_type.into());
         self
@@ -152,7 +152,7 @@ impl<'a> SendVenue<'a> {
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(ReplyMarkup.into());
+        self.reply_markup = Some(reply_markup.into());
         self
     }
 }

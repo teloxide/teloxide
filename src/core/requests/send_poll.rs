@@ -90,7 +90,7 @@ impl<'a> SendPoll<'a> {
 
     pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
     where
-        T: Into<Vec<bool>>,
+        T: Into<bool>,
     {
         self.disable_notification = Some(disable_notification.into());
         self
@@ -98,7 +98,7 @@ impl<'a> SendPoll<'a> {
 
     pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
     where
-        T: Into<Vec<i32>>,
+        T: Into<i32>,
     {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
