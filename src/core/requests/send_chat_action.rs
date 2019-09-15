@@ -21,26 +21,17 @@ struct SendChatAction<'a> {
 }
 
 #[derive(Debug, Serialize, From, Clone)]
+#[serde(rename_all = "snake_case")]
 enum ChatAction {
-    #[serde(rename = "typing")]
     Typing,
-    #[serde(rename = "upload_photo")]
     UploadPhoto,
-    #[serde(rename = "record_video")]
     RecordVideo,
-    #[serde(rename = "upload_video")]
     UploadVideo,
-    #[serde(rename = "record_audio")]
     RecordAudio,
-    #[serde(rename = "upload_audio")]
     UploadAudio,
-    #[serde(rename = "upload_document")]
     UploadDocument,
-    #[serde(rename = "find_location")]
     FindLocation,
-    #[serde(rename = "record_video_note")]
     RecordVideoNote,
-    #[serde(rename = "upload_video_note")]
     UploadVideoNote,
 }
 
