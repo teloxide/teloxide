@@ -1,6 +1,5 @@
 use self::not_implemented_types::*;
 pub use self::{
-    answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,
     animation::Animation,
     audio::Audio,
@@ -51,7 +50,6 @@ pub use self::{
 };
 
 mod animation;
-mod answer_pre_checkout_query;
 mod answer_shipping_query;
 mod audio;
 mod callback_query;
