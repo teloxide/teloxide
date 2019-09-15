@@ -8,6 +8,7 @@ use crate::core::network;
 /// shipping_query field to the bot. Use this method to reply to shipping
 /// queries. On success, True is returned.
 pub struct AnswerShippingQuery<'a> {
+    #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
 
     /// Unique identifier for the query to be answered
@@ -40,7 +41,7 @@ impl<'a> Request<'a> for AnswerShippingQuery<'a> {
                 &self.ctx.token,
                 "answerShippingQuery",
                 &self
-            )
+            ).await
         })
     }
 }
@@ -77,7 +78,7 @@ impl<'a> AnswerShippingQuery<'a> {
     pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
         where T: Into<Vec<ShippingOption>>
     {
-        self.shipping_options = shipping_options;
+        self.shipping_options = Some(shipping_options.into());
         self
     }
 
