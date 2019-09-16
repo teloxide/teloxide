@@ -36,7 +36,7 @@ enum ChatAction {
 }
 
 impl<'a> Request<'a> for SendChatAction<'a> {
-    type ReturnValue = Message;
+    type ReturnValue = bool;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
