@@ -180,7 +180,7 @@ pub fn not<A>(a: A) -> Not<A> {
     Not::new(a)
 }
 
-/// Return [filter] that passes if and only if all given filters passes.
+/// Return [filter] that passes if and only if all of the given filters passes.
 ///
 /// **NOTE**: if one of filters don't pass
 /// it is **not** guaranteed that other will be executed.
@@ -211,7 +211,7 @@ macro_rules! all {
     };
 }
 
-/// Return [filter] that passes if and only if any given filters passes.
+/// Return [filter] that passes if any of the given filters passes.
 ///
 /// **NOTE**: if one of filters passes
 /// it is **not** guaranteed that other will be executed.
