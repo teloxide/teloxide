@@ -309,3 +309,64 @@ impl<A, B> std::ops::BitOr<B> for F<A> {
         f(or(self.0, other))
     }
 }
+
+/// Extensions for filters
+pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
+    /// Alias for [`Not::new`]
+    ///
+    /// ## Examples
+    /// ```
+    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    ///
+    /// let flt = |i: &i32| -> bool { *i > 0 };
+    /// let flt = flt.not();
+    /// assert!(flt.test(&-1));
+    /// assert_eq!(flt.test(&1), false);
+    /// ```
+    ///
+    /// [`Not::new`]: crate::dispatcher::filter::Not::new
+    fn not(self) -> Not<Self> where Self: Sized {
+        Not::new(self)
+    }
+
+    /// Alias for [`And::new`]
+    ///
+    /// ## Examples
+    /// ```
+    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    ///
+    /// let flt = |i: &i32| -> bool { *i > 0 };
+    /// let flt = flt.and(|i: &i32| *i < 42);
+    ///
+    /// assert!(flt.test(&1));
+    /// assert_eq!(flt.test(&-1), false);
+    /// assert_eq!(flt.test(&43), false);
+    /// ```
+    ///
+    /// [`Not::new`]: crate::dispatcher::filter::And::new
+    fn and<B>(self, other: B) -> And<Self, B> where Self: Sized {
+        And::new(self, other)
+    }
+
+    /// Alias for [`Or::new`]
+    ///
+    /// ## Examples
+    /// ```
+    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    ///
+    /// let flt = |i: &i32| -> bool { *i < 0 };
+    /// let flt = flt.or(|i: &i32| *i > 42);
+    ///
+    /// assert!(flt.test(&-1));
+    /// assert!(flt.test(&43));
+    /// assert_eq!(flt.test(&17), false);
+    /// ```
+    ///
+    /// [`Not::new`]: crate::dispatcher::filter::Or::new
+    fn or<B>(self, other: B) -> Or<Self, B> where Self: Sized {
+        Or::new(self, other)
+    }
+}
+
+// All methods implemented via defaults
+impl<T, F> FilterExt<T> for F where F: Filter<T> {}
