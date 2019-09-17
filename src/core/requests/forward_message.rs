@@ -24,7 +24,7 @@ pub struct ForwardMessage<'a> {
     /// (in the format @channelusername)
     pub from_chat_id: ChatId,
     /// Message identifier in the chat specified in from_chat_id
-    pub message_id: i64,
+    pub message_id: i32,
 
     /// Sends the message silently. Users will receive a notification with no
     /// sound.
@@ -53,7 +53,7 @@ impl<'a> ForwardMessage<'a> {
         ctx: RequestContext<'a>,
         chat_id: ChatId,
         from_chat_id: ChatId,
-        message_id: i64,
+        message_id: i32,
     ) -> Self {
         Self {
             ctx,
@@ -74,7 +74,7 @@ impl<'a> ForwardMessage<'a> {
         self
     }
 
-    pub fn message_id<T: Into<i64>>(mut self, val: T) -> Self {
+    pub fn message_id<T: Into<i32>>(mut self, val: T) -> Self {
         self.message_id = val.into();
         self
     }

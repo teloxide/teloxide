@@ -1,6 +1,6 @@
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone, Serialize)]
 pub struct User {
-    pub id: i64,
+    pub id: i32,
     pub is_bot: bool,
     pub first_name: String,
     pub last_name: Option<String>,

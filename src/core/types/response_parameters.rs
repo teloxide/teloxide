@@ -2,7 +2,7 @@
 #[serde(rename_all = "snake_case")]
 pub enum ResponseParameters {
     MigrateToChatId(i64),
-    RetryAfter(i64),
+    RetryAfter(i32),
 }
 
 #[cfg(test)]

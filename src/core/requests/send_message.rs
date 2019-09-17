@@ -42,7 +42,7 @@ pub struct SendMessage<'a> {
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_to_message_id: Option<i64>,
+    pub reply_to_message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<ReplyMarkup>,
 }
@@ -106,7 +106,7 @@ impl<'a> SendMessage<'a> {
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i64>>(mut self, val: T) -> Self {
+    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
         self.reply_to_message_id = Some(val.into());
         self
     }

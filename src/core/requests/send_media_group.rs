@@ -17,7 +17,7 @@ pub struct SendMediaGroup<'a> {
     pub media: Vec<InputMedia>,
 
     pub disable_notification: Option<bool>,
-    pub reply_to_message_id: Option<i64>,
+    pub reply_to_message_id: Option<i32>,
 }
 
 impl<'a> Request<'a> for SendMediaGroup<'a> {
@@ -96,7 +96,7 @@ impl<'a> SendMediaGroup<'a> {
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i64>>(mut self, val: T) -> Self {
+    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
         self.reply_to_message_id = Some(val.into());
         self
     }

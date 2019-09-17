@@ -92,7 +92,7 @@ impl Bot {
     where
         C: Into<ChatId>,
         F: Into<ChatId>,
-        M: Into<i64>,
+        M: Into<i32>,
     {
         ForwardMessage::new(
             self.ctx(),

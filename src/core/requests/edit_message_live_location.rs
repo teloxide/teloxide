@@ -23,7 +23,7 @@ pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if inline_message_id is not specified. Identifier of the
     /// message to edit
-    message_id: Option<i64>,
+    message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if chat_id and message_id are not specified. Identifier of
     /// the inline message
@@ -75,7 +75,7 @@ impl<'a> EditMessageLiveLocation<'a> {
         self
     }
 
-    pub fn message_id<T: Into<i64>>(mut self, message_id: T) -> Self {
+    pub fn message_id<T: Into<i32>>(mut self, message_id: T) -> Self {
         self.message_id = Some(message_id.into());
         self
     }

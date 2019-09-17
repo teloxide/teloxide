@@ -55,7 +55,7 @@ pub struct SendAudio<'a> {
     /// sound.
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
-    pub reply_to_message_id: Option<i64>,
+    pub reply_to_message_id: Option<i32>,
     pub reply_markup: Option<ReplyMarkup>,
 }
 
@@ -174,7 +174,7 @@ impl<'a> SendAudio<'a> {
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i64>>(
+    pub fn reply_to_message_id<T: Into<i32>>(
         mut self,
         reply_to_message_id: T,
     ) -> Self {

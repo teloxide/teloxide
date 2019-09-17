@@ -8,7 +8,7 @@ pub struct Contact {
     /// Optional. Contact's last name
     pub last_name: Option<String>,
     /// Optional. Contact's user identifier in Telegram
-    pub user_id: Option<i64>,
+    pub user_id: Option<i32>,
     /// Optional. Additional data about the contact in the form of a
     /// [vCard](https://en.wikipedia.org/wiki/VCard)
     pub vcard: Option<String>,

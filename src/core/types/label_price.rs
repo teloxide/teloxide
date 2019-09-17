@@ -9,7 +9,7 @@ pub struct LabeledPrice {
     /// amount = 145. See the exp parameter in [`currencies.json`](https://core.telegram.org/bots/payments/currencies.json),
     /// it shows the number of digits past the decimal point for each currency
     /// (2 for the majority of currencies).
-    pub amount: i64,
+    pub amount: i32,
 }
 
 #[cfg(test)]

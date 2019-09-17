@@ -1,8 +1,9 @@
 use crate::core::types::{InlineKeyboardMarkup, LabeledPrice};
+use crate::core::requests::ChatId;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SendInvoice {
-    pub chat_id: i64,
+    pub chat_id: ChatId,
     pub title: String,
     pub description: String,
     pub payload: String,
@@ -12,9 +13,9 @@ pub struct SendInvoice {
     pub prices: Vec<LabeledPrice>,
     pub provider_data: Option<String>,
     pub photo_url: Option<String>,
-    pub photo_size: Option<i64>,
-    pub photo_width: Option<i64>,
-    pub photo_height: Option<i64>,
+    pub photo_size: Option<i32>,
+    pub photo_width: Option<i32>,
+    pub photo_height: Option<i32>,
     pub need_name: Option<bool>,
     pub need_phone_number: Option<bool>,
     pub need_email: Option<bool>,
@@ -23,6 +24,6 @@ pub struct SendInvoice {
     pub send_email_to_provider: Option<bool>,
     pub is_flexible: Option<bool>,
     pub disable_notification: Option<bool>,
-    pub reply_to_message_id: Option<i64>,
+    pub reply_to_message_id: Option<i32>,
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }

@@ -7,7 +7,7 @@ use crate::core::types::{
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Message {
     #[serde(rename = "message_id")]
-    pub id: i64,
+    pub id: i32,
     pub date: i32,
     pub chat: Chat,
     #[serde(flatten)]
@@ -91,7 +91,7 @@ pub enum ForwardKind {
         #[serde(rename = "forward_from_chat")]
         chat: Chat,
         #[serde(rename = "forward_from_message_id")]
-        message_id: i64,
+        message_id: i32,
         #[serde(rename = "forward_signature")]
         signature: Option<String>,
     },
