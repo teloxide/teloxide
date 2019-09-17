@@ -19,7 +19,7 @@ pub struct InlineQueryResultArticle {
     /// Optional. Url of the thumbnail for the result
     pub thumb_url: Option<String>,
     /// Optional. Thumbnail width
-    pub thumb_width: Option<i64>,
+    pub thumb_width: Option<i32>,
     /// Optional. Thumbnail height
-    pub thumb_height: Option<i64>,
+    pub thumb_height: Option<i32>,
 }
