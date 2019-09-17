@@ -6,7 +6,6 @@ use crate::core::{
 };
 
 use reqwest::r#async::multipart::Form;
-use serde::Serialize;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.

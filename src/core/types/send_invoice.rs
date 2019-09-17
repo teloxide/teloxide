@@ -1,6 +1,6 @@
 use crate::core::types::{InlineKeyboardMarkup, LabeledPrice};
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct SendInvoice {
     pub chat_id: i64,
     pub title: String,

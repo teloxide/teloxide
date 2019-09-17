@@ -1,19 +1,20 @@
-use std::path::Path;
-
 use crate::core::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ChatId,
+        Request,
+        RequestFuture,
+        RequestContext,
+        ResponseResult,
     },
-    types::{InlineKeyboardMarkup, Message, ParseMode},
+    types::{InlineKeyboardMarkup, Message},
 };
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is
 /// returned, otherwise True is returned.
 #[derive(Debug, Clone, Serialize)]
-struct StopMessageLiveLocation<'a> {
+pub struct StopMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Required if inline_message_id is not specified. Unique identifier for
@@ -52,7 +53,7 @@ impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
 }
 
 impl<'a> StopMessageLiveLocation<'a> {
-    fn new(ctx: RequestContext<'a>) -> Self {
+    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
         Self {
             ctx,
             chat_id: None,
