@@ -1,6 +1,6 @@
 use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Hash, PartialEq, Eq, Clone)]
 pub struct InlineQueryResultArticle {
     /// Unique identifier for this result, 1-64 Bytes
     pub id: String,

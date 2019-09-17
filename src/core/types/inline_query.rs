@@ -1,6 +1,6 @@
 use crate::core::types::{User, Location};
 
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Hash, PartialEq, Eq, Clone)]
 pub struct InlineQuery {
     /// Unique identifier for this query
     pub id: String,
