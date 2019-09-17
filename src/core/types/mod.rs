@@ -46,6 +46,7 @@ pub use self::{
     video::Video,
     video_note::VideoNote,
     voice::Voice,
+    file::File,
 };
 
 mod animation;
@@ -93,3 +94,4 @@ mod venue;
 mod video;
 mod video_note;
 mod voice;
+mod file;
