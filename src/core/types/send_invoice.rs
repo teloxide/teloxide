@@ -1,5 +1,5 @@
-use crate::core::types::{InlineKeyboardMarkup, LabeledPrice};
 use crate::core::requests::ChatId;
+use crate::core::types::{InlineKeyboardMarkup, LabeledPrice};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SendInvoice {

@@ -1,6 +1,4 @@
-use crate::core::types::{
-    Message, ChosenInlineResult, CallbackQuery,
-};
+use crate::core::types::{CallbackQuery, ChosenInlineResult, Message};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Update {

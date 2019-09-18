@@ -1,4 +1,6 @@
-use crate::core::types::{ParseMode, InlineKeyboardMarkup, InputMessageContent};
+use crate::core::types::{
+    InlineKeyboardMarkup, InputMessageContent, ParseMode,
+};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultAudio {

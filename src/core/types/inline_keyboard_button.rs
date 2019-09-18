@@ -62,32 +62,37 @@ impl InlineKeyboardButton {
         }
     }
 
-    pub fn callback(text: String, callback_data: String)
-                    -> InlineKeyboardButton {
+    pub fn callback(
+        text: String,
+        callback_data: String,
+    ) -> InlineKeyboardButton {
         InlineKeyboardButton {
             text,
             kind: InlineKeyboardButtonKind::CallbackData(callback_data),
         }
     }
 
-    pub fn switch_inline_query(text: String, switch_inline_query: String)
-                               -> InlineKeyboardButton {
+    pub fn switch_inline_query(
+        text: String,
+        switch_inline_query: String,
+    ) -> InlineKeyboardButton {
         InlineKeyboardButton {
             text,
-            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query)
+            kind: InlineKeyboardButtonKind::SwitchInlineQuery(
+                switch_inline_query,
+            ),
         }
     }
 
     pub fn switch_inline_query_current_chat(
         text: String,
-        switch_inline_query_current_chat: String
+        switch_inline_query_current_chat: String,
     ) -> InlineKeyboardButton {
-
         InlineKeyboardButton {
             text,
             kind: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
-                switch_inline_query_current_chat
-            )
+                switch_inline_query_current_chat,
+            ),
         }
     }
 }

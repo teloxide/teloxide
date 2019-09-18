@@ -1,6 +1,8 @@
-use crate::core::types::ShippingOption;
-use crate::core::requests::{RequestContext, Request, RequestFuture, ResponseResult};
 use crate::core::network;
+use crate::core::requests::{
+    Request, RequestContext, RequestFuture, ResponseResult,
+};
+use crate::core::types::ShippingOption;
 
 #[derive(Debug, Clone, Serialize)]
 /// If you sent an invoice requesting a shipping address and the parameter
@@ -40,8 +42,9 @@ impl<'a> Request<'a> for AnswerShippingQuery<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "answerShippingQuery",
-                &self
-            ).await
+                &self,
+            )
+            .await
         })
     }
 }
@@ -50,40 +53,44 @@ impl<'a> AnswerShippingQuery<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,
         shipping_query_id: String,
-        ok: bool
+        ok: bool,
     ) -> Self {
         Self {
             ctx,
             shipping_query_id,
             ok,
             shipping_options: None,
-            error_message: None
+            error_message: None,
         }
     }
 
     pub fn shipping_query_id<T>(mut self, shipping_query_id: T) -> Self
-        where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.shipping_query_id = shipping_query_id.into();
         self
     }
 
     pub fn ok<T>(mut self, ok: T) -> Self
-        where T: Into<bool>
+    where
+        T: Into<bool>,
     {
         self.ok = ok.into();
         self
     }
 
     pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
-        where T: Into<Vec<ShippingOption>>
+    where
+        T: Into<Vec<ShippingOption>>,
     {
         self.shipping_options = Some(shipping_options.into());
         self
     }
 
     pub fn error_message<T>(mut self, error_message: T) -> Self
-        where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.error_message = Some(error_message.into());
         self

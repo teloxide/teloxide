@@ -5,4 +5,3 @@ pub struct MaskPosition {
     pub y_shift: f64,
     pub scale: f64,
 }
-

@@ -8,18 +8,20 @@ use crate::core::types::ParseMode;
 /// a result of an inline query.
 /// [More](https://core.telegram.org/bots/api#inputmessagecontent)
 pub enum InputMessageContent {
-    /// Represents the content of a text message to be sent as the result of an inline query.
+    /// Represents the content of a text message to be sent as the result of an
+    /// inline query.
     Text {
         /// Text of the message to be sent, 1-4096 characters
         message_text: String,
 
         /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text or inline URLs]
-        /// in the media caption.
+        /// if you want Telegram apps to show [bold, italic, fixed-width text
+        /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::core::types::ParseMode::Markdown
         /// [Html]: crate::core::types::ParseMode::Html
-        /// [bold, italic, fixed-width text or inline URLs]: crate::core::types::ParseMode
+        /// [bold, italic, fixed-width text or inline URLs]:
+        /// crate::core::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
 
@@ -27,18 +29,21 @@ pub enum InputMessageContent {
         #[serde(skip_serializing_if = "Option::is_none")]
         disable_web_page_preview: Option<bool>,
     },
-    /// Represents the content of a location message to be sent as the result of an inline query.
+    /// Represents the content of a location message to be sent as the result
+    /// of an inline query.
     Location {
         /// Latitude of the location in degrees
         latitude: f64,
         /// Longitude of the location in degrees
         longitude: f64,
 
-        /// Period in seconds for which the location can be updated, should be between 60 and 86400.
+        /// Period in seconds for which the location can be updated, should be
+        /// between 60 and 86400.
         #[serde(skip_serializing_if = "Option::is_none")]
         live_period: Option<u32>,
     },
-    /// Represents the content of a venue message to be sent as the result of an inline query.
+    /// Represents the content of a venue message to be sent as the result of
+    /// an inline query.
     Venue {
         /// Latitude of the venue in degrees
         latitude: f64,
@@ -53,12 +58,14 @@ pub enum InputMessageContent {
         #[serde(skip_serializing_if = "Option::is_none")]
         foursquare_id: Option<String>,
 
-        /// Foursquare type of the venue, if known. (For example, “arts_entertainment/default”,
-        /// “arts_entertainment/aquarium” or “food/icecream”.)
+        /// Foursquare type of the venue, if known. (For example,
+        /// “arts_entertainment/default”, “arts_entertainment/aquarium”
+        /// or “food/icecream”.)
         #[serde(skip_serializing_if = "Option::is_none")]
         foursquare_type: Option<String>,
     },
-    /// Represents the content of a contact message to be sent as the result of an inline query.
+    /// Represents the content of a contact message to be sent as the result of
+    /// an inline query.
     Contact {
         /// Contact's phone number
         phone_number: String,
@@ -124,7 +131,8 @@ mod tests {
 
     #[test]
     fn contact_serialize() {
-        let expected_json = r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
+        let expected_json =
+            r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
         let contact_content = InputMessageContent::Contact {
             phone_number: String::from("+3800000000"),
             first_name: String::from("jhon"),

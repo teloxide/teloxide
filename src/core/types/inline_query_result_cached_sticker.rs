@@ -1,4 +1,4 @@
-use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
+use crate::core::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultCachedSticker {

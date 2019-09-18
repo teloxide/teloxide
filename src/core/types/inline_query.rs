@@ -1,4 +1,4 @@
-use crate::core::types::{User, Location};
+use crate::core::types::{Location, User};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQuery {

@@ -2,11 +2,7 @@ use std::path::PathBuf;
 
 use bytes::{Bytes, BytesMut};
 use reqwest::r#async::multipart::Part;
-use tokio::{
-    prelude::*,
-    codec::FramedRead,
-};
-
+use tokio::{codec::FramedRead, prelude::*};
 
 struct FileDecoder;
 

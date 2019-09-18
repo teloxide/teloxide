@@ -17,22 +17,19 @@ pub struct InlineKeyboardMarkup {
 /// Example:
 /// ```
 /// use async_telegram_bot::core::types::{
-///     InlineKeyboardMarkup,
-///     InlineKeyboardButton
+///     InlineKeyboardButton, InlineKeyboardMarkup,
 /// };
-///
 ///
 /// let url_button = InlineKeyboardButton::url(
 ///     "text".to_string(),
-///     "http://url.com".to_string()
+///     "http://url.com".to_string(),
 /// );
-/// let keyboard = InlineKeyboardMarkup::new()
-///     .append_row(vec![url_button]);
+/// let keyboard = InlineKeyboardMarkup::new().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
     pub fn new() -> Self {
         Self {
-            inline_keyboard: vec![]
+            inline_keyboard: vec![],
         }
     }
 
@@ -41,11 +38,14 @@ impl InlineKeyboardMarkup {
         self
     }
 
-    pub fn append_to_row(mut self, button: InlineKeyboardButton, index: usize)
-                         -> Self {
+    pub fn append_to_row(
+        mut self,
+        button: InlineKeyboardButton,
+        index: usize,
+    ) -> Self {
         match self.inline_keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),
-            None => self.inline_keyboard.push(vec![button])
+            None => self.inline_keyboard.push(vec![button]),
         };
         self
     }
@@ -68,9 +68,7 @@ mod tests {
         let markup = InlineKeyboardMarkup::new()
             .append_row(vec![button1.clone(), button2.clone()]);
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![
-                vec![button1.clone(), button2.clone()]
-            ]
+            inline_keyboard: vec![vec![button1.clone(), button2.clone()]],
         };
         assert_eq!(markup, expected);
     }
@@ -89,9 +87,7 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 0);
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![
-                vec![button1.clone(), button2.clone()]
-            ]
+            inline_keyboard: vec![vec![button1.clone(), button2.clone()]],
         };
         assert_eq!(markup, expected);
     }
@@ -110,10 +106,7 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 1);
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![
-                vec![button1.clone()],
-                vec![button2.clone()]
-            ]
+            inline_keyboard: vec![vec![button1.clone()], vec![button2.clone()]],
         };
         assert_eq!(markup, expected);
     }

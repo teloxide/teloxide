@@ -1,9 +1,12 @@
 use crate::core::network;
-use crate::core::requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult};
+use crate::core::requests::{
+    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+};
 
-///Use this method when you need to tell the user that something is happening on the bot's side.
-///The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
-///Returns True on success.
+///Use this method when you need to tell the user that something is happening
+/// on the bot's side. The status is set for 5 seconds or less (when a message
+/// arrives from your bot, Telegram clients clear its typing status).
+/// Returns True on success.
 #[derive(Debug, Clone, Serialize)]
 struct SendChatAction<'a> {
     #[serde(skip_serializing)]
@@ -45,7 +48,7 @@ impl<'a> Request<'a> for SendChatAction<'a> {
                 "sendChatAction",
                 &self,
             )
-                .await
+            .await
         })
     }
 }
@@ -64,17 +67,16 @@ impl<'a> SendChatAction<'a> {
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
-            T: Into<ChatId>,
+    where
+        T: Into<ChatId>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
-
     pub fn action<T>(mut self, action: T) -> Self
-        where
-            T: Into<ChatAction>,
+    where
+        T: Into<ChatAction>,
     {
         self.action = action.into();
         self

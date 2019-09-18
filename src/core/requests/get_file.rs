@@ -1,9 +1,11 @@
-use crate::core::requests::{RequestContext, RequestFuture, ResponseResult, Request};
-use crate::core::types::File;
 use crate::core::network;
+use crate::core::requests::{
+    Request, RequestContext, RequestFuture, ResponseResult,
+};
+use crate::core::types::File;
 
-/// Use this method to get basic info about a file and prepare it for downloading.
-/// For the moment, bots can download files of up to 20MB in size.
+/// Use this method to get basic info about a file and prepare it for
+/// downloading. For the moment, bots can download files of up to 20MB in size.
 /// On success, a File object is returned.
 /// The file can then be downloaded via the link https://api.telegram.org/file/bot<token>/<file_path>,
 /// where <file_path> is taken from the response.
@@ -14,9 +16,8 @@ struct GetFile<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// File identifier to get info about
-    file_id: String
+    file_id: String,
 }
-
 
 impl<'a> Request<'a> for GetFile<'a> {
     type ReturnValue = File;
@@ -29,16 +30,15 @@ impl<'a> Request<'a> for GetFile<'a> {
                 "getFile",
                 &self,
             )
-                .await
+            .await
         })
     }
 }
 
-
-impl<'a> GetFile<'a>{
+impl<'a> GetFile<'a> {
     pub fn file_id<T>(mut self, file_id: T) -> Self
-        where
-            T: Into<String>,
+    where
+        T: Into<String>,
     {
         self.file_id = file_id.into();
         self

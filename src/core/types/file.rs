@@ -2,5 +2,5 @@
 pub struct File {
     pub file_id: String,
     pub file_size: u32,
-    pub file_path: String
+    pub file_path: String,
 }

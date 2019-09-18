@@ -1,11 +1,7 @@
 use crate::core::{
     network,
     requests::{
-        ChatId,
-        Request,
-        RequestFuture,
-        RequestContext,
-        ResponseResult,
+        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
     },
     types::{Message, ParseMode, ReplyMarkup},
 };

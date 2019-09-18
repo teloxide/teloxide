@@ -1,6 +1,6 @@
 use crate::core::{
-    requests::{RequestContext, Request, RequestFuture, ResponseResult},
-    network
+    network,
+    requests::{Request, RequestContext, RequestFuture, ResponseResult},
 };
 
 #[derive(Debug, Serialize, Clone)]
@@ -40,8 +40,9 @@ impl<'a> Request<'a> for AnswerPreCheckoutQuery<'a> {
                 &self.ctx.client,
                 &self.ctx.token,
                 "answerPreCheckoutQuery",
-                &self
-            ).await
+                &self,
+            )
+            .await
         })
     }
 }
@@ -50,32 +51,35 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,
         pre_checkout_query_id: String,
-        ok: bool
+        ok: bool,
     ) -> Self {
         Self {
             ctx,
             pre_checkout_query_id,
             ok,
-            error_message: None
+            error_message: None,
         }
     }
 
     pub fn pre_checkout_query_id<T>(mut self, pre_checkout_query_id: T) -> Self
-        where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.pre_checkout_query_id = pre_checkout_query_id.into();
         self
     }
 
     pub fn ok<T>(mut self, ok: T) -> Self
-        where T: Into<bool>
+    where
+        T: Into<bool>,
     {
         self.ok = ok.into();
         self
     }
 
     pub fn error_message<T>(mut self, error_message: T) -> Self
-        where T: Into<String>
+    where
+        T: Into<String>,
     {
         self.error_message = Some(error_message.into());
         self

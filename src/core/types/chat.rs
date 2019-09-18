@@ -1,6 +1,5 @@
 use crate::core::types::{ChatPermissions, ChatPhoto, Message};
 
-
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Chat {
     pub id: i64,
@@ -8,7 +7,6 @@ pub struct Chat {
     pub kind: ChatKind,
     pub photo: Option<ChatPhoto>,
 }
-
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]

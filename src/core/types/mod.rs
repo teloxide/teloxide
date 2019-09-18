@@ -10,12 +10,36 @@ pub use self::{
     chosen_inline_result::ChosenInlineResult,
     contact::Contact,
     document::Document,
+    file::File,
     force_reply::ForceReply,
     game::Game,
     inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
     inline_keyboard_markup::InlineKeyboardMarkup,
+    inline_query::InlineQuery,
+    inline_query_result::InlineQueryResult,
+    inline_query_result_article::InlineQueryResultArticle,
+    inline_query_result_audio::InlineQueryResultAudio,
+    inline_query_result_cached_audio::InlineQueryResultCachedAudio,
+    inline_query_result_cached_document::InlineQueryResultCachedDocument,
+    inline_query_result_cached_gif::InlineQueryResultCachedGif,
+    inline_query_result_cached_mpeg4_gif::InlineQueryResultCachedMpeg4Gif,
+    inline_query_result_cached_photo::InlineQueryResultCachedPhoto,
+    inline_query_result_cached_sticker::InlineQueryResultCachedSticker,
+    inline_query_result_cached_video::InlineQueryResultCachedVideo,
+    inline_query_result_cached_voice::InlineQueryResultCachedVoice,
+    inline_query_result_contact::InlineQueryResultContact,
+    inline_query_result_document::InlineQueryResultDocument,
+    inline_query_result_game::InlineQueryResultGame,
+    inline_query_result_gif::InlineQueryResultGif,
+    inline_query_result_location::InlineQueryResultLocation,
+    inline_query_result_mpeg4_gif::InlineQueryResultMpeg4Gif,
+    inline_query_result_photo::InlineQueryResultPhoto,
+    inline_query_result_venue::InlineQueryResultVenue,
+    inline_query_result_video::InlineQueryResultVideo,
+    inline_query_result_voice::InlineQueryResultVoice,
     input_file::InputFile,
     input_media::InputMedia,
+    input_message_content::InputMessageContent,
     invoice::Invoice,
     keyboard_button::KeyboardButton,
     label_price::LabeledPrice,
@@ -46,31 +70,6 @@ pub use self::{
     video::Video,
     video_note::VideoNote,
     voice::Voice,
-    file::File,
-    input_message_content::InputMessageContent,
-
-    inline_query::InlineQuery,
-    inline_query_result::InlineQueryResult,
-    inline_query_result_cached_audio::InlineQueryResultCachedAudio,
-    inline_query_result_cached_document::InlineQueryResultCachedDocument,
-    inline_query_result_cached_gif::InlineQueryResultCachedGif,
-    inline_query_result_cached_mpeg4_gif::InlineQueryResultCachedMpeg4Gif,
-    inline_query_result_cached_photo::InlineQueryResultCachedPhoto,
-    inline_query_result_cached_sticker::InlineQueryResultCachedSticker,
-    inline_query_result_cached_video::InlineQueryResultCachedVideo,
-    inline_query_result_cached_voice::InlineQueryResultCachedVoice,
-    inline_query_result_article::InlineQueryResultArticle,
-    inline_query_result_audio::InlineQueryResultAudio,
-    inline_query_result_contact::InlineQueryResultContact,
-    inline_query_result_game::InlineQueryResultGame,
-    inline_query_result_document::InlineQueryResultDocument,
-    inline_query_result_gif::InlineQueryResultGif,
-    inline_query_result_location::InlineQueryResultLocation,
-    inline_query_result_mpeg4_gif::InlineQueryResultMpeg4Gif,
-    inline_query_result_photo::InlineQueryResultPhoto,
-    inline_query_result_venue::InlineQueryResultVenue,
-    inline_query_result_video::InlineQueryResultVideo,
-    inline_query_result_voice::InlineQueryResultVoice,
 };
 
 mod animation;
@@ -83,12 +82,14 @@ mod chat_photo;
 mod chosen_inline_result;
 mod contact;
 mod document;
+mod file;
 mod force_reply;
 mod game;
 mod inline_keyboard_button;
 mod inline_keyboard_markup;
 mod input_file;
 mod input_media;
+mod input_message_content;
 mod invoice;
 mod keyboard_button;
 mod label_price;
@@ -118,11 +119,11 @@ mod venue;
 mod video;
 mod video_note;
 mod voice;
-mod file;
-mod input_message_content;
 
 mod inline_query;
 mod inline_query_result;
+mod inline_query_result_article;
+mod inline_query_result_audio;
 mod inline_query_result_cached_audio;
 mod inline_query_result_cached_document;
 mod inline_query_result_cached_gif;
@@ -131,11 +132,9 @@ mod inline_query_result_cached_photo;
 mod inline_query_result_cached_sticker;
 mod inline_query_result_cached_video;
 mod inline_query_result_cached_voice;
-mod inline_query_result_article;
-mod inline_query_result_audio;
 mod inline_query_result_contact;
-mod inline_query_result_game;
 mod inline_query_result_document;
+mod inline_query_result_game;
 mod inline_query_result_gif;
 mod inline_query_result_location;
 mod inline_query_result_mpeg4_gif;

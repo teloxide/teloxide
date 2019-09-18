@@ -24,7 +24,7 @@ mod tests {
             file_id: "id".to_string(),
             width: 320,
             height: 320,
-            file_size: Some(3452)
+            file_size: Some(3452),
         };
         let actual = serde_json::from_str::<PhotoSize>(json).unwrap();
         assert_eq!(actual, expected);

@@ -1,4 +1,4 @@
-use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
+use crate::core::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultArticle {
@@ -14,7 +14,8 @@ pub struct InlineQueryResultArticle {
     /// Optional. URL of the result
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Optional. Pass True, if you don't want the URL to be shown in the message
+    /// Optional. Pass True, if you don't want the URL to be shown in the
+    /// message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hide_url: Option<bool>,
     /// Optional. Short description of the result

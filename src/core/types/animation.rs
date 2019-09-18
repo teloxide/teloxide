@@ -19,7 +19,7 @@ pub struct Animation {
     /// Optional. MIME type of the file as defined by sender
     pub mime_type: Option<String>,
     /// Optional. File size
-    pub file_size: Option<u32>
+    pub file_size: Option<u32>,
 }
 
 #[cfg(test)]
@@ -51,11 +51,11 @@ mod tests {
                 file_id: "id".to_string(),
                 width: 320,
                 height: 320,
-                file_size: Some(3452)
+                file_size: Some(3452),
             }),
             file_name: Some("some".to_string()),
             mime_type: Some("gif".to_string()),
-            file_size: Some(6500)
+            file_size: Some(6500),
         };
         let actual = serde_json::from_str::<Animation>(json).unwrap();
         assert_eq!(actual, expected)
