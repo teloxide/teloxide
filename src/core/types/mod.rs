@@ -47,6 +47,8 @@ pub use self::{
     video_note::VideoNote,
     voice::Voice,
     file::File,
+    input_message_content::InputMessageContent,
+
     inline_query::InlineQuery,
     inline_query_result::InlineQueryResult,
     inline_query_result_cached_audio::InlineQueryResultCachedAudio,
@@ -117,6 +119,7 @@ mod video;
 mod video_note;
 mod voice;
 mod file;
+mod input_message_content;
 
 mod inline_query;
 mod inline_query_result;

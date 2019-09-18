@@ -1,7 +1,6 @@
-use super::inline_keyboard_markup::InlineKeyboardMarkup;
-use super::input_message_content::InputMessageContent;
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultVoice {
     pub id: String,
     pub voice_url: String,

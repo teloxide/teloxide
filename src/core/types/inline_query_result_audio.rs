@@ -1,8 +1,6 @@
-use super::inline_keyboard_markup::InlineKeyboardMarkup;
-use super::input_message_content::InputMessageContent;
-use crate::core::types::parse_mode::ParseMode;
+use crate::core::types::{ParseMode, InlineKeyboardMarkup, InputMessageContent};
 
-#[derive(Debug, Serialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultAudio {
     pub id: String,
     pub audio_url: String,

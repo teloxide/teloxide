@@ -1,8 +1,6 @@
-use super::inline_keyboard_markup::InlineKeyboardMarkup;
-use super::input_message_content::InputMessageContent;
-use crate::core::types::parse_mode::ParseMode;
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup, ParseMode};
 
-#[derive(Debug, Serialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Hash, PartialEq, Eq, Clone)]
 pub struct InlineQueryResultGame {
     pub id: String,
     pub game_short_name: String,

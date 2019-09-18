@@ -1,7 +1,6 @@
-use super::inline_keyboard_markup::InlineKeyboardMarkup;
-use super::input_message_content::InputMessageContent;
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
 
-#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultCachedGif {
     pub id: String,
     pub gif_file_id: String,
