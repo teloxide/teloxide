@@ -12,11 +12,11 @@ use crate::core::types::File;
 /// It is guaranteed that the link will be valid for at least 1 hour.
 /// When the link expires, a new one can be requested by calling getFile again.
 #[derive(Debug, Clone, Serialize)]
-struct GetFile<'a> {
+pub struct GetFile<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// File identifier to get info about
-    file_id: String,
+    pub file_id: String,
 }
 
 impl<'a> Request<'a> for GetFile<'a> {
@@ -36,6 +36,10 @@ impl<'a> Request<'a> for GetFile<'a> {
 }
 
 impl<'a> GetFile<'a> {
+    pub(crate) fn new(ctx: RequestContext<'a>, file_id: String) -> Self {
+        Self { ctx, file_id }
+    }
+
     pub fn file_id<T>(mut self, file_id: T) -> Self
     where
         T: Into<String>,

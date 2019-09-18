@@ -7,7 +7,7 @@ use crate::core::types::{Message, ReplyMarkup};
 /// Use this method to send phone contacts.
 /// returned.
 #[derive(Debug, Clone, Serialize)]
-struct SendContact<'a> {
+pub struct SendContact<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
