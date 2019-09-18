@@ -108,8 +108,7 @@ mod tests {
 
     #[test]
     fn venue_serialize() {
-        let expected_json = r#"{"latitude":59.08,"longitude":38.4326,"title":"some title",
-            "address":"some address"}"#;
+        let expected_json = r#"{"latitude":59.08,"longitude":38.4326,"title":"some title","address":"some address"}"#;
         let venue_content = InputMessageContent::Venue {
             latitude: 59.08,
             longitude: 38.4326,
