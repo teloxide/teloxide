@@ -15,20 +15,19 @@ pub struct InlineKeyboardMarkup {
 /// Build Markup
 ///
 /// Example:
-/// ```edition2018
+/// ```
 /// use async_telegram_bot::core::types::{
 ///     InlineKeyboardMarkup,
 ///     InlineKeyboardButton
 /// };
 ///
-/// fn main() {
-///     let url_button = InlineKeyboardButton::url(
-///         "text".to_string(),
-///         "http://url.com".to_string()
-///     );
-///     let keyboard = InlineKeyboardMarkup::new()
-///         .row(vec![url_button]);
-/// }
+///
+/// let url_button = InlineKeyboardButton::url(
+///     "text".to_string(),
+///     "http://url.com".to_string()
+/// );
+/// let keyboard = InlineKeyboardMarkup::new()
+///     .append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
     pub fn new() -> Self {
