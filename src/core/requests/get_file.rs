@@ -40,7 +40,7 @@ impl<'a> GetFile<'a>{
         where
             T: Into<String>,
     {
-        self.file_id = message_id.into();
+        self.file_id = file_id.into();
         self
     }
 }
