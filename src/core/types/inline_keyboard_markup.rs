@@ -77,7 +77,7 @@ mod tests {
     }
 
     #[test]
-    fn append_to_row__existent_row() {
+    fn append_to_row_existent_row() {
         let button1 = InlineKeyboardButton::url(
             "text 1".to_string(),
             "url 1".to_string(),
@@ -98,7 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn append_to_row__nonexistent_row() {
+    fn append_to_row_nonexistent_row() {
         let button1 = InlineKeyboardButton::url(
             "text 1".to_string(),
             "url 1".to_string(),
