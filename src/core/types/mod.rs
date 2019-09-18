@@ -47,6 +47,28 @@ pub use self::{
     video_note::VideoNote,
     voice::Voice,
     file::File,
+    inline_query::InlineQuery,
+    inline_query_result::InlineQueryResult,
+    inline_query_result_cached_audio::InlineQueryResultCachedAudio,
+    inline_query_result_cached_document::InlineQueryResultCachedDocument,
+    inline_query_result_cached_gif::InlineQueryResultCachedGif,
+    inline_query_result_cached_mpeg4_gif::InlineQueryResultCachedMpeg4Gif,
+    inline_query_result_cached_photo::InlineQueryResultCachedPhoto,
+    inline_query_result_cached_sticker::InlineQueryResultCachedSticker,
+    inline_query_result_cached_video::InlineQueryResultCachedVideo,
+    inline_query_result_cached_voice::InlineQueryResultCachedVoice,
+    inline_query_result_article::InlineQueryResultArticle,
+    inline_query_result_audio::InlineQueryResultAudio,
+    inline_query_result_contact::InlineQueryResultContact,
+    inline_query_result_game::InlineQueryResultGame,
+    inline_query_result_document::InlineQueryResultDocument,
+    inline_query_result_gif::InlineQueryResultGif,
+    inline_query_result_location::InlineQueryResultLocation,
+    inline_query_result_mpeg4_gif::InlineQueryResultMpeg4Gif,
+    inline_query_result_photo::InlineQueryResultPhoto,
+    inline_query_result_venue::InlineQueryResultVenue,
+    inline_query_result_video::InlineQueryResultVideo,
+    inline_query_result_voice::InlineQueryResultVoice,
 };
 
 mod animation;
@@ -95,3 +117,26 @@ mod video;
 mod video_note;
 mod voice;
 mod file;
+
+mod inline_query;
+mod inline_query_result;
+mod inline_query_result_cached_audio;
+mod inline_query_result_cached_document;
+mod inline_query_result_cached_gif;
+mod inline_query_result_cached_mpeg4_gif;
+mod inline_query_result_cached_photo;
+mod inline_query_result_cached_sticker;
+mod inline_query_result_cached_video;
+mod inline_query_result_cached_voice;
+mod inline_query_result_article;
+mod inline_query_result_audio;
+mod inline_query_result_contact;
+mod inline_query_result_game;
+mod inline_query_result_document;
+mod inline_query_result_gif;
+mod inline_query_result_location;
+mod inline_query_result_mpeg4_gif;
+mod inline_query_result_photo;
+mod inline_query_result_venue;
+mod inline_query_result_video;
+mod inline_query_result_voice;
