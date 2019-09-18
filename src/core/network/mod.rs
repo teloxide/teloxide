@@ -57,18 +57,7 @@ pub async fn request_multipart<T: DeserializeOwned>(
     )
     .map_err(RequestError::InvalidJson)?;
 
-    match response {
-        TelegramResponse::Ok { result, .. } => Ok(result),
-        TelegramResponse::Err {
-            description,
-            error_code,
-            response_parameters: _,
-            ..
-        } => Err(RequestError::ApiError {
-            description,
-            status_code: StatusCode::from_u16(error_code).unwrap(),
-        }),
-    }
+    response.into()
 }
 
 pub async fn request_json<T: DeserializeOwned, P: Serialize>(
@@ -89,18 +78,7 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
     )
     .map_err(RequestError::InvalidJson)?;
 
-    match response {
-        TelegramResponse::Ok { result, .. } => Ok(result),
-        TelegramResponse::Err {
-            description,
-            error_code,
-            response_parameters: _,
-            ..
-        } => Err(RequestError::ApiError {
-            description,
-            status_code: StatusCode::from_u16(error_code).unwrap(),
-        }),
-    }
+    response.into()
 }
 
 #[derive(Deserialize)]
@@ -122,6 +100,36 @@ enum TelegramResponse<R> {
         error_code: u16,
         response_parameters: Option<ResponseParameters>,
     },
+}
+
+impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
+    fn into(self) -> Result<R, RequestError> {
+        match self {
+            TelegramResponse::Ok { result, .. } => Ok(result),
+            TelegramResponse::Err {
+                description,
+                error_code,
+                response_parameters,
+                ..
+            } => {
+                if let Some(params) = response_parameters {
+                    match params {
+                        ResponseParameters::RetryAfter(i) => {
+                            Err(RequestError::RetryAfter(i))
+                        }
+                        ResponseParameters::MigrateToChatId(to) => {
+                            Err(RequestError::MigrateToChatId(to))
+                        }
+                    }
+                } else {
+                    Err(RequestError::ApiError {
+                        description,
+                        status_code: StatusCode::from_u16(error_code).unwrap(),
+                    })
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
