@@ -11,7 +11,7 @@ use crate::core::types::{
 };
 
 /// This object represents one result of an inline query.
-#[derive(Debug, Serialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, PartialEq, Clone, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InlineQueryResult {
@@ -54,6 +54,21 @@ mod tests {
     use crate::core::types::{
         InlineQueryResult, InlineQueryResultCachedAudio, InputMessageContent,
     };
+
+    #[test]
+    fn into() {
+        let structure =
+            InlineQueryResult::CachedAudio(InlineQueryResultCachedAudio {
+                id: String::from("id"),
+                audio_file_id: String::from("audio_file_id"),
+                caption: None,
+                parse_mode: None,
+                reply_markup: None,
+                input_message_content: None,
+            });
+
+        let _: InlineQueryResult = structure.into();
+    }
 
     #[test]
     fn cached_audio_min_serialize() {
