@@ -2,6 +2,10 @@ use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
 
 #[derive(Debug, Serialize, Hash, PartialEq, Eq, Clone)]
 pub struct InlineQueryResultArticle {
+    // Type of the result, must be article
+    #[serde(rename = "type")]
+    pub query_type: String,
+
     /// Unique identifier for this result, 1-64 Bytes
     pub id: String,
     /// Title of the result
