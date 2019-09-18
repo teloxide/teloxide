@@ -2,7 +2,7 @@ use super::inline_keyboard_markup::InlineKeyboardMarkup;
 use super::input_message_content::InputMessageContent;
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
-pub struct InlineQueryResultCachedPhoto {
+pub struct InlineQueryResultPhoto {
     #[serde(rename = "type")]
     pub query_type: String,
     pub id: String,
