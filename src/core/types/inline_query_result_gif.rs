@@ -1,4 +1,4 @@
-use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup, ParseMode};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultGif {
@@ -10,7 +10,7 @@ pub struct InlineQueryResultGif {
     pub thumb_url: String,
     pub title: Option<String>,
     pub caption: Option<String>,
-    pub parse_mode: Option<String>,
+    pub parse_mode: Option<ParseMode>,
     pub reply_markup: Option<InlineKeyboardMarkup>,
     pub input_message_content: Option<InputMessageContent>,
 }

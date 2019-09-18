@@ -1,4 +1,4 @@
-use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup, ParseMode};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultVideo {
@@ -8,7 +8,7 @@ pub struct InlineQueryResultVideo {
     pub thumb_url: String,
     pub title: String,
     pub caption: Option<String>,
-    pub parse_mode: Option<String>,
+    pub parse_mode: Option<ParseMode>,
     pub video_width: Option<i32>,
     pub video_height: Option<i32>,
     pub video_duration: Option<i32>,

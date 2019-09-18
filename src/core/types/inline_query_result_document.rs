@@ -1,11 +1,11 @@
-use crate::core::types::{InputMessageContent, InlineKeyboardMarkup};
+use crate::core::types::{InputMessageContent, InlineKeyboardMarkup, ParseMode};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultDocument {
     pub id: String,
     pub title: String,
     pub caption: Option<String>,
-    pub parse_mode: Option<String>,
+    pub parse_mode: Option<ParseMode>,
     pub document_url: String,
     pub mime_type: String,
     pub description: Option<String>,
