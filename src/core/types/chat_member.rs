@@ -1,4 +1,4 @@
-use crate::core::types::{ChatMemberStatus, User};
+use crate::core::types::User;
 
 /// This object contains information about one member of the chat.
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
@@ -53,4 +53,75 @@ pub struct ChatMember {
     ///Optional. Restricted only. True, if user may add web page previews to
     /// his messages, implies can_send_media_messages
     pub can_add_web_page_previews: Option<bool>,
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum ChatMemberStatus {
+    Creator,
+    Administrator,
+    Member,
+    Restricted,
+    Left,
+    Kicked
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let json = r#"{
+            "user":{
+                "id":12345,
+                "is_bot":false,
+                "first_name":"firstName"
+            },
+            "status":"creator",
+            "until_date":123456,
+            "can_be_edited":true,
+            "can_post_messages":true,
+            "can_edit_messages":true,
+            "can_delete_messages":true,
+            "can_restrict_members":true,
+            "can_promote_members":true,
+            "can_change_info":true,
+            "can_invite_users":true,
+            "can_pin_messages":true,
+            "is_member":true,
+            "can_send_messages":true,
+            "can_send_media_messages":true,
+            "can_send_polls":true,
+            "can_send_other_messages":true,
+            "can_add_web_page_previews":true
+        }"#;
+        let expected = ChatMember {
+            user: User {
+                id: 12345,
+                is_bot: false,
+                first_name: "firstName".to_string(),
+                last_name: None,
+                username: None,
+                language_code: None
+            },
+            status: ChatMemberStatus::Creator,
+            until_date: Some(123456),
+            can_be_edited: Some(true),
+            can_change_info: Some(true),
+            can_post_messages: Some(true),
+            can_edit_messages: Some(true),
+            can_delete_messages: Some(true),
+            can_invite_users: Some(true),
+            can_restrict_members: Some(true),
+            can_pin_messages: Some(true),
+            can_promote_members: Some(true),
+            can_send_messages: Some(true),
+            can_send_media_messages: Some(true),
+            can_send_other_messages: Some(true),
+            can_add_web_page_previews: Some(true)
+        };
+        let actual = serde_json::from_str::<ChatMember>(&json).unwrap();
+        assert_eq!(actual, expected)
+    }
 }

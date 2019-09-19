@@ -4,7 +4,7 @@ pub use self::{
     audio::Audio,
     callback_query::CallbackQuery,
     chat::{Chat, ChatKind, NonPrivateChatKind},
-    chat_member::ChatMember,
+    chat_member::{ChatMember, ChatMemberStatus},
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
     chosen_inline_result::ChosenInlineResult,
