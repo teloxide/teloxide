@@ -11,13 +11,26 @@ pub struct Message {
     pub date: i32,
     pub chat: Chat,
     #[serde(flatten)]
-    pub message_kind: MessageKind,
+    pub kind: MessageKind,
+}
+
+impl Message {
+    fn text(&self) -> Option<&str> {
+        if let MessageKind::Common {
+                media_kind: MediaKind::Text {
+                    ref text, ..
+                }, .. } = self.kind {
+            Some(text)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum MessageKind {
-    IncomingMessage {
+    Common {
         #[serde(flatten)]
         from: Sender,
         #[serde(flatten)]
@@ -55,8 +68,8 @@ pub enum MessageKind {
         migrate_to_chat_id: i64,
         migrate_from_chat_id: i64,
     },
-    PinnedMessage {
-        pinned_message: Box<Message>,
+    Pinned {
+        pinned: Box<Message>,
     },
     Invoice {
         invoice: Invoice,

@@ -1,22 +1,51 @@
 use crate::core::types::{Message, User};
 
-/// This object represents an incoming callback query from a callback button in
-/// an inline keyboard.
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct CallbackQuery {
-    /// Unique identifier for this query
     pub id: String,
-    /// Sender
     pub from: User,
-    /// Message with the callback button that originated the query.
-    /// Note that message content and message date will not be available if the
-    /// message is too old
-    pub message: Message,
-    /// Global identifier, uniquely corresponding to the chat to which the
-    /// message with the callback button was sent. Useful for high scores
-    /// in games.
     pub chat_instance: String,
-    /// Data associated with the callback button. Be aware that a bad client
-    /// can send arbitrary data in this field.
-    pub data: String,
+    pub message: Option<Message>,
+    pub inline_message_id: Option<String>,
+    pub data: Option<String>,
+    pub game_short_name: Option<String>
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let json = r#"{
+            "id":"id",
+            "from":{
+                "id":12345,
+                "is_bot":false,
+                "first_name":"firstName"
+            },
+            "inline_message_id":"i_m_id",
+            "chat_instance":"123456",
+            "data":"some_data",
+            "game_short_name":"game_name"
+        }"#;
+        let expected = CallbackQuery {
+            id: "id".to_string(),
+            from: User {
+                id: 12345,
+                is_bot: false,
+                first_name: "firstName".to_string(),
+                last_name: None,
+                username: None,
+                language_code: None
+            },
+            chat_instance: "123456".to_string(),
+            message: None,
+            inline_message_id: Some("i_m_id".to_string()),
+            data: Some("some_data".to_string()),
+            game_short_name: Some("game_name".to_string())
+        };
+        let actual = serde_json::from_str::<CallbackQuery>(json).unwrap();
+        assert_eq!(actual, expected);
+    }
 }

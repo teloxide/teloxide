@@ -9,7 +9,7 @@ use bytes::Buf;
 use futures::StreamExt;
 use reqwest::r#async::Chunk;
 use reqwest::{
-    r#async::{multipart::Form, Client},
+    r#async::{multipart::Form, Client, Response},
     StatusCode,
 };
 use serde::{de::DeserializeOwned, Serialize};
@@ -49,22 +49,18 @@ pub async fn request_multipart<T: DeserializeOwned>(
     method_name: &str,
     params: Option<Form>,
 ) -> ResponseResult<T> {
-    let mut response = client
-        .post(&method_url(TELEGRAM_API_URL, token, method_name))
-        .apply(|request_builder| match params {
-            Some(params) => request_builder.multipart(params),
-            None => request_builder,
-        })
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    let response = serde_json::from_str::<TelegramResponse<T>>(
-        &response.text().await.map_err(RequestError::NetworkError)?,
+    process_response(
+        client
+            .post(&method_url(TELEGRAM_API_URL, token, method_name))
+            .apply(|request_builder| match params {
+                Some(params) => request_builder.multipart(params),
+                None => request_builder,
+            })
+            .send()
+            .await
+            .map_err(RequestError::NetworkError)?,
     )
-    .map_err(RequestError::InvalidJson)?;
-
-    response.into()
+    .await
 }
 
 pub async fn request_json<T: DeserializeOwned, P: Serialize>(
@@ -73,13 +69,20 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
     method_name: &str,
     params: &P,
 ) -> ResponseResult<T> {
-    let mut response = client
-        .post(&method_url(TELEGRAM_API_URL, token, method_name))
-        .json(params)
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
+    process_response(
+        client
+            .post(&method_url(TELEGRAM_API_URL, token, method_name))
+            .json(params)
+            .send()
+            .await
+            .map_err(RequestError::NetworkError)?,
+    )
+    .await
+}
 
+async fn process_response<T: DeserializeOwned>(
+    mut response: Response,
+) -> ResponseResult<T> {
     let response = serde_json::from_str::<TelegramResponse<T>>(
         &response.text().await.map_err(RequestError::NetworkError)?,
     )
@@ -92,14 +95,14 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
 #[serde(untagged)]
 enum TelegramResponse<R> {
     Ok {
-        /// Dummy field. Used for deserialization.
+        /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
         ok: bool, // TODO: True type
 
         result: R,
     },
     Err {
-        /// Dummy field. Used for deserialization.
+        /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
         ok: bool, // TODO: False type
 
