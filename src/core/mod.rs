@@ -1,3 +1,3 @@
-mod network;
+pub(crate) mod network;
 pub mod requests;
 pub mod types;
