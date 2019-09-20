@@ -36,7 +36,9 @@ pub enum ElementType {
     Email,
 }
 
+#[cfg(test)]
 mod tests {
+    use super::super::{ElementType, EncryptedPassportElement, PassportFile};
     #[test]
     fn must_serialize_encrypted_passport_element_to_json() {
         // given
@@ -61,7 +63,11 @@ mod tests {
             phone_number: "1313".to_string(),
             email: "someemail".to_string(),
             files: None,
-            front_size: Some(create_passport_file()),
+            front_size: Some(PassportFile {
+                file_id: "someId".to_string(),
+                file_size: 13,
+                file_date: 13,
+            }),
             reverse_side: None,
             selfie: None,
             translation: None,
