@@ -27,10 +27,10 @@ mod tests {
                   "file_id":"someId",
                   "file_size":13,
                   "file_date":13
-                },
+                }
                 }
             ],
-            "credential":
+            "credentials":
             {
                 "data":"someData",
                 "hash":"1122",
