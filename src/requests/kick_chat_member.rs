@@ -6,7 +6,7 @@ use crate::requests::RequestContext;
 /// bot must be an administrator in the chat for this to work and must have the
 /// appropriate admin rights. Returns True on success.
 #[derive(Debug, Clone, Serialize)]
-struct KickChatMember<'a> {
+pub struct KickChatMember<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
 }
