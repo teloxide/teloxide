@@ -5,7 +5,7 @@ use crate::requests::RequestContext;
 ///Use this method to get a list of profile pictures for a user. Returns a
 /// UserProfilePhotos object.
 #[derive(Debug, Clone, Serialize)]
-struct GetUserProfilePhotos<'a> {
+pub struct GetUserProfilePhotos<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Unique identifier of the target user
