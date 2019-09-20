@@ -3,8 +3,11 @@ extern crate derive_more;
 #[macro_use]
 extern crate serde;
 
-pub mod bot;
-pub mod core;
-pub mod errors;
+mod network;
 
-pub use errors::DownloadError;
+pub mod bot;
+pub mod errors;
+pub mod requests;
+pub mod types;
+
+pub use errors::{DownloadError, RequestError};
