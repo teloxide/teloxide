@@ -70,6 +70,7 @@ pub mod forward_message;
 pub mod get_chat;
 pub mod get_file;
 pub mod get_me;
+pub mod get_updates;
 pub mod get_user_profile_photos;
 pub mod kick_chat_member;
 pub mod restrict_chat_member;
