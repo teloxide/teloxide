@@ -1,7 +1,7 @@
 use crate::types::Sticker;
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
-pub struct Sticker {
+pub struct StickerSet {
     pub name: String,
     pub title: String,
     pub is_animated: bool,
