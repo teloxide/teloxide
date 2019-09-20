@@ -1,9 +1,10 @@
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult},
+    requests::{
+        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+    },
     types::{Message, ReplyMarkup},
 };
-
 
 /// Use this method to send information about a venue.
 /// Message is returned.

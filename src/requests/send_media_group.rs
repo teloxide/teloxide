@@ -9,7 +9,6 @@ use crate::{
     types::{InputFile, InputMedia, Message},
 };
 
-
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {

@@ -2,7 +2,7 @@ use crate::{
     network,
     requests::{
         ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    }
+    },
 };
 
 ///Use this method when you need to tell the user that something is happening

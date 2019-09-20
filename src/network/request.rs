@@ -1,22 +1,22 @@
-use serde::{de::DeserializeOwned, Serialize};
-use reqwest::r#async::{
-    Client, multipart::Form, Response,
-};
 use apply::Apply;
+use reqwest::r#async::{multipart::Form, Client, Response};
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
-    RequestError,
-    requests::ResponseResult,
     network::{method_url, TELEGRAM_API_URL},
+    requests::ResponseResult,
+    RequestError,
 };
-
 
 pub async fn request_multipart<T>(
     client: &Client,
     token: &str,
     method_name: &str,
     params: Option<Form>,
-) -> ResponseResult<T> where T: DeserializeOwned {
+) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+{
     process_response(
         client
             .post(&method_url(TELEGRAM_API_URL, token, method_name))
@@ -28,7 +28,7 @@ pub async fn request_multipart<T>(
             .await
             .map_err(RequestError::NetworkError)?,
     )
-        .await
+    .await
 }
 
 pub async fn request_json<T: DeserializeOwned, P: Serialize>(
@@ -45,7 +45,7 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
             .await
             .map_err(RequestError::NetworkError)?,
     )
-        .await
+    .await
 }
 
 async fn process_response<T: DeserializeOwned>(
@@ -54,7 +54,7 @@ async fn process_response<T: DeserializeOwned>(
     let response = serde_json::from_str::<TelegramResponse<T>>(
         &response.text().await.map_err(RequestError::NetworkError)?,
     )
-        .map_err(RequestError::InvalidJson)?;
+    .map_err(RequestError::InvalidJson)?;
 
     response.into()
 }

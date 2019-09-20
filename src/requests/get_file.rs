@@ -4,7 +4,6 @@ use crate::{
     types::File,
 };
 
-
 /// Use this method to get basic info about a file and prepare it for
 /// downloading. For the moment, bots can download files of up to 20MB in size.
 /// On success, a File object is returned.

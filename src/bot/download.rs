@@ -1,16 +1,11 @@
 use reqwest::r#async::Chunk;
-use tokio::{
-    io::AsyncWrite,
-    stream::Stream,
-};
-
+use tokio::{io::AsyncWrite, stream::Stream};
 
 use crate::{
-    DownloadError,
     bot::Bot,
     network::{download_file, download_file_stream},
+    DownloadError,
 };
-
 
 impl Bot {
     /// Download file from telegram into `destination`.

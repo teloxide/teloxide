@@ -1,6 +1,8 @@
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult},
+    requests::{
+        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+    },
     types::{Message, ReplyMarkup},
 };
 

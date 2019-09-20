@@ -1,14 +1,13 @@
-use reqwest::r#async::{Client, Chunk};
+use reqwest::r#async::{Chunk, Client};
 use tokio::{
-    stream::Stream,
     io::{AsyncWrite, AsyncWriteExt},
+    stream::Stream,
 };
 
 use crate::{
+    network::{file_url, TELEGRAM_API_URL},
     DownloadError,
-    network::{TELEGRAM_API_URL, file_url},
 };
-
 
 pub async fn download_file<D>(
     client: &Client,
@@ -16,8 +15,8 @@ pub async fn download_file<D>(
     path: &str,
     destination: &mut D,
 ) -> Result<(), DownloadError>
-    where
-        D: AsyncWrite + Unpin,
+where
+    D: AsyncWrite + Unpin,
 {
     let mut stream = download_file_stream(client, token, path).await?;
 
