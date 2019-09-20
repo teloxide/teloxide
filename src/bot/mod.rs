@@ -1,8 +1,8 @@
 use reqwest::r#async::Client;
 
-use crate::core::network::{download_file, download_file_stream};
-use crate::core::requests::get_file::GetFile;
-use crate::core::{
+use crate::network::{download_file, download_file_stream};
+use crate::requests::get_file::GetFile;
+use crate::{
     requests::{
         edit_message_live_location::EditMessageLiveLocation,
         forward_message::ForwardMessage, get_me::GetMe, send_audio::SendAudio,
@@ -58,10 +58,11 @@ impl Bot {
     /// ```no_run
     /// use async_telegram_bot::{
     ///     bot::Bot,
-    ///     core::{requests::Request, types::File as TgFile},
+    ///     requests::Request,
+    ///     types::File as TgFile,
     /// };
     /// use tokio::fs::File;
-    /// # use async_telegram_bot::core::requests::RequestError;
+    /// # use async_telegram_bot::requests::RequestError;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
