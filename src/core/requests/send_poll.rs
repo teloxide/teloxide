@@ -7,7 +7,7 @@ use crate::core::types::{Message, ReplyMarkup};
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.
 #[derive(Debug, Clone, Serialize)]
-struct SendPoll<'a> {
+pub struct SendPoll<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// identifier for the target chat or username of the target channel (in

@@ -1,6 +1,4 @@
-use crate::core::types::{
-    InlineKeyboardMarkup, InputMessageContent, ParseMode,
-};
+use crate::core::types::InlineKeyboardMarkup;
 
 #[derive(Debug, Serialize, Hash, PartialEq, Eq, Clone)]
 pub struct InlineQueryResultGame {

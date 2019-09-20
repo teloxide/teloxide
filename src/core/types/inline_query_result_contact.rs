@@ -1,6 +1,4 @@
-use crate::core::types::{
-    InlineKeyboardMarkup, InputMessageContent, ParseMode,
-};
+use crate::core::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
 pub struct InlineQueryResultContact {

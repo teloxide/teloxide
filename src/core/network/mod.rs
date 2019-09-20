@@ -3,12 +3,19 @@ use crate::core::{
     types::ResponseParameters,
 };
 
+use crate::DownloadError;
 use apply::Apply;
+use bytes::Buf;
+use futures::StreamExt;
+use reqwest::r#async::Chunk;
 use reqwest::{
     r#async::{multipart::Form, Client, Response},
     StatusCode,
 };
 use serde::{de::DeserializeOwned, Serialize};
+use tokio::io::AsyncWriteExt;
+use tokio::prelude::AsyncWrite;
+use tokio::stream::Stream;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
@@ -81,18 +88,7 @@ async fn process_response<T: DeserializeOwned>(
     )
     .map_err(RequestError::InvalidJson)?;
 
-    match response {
-        TelegramResponse::Ok { result, .. } => Ok(result),
-        TelegramResponse::Err {
-            description,
-            error_code,
-            response_parameters: _,
-            ..
-        } => Err(RequestError::ApiError {
-            description,
-            status_code: StatusCode::from_u16(error_code).unwrap(),
-        }),
-    }
+    response.into()
 }
 
 #[derive(Deserialize)]
@@ -114,6 +110,64 @@ enum TelegramResponse<R> {
         error_code: u16,
         response_parameters: Option<ResponseParameters>,
     },
+}
+
+pub async fn download_file<D>(
+    client: &Client,
+    token: &str,
+    path: &str,
+    destination: &mut D,
+) -> Result<(), DownloadError>
+where
+    D: AsyncWrite + Unpin,
+{
+    let mut stream = download_file_stream(client, token, path).await?;
+
+    while let Some(chunk) = stream.next().await {
+        destination.write_all(chunk?.bytes()).await?;
+    }
+
+    Ok(())
+}
+
+pub(crate) async fn download_file_stream(
+    client: &Client,
+    token: &str,
+    path: &str,
+) -> Result<impl Stream<Item = Result<Chunk, reqwest::Error>>, reqwest::Error> {
+    let url = file_url(TELEGRAM_API_URL, token, path);
+    let resp = client.get(&url).send().await?.error_for_status()?;
+    Ok(resp.into_body())
+}
+
+impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
+    fn into(self) -> Result<R, RequestError> {
+        match self {
+            TelegramResponse::Ok { result, .. } => Ok(result),
+            TelegramResponse::Err {
+                description,
+                error_code,
+                response_parameters,
+                ..
+            } => {
+                if let Some(params) = response_parameters {
+                    match params {
+                        ResponseParameters::RetryAfter(i) => {
+                            Err(RequestError::RetryAfter(i))
+                        }
+                        ResponseParameters::MigrateToChatId(to) => {
+                            Err(RequestError::MigrateToChatId(to))
+                        }
+                    }
+                } else {
+                    Err(RequestError::ApiError {
+                        description,
+                        status_code: StatusCode::from_u16(error_code).unwrap(),
+                    })
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]

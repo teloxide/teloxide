@@ -8,7 +8,7 @@ use crate::core::requests::{
 /// arrives from your bot, Telegram clients clear its typing status).
 /// Returns True on success.
 #[derive(Debug, Clone, Serialize)]
-struct SendChatAction<'a> {
+pub struct SendChatAction<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
@@ -24,7 +24,7 @@ struct SendChatAction<'a> {
 
 #[derive(Debug, Serialize, From, Clone)]
 #[serde(rename_all = "snake_case")]
-enum ChatAction {
+pub enum ChatAction {
     Typing,
     UploadPhoto,
     RecordVideo,

@@ -7,7 +7,7 @@ use crate::core::types::{Message, ReplyMarkup};
 /// Use this method to send information about a venue.
 /// Message is returned.
 #[derive(Debug, Clone, Serialize)]
-struct SendVenue<'a> {
+pub struct SendVenue<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
@@ -62,7 +62,7 @@ impl<'a> Request<'a> for SendVenue<'a> {
 }
 
 impl<'a> SendVenue<'a> {
-    pub fn new(
+    pub(crate) fn new(
         ctx: RequestContext<'a>,
         chat_id: ChatId,
         latitude: f64,
