@@ -6,7 +6,7 @@ use crate::{
 
 #[derive(Deserialize)]
 #[serde(untagged)]
-enum TelegramResponse<R> {
+pub enum TelegramResponse<R> {
     Ok {
         /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]

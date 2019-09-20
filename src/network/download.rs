@@ -1,8 +1,10 @@
+use futures::StreamExt;
 use reqwest::r#async::{Chunk, Client};
 use tokio::{
     io::{AsyncWrite, AsyncWriteExt},
     stream::Stream,
 };
+use bytes::Buf;
 
 use crate::{
     network::{file_url, TELEGRAM_API_URL},
@@ -27,7 +29,7 @@ where
     Ok(())
 }
 
-pub(crate) async fn download_file_stream(
+pub async fn download_file_stream(
     client: &Client,
     token: &str,
     path: &str,

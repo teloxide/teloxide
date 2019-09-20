@@ -1,6 +1,6 @@
 use crate::types::Sticker;
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct StickerSet {
     pub name: String,
     pub title: String,

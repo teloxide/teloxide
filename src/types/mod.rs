@@ -14,7 +14,7 @@ pub use self::{
     file::File,
     force_reply::ForceReply,
     game::Game,
-    game_high_score,
+    game_high_score::GameHighScore,
     inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
     inline_keyboard_markup::InlineKeyboardMarkup,
     inline_query::InlineQuery,
