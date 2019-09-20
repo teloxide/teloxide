@@ -5,7 +5,7 @@ use crate::{
         filter::Filter,
         handler::Handler,
     },
-    core::types::{
+    types::{
         Update,
         Message,
         UpdateKind,
@@ -110,7 +110,7 @@ impl Dispatcher {
     where
         S: Stream<Item=Update>
     {
-        use futures_util::stream::StreamExt;
+        use futures::StreamExt;
 
         let dp = &*self;
 
@@ -202,7 +202,7 @@ mod tests {
     #[tokio::test]
     async fn test() {
         use crate::{
-            core::types::{
+            types::{
                 Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
             },
             dispatcher::simple::Dispatcher,
@@ -221,7 +221,7 @@ mod tests {
                     username: Some("WaffleLapkin".to_string()),
                 },
             },
-            message_kind: MessageKind::IncomingMessage {
+            kind: MessageKind::Common {
                 from: Sender::User(User {
                     id: 457569668,
                     is_bot: true,
