@@ -62,7 +62,7 @@ impl Bot {
     ///     types::File as TgFile,
     /// };
     /// use tokio::fs::File;
-    /// # use async_telegram_bot::requests::RequestError;
+    /// # use async_telegram_bot::RequestError;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");

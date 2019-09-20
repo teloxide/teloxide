@@ -10,4 +10,4 @@ pub mod errors;
 pub mod requests;
 pub mod types;
 
-pub use errors::DownloadError;
+pub use errors::{DownloadError, RequestError};

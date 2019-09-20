@@ -1,5 +1,6 @@
 use crate::{
-    requests::{RequestError, ResponseResult},
+    RequestError,
+    requests::ResponseResult,
     types::ResponseParameters,
 };
 
