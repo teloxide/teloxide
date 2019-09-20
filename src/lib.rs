@@ -4,9 +4,9 @@ extern crate derive_more;
 extern crate serde;
 
 mod network;
+mod errors;
 
 pub mod bot;
-pub mod errors;
 pub mod requests;
 pub mod types;
 
