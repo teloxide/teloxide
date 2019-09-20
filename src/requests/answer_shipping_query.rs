@@ -1,7 +1,5 @@
 use crate::network;
-use crate::requests::{
-    Request, RequestContext, RequestFuture, ResponseResult,
-};
+use crate::requests::{Request, RequestContext, RequestFuture, ResponseResult};
 use crate::types::ShippingOption;
 
 #[derive(Debug, Clone, Serialize)]

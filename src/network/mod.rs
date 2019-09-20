@@ -1,7 +1,5 @@
 use crate::{
-    RequestError,
-    requests::ResponseResult,
-    types::ResponseParameters,
+    requests::ResponseResult, types::ResponseParameters, RequestError,
 };
 
 use crate::DownloadError;
