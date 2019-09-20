@@ -1,3 +1,5 @@
+use apply::Apply;
+
 use crate::{
     network::request_multipart,
     requests::{
@@ -6,7 +8,7 @@ use crate::{
     },
     types::{InputFile, InputMedia, Message},
 };
-use apply::Apply;
+
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]

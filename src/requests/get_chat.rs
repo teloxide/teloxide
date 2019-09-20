@@ -1,6 +1,8 @@
-use crate::requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request};
-use crate::types::Chat;
-use crate::network;
+use crate::{
+    network,
+    types::Chat,
+    requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request},
+};
 
 /// Use this method to get up to date information about the chat 
 /// (current name of the user for one-on-one conversations, 

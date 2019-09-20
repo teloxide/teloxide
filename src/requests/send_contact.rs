@@ -1,8 +1,9 @@
-use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+use crate::{
+    network,
+    requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult},
+    types::{Message, ReplyMarkup},
 };
-use crate::types::{Message, ReplyMarkup};
+
 
 /// Use this method to send phone contacts.
 /// returned.

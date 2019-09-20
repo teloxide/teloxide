@@ -1,8 +1,7 @@
 use crate::{
     network,
-    requests::form_builder::FormBuilder,
     requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+        form_builder::FormBuilder, ChatId, Request, RequestContext, RequestFuture, ResponseResult,
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };

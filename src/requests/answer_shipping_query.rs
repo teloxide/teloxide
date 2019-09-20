@@ -1,6 +1,8 @@
-use crate::network;
-use crate::requests::{Request, RequestContext, RequestFuture, ResponseResult};
-use crate::types::ShippingOption;
+use crate::{
+    network,
+    requests::{Request, RequestContext, RequestFuture, ResponseResult},
+    types::ShippingOption,
+};
 
 #[derive(Debug, Clone, Serialize)]
 /// If you sent an invoice requesting a shipping address and the parameter

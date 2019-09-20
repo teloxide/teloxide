@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
+use reqwest::r#async::multipart::Form;
+
 use crate::{
     requests::{utils, ChatId},
     types::{InputMedia, ParseMode},
 };
-
-use reqwest::r#async::multipart::Form;
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`
 /// from scratch.

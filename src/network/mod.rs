@@ -1,20 +1,21 @@
+use futures::StreamExt;
+use serde::{de::DeserializeOwned, Serialize};
+use tokio::{
+    stream::Stream,
+    io::{AsyncWrite, AsyncWriteExt},
+};
+use reqwest::{
+    StatusCode,
+    r#async::{multipart::Form, Client, Response, Chunk},
+};
+use bytes::Buf;
+use apply::Apply;
+
 use crate::{
-    requests::ResponseResult, types::ResponseParameters, RequestError,
+    DownloadError, RequestError,
+    requests::ResponseResult, types::ResponseParameters,
 };
 
-use crate::DownloadError;
-use apply::Apply;
-use bytes::Buf;
-use futures::StreamExt;
-use reqwest::r#async::Chunk;
-use reqwest::{
-    r#async::{multipart::Form, Client, Response},
-    StatusCode,
-};
-use serde::{de::DeserializeOwned, Serialize};
-use tokio::io::AsyncWriteExt;
-use tokio::prelude::AsyncWrite;
-use tokio::stream::Stream;
 
 const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 

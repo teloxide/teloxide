@@ -1,16 +1,15 @@
-use crate::bot::Bot;
-use crate::requests::edit_message_live_location::EditMessageLiveLocation;
-use crate::requests::forward_message::ForwardMessage;
-use crate::requests::get_file::GetFile;
-use crate::requests::get_me::GetMe;
-use crate::requests::send_audio::SendAudio;
-use crate::requests::send_location::SendLocation;
-use crate::requests::send_media_group::SendMediaGroup;
-use crate::requests::send_message::SendMessage;
-use crate::requests::send_photo::SendPhoto;
-use crate::requests::stop_message_live_location::StopMessageLiveLocation;
-use crate::requests::ChatId;
-use crate::types::{InputFile, InputMedia};
+use crate::{
+    bot::Bot,
+    requests::{
+        edit_message_live_location::EditMessageLiveLocation,
+        forward_message::ForwardMessage, get_file::GetFile, get_me::GetMe,
+        send_audio::SendAudio, send_location::SendLocation,
+        send_media_group::SendMediaGroup, send_message::SendMessage,
+        send_photo::SendPhoto,
+        stop_message_live_location::StopMessageLiveLocation, ChatId,
+    },
+    types::{InputFile, InputMedia},
+};
 
 /// Telegram functions
 impl Bot {

@@ -1,8 +1,9 @@
-use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+use crate::{
+    network,
+    requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult},
+    types::{Message, ReplyMarkup},
 };
-use crate::types::{Message, ReplyMarkup};
+
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.

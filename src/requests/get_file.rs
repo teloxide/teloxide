@@ -1,6 +1,9 @@
-use crate::network;
-use crate::requests::{Request, RequestContext, RequestFuture, ResponseResult};
-use crate::types::File;
+use crate::{
+    network,
+    requests::{Request, RequestContext, RequestFuture, ResponseResult},
+    types::File,
+};
+
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading. For the moment, bots can download files of up to 20MB in size.

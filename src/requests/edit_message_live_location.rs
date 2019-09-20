@@ -1,9 +1,8 @@
-use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+use crate::{
+    network,
+    requests::{ChatId, Request, RequestContext, RequestFuture, ResponseResult},
+    types::{Message, ReplyMarkup},
 };
-use crate::types::{Message, ReplyMarkup};
-use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited

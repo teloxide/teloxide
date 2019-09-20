@@ -2,6 +2,7 @@ use self::not_implemented_types::*;
 pub use self::{
     animation::Animation,
     audio::Audio,
+    callback_game::CallbackGame,
     callback_query::CallbackQuery,
     chat::{Chat, ChatKind, NonPrivateChatKind},
     chat_member::{ChatMember, ChatMemberStatus},
@@ -13,6 +14,7 @@ pub use self::{
     file::File,
     force_reply::ForceReply,
     game::Game,
+    game_high_score,
     inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
     inline_keyboard_markup::InlineKeyboardMarkup,
     inline_query::InlineQuery,
@@ -44,6 +46,7 @@ pub use self::{
     keyboard_button::KeyboardButton,
     label_price::LabeledPrice,
     location::Location,
+    login_url::LoginUrl,
     mask_position::MaskPosition,
     message::{
         ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind, Sender,
@@ -63,17 +66,21 @@ pub use self::{
     shipping_option::ShippingOption,
     shipping_query::ShippingQuery,
     sticker::Sticker,
+    sticker_set::StickerSet,
     successful_payment::SuccessfulPayment,
     update::{Update, UpdateKind},
     user::User,
+    user_profile_photos::UserProfilePhotos,
     venue::Venue,
     video::Video,
     video_note::VideoNote,
     voice::Voice,
+    webhook_info::WebhookInfo,
 };
 
 mod animation;
 mod audio;
+mod callback_game;
 mod callback_query;
 mod chat;
 mod chat_member;
@@ -85,6 +92,7 @@ mod document;
 mod file;
 mod force_reply;
 mod game;
+mod game_high_score;
 mod inline_keyboard_button;
 mod inline_keyboard_markup;
 mod input_file;
@@ -94,6 +102,7 @@ mod invoice;
 mod keyboard_button;
 mod label_price;
 mod location;
+mod login_url;
 mod mask_position;
 mod message;
 mod message_entity;
@@ -112,13 +121,16 @@ mod shipping_address;
 mod shipping_option;
 mod shipping_query;
 mod sticker;
+mod sticker_set;
 mod successful_payment;
 mod update;
 mod user;
+mod user_profile_photos;
 mod venue;
 mod video;
 mod video_note;
 mod voice;
+mod webhook_info;
 
 mod inline_query;
 mod inline_query_result;

@@ -1,5 +1,4 @@
 use crate::types::PhotoSize;
-use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone, PartialEq, Eq, Hash)]
 /// This object represents a [video message](https://telegram.org/blog/video-messages-and-telescope)

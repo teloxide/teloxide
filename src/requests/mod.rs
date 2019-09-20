@@ -1,12 +1,11 @@
-use std::future::Future;
-use std::pin::Pin;
-
-use crate::errors::RequestError;
-use reqwest::r#async::Client;
-use serde::de::DeserializeOwned;
-
 mod form_builder;
 mod utils;
+
+use reqwest::r#async::Client;
+use serde::de::DeserializeOwned;
+use std::{future::Future, pin::Pin};
+
+use crate::RequestError;
 
 pub type ResponseResult<T> = Result<T, RequestError>;
 
@@ -68,6 +67,7 @@ pub mod answer_pre_checkout_query;
 pub mod answer_shipping_query;
 pub mod edit_message_live_location;
 pub mod forward_message;
+pub mod get_chat;
 pub mod get_file;
 pub mod get_me;
 pub mod get_user_profile_photos;
