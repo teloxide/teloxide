@@ -23,7 +23,8 @@ where
     let mut stream = download_file_stream(client, token, path).await?;
 
     while let Some(chunk) = stream.next().await {
-        destination.write_all(chunk?.bytes()).await?;
+        let chunk = chunk?;
+        destination.write_all(chunk.bytes()).await?;
     }
 
     Ok(())

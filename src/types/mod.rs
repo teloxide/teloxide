@@ -76,6 +76,11 @@ pub use self::{
     video_note::VideoNote,
     voice::Voice,
     webhook_info::WebhookInfo,
+
+    encrypted_passport_element::{ElementType, EncryptedPassportElement},
+    passport_data::PassportData,
+    encrypted_credintials::EncryptedCredentials,
+    passport_file::PassportFile,
 };
 
 mod animation;
@@ -154,3 +159,8 @@ mod inline_query_result_photo;
 mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
+
+mod encrypted_passport_element;
+mod passport_data;
+mod encrypted_credintials;
+mod passport_file;
