@@ -13,8 +13,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn should_serialize_passport_data_to_json() {
-        // given
+    fn must_serialize_passport_data_to_json() {
         let expected_json = r#"{
             "data":
             [
@@ -23,16 +22,12 @@ mod tests {
                 "data":"somedata",
                 "phone_number":"1313",
                 "email":"someemail",
-                "files":null,
                 "front_size":
                 {
                   "file_id":"someId",
                   "file_size":13,
                   "file_date":13
                 },
-                "reverse_side":null,
-                "selfie":null,
-                "translation":null
                 }
             ],
             "credential":

@@ -48,11 +48,7 @@ mod tests {
             "data":"somedata",
             "phone_number":"1313",
             "email":"someemail",
-            "files":null,
-            "front_size":{"file_id":"someId","file_size":13,"file_date":13},
-            "reverse_side":null,
-            "selfie":null,
-            "translation":null
+            "front_size":{"file_id":"someId","file_size":13,"file_date":13}
         }"#
         .replace("\n", "")
         .replace(" ", "");
