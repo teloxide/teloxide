@@ -1,10 +1,10 @@
+use bytes::Buf;
 use futures::StreamExt;
 use reqwest::r#async::{Chunk, Client};
 use tokio::{
     io::{AsyncWrite, AsyncWriteExt},
     stream::Stream,
 };
-use bytes::Buf;
 
 use crate::{
     network::{file_url, TELEGRAM_API_URL},

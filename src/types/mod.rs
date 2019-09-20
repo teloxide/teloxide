@@ -11,6 +11,8 @@ pub use self::{
     chosen_inline_result::ChosenInlineResult,
     contact::Contact,
     document::Document,
+    encrypted_credintials::EncryptedCredentials,
+    encrypted_passport_element::{ElementType, EncryptedPassportElement},
     file::File,
     force_reply::ForceReply,
     game::Game,
@@ -54,6 +56,8 @@ pub use self::{
     message_entity::MessageEntity,
     order_info::OrderInfo,
     parse_mode::ParseMode,
+    passport_data::PassportData,
+    passport_file::PassportFile,
     photo_size::PhotoSize,
     poll::{Poll, PollOption},
     pre_checkout_query::PreCheckoutQuery,
@@ -76,11 +80,6 @@ pub use self::{
     video_note::VideoNote,
     voice::Voice,
     webhook_info::WebhookInfo,
-
-    encrypted_passport_element::{ElementType, EncryptedPassportElement},
-    passport_data::PassportData,
-    encrypted_credintials::EncryptedCredentials,
-    passport_file::PassportFile,
 };
 
 mod animation;
@@ -160,7 +159,7 @@ mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
 
+mod encrypted_credintials;
 mod encrypted_passport_element;
 mod passport_data;
-mod encrypted_credintials;
 mod passport_file;
