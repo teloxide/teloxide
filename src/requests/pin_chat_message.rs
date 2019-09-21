@@ -30,7 +30,7 @@ impl<'a> PinChatMessage<'a> {
 }
 
 impl<'a> Request<'a> for PinChatMessage<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = bool; // TODO: change to unit type True
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
