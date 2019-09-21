@@ -11,9 +11,9 @@ pub struct PinChatMessage<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or username 
     /// of the target supergroup or channel (in the format @channelusername)
-    chat_id: ChatId,
-    message_id: i32,
-    disable_notification: bool
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub disable_notification: bool
 }
 
 impl<'a> PinChatMessage<'a> {
