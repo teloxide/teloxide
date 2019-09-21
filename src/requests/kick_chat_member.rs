@@ -64,7 +64,7 @@ impl<'a> KickChatMember<'a> {
     }
 
     pub fn until_date<T: Into<u64>>(mut self, until_date: T) -> Self {
-        self.until_date = Some(user_id.into());
+        self.until_date = Some(until_date.into());
         self
     }
 }
