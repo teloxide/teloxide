@@ -97,6 +97,7 @@ pub mod get_file;
 pub mod get_me;
 pub mod get_user_profile_photos;
 pub mod kick_chat_member;
+pub mod pin_chat_message;
 pub mod restrict_chat_member;
 pub mod send_audio;
 pub mod send_chat_action;
