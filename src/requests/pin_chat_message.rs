@@ -1,5 +1,5 @@
-use crate::core::requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request};
-use crate::core::network;
+use crate::requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request};
+use crate::network;
 
 /// Use this method to get up to date information about the chat 
 /// (current name of the user for one-on-one conversations, 
@@ -14,6 +14,19 @@ pub struct PinChatMessage<'a> {
     chat_id: ChatId,
     message_id: i32,
     disable_notification: bool
+}
+
+impl<'a> PinChatMessage<'a> {
+    pub(crate) fn new(
+        ctx: RequestContext<'a>, chat_id: ChatId, message_id: i32
+    ) -> Self {
+        Self { ctx, chat_id, message_id, disable_notification: false }
+    }
+
+    pub fn disable_notification(mut self) -> Self {
+        self.disable_notification = true;
+        self
+    }
 }
 
 impl<'a> Request<'a> for PinChatMessage<'a> {
