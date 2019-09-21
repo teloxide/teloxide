@@ -9,15 +9,15 @@ pub struct GetUserProfilePhotos<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// Unique identifier of the target user
-    user_id: i32,
+    pub user_id: i32,
     /// Sequential number of the first photo to be returned. By default, all
     /// photos are returned.
     #[serde(skip_serializing_if = "Option::is_none")]
-    offset: Option<i64>,
+    pub offset: Option<i64>,
     ///Limits the number of photos to be retrieved. Values between 1—100 are
     /// accepted. Defaults to 100.
     #[serde(skip_serializing_if = "Option::is_none")]
-    limit: Option<i64>,
+    pub limit: Option<i64>,
 }
 
 impl<'a> Request<'a> for GetUserProfilePhotos<'a> {
