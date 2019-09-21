@@ -17,50 +17,50 @@ pub enum EncryptedPassportElementKind {
         data: String,
         front_side: PassportFile,
         selfie: PassportFile,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     DriverLicense {
         data: String,
         front_side: PassportFile,
         reverse_side: PassportFile,
         selfie: PassportFile,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     IdentityCard {
         data: String,
         front_side: PassportFile,
         reverse_side: PassportFile,
         selfie: PassportFile,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     InternalPassport {
         data: String,
         front_side: PassportFile,
         selfie: PassportFile,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     Address {
         data: String
     },
     UtilityBill {
         files: Vec<PassportFile>,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     BankStatement {
         files: Vec<PassportFile>,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     RentalAgreement {
         files: Vec<PassportFile>,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     PassportRegistration {
         files: Vec<PassportFile>,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     TemporaryRegistration {
         files: Vec<PassportFile>,
-        translation: Vec<PassportFile>
+        translation: Option<Vec<PassportFile>>
     },
     PhoneNumber { phone_number: String },
     Email { email: String }
