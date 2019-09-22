@@ -20,6 +20,7 @@ pub struct KickChatMember<'a> {
     ///Date when the user will be unbanned, unix time. If user is banned for
     /// more than 366 days or less than 30 seconds from the current time they
     /// are considered to be banned forever
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub until_date: Option<u64>,
 }
 
