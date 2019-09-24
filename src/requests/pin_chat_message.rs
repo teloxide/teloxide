@@ -13,18 +13,20 @@ pub struct PinChatMessage<'a> {
     /// of the target supergroup or channel (in the format @channelusername)
     pub chat_id: ChatId,
     pub message_id: i32,
-    pub disable_notification: bool
+    pub disable_notification: Option<bool>
 }
 
 impl<'a> PinChatMessage<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>, chat_id: ChatId, message_id: i32
     ) -> Self {
-        Self { ctx, chat_id, message_id, disable_notification: false }
+        Self { ctx, chat_id, message_id, disable_notification: None }
     }
 
-    pub fn disable_notification(mut self) -> Self {
-        self.disable_notification = true;
+    pub fn disable_notification<T>(mut self, val: T) -> Self
+    where T: Into<bool>
+    {
+        self.disable_notification = Some(val.into());
         self
     }
 }
