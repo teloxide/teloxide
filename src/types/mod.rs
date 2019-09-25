@@ -72,6 +72,7 @@ pub use self::{
     sticker::Sticker,
     sticker_set::StickerSet,
     successful_payment::SuccessfulPayment,
+    unit_true::True,
     update::{Update, UpdateKind},
     user::User,
     user_profile_photos::UserProfilePhotos,
@@ -127,6 +128,7 @@ mod shipping_query;
 mod sticker;
 mod sticker_set;
 mod successful_payment;
+mod unit_true;
 mod update;
 mod user;
 mod user_profile_photos;
