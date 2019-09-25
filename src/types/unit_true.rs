@@ -1,8 +1,14 @@
 use serde::de::{self, Deserialize, Deserializer, Visitor};
 use serde::ser::{Serialize, Serializer};
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct True;
+
+impl std::process::Termination for True {
+    fn report(self) -> i32 {
+        libc::EXIT_SUCCESS
+    }
+}
 
 impl<'de> Deserialize<'de> for True {
     fn deserialize<D>(des: D) -> Result<Self, D::Error>
@@ -18,8 +24,8 @@ struct TrueVisitor;
 impl<'de> Visitor<'de> for TrueVisitor {
     type Value = True;
 
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("bool, equal to `true`")
+    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "bool, equal to `true`")
     }
 
     fn visit_bool<E>(self, value: bool) -> Result<Self::Value, E>
