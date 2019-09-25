@@ -34,7 +34,7 @@ impl<'de> Visitor<'de> for TrueVisitor {
     {
         match value {
             true => Ok(True),
-            _ => Err(E::custom("expected `true`, found `false`"))
+            false => Err(E::custom("expected `true`, found `false`"))
         }
     }
 }
