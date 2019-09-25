@@ -10,6 +10,17 @@ impl std::process::Termination for True {
     }
 }
 
+impl std::convert::TryFrom<bool> for True {
+    type Error = ();
+
+    fn try_from(value: bool) -> Result<Self, Self::Error> {
+        match value {
+            true => Ok(True),
+            false => Err(())
+        }
+    }
+}
+
 impl<'de> Deserialize<'de> for True {
     fn deserialize<D>(des: D) -> Result<Self, D::Error>
     where

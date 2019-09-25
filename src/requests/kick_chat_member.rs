@@ -2,6 +2,7 @@ use crate::network;
 use crate::requests::{
     ChatId, Request, RequestContext, RequestFuture, ResponseResult,
 };
+use crate::types::True;
 
 /// Use this method to kick a user from a group, a supergroup or a channel. In
 /// the case of supergroups and channels, the user will not be able to return to
@@ -25,7 +26,7 @@ pub struct KickChatMember<'a> {
 }
 
 impl<'a> Request<'a> for KickChatMember<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {

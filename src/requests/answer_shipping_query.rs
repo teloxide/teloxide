@@ -1,7 +1,7 @@
 use crate::{
     network,
     requests::{Request, RequestContext, RequestFuture, ResponseResult},
-    types::ShippingOption,
+    types::{ShippingOption, True},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -34,7 +34,7 @@ pub struct AnswerShippingQuery<'a> {
 }
 
 impl<'a> Request<'a> for AnswerShippingQuery<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
