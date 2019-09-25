@@ -2,7 +2,7 @@ use crate::network;
 use crate::requests::{
     ChatId, Request, RequestContext, RequestFuture, ResponseResult,
 };
-use crate::types::ChatPermissions;
+use crate::types::{ChatPermissions, True};
 
 /// Use this method to restrict a user in a supergroup. The bot must be an
 /// administrator in the supergroup for this to work and must have the
@@ -27,7 +27,7 @@ pub struct RestrictChatMember<'a> {
 }
 
 impl<'a> Request<'a> for RestrictChatMember<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {

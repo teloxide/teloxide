@@ -1,4 +1,7 @@
-use crate::requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request};
+use crate::{
+    requests::{ChatId, RequestContext, RequestFuture, ResponseResult, Request},
+    types::True
+};
 use crate::network;
 
 /// Use this method to get up to date information about the chat 
@@ -32,7 +35,7 @@ impl<'a> PinChatMessage<'a> {
 }
 
 impl<'a> Request<'a> for PinChatMessage<'a> {
-    type ReturnValue = bool; // TODO: change to unit type True
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
