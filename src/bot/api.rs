@@ -1,3 +1,4 @@
+use crate::requests::get_updates::GetUpdates;
 use crate::{
     bot::Bot,
     requests::{
@@ -15,6 +16,10 @@ use crate::{
 impl Bot {
     pub fn get_me(&self) -> GetMe {
         GetMe::new(self.ctx())
+    }
+
+    pub fn get_updates(&self) -> GetUpdates {
+        GetUpdates::new(self.ctx())
     }
 
     pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
