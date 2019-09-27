@@ -15,7 +15,7 @@ pub struct Message {
 }
 
 impl Message {
-    fn text(&self) -> Option<&str> {
+    pub fn text(&self) -> Option<&str> {
         if let MessageKind::Common {
             media_kind: MediaKind::Text { ref text, .. },
             ..

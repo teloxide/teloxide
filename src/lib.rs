@@ -1,13 +1,15 @@
+#![feature(termination_trait_lib)]
+
 #[macro_use]
 extern crate derive_more;
 #[macro_use]
 extern crate serde;
 
 mod network;
+mod errors;
 
 pub mod bot;
 pub mod dispatcher;
-pub mod errors;
 pub mod requests;
 pub mod types;
 
