@@ -1,9 +1,8 @@
-use std::{future::Future, pin::Pin};
-
 use crate::{
     dispatcher::{
         filter::Filter,
         handler::Handler,
+        updater::Updater,
     },
     types::{
         Update,
@@ -14,22 +13,22 @@ use crate::{
     },
 };
 
-use tokio::stream::Stream;
+use futures::StreamExt;
 
 
-pub type Handlers<T> = Vec<(Box<dyn Filter<T>>, Box<dyn Handler<T>>)>;
+pub type Handlers<'a, T> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T> + 'a>)>;
 
-pub struct Dispatcher {
-    message_handlers: Handlers<Message>,
-    edited_message_handlers: Handlers<Message>,
-    channel_post_handlers: Handlers<Message>,
-    edited_channel_post_handlers: Handlers<Message>,
-    inline_query_handlers: Handlers<()>,
-    chosen_inline_result_handlers: Handlers<ChosenInlineResult>,
-    callback_query_handlers: Handlers<CallbackQuery>,
+pub struct Dispatcher<'a> {
+    message_handlers: Handlers<'a, Message>,
+    edited_message_handlers: Handlers<'a, Message>,
+    channel_post_handlers: Handlers<'a, Message>,
+    edited_channel_post_handlers: Handlers<'a, Message>,
+    inline_query_handlers: Handlers<'a, ()>,
+    chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult>,
+    callback_query_handlers: Handlers<'a, CallbackQuery>,
 }
 
-impl Dispatcher {
+impl<'a> Dispatcher<'a> {
     pub fn new() -> Self {
         Dispatcher {
             message_handlers: Vec::new(),
@@ -44,8 +43,8 @@ impl Dispatcher {
 
     pub fn message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<Message> + 'static,
-        H: Handler<Message> + 'static,
+        F: Filter<Message> + 'a,
+        H: Handler<'a, Message> + 'a,
     {
         self.message_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -53,8 +52,8 @@ impl Dispatcher {
 
     pub fn edited_message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<Message> + 'static,
-        H: Handler<Message> + 'static,
+        F: Filter<Message> + 'a,
+        H: Handler<'a, Message> + 'a,
     {
         self.edited_message_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -62,8 +61,8 @@ impl Dispatcher {
 
     pub fn channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<Message> + 'static,
-        H: Handler<Message> + 'static,
+        F: Filter<Message> + 'a,
+        H: Handler<'a, Message> + 'a,
     {
         self.channel_post_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -71,8 +70,8 @@ impl Dispatcher {
 
     pub fn edited_channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<Message> + 'static,
-        H: Handler<Message> + 'static,
+        F: Filter<Message> + 'a,
+        H: Handler<'a, Message> + 'a,
     {
         self.edited_channel_post_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -80,8 +79,8 @@ impl Dispatcher {
 
     pub fn inline_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<()> + 'static,
-        H: Handler<()> + 'static,
+        F: Filter<()> + 'a,
+        H: Handler<'a, ()> + 'a,
     {
         self.inline_query_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -89,8 +88,8 @@ impl Dispatcher {
 
     pub fn chosen_inline_result_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<ChosenInlineResult> + 'static,
-        H: Handler<ChosenInlineResult> + 'static,
+        F: Filter<ChosenInlineResult> + 'a,
+        H: Handler<'a, ChosenInlineResult> + 'a,
     {
         self.chosen_inline_result_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -98,114 +97,73 @@ impl Dispatcher {
 
     pub fn callback_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<CallbackQuery> + 'static,
-        H: Handler<CallbackQuery> + 'static,
+        F: Filter<CallbackQuery> + 'a,
+        H: Handler<'a, CallbackQuery> + 'a,
     {
         self.callback_query_handlers.push((Box::new(filter), Box::new(handler)));
         self
     }
 
     // TODO: Can someone simplify this?
-    pub async fn dispatch<S>(&mut self, updates: S)
+    pub async fn dispatch<U, E>(&mut self, updates: U)
     where
-        S: Stream<Item=Update>
+        U: Updater<E> + 'a
     {
-        use futures::StreamExt;
+        updates.for_each(|res| {
+            async {
+                let res = res;
+                let Update { kind, id } = match res {
+                    Ok(upd) => upd,
+                    _ => return // TODO: proper error handling
+                };
 
-        let dp = &*self;
+                log::debug!("Handled update#{id:?}: {kind:?}", id = id, kind = kind);
 
-        updates.for_each(|Update { id, kind }| async move {
-            log::debug!("Handled update#{id:?}: {kind:?}", id = id, kind = kind);
+                // TODO: can someone extract this to a function?
+                macro_rules! call {
+                    ($h:expr, $value:expr) => {{
+                        let value = $value;
+                        let handler = $h.iter().find_map(|e| {
+                            let (filter, handler) = e;
+                            if filter.test(&value) {
+                                Some(handler)
+                            } else {
+                                None
+                            }
+                        });
 
-            match kind {
-                UpdateKind::Message(mes) => {
-                    call_handler(
-                        find_handler(&dp.message_handlers, &mes),
-                        mes
-                    )
-                        .await;
-                },
-                UpdateKind::EditedMessage(mes) => {
-                    call_handler(
-                        find_handler(&dp.edited_message_handlers, &mes),
-                        mes
-                    )
-                        .await;
-                },
-                UpdateKind::ChannelPost(post) => {
-                    call_handler(
-                        find_handler(&dp.channel_post_handlers, &post),
-                        post
-                    )
-                        .await;
-                },
-                UpdateKind::EditedChannelPost(post) => {
-                    call_handler(
-                        find_handler(&dp.edited_channel_post_handlers, &post),
-                        post
-                    )
-                        .await;
-                },
-                UpdateKind::InlineQuery(query) => {
-                    call_handler(
-                        find_handler(&dp.inline_query_handlers, &query),
-                        query
-                    )
-                        .await;
-                },
-                UpdateKind::ChosenInlineResult(result) => {
-                    call_handler(
-                        find_handler(&dp.chosen_inline_result_handlers, &result),
-                        result
-                    )
-                        .await;
-                },
-                UpdateKind::CallbackQuery(callback) => {
-                    call_handler(
-                        find_handler(&dp.callback_query_handlers, &callback),
-                        callback
-                    )
-                        .await;
-                },
+                        match handler {
+                            Some(handler) => handler.handle(value).await,
+                            None => log::warn!("Unhandled update: {:?}", value)
+                        }
+                    }};
+                }
+
+                match kind {
+                    UpdateKind::Message(mes) => call!(self.message_handlers, mes),
+                    UpdateKind::EditedMessage(mes) => call!(self.edited_message_handlers, mes),
+                    UpdateKind::ChannelPost(post) => call!(self.channel_post_handlers, post),
+                    UpdateKind::EditedChannelPost(post) => call!(self.edited_channel_post_handlers, post),
+                    UpdateKind::InlineQuery(query) => call!(self.inline_query_handlers, query),
+                    UpdateKind::ChosenInlineResult(result) => call!(self.chosen_inline_result_handlers, result),
+                    UpdateKind::CallbackQuery(callback) => call!(self.callback_query_handlers, callback),
+                }
             }
         })
             .await;
     }
 }
 
-/// Helper function
-fn find_handler<'a, T: std::fmt::Debug>(handlers: &'a Handlers<T>, value: &T) -> Option<&'a Box<Handler<T>>> {
-    let handler = handlers.iter().find_map(|e| {
-        let (filter, handler) = e;
-        if filter.test(value) {
-            Some(handler)
-        } else {
-            None
-        }
-    });
-
-    handler
-}
-
-/// Helper function
-async fn call_handler<T: std::fmt::Debug>(handler: Option<&Box<Handler<T>>>, value: T) {
-    match handler {
-        Some(handler) => handler.handle(value).await,
-        None => log::warn!("Unhandled update: {:?}", value)
-    }
-}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[tokio::test]
     async fn test() {
         use crate::{
             types::{
                 Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
             },
-            dispatcher::simple::Dispatcher,
+            dispatcher::{simple::Dispatcher, updater::StreamUpdater},
         };
 
         let mes = Message {
@@ -249,6 +207,9 @@ mod tests {
         let mut dp = Dispatcher::new()
             .message_handler(true, handler);
 
-        dp.dispatch(tokio::stream::iter(vec![Update { id: 0, kind: UpdateKind::Message(mes) }])).await;
+        use futures::future::ready;
+        use futures::stream;
+
+        dp.dispatch(StreamUpdater::new(stream::once(ready(Result::<_, ()>::Ok(Update { id: 0, kind: UpdateKind::Message(mes) }))))).await;
     }
 }
