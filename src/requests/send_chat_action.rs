@@ -40,7 +40,7 @@ pub enum ChatAction {
 }
 
 #[async_trait]
-impl<'a> Request for SendChatAction<'a> {
+impl Request for SendChatAction<'_> {
     type ReturnValue = bool;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -48,7 +48,7 @@ impl<'a> Request for SendChatAction<'a> {
     }
 }
 
-impl<'a> SendChatAction<'a> {
+impl SendChatAction<'_> {
     async fn send(self) -> ResponseResult<bool> {
         network::request_json(
             &self.ctx.client,

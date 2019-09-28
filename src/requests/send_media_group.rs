@@ -23,7 +23,7 @@ pub struct SendMediaGroup<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for SendMediaGroup<'a> {
+impl Request for SendMediaGroup<'_> {
     type ReturnValue = Vec<Message>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

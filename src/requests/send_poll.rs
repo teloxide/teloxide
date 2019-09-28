@@ -33,7 +33,7 @@ pub struct SendPoll<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for SendPoll<'a> {
+impl Request for SendPoll<'_> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -41,7 +41,7 @@ impl<'a> Request for SendPoll<'a> {
     }
 }
 
-impl<'a> SendPoll<'a> {
+impl SendPoll<'_> {
     async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,

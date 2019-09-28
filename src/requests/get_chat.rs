@@ -20,7 +20,7 @@ pub struct GetChat<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for GetChat<'a> {
+impl Request for GetChat<'_> {
     type ReturnValue = Chat;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -28,7 +28,7 @@ impl<'a> Request for GetChat<'a> {
     }
 }
 
-impl<'a> GetChat<'a> {
+impl GetChat<'_> {
     async fn send(self) -> ResponseResult<Chat> {
         network::request_json(
             &self.ctx.client,

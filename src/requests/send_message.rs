@@ -44,7 +44,7 @@ pub struct SendMessage<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for SendMessage<'a> {
+impl Request for SendMessage<'_> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -52,7 +52,7 @@ impl<'a> Request for SendMessage<'a> {
     }
 }
 
-impl<'a> SendMessage<'a> {
+impl SendMessage<'_> {
     async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             self.ctx.client,

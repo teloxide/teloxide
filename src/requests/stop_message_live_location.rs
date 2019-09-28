@@ -33,7 +33,7 @@ pub struct StopMessageLiveLocation<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for StopMessageLiveLocation<'a> {
+impl Request for StopMessageLiveLocation<'_> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -41,7 +41,7 @@ impl<'a> Request for StopMessageLiveLocation<'a> {
     }
 }
 
-impl<'a> StopMessageLiveLocation<'a> {
+impl StopMessageLiveLocation<'_> {
     async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
