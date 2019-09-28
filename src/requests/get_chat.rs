@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+        ChatId, Request, RequestContext, ResponseResult,
     },
     types::Chat,
 };

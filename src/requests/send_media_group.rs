@@ -5,7 +5,7 @@ use crate::{
     network::request_multipart,
     requests::{
         form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ResponseResult,
     },
     types::{InputFile, InputMedia, Message},
 };

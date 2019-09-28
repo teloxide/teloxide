@@ -4,7 +4,7 @@ use crate::{
     network,
     requests::{
         form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ResponseResult,
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
