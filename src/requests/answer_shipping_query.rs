@@ -45,7 +45,7 @@ impl Request for AnswerShippingQuery<'_> {
 }
 
 impl AnswerShippingQuery<'_> {
-    pub async fn send(self) -> ResponseResult<bool> {
+    pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

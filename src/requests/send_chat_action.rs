@@ -50,7 +50,7 @@ impl Request for SendChatAction<'_> {
 }
 
 impl SendChatAction<'_> {
-    pub async fn send(self) -> ResponseResult<bool> {
+    pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
