@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{
@@ -28,19 +30,21 @@ pub struct ForwardMessage<'a> {
     pub disable_notification: Option<bool>,
 }
 
+#[async_trait]
 impl<'a> Request<'a> for ForwardMessage<'a> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                self.ctx.client,
-                self.ctx.token,
-                "forwardMessage",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
+    where
+        Self: 'a
+    {
+        network::request_json(
+            self.ctx.client,
+            self.ctx.token,
+            "forwardMessage",
+            &self,
+        )
+        .await
     }
 }
 

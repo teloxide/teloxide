@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{
@@ -32,19 +34,21 @@ pub struct StopMessageLiveLocation<'a> {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
+#[async_trait]
 impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "stopMessageLiveLocation",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
+    where
+        Self: 'a
+    {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "stopMessageLiveLocation",
+            &self,
+        )
+        .await
     }
 }
 

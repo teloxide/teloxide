@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{Request, RequestContext, RequestFuture, ResponseResult},
@@ -33,19 +35,20 @@ pub struct AnswerShippingQuery<'a> {
     pub error_message: Option<String>,
 }
 
+#[async_trait]
 impl<'a> Request<'a> for AnswerShippingQuery<'a> {
     type ReturnValue = bool;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "answerShippingQuery",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
+    where
+        Self: 'a
+    {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "answerShippingQuery",
+            &self,
+        ).await
     }
 }
 

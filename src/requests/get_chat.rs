@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{
@@ -19,19 +21,20 @@ pub struct GetChat<'a> {
     chat_id: ChatId,
 }
 
+#[async_trait]
 impl<'a> Request<'a> for GetChat<'a> {
     type ReturnValue = Chat;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "getChat",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
+    where
+        Self: 'a
+    {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "getChat",
+            &self,
+        ).await
     }
 }
 

@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{Request, RequestContext, RequestFuture, ResponseResult},
@@ -11,16 +13,20 @@ pub struct GetMe<'a> {
     ctx: RequestContext<'a>,
 }
 
+#[async_trait]
 impl<'a> Request<'a> for GetMe<'a> {
     type ReturnValue = User;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(network::request_multipart(
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
+    where
+        Self: 'a
+    {
+        network::request_multipart(
             self.ctx.client,
             self.ctx.token,
             "getMe",
             None,
-        ))
+        ).await
     }
 }
 
