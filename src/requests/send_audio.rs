@@ -62,13 +62,16 @@ pub struct SendAudio<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for SendAudio<'a> {
+ impl<'a> Request for SendAudio<'a> {
     type ReturnValue = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl SendAudio<'_> {
+    async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new()
             .add("chat_id", &self.chat_id)
             .add_if_some("caption", self.caption.as_ref())

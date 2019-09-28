@@ -41,19 +41,23 @@ pub struct EditMessageLiveLocation<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for EditMessageLiveLocation<'a> {
+ impl<'a> Request for EditMessageLiveLocation<'a> {
     type ReturnValue = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> EditMessageLiveLocation<'a> {
+    async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
             "editMessageLiveLocation",
             &self,
-        ).await
+        )
+        .await
     }
 }
 

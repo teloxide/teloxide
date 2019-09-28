@@ -31,13 +31,16 @@ pub struct ForwardMessage<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for ForwardMessage<'a> {
+ impl<'a> Request for ForwardMessage<'a> {
     type ReturnValue = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> ForwardMessage<'a> {
+    async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             self.ctx.client,
             self.ctx.token,

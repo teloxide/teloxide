@@ -14,19 +14,23 @@ pub struct GetMe<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for GetMe<'a> {
+impl<'a> Request for GetMe<'a> {
     type ReturnValue = User;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> GetMe<'a> {
+    async fn send(self) -> ResponseResult<User> {
         network::request_multipart(
             self.ctx.client,
             self.ctx.token,
             "getMe",
             None,
-        ).await
+        )
+        .await
     }
 }
 

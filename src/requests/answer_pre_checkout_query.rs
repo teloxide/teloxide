@@ -34,19 +34,23 @@ pub struct AnswerPreCheckoutQuery<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for AnswerPreCheckoutQuery<'a> {
+ impl<'a> Request for AnswerPreCheckoutQuery<'a> {
     type ReturnValue = bool;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> AnswerPreCheckoutQuery<'a> {
+    async fn send(self) -> ResponseResult<bool> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
             "answerPreCheckoutQuery",
             &self,
-        ).await
+        )
+        .await
     }
 }
 

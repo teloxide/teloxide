@@ -23,13 +23,16 @@ pub struct SendMediaGroup<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for SendMediaGroup<'a> {
+ impl<'a> Request for SendMediaGroup<'a> {
     type ReturnValue = Vec<Message>;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl SendMediaGroup<'_> {
+    async fn send(self) -> ResponseResult<Vec<Message>> {
         let params = FormBuilder::new()
             .add("chat_id", &self.chat_id)
             .apply(|form| {

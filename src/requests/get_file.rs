@@ -22,13 +22,16 @@ pub struct GetFile<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for GetFile<'a> {
+impl Request for GetFile<'_> {
     type ReturnValue = File;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl GetFile<'_> {
+    async fn send(self) -> ResponseResult<File> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

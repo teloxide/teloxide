@@ -35,13 +35,16 @@ pub struct SendPoll<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for SendPoll<'a> {
+ impl<'a> Request for SendPoll<'a> {
     type ReturnValue = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> SendPoll<'a> {
+    async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

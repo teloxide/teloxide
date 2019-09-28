@@ -22,19 +22,23 @@ pub struct GetChat<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for GetChat<'a> {
+ impl<'a> Request for GetChat<'a> {
     type ReturnValue = Chat;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> GetChat<'a> {
+    async fn send(self) -> ResponseResult<Chat> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
             "getChat",
             &self,
-        ).await
+        )
+        .await
     }
 }
 

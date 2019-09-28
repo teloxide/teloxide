@@ -36,19 +36,23 @@ pub struct AnswerShippingQuery<'a> {
 }
 
 #[async_trait]
-impl<'a> Request<'a> for AnswerShippingQuery<'a> {
+ impl<'a> Request for AnswerShippingQuery<'a> {
     type ReturnValue = bool;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>
-    where
-        Self: 'a
-    {
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl<'a> AnswerShippingQuery<'a> {
+    async fn send(self) -> ResponseResult<bool> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
             "answerShippingQuery",
             &self,
-        ).await
+        )
+        .await
     }
 }
 
