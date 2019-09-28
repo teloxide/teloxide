@@ -62,7 +62,7 @@ pub struct SendAudio<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for SendAudio<'a> {
+impl<'a> Request for SendAudio<'a> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

@@ -2,9 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, ResponseResult,
-    },
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
 
@@ -35,7 +33,7 @@ pub struct StopMessageLiveLocation<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for StopMessageLiveLocation<'a> {
+impl<'a> Request for StopMessageLiveLocation<'a> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

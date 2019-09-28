@@ -34,7 +34,7 @@ pub struct AnswerPreCheckoutQuery<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for AnswerPreCheckoutQuery<'a> {
+impl<'a> Request for AnswerPreCheckoutQuery<'a> {
     type ReturnValue = bool;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

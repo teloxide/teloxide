@@ -2,9 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, ResponseResult,
-    },
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
 
@@ -50,7 +48,7 @@ pub struct SendVenue<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for SendVenue<'a> {
+impl<'a> Request for SendVenue<'a> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

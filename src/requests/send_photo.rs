@@ -46,7 +46,7 @@ pub struct SendPhoto<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for SendPhoto<'a> {
+impl<'a> Request for SendPhoto<'a> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

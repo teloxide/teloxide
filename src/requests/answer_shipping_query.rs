@@ -36,7 +36,7 @@ pub struct AnswerShippingQuery<'a> {
 }
 
 #[async_trait]
- impl<'a> Request for AnswerShippingQuery<'a> {
+impl<'a> Request for AnswerShippingQuery<'a> {
     type ReturnValue = bool;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
