@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{ChatId, Request, RequestContext, ResponseResult},
+    types::True
 };
 
 ///Use this method when you need to tell the user that something is happening
@@ -41,7 +42,7 @@ pub enum ChatAction {
 
 #[async_trait]
 impl Request for SendChatAction<'_> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await

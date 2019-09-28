@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
-    types::ShippingOption,
+    types::{ShippingOption, True},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -37,7 +37,7 @@ pub struct AnswerShippingQuery<'a> {
 
 #[async_trait]
 impl Request for AnswerShippingQuery<'_> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await

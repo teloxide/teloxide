@@ -3,7 +3,7 @@ use reqwest::r#async::{multipart::Form, Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
-    network::{method_url, TELEGRAM_API_URL, TelegramResponse},
+    network::{method_url, TelegramResponse, TELEGRAM_API_URL},
     requests::ResponseResult,
     RequestError,
 };

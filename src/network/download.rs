@@ -1,10 +1,10 @@
+use bytes::Buf;
 use futures::StreamExt;
 use reqwest::r#async::{Chunk, Client};
 use tokio::{
     io::{AsyncWrite, AsyncWriteExt},
     stream::Stream,
 };
-use bytes::Buf;
 
 use crate::{
     network::{file_url, TELEGRAM_API_URL},
@@ -23,7 +23,8 @@ where
     let mut stream = download_file_stream(client, token, path).await?;
 
     while let Some(chunk) = stream.next().await {
-        destination.write_all(chunk?.bytes()).await?;
+        let chunk = chunk?;
+        destination.write_all(chunk.bytes()).await?;
     }
 
     Ok(())

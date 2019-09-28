@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
+    types::True
 };
 
 #[derive(Debug, Serialize, Clone)]
@@ -35,7 +36,7 @@ pub struct AnswerPreCheckoutQuery<'a> {
 
 #[async_trait]
 impl Request for AnswerPreCheckoutQuery<'_> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -43,7 +44,7 @@ impl Request for AnswerPreCheckoutQuery<'_> {
 }
 
 impl AnswerPreCheckoutQuery<'_> {
-    pub async fn send(self) -> ResponseResult<bool> {
+    pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
