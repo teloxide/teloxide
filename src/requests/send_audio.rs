@@ -71,7 +71,7 @@ impl Request for SendAudio<'_> {
 }
 
 impl SendAudio<'_> {
-    async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new()
             .add("chat_id", &self.chat_id)
             .add_if_some("caption", self.caption.as_ref())

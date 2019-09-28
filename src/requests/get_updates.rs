@@ -39,7 +39,7 @@ impl Request for GetUpdates<'_> {
 }
 
 impl GetUpdates<'_> {
-    async fn send(self) -> ResponseResult<Vec<Update>> {
+    pub async fn send(self) -> ResponseResult<Vec<Update>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

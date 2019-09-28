@@ -48,7 +48,7 @@ impl Request for SendLocation<'_> {
 }
 
 impl SendLocation<'_> {
-    async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

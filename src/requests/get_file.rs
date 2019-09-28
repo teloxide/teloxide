@@ -31,7 +31,7 @@ impl Request for GetFile<'_> {
 }
 
 impl GetFile<'_> {
-    async fn send(self) -> ResponseResult<File> {
+    pub async fn send(self) -> ResponseResult<File> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

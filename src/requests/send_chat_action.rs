@@ -49,7 +49,7 @@ impl Request for SendChatAction<'_> {
 }
 
 impl SendChatAction<'_> {
-    async fn send(self) -> ResponseResult<bool> {
+    pub async fn send(self) -> ResponseResult<bool> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

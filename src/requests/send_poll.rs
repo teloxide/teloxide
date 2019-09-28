@@ -42,7 +42,7 @@ impl Request for SendPoll<'_> {
 }
 
 impl SendPoll<'_> {
-    async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

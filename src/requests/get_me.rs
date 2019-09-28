@@ -23,7 +23,7 @@ impl Request for GetMe<'_> {
 }
 
 impl GetMe<'_> {
-    async fn send(self) -> ResponseResult<User> {
+    pub async fn send(self) -> ResponseResult<User> {
         network::request_multipart(
             self.ctx.client,
             self.ctx.token,

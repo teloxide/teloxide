@@ -57,7 +57,7 @@ impl Request for SendVenue<'_> {
 }
 
 impl SendVenue<'_> {
-    async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

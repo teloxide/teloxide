@@ -29,7 +29,7 @@ impl Request for GetChat<'_> {
 }
 
 impl GetChat<'_> {
-    async fn send(self) -> ResponseResult<Chat> {
+    pub async fn send(self) -> ResponseResult<Chat> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

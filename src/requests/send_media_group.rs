@@ -32,7 +32,7 @@ impl Request for SendMediaGroup<'_> {
 }
 
 impl SendMediaGroup<'_> {
-    async fn send(self) -> ResponseResult<Vec<Message>> {
+    pub async fn send(self) -> ResponseResult<Vec<Message>> {
         let params = FormBuilder::new()
             .add("chat_id", &self.chat_id)
             .apply(|form| {
