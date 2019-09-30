@@ -22,6 +22,12 @@ pub use self::{
     send_photo::SendPhoto, send_poll::SendPoll, send_venue::SendVenue,
     stop_message_live_location::StopMessageLiveLocation,
     unban_chat_member::UnbanChatMember,
+    promote_chat_member::PromoteChatMember,
+    send_animation::SendAnimation,
+    send_document::SendDocument,
+    send_video::SendVideo,
+    send_video_note::SendVideoNote,
+    send_voice::SendVoice,
 };
 
 pub type ResponseResult<T> = Result<T, RequestError>;
@@ -103,3 +109,9 @@ mod send_poll;
 mod send_venue;
 mod stop_message_live_location;
 mod unban_chat_member;
+mod promote_chat_member;
+mod send_animation;
+mod send_document;
+mod send_video;
+mod send_video_note;
+mod send_voice;
