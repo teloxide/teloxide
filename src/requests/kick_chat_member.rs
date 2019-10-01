@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult, ChatId},
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::True,
 };
 
@@ -32,7 +32,7 @@ impl<'a> Request for KickChatMember<'a> {
     type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
-            self.send().await
+        self.send().await
     }
 }
 

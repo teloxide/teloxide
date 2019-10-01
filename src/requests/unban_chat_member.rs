@@ -1,7 +1,7 @@
+use async_trait::async_trait;
+
 use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-};
+use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 
 /// Use this method to unban a previously kicked user in a supergroup or
 /// channel. The user will not return to the group or channel automatically, but
@@ -18,19 +18,24 @@ pub struct UnbanChatMember<'a> {
     pub user_id: i32,
 }
 
-impl<'a> Request<'a> for UnbanChatMember<'a> {
+#[async_trait]
+impl Request for UnbanChatMember<'_> {
     type ReturnValue = bool;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "unbanChatMember",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl UnbanChatMember<'_> {
+    pub async fn send(self) -> ResponseResult<bool> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "unbanChatMember",
+            &self,
+        )
+        .await
     }
 }
 

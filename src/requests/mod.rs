@@ -1,5 +1,3 @@
-use std::{future::Future, pin::Pin};
-
 use async_trait::async_trait;
 use reqwest::r#async::Client;
 use serde::de::DeserializeOwned;

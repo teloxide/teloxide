@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, RequestContext, ResponseResult, Request},
-    types::True
+    requests::{ChatId, Request, RequestContext, ResponseResult},
+    types::True,
 };
 
 /// Use this method to get up to date information about the chat
@@ -59,6 +59,7 @@ impl PinChatMessage<'_> {
             &self.ctx.token,
             "pinChatMessage",
             &self,
-        ).await
+        )
+        .await
     }
 }
