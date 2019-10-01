@@ -72,11 +72,10 @@ impl<'a> GetUserProfilePhotos<'a> {
     }
 
     pub fn limit<T>(mut self, limit: T) -> Self
-        where
-            T: Into<i64>,
+    where
+        T: Into<i64>,
     {
         self.limit = Some(limit.into());
         self
     }
-
 }

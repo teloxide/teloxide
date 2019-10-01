@@ -203,8 +203,9 @@ pub enum MediaKind {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::*;
     use serde_json::from_str;
+
+    use crate::types::*;
 
     #[test]
     fn de_media_forwarded() {
