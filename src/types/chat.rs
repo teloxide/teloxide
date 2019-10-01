@@ -80,8 +80,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::types::*;
     use serde_json::from_str;
+
+    use crate::types::*;
 
     #[test]
     fn channel_de() {
@@ -113,9 +114,9 @@ mod tests {
                     type_: (),
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
-                    last_name: None
+                    last_name: None,
                 },
-                photo: None
+                photo: None,
             },
             from_str(
                 r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#

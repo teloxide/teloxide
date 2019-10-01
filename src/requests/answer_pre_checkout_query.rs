@@ -1,7 +1,7 @@
 use crate::{
     network,
     requests::{Request, RequestContext, RequestFuture, ResponseResult},
-    types::True
+    types::True,
 };
 
 #[derive(Debug, Serialize, Clone)]

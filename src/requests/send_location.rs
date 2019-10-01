@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::{
     network,
     requests::{
@@ -5,8 +7,6 @@ use crate::{
     },
     types::{Message, ReplyMarkup},
 };
-
-use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send point on the map. On success, the sent [`Message`]

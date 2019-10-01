@@ -34,9 +34,7 @@ impl<'a> Request<'a> for UnbanChatMember<'a> {
     }
 }
 
-
-impl<'a>UnbanChatMember<'a>{
-
+impl<'a> UnbanChatMember<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,
         chat_id: ChatId,
@@ -50,20 +48,18 @@ impl<'a>UnbanChatMember<'a>{
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
+    where
         T: Into<ChatId>,
-        {
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-
     pub fn user_id<T>(mut self, user_id: T) -> Self
-        where
-            T: Into<i32>,
+    where
+        T: Into<i32>,
     {
         self.user_id = user_id.into();
         self
     }
-
 }

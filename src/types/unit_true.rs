@@ -16,7 +16,7 @@ impl std::convert::TryFrom<bool> for True {
     fn try_from(value: bool) -> Result<Self, Self::Error> {
         match value {
             true => Ok(True),
-            false => Err(())
+            false => Err(()),
         }
     }
 }
@@ -24,7 +24,7 @@ impl std::convert::TryFrom<bool> for True {
 impl<'de> Deserialize<'de> for True {
     fn deserialize<D>(des: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
         des.deserialize_bool(TrueVisitor)
     }
@@ -41,11 +41,11 @@ impl<'de> Visitor<'de> for TrueVisitor {
 
     fn visit_bool<E>(self, value: bool) -> Result<Self::Value, E>
     where
-        E: de::Error
+        E: de::Error,
     {
         match value {
             true => Ok(True),
-            false => Err(E::custom("expected `true`, found `false`"))
+            false => Err(E::custom("expected `true`, found `false`")),
         }
     }
 }
@@ -61,8 +61,9 @@ impl Serialize for True {
 
 #[cfg(test)]
 mod tests {
-    use super::True;
     use serde_json::{from_str, to_string};
+
+    use super::True;
 
     #[test]
     fn unit_true_de() {

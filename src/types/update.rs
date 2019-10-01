@@ -16,7 +16,8 @@ pub enum UpdateKind {
     EditedMessage(Message),
     ChannelPost(Message),
     EditedChannelPost(Message),
-    InlineQuery(()), // TODO
+    InlineQuery(()),
+    // TODO
     ChosenInlineResult(ChosenInlineResult),
     CallbackQuery(CallbackQuery),
 }

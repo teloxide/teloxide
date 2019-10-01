@@ -1,9 +1,9 @@
-mod api;
-mod download;
-
 use reqwest::r#async::Client;
 
 use crate::requests::RequestContext;
+
+mod api;
+mod download;
 
 pub struct Bot {
     token: String,

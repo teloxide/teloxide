@@ -3,7 +3,7 @@ use crate::{
     requests::{
         ChatId, Request, RequestContext, RequestFuture, ResponseResult,
     },
-    types::True
+    types::True,
 };
 
 ///Use this method when you need to tell the user that something is happening

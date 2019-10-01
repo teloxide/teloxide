@@ -1,12 +1,12 @@
-mod download;
-mod request;
-mod telegram_response;
-
 pub use download::{download_file, download_file_stream};
 pub use request::{request_json, request_multipart};
 pub use telegram_response::TelegramResponse;
 
-pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
+mod download;
+mod request;
+mod telegram_response;
+
+const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
 ///
