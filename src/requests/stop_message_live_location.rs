@@ -1,8 +1,8 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    },
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
 
@@ -32,19 +32,24 @@ pub struct StopMessageLiveLocation<'a> {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl<'a> Request<'a> for StopMessageLiveLocation<'a> {
+#[async_trait]
+impl Request for StopMessageLiveLocation<'_> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "stopMessageLiveLocation",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl StopMessageLiveLocation<'_> {
+    pub async fn send(self) -> ResponseResult<Message> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "stopMessageLiveLocation",
+            &self,
+        )
+        .await
     }
 }
 

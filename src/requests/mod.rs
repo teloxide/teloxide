@@ -1,5 +1,6 @@
 use std::{future::Future, pin::Pin};
 
+use async_trait::async_trait;
 use reqwest::r#async::Client;
 use serde::de::DeserializeOwned;
 
@@ -32,14 +33,13 @@ pub type ResponseResult<T> = Result<T, RequestError>;
 
 /// Request that can be sent to telegram.
 /// `ReturnValue` - a type that will be returned from Telegram.
-pub trait Request<'a> {
+#[async_trait]
+pub trait Request {
     type ReturnValue: DeserializeOwned;
 
     /// Send request to telegram
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>>;
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>;
 }
-
-pub type RequestFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 #[derive(Debug, Clone)]
 pub struct RequestContext<'a> {

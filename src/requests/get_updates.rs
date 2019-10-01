@@ -1,6 +1,8 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{Request, RequestContext, RequestFuture, ResponseResult},
+    requests::{Request, RequestContext, ResponseResult},
     types::Update,
 };
 
@@ -27,19 +29,24 @@ pub enum AllowedUpdate {
     CallbackQuery,
 }
 
-impl<'a> Request<'a> for GetUpdates<'a> {
+#[async_trait]
+impl Request for GetUpdates<'_> {
     type ReturnValue = Vec<Update>;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "getUpdates",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl GetUpdates<'_> {
+    pub async fn send(self) -> ResponseResult<Vec<Update>> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "getUpdates",
+            &self,
+        )
+        .await
     }
 }
 

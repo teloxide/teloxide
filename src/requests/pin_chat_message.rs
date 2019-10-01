@@ -1,9 +1,9 @@
-use crate::network;
+use async_trait::async_trait;
+
 use crate::{
-    requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    },
-    types::True,
+    network,
+    requests::{ChatId, RequestContext, ResponseResult, Request},
+    types::True
 };
 
 /// Use this method to get up to date information about the chat
@@ -44,18 +44,21 @@ impl<'a> PinChatMessage<'a> {
     }
 }
 
-impl<'a> Request<'a> for PinChatMessage<'a> {
+#[async_trait]
+impl<'a> Request for PinChatMessage<'a> {
     type ReturnValue = True;
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "pinChatMessage",
-                &self,
-            )
-            .await
-        })
+impl PinChatMessage<'_> {
+    async fn send(self) -> ResponseResult<True> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "pinChatMessage",
+            &self,
+        ).await
     }
 }

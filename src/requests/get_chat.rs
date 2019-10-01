@@ -1,8 +1,8 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    },
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::Chat,
 };
 
@@ -19,19 +19,24 @@ pub struct GetChat<'a> {
     chat_id: ChatId,
 }
 
-impl<'a> Request<'a> for GetChat<'a> {
+#[async_trait]
+impl Request for GetChat<'_> {
     type ReturnValue = Chat;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "getChat",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl GetChat<'_> {
+    pub async fn send(self) -> ResponseResult<Chat> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "getChat",
+            &self,
+        )
+        .await
     }
 }
 

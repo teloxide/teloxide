@@ -1,6 +1,8 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{Request, RequestContext, RequestFuture, ResponseResult},
+    requests::{Request, RequestContext, ResponseResult},
     types::File,
 };
 
@@ -19,19 +21,24 @@ pub struct GetFile<'a> {
     pub file_id: String,
 }
 
-impl<'a> Request<'a> for GetFile<'a> {
+#[async_trait]
+impl Request for GetFile<'_> {
     type ReturnValue = File;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "getFile",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl GetFile<'_> {
+    pub async fn send(self) -> ResponseResult<File> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "getFile",
+            &self,
+        )
+        .await
     }
 }
 

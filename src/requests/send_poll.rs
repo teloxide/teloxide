@@ -1,8 +1,8 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    },
+    requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
 
@@ -32,19 +32,24 @@ pub struct SendPoll<'a> {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl<'a> Request<'a> for SendPoll<'a> {
+#[async_trait]
+impl Request for SendPoll<'_> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "sendPoll",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl SendPoll<'_> {
+    pub async fn send(self) -> ResponseResult<Message> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "sendPoll",
+            &self,
+        )
+        .await
     }
 }
 

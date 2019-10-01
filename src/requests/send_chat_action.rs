@@ -1,9 +1,9 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
-    requests::{
-        ChatId, Request, RequestContext, RequestFuture, ResponseResult,
-    },
-    types::True,
+    requests::{ChatId, Request, RequestContext, ResponseResult},
+    types::True
 };
 
 ///Use this method when you need to tell the user that something is happening
@@ -40,19 +40,24 @@ pub enum ChatAction {
     UploadVideoNote,
 }
 
-impl<'a> Request<'a> for SendChatAction<'a> {
+#[async_trait]
+impl Request for SendChatAction<'_> {
     type ReturnValue = True;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "sendChatAction",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl SendChatAction<'_> {
+    pub async fn send(self) -> ResponseResult<True> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "sendChatAction",
+            &self,
+        )
+        .await
     }
 }
 
