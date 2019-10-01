@@ -22,6 +22,7 @@ pub use self::{
     send_video_note::SendVideoNote, send_voice::SendVoice,
     stop_message_live_location::StopMessageLiveLocation,
     unban_chat_member::UnbanChatMember,
+    unpin_chat_message::UnpinChatMessage,
 };
 
 mod form_builder;
@@ -111,3 +112,4 @@ mod send_video_note;
 mod send_voice;
 mod stop_message_live_location;
 mod unban_chat_member;
+mod unpin_chat_message;
