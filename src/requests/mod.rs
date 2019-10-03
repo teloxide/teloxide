@@ -21,8 +21,7 @@ pub use self::{
     send_venue::SendVenue, send_video::SendVideo,
     send_video_note::SendVideoNote, send_voice::SendVoice,
     stop_message_live_location::StopMessageLiveLocation,
-    unban_chat_member::UnbanChatMember,
-    unpin_chat_message::UnpinChatMessage,
+    unban_chat_member::UnbanChatMember, unpin_chat_message::UnpinChatMessage,
 };
 
 mod form_builder;
