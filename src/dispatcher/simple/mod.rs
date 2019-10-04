@@ -16,19 +16,19 @@ use crate::{
 use futures::StreamExt;
 
 
-pub type Handlers<'a, T> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T> + 'a>)>;
+pub type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
 
-pub struct Dispatcher<'a> {
-    message_handlers: Handlers<'a, Message>,
-    edited_message_handlers: Handlers<'a, Message>,
-    channel_post_handlers: Handlers<'a, Message>,
-    edited_channel_post_handlers: Handlers<'a, Message>,
-    inline_query_handlers: Handlers<'a, ()>,
-    chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult>,
-    callback_query_handlers: Handlers<'a, CallbackQuery>,
+pub struct Dispatcher<'a, E> {
+    message_handlers: Handlers<'a, Message, E>,
+    edited_message_handlers: Handlers<'a, Message, E>,
+    channel_post_handlers: Handlers<'a, Message, E>,
+    edited_channel_post_handlers: Handlers<'a, Message, E>,
+    inline_query_handlers: Handlers<'a, (), E>,
+    chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
+    callback_query_handlers: Handlers<'a, CallbackQuery, E>,
 }
 
-impl<'a> Dispatcher<'a> {
+impl<'a, E> Dispatcher<'a, E> {
     pub fn new() -> Self {
         Dispatcher {
             message_handlers: Vec::new(),
@@ -44,7 +44,7 @@ impl<'a> Dispatcher<'a> {
     pub fn message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message> + 'a,
+        H: Handler<'a, Message, E> + 'a,
     {
         self.message_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -53,7 +53,7 @@ impl<'a> Dispatcher<'a> {
     pub fn edited_message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message> + 'a,
+        H: Handler<'a, Message, E> + 'a,
     {
         self.edited_message_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -62,7 +62,7 @@ impl<'a> Dispatcher<'a> {
     pub fn channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message> + 'a,
+        H: Handler<'a, Message, E> + 'a,
     {
         self.channel_post_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -71,7 +71,7 @@ impl<'a> Dispatcher<'a> {
     pub fn edited_channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message> + 'a,
+        H: Handler<'a, Message, E> + 'a,
     {
         self.edited_channel_post_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -80,7 +80,7 @@ impl<'a> Dispatcher<'a> {
     pub fn inline_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<()> + 'a,
-        H: Handler<'a, ()> + 'a,
+        H: Handler<'a, (), E> + 'a,
     {
         self.inline_query_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -89,7 +89,7 @@ impl<'a> Dispatcher<'a> {
     pub fn chosen_inline_result_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<ChosenInlineResult> + 'a,
-        H: Handler<'a, ChosenInlineResult> + 'a,
+        H: Handler<'a, ChosenInlineResult, E> + 'a,
     {
         self.chosen_inline_result_handlers.push((Box::new(filter), Box::new(handler)));
         self
@@ -98,16 +98,16 @@ impl<'a> Dispatcher<'a> {
     pub fn callback_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<CallbackQuery> + 'a,
-        H: Handler<'a, CallbackQuery> + 'a,
+        H: Handler<'a, CallbackQuery, E> + 'a,
     {
         self.callback_query_handlers.push((Box::new(filter), Box::new(handler)));
         self
     }
 
     // TODO: Can someone simplify this?
-    pub async fn dispatch<U, E>(&mut self, updates: U)
+    pub async fn dispatch<U, UE>(&mut self, updates: U)
     where
-        U: Updater<E> + 'a
+        U: Updater<UE> + 'a
     {
         updates.for_each(|res| {
             async {
@@ -133,7 +133,7 @@ impl<'a> Dispatcher<'a> {
                         });
 
                         match handler {
-                            Some(handler) => handler.handle(value).await,
+                            Some(handler) => { handler.handle(value).await; /* todo */ },
                             None => log::warn!("Unhandled update: {:?}", value)
                         }
                     }};
@@ -157,6 +157,8 @@ impl<'a> Dispatcher<'a> {
 
 #[cfg(test)]
 mod tests {
+    use std::convert::Infallible;
+
     #[tokio::test]
     async fn test() {
         use crate::{
@@ -204,8 +206,15 @@ mod tests {
             println!("{:#?}", mes)
         }
 
-        let mut dp = Dispatcher::new()
-            .message_handler(true, handler);
+        async fn handler2(mes: Message) -> Result<(), Infallible>{
+            println!("{:#?}", mes);
+
+            Ok(())
+        }
+
+        let mut dp = Dispatcher::<Infallible>::new()
+            .message_handler(true, handler)
+            .message_handler(true, handler2);
 
         use futures::future::ready;
         use futures::stream;
