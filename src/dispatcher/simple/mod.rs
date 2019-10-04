@@ -14,6 +14,8 @@ use crate::{
 };
 
 use futures::StreamExt;
+use std::pin::Pin;
+use std::future::Future;
 
 
 pub type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
@@ -26,6 +28,7 @@ pub struct Dispatcher<'a, E> {
     inline_query_handlers: Handlers<'a, (), E>,
     chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
     callback_query_handlers: Handlers<'a, CallbackQuery, E>,
+    error_handler: Option<Box<dyn Fn(E) -> Pin<Box<dyn Future<Output = ()> + 'a>>>>,
 }
 
 impl<'a, E> Dispatcher<'a, E> {
@@ -37,7 +40,8 @@ impl<'a, E> Dispatcher<'a, E> {
             edited_channel_post_handlers: Vec::new(),
             inline_query_handlers: Vec::new(),
             chosen_inline_result_handlers: Vec::new(),
-            callback_query_handlers: Vec::new()
+            callback_query_handlers: Vec::new(),
+            error_handler: None,
         }
     }
 
@@ -104,6 +108,16 @@ impl<'a, E> Dispatcher<'a, E> {
         self
     }
 
+    // TODO: rework error handling
+    pub fn set_error_handler<H, Fut>(mut self, handler: H) -> Self
+    where
+        H: Fn(E) -> Fut + 'static,
+        Fut: Future<Output = ()> + 'a,
+    {
+        self.error_handler = Some(Box::new(move |e| Box::pin(handler(e))));
+        self
+    }
+
     // TODO: Can someone simplify this?
     pub async fn dispatch<U, UE>(&mut self, updates: U)
     where
@@ -133,7 +147,13 @@ impl<'a, E> Dispatcher<'a, E> {
                         });
 
                         match handler {
-                            Some(handler) => { handler.handle(value).await; /* todo */ },
+                            Some(handler) => {
+                                 if let Err(err) = handler.handle(value).await {
+                                    if let Some(h) = &self.error_handler {
+                                        h(err).await;
+                                    }
+                                 }
+                            },
                             None => log::warn!("Unhandled update: {:?}", value)
                         }
                     }};
