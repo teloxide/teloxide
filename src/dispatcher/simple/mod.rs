@@ -1,3 +1,5 @@
+pub mod error_policy;
+
 use crate::{
     dispatcher::{
         filter::Filter,
@@ -16,6 +18,7 @@ use crate::{
 use futures::StreamExt;
 use std::pin::Pin;
 use std::future::Future;
+use crate::dispatcher::simple::error_policy::ErrorPolicy;
 
 
 pub type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
@@ -28,11 +31,14 @@ pub struct Dispatcher<'a, E> {
     inline_query_handlers: Handlers<'a, (), E>,
     chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
     callback_query_handlers: Handlers<'a, CallbackQuery, E>,
-    error_handler: Option<Box<dyn Fn(E) -> Pin<Box<dyn Future<Output = ()> + 'a>>>>,
+    error_policy: ErrorPolicy<'a, E>,
 }
 
-impl<'a, E> Dispatcher<'a, E> {
-    pub fn new() -> Self {
+impl<'a, E> Dispatcher<'a, E>
+where
+    E: std::fmt::Debug, // TODO: Is this really necessary?
+{
+    pub fn new(error_policy: ErrorPolicy<'a, E>) -> Self {
         Dispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
@@ -41,7 +47,7 @@ impl<'a, E> Dispatcher<'a, E> {
             inline_query_handlers: Vec::new(),
             chosen_inline_result_handlers: Vec::new(),
             callback_query_handlers: Vec::new(),
-            error_handler: None,
+            error_policy
         }
     }
 
@@ -108,16 +114,6 @@ impl<'a, E> Dispatcher<'a, E> {
         self
     }
 
-    // TODO: rework error handling
-    pub fn set_error_handler<H, Fut>(mut self, handler: H) -> Self
-    where
-        H: Fn(E) -> Fut + 'static,
-        Fut: Future<Output = ()> + 'a,
-    {
-        self.error_handler = Some(Box::new(move |e| Box::pin(handler(e))));
-        self
-    }
-
     // TODO: Can someone simplify this?
     pub async fn dispatch<U, UE>(&mut self, updates: U)
     where
@@ -149,9 +145,7 @@ impl<'a, E> Dispatcher<'a, E> {
                         match handler {
                             Some(handler) => {
                                  if let Err(err) = handler.handle(value).await {
-                                    if let Some(h) = &self.error_handler {
-                                        h(err).await;
-                                    }
+                                    self.error_policy.handle_error(err).await;
                                  }
                             },
                             None => log::warn!("Unhandled update: {:?}", value)
@@ -185,7 +179,7 @@ mod tests {
             types::{
                 Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
             },
-            dispatcher::{simple::Dispatcher, updater::StreamUpdater},
+            dispatcher::{simple::{Dispatcher, error_policy::ErrorPolicy}, updater::StreamUpdater},
         };
 
         let mes = Message {
@@ -232,7 +226,7 @@ mod tests {
             Ok(())
         }
 
-        let mut dp = Dispatcher::<Infallible>::new()
+        let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
             .message_handler(true, handler)
             .message_handler(true, handler2);
 
