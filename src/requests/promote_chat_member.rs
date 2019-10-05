@@ -1,9 +1,8 @@
-use crate::requests::{ChatId, RequestContext, ResponseResult, Request};
-use crate::types::True;
 use crate::network;
+use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
+use crate::types::True;
 
 use async_trait::async_trait;
-
 
 ///Use this method to promote or demote a user in a supergroup or a channel.
 /// The bot must be an administrator in the chat for this to work and must have
@@ -15,38 +14,38 @@ pub struct PromoteChatMember<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    chat_id: ChatId,
+    pub chat_id: ChatId,
     ///Unique identifier of the target user
-    user_id: i32,
+    pub user_id: i32,
     ///Pass True, if the administrator can change chat title, photo and other
     /// settings
     #[serde(skip_serializing_if = "Option::is_none")]
     can_change_info: Option<bool>,
     ///Pass True, if the administrator can create channel posts, channels only
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_post_messages: Option<bool>,
+    pub can_post_messages: Option<bool>,
     ///Pass True, if the administrator can edit messages of other users and
     /// can pin messages, channels only
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_edit_messages: Option<bool>,
+    pub can_edit_messages: Option<bool>,
     ///Pass True, if the administrator can delete messages of other users
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_delete_messages: Option<bool>,
+    pub can_delete_messages: Option<bool>,
     ///Pass True, if the administrator can invite new users to the chat
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_invite_users: Option<bool>,
+    pub can_invite_users: Option<bool>,
     ///Pass True, if the administrator can restrict, ban or unban chat members
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_restrict_members: Option<bool>,
+    pub can_restrict_members: Option<bool>,
     ///Pass True, if the administrator can pin messages, supergroups only
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_pin_messages: Option<bool>,
+    pub can_pin_messages: Option<bool>,
     ///Pass True, if the administrator can add new administrators with a
     /// subset of his own privileges or demote administrators that he has
     /// promoted, directly or indirectly (promoted by administrators that were
     /// appointed by him)
     #[serde(skip_serializing_if = "Option::is_none")]
-    can_promote_members: Option<bool>,
+    pub can_promote_members: Option<bool>,
 }
 #[async_trait]
 impl Request for PromoteChatMember<'_> {
@@ -57,7 +56,6 @@ impl Request for PromoteChatMember<'_> {
     }
 }
 
-
 impl PromoteChatMember<'_> {
     pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
@@ -66,11 +64,15 @@ impl PromoteChatMember<'_> {
             "promoteChatMember",
             &self,
         )
-            .await
+        .await
     }
 }
 impl<'a> PromoteChatMember<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>, chat_id: ChatId, user_id :i32) -> Self {
+    pub(crate) fn new(
+        ctx: RequestContext<'a>,
+        chat_id: ChatId,
+        user_id: i32,
+    ) -> Self {
         Self {
             ctx,
             chat_id,
@@ -82,93 +84,87 @@ impl<'a> PromoteChatMember<'a> {
             can_invite_users: None,
             can_restrict_members: None,
             can_pin_messages: None,
-            can_promote_members: None
+            can_promote_members: None,
         }
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
-            T: Into<ChatId>,
+    where
+        T: Into<ChatId>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
     pub fn user_id<T>(mut self, user_id: T) -> Self
-        where
-            T: Into<i32>,
+    where
+        T: Into<i32>,
     {
         self.user_id = user_id.into();
         self
     }
 
-
-    pub fn can_change_info<T>(mut self, can_change_info :T)->Self
+    pub fn can_change_info<T>(mut self, can_change_info: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_change_info = Some(can_change_info.into());
+        self.can_change_info = Some(can_change_info.into());
         self
     }
 
-    pub fn can_post_messages<T>(mut self, can_post_messages :T)->Self
+    pub fn can_post_messages<T>(mut self, can_post_messages: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_post_messages = Some(can_post_messages.into());
+        self.can_post_messages = Some(can_post_messages.into());
         self
     }
 
-    pub fn can_edit_messages<T>(mut self, can_edit_messages :T)->Self
+    pub fn can_edit_messages<T>(mut self, can_edit_messages: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_edit_messages = Some(can_edit_messages.into());
+        self.can_edit_messages = Some(can_edit_messages.into());
         self
     }
 
-    pub fn can_delete_messages<T>(mut self, can_delete_messages :T)->Self
+    pub fn can_delete_messages<T>(mut self, can_delete_messages: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_delete_messages = Some(can_delete_messages.into());
+        self.can_delete_messages = Some(can_delete_messages.into());
         self
     }
 
-    pub fn can_invite_users<T>(mut self, can_invite_users :T)->Self
+    pub fn can_invite_users<T>(mut self, can_invite_users: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_invite_users = Some(can_invite_users.into());
+        self.can_invite_users = Some(can_invite_users.into());
         self
     }
 
-    pub fn can_restrict_members<T>(mut self, can_restrict_members :T)->Self
+    pub fn can_restrict_members<T>(mut self, can_restrict_members: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_restrict_members = Some(can_restrict_members.into());
+        self.can_restrict_members = Some(can_restrict_members.into());
         self
     }
 
-    pub fn can_pin_messages<T>(mut self, can_pin_messages :T)->Self
+    pub fn can_pin_messages<T>(mut self, can_pin_messages: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_pin_messages = Some(can_pin_messages.into());
+        self.can_pin_messages = Some(can_pin_messages.into());
         self
     }
 
-    pub fn can_promote_members<T>(mut self, can_promote_members :T)->Self
+    pub fn can_promote_members<T>(mut self, can_promote_members: T) -> Self
     where
-        T:Into<bool>,
+        T: Into<bool>,
     {
-    self.can_promote_members = Some(can_promote_members.into());
+        self.can_promote_members = Some(can_promote_members.into());
         self
     }
 }
-
-
-
-
-
