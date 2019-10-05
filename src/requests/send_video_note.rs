@@ -19,8 +19,10 @@ pub struct SendVideoNote<'a> {
     /// notes by a URL is currently unsupported
     pub video_note: String, //	InputFile or String
     ///Duration of sent video in seconds
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
     ///    Video width and height, i.e. diameter of the video message
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub length: Option<u64>,
     ///Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side. The thumbnail should be in JPEG
@@ -30,15 +32,19 @@ pub struct SendVideoNote<'a> {
     /// uploaded as a new file, so you can pass “attach://<file_attach_name>”
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb: Option<String>, //	InputFile or String
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
     ///If the message is a reply, ID of the original message
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
     ///    Additional interface options. A JSON-serialized object for an inline
     /// keyboard, custom reply keyboard, instructions to remove reply keyboard
     /// or to force a reply from the user.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<ReplyMarkup>,
 }
 
