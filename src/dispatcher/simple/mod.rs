@@ -64,7 +64,7 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 ///     })
 ///     // Add 'handler' that will handle all
 ///     // messages edited in chat with the bot
-///     .edited_message_handler(true, edit);
+///     .edited_message_handler(true, handle_edited_message);
 ///
 /// // Start dispatching updates from long polling
 /// dp.dispatch(polling(&bot)).await;
