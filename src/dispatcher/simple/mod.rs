@@ -223,17 +223,38 @@ where
 #[cfg(test)]
 mod tests {
     use std::convert::Infallible;
+    use std::sync::atomic::{AtomicI32, Ordering};
+
+    use crate::{
+        types::{
+            Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
+        },
+        dispatcher::{simple::{Dispatcher, error_policy::ErrorPolicy}, updater::StreamUpdater},
+    };
+    use futures::Stream;
 
     #[tokio::test]
-    async fn test() {
-        use crate::{
-            types::{
-                Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
-            },
-            dispatcher::{simple::{Dispatcher, error_policy::ErrorPolicy}, updater::StreamUpdater},
-        };
+    async fn first_handler_executes_1_time() {
+        let counter = &AtomicI32::new(0);
+        let counter2 = &AtomicI32::new(0);
 
-        let mes = Message {
+        let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+            .message_handler(true, |_mes: Message| async move {
+                counter.fetch_add(1, Ordering::SeqCst);
+            })
+            .message_handler(true, |_mes: Message| async move {
+                counter2.fetch_add(1, Ordering::SeqCst);
+                Ok::<_, Infallible>(())
+            });
+
+        dp.dispatch(one_message_updater()).await;
+
+        assert_eq!(counter.load(Ordering::SeqCst), 1);
+        assert_eq!(counter2.load(Ordering::SeqCst), 0);
+    }
+
+    fn message() -> Message {
+        Message {
             id: 6534,
             date: 1567898953,
             chat: Chat {
@@ -265,25 +286,19 @@ mod tests {
                 },
                 reply_markup: None,
             },
-        };
-
-        async fn handler(mes: Message) {
-            println!("{:#?}", mes)
         }
+    }
 
-        async fn handler2(mes: Message) -> Result<(), Infallible>{
-            println!("{:#?}", mes);
+    fn message_update() -> Update {
+        Update { id: 0, kind: UpdateKind::Message(message()) }
+    }
 
-            Ok(())
-        }
-
-        let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
-            .message_handler(true, handler)
-            .message_handler(true, handler2);
-
+    fn one_message_updater() -> StreamUpdater<impl Stream<Item=Result<Update, Infallible>>> {
         use futures::future::ready;
         use futures::stream;
 
-        dp.dispatch(StreamUpdater::new(stream::once(ready(Result::<_, ()>::Ok(Update { id: 0, kind: UpdateKind::Message(mes) }))))).await;
+        StreamUpdater::new(
+            stream::once(ready(Ok(message_update())))
+        )
     }
 }
