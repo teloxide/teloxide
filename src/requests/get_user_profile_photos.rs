@@ -1,6 +1,10 @@
-use crate::network;
-use crate::requests::{Request, RequestContext, RequestFuture, ResponseResult};
-use crate::types::UserProfilePhotos;
+use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::UserProfilePhotos,
+};
 
 ///Use this method to get a list of profile pictures for a user. Returns a
 /// UserProfilePhotos object.
@@ -20,19 +24,24 @@ pub struct GetUserProfilePhotos<'a> {
     pub limit: Option<i64>,
 }
 
-impl<'a> Request<'a> for GetUserProfilePhotos<'a> {
+#[async_trait]
+impl Request for GetUserProfilePhotos<'_> {
     type ReturnValue = UserProfilePhotos;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "getUserProfilePhotos",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl GetUserProfilePhotos<'_> {
+    async fn send(self) -> ResponseResult<UserProfilePhotos> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "getUserProfilePhotos",
+            &self,
+        )
+        .await
     }
 }
 
@@ -63,11 +72,10 @@ impl<'a> GetUserProfilePhotos<'a> {
     }
 
     pub fn limit<T>(mut self, limit: T) -> Self
-        where
-            T: Into<i64>,
+    where
+        T: Into<i64>,
     {
         self.limit = Some(limit.into());
         self
     }
-
 }

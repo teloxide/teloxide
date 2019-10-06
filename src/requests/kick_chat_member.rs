@@ -1,8 +1,10 @@
-use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{ChatId, Request, RequestContext, ResponseResult},
+    types::True,
 };
-use crate::types::True;
 
 /// Use this method to kick a user from a group, a supergroup or a channel. In
 /// the case of supergroups and channels, the user will not be able to return to
@@ -25,19 +27,24 @@ pub struct KickChatMember<'a> {
     pub until_date: Option<u64>,
 }
 
-impl<'a> Request<'a> for KickChatMember<'a> {
+#[async_trait]
+impl<'a> Request for KickChatMember<'a> {
     type ReturnValue = True;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                self.ctx.client,
-                self.ctx.token,
-                "kickChatMember",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl KickChatMember<'_> {
+    async fn send(self) -> ResponseResult<True> {
+        network::request_json(
+            self.ctx.client,
+            self.ctx.token,
+            "kickChatMember",
+            &self,
+        )
+        .await
     }
 }
 

@@ -6,10 +6,9 @@ use tokio::{
     stream::Stream,
 };
 
-use crate::{
-    network::{file_url, TELEGRAM_API_URL},
-    DownloadError,
-};
+use crate::DownloadError;
+
+use super::TELEGRAM_API_URL;
 
 pub async fn download_file<D>(
     client: &Client,
@@ -35,7 +34,10 @@ pub async fn download_file_stream(
     token: &str,
     path: &str,
 ) -> Result<impl Stream<Item = Result<Chunk, reqwest::Error>>, reqwest::Error> {
-    let url = file_url(TELEGRAM_API_URL, token, path);
-    let resp = client.get(&url).send().await?.error_for_status()?;
-    Ok(resp.into_body())
+    Ok(client
+        .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .send()
+        .await?
+        .error_for_status()?
+        .into_body())
 }

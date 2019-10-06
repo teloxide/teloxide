@@ -12,7 +12,9 @@ pub use self::{
     contact::Contact,
     document::Document,
     encrypted_credintials::EncryptedCredentials,
-    encrypted_passport_element::{EncryptedPassportElement, EncryptedPassportElementKind},
+    encrypted_passport_element::{
+        EncryptedPassportElement, EncryptedPassportElementKind,
+    },
     file::File,
     force_reply::ForceReply,
     game::Game,

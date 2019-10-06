@@ -5,12 +5,12 @@ extern crate derive_more;
 #[macro_use]
 extern crate serde;
 
-mod network;
+pub use errors::{DownloadError, RequestError};
+
 mod errors;
+mod network;
 
 pub mod bot;
 pub mod dispatcher;
 pub mod requests;
 pub mod types;
-
-pub use errors::{DownloadError, RequestError};

@@ -1,8 +1,9 @@
-use crate::network;
-use crate::requests::{
-    ChatId, Request, RequestContext, RequestFuture, ResponseResult,
+use crate::{
+    network,
+    requests::{ChatId, Request, RequestContext, ResponseResult},
+    types::{ChatPermissions, True},
 };
-use crate::types::{ChatPermissions, True};
+use async_trait::async_trait;
 
 /// Use this method to restrict a user in a supergroup. The bot must be an
 /// administrator in the supergroup for this to work and must have the
@@ -26,19 +27,24 @@ pub struct RestrictChatMember<'a> {
     pub until_date: Option<u64>,
 }
 
-impl<'a> Request<'a> for RestrictChatMember<'a> {
+#[async_trait]
+impl<'a> Request for RestrictChatMember<'a> {
     type ReturnValue = True;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            network::request_json(
-                &self.ctx.client,
-                &self.ctx.token,
-                "restrictChatMember",
-                &self,
-            )
-            .await
-        })
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
+
+impl RestrictChatMember<'_> {
+    async fn send(self) -> ResponseResult<True> {
+        network::request_json(
+            &self.ctx.client,
+            &self.ctx.token,
+            "restrictChatMember",
+            &self,
+        )
+        .await
     }
 }
 

@@ -1,8 +1,10 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{
         form_builder::FormBuilder, ChatId, Request, RequestContext,
-        RequestFuture, ResponseResult,
+        ResponseResult,
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
@@ -43,39 +45,44 @@ pub struct SendPhoto<'a> {
     pub reply_markup: Option<ReplyMarkup>,
 }
 
-impl<'a> Request<'a> for SendPhoto<'a> {
+#[async_trait]
+impl Request for SendPhoto<'_> {
     type ReturnValue = Message;
 
-    fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
-        Box::pin(async move {
-            let mut params = FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .add_if_some("caption", self.caption.as_ref())
-                .add_if_some("parse_mode", self.parse_mode.as_ref())
-                .add_if_some(
-                    "disable_notification",
-                    self.disable_notification.as_ref(),
-                )
-                .add_if_some(
-                    "reply_to_message_id",
-                    self.reply_to_message_id.as_ref(),
-                );
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+        self.send().await
+    }
+}
 
-            params = match self.photo {
-                InputFile::File(path) => params.add_file("photo", &path),
-                InputFile::Url(url) => params.add("photo", &url),
-                InputFile::FileId(file_id) => params.add("photo", &file_id),
-            };
-            let params = params.build();
-
-            network::request_multipart(
-                &self.ctx.client,
-                &self.ctx.token,
-                "sendPhoto",
-                Some(params),
+impl SendPhoto<'_> {
+    pub async fn send(self) -> ResponseResult<Message> {
+        let mut params = FormBuilder::new()
+            .add("chat_id", &self.chat_id)
+            .add_if_some("caption", self.caption.as_ref())
+            .add_if_some("parse_mode", self.parse_mode.as_ref())
+            .add_if_some(
+                "disable_notification",
+                self.disable_notification.as_ref(),
             )
-            .await
-        })
+            .add_if_some(
+                "reply_to_message_id",
+                self.reply_to_message_id.as_ref(),
+            );
+
+        params = match self.photo {
+            InputFile::File(path) => params.add_file("photo", &path),
+            InputFile::Url(url) => params.add("photo", &url),
+            InputFile::FileId(file_id) => params.add("photo", &file_id),
+        };
+        let params = params.build();
+
+        network::request_multipart(
+            &self.ctx.client,
+            &self.ctx.token,
+            "sendPhoto",
+            Some(params),
+        )
+        .await
     }
 }
 
