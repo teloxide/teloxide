@@ -7,6 +7,23 @@ use std::{future::Future, pin::Pin};
 
 use crate::RequestError;
 
+pub use self::{
+    answer_pre_checkout_query::AnswerPreCheckoutQuery,
+    answer_shipping_query::AnswerShippingQuery,
+    edit_message_live_location::EditMessageLiveLocation,
+    forward_message::ForwardMessage, get_chat::GetChat, get_file::GetFile,
+    get_me::GetMe, get_updates::GetUpdates,
+    get_user_profile_photos::GetUserProfilePhotos,
+    kick_chat_member::KickChatMember, pin_chat_message::PinChatMessage,
+    restrict_chat_member::RestrictChatMember,
+    send_audio::SendAudio, send_chat_action::SendChatAction,
+    send_contact::SendContact, send_location::SendLocation,
+    send_media_group::SendMediaGroup, send_message::SendMessage,
+    send_photo::SendPhoto, send_poll::SendPoll, send_venue::SendVenue,
+    stop_message_live_location::StopMessageLiveLocation,
+    unban_chat_member::UnbanChatMember,
+};
+
 pub type ResponseResult<T> = Result<T, RequestError>;
 
 /// Request that can be sent to telegram.
@@ -63,25 +80,26 @@ mod tests {
     }
 }
 
-pub mod answer_pre_checkout_query;
-pub mod answer_shipping_query;
-pub mod edit_message_live_location;
-pub mod forward_message;
-pub mod get_chat;
-pub mod get_file;
-pub mod get_me;
-pub mod get_updates;
-pub mod get_user_profile_photos;
-pub mod kick_chat_member;
-pub mod restrict_chat_member;
-pub mod send_audio;
-pub mod send_chat_action;
-pub mod send_contact;
-pub mod send_location;
-pub mod send_media_group;
-pub mod send_message;
-pub mod send_photo;
-pub mod send_poll;
-pub mod send_venue;
-pub mod stop_message_live_location;
-pub mod unban_chat_member;
+mod answer_pre_checkout_query;
+mod answer_shipping_query;
+mod edit_message_live_location;
+mod forward_message;
+mod get_chat;
+mod get_file;
+mod get_me;
+mod get_updates;
+mod get_user_profile_photos;
+mod kick_chat_member;
+mod pin_chat_message;
+mod restrict_chat_member;
+mod send_audio;
+mod send_chat_action;
+mod send_contact;
+mod send_location;
+mod send_media_group;
+mod send_message;
+mod send_photo;
+mod send_poll;
+mod send_venue;
+mod stop_message_live_location;
+mod unban_chat_member;

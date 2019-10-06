@@ -3,6 +3,7 @@ use crate::{
     requests::{
         ChatId, Request, RequestContext, RequestFuture, ResponseResult,
     },
+    types::True
 };
 
 ///Use this method when you need to tell the user that something is happening
@@ -40,7 +41,7 @@ pub enum ChatAction {
 }
 
 impl<'a> Request<'a> for SendChatAction<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {

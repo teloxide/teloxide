@@ -11,6 +11,8 @@ pub use self::{
     chosen_inline_result::ChosenInlineResult,
     contact::Contact,
     document::Document,
+    encrypted_credintials::EncryptedCredentials,
+    encrypted_passport_element::{EncryptedPassportElement, EncryptedPassportElementKind},
     file::File,
     force_reply::ForceReply,
     game::Game,
@@ -54,6 +56,8 @@ pub use self::{
     message_entity::MessageEntity,
     order_info::OrderInfo,
     parse_mode::ParseMode,
+    passport_data::PassportData,
+    passport_file::PassportFile,
     photo_size::PhotoSize,
     poll::{Poll, PollOption},
     pre_checkout_query::PreCheckoutQuery,
@@ -68,6 +72,7 @@ pub use self::{
     sticker::Sticker,
     sticker_set::StickerSet,
     successful_payment::SuccessfulPayment,
+    unit_true::True,
     update::{Update, UpdateKind},
     user::User,
     user_profile_photos::UserProfilePhotos,
@@ -123,6 +128,7 @@ mod shipping_query;
 mod sticker;
 mod sticker_set;
 mod successful_payment;
+mod unit_true;
 mod update;
 mod user;
 mod user_profile_photos;
@@ -154,3 +160,8 @@ mod inline_query_result_photo;
 mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
+
+mod encrypted_credintials;
+mod encrypted_passport_element;
+mod passport_data;
+mod passport_file;

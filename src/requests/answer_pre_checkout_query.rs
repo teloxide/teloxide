@@ -1,6 +1,7 @@
 use crate::{
     network,
     requests::{Request, RequestContext, RequestFuture, ResponseResult},
+    types::True
 };
 
 #[derive(Debug, Serialize, Clone)]
@@ -32,7 +33,7 @@ pub struct AnswerPreCheckoutQuery<'a> {
 }
 
 impl<'a> Request<'a> for AnswerPreCheckoutQuery<'a> {
-    type ReturnValue = bool;
+    type ReturnValue = True;
 
     fn send(self) -> RequestFuture<'a, ResponseResult<Self::ReturnValue>> {
         Box::pin(async move {
