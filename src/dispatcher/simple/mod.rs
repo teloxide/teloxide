@@ -16,13 +16,64 @@ use crate::{
 };
 
 use futures::StreamExt;
-use std::pin::Pin;
-use std::future::Future;
 use crate::dispatcher::simple::error_policy::ErrorPolicy;
 
 
-pub type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
+type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
 
+/// Dispatcher that dispatches updates from telegram.
+///
+/// This is 'simple' implementation with following limitations:
+/// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
+/// - All 'handlers' are boxed
+/// - Handler's fututres are also boxed
+/// - [Custom error policy] is also boxed
+/// - All errors from [updater] are ignored (TODO: remove this limitation)
+/// - All handlers executed in order (this means that in dispatcher have
+///   2 upadtes it will first execute some handler into complition with
+///   first update and **then** search for handler for second update,
+///   this is probably wrong)
+///
+/// ## Examples
+///
+/// Simplest example:
+/// ```no_run
+/// # async fn run() {
+/// use std::convert::Infallible;
+/// use async_telegram_bot::{
+///     bot::Bot,
+///     types::Message,
+///     dispatcher::{
+///         updater::polling,
+///         simple::{Dispatcher, error_policy::ErrorPolicy},
+///     },
+/// };
+///
+/// async fn handle_edited_message(mes: Message) {
+///     println!("Edited message: {:?}", mes)
+/// }
+///
+/// let bot = Bot::new("TOKEN");
+///
+/// // create dispatcher which handlers can't fail
+/// // with error policy that just ignores all errors (that can't ever happen)
+/// let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+///     // Add 'handler' that will handle all messages sent to the bot
+///     .message_handler(true, |mes: Message| async move {
+///         println!("New message: {:?}", mes)
+///     })
+///     // Add 'handler' that will handle all
+///     // messages edited in chat with the bot
+///     .edited_message_handler(true, edit);
+///
+/// // Start dispatching updates from long polling
+/// dp.dispatch(polling(&bot)).await;
+/// # }
+/// ```
+///
+/// [`std::fmt::Debug`]: std::fmt::Debug
+/// [Custom error policy]: crate::dispatcher::simple::error_policy::ErrorPolicy::Custom
+/// [updater]: crate::dispatcher::updater
 pub struct Dispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,

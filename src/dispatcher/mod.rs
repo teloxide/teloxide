@@ -1,4 +1,5 @@
-/// POC implementation of update dispatching
+//! POC implementation of update dispatching
+
 pub mod filter;
 pub mod handler;
 pub mod simple;
