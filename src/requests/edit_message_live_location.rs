@@ -9,9 +9,12 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
 /// until its live_period expires or editing is explicitly disabled by a
-/// call to [`stopMessageLiveLocation`]. On success, if the edited message
+/// call to [`StopMessageLiveLocation`]. On success, if the edited message
 /// was sent by the bot, the edited [`Message`] is returned, otherwise True
 /// is returned.
+///
+/// [`StopMessageLiveLocation`]: crate::requests::StopMessageLiveLocation
+/// [`Message`]: crate::types::Message
 pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
