@@ -14,7 +14,7 @@ pub use self::{
     kick_chat_member::KickChatMember, pin_chat_message::PinChatMessage,
     promote_chat_member::PromoteChatMember,
     restrict_chat_member::RestrictChatMember, send_animation::SendAnimation,
-    send_audio::SendAudio, send_chat_action::SendChatAction,
+    send_audio::SendAudio, send_chat_action::{SendChatAction, ChatAction},
     send_contact::SendContact, send_document::SendDocument,
     send_location::SendLocation, send_media_group::SendMediaGroup,
     send_message::SendMessage, send_photo::SendPhoto, send_poll::SendPoll,
