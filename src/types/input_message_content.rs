@@ -19,7 +19,7 @@ pub enum InputMessageContent {
         /// or inline URLs] in the media caption.
         ///
         /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [Html]: crate::types::ParseMode::Html
+        /// [HTML]: crate::types::ParseMode::HTML
         /// [bold, italic, fixed-width text or inline URLs]:
         /// crate::types::ParseMode
         #[serde(skip_serializing_if = "Option::is_none")]

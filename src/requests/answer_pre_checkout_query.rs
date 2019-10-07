@@ -12,6 +12,8 @@ use crate::{
 /// pre_checkout_query. Use this method to respond to such pre-checkout queries.
 /// On success, True is returned. Note: The Bot API must receive an answer
 /// within 10 seconds after the pre-checkout query was sent.
+///
+/// [`Update`]: crate::types::Update
 pub struct AnswerPreCheckoutQuery<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,

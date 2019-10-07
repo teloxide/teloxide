@@ -15,6 +15,9 @@ use crate::{
 /// to 50 MB in size, this limit may be changed in the future.
 ///
 /// For sending voice messages, use the [`SendVoice`] method instead.
+///
+/// [`Message`]: crate::types::Message
+/// [`SendVoice`]: crate::requests::SendVoice
 pub struct SendAudio<'a> {
     ctx: RequestContext<'a>,
 
@@ -35,7 +38,7 @@ pub struct SendAudio<'a> {
     /// or inline URLs] in the media caption.
     ///
     /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [Html]: crate::types::ParseMode::Html
+    /// [HTML]: crate::types::ParseMode::HTML
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
