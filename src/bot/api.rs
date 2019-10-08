@@ -1,14 +1,14 @@
 use crate::{
     bot::Bot,
     requests::{
-        ChatId, EditMessageLiveLocation, ForwardMessage, GetFile, GetMe,
-        SendAudio, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
-        StopMessageLiveLocation, AnswerPreCheckoutQuery, AnswerShippingQuery,
+        AnswerPreCheckoutQuery, AnswerShippingQuery, ChatAction, ChatId,
+        EditMessageLiveLocation, ForwardMessage, GetFile, GetMe,
         KickChatMember, PinChatMessage, PromoteChatMember, RestrictChatMember,
-        SendChatAction, SendContact, SendPoll, SendVenue, SendVideoNote,
-        SendVoice, UnbanChatMember, UnpinChatMessage, ChatAction
+        SendAudio, SendChatAction, SendContact, SendLocation, SendMediaGroup,
+        SendMessage, SendPhoto, SendPoll, SendVenue, SendVideoNote, SendVoice,
+        StopMessageLiveLocation, UnbanChatMember, UnpinChatMessage,
     },
-    types::{InputFile, InputMedia, ChatPermissions},
+    types::{ChatPermissions, InputFile, InputMedia},
 };
 
 /// Telegram functions
@@ -121,7 +121,7 @@ impl Bot {
     ) -> AnswerPreCheckoutQuery
     where
         I: Into<String>,
-        O: Into<bool>
+        O: Into<bool>,
     {
         AnswerPreCheckoutQuery::new(
             self.ctx(),
@@ -137,12 +137,12 @@ impl Bot {
     ) -> AnswerShippingQuery
     where
         I: Into<String>,
-        O: Into<bool>
+        O: Into<bool>,
     {
         AnswerShippingQuery::new(
             self.ctx(),
             shipping_query_id.into(),
-            ok.into()
+            ok.into(),
         )
     }
 
@@ -161,7 +161,7 @@ impl Bot {
     pub fn pin_chat_message<C, M>(
         &self,
         chat_id: C,
-        message_id: M
+        message_id: M,
     ) -> PinChatMessage
     where
         C: Into<ChatId>,
@@ -186,12 +186,12 @@ impl Bot {
         &self,
         chat_id: C,
         user_id: U,
-        permissions: P
+        permissions: P,
     ) -> RestrictChatMember
     where
         C: Into<ChatId>,
         U: Into<i32>,
-        P: Into<ChatPermissions>
+        P: Into<ChatPermissions>,
     {
         RestrictChatMember::new(
             self.ctx(),
@@ -201,7 +201,11 @@ impl Bot {
         )
     }
 
-    pub fn send_chat_action<C, A>(&self, chat_id: C, action: A) -> SendChatAction
+    pub fn send_chat_action<C, A>(
+        &self,
+        chat_id: C,
+        action: A,
+    ) -> SendChatAction
     where
         C: Into<ChatId>,
         A: Into<ChatAction>,
@@ -218,7 +222,7 @@ impl Bot {
     where
         C: Into<ChatId>,
         P: Into<String>,
-        F: Into<String>
+        F: Into<String>,
     {
         SendContact::new(
             self.ctx(),
@@ -237,7 +241,7 @@ impl Bot {
     where
         C: Into<ChatId>,
         Q: Into<String>,
-        O: Into<Vec<String>>
+        O: Into<Vec<String>>,
     {
         SendPoll::new(
             self.ctx(),
@@ -272,7 +276,11 @@ impl Bot {
         )
     }
 
-    pub fn send_video_note<C, V>(&self, chat_id: C, video_note: V) -> SendVideoNote
+    pub fn send_video_note<C, V>(
+        &self,
+        chat_id: C,
+        video_note: V,
+    ) -> SendVideoNote
     where
         C: Into<ChatId>,
         V: Into<String>, // TODO: InputFile
@@ -288,7 +296,11 @@ impl Bot {
         SendVoice::new(self.ctx(), chat_id.into(), voice.into())
     }
 
-    pub fn unban_chat_member<C, U>(&self, chat_id: C, user_id: U) -> UnbanChatMember
+    pub fn unban_chat_member<C, U>(
+        &self,
+        chat_id: C,
+        user_id: U,
+    ) -> UnbanChatMember
     where
         C: Into<ChatId>,
         U: Into<i32>,
