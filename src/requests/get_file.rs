@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::File,
 };
-use std::borrow::Cow;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading. For the moment, bots can download files of up to 20MB in size.

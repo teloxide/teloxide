@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
-use std::borrow::Cow;
 
 /// Use this method to send information about a venue.
 /// Message is returned.
@@ -15,7 +16,7 @@ pub struct SendVenue<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Latitude of the venue
     pub latitude: f64,
     /// Longitude of the venue
@@ -45,12 +46,12 @@ pub struct SendVenue<'a> {
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove reply keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendVenue<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -58,7 +59,7 @@ impl Request for SendVenue<'_> {
 }
 
 impl SendVenue<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -70,17 +71,19 @@ impl SendVenue<'_> {
 }
 
 impl<'a> SendVenue<'a> {
-    pub(crate) fn new<C, S>(
+    pub(crate) fn new<C, S, Lt, Lg>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        latitude: f64,
-        longitude: f64,
+        latitude: Lt,
+        longitude: Lg,
         title: S,
         address: S,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         S: Into<Cow<'a, str>>,
+        Lt: Into<f32>,
+        Lg: Into<f32>,
     {
         Self {
             ctx,
@@ -98,7 +101,7 @@ impl<'a> SendVenue<'a> {
     }
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -162,7 +165,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<Cow<'a, ReplyMarkup>>,
+        T: Into<ReplyMarkup<'a>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

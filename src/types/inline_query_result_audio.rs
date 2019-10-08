@@ -1,7 +1,7 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultAudio {
+pub struct InlineQueryResultAudio<'a> {
     pub id: String,
     pub audio_url: String,
     pub title: String,
@@ -14,7 +14,7 @@ pub struct InlineQueryResultAudio {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub audio_duration: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

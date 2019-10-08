@@ -1,3 +1,6 @@
+use std::borrow::Cow;
+use std::ops::Deref;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -8,8 +11,6 @@ use crate::{
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
-use std::borrow::Cow;
-use std::ops::Deref;
 
 #[derive(Debug, Clone)]
 /// Use this method to send photos. On success, the sent [`Message`] is
@@ -19,14 +20,14 @@ pub struct SendPhoto<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Photo to send.
     /// [`InputFile::FileId`] - Pass a file_id as String to send a photo that
     /// exists on the Telegram servers (recommended)
     /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
     /// to get a photo from the Internet
     /// [`InputFile::File`] - Upload a new photo.
-    pub photo: Cow<'a, InputFile>,
+    pub photo: InputFile<'a>,
     /// Photo caption (may also be used when resending photos by file_id),
     /// 0-1024 characters
     pub caption: Option<Cow<'a, str>>,
@@ -44,12 +45,12 @@ pub struct SendPhoto<'a> {
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i32>,
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendPhoto<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -57,9 +58,9 @@ impl Request for SendPhoto<'_> {
 }
 
 impl SendPhoto<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         let mut params = FormBuilder::new()
-            .add("chat_id", self.chat_id.deref())
+            .add("chat_id", &self.chat_id)
             .add_if_some("caption", self.caption.as_deref())
             .add_if_some("parse_mode", self.parse_mode.as_ref())
             .add_if_some(
@@ -71,8 +72,8 @@ impl SendPhoto<'_> {
                 self.reply_to_message_id.as_ref(),
             );
 
-        params = match self.photo.deref() {
-            InputFile::File(path) => params.add_file("photo", path),
+        params = match self.photo {
+            InputFile::File(path) => params.add_file("photo", &path),
             InputFile::Url(url) => params.add("photo", url.deref()),
             InputFile::FileId(file_id) => params.add("photo", file_id.deref()),
         };
@@ -95,8 +96,8 @@ impl<'a> SendPhoto<'a> {
         photo: InputFile,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
-        F: Into<Cow<'a, InputFile>>,
+        C: Into<ChatId<'a>>,
+        F: Into<InputFile<'a>>,
     {
         Self {
             ctx,
@@ -112,7 +113,7 @@ impl<'a> SendPhoto<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -120,7 +121,7 @@ impl<'a> SendPhoto<'a> {
 
     pub fn photo<T>(mut self, photo: T) -> Self
     where
-        T: Into<Cow<'a, InputFile>>,
+        T: Into<InputFile<'a>>,
     {
         self.photo = photo.into();
         self

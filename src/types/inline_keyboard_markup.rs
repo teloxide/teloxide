@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::types::InlineKeyboardButton;
 
 /// This object represents an inline keyboard that appears right next to the
@@ -6,10 +8,10 @@ use crate::types::InlineKeyboardButton;
 /// *Note*: This will only work in Telegram versions released after
 /// 9 April, 2016. Older clients will display unsupported message.
 #[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
-pub struct InlineKeyboardMarkup {
+pub struct InlineKeyboardMarkup<'a> {
     /// Array of button rows, each represented by an Array of
     /// [`InlineKeyboardButton`] objects
-    pub inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
+    pub inline_keyboard: Cow<'a, [Cow<'a, [InlineKeyboardButton]>]>,
 }
 
 /// Build Markup
@@ -26,7 +28,7 @@ pub struct InlineKeyboardMarkup {
 /// );
 /// let keyboard = InlineKeyboardMarkup::new().append_row(vec![url_button]);
 /// ```
-impl InlineKeyboardMarkup {
+impl<'a> InlineKeyboardMarkup<'a> {
     pub fn new() -> Self {
         Self {
             inline_keyboard: vec![],

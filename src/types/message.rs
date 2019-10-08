@@ -5,16 +5,16 @@ use crate::types::{
 };
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
-pub struct Message {
+pub struct Message<'a> {
     #[serde(rename = "message_id")]
     pub id: i32,
     pub date: i32,
-    pub chat: Chat,
+    pub chat: Chat<'a>,
     #[serde(flatten)]
-    pub kind: MessageKind,
+    pub kind: MessageKind<'a>,
 }
 
-impl Message {
+impl<'a> Message<'a> {
     pub fn text(&self) -> Option<&str> {
         if let MessageKind::Common {
             media_kind: MediaKind::Text { ref text, .. },
@@ -30,16 +30,16 @@ impl Message {
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum MessageKind {
+pub enum MessageKind<'a> {
     Common {
         #[serde(flatten)]
         from: Sender,
         #[serde(flatten)]
-        forward_kind: ForwardKind,
+        forward_kind: ForwardKind<'a>,
         edit_date: Option<i32>,
         #[serde(flatten)]
         media_kind: MediaKind,
-        reply_markup: Option<InlineKeyboardMarkup>,
+        reply_markup: Option<InlineKeyboardMarkup<'a>>,
     },
     NewChatMembers {
         new_chat_members: Vec<User>,
@@ -70,7 +70,7 @@ pub enum MessageKind {
         migrate_from_chat_id: i64,
     },
     Pinned {
-        pinned: Box<Message>,
+        pinned: Box<Message<'a>>,
     },
     Invoice {
         invoice: Invoice,
@@ -98,12 +98,12 @@ pub enum Sender {
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum ForwardKind {
+pub enum ForwardKind<'a> {
     ChannelForward {
         #[serde(rename = "forward_date")]
         date: i32,
         #[serde(rename = "forward_from_chat")]
-        chat: Chat,
+        chat: Chat<'a>,
         #[serde(rename = "forward_from_message_id")]
         message_id: i32,
         #[serde(rename = "forward_signature")]
@@ -116,7 +116,7 @@ pub enum ForwardKind {
         from: ForwardedFrom,
     },
     Origin {
-        reply_to_message: Option<Box<Message>>,
+        reply_to_message: Option<Box<Message<'a>>>,
     },
 }
 

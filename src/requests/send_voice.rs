@@ -1,8 +1,10 @@
+use std::borrow::Cow;
+
+use async_trait::async_trait;
+
 use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 use crate::types::{Message, ParseMode, ReplyMarkup};
-use async_trait::async_trait;
-use std::borrow::Cow;
 
 ///Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message. For this to work, your audio must be
@@ -16,12 +18,13 @@ pub struct SendVoice<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Audio file to send. Pass a file_id as String to send a file that exists
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: Cow<'a, str>, //InputFile or String
+    pub voice: Cow<'a, str>,
+    //InputFile or String
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<Cow<'a, str>>,
@@ -44,12 +47,12 @@ pub struct SendVoice<'a> {
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove reply keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendVoice<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -57,7 +60,7 @@ impl Request for SendVoice<'_> {
 }
 
 impl SendVoice<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -75,7 +78,7 @@ impl<'a> SendVoice<'a> {
         voice: S,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         S: Into<Cow<'a, str>>,
     {
         Self {
@@ -93,7 +96,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -149,7 +152,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<Cow<'a, ReplyMarkup>>,
+        T: Into<ReplyMarkup<'a>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

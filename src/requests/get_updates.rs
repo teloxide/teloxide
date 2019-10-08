@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::Update,
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUpdates<'a> {
@@ -32,7 +33,7 @@ pub enum AllowedUpdate {
 
 #[async_trait]
 impl Request for GetUpdates<'_> {
-    type ReturnValue = Vec<Update>;
+    type ReturnValue = Vec<Update<'static>>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -40,7 +41,7 @@ impl Request for GetUpdates<'_> {
 }
 
 impl GetUpdates<'_> {
-    pub async fn send(self) -> ResponseResult<Vec<Update>> {
+    pub async fn send(self) -> ResponseResult<Vec<Update<'static>>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

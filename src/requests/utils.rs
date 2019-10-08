@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use bytes::{Bytes, BytesMut};
 use reqwest::r#async::multipart::Part;
@@ -21,7 +21,7 @@ impl tokio::codec::Decoder for FileDecoder {
     }
 }
 
-pub fn file_to_part(path_to_file: &PathBuf) -> Part {
+pub fn file_to_part(path_to_file: &Path) -> Part {
     let file = tokio::fs::File::open(path_to_file.clone())
         .map(|file| {
             FramedRead::new(

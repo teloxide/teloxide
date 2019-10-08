@@ -4,7 +4,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 /// user with optional caption. Alternatively, you can use input_message_content
 /// to send a message with the specified content instead of the photo.
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultPhoto {
+pub struct InlineQueryResultPhoto<'a> {
     pub id: String,
     pub photo_url: String,
     pub thumb_url: String,
@@ -21,7 +21,7 @@ pub struct InlineQueryResultPhoto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_mode: Option<ParseMode>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

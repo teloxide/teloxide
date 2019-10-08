@@ -1,11 +1,14 @@
+use std::borrow::Cow;
+use std::path::Path;
+
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
-pub enum InputFile {
-    File(std::path::PathBuf),
-    Url(String),
-    FileId(String),
+pub enum InputFile<'a> {
+    File(Cow<'a, Path>),
+    Url(Cow<'a, str>),
+    FileId(Cow<'a, str>),
 }
 
-impl serde::Serialize for InputFile {
+impl<'a> serde::Serialize for InputFile<'a> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

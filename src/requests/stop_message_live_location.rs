@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
-use std::borrow::Cow;
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is
@@ -18,7 +19,7 @@ pub struct StopMessageLiveLocation<'a> {
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub chat_id: Option<Cow<'a, ChatId>>,
+    pub chat_id: Option<ChatId<'a>>,
     /// Required if inline_message_id is not specified. Identifier of the
     /// message with live location to stop
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,12 +31,12 @@ pub struct StopMessageLiveLocation<'a> {
     /// A JSON-serialized object InlineKeyboardMarkup for a new inline
     /// keyboard.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<Cow<'a, InlineKeyboardMarkup>>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for StopMessageLiveLocation<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -43,7 +44,7 @@ impl Request for StopMessageLiveLocation<'_> {
 }
 
 impl StopMessageLiveLocation<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -67,7 +68,7 @@ impl<'a> StopMessageLiveLocation<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = Some(chat_id.into());
         self
@@ -91,7 +92,7 @@ impl<'a> StopMessageLiveLocation<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<Cow<'a, InlineKeyboardMarkup>>,
+        T: Into<InlineKeyboardMarkup<'a>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

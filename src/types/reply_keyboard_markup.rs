@@ -1,13 +1,15 @@
+use std::borrow::Cow;
+
 use crate::types::KeyboardButton;
 
 /// This object represents a custom keyboard with reply options.
 #[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
-pub struct ReplyKeyboardMarkup {
+pub struct ReplyKeyboardMarkup<'a> {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
     ///
     /// [`KeyboardButton`]: crate::types::KeyboardButton
-    pub keyboard: Vec<Vec<KeyboardButton>>,
+    pub keyboard: Cow<'a, [Cow<'a, [KeyboardButton]>]>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Optional. Requests clients to resize the keyboard vertically for

@@ -1,10 +1,10 @@
+use async_trait::async_trait;
+
 use crate::{
     network,
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{ChatPermissions, True},
 };
-use async_trait::async_trait;
-use std::borrow::Cow;
 
 /// Use this method to restrict a user in a supergroup. The bot must be an
 /// administrator in the supergroup for this to work and must have the
@@ -16,7 +16,7 @@ pub struct RestrictChatMember<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target chat or username of the target
     /// supergroup (in the format @supergroupusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     ///Unique identifier of the target user
     pub user_id: i32,
     ///New user permissions
@@ -50,14 +50,15 @@ impl RestrictChatMember<'_> {
 }
 
 impl<'a> RestrictChatMember<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, U>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        user_id: i32,
+        user_id: U,
         permissions: ChatPermissions,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
+        U: Into<i32>,
     {
         Self {
             ctx,
@@ -70,7 +71,7 @@ impl<'a> RestrictChatMember<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self

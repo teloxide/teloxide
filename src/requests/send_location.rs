@@ -1,12 +1,12 @@
-use async_trait::async_trait;
 use serde::Serialize;
+
+use async_trait::async_trait;
 
 use crate::{
     network,
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send point on the map. On success, the sent [`Message`]
@@ -17,7 +17,7 @@ pub struct SendLocation<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    chat_id: Cow<'a, ChatId>,
+    chat_id: ChatId<'a>,
     /// Latitude of the location
     latitude: f64,
     /// Longitude of the location
@@ -35,12 +35,12 @@ pub struct SendLocation<'a> {
     /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendLocation<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -48,7 +48,7 @@ impl Request for SendLocation<'_> {
 }
 
 impl SendLocation<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -60,14 +60,16 @@ impl SendLocation<'_> {
 }
 
 impl<'a> SendLocation<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, Lt, Lg>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        latitude: f64,
-        longitude: f64,
+        latitude: Lt,
+        longitude: Lg,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
+        Lt: Into<f32>,
+        Lg: Into<f32>,
     {
         Self {
             ctx,
@@ -83,7 +85,7 @@ impl<'a> SendLocation<'a> {
 
     pub fn chat_id<C>(mut self, chat_id: C) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self

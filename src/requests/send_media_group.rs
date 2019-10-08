@@ -1,4 +1,7 @@
+use std::borrow::Cow;
+
 use apply::Apply;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -9,16 +12,14 @@ use crate::{
     },
     types::{InputFile, InputMedia, Message},
 };
-use std::borrow::Cow;
-use std::ops::Deref;
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {
     ctx: RequestContext<'a>,
 
-    pub chat_id: Cow<'a, ChatId>,
-    pub media: Cow<'a, [InputMedia]>,
+    pub chat_id: ChatId<'a>,
+    pub media: Cow<'a, [InputMedia<'a>]>,
 
     pub disable_notification: Option<bool>,
     pub reply_to_message_id: Option<i32>,
@@ -26,7 +27,7 @@ pub struct SendMediaGroup<'a> {
 
 #[async_trait]
 impl Request for SendMediaGroup<'_> {
-    type ReturnValue = Vec<Message>;
+    type ReturnValue = Vec<Message<'static>>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -34,9 +35,9 @@ impl Request for SendMediaGroup<'_> {
 }
 
 impl SendMediaGroup<'_> {
-    pub async fn send(self) -> ResponseResult<Vec<Message>> {
+    pub async fn send(self) -> ResponseResult<Vec<Message<'static>>> {
         let params = FormBuilder::new()
-            .add("chat_id", self.chat_id.deref())
+            .add("chat_id", &self.chat_id)
             .apply(|form| {
                 self.media
                     .iter()
@@ -73,11 +74,15 @@ impl SendMediaGroup<'_> {
 }
 
 impl<'a> SendMediaGroup<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, M>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        media: Vec<InputMedia>,
-    ) -> Self {
+        chat_id: C,
+        media: M,
+    ) -> Self
+    where
+        C: Into<ChatId<'a>>,
+        M: Into<InputMedia<'a>>,
+    {
         SendMediaGroup {
             ctx,
             chat_id,
@@ -87,22 +92,34 @@ impl<'a> SendMediaGroup<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
+    pub fn chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<ChatId<'a>>,
+    {
         self.chat_id = val.into();
         self
     }
 
-    pub fn media<T: Into<Vec<InputMedia>>>(mut self, val: T) -> Self {
+    pub fn media<T>(mut self, val: T) -> Self
+    where
+        T: Into<InputMedia<'a>>,
+    {
         self.media = val.into();
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
+    pub fn disable_notification<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(val.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
+    pub fn reply_to_message_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.reply_to_message_id = Some(val.into());
         self
     }

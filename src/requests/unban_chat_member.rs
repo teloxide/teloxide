@@ -2,7 +2,6 @@ use async_trait::async_trait;
 
 use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use std::borrow::Cow;
 
 /// Use this method to unban a previously kicked user in a supergroup or
 /// channel. The user will not return to the group or channel automatically, but
@@ -14,7 +13,7 @@ pub struct UnbanChatMember<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target group or username of the target
     /// supergroup or channel (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Unique identifier of the target user
     pub user_id: i32,
 }
@@ -41,13 +40,14 @@ impl UnbanChatMember<'_> {
 }
 
 impl<'a> UnbanChatMember<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, U>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        user_id: i32,
+        user_id: U,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
+        U: Into<i32>,
     {
         Self {
             ctx,
@@ -58,7 +58,7 @@ impl<'a> UnbanChatMember<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self

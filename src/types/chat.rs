@@ -1,23 +1,23 @@
 use crate::types::{ChatPermissions, ChatPhoto, Message};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
-pub struct Chat {
+pub struct Chat<'a> {
     pub id: i64,
     #[serde(flatten)]
-    pub kind: ChatKind,
+    pub kind: ChatKind<'a>,
     pub photo: Option<ChatPhoto>,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum ChatKind {
+pub enum ChatKind<'a> {
     NonPrivate {
         title: Option<String>,
         #[serde(flatten)]
         kind: NonPrivateChatKind,
         description: Option<String>,
         invite_link: Option<String>,
-        pinned_message: Option<Box<Message>>,
+        pinned_message: Option<Box<Message<'a>>>,
     },
     Private {
         /// Dummy field. Used to ensure that "type" field is equal to "private"

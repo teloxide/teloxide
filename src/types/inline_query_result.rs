@@ -14,37 +14,37 @@ use crate::types::{
 #[derive(Debug, Serialize, PartialEq, Clone, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
-pub enum InlineQueryResult {
+pub enum InlineQueryResult<'a> {
     #[serde(rename = "audio")]
-    CachedAudio(InlineQueryResultCachedAudio),
+    CachedAudio(InlineQueryResultCachedAudio<'a>),
     #[serde(rename = "document")]
-    CachedDocument(InlineQueryResultCachedDocument),
+    CachedDocument(InlineQueryResultCachedDocument<'a>),
     #[serde(rename = "gif")]
-    CachedGif(InlineQueryResultCachedGif),
+    CachedGif(InlineQueryResultCachedGif<'a>),
     #[serde(rename = "mpeg4_gif")]
-    CachedMpeg4Gif(InlineQueryResultCachedMpeg4Gif),
+    CachedMpeg4Gif(InlineQueryResultCachedMpeg4Gif<'a>),
     #[serde(rename = "photo")]
-    CachedPhoto(InlineQueryResultCachedPhoto),
+    CachedPhoto(InlineQueryResultCachedPhoto<'a>),
     #[serde(rename = "sticker")]
-    CachedSticker(InlineQueryResultCachedSticker),
+    CachedSticker(InlineQueryResultCachedSticker<'a>),
     #[serde(rename = "video")]
-    CachedVideo(InlineQueryResultCachedVideo),
+    CachedVideo(InlineQueryResultCachedVideo<'a>),
     #[serde(rename = "voice")]
-    CachedVoice(InlineQueryResultCachedVoice),
+    CachedVoice(InlineQueryResultCachedVoice<'a>),
 
-    Article(InlineQueryResultArticle),
-    Audio(InlineQueryResultAudio),
-    Contact(InlineQueryResultContact),
-    Game(InlineQueryResultGame),
-    Document(InlineQueryResultDocument),
-    Gif(InlineQueryResultGif),
-    Location(InlineQueryResultLocation),
+    Article(InlineQueryResultArticle<'a>),
+    Audio(InlineQueryResultAudio<'a>),
+    Contact(InlineQueryResultContact<'a>),
+    Game(InlineQueryResultGame<'a>),
+    Document(InlineQueryResultDocument<'a>),
+    Gif(InlineQueryResultGif<'a>),
+    Location(InlineQueryResultLocation<'a>),
     #[serde(rename = "mpeg4_gif")]
-    Mpeg4Gif(InlineQueryResultMpeg4Gif),
-    Photo(InlineQueryResultPhoto),
-    Venue(InlineQueryResultVenue),
-    Video(InlineQueryResultVideo),
-    Voice(InlineQueryResultVoice),
+    Mpeg4Gif(InlineQueryResultMpeg4Gif<'a>),
+    Photo(InlineQueryResultPhoto<'a>),
+    Venue(InlineQueryResultVenue<'a>),
+    Video(InlineQueryResultVideo<'a>),
+    Voice(InlineQueryResultVoice<'a>),
 }
 
 #[cfg(test)]

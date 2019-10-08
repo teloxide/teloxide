@@ -5,7 +5,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::True,
 };
-use std::borrow::Cow;
 
 ///Use this method when you need to tell the user that something is happening
 /// on the bot's side. The status is set for 5 seconds or less (when a message
@@ -17,7 +16,7 @@ pub struct SendChatAction<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Type of action to broadcast. Choose one, depending on what the user is
     /// about to receive: typing for text messages, upload_photo for photos,
     /// record_video or upload_video for videos, record_audio or upload_audio
@@ -69,7 +68,7 @@ impl<'a> SendChatAction<'a> {
         action: ChatAction,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
     {
         Self {
             ctx,
@@ -80,7 +79,7 @@ impl<'a> SendChatAction<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self

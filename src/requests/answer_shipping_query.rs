@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::{ShippingOption, True},
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// If you sent an invoice requesting a shipping address and the parameter
@@ -60,13 +61,14 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, O>(
         ctx: RequestContext<'a>,
         shipping_query_id: C,
-        ok: bool,
+        ok: O,
     ) -> Self
     where
         C: Into<Cow<'a, str>>,
+        O: Into<bool>,
     {
         Self {
             ctx,

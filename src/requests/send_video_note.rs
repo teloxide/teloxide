@@ -1,8 +1,10 @@
+use std::borrow::Cow;
+
+use async_trait::async_trait;
+
 use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 use crate::types::{Message, ReplyMarkup};
-use async_trait::async_trait;
-use std::borrow::Cow;
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
@@ -13,12 +15,13 @@ pub struct SendVideoNote<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     ///Video note to send. Pass a file_id as String to send a video note that
     /// exists on the Telegram servers (recommended) or upload a new video
     /// using multipart/form-data. More info on Sending Files ». Sending video
     /// notes by a URL is currently unsupported
-    pub video_note: Cow<'a, str>, //	InputFile or String
+    pub video_note: Cow<'a, str>,
+    //	InputFile or String
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -34,7 +37,8 @@ pub struct SendVideoNote<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<Cow<'a, str>>, //	InputFile or String
+    pub thumb: Option<Cow<'a, str>>,
+    //	InputFile or String
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -46,12 +50,12 @@ pub struct SendVideoNote<'a> {
     /// keyboard, custom reply keyboard, instructions to remove reply keyboard
     /// or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendVideoNote<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -59,7 +63,7 @@ impl Request for SendVideoNote<'_> {
 }
 
 impl SendVideoNote<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -77,7 +81,7 @@ impl<'a> SendVideoNote<'a> {
         video_note: S,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         S: Into<Cow<'a, str>>,
     {
         Self {
@@ -95,7 +99,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -151,7 +155,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<Cow<'a, ReplyMarkup>>,
+        T: Into<ReplyMarkup<'a>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

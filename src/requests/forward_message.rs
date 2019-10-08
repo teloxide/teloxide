@@ -5,7 +5,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::Message,
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to forward messages of any kind. On success, the sent
@@ -16,10 +15,10 @@ pub struct ForwardMessage<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub from_chat_id: Cow<'a, ChatId>,
+    pub from_chat_id: ChatId<'a>,
     /// Message identifier in the chat specified in from_chat_id
     pub message_id: i32,
 
@@ -31,7 +30,7 @@ pub struct ForwardMessage<'a> {
 
 #[async_trait]
 impl Request for ForwardMessage<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -39,7 +38,7 @@ impl Request for ForwardMessage<'_> {
 }
 
 impl ForwardMessage<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             self.ctx.client,
             self.ctx.token,
@@ -51,14 +50,16 @@ impl ForwardMessage<'_> {
 }
 
 impl<'a> ForwardMessage<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, F, M>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        from_chat_id: C,
-        message_id: i32,
+        from_chat_id: F,
+        message_id: M,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
+        F: Into<ChatId<'a>>,
+        M: Into<i32>,
     {
         Self {
             ctx,
@@ -71,7 +72,7 @@ impl<'a> ForwardMessage<'a> {
 
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = val.into();
         self
@@ -79,7 +80,7 @@ impl<'a> ForwardMessage<'a> {
 
     pub fn from_chat_id<T>(mut self, val: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.from_chat_id = val.into();
         self

@@ -1,7 +1,7 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultArticle {
+pub struct InlineQueryResultArticle<'a> {
     /// Unique identifier for this result, 1-64 Bytes
     pub id: String,
     /// Title of the result
@@ -10,7 +10,7 @@ pub struct InlineQueryResultArticle {
     pub input_message_content: InputMessageContent,
     /// Optional. Inline keyboard attached to the message
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     /// Optional. URL of the result
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use reqwest::r#async::multipart::Form;
 
@@ -40,7 +40,7 @@ impl FormBuilder {
         }
     }
 
-    pub fn add_file(self, name: &str, path_to_file: &PathBuf) -> Self {
+    pub fn add_file(self, name: &str, path_to_file: &Path) -> Self {
         Self {
             form: self
                 .form
@@ -69,7 +69,7 @@ macro_rules! impl_for_struct {
     };
 }
 
-impl_for_struct!(bool, i32, i64, Vec<InputMedia>);
+impl_for_struct!(bool, i32, i64, Vec<InputMedia<'_>>);
 
 impl ToFormValue for str {
     fn to_form_value(&self) -> String {
@@ -86,7 +86,7 @@ impl ToFormValue for ParseMode {
     }
 }
 
-impl ToFormValue for ChatId {
+impl<'a> ToFormValue for ChatId<'a> {
     fn to_form_value(&self) -> String {
         match self {
             ChatId::Id(id) => id.to_string(),

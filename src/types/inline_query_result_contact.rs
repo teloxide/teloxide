@@ -1,7 +1,7 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultContact {
+pub struct InlineQueryResultContact<'a> {
     pub id: String,
     pub phone_number: String,
     pub first_name: String,
@@ -10,7 +10,7 @@ pub struct InlineQueryResultContact {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vcard: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
     #[serde(skip_serializing_if = "Option::is_none")]

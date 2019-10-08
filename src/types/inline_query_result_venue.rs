@@ -1,7 +1,7 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultVenue {
+pub struct InlineQueryResultVenue<'a> {
     pub id: String,
     pub latitude: f64,
     pub longitude: f64,
@@ -12,7 +12,7 @@ pub struct InlineQueryResultVenue {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub foursquare_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
     #[serde(skip_serializing_if = "Option::is_none")]

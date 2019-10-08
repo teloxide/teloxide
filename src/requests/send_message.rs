@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ParseMode, ReplyMarkup},
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send text messages. On success, the sent [`Message`] is
@@ -16,7 +17,7 @@ pub struct SendMessage<'a> {
 
     ///	Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Text of the message to be sent
     pub text: Cow<'a, str>,
 
@@ -41,12 +42,12 @@ pub struct SendMessage<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendMessage<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -54,7 +55,7 @@ impl Request for SendMessage<'_> {
 }
 
 impl SendMessage<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             self.ctx.client,
             self.ctx.token,
@@ -66,11 +67,15 @@ impl SendMessage<'_> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, T>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        text: String,
-    ) -> Self {
+        chat_id: C,
+        text: T,
+    ) -> Self
+    where
+        C: Into<ChatId<'a>>,
+        T: Into<Cow<'a, str>>,
+    {
         SendMessage {
             ctx,
             chat_id: chat_id.into(),
@@ -85,7 +90,7 @@ impl<'a> SendMessage<'a> {
 
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = val.into();
         self
@@ -133,7 +138,7 @@ impl<'a> SendMessage<'a> {
 
     pub fn reply_markup<T>(mut self, val: T) -> Self
     where
-        T: Into<Cow<'a, ReplyMarkup>>,
+        T: Into<ReplyMarkup<'a>>,
     {
         self.reply_markup = Some(val.into());
         self

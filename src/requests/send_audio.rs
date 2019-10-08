@@ -1,3 +1,6 @@
+use std::borrow::Cow;
+use std::ops::Deref;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -8,8 +11,6 @@ use crate::{
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
-use std::borrow::Cow;
-use std::ops::Deref;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// them in the music player. Your audio must be in the .mp3 format. On success,
@@ -25,14 +26,14 @@ pub struct SendAudio<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: Cow<'a, ChatId>,
+    pub chat_id: ChatId<'a>,
     /// Audio to send.
     /// [`InputFile::FileId`] - Pass a file_id as String to send an audio that
     /// exists on the Telegram servers (recommended).
     /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
     /// to get an audio from the Internet.
     /// [`InputFile::File`] - Upload a new audio.
-    pub audio: Cow<'a, InputFile>,
+    pub audio: InputFile<'a>,
     /// Audio caption, 0-1024 characters
     pub caption: Option<Cow<'a, str>>,
     /// Send [Markdown] or [HTML],
@@ -57,18 +58,18 @@ pub struct SendAudio<'a> {
     /// uploaded as a new file, so you can pass “attach://<file_attach_name>”
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>
-    pub thumb: Option<Cow<'a, InputFile>>,
+    pub thumb: Option<InputFile<'a>>,
     /// Sends the message silently. Users will receive a notification with no
     /// sound.
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i32>,
-    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    pub reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendAudio<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -76,9 +77,9 @@ impl Request for SendAudio<'_> {
 }
 
 impl SendAudio<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         let mut params = FormBuilder::new()
-            .add("chat_id", self.chat_id.deref())
+            .add("chat_id", &self.chat_id)
             .add_if_some("caption", self.caption.as_deref())
             .add_if_some("parse_mode", self.parse_mode.as_ref())
             .add_if_some("duration", self.duration.as_ref())
@@ -92,13 +93,13 @@ impl SendAudio<'_> {
                 "reply_to_message_id",
                 self.reply_to_message_id.as_ref(),
             );
-        params = match self.audio.deref() {
-            InputFile::File(file) => params.add_file("audio", file),
+        params = match self.audio {
+            InputFile::File(file) => params.add_file("audio", &file),
             InputFile::Url(url) => params.add("audio", url.deref()),
             InputFile::FileId(file_id) => params.add("audio", file_id.deref()),
         };
         if let Some(thumb) = self.thumb {
-            params = match thumb.deref() {
+            params = match thumb {
                 InputFile::File(file) => params.add_file("thumb", &file),
                 InputFile::Url(url) => params.add("thumb", url.deref()),
                 InputFile::FileId(file_id) => {
@@ -125,8 +126,8 @@ impl<'a> SendAudio<'a> {
         audio: A,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
-        A: Into<Cow<'a, InputFile>>,
+        C: Into<ChatId<'a>>,
+        A: Into<InputFile<'a>>,
     {
         Self {
             ctx,
@@ -146,7 +147,7 @@ impl<'a> SendAudio<'a> {
 
     pub fn chat_id<C>(mut self, chat_id: C) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -154,7 +155,7 @@ impl<'a> SendAudio<'a> {
 
     pub fn audio<A>(mut self, audio: A) -> Self
     where
-        A: Into<Cow<'a, InputFile>>,
+        A: Into<InputFile<'a>>,
     {
         self.audio = audio.into();
         self
@@ -202,7 +203,7 @@ impl<'a> SendAudio<'a> {
 
     pub fn thumb<T>(mut self, thumb: T) -> Self
     where
-        T: Into<Cow<'a, InputFile>>,
+        T: Into<InputFile<'a>>,
     {
         self.thumb = Some(thumb.into());
         self

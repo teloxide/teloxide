@@ -5,7 +5,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::Chat,
 };
-use std::borrow::Cow;
 
 /// Use this method to get up to date information about the chat
 /// (current name of the user for one-on-one conversations,
@@ -17,12 +16,12 @@ pub struct GetChat<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or username
     /// of the target supergroup or channel (in the format @channelusername)
-    chat_id: Cow<'a, ChatId>,
+    chat_id: ChatId<'a>,
 }
 
 #[async_trait]
 impl Request for GetChat<'_> {
-    type ReturnValue = Chat;
+    type ReturnValue = Chat<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -30,7 +29,7 @@ impl Request for GetChat<'_> {
 }
 
 impl GetChat<'_> {
-    pub async fn send(self) -> ResponseResult<Chat> {
+    pub async fn send(self) -> ResponseResult<Chat<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -44,7 +43,7 @@ impl GetChat<'_> {
 impl<'a> GetChat<'a> {
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self

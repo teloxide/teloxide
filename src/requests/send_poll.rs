@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
-use std::borrow::Cow;
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.
@@ -16,7 +17,7 @@ pub struct SendPoll<'a> {
     /// identifier for the target chat or username of the target channel (in
     /// the format @channelusername). A native poll can't be sent to a private
     /// chat.
-    chat_id: Cow<'a, ChatId>,
+    chat_id: ChatId<'a>,
     /// Poll question, 1-255 characters
     question: Cow<'a, str>,
     /// List of answer options, 2-10 strings 1-100 characters each
@@ -30,12 +31,12 @@ pub struct SendPoll<'a> {
     /// or ForceReply 	Optional 	Additional interface options. A JSON-serialized
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove reply keyboard or to force a reply from the user.
-    reply_markup: Option<Cow<'a, ReplyMarkup>>,
+    reply_markup: Option<ReplyMarkup<'a>>,
 }
 
 #[async_trait]
 impl Request for SendPoll<'_> {
-    type ReturnValue = Message;
+    type ReturnValue = Message<'static>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -43,7 +44,7 @@ impl Request for SendPoll<'_> {
 }
 
 impl SendPoll<'_> {
-    pub async fn send(self) -> ResponseResult<Message> {
+    pub async fn send(self) -> ResponseResult<Message<'static>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,
@@ -57,12 +58,12 @@ impl SendPoll<'_> {
 impl<'a> SendPoll<'a> {
     pub(crate) fn new<C, S, O>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        question: String,
-        options: Vec<String>,
+        chat_id: C,
+        question: S,
+        options: O,
     ) -> Self
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         S: Into<Cow<'a, str>>,
         O: Into<Cow<'a, [str]>>,
     {
@@ -79,7 +80,7 @@ impl<'a> SendPoll<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<Cow<'a, ChatId>>,
+        T: Into<ChatId<'a>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -119,7 +120,7 @@ impl<'a> SendPoll<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<Cow<'a, ReplyMarkup>>,
+        T: Into<ReplyMarkup<'a>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

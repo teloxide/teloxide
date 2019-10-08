@@ -1,7 +1,7 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 #[derive(Debug, Serialize, PartialEq, Clone)]
-pub struct InlineQueryResultVideo {
+pub struct InlineQueryResultVideo<'a> {
     pub id: String,
     pub video_url: String,
     pub mime_type: String,
@@ -20,7 +20,7 @@ pub struct InlineQueryResultVideo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<InlineKeyboardMarkup<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

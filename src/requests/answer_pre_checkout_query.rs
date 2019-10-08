@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_trait::async_trait;
 
 use crate::{
@@ -5,7 +7,6 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::True,
 };
-use std::borrow::Cow;
 
 #[derive(Debug, Serialize, Clone)]
 /// Once the user has confirmed their payment and shipping details, the Bot API
@@ -59,13 +60,14 @@ impl AnswerPreCheckoutQuery<'_> {
 }
 
 impl<'a> AnswerPreCheckoutQuery<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new<C, O>(
         ctx: RequestContext<'a>,
         pre_checkout_query_id: C,
-        ok: bool,
+        ok: O,
     ) -> Self
     where
         C: Into<Cow<'a, str>>,
+        O: Into<bool>,
     {
         Self {
             ctx,

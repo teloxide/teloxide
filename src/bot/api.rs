@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::{
     bot::Bot,
     requests::{
@@ -10,7 +12,6 @@ use crate::{
     },
     types::{ChatPermissions, InputFile, InputMedia},
 };
-use std::borrow::Cow;
 
 /// Telegram functions
 impl Bot {
@@ -18,10 +19,10 @@ impl Bot {
         GetMe::new(self.ctx())
     }
 
-    pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
+    pub fn send_message<'a, C, T>(&'a self, chat_id: C, text: T) -> SendMessage
     where
-        C: Into<ChatId>,
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
+        C: Into<ChatId<'a>>,
     {
         SendMessage::new(self.ctx(), chat_id.into(), text.into())
     }
@@ -49,7 +50,7 @@ impl Bot {
         message_id: M,
     ) -> ForwardMessage
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         M: Into<i32>,
     {
         ForwardMessage::new(
@@ -62,8 +63,8 @@ impl Bot {
 
     pub fn send_audio<'a, C, A>(&'a self, chat_id: C, audio: A) -> SendAudio
     where
-        C: Into<Cow<'a, ChatId>>,
-        A: Into<Cow<'a, InputFile>>,
+        C: Into<ChatId<'a>>,
+        A: Into<InputFile<'a>>,
     {
         SendAudio::new(self.ctx(), chat_id.into(), audio.into())
     }
@@ -75,7 +76,7 @@ impl Bot {
         longitude: Lg,
     ) -> SendLocation
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         Lt: Into<f64>,
         Lg: Into<f64>,
     {
@@ -87,18 +88,22 @@ impl Bot {
         )
     }
 
-    pub fn send_media_group<C, M>(&self, chat_id: C, media: M) -> SendMediaGroup
+    pub fn send_media_group<'a, C, M>(
+        &'a self,
+        chat_id: C,
+        media: M,
+    ) -> SendMediaGroup
     where
-        C: Into<ChatId>,
-        M: Into<Vec<InputMedia>>,
+        C: Into<ChatId<'a>>,
+        M: Into<InputMedia<'a>>,
     {
         SendMediaGroup::new(self.ctx(), chat_id.into(), media.into())
     }
 
-    pub fn send_photo<C, P>(&self, chat_id: C, photo: P) -> SendPhoto
+    pub fn send_photo<'a, C, P>(&'a self, chat_id: C, photo: P) -> SendPhoto
     where
-        C: Into<ChatId>,
-        P: Into<InputFile>,
+        C: Into<ChatId<'a>>,
+        P: Into<InputFile<'a>>,
     {
         SendPhoto::new(self.ctx(), chat_id.into(), photo.into())
     }
@@ -114,13 +119,13 @@ impl Bot {
         GetFile::new(self.ctx(), file_id.into())
     }
 
-    pub fn answer_pre_checkout_query<I, O>(
-        &self,
+    pub fn answer_pre_checkout_query<'a, I, O>(
+        &'a self,
         pre_checkout_query_id: I,
         ok: O,
     ) -> AnswerPreCheckoutQuery
     where
-        I: Into<String>,
+        I: Into<Cow<'a, str>>,
         O: Into<bool>,
     {
         AnswerPreCheckoutQuery::new(
@@ -130,13 +135,13 @@ impl Bot {
         )
     }
 
-    pub fn answer_shipping_query<I, O>(
-        &self,
+    pub fn answer_shipping_query<'a, I, O>(
+        &'a self,
         shipping_query_id: I,
         ok: O,
     ) -> AnswerShippingQuery
     where
-        I: Into<String>,
+        I: Into<Cow<'a, str>>,
         O: Into<bool>,
     {
         AnswerShippingQuery::new(
@@ -152,7 +157,7 @@ impl Bot {
         user_id: U,
     ) -> KickChatMember
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         U: Into<i32>,
     {
         KickChatMember::new(self.ctx(), chat_id.into(), user_id.into())
@@ -164,7 +169,7 @@ impl Bot {
         message_id: M,
     ) -> PinChatMessage
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         M: Into<i32>,
     {
         PinChatMessage::new(self.ctx(), chat_id.into(), message_id.into())
@@ -176,7 +181,7 @@ impl Bot {
         user_id: U,
     ) -> PromoteChatMember
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         U: Into<i32>,
     {
         PromoteChatMember::new(self.ctx(), chat_id.into(), user_id.into())
@@ -189,7 +194,7 @@ impl Bot {
         permissions: P,
     ) -> RestrictChatMember
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         U: Into<i32>,
         P: Into<ChatPermissions>,
     {
@@ -207,7 +212,7 @@ impl Bot {
         action: A,
     ) -> SendChatAction
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         A: Into<ChatAction>,
     {
         SendChatAction::new(self.ctx(), chat_id.into(), action.into())
@@ -220,7 +225,7 @@ impl Bot {
         first_name: S,
     ) -> SendContact
     where
-        C: Into<Cow<'a, ChatId>>,
+        C: Into<ChatId<'a>>,
         S: Into<Cow<'a, str>>,
     {
         SendContact::new(
@@ -231,16 +236,16 @@ impl Bot {
         )
     }
 
-    pub fn send_poll<C, Q, O>(
+    pub fn send_poll<'a, C, Q, O>(
         &self,
         chat_id: C,
         question: Q,
         options: O,
     ) -> SendPoll
     where
-        C: Into<ChatId>,
-        Q: Into<String>,
-        O: Into<Vec<String>>,
+        C: Into<ChatId<'a>>,
+        Q: Into<Cow<'a, str>>,
+        O: Into<Cow<'a, [str]>>,
     {
         SendPoll::new(
             self.ctx(),
@@ -250,8 +255,8 @@ impl Bot {
         )
     }
 
-    pub fn send_venue<C, Lt, Lg, T, A>(
-        &self,
+    pub fn send_venue<'a, C, Lt, Lg, T, A>(
+        &'a self,
         chat_id: C,
         latitude: Lt,
         longitude: Lg,
@@ -259,11 +264,11 @@ impl Bot {
         address: A,
     ) -> SendVenue
     where
-        C: Into<ChatId>,
+        C: Into<ChatId<'a>>,
         Lt: Into<f64>,
         Lg: Into<f64>,
-        T: Into<String>,
-        A: Into<String>,
+        T: Into<Cow<'a, str>>,
+        A: Into<Cow<'a, str>>,
     {
         SendVenue::new(
             self.ctx(),
@@ -275,41 +280,41 @@ impl Bot {
         )
     }
 
-    pub fn send_video_note<C, V>(
-        &self,
+    pub fn send_video_note<'a, C, V>(
+        &'a self,
         chat_id: C,
         video_note: V,
     ) -> SendVideoNote
     where
-        C: Into<ChatId>,
-        V: Into<String>, // TODO: InputFile
+        C: Into<ChatId<'a>>,
+        V: Into<Cow<'a, str>>, // TODO: InputFile
     {
         SendVideoNote::new(self.ctx(), chat_id.into(), video_note.into())
     }
 
-    pub fn send_voice<C, V>(&self, chat_id: C, voice: V) -> SendVoice
+    pub fn send_voice<'a, C, V>(&'a self, chat_id: C, voice: V) -> SendVoice
     where
-        C: Into<ChatId>,
-        V: Into<String>, // TODO: InputFile
+        C: Into<ChatId<'a>>,
+        V: Into<Cow<'a, str>>, // TODO: InputFile
     {
         SendVoice::new(self.ctx(), chat_id.into(), voice.into())
     }
 
-    pub fn unban_chat_member<C, U>(
-        &self,
+    pub fn unban_chat_member<'a, C, U>(
+        &'a self,
         chat_id: C,
         user_id: U,
     ) -> UnbanChatMember
     where
-        C: Into<ChatId>,
+        C: Into<ChatId<'a>>,
         U: Into<i32>,
     {
         UnbanChatMember::new(self.ctx(), chat_id.into(), user_id.into())
     }
 
-    pub fn unpin_chat_message<C>(&self, chat_id: C) -> UnpinChatMessage
+    pub fn unpin_chat_message<'a, C>(&'a self, chat_id: C) -> UnpinChatMessage
     where
-        C: Into<ChatId>,
+        C: Into<ChatId<'a>>,
     {
         UnpinChatMessage::new(self.ctx(), chat_id.into())
     }
