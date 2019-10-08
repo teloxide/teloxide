@@ -95,7 +95,7 @@ impl<'a> AnswerShippingQuery<'a> {
 
     pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
     where
-        T: Into<Vec<Cow<'a, ShippingOption>>>,
+        T: Into<Cow<'a, [ShippingOption]>>,
     {
         self.shipping_options = Some(shipping_options.into());
         self
