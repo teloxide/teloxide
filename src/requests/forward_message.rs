@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::Message,
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to forward messages of any kind. On success, the sent
@@ -15,10 +16,10 @@ pub struct ForwardMessage<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub from_chat_id: ChatId,
+    pub from_chat_id: Cow<'a, ChatId>,
     /// Message identifier in the chat specified in from_chat_id
     pub message_id: i32,
 
@@ -50,37 +51,37 @@ impl ForwardMessage<'_> {
 }
 
 impl<'a> ForwardMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
+        chat_id: C,
+        from_chat_id: C,
         message_id: i32,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, ChatId>> {
         Self {
             ctx,
-            chat_id,
-            from_chat_id,
+            chat_id: chat_id.into(),
+            from_chat_id: from_chat_id.into(),
             message_id,
             disable_notification: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
+    pub fn chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>> {
         self.chat_id = val.into();
         self
     }
 
-    pub fn from_chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
+    pub fn from_chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>>{
         self.from_chat_id = val.into();
         self
     }
 
-    pub fn message_id<T: Into<i32>>(mut self, val: T) -> Self {
+    pub fn message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
         self.message_id = val.into();
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
+    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool>{
         self.disable_notification = Some(val.into());
         self
     }

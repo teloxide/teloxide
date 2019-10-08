@@ -2,6 +2,7 @@ use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 use crate::types::{Message, ReplyMarkup, ParseMode};
 use async_trait::async_trait;
+use std::borrow::Cow;
 
 ///Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message. For this to work, your audio must be
@@ -15,15 +16,15 @@ pub struct SendVoice<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Audio file to send. Pass a file_id as String to send a file that exists
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: String, //InputFile or String
+    pub voice: Cow<'a, str>, //InputFile or String
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub caption: Option<String>,
+    pub caption: Option<Cow<'a, str>>,
     ///	Send Markdown or HTML, if you want Telegram apps to show bold, italic,
     /// fixed-width text or inline URLs in the media caption.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -43,7 +44,7 @@ pub struct SendVoice<'a> {
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove reply keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -68,11 +69,11 @@ impl SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        voice: String,
-    ) -> Self {
+        chat_id: C,
+        voice: S,
+    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>>{
         Self {
             ctx,
             chat_id,
@@ -88,7 +89,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
         where
-            T: Into<ChatId>,
+            T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -96,7 +97,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn voice<T>(mut self, voice: T) -> Self
         where
-            T: Into<String>,
+            T: Into<Cow<'a, str>>,
     {
         self.voice = voice.into();
         self
@@ -104,7 +105,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn caption<T>(mut self, caption: T) -> Self
         where
-            T: Into<String>,
+            T: Into<Cow<'a, str>>,
     {
         self.caption = Some(caption.into());
         self
@@ -146,7 +147,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
         where
-            T: Into<ReplyMarkup>,
+            T: Into<Cow<'a, ReplyMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

@@ -5,6 +5,7 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::True,
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Serialize, Clone)]
 /// Once the user has confirmed their payment and shipping details, the Bot API
@@ -19,7 +20,7 @@ pub struct AnswerPreCheckoutQuery<'a> {
     ctx: RequestContext<'a>,
 
     /// Unique identifier for the query to be answered
-    pub pre_checkout_query_id: String,
+    pub pre_checkout_query_id: Cow<'a, str>,
 
     /// Specify True if everything is alright (goods are available, etc.) and
     /// the bot is ready to proceed with the order. Use False if there are any
@@ -33,7 +34,7 @@ pub struct AnswerPreCheckoutQuery<'a> {
     /// while you were busy filling out your payment details. Please choose a
     /// different color or garment!"). Telegram will display this message to
     /// the user.
-    pub error_message: Option<String>,
+    pub error_message: Option<Cow<'a, str>>,
 }
 
 #[async_trait]
@@ -58,14 +59,14 @@ impl AnswerPreCheckoutQuery<'_> {
 }
 
 impl<'a> AnswerPreCheckoutQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: C,
         ok: bool,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, str>> {
         Self {
             ctx,
-            pre_checkout_query_id,
+            pre_checkout_query_id: pre_checkout_query_id.into(),
             ok,
             error_message: None,
         }
@@ -73,7 +74,7 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
 
     pub fn pre_checkout_query_id<T>(mut self, pre_checkout_query_id: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.pre_checkout_query_id = pre_checkout_query_id.into();
         self
@@ -89,7 +90,7 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
 
     pub fn error_message<T>(mut self, error_message: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.error_message = Some(error_message.into());
         self

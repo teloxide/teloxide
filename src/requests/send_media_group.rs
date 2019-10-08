@@ -9,14 +9,16 @@ use crate::{
     },
     types::{InputFile, InputMedia, Message},
 };
+use std::borrow::Cow;
+use std::ops::Deref;
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {
     ctx: RequestContext<'a>,
 
-    pub chat_id: ChatId,
-    pub media: Vec<InputMedia>,
+    pub chat_id: Cow<'a, ChatId>,
+    pub media: Cow<'a, [InputMedia]>,
 
     pub disable_notification: Option<bool>,
     pub reply_to_message_id: Option<i32>,
@@ -34,7 +36,7 @@ impl Request for SendMediaGroup<'_> {
 impl SendMediaGroup<'_> {
     pub async fn send(self) -> ResponseResult<Vec<Message>> {
         let params = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
+            .add("chat_id", self.chat_id.deref())
             .apply(|form| {
                 self.media
                     .iter()

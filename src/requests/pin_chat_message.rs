@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::True,
 };
+use std::borrow::Cow;
 
 /// Use this method to get up to date information about the chat
 /// (current name of the user for one-on-one conversations,
@@ -16,20 +17,20 @@ pub struct PinChatMessage<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or username
     /// of the target supergroup or channel (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     pub message_id: i32,
     pub disable_notification: Option<bool>,
 }
 
 impl<'a> PinChatMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
+        chat_id: C,
         message_id: i32,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, ChatId>> {
         Self {
             ctx,
-            chat_id,
+            chat_id: chat_id.into(),
             message_id,
             disable_notification: None,
         }

@@ -2,6 +2,7 @@ use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 use crate::types::{Message, ReplyMarkup};
 use async_trait::async_trait;
+use std::borrow::Cow;
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
@@ -12,12 +13,12 @@ pub struct SendVideoNote<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     ///Video note to send. Pass a file_id as String to send a video note that
     /// exists on the Telegram servers (recommended) or upload a new video
     /// using multipart/form-data. More info on Sending Files ». Sending video
     /// notes by a URL is currently unsupported
-    pub video_note: String, //	InputFile or String
+    pub video_note: Cow<'a, str>, //	InputFile or String
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -33,7 +34,7 @@ pub struct SendVideoNote<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>, //	InputFile or String
+    pub thumb: Option<Cow<'a, str>>, //	InputFile or String
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -45,7 +46,7 @@ pub struct SendVideoNote<'a> {
     /// keyboard, custom reply keyboard, instructions to remove reply keyboard
     /// or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -70,11 +71,11 @@ impl SendVideoNote<'_> {
 }
 
 impl<'a> SendVideoNote<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        video_note: String,
-    ) -> Self {
+        chat_id: C,
+        video_note: S,
+    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>> {
         Self {
             ctx,
             chat_id,
@@ -90,7 +91,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -98,7 +99,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn video_note<T>(mut self, video_note: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.video_note = video_note.into();
         self
@@ -122,7 +123,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn thumb<T>(mut self, thumb: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.thumb = Some(thumb.into());
         self
@@ -146,7 +147,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<ReplyMarkup>,
+        T: Into<Cow<'a, ReplyMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

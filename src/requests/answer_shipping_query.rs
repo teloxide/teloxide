@@ -5,6 +5,7 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::{ShippingOption, True},
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// If you sent an invoice requesting a shipping address and the parameter
@@ -18,7 +19,7 @@ pub struct AnswerShippingQuery<'a> {
     ctx: RequestContext<'a>,
 
     /// Unique identifier for the query to be answered
-    pub shipping_query_id: String,
+    pub shipping_query_id: Cow<'a, str>,
     /// Specify True if delivery to the specified address is possible and False
     /// if there are any problems (for example, if delivery to the specified
     /// address is not possible)
@@ -27,14 +28,14 @@ pub struct AnswerShippingQuery<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if ok is True. A JSON-serialized array of available shipping
     /// options.
-    pub shipping_options: Option<Vec<ShippingOption>>,
+    pub shipping_options: Option<Cow<'a, [ShippingOption]>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if ok is False. Error message in human readable form that
     /// explains why it is impossible to complete the order (e.g. "Sorry,
     /// delivery to your desired address is unavailable'). Telegram will
     /// display this message to the user.
-    pub error_message: Option<String>,
+    pub error_message: Option<Cow<'a, str>>,
 }
 
 #[async_trait]
@@ -59,14 +60,14 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        shipping_query_id: String,
+        shipping_query_id: C,
         ok: bool,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, str>> {
         Self {
             ctx,
-            shipping_query_id,
+            shipping_query_id: shipping_query_id.into(),
             ok,
             shipping_options: None,
             error_message: None,
@@ -75,7 +76,7 @@ impl<'a> AnswerShippingQuery<'a> {
 
     pub fn shipping_query_id<T>(mut self, shipping_query_id: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.shipping_query_id = shipping_query_id.into();
         self
@@ -91,7 +92,7 @@ impl<'a> AnswerShippingQuery<'a> {
 
     pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
     where
-        T: Into<Vec<ShippingOption>>,
+        T: Into<Vec<Cow<'a, ShippingOption>>>,
     {
         self.shipping_options = Some(shipping_options.into());
         self
@@ -99,7 +100,7 @@ impl<'a> AnswerShippingQuery<'a> {
 
     pub fn error_message<T>(mut self, error_message: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.error_message = Some(error_message.into());
         self

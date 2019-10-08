@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ParseMode, ReplyMarkup},
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send text messages. On success, the sent [`Message`] is
@@ -15,9 +16,9 @@ pub struct SendMessage<'a> {
 
     ///	Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Text of the message to be sent
-    pub text: String,
+    pub text: Cow<'a, str>,
 
     /// Send [Markdown] or [HTML],
     /// if you want Telegram apps to show [bold, italic, fixed-width text
@@ -40,7 +41,7 @@ pub struct SendMessage<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to_message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -72,8 +73,8 @@ impl<'a> SendMessage<'a> {
     ) -> Self {
         SendMessage {
             ctx,
-            chat_id,
-            text,
+            chat_id: chat_id.into(),
+            text: text.into(),
             parse_mode: None,
             disable_web_page_preview: None,
             disable_notification: None,
@@ -82,37 +83,37 @@ impl<'a> SendMessage<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
+    pub fn chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>> {
         self.chat_id = val.into();
         self
     }
 
-    pub fn text<T: Into<String>>(mut self, val: T) -> Self {
+    pub fn text<T>(mut self, val: T) -> Self where T: Into<Cow<'a, str>> {
         self.text = val.into();
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, val: T) -> Self {
+    pub fn parse_mode<T>(mut self, val: T) -> Self where T: Into<ParseMode>{
         self.parse_mode = Some(val.into());
         self
     }
 
-    pub fn disable_web_page_preview<T: Into<bool>>(mut self, val: T) -> Self {
+    pub fn disable_web_page_preview<T>(mut self, val: T) -> Self where T: Into<bool>{
         self.disable_web_page_preview = Some(val.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
+    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool> {
         self.disable_notification = Some(val.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
+    pub fn reply_to_message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
         self.reply_to_message_id = Some(val.into());
         self
     }
 
-    pub fn reply_markup<T: Into<ReplyMarkup>>(mut self, val: T) -> Self {
+    pub fn reply_markup<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ReplyMarkup>>  {
         self.reply_markup = Some(val.into());
         self
     }

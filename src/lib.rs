@@ -1,4 +1,5 @@
 #![feature(termination_trait_lib)]
+#![feature(inner_deref)]
 
 #[macro_use]
 extern crate derive_more;

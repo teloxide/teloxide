@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
+use std::borrow::Cow;
 
 /// Use this method to send phone contacts.
 /// returned.
@@ -14,18 +15,18 @@ pub struct SendContact<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Contact's phone number
-    pub phone_number: String,
+    pub phone_number: Cow<'a, str>,
     /// Contact's first name
-    pub first_name: String,
+    pub first_name: Cow<'a, str>,
     /// Contact's last name
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub last_name: Option<String>,
+    pub last_name: Option<Cow<'a, str>>,
     /// Additional data about the contact in the form of a
     /// vCard, 0-2048 bytes
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub vcard: Option<String>,
+    pub vcard: Option<Cow<'a, str>>,
     /// Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,7 +40,7 @@ pub struct SendContact<'a> {
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -64,17 +65,17 @@ impl SendContact<'_> {
 }
 
 impl<'a> SendContact<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        phone_number: String,
-        first_name: String,
-    ) -> Self {
+        chat_id: C,
+        phone_number: S,
+        first_name: S,
+    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>>{
         Self {
             ctx,
-            chat_id,
-            phone_number,
-            first_name,
+            chat_id: chat_id.into(),
+            phone_number: phone_number.into(),
+            first_name: first_name.into(),
             last_name: None,
             vcard: None,
             disable_notification: None,
@@ -85,7 +86,7 @@ impl<'a> SendContact<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -93,7 +94,7 @@ impl<'a> SendContact<'a> {
 
     pub fn phone_number<T>(mut self, phone_number: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.phone_number = phone_number.into();
         self
@@ -101,7 +102,7 @@ impl<'a> SendContact<'a> {
 
     pub fn first_name<T>(mut self, first_name: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.first_name = first_name.into();
         self
@@ -109,7 +110,7 @@ impl<'a> SendContact<'a> {
 
     pub fn last_name<T>(mut self, last_name: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.last_name = Some(last_name.into());
         self
@@ -117,7 +118,7 @@ impl<'a> SendContact<'a> {
 
     pub fn vcard<T>(mut self, vcard: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.vcard = Some(vcard.into());
         self
@@ -141,7 +142,7 @@ impl<'a> SendContact<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<ReplyMarkup>,
+        T: Into<Cow<'a, ReplyMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

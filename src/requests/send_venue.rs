@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
+use std::borrow::Cow;
 
 /// Use this method to send information about a venue.
 /// Message is returned.
@@ -14,23 +15,23 @@ pub struct SendVenue<'a> {
     ctx: RequestContext<'a>,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Latitude of the venue
     pub latitude: f64,
     /// Longitude of the venue
     pub longitude: f64,
     /// Name of the venue
-    pub title: String,
+    pub title: Cow<'a, str>,
     /// Address of the venue
-    pub address: String,
+    pub address: Cow<'a, str>,
     /// Foursquare identifier of the venue
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub foursquare_id: Option<String>,
+    pub foursquare_id: Option<Cow<'a, str>>,
     /// Foursquare type of the venue, if known. (For
     /// example, “arts_entertainment/default”, “arts_entertainment/aquarium” or
     /// “food/icecream”.)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub foursquare_type: Option<String>,
+    pub foursquare_type: Option<Cow<'a, str>>,
     /// Sends the message silently. Users will receive a
     /// notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -44,7 +45,7 @@ pub struct SendVenue<'a> {
     /// object for an inline keyboard, custom reply keyboard, instructions to
     /// remove reply keyboard or to force a reply from the user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -69,21 +70,21 @@ impl SendVenue<'_> {
 }
 
 impl<'a> SendVenue<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
+        chat_id: C,
         latitude: f64,
         longitude: f64,
-        title: String,
-        address: String,
-    ) -> Self {
+        title: S,
+        address: S,
+    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>> {
         Self {
             ctx,
-            chat_id,
+            chat_id: chat_id.into(),
             latitude,
             longitude,
-            title,
-            address,
+            title: title.into(),
+            address: address.into(),
             foursquare_id: None,
             foursquare_type: None,
             disable_notification: None,
@@ -93,7 +94,7 @@ impl<'a> SendVenue<'a> {
     }
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self
@@ -117,7 +118,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn title<T>(mut self, title: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.title = title.into();
         self
@@ -125,7 +126,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn address<T>(mut self, address: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.address = address.into();
         self
@@ -133,7 +134,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn foursquare_id<T>(mut self, foursquare_id: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.foursquare_id = Some(foursquare_id.into());
         self
@@ -149,7 +150,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn foursquare_type<T>(mut self, foursquare_type: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.foursquare_type = Some(foursquare_type.into());
         self
@@ -157,7 +158,7 @@ impl<'a> SendVenue<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<ReplyMarkup>,
+        T: Into<Cow<'a, ReplyMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

@@ -5,6 +5,7 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::Update,
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUpdates<'a> {
@@ -14,7 +15,7 @@ pub struct GetUpdates<'a> {
     pub offset: Option<i32>,
     pub limit: Option<u8>,
     pub timeout: Option<u32>,
-    pub allowed_updates: Option<Vec<AllowedUpdate>>,
+    pub allowed_updates: Option<Cow<'a, [AllowedUpdate]>>,
 }
 
 #[derive(Debug, Serialize, Eq, Hash, PartialEq, Clone, Copy)]
@@ -87,7 +88,7 @@ impl<'a> GetUpdates<'a> {
 
     pub fn allowed_updates<T>(mut self, allowed_updates: T) -> Self
     where
-        T: Into<Vec<AllowedUpdate>>,
+        T: Into<Option<Cow<'a, [AllowedUpdate]>>>,
     {
         self.allowed_updates = Some(allowed_updates.into());
         self

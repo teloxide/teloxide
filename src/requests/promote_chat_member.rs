@@ -3,6 +3,7 @@ use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
 use crate::types::True;
 
 use async_trait::async_trait;
+use std::borrow::Cow;
 
 ///Use this method to promote or demote a user in a supergroup or a channel.
 /// The bot must be an administrator in the chat for this to work and must have
@@ -14,7 +15,7 @@ pub struct PromoteChatMember<'a> {
     ctx: RequestContext<'a>,
     ///Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     ///Unique identifier of the target user
     pub user_id: i32,
     ///Pass True, if the administrator can change chat title, photo and other
@@ -68,14 +69,14 @@ impl PromoteChatMember<'_> {
     }
 }
 impl<'a> PromoteChatMember<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
+        chat_id: C,
         user_id: i32,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, ChatId>> {
         Self {
             ctx,
-            chat_id,
+            chat_id: chat_id.into(),
             user_id,
             can_change_info: None,
             can_post_messages: None,
@@ -90,7 +91,7 @@ impl<'a> PromoteChatMember<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self

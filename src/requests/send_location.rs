@@ -6,6 +6,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send point on the map. On success, the sent [`Message`]
@@ -16,7 +17,7 @@ pub struct SendLocation<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    chat_id: ChatId,
+    chat_id: Cow<'a, ChatId>,
     /// Latitude of the location
     latitude: f64,
     /// Longitude of the location
@@ -34,7 +35,7 @@ pub struct SendLocation<'a> {
     /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    reply_markup: Option<ReplyMarkup>,
+    reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -59,15 +60,15 @@ impl SendLocation<'_> {
 }
 
 impl<'a> SendLocation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
+        chat_id: C,
         latitude: f64,
         longitude: f64,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, ChatId>>{
         Self {
             ctx,
-            chat_id,
+            chat_id: chat_id.into(),
             latitude,
             longitude,
             live_period: None,
@@ -77,12 +78,12 @@ impl<'a> SendLocation<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self where C: Into<Cow<'a, ChatId>> {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn latitude<T: Into<f64>>(mut self, latitude: T) -> Self {
+    pub fn latitude<T>(mut self, latitude: T) -> Self where T: Into<f64>{
         self.latitude = latitude.into();
         self
     }
@@ -92,17 +93,17 @@ impl<'a> SendLocation<'a> {
         self
     }
 
-    pub fn live_period<T: Into<i32>>(mut self, live_period: T) -> Self {
+    pub fn live_period<T>(mut self, live_period: T) -> Self where T: Into<i32> {
         self.live_period = Some(live_period.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
+    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool> {
         self.disable_notification = Some(val.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
+    pub fn reply_to_message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
         self.reply_to_message_id = Some(val.into());
         self
     }

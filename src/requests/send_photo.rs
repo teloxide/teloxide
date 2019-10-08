@@ -8,6 +8,8 @@ use crate::{
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
+use std::borrow::Cow;
+use std::ops::Deref;
 
 #[derive(Debug, Clone)]
 /// Use this method to send photos. On success, the sent [`Message`] is
@@ -17,17 +19,17 @@ pub struct SendPhoto<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Photo to send.
     /// [`InputFile::FileId`] - Pass a file_id as String to send a photo that
     /// exists on the Telegram servers (recommended)
     /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
     /// to get a photo from the Internet
     /// [`InputFile::File`] - Upload a new photo.
-    pub photo: InputFile,
+    pub photo: Cow<'a, InputFile>,
     /// Photo caption (may also be used when resending photos by file_id),
     /// 0-1024 characters
-    pub caption: Option<String>,
+    pub caption: Option<Cow<'a, str>>,
     /// Send [Markdown] or [HTML],
     /// if you want Telegram apps to show [bold, italic, fixed-width text
     /// or inline URLs] in the media caption.
@@ -42,7 +44,7 @@ pub struct SendPhoto<'a> {
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i32>,
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -57,8 +59,8 @@ impl Request for SendPhoto<'_> {
 impl SendPhoto<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add_if_some("caption", self.caption.as_ref())
+            .add("chat_id", self.chat_id.deref())
+            .add_if_some("caption", self.caption.as_deref())
             .add_if_some("parse_mode", self.parse_mode.as_ref())
             .add_if_some(
                 "disable_notification",
@@ -69,10 +71,10 @@ impl SendPhoto<'_> {
                 self.reply_to_message_id.as_ref(),
             );
 
-        params = match self.photo {
-            InputFile::File(path) => params.add_file("photo", &path),
-            InputFile::Url(url) => params.add("photo", &url),
-            InputFile::FileId(file_id) => params.add("photo", &file_id),
+        params = match self.photo.deref() {
+            InputFile::File(path) => params.add_file("photo", path),
+            InputFile::Url(url) => params.add("photo", url.deref()),
+            InputFile::FileId(file_id) => params.add("photo", file_id.deref()),
         };
         let params = params.build();
 
@@ -87,15 +89,15 @@ impl SendPhoto<'_> {
 }
 
 impl<'a> SendPhoto<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, F>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
+        chat_id: C,
         photo: InputFile,
-    ) -> Self {
+    ) -> Self where C: Into<Cow<'a, ChatId>>, F: Into<Cow<'a, InputFile>> {
         Self {
             ctx,
-            chat_id,
-            photo,
+            chat_id: chat_id.into(),
+            photo: photo.into(),
             caption: None,
             parse_mode: None,
             disable_notification: None,
@@ -104,38 +106,38 @@ impl<'a> SendPhoto<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self where T: Into<Cow<'a, ChatId>> {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn photo<T: Into<InputFile>>(mut self, photo: T) -> Self {
+    pub fn photo<T>(mut self, photo: T) -> Self where T: Into<Cow<'a, InputFile>> {
         self.photo = photo.into();
         self
     }
 
-    pub fn caption<T: Into<String>>(mut self, caption: T) -> Self {
+    pub fn caption<T>(mut self, caption: T) -> Self where T: Into<Cow<'a, str>> {
         self.caption = Some(caption.into());
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, parse_mode: T) -> Self {
+    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self where T: Into<Cow<'a, ParseMode>> {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(
+    pub fn disable_notification<T>(
         mut self,
         disable_notification: T,
-    ) -> Self {
+    ) -> Self where T: Into<bool> {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(
+    pub fn reply_to_message_id<T>(
         mut self,
         reply_to_message_id: T,
-    ) -> Self {
+    ) -> Self where T: Into<i32> {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

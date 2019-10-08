@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
+use std::borrow::Cow;
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is
@@ -17,7 +18,7 @@ pub struct StopMessageLiveLocation<'a> {
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub chat_id: Option<ChatId>,
+    pub chat_id: Option<Cow<'a, ChatId>>,
     /// Required if inline_message_id is not specified. Identifier of the
     /// message with live location to stop
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -25,11 +26,11 @@ pub struct StopMessageLiveLocation<'a> {
     /// Required if chat_id and message_id are not specified. Identifier of the
     /// inline message
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub inline_message_id: Option<String>,
+    pub inline_message_id: Option<Cow<'a, str>>,
     /// A JSON-serialized object InlineKeyboardMarkup for a new inline
     /// keyboard.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_markup: Option<InlineKeyboardMarkup>,
+    pub reply_markup: Option<Cow<'a, InlineKeyboardMarkup>>,
 }
 
 #[async_trait]
@@ -66,7 +67,7 @@ impl<'a> StopMessageLiveLocation<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = Some(chat_id.into());
         self
@@ -82,7 +83,7 @@ impl<'a> StopMessageLiveLocation<'a> {
 
     pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.inline_message_id = Some(inline_message_id.into());
         self
@@ -90,7 +91,7 @@ impl<'a> StopMessageLiveLocation<'a> {
 
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
     where
-        T: Into<InlineKeyboardMarkup>,
+        T: Into<Cow<'a, InlineKeyboardMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self

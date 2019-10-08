@@ -5,6 +5,7 @@ use crate::{
     requests::{Request, RequestContext, ResponseResult},
     types::File,
 };
+use std::borrow::Cow;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading. For the moment, bots can download files of up to 20MB in size.
@@ -18,7 +19,7 @@ pub struct GetFile<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
     /// File identifier to get info about
-    pub file_id: String,
+    pub file_id: Cow<'a, str>,
 }
 
 #[async_trait]
@@ -43,13 +44,13 @@ impl GetFile<'_> {
 }
 
 impl<'a> GetFile<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>, file_id: String) -> Self {
+    pub(crate) fn new(ctx: RequestContext<'a>, file_id: Cow<'a, str>) -> Self {
         Self { ctx, file_id }
     }
 
-    pub fn file_id<T>(mut self, file_id: T) -> Self
+    pub fn file_id<C>(mut self, file_id: C) -> Self
     where
-        T: Into<String>,
+        C: Into<Cow<'a, str>>,
     {
         self.file_id = file_id.into();
         self

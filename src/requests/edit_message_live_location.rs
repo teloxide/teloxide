@@ -5,6 +5,7 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::{Message, ReplyMarkup},
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
@@ -31,14 +32,14 @@ pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if chat_id and message_id are not specified. Identifier of
     /// the inline message
-    inline_message_id: Option<String>,
+    inline_message_id: Option<Cow<'a, str>>,
     /// Latitude of new location
     latitude: f64,
     /// Longitude of new location
     longitude: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     /// A JSON-serialized object for a new inline keyboard.
-    reply_markup: Option<ReplyMarkup>,
+    reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -79,30 +80,30 @@ impl<'a> EditMessageLiveLocation<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self where T: Into<ChatId> {
         self.chat_id = Some(chat_id.into());
         self
     }
 
-    pub fn message_id<T: Into<i32>>(mut self, message_id: T) -> Self {
+    pub fn message_id<T>(mut self, message_id: T) -> Self where T: Into<i32> {
         self.message_id = Some(message_id.into());
         self
     }
 
     pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
     where
-        T: Into<String>,
+        T: Into<Cow<'a, str>>,
     {
         self.inline_message_id = Some(inline_message_id.into());
         self
     }
 
-    pub fn latitude<T: Into<f64>>(mut self, latitude: T) -> Self {
+    pub fn latitude<T>(mut self, latitude: T) -> Self where T: Into<f64> {
         self.latitude = latitude.into();
         self
     }
 
-    pub fn longitude<T: Into<f64>>(mut self, longitude: T) -> Self {
+    pub fn longitude<T>(mut self, longitude: T) -> Self where T: Into<f64>  {
         self.longitude = longitude.into();
         self
     }

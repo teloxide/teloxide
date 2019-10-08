@@ -8,6 +8,8 @@ use crate::{
     },
     types::{InputFile, Message, ParseMode, ReplyMarkup},
 };
+use std::borrow::Cow;
+use std::ops::Deref;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// them in the music player. Your audio must be in the .mp3 format. On success,
@@ -23,16 +25,16 @@ pub struct SendAudio<'a> {
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
     /// Audio to send.
     /// [`InputFile::FileId`] - Pass a file_id as String to send an audio that
     /// exists on the Telegram servers (recommended).
     /// [`InputFile::Url`] - Pass an HTTP URL as a String for Telegram
     /// to get an audio from the Internet.
     /// [`InputFile::File`] - Upload a new audio.
-    pub audio: InputFile,
+    pub audio: Cow<'a, InputFile>,
     /// Audio caption, 0-1024 characters
-    pub caption: Option<String>,
+    pub caption: Option<Cow<'a, str>>,
     /// Send [Markdown] or [HTML],
     /// if you want Telegram apps to show [bold, italic, fixed-width text
     /// or inline URLs] in the media caption.
@@ -45,9 +47,9 @@ pub struct SendAudio<'a> {
     /// Duration of the audio in seconds
     pub duration: Option<i32>,
     /// Performer
-    pub performer: Option<String>,
+    pub performer: Option<Cow<'a, str>>,
     /// Track name
-    pub title: Option<String>,
+    pub title: Option<Cow<'a, str>>,
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side. The thumbnail should be in JPEG
     /// format and less than 200 kB in size. A thumbnail‘s width and height
@@ -55,13 +57,13 @@ pub struct SendAudio<'a> {
     /// uploaded as a new file, so you can pass “attach://<file_attach_name>”
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>
-    pub thumb: Option<InputFile>,
+    pub thumb: Option<Cow<'a, InputFile>>,
     /// Sends the message silently. Users will receive a notification with no
     /// sound.
     pub disable_notification: Option<bool>,
     /// If the message is a reply, ID of the original message
     pub reply_to_message_id: Option<i32>,
-    pub reply_markup: Option<ReplyMarkup>,
+    pub reply_markup: Option<Cow<'a, ReplyMarkup>>,
 }
 
 #[async_trait]
@@ -76,12 +78,12 @@ impl Request for SendAudio<'_> {
 impl SendAudio<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add_if_some("caption", self.caption.as_ref())
+            .add("chat_id", self.chat_id.deref())
+            .add_if_some("caption", self.caption.as_deref())
             .add_if_some("parse_mode", self.parse_mode.as_ref())
             .add_if_some("duration", self.duration.as_ref())
-            .add_if_some("performer", self.performer.as_ref())
-            .add_if_some("title", self.title.as_ref())
+            .add_if_some("performer", self.performer.as_deref())
+            .add_if_some("title", self.title.as_deref())
             .add_if_some(
                 "disable_notification",
                 self.disable_notification.as_ref(),
@@ -90,16 +92,16 @@ impl SendAudio<'_> {
                 "reply_to_message_id",
                 self.reply_to_message_id.as_ref(),
             );
-        params = match self.audio {
-            InputFile::File(file) => params.add_file("audio", &file),
-            InputFile::Url(url) => params.add("audio", &url),
-            InputFile::FileId(file_id) => params.add("audio", &file_id),
+        params = match self.audio.deref() {
+            InputFile::File(file) => params.add_file("audio", file),
+            InputFile::Url(url) => params.add("audio", url.deref()),
+            InputFile::FileId(file_id) => params.add("audio", file_id.deref()),
         };
         if let Some(thumb) = self.thumb {
-            params = match thumb {
+            params = match thumb.deref() {
                 InputFile::File(file) => params.add_file("thumb", &file),
-                InputFile::Url(url) => params.add("thumb", &url),
-                InputFile::FileId(file_id) => params.add("thumb", &file_id),
+                InputFile::Url(url) => params.add("thumb", url.deref()),
+                InputFile::FileId(file_id) => params.add("thumb", file_id.deref()),
             }
         }
         let params = params.build();
@@ -115,15 +117,15 @@ impl SendAudio<'_> {
 }
 
 impl<'a> SendAudio<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, A>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        audio: InputFile,
-    ) -> Self {
+        chat_id: C,
+        audio: A,
+    ) -> Self where C: Into<Cow<'a, ChatId>>, A: Into<Cow<'a, InputFile>>{
         Self {
             ctx,
-            chat_id,
-            audio,
+            chat_id: chat_id.into(),
+            audio: audio.into(),
             caption: None,
             parse_mode: None,
             duration: None,
@@ -136,58 +138,58 @@ impl<'a> SendAudio<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self where C: Into<Cow<'a, ChatId>> {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn audio<T: Into<InputFile>>(mut self, audio: T) -> Self {
+    pub fn audio<A>(mut self, audio: A) -> Self where A: Into<Cow<'a, InputFile>> {
         self.audio = audio.into();
         self
     }
 
-    pub fn caption<T: Into<String>>(mut self, caption: T) -> Self {
+    pub fn caption<C>(mut self, caption: C) -> Self where C: Into<Cow<'a, str>> {
         self.caption = Some(caption.into());
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, parse_mode: T) -> Self {
+    pub fn parse_mode<P>(mut self, parse_mode: P) -> Self where P: Into<ParseMode> {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-    pub fn duration<T: Into<i32>>(mut self, duration: T) -> Self {
+    pub fn duration<D>(mut self, duration: D) -> Self where D: Into<i32> {
         self.duration = Some(duration.into());
         self
     }
 
-    pub fn performer<T: Into<String>>(mut self, performer: T) -> Self {
+    pub fn performer<P>(mut self, performer: P) -> Self where P: Into<Cow<'a, str>> {
         self.performer = Some(performer.into());
         self
     }
 
-    pub fn title<T: Into<String>>(mut self, title: T) -> Self {
+    pub fn title<T>(mut self, title: T) -> Self where T: Into<Cow<'a, str>>{
         self.title = Some(title.into());
         self
     }
 
-    pub fn thumb<T: Into<InputFile>>(mut self, thumb: T) -> Self {
+    pub fn thumb<T>(mut self, thumb: T) -> Self where T: Into<Cow<'a, InputFile>>{
         self.thumb = Some(thumb.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(
+    pub fn disable_notification<D>(
         mut self,
-        disable_notification: T,
-    ) -> Self {
+        disable_notification: D,
+    ) -> Self where D: Into<bool> {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(
+    pub fn reply_to_message_id<R>(
         mut self,
-        reply_to_message_id: T,
-    ) -> Self {
+        reply_to_message_id: R,
+    ) -> Self where R: Into<i32> {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

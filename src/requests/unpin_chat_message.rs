@@ -5,13 +5,14 @@ use crate::{
     requests::{ChatId, Request, RequestContext, ResponseResult},
     types::True,
 };
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct UnpinChatMessage<'a> {
     #[serde(skip_serializing)]
     pub ctx: RequestContext<'a>,
 
-    pub chat_id: ChatId,
+    pub chat_id: Cow<'a, ChatId>,
 }
 
 #[async_trait]
@@ -42,7 +43,7 @@ impl<'a> UnpinChatMessage<'a> {
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self

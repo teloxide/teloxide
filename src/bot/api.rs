@@ -10,6 +10,7 @@ use crate::{
     },
     types::{InputFile, InputMedia, ChatPermissions},
 };
+use std::borrow::Cow;
 
 /// Telegram functions
 impl Bot {
@@ -41,15 +42,14 @@ impl Bot {
         )
     }
 
-    pub fn forward_message<C, F, M>(
-        &self,
+    pub fn forward_message<'a, C, F, M>(
+        &'a self,
         chat_id: C,
-        from_chat_id: F,
+        from_chat_id: C,
         message_id: M,
     ) -> ForwardMessage
     where
-        C: Into<ChatId>,
-        F: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         M: Into<i32>,
     {
         ForwardMessage::new(
@@ -60,22 +60,22 @@ impl Bot {
         )
     }
 
-    pub fn send_audio<C, A>(&self, chat_id: C, audio: A) -> SendAudio
+    pub fn send_audio<'a, C, A>(&'a self, chat_id: C, audio: A) -> SendAudio
     where
-        C: Into<ChatId>,
-        A: Into<InputFile>,
+        C: Into<Cow<'a, ChatId>>,
+        A: Into<Cow<'a, InputFile>>,
     {
         SendAudio::new(self.ctx(), chat_id.into(), audio.into())
     }
 
-    pub fn send_location<C, Lt, Lg>(
-        &self,
+    pub fn send_location<'a, C, Lt, Lg>(
+        &'a self,
         chat_id: C,
         latitude: Lt,
         longitude: Lg,
     ) -> SendLocation
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         Lt: Into<f64>,
         Lg: Into<f64>,
     {
@@ -107,9 +107,9 @@ impl Bot {
         StopMessageLiveLocation::new(self.ctx())
     }
 
-    pub fn get_file<F>(&self, file_id: F) -> GetFile
+    pub fn get_file<'a, C>(&'a self, file_id: C) -> GetFile<'a>
     where
-        F: Into<String>,
+        C: Into<Cow<'a, str>>,
     {
         GetFile::new(self.ctx(), file_id.into())
     }
@@ -146,50 +146,50 @@ impl Bot {
         )
     }
 
-    pub fn kick_chat_member<C, U>(
-        &self,
+    pub fn kick_chat_member<'a, C, U>(
+        &'a self,
         chat_id: C,
         user_id: U,
     ) -> KickChatMember
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         U: Into<i32>,
     {
         KickChatMember::new(self.ctx(), chat_id.into(), user_id.into())
     }
 
-    pub fn pin_chat_message<C, M>(
-        &self,
+    pub fn pin_chat_message<'a, C, M>(
+        &'a self,
         chat_id: C,
         message_id: M
     ) -> PinChatMessage
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         M: Into<i32>,
     {
         PinChatMessage::new(self.ctx(), chat_id.into(), message_id.into())
     }
 
-    pub fn promote_chat_member<C, U>(
-        &self,
+    pub fn promote_chat_member<'a, C, U>(
+        &'a self,
         chat_id: C,
         user_id: U,
     ) -> PromoteChatMember
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         U: Into<i32>,
     {
         PromoteChatMember::new(self.ctx(), chat_id.into(), user_id.into())
     }
 
-    pub fn restrict_chat_member<C, U, P>(
-        &self,
+    pub fn restrict_chat_member<'a, C, U, P>(
+        &'a self,
         chat_id: C,
         user_id: U,
         permissions: P
     ) -> RestrictChatMember
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         U: Into<i32>,
         P: Into<ChatPermissions>
     {
@@ -201,24 +201,23 @@ impl Bot {
         )
     }
 
-    pub fn send_chat_action<C, A>(&self, chat_id: C, action: A) -> SendChatAction
+    pub fn send_chat_action<'a, C, A>(&'a self, chat_id: C, action: A) -> SendChatAction
     where
-        C: Into<ChatId>,
+        C: Into<Cow<'a, ChatId>>,
         A: Into<ChatAction>,
     {
         SendChatAction::new(self.ctx(), chat_id.into(), action.into())
     }
 
-    pub fn send_contact<C, P, F>(
-        &self,
+    pub fn send_contact<'a, C, S>(
+        &'a self,
         chat_id: C,
-        phone_number: P,
-        first_name: F,
+        phone_number: S,
+        first_name: S,
     ) -> SendContact
     where
-        C: Into<ChatId>,
-        P: Into<String>,
-        F: Into<String>
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
     {
         SendContact::new(
             self.ctx(),
