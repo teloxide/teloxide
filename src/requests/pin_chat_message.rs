@@ -27,7 +27,10 @@ impl<'a> PinChatMessage<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         message_id: i32,
-    ) -> Self where C: Into<Cow<'a, ChatId>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

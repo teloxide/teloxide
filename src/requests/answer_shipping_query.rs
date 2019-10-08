@@ -64,7 +64,10 @@ impl<'a> AnswerShippingQuery<'a> {
         ctx: RequestContext<'a>,
         shipping_query_id: C,
         ok: bool,
-    ) -> Self where C: Into<Cow<'a, str>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             shipping_query_id: shipping_query_id.into(),

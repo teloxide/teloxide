@@ -83,37 +83,58 @@ impl<'a> SendMessage<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = val.into();
         self
     }
 
-    pub fn text<T>(mut self, val: T) -> Self where T: Into<Cow<'a, str>> {
+    pub fn text<T>(mut self, val: T) -> Self
+    where
+        T: Into<Cow<'a, str>>,
+    {
         self.text = val.into();
         self
     }
 
-    pub fn parse_mode<T>(mut self, val: T) -> Self where T: Into<ParseMode>{
+    pub fn parse_mode<T>(mut self, val: T) -> Self
+    where
+        T: Into<ParseMode>,
+    {
         self.parse_mode = Some(val.into());
         self
     }
 
-    pub fn disable_web_page_preview<T>(mut self, val: T) -> Self where T: Into<bool>{
+    pub fn disable_web_page_preview<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_web_page_preview = Some(val.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool> {
+    pub fn disable_notification<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(val.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
+    pub fn reply_to_message_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.reply_to_message_id = Some(val.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ReplyMarkup>>  {
+    pub fn reply_markup<T>(mut self, val: T) -> Self
+    where
+        T: Into<Cow<'a, ReplyMarkup>>,
+    {
         self.reply_markup = Some(val.into());
         self
     }

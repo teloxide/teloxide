@@ -56,7 +56,10 @@ impl<'a> ForwardMessage<'a> {
         chat_id: C,
         from_chat_id: C,
         message_id: i32,
-    ) -> Self where C: Into<Cow<'a, ChatId>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),
@@ -66,22 +69,34 @@ impl<'a> ForwardMessage<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = val.into();
         self
     }
 
-    pub fn from_chat_id<T>(mut self, val: T) -> Self where T: Into<Cow<'a, ChatId>>{
+    pub fn from_chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<Cow<'a, ChatId>>,
+    {
         self.from_chat_id = val.into();
         self
     }
 
-    pub fn message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
+    pub fn message_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.message_id = val.into();
         self
     }
 
-    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool>{
+    pub fn disable_notification<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(val.into());
         self
     }

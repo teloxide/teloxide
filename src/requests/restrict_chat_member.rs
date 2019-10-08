@@ -55,7 +55,10 @@ impl<'a> RestrictChatMember<'a> {
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,
-    ) -> Self where C: Into<Cow<'a, ChatId>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

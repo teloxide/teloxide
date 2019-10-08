@@ -60,7 +60,12 @@ impl<'a> SendPoll<'a> {
         chat_id: ChatId,
         question: String,
         options: Vec<String>,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>>, O: Into<Cow<'a, [str]>>{
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
+        O: Into<Cow<'a, [str]>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

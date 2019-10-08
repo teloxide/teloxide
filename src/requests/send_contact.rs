@@ -70,7 +70,11 @@ impl<'a> SendContact<'a> {
         chat_id: C,
         phone_number: S,
         first_name: S,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>>{
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

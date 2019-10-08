@@ -77,7 +77,11 @@ impl<'a> SendVenue<'a> {
         longitude: f64,
         title: S,
         address: S,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

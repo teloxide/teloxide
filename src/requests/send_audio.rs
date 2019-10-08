@@ -101,7 +101,9 @@ impl SendAudio<'_> {
             params = match thumb.deref() {
                 InputFile::File(file) => params.add_file("thumb", &file),
                 InputFile::Url(url) => params.add("thumb", url.deref()),
-                InputFile::FileId(file_id) => params.add("thumb", file_id.deref()),
+                InputFile::FileId(file_id) => {
+                    params.add("thumb", file_id.deref())
+                }
             }
         }
         let params = params.build();
@@ -121,7 +123,11 @@ impl<'a> SendAudio<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         audio: A,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, A: Into<Cow<'a, InputFile>>{
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        A: Into<Cow<'a, InputFile>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),
@@ -138,58 +144,82 @@ impl<'a> SendAudio<'a> {
         }
     }
 
-    pub fn chat_id<C>(mut self, chat_id: C) -> Self where C: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn audio<A>(mut self, audio: A) -> Self where A: Into<Cow<'a, InputFile>> {
+    pub fn audio<A>(mut self, audio: A) -> Self
+    where
+        A: Into<Cow<'a, InputFile>>,
+    {
         self.audio = audio.into();
         self
     }
 
-    pub fn caption<C>(mut self, caption: C) -> Self where C: Into<Cow<'a, str>> {
+    pub fn caption<C>(mut self, caption: C) -> Self
+    where
+        C: Into<Cow<'a, str>>,
+    {
         self.caption = Some(caption.into());
         self
     }
 
-    pub fn parse_mode<P>(mut self, parse_mode: P) -> Self where P: Into<ParseMode> {
+    pub fn parse_mode<P>(mut self, parse_mode: P) -> Self
+    where
+        P: Into<ParseMode>,
+    {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-    pub fn duration<D>(mut self, duration: D) -> Self where D: Into<i32> {
+    pub fn duration<D>(mut self, duration: D) -> Self
+    where
+        D: Into<i32>,
+    {
         self.duration = Some(duration.into());
         self
     }
 
-    pub fn performer<P>(mut self, performer: P) -> Self where P: Into<Cow<'a, str>> {
+    pub fn performer<P>(mut self, performer: P) -> Self
+    where
+        P: Into<Cow<'a, str>>,
+    {
         self.performer = Some(performer.into());
         self
     }
 
-    pub fn title<T>(mut self, title: T) -> Self where T: Into<Cow<'a, str>>{
+    pub fn title<T>(mut self, title: T) -> Self
+    where
+        T: Into<Cow<'a, str>>,
+    {
         self.title = Some(title.into());
         self
     }
 
-    pub fn thumb<T>(mut self, thumb: T) -> Self where T: Into<Cow<'a, InputFile>>{
+    pub fn thumb<T>(mut self, thumb: T) -> Self
+    where
+        T: Into<Cow<'a, InputFile>>,
+    {
         self.thumb = Some(thumb.into());
         self
     }
 
-    pub fn disable_notification<D>(
-        mut self,
-        disable_notification: D,
-    ) -> Self where D: Into<bool> {
+    pub fn disable_notification<D>(mut self, disable_notification: D) -> Self
+    where
+        D: Into<bool>,
+    {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<R>(
-        mut self,
-        reply_to_message_id: R,
-    ) -> Self where R: Into<i32> {
+    pub fn reply_to_message_id<R>(mut self, reply_to_message_id: R) -> Self
+    where
+        R: Into<i32>,
+    {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

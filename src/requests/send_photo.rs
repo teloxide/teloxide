@@ -93,7 +93,11 @@ impl<'a> SendPhoto<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         photo: InputFile,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, F: Into<Cow<'a, InputFile>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        F: Into<Cow<'a, InputFile>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),
@@ -106,38 +110,50 @@ impl<'a> SendPhoto<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self where T: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    where
+        T: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn photo<T>(mut self, photo: T) -> Self where T: Into<Cow<'a, InputFile>> {
+    pub fn photo<T>(mut self, photo: T) -> Self
+    where
+        T: Into<Cow<'a, InputFile>>,
+    {
         self.photo = photo.into();
         self
     }
 
-    pub fn caption<T>(mut self, caption: T) -> Self where T: Into<Cow<'a, str>> {
+    pub fn caption<T>(mut self, caption: T) -> Self
+    where
+        T: Into<Cow<'a, str>>,
+    {
         self.caption = Some(caption.into());
         self
     }
 
-    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self where T: Into<Cow<'a, ParseMode>> {
+    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
+    where
+        T: Into<Cow<'a, ParseMode>>,
+    {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-    pub fn disable_notification<T>(
-        mut self,
-        disable_notification: T,
-    ) -> Self where T: Into<bool> {
+    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(
-        mut self,
-        reply_to_message_id: T,
-    ) -> Self where T: Into<i32> {
+    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

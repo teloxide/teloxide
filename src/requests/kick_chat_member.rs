@@ -54,7 +54,10 @@ impl<'a> KickChatMember<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         user_id: i32,
-    ) -> Self where C: Into<Cow<'a, ChatId>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),
@@ -63,17 +66,26 @@ impl<'a> KickChatMember<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self where T: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    where
+        T: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn user_id<T>(mut self, user_id: T) -> Self where T: Into<i32> {
+    pub fn user_id<T>(mut self, user_id: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.user_id = user_id.into();
         self
     }
 
-    pub fn until_date<T>(mut self, until_date: T) -> Self where T: Into<u64> {
+    pub fn until_date<T>(mut self, until_date: T) -> Self
+    where
+        T: Into<u64>,
+    {
         self.until_date = Some(until_date.into());
         self
     }

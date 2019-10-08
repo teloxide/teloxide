@@ -63,7 +63,10 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
         ctx: RequestContext<'a>,
         pre_checkout_query_id: C,
         ok: bool,
-    ) -> Self where C: Into<Cow<'a, str>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             pre_checkout_query_id: pre_checkout_query_id.into(),

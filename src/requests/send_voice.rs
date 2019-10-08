@@ -1,6 +1,6 @@
 use crate::network;
 use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ReplyMarkup, ParseMode};
+use crate::types::{Message, ParseMode, ReplyMarkup};
 use async_trait::async_trait;
 use std::borrow::Cow;
 
@@ -73,7 +73,11 @@ impl<'a> SendVoice<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         voice: S,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>>{
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             chat_id,
@@ -88,69 +92,66 @@ impl<'a> SendVoice<'a> {
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
-            T: Into<Cow<'a, ChatId>>,
+    where
+        T: Into<Cow<'a, ChatId>>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
     pub fn voice<T>(mut self, voice: T) -> Self
-        where
-            T: Into<Cow<'a, str>>,
+    where
+        T: Into<Cow<'a, str>>,
     {
         self.voice = voice.into();
         self
     }
 
     pub fn caption<T>(mut self, caption: T) -> Self
-        where
-            T: Into<Cow<'a, str>>,
+    where
+        T: Into<Cow<'a, str>>,
     {
         self.caption = Some(caption.into());
         self
     }
 
     pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
-        where
-            T: Into<ParseMode>,
+    where
+        T: Into<ParseMode>,
     {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-
     pub fn duration<T>(mut self, duration: T) -> Self
-        where
-            T: Into<u64>,
+    where
+        T: Into<u64>,
     {
         self.duration = Some(duration.into());
         self
     }
 
     pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
-        where
-            T: Into<bool>,
+    where
+        T: Into<bool>,
     {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
     pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
-        where
-            T: Into<i32>,
+    where
+        T: Into<i32>,
     {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }
 
-
     pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
-        where
-            T: Into<Cow<'a, ReplyMarkup>>,
+    where
+        T: Into<Cow<'a, ReplyMarkup>>,
     {
         self.reply_markup = Some(reply_markup.into());
         self
     }
-
 }

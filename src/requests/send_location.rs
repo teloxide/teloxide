@@ -65,7 +65,10 @@ impl<'a> SendLocation<'a> {
         chat_id: C,
         latitude: f64,
         longitude: f64,
-    ) -> Self where C: Into<Cow<'a, ChatId>>{
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),
@@ -78,12 +81,18 @@ impl<'a> SendLocation<'a> {
         }
     }
 
-    pub fn chat_id<C>(mut self, chat_id: C) -> Self where C: Into<Cow<'a, ChatId>> {
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn latitude<T>(mut self, latitude: T) -> Self where T: Into<f64>{
+    pub fn latitude<T>(mut self, latitude: T) -> Self
+    where
+        T: Into<f64>,
+    {
         self.latitude = latitude.into();
         self
     }
@@ -93,17 +102,26 @@ impl<'a> SendLocation<'a> {
         self
     }
 
-    pub fn live_period<T>(mut self, live_period: T) -> Self where T: Into<i32> {
+    pub fn live_period<T>(mut self, live_period: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.live_period = Some(live_period.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, val: T) -> Self where T: Into<bool> {
+    pub fn disable_notification<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(val.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, val: T) -> Self where T: Into<i32> {
+    pub fn reply_to_message_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.reply_to_message_id = Some(val.into());
         self
     }

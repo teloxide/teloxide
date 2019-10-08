@@ -67,7 +67,10 @@ impl<'a> SendChatAction<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         action: ChatAction,
-    ) -> Self where C: Into<Cow<'a, ChatId>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+    {
         Self {
             ctx,
             chat_id: chat_id.into(),

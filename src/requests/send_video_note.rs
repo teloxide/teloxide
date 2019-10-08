@@ -75,7 +75,11 @@ impl<'a> SendVideoNote<'a> {
         ctx: RequestContext<'a>,
         chat_id: C,
         video_note: S,
-    ) -> Self where C: Into<Cow<'a, ChatId>>, S: Into<Cow<'a, str>> {
+    ) -> Self
+    where
+        C: Into<Cow<'a, ChatId>>,
+        S: Into<Cow<'a, str>>,
+    {
         Self {
             ctx,
             chat_id,
