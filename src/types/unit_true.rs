@@ -4,12 +4,6 @@ use serde::ser::{Serialize, Serializer};
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct True;
 
-impl std::process::Termination for True {
-    fn report(self) -> i32 {
-        libc::EXIT_SUCCESS
-    }
-}
-
 impl std::convert::TryFrom<bool> for True {
     type Error = ();
 
