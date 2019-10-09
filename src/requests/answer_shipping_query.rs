@@ -73,7 +73,7 @@ impl<'a> AnswerShippingQuery<'a> {
         Self {
             ctx,
             shipping_query_id: shipping_query_id.into(),
-            ok,
+            ok: ok.into(),
             shipping_options: None,
             error_message: None,
         }
