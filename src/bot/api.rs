@@ -1,10 +1,9 @@
-use crate::requests::get_updates::GetUpdates;
 use crate::{
     bot::Bot,
     requests::{
         ChatId, EditMessageLiveLocation, ForwardMessage, GetFile, GetMe,
         SendAudio, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
-        StopMessageLiveLocation,
+        StopMessageLiveLocation, GetUpdates
     },
     types::{InputFile, InputMedia},
 };
