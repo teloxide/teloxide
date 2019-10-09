@@ -89,7 +89,7 @@ impl<'a> GetUpdates<'a> {
 
     pub fn allowed_updates<T>(mut self, allowed_updates: T) -> Self
     where
-        T: Into<Option<Cow<'a, [AllowedUpdate]>>>,
+        T: Into<Cow<'a, [AllowedUpdate]>>,
     {
         self.allowed_updates = Some(allowed_updates.into());
         self
