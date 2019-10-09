@@ -40,7 +40,7 @@ impl<'a> UnpinChatMessage<'a> {
     where
         C: Into<ChatId<'a>>,
     {
-        Self { ctx, chat_id }
+        Self { ctx, chat_id: chat_id.into() }
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self
