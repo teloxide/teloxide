@@ -52,7 +52,7 @@ impl<'a> UnbanChatMember<'a> {
         Self {
             ctx,
             chat_id: chat_id.into(),
-            user_id,
+            user_id: user_id.into(),
         }
     }
 
