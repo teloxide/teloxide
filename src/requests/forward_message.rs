@@ -65,7 +65,7 @@ impl<'a> ForwardMessage<'a> {
             ctx,
             chat_id: chat_id.into(),
             from_chat_id: from_chat_id.into(),
-            message_id,
+            message_id: message_id.into(),
             disable_notification: None,
         }
     }
