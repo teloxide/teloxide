@@ -1,6 +1,5 @@
-use bytes::Buf;
-use futures::StreamExt;
-use reqwest::r#async::{Chunk, Client};
+use bytes::Bytes;
+use reqwest::Client;
 use tokio::{
     io::{AsyncWrite, AsyncWriteExt},
     stream::Stream,
@@ -19,11 +18,14 @@ pub async fn download_file<D>(
 where
     D: AsyncWrite + Unpin,
 {
-    let mut stream = download_file_stream(client, token, path).await?;
+    let mut res = client
+        .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .send()
+        .await?
+        .error_for_status()?;
 
-    while let Some(chunk) = stream.next().await {
-        let chunk = chunk?;
-        destination.write_all(chunk.bytes()).await?;
+    while let Some(chunk) = res.chunk().await? {
+        destination.write_all(&chunk).await?;
     }
 
     Ok(())
@@ -33,11 +35,18 @@ pub async fn download_file_stream(
     client: &Client,
     token: &str,
     path: &str,
-) -> Result<impl Stream<Item = Result<Chunk, reqwest::Error>>, reqwest::Error> {
-    Ok(client
+) -> Result<impl Stream<Item = reqwest::Result<Bytes>>, reqwest::Error> {
+    let res = client
         .get(&super::file_url(TELEGRAM_API_URL, token, path))
         .send()
         .await?
-        .error_for_status()?
-        .into_body())
+        .error_for_status()?;
+
+    Ok(futures::stream::unfold(res, |mut res| async {
+        match res.chunk().await {
+            Err(err) => Some((Err(err), res)),
+            Ok(Some(c)) => Some((Ok(c), res)),
+            Ok(None) => None,
+        }
+    }))
 }

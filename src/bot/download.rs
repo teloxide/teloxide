@@ -1,5 +1,5 @@
-use reqwest::r#async::Chunk;
 use tokio::{io::AsyncWrite, stream::Stream};
+use bytes::Bytes;
 
 use crate::{
     bot::Bot,
@@ -59,7 +59,7 @@ impl Bot {
     pub async fn download_file_stream(
         &self,
         path: &str,
-    ) -> Result<impl Stream<Item = Result<Chunk, reqwest::Error>>, reqwest::Error>
+    ) -> Result<impl Stream<Item = Result<Bytes, reqwest::Error>>, reqwest::Error>
     {
         download_file_stream(&self.client, &self.token, path).await
     }
