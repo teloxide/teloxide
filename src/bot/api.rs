@@ -24,7 +24,7 @@ impl Bot {
         T: Into<Cow<'a, str>>,
         C: Into<ChatId<'a>>,
     {
-        SendMessage::new(self.ctx(), chat_id.into(), text.into())
+        SendMessage::new(self.ctx(), chat_id, text)
     }
 
     pub fn edit_message_live_location<Lt, Lg>(
