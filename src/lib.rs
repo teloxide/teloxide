@@ -1,5 +1,3 @@
-#![feature(termination_trait_lib)]
-
 #[macro_use]
 extern crate derive_more;
 #[macro_use]
