@@ -40,7 +40,7 @@ pub struct SendLocation<'a> {
 
 #[async_trait]
 impl Request for SendLocation<'_> {
-    type ReturnValue = Message<'static>;
+    type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -48,7 +48,7 @@ impl Request for SendLocation<'_> {
 }
 
 impl SendLocation<'_> {
-    pub async fn send(self) -> ResponseResult<Message<'static>> {
+    pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

@@ -33,7 +33,7 @@ pub enum AllowedUpdate {
 
 #[async_trait]
 impl Request for GetUpdates<'_> {
-    type ReturnValue = Vec<Update<'static>>;
+    type ReturnValue = Vec<Update>;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -41,7 +41,7 @@ impl Request for GetUpdates<'_> {
 }
 
 impl GetUpdates<'_> {
-    pub async fn send(self) -> ResponseResult<Vec<Update<'static>>> {
+    pub async fn send(self) -> ResponseResult<Vec<Update>> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

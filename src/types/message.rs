@@ -5,16 +5,16 @@ use crate::types::{
 };
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
-pub struct Message<'a> {
+pub struct Message {
     #[serde(rename = "message_id")]
     pub id: i32,
     pub date: i32,
-    pub chat: Chat<'a>,
+    pub chat: Chat<'static>,
     #[serde(flatten)]
-    pub kind: MessageKind<'a>,
+    pub kind: MessageKind,
 }
 
-impl<'a> Message<'a> {
+impl Message {
     pub fn text(&self) -> Option<&str> {
         if let MessageKind::Common {
             media_kind: MediaKind::Text { ref text, .. },
@@ -30,16 +30,16 @@ impl<'a> Message<'a> {
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum MessageKind<'a> {
+pub enum MessageKind {
     Common {
         #[serde(flatten)]
         from: Sender,
         #[serde(flatten)]
-        forward_kind: ForwardKind<'a>,
+        forward_kind: ForwardKind,
         edit_date: Option<i32>,
         #[serde(flatten)]
         media_kind: MediaKind,
-        reply_markup: Option<InlineKeyboardMarkup<'a>>,
+        reply_markup: Option<InlineKeyboardMarkup<'static>>,
     },
     NewChatMembers {
         new_chat_members: Vec<User>,
@@ -70,7 +70,7 @@ pub enum MessageKind<'a> {
         migrate_from_chat_id: i64,
     },
     Pinned {
-        pinned: Box<Message<'a>>,
+        pinned: Box<Message>,
     },
     Invoice {
         invoice: Invoice,
@@ -98,12 +98,12 @@ pub enum Sender {
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum ForwardKind<'a> {
+pub enum ForwardKind {
     ChannelForward {
         #[serde(rename = "forward_date")]
         date: i32,
         #[serde(rename = "forward_from_chat")]
-        chat: Chat<'a>,
+        chat: Chat<'static>,
         #[serde(rename = "forward_from_message_id")]
         message_id: i32,
         #[serde(rename = "forward_signature")]
@@ -116,7 +116,7 @@ pub enum ForwardKind<'a> {
         from: ForwardedFrom,
     },
     Origin {
-        reply_to_message: Option<Box<Message<'a>>>,
+        reply_to_message: Option<Box<Message>>,
     },
 }
 

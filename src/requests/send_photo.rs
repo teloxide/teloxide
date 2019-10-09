@@ -50,7 +50,7 @@ pub struct SendPhoto<'a> {
 
 #[async_trait]
 impl Request for SendPhoto<'_> {
-    type ReturnValue = Message<'static>;
+    type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -58,7 +58,7 @@ impl Request for SendPhoto<'_> {
 }
 
 impl SendPhoto<'_> {
-    pub async fn send(self) -> ResponseResult<Message<'static>> {
+    pub async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new()
             .add("chat_id", &self.chat_id)
             .add_if_some("caption", self.caption.as_deref())

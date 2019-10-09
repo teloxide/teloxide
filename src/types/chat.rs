@@ -17,7 +17,7 @@ pub enum ChatKind<'a> {
         kind: NonPrivateChatKind,
         description: Option<String>,
         invite_link: Option<String>,
-        pinned_message: Option<Box<Message<'a>>>,
+        pinned_message: Option<Box<Message>>,
     },
     Private {
         /// Dummy field. Used to ensure that "type" field is equal to "private"

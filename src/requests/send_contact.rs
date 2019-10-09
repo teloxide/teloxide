@@ -46,7 +46,7 @@ pub struct SendContact<'a> {
 
 #[async_trait]
 impl Request for SendContact<'_> {
-    type ReturnValue = Message<'static>;
+    type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await
@@ -54,7 +54,7 @@ impl Request for SendContact<'_> {
 }
 
 impl SendContact<'_> {
-    pub async fn send(self) -> ResponseResult<Message<'static>> {
+    pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
             &self.ctx.client,
             &self.ctx.token,

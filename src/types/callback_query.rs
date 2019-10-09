@@ -1,11 +1,11 @@
 use crate::types::{Message, User};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
-pub struct CallbackQuery<'a> {
+pub struct CallbackQuery {
     pub id: String,
     pub from: User,
     pub chat_instance: String,
-    pub message: Option<Message<'a>>,
+    pub message: Option<Message>,
     pub inline_message_id: Option<String>,
     pub data: Option<String>,
     pub game_short_name: Option<String>,
