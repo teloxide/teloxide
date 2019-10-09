@@ -218,15 +218,16 @@ impl Bot {
         SendChatAction::new(self.ctx(), chat_id.into(), action.into())
     }
 
-    pub fn send_contact<'a, C, S>(
+    pub fn send_contact<'a, C, P, F>(
         &'a self,
         chat_id: C,
-        phone_number: S,
-        first_name: S,
+        phone_number: P,
+        first_name: F,
     ) -> SendContact
     where
         C: Into<ChatId<'a>>,
-        S: Into<Cow<'a, str>>,
+        P: Into<Cow<'a, str>>,
+        F: Into<Cow<'a, str>>,
     {
         SendContact::new(
             self.ctx(),

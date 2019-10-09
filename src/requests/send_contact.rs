@@ -66,15 +66,16 @@ impl SendContact<'_> {
 }
 
 impl<'a> SendContact<'a> {
-    pub(crate) fn new<C, S>(
+    pub(crate) fn new<C, P, F>(
         ctx: RequestContext<'a>,
         chat_id: C,
-        phone_number: S,
-        first_name: S,
+        phone_number: P,
+        first_name: F,
     ) -> Self
     where
         C: Into<ChatId<'a>>,
-        S: Into<Cow<'a, str>>,
+        P: Into<Cow<'a, str>>,
+        F: Into<Cow<'a, str>>,
     {
         Self {
             ctx,
