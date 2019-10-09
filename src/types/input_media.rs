@@ -168,7 +168,7 @@ pub enum InputMedia<'a> {
 }
 
 impl<'a> InputMedia<'a> {
-    pub fn media(&self) -> &'a InputFile {
+    pub fn media(&self) -> &InputFile<'a> {
         match self {
             InputMedia::Photo { media, .. }
             | InputMedia::Document { media, .. }
