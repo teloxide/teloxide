@@ -1,4 +1,3 @@
-use self::not_implemented_types::*;
 pub use self::{
     animation::Animation,
     audio::Audio,
@@ -113,7 +112,6 @@ mod login_url;
 mod mask_position;
 mod message;
 mod message_entity;
-mod not_implemented_types;
 mod order_info;
 mod parse_mode;
 mod photo_size;
