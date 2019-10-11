@@ -1,8 +1,9 @@
-use bytes::Bytes;
 use reqwest::Client;
-use tokio::{
-    io::{AsyncWrite, AsyncWriteExt},
-    stream::Stream,
+use tokio::io::{AsyncWrite, AsyncWriteExt};
+#[cfg(feature = "unstable-stream")]
+use ::{
+    tokio::stream::Stream,
+    bytes::Bytes,
 };
 
 use crate::DownloadError;
@@ -31,6 +32,7 @@ where
     Ok(())
 }
 
+#[cfg(feature = "unstable-stream")]
 pub async fn download_file_stream(
     client: &Client,
     token: &str,

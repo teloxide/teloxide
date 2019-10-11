@@ -1,6 +1,10 @@
-pub use download::{download_file, download_file_stream};
-pub use request::{request_json, request_multipart};
-pub use telegram_response::TelegramResponse;
+pub use self::{
+    download::download_file,
+    request::{request_json, request_multipart},
+    telegram_response::TelegramResponse,
+};
+#[cfg(feature = "unstable-stream")]
+pub use download::download_file_stream;
 
 mod download;
 mod request;
@@ -22,7 +26,7 @@ fn method_url(base: &str, token: &str, method_name: &str) -> String {
 
 /// Creates URL for downloading a file. See the [Telegram documentation].
 ///
-/// [Telegram documentation] (https://core.telegram.org/bots/api#file)
+/// [Telegram documentation]: https://core.telegram.org/bots/api#file
 fn file_url(base: &str, token: &str, file_path: &str) -> String {
     format!(
         "{url}/file/bot{token}/{file}",
