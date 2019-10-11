@@ -1,11 +1,17 @@
-use tokio::{io::AsyncWrite, stream::Stream};
-use bytes::Bytes;
+use tokio::io::AsyncWrite;
+#[cfg(feature = "unstable-stream")]
+use ::{
+    bytes::Bytes,
+    tokio::stream::Stream,
+};
 
 use crate::{
     bot::Bot,
-    network::{download_file, download_file_stream},
     DownloadError,
+    network::download_file,
 };
+#[cfg(feature = "unstable-stream")]
+use crate::network::download_file_stream;
 
 impl Bot {
     /// Download file from telegram into `destination`.
@@ -56,6 +62,7 @@ impl Bot {
     /// [`AsyncWrite`]: tokio::io::AsyncWrite
     /// [`tokio::fs::File`]: tokio::fs::File
     /// [`download_file`]: crate::bot::Bot::download_file
+    #[cfg(feature = "unstable-stream")]
     pub async fn download_file_stream(
         &self,
         path: &str,
