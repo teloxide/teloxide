@@ -27,7 +27,7 @@ impl Bot {
     /// let mut file = File::create("/home/waffle/Pictures/test.png").await?;
     ///
     /// let TgFile { file_path, .. } =
-    ///     bot.get_file("*file_id*").send_boxed().await?;
+    ///     bot.get_file("*file_id*").send().await?;
     /// bot.download_file(&file_path, &mut file).await?;
     /// # Ok(()) }
     /// ```
