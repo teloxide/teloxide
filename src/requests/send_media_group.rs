@@ -1,11 +1,11 @@
 use apply::Apply;
+
 use async_trait::async_trait;
 
 use crate::{
     network::request_multipart,
     requests::{
-        form_builder::FormBuilder, Request, RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
     types::{ChatId, InputFile, InputMedia, Message},
 };

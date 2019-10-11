@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup}
+    types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
 // TODO: add method to bot/api
@@ -22,7 +22,8 @@ pub struct SendDocument<'a> {
     /// the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data.»
-    pub document: String, //InputFile or String
+    pub document: String,
+    //InputFile or String
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side. The thumbnail should be in JPEG
     /// format and less than 200 kB in size. A thumbnail‘s width and height
@@ -32,7 +33,8 @@ pub struct SendDocument<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>, //InputFile or String
+    pub thumb: Option<String>,
+    //InputFile or String
     /// Document caption (may also be used when resending documents by
     /// file_id), 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]

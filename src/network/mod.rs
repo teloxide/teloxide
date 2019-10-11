@@ -1,10 +1,11 @@
+#[cfg(feature = "unstable-stream")]
+pub use download::download_file_stream;
+
 pub use self::{
     download::download_file,
     request::{request_json, request_multipart},
     telegram_response::TelegramResponse,
 };
-#[cfg(feature = "unstable-stream")]
-pub use download::download_file_stream;
 
 mod download;
 mod request;

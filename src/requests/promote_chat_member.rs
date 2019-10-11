@@ -49,6 +49,7 @@ pub struct PromoteChatMember<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub can_promote_members: Option<bool>,
 }
+
 #[async_trait]
 impl Request for PromoteChatMember<'_> {
     type ReturnValue = True;
@@ -69,6 +70,7 @@ impl PromoteChatMember<'_> {
         .await
     }
 }
+
 impl<'a> PromoteChatMember<'a> {
     pub(crate) fn new(
         ctx: RequestContext<'a>,

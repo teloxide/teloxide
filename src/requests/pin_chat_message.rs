@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, True}
+    types::{ChatId, True},
 };
 
 /// Use this method to get up to date information about the chat

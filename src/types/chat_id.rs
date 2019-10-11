@@ -29,7 +29,7 @@ mod tests {
         let actual_json = serde_json::to_string(&ChatId::ChannelUsername(
             String::from("@username"),
         ))
-            .unwrap();
+        .unwrap();
 
         assert_eq!(expected_json, actual_json)
     }

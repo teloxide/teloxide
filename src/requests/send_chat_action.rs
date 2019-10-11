@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, True, ChatAction}
+    types::{ChatAction, ChatId, True},
 };
 
 ///Use this method when you need to tell the user that something is happening

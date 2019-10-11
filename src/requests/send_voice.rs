@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup}
+    types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
 ///Use this method to send audio files, if you want Telegram clients to display
@@ -23,7 +23,8 @@ pub struct SendVoice<'a> {
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: String, //InputFile or String
+    pub voice: String,
+    //InputFile or String
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,

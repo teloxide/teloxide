@@ -1,6 +1,7 @@
-use async_trait::async_trait;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+
+use async_trait::async_trait;
 
 use crate::RequestError;
 
@@ -8,33 +9,20 @@ pub use self::{
     answer_pre_checkout_query::AnswerPreCheckoutQuery,
     answer_shipping_query::AnswerShippingQuery,
     edit_message_live_location::EditMessageLiveLocation,
-    forward_message::ForwardMessage,
-    get_chat::GetChat,
-    get_file::GetFile,
-    get_me::GetMe,
-    get_updates::GetUpdates,
+    forward_message::ForwardMessage, get_chat::GetChat, get_file::GetFile,
+    get_me::GetMe, get_updates::GetUpdates,
     get_user_profile_photos::GetUserProfilePhotos,
-    kick_chat_member::KickChatMember,
-    pin_chat_message::PinChatMessage,
+    kick_chat_member::KickChatMember, pin_chat_message::PinChatMessage,
     promote_chat_member::PromoteChatMember,
-    restrict_chat_member::RestrictChatMember,
-    send_animation::SendAnimation,
-    send_audio::SendAudio,
-    send_chat_action::SendChatAction,
-    send_contact::SendContact,
-    send_document::SendDocument,
-    send_location::SendLocation,
-    send_media_group::SendMediaGroup,
-    send_message::SendMessage,
-    send_photo::SendPhoto,
-    send_poll::SendPoll,
-    send_venue::SendVenue,
-    send_video::SendVideo,
-    send_video_note::SendVideoNote,
-    send_voice::SendVoice,
+    restrict_chat_member::RestrictChatMember, send_animation::SendAnimation,
+    send_audio::SendAudio, send_chat_action::SendChatAction,
+    send_contact::SendContact, send_document::SendDocument,
+    send_location::SendLocation, send_media_group::SendMediaGroup,
+    send_message::SendMessage, send_photo::SendPhoto, send_poll::SendPoll,
+    send_venue::SendVenue, send_video::SendVideo,
+    send_video_note::SendVideoNote, send_voice::SendVoice,
     stop_message_live_location::StopMessageLiveLocation,
-    unban_chat_member::UnbanChatMember,
-    unpin_chat_message::UnpinChatMessage,
+    unban_chat_member::UnbanChatMember, unpin_chat_message::UnpinChatMessage,
 };
 
 mod form_builder;

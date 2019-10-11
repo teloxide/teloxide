@@ -20,7 +20,8 @@ pub struct SendVideoNote<'a> {
     /// exists on the Telegram servers (recommended) or upload a new video
     /// using multipart/form-data. More info on Sending Files ». Sending video
     /// notes by a URL is currently unsupported
-    pub video_note: String, //	InputFile or String
+    pub video_note: String,
+    //	InputFile or String
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -36,7 +37,8 @@ pub struct SendVideoNote<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>, //	InputFile or String
+    pub thumb: Option<String>,
+    //	InputFile or String
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
     #[serde(skip_serializing_if = "Option::is_none")]

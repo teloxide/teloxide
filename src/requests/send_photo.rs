@@ -3,8 +3,7 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, Request, RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };

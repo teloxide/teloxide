@@ -1,10 +1,8 @@
 use reqwest::Client;
 use tokio::io::{AsyncWrite, AsyncWriteExt};
+
 #[cfg(feature = "unstable-stream")]
-use ::{
-    tokio::stream::Stream,
-    bytes::Bytes,
-};
+use ::{bytes::Bytes, tokio::stream::Stream};
 
 use crate::DownloadError;
 
@@ -44,11 +42,13 @@ pub async fn download_file_stream(
         .await?
         .error_for_status()?;
 
-    Ok(futures::stream::unfold(res, |mut res| async {
-        match res.chunk().await {
-            Err(err) => Some((Err(err), res)),
-            Ok(Some(c)) => Some((Ok(c), res)),
-            Ok(None) => None,
+    Ok(futures::stream::unfold(res, |mut res| {
+        async {
+            match res.chunk().await {
+                Err(err) => Some((Err(err), res)),
+                Ok(Some(c)) => Some((Ok(c), res)),
+                Ok(None) => None,
+            }
         }
     }))
 }

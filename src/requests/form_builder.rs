@@ -4,7 +4,7 @@ use reqwest::multipart::Form;
 
 use crate::{
     requests::utils,
-    types::{InputMedia, ParseMode, ChatId},
+    types::{ChatId, InputMedia, ParseMode},
 };
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
