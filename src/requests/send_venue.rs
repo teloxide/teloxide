@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{Message, ReplyMarkup},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ReplyMarkup},
 };
 
 /// Use this method to send information about a venue.

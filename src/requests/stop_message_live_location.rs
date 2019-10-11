@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{InlineKeyboardMarkup, Message},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, InlineKeyboardMarkup, Message},
 };
 
 /// Use this method to stop updating a live location message before live_period

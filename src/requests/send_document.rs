@@ -1,7 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ParseMode, ReplyMarkup};
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ParseMode, ReplyMarkup}
+};
 
 // TODO: add method to bot/api
 
@@ -51,6 +54,7 @@ pub struct SendDocument<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<ReplyMarkup>,
 }
+
 #[async_trait]
 impl Request for SendDocument<'_> {
     type ReturnValue = Message;

@@ -1,7 +1,10 @@
 use async_trait::async_trait;
 
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::ChatId,
+};
 
 /// Use this method to unban a previously kicked user in a supergroup or
 /// channel. The user will not return to the group or channel automatically, but

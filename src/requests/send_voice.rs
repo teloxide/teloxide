@@ -1,7 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ParseMode, ReplyMarkup};
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ParseMode, ReplyMarkup}
+};
 
 ///Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message. For this to work, your audio must be

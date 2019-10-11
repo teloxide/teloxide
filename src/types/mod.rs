@@ -5,6 +5,8 @@ pub use self::{
     callback_game::CallbackGame,
     callback_query::CallbackQuery,
     chat::{Chat, ChatKind, NonPrivateChatKind},
+    chat_action::ChatAction,
+    chat_id::ChatId,
     chat_member::{ChatMember, ChatMemberStatus},
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
@@ -90,6 +92,8 @@ mod audio;
 mod callback_game;
 mod callback_query;
 mod chat;
+mod chat_action;
+mod chat_id;
 mod chat_member;
 mod chat_permissions;
 mod chat_photo;
