@@ -3,8 +3,8 @@ use serde::Serialize;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{Message, ReplyMarkup},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ReplyMarkup},
 };
 
 #[derive(Debug, Clone, Serialize)]

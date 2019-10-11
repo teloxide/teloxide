@@ -4,10 +4,10 @@ use async_trait::async_trait;
 use crate::{
     network::request_multipart,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
+        form_builder::FormBuilder, Request, RequestContext,
         ResponseResult,
     },
-    types::{InputFile, InputMedia, Message},
+    types::{ChatId, InputFile, InputMedia, Message},
 };
 
 /// Use this method to send a group of photos or videos as an album.

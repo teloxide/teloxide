@@ -20,7 +20,7 @@ pub use self::{
     restrict_chat_member::RestrictChatMember,
     send_animation::SendAnimation,
     send_audio::SendAudio,
-    send_chat_action::{ChatAction, SendChatAction},
+    send_chat_action::SendChatAction,
     send_contact::SendContact,
     send_document::SendDocument,
     send_location::SendLocation,
@@ -56,43 +56,6 @@ pub trait Request {
 pub struct RequestContext<'a> {
     pub client: &'a Client,
     pub token: &'a str,
-}
-
-/// Unique identifier for the target chat or username of the target channel (in
-/// the format @channelusername)
-#[derive(Debug, Display, Serialize, From, PartialEq, Eq, Clone)]
-#[serde(untagged)]
-pub enum ChatId {
-    /// chat identifier
-    #[display(fmt = "{}", _0)]
-    Id(i64),
-    /// _channel_ username (in the format @channelusername)
-    #[display(fmt = "{}", _0)]
-    ChannelUsername(String),
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn chat_id_id_serialization() {
-        let expected_json = String::from(r#"123456"#);
-        let actual_json = serde_json::to_string(&ChatId::Id(123456)).unwrap();
-
-        assert_eq!(expected_json, actual_json)
-    }
-
-    #[test]
-    fn chat_id_channel_username_serialization() {
-        let expected_json = String::from(r#""@username""#);
-        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(
-            String::from("@username"),
-        ))
-        .unwrap();
-
-        assert_eq!(expected_json, actual_json)
-    }
 }
 
 mod answer_pre_checkout_query;

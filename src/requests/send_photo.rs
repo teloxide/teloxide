@@ -3,10 +3,10 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
+        form_builder::FormBuilder, Request, RequestContext,
         ResponseResult,
     },
-    types::{InputFile, Message, ParseMode, ReplyMarkup},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 #[derive(Debug, Clone)]

@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use reqwest::r#async::multipart::Form;
 
 use crate::{
-    requests::{utils, ChatId},
-    types::{InputMedia, ParseMode},
+    requests::utils,
+    types::{InputMedia, ParseMode, ChatId},
 };
 
 /// This is a convenient struct that builds `reqwest::r#async::multipart::Form`

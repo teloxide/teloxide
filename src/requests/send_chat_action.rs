@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::True,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, True, ChatAction}
 };
 
 ///Use this method when you need to tell the user that something is happening
@@ -23,21 +23,6 @@ pub struct SendChatAction<'a> {
     /// for audio files, upload_document for general files, find_location for
     /// location data, record_video_note or upload_video_note for video notes.
     pub action: ChatAction,
-}
-
-#[derive(Debug, Serialize, From, Clone)]
-#[serde(rename_all = "snake_case")]
-pub enum ChatAction {
-    Typing,
-    UploadPhoto,
-    RecordVideo,
-    UploadVideo,
-    RecordAudio,
-    UploadAudio,
-    UploadDocument,
-    FindLocation,
-    RecordVideoNote,
-    UploadVideoNote,
 }
 
 #[async_trait]

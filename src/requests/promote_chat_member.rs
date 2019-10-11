@@ -1,8 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::True;
-
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, True},
+};
 
 ///Use this method to promote or demote a user in a supergroup or a channel.
 /// The bot must be an administrator in the chat for this to work and must have

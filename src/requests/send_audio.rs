@@ -3,10 +3,9 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
-    types::{InputFile, Message, ParseMode, ReplyMarkup},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 /// Use this method to send audio files, if you want Telegram clients to display

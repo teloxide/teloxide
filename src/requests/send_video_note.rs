@@ -1,7 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ReplyMarkup};
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ReplyMarkup},
+};
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent

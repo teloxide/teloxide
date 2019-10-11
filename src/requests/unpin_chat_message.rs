@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::True,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, True}
 };
 
 #[derive(Debug, Clone, Serialize)]
