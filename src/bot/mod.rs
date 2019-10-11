@@ -1,4 +1,4 @@
-use reqwest::r#async::Client;
+use reqwest::Client;
 
 use crate::requests::RequestContext;
 
