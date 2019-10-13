@@ -70,6 +70,7 @@ impl<'a> ForwardMessage<'a> {
         self
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub fn from_chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
         self.from_chat_id = val.into();
         self
