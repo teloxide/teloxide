@@ -63,46 +63,62 @@ impl EditMessageLiveLocation<'_> {
 }
 
 impl<'a> EditMessageLiveLocation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Lt, Lg>(
         ctx: RequestContext<'a>,
-        latitude: f64,
-        longitude: f64,
-    ) -> Self {
+        latitude: Lt,
+        longitude: Lg,
+    ) -> Self
+    where
+        Lt: Into<f64>,
+        Lg: Into<f64>,
+    {
         Self {
             ctx,
             chat_id: None,
             message_id: None,
             inline_message_id: None,
-            latitude,
-            longitude,
+            latitude: latitude.into(),
+            longitude: longitude.into(),
             reply_markup: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
         self.chat_id = Some(chat_id.into());
         self
     }
 
-    pub fn message_id<T: Into<i32>>(mut self, message_id: T) -> Self {
+    pub fn message_id<T>(mut self, message_id: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.message_id = Some(message_id.into());
         self
     }
 
-    pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
+    pub fn inline_message_id<S>(mut self, inline_message_id: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
         self.inline_message_id = Some(inline_message_id.into());
         self
     }
 
-    pub fn latitude<T: Into<f64>>(mut self, latitude: T) -> Self {
+    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
+    where
+        Lt: Into<f64>,
+    {
         self.latitude = latitude.into();
         self
     }
 
-    pub fn longitude<T: Into<f64>>(mut self, longitude: T) -> Self {
+    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
+    where
+        Lg: Into<f64>,
+    {
         self.longitude = longitude.into();
         self
     }

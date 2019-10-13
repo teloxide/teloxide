@@ -72,15 +72,19 @@ impl SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, V>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        voice: String,
-    ) -> Self {
+        chat_id: C,
+        voice: V,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        V: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            voice,
+            chat_id: chat_id.into(),
+            voice: voice.into(),
             caption: None,
             parse_mode: None,
             duration: None,

@@ -59,31 +59,35 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<S, B>(
         ctx: RequestContext<'a>,
-        shipping_query_id: String,
-        ok: bool,
-    ) -> Self {
+        shipping_query_id: S,
+        ok: B,
+    ) -> Self
+    where
+        S: Into<String>,
+        B: Into<bool>,
+    {
         Self {
             ctx,
-            shipping_query_id,
-            ok,
+            shipping_query_id: shipping_query_id.into(),
+            ok: ok.into(),
             shipping_options: None,
             error_message: None,
         }
     }
 
-    pub fn shipping_query_id<T>(mut self, shipping_query_id: T) -> Self
+    pub fn shipping_query_id<S>(mut self, shipping_query_id: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
         self.shipping_query_id = shipping_query_id.into();
         self
     }
 
-    pub fn ok<T>(mut self, ok: T) -> Self
+    pub fn ok<B>(mut self, ok: B) -> Self
     where
-        T: Into<bool>,
+        B: Into<bool>,
     {
         self.ok = ok.into();
         self
@@ -97,9 +101,9 @@ impl<'a> AnswerShippingQuery<'a> {
         self
     }
 
-    pub fn error_message<T>(mut self, error_message: T) -> Self
+    pub fn error_message<S>(mut self, error_message: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
         self.error_message = Some(error_message.into());
         self

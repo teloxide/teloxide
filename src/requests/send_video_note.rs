@@ -75,15 +75,19 @@ impl SendVideoNote<'_> {
 }
 
 impl<'a> SendVideoNote<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, V>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        video_note: String,
-    ) -> Self {
+        chat_id: C,
+        video_note: V,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        V: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            video_note,
+            chat_id: chat_id.into(),
+            video_note: video_note.into(),
             duration: None,
             length: None,
             thumb: None,

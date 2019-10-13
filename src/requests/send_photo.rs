@@ -73,28 +73,31 @@ impl SendPhoto<'_> {
             InputFile::Url(url) => params.add("photo", &url),
             InputFile::FileId(file_id) => params.add("photo", &file_id),
         };
-        let params = params.build();
 
         network::request_multipart(
             &self.ctx.client,
             &self.ctx.token,
             "sendPhoto",
-            Some(params),
+            Some(params.build()),
         )
         .await
     }
 }
 
 impl<'a> SendPhoto<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, P>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        photo: InputFile,
-    ) -> Self {
+        chat_id: C,
+        photo: P,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        P: Into<InputFile>,
+    {
         Self {
             ctx,
-            chat_id,
-            photo,
+            chat_id: chat_id.into(),
+            photo: photo.into(),
             caption: None,
             parse_mode: None,
             disable_notification: None,
@@ -103,38 +106,50 @@ impl<'a> SendPhoto<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn photo<T: Into<InputFile>>(mut self, photo: T) -> Self {
+    pub fn photo<T>(mut self, photo: T) -> Self
+    where
+        T: Into<InputFile>,
+    {
         self.photo = photo.into();
         self
     }
 
-    pub fn caption<T: Into<String>>(mut self, caption: T) -> Self {
+    pub fn caption<T>(mut self, caption: T) -> Self
+    where
+        T: Into<String>,
+    {
         self.caption = Some(caption.into());
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, parse_mode: T) -> Self {
+    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
+    where
+        T: Into<ParseMode>,
+    {
         self.parse_mode = Some(parse_mode.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(
-        mut self,
-        disable_notification: T,
-    ) -> Self {
+    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    where
+        T: Into<bool>,
+    {
         self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(
-        mut self,
-        reply_to_message_id: T,
-    ) -> Self {
+    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }

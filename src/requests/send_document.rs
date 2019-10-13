@@ -79,15 +79,19 @@ impl SendDocument<'_> {
 }
 
 impl<'a> SendDocument<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, D>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        document: String,
-    ) -> Self {
+        chat_id: C,
+        document: D,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        D: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            document,
+            chat_id: chat_id.into(),
+            document: document.into(),
             thumb: None,
             caption: None,
             parse_mode: None,

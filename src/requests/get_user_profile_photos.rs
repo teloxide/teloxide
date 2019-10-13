@@ -46,10 +46,13 @@ impl GetUserProfilePhotos<'_> {
 }
 
 impl<'a> GetUserProfilePhotos<'a> {
-    pub fn new(ctx: RequestContext<'a>, user_id: i32) -> Self {
+    pub fn new<U>(ctx: RequestContext<'a>, user_id: U) -> Self
+    where
+        U: Into<i32>,
+    {
         Self {
             ctx,
-            user_id,
+            user_id: user_id.into(),
             offset: None,
             limit: None,
         }

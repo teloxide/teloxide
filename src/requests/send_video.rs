@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use crate::network;
 use crate::requests::{Request, RequestContext, ResponseResult};
 use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+
 //TODO: add action to bot api
 ///Use this method to send video files, Telegram clients support mp4 videos
 /// (other formats may be sent as Document). On success, the sent Message is
@@ -87,15 +88,19 @@ impl SendVideo<'_> {
 }
 
 impl<'a> SendVideo<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, V>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        video: String,
-    ) -> Self {
+        chat_id: C,
+        video: V,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        V: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            video,
+            chat_id: chat_id.into(),
+            video: video.into(),
             duration: None,
             width: None,
             height: None,

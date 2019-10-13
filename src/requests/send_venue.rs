@@ -69,21 +69,28 @@ impl SendVenue<'_> {
 }
 
 impl<'a> SendVenue<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Lt, Lg, C, T, A>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        latitude: f64,
-        longitude: f64,
-        title: String,
-        address: String,
-    ) -> Self {
+        chat_id: C,
+        latitude: Lt,
+        longitude: Lg,
+        title: T,
+        address: A,
+    ) -> Self
+    where
+        Lt: Into<f64>,
+        Lg: Into<f64>,
+        C: Into<ChatId>,
+        T: Into<String>,
+        A: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            latitude,
-            longitude,
-            title,
-            address,
+            chat_id: chat_id.into(),
+            latitude: latitude.into(),
+            longitude: longitude.into(),
+            title: title.into(),
+            address: address.into(),
             foursquare_id: None,
             foursquare_type: None,
             disable_notification: None,
@@ -99,17 +106,17 @@ impl<'a> SendVenue<'a> {
         self
     }
 
-    pub fn longitude<T>(mut self, longitude: T) -> Self
+    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
     where
-        T: Into<f64>,
+        Lg: Into<f64>,
     {
         self.longitude = longitude.into();
         self
     }
 
-    pub fn latitude<T>(mut self, latitude: T) -> Self
+    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
     where
-        T: Into<f64>,
+        Lt: Into<f64>,
     {
         self.latitude = latitude.into();
         self

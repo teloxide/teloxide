@@ -43,15 +43,19 @@ impl UnbanChatMember<'_> {
 }
 
 impl<'a> UnbanChatMember<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, U>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        user_id: i32,
-    ) -> Self {
+        chat_id: C,
+        user_id: U,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        U: Into<i32>,
+    {
         Self {
             ctx,
-            chat_id,
-            user_id,
+            chat_id: chat_id.into(),
+            user_id: user_id.into(),
         }
     }
 

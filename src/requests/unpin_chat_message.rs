@@ -36,8 +36,14 @@ impl UnpinChatMessage<'_> {
 }
 
 impl<'a> UnpinChatMessage<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>, chat_id: ChatId) -> Self {
-        Self { ctx, chat_id }
+    pub(crate) fn new<C>(ctx: RequestContext<'a>, chat_id: C) -> Self
+    where
+        C: Into<ChatId>,
+    {
+        Self {
+            ctx,
+            chat_id: chat_id.into(),
+        }
     }
 
     pub fn chat_id<T>(mut self, chat_id: T) -> Self

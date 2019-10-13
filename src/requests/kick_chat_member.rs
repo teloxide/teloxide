@@ -49,30 +49,43 @@ impl KickChatMember<'_> {
 }
 
 impl<'a> KickChatMember<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, U>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        user_id: i32,
-    ) -> Self {
+        chat_id: C,
+        user_id: U,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        U: Into<i32>,
+    {
         Self {
             ctx,
-            chat_id,
-            user_id,
+            chat_id: chat_id.into(),
+            user_id: user_id.into(),
             until_date: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    where
+        C: Into<ChatId>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn user_id<T: Into<i32>>(mut self, user_id: T) -> Self {
+    pub fn user_id<U>(mut self, user_id: U) -> Self
+    where
+        U: Into<i32>,
+    {
         self.user_id = user_id.into();
         self
     }
 
-    pub fn until_date<T: Into<u64>>(mut self, until_date: T) -> Self {
+    pub fn until_date<T>(mut self, until_date: T) -> Self
+    where
+        T: Into<u64>,
+    {
         self.until_date = Some(until_date.into());
         self
     }

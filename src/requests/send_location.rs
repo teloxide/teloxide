@@ -60,17 +60,22 @@ impl SendLocation<'_> {
 }
 
 impl<'a> SendLocation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Lt, Lg, C>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        latitude: f64,
-        longitude: f64,
-    ) -> Self {
+        chat_id: C,
+        latitude: Lt,
+        longitude: Lg,
+    ) -> Self
+    where
+        Lt: Into<f64>,
+        Lg: Into<f64>,
+        C: Into<ChatId>,
+    {
         Self {
             ctx,
-            chat_id,
-            latitude,
-            longitude,
+            chat_id: chat_id.into(),
+            latitude: latitude.into(),
+            longitude: longitude.into(),
             live_period: None,
             disable_notification: None,
             reply_to_message_id: None,
@@ -78,33 +83,51 @@ impl<'a> SendLocation<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
+    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
         self.chat_id = chat_id.into();
         self
     }
 
-    pub fn latitude<T: Into<f64>>(mut self, latitude: T) -> Self {
+    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
+    where
+        Lt: Into<f64>,
+    {
         self.latitude = latitude.into();
         self
     }
 
-    pub fn longitude<T: Into<f64>>(mut self, longitude: T) -> Self {
+    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
+    where
+        Lg: Into<f64>,
+    {
         self.longitude = longitude.into();
         self
     }
 
-    pub fn live_period<T: Into<i32>>(mut self, live_period: T) -> Self {
+    pub fn live_period<T>(mut self, live_period: T) -> Self
+    where
+        T: Into<i32>,
+    {
         self.live_period = Some(live_period.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
-        self.disable_notification = Some(val.into());
+    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_notification = Some(disable_notification.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
-        self.reply_to_message_id = Some(val.into());
+    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(reply_to_message_id.into());
         self
     }
 }

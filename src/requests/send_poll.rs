@@ -54,17 +54,22 @@ impl SendPoll<'_> {
 }
 
 impl<'a> SendPoll<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, Q, O>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        question: String,
-        options: Vec<String>,
-    ) -> Self {
+        chat_id: C,
+        question: Q,
+        options: O,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        Q: Into<String>,
+        O: Into<Vec<String>>,
+    {
         Self {
             ctx,
-            chat_id,
-            question,
-            options,
+            chat_id: chat_id.into(),
+            question: question.into(),
+            options: options.into(),
             disable_notification: None,
             reply_to_message_id: None,
             reply_markup: None,

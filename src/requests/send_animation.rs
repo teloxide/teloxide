@@ -86,15 +86,19 @@ impl SendAnimation<'_> {
 }
 
 impl<'a> SendAnimation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        animation: String,
-    ) -> Self {
+        chat_id: C,
+        animation: S,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        S: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            animation,
+            chat_id: chat_id.into(),
+            animation: animation.into(),
             duration: None,
             width: None,
             height: None,

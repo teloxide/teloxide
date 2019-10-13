@@ -47,15 +47,19 @@ impl SendChatAction<'_> {
 }
 
 impl<'a> SendChatAction<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Cid, Ca>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        action: ChatAction,
-    ) -> Self {
+        chat_id: Cid,
+        action: Ca,
+    ) -> Self
+    where
+        Cid: Into<ChatId>,
+        Ca: Into<ChatAction>,
+    {
         Self {
             ctx,
-            chat_id,
-            action,
+            chat_id: chat_id.into(),
+            action: action.into(),
         }
     }
 

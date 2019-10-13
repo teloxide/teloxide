@@ -58,15 +58,19 @@ impl AnswerPreCheckoutQuery<'_> {
 }
 
 impl<'a> AnswerPreCheckoutQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<S, B>(
         ctx: RequestContext<'a>,
-        pre_checkout_query_id: String,
-        ok: bool,
-    ) -> Self {
+        pre_checkout_query_id: S,
+        ok: B,
+    ) -> Self
+    where
+        S: Into<String>,
+        B: Into<bool>,
+    {
         Self {
             ctx,
-            pre_checkout_query_id,
-            ok,
+            pre_checkout_query_id: pre_checkout_query_id.into(),
+            ok: ok.into(),
             error_message: None,
         }
     }
@@ -79,17 +83,17 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
         self
     }
 
-    pub fn ok<T>(mut self, ok: T) -> Self
+    pub fn ok<B>(mut self, ok: B) -> Self
     where
-        T: Into<bool>,
+        B: Into<bool>,
     {
         self.ok = ok.into();
         self
     }
 
-    pub fn error_message<T>(mut self, error_message: T) -> Self
+    pub fn error_message<S>(mut self, error_message: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
         self.error_message = Some(error_message.into());
         self

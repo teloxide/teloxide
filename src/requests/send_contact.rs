@@ -64,17 +64,22 @@ impl SendContact<'_> {
 }
 
 impl<'a> SendContact<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, P, F>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        phone_number: String,
-        first_name: String,
-    ) -> Self {
+        chat_id: C,
+        phone_number: P,
+        first_name: F,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        P: Into<String>,
+        F: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            phone_number,
-            first_name,
+            chat_id: chat_id.into(),
+            phone_number: phone_number.into(),
+            first_name: first_name.into(),
             last_name: None,
             vcard: None,
             disable_notification: None,
