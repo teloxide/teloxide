@@ -24,13 +24,7 @@ impl Request for GetMe<'_> {
 
 impl GetMe<'_> {
     pub async fn send(self) -> ResponseResult<User> {
-        network::request_multipart(
-            self.ctx.client,
-            self.ctx.token,
-            "getMe",
-            None,
-        )
-        .await
+        network::request_simple(self.ctx.client, self.ctx.token, "getMe").await
     }
 }
 

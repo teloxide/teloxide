@@ -79,7 +79,7 @@ impl SendPhoto<'_> {
             &self.ctx.client,
             &self.ctx.token,
             "sendPhoto",
-            Some(params),
+            params,
         )
         .await
     }

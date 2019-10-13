@@ -1,5 +1,3 @@
-use apply::Apply;
-
 use async_trait::async_trait;
 
 use crate::{
@@ -7,7 +5,7 @@ use crate::{
     requests::{
         form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
-    types::{ChatId, InputFile, InputMedia, Message},
+    types::{ChatId, InputMedia, Message},
 };
 
 /// Use this method to send a group of photos or videos as an album.
@@ -33,23 +31,8 @@ impl Request for SendMediaGroup<'_> {
 
 impl SendMediaGroup<'_> {
     pub async fn send(self) -> ResponseResult<Vec<Message>> {
-        let params = FormBuilder::new()
+        let form = FormBuilder::new()
             .add("chat_id", &self.chat_id)
-            .apply(|form| {
-                self.media
-                    .iter()
-                    .map(|e| e.media())
-                    .fold(form, |acc, file| {
-                        if let InputFile::File(path) = file {
-                            acc.add_file(
-                                &path.file_name().unwrap().to_string_lossy(),
-                                path,
-                            )
-                        } else {
-                            acc
-                        }
-                    })
-            })
             .add("media", &self.media)
             .add_if_some(
                 "disable_notification",
@@ -58,13 +41,21 @@ impl SendMediaGroup<'_> {
             .add_if_some(
                 "reply_to_message_id",
                 self.reply_to_message_id.as_ref(),
-            )
-            .build();
+            );
+
+        let form = self.media.iter().filter_map(|e| e.media().as_file())
+                .fold(form, |acc, path|
+                    acc.add_file(
+                        &path.file_name().unwrap().to_string_lossy(),
+                        path,
+                    )
+                );
+
         request_multipart(
             &self.ctx.client,
             &self.ctx.token,
             "sendMediaGroup",
-            Some(params),
+            form.build(),
         )
         .await
     }

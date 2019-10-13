@@ -107,7 +107,7 @@ impl SendAudio<'_> {
             &self.ctx.client,
             &self.ctx.token,
             "sendAudio",
-            Some(params),
+            params,
         )
         .await
     }
