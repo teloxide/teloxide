@@ -1,7 +1,9 @@
 #[macro_use]
-extern crate derive_more;
+extern crate thiserror;
 #[macro_use]
 extern crate serde;
+#[macro_use]
+extern crate derive_more;
 
 pub use errors::{DownloadError, RequestError};
 

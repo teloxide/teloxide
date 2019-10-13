@@ -1,29 +1,21 @@
 use reqwest::StatusCode;
 
 //<editor-fold desc="download">
-#[derive(Debug, Display, From)]
+#[derive(Debug, Error, From)]
 pub enum DownloadError {
-    #[display(fmt = "Network error: {err}", err = _0)]
-    NetworkError(reqwest::Error),
+    #[error("A network error: {0}")]
+    NetworkError(#[source] reqwest::Error),
 
-    #[display(fmt = "IO Error: {err}", err = _0)]
-    Io(std::io::Error),
+    #[error("An I/O error: {0}")]
+    Io(#[source] std::io::Error),
 }
 
-impl std::error::Error for DownloadError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            DownloadError::NetworkError(err) => Some(err),
-            DownloadError::Io(err) => Some(err),
-        }
-    }
-}
 //</editor-fold>
 
 //<editor-fold desc="request">
-#[derive(Debug, Display)]
+#[derive(Debug, Error)]
 pub enum RequestError {
-    #[display(fmt = "Telegram error #{}: {}", status_code, description)]
+    #[error("A Telegram's error #{status_code}: {description}")]
     ApiError {
         status_code: StatusCode,
         description: String,
@@ -31,30 +23,19 @@ pub enum RequestError {
 
     /// The group has been migrated to a supergroup with the specified
     /// identifier.
-    #[display(fmt = "The group has been migrated to a supergroup with id {id}", id = _0)]
+    #[error("The group has been migrated to a supergroup with ID #{0}")]
     MigrateToChatId(i64),
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated
-    #[display(fmt = "Retry after {secs} seconds", secs = _0)]
+    #[error("Retry after {0} seconds")]
     RetryAfter(i32),
 
-    #[display(fmt = "Network error: {err}", err = _0)]
-    NetworkError(reqwest::Error),
+    #[error("A network error: {0}")]
+    NetworkError(#[source] reqwest::Error),
 
-    #[display(fmt = "InvalidJson error caused by: {err}", err = _0)]
-    InvalidJson(serde_json::Error),
+    #[error("An error while parsing JSON: {0}")]
+    InvalidJson(#[source] serde_json::Error),
 }
 
-impl std::error::Error for RequestError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            RequestError::ApiError { .. } => None,
-            RequestError::MigrateToChatId(_) => None,
-            RequestError::RetryAfter(_) => None,
-            RequestError::NetworkError(err) => Some(err),
-            RequestError::InvalidJson(err) => Some(err),
-        }
-    }
-}
 //</editor-fold>
