@@ -5,7 +5,7 @@ use crate::types::InlineKeyboardButton;
 ///
 /// *Note*: This will only work in Telegram versions released after
 /// 9 April, 2016. Older clients will display unsupported message.
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Default)]
 pub struct InlineKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`InlineKeyboardButton`] objects
@@ -28,9 +28,7 @@ pub struct InlineKeyboardMarkup {
 /// ```
 impl InlineKeyboardMarkup {
     pub fn new() -> Self {
-        Self {
-            inline_keyboard: vec![],
-        }
+        <_>::default()
     }
 
     pub fn append_row(mut self, buttons: Vec<InlineKeyboardButton>) -> Self {
