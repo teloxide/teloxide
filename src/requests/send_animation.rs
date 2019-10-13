@@ -65,7 +65,7 @@ pub struct SendAnimation<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for SendAnimation<'a> {
+impl Request for SendAnimation<'_> {
     type ReturnValue = Message;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
