@@ -61,35 +61,35 @@ impl<'a> GetUpdates<'a> {
         }
     }
 
-    pub fn offset<T>(mut self, offset: T) -> Self
+    pub fn offset<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.offset = Some(offset.into());
+        self.offset = Some(value.into());
         self
     }
 
-    pub fn limit<T>(mut self, limit: T) -> Self
+    pub fn limit<T>(mut self, value: T) -> Self
     where
         T: Into<u8>,
     {
-        self.limit = Some(limit.into());
+        self.limit = Some(value.into());
         self
     }
 
-    pub fn timeout<T>(mut self, timeout: T) -> Self
+    pub fn timeout<T>(mut self, value: T) -> Self
     where
         T: Into<u32>,
     {
-        self.timeout = Some(timeout.into());
+        self.timeout = Some(value.into());
         self
     }
 
-    pub fn allowed_updates<T>(mut self, allowed_updates: T) -> Self
+    pub fn allowed_updates<T>(mut self, value: T) -> Self
     where
         T: Into<Vec<AllowedUpdate>>,
     {
-        self.allowed_updates = Some(allowed_updates.into());
+        self.allowed_updates = Some(value.into());
         self
     }
 }

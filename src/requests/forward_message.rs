@@ -50,39 +50,56 @@ impl ForwardMessage<'_> {
 }
 
 impl<'a> ForwardMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, Fc, M>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
-        message_id: i32,
-    ) -> Self {
+        chat_id: C,
+        from_chat_id: Fc,
+        message_id: M,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        Fc: Into<ChatId>,
+        M: Into<i32>,
+    {
         Self {
             ctx,
-            chat_id,
-            from_chat_id,
-            message_id,
+            chat_id: chat_id.into(),
+            from_chat_id: from_chat_id.into(),
+            message_id: message_id.into(),
             disable_notification: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
-        self.chat_id = val.into();
+    pub fn chat_id<C>(mut self, value: C) -> Self
+    where
+        C: Into<ChatId>,
+    {
+        self.chat_id = value.into();
         self
     }
 
     #[allow(clippy::wrong_self_convention)]
-    pub fn from_chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
-        self.from_chat_id = val.into();
+    pub fn from_chat_id<C>(mut self, value: C) -> Self
+    where
+        C: Into<ChatId>,
+    {
+        self.from_chat_id = value.into();
         self
     }
 
-    pub fn message_id<T: Into<i32>>(mut self, val: T) -> Self {
-        self.message_id = val.into();
+    pub fn message_id<M>(mut self, value: M) -> Self
+    where
+        M: Into<i32>,
+    {
+        self.message_id = value.into();
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
-        self.disable_notification = Some(val.into());
+    pub fn disable_notification<B>(mut self, value: B) -> Self
+    where
+        B: Into<bool>,
+    {
+        self.disable_notification = Some(value.into());
         self
     }
 }

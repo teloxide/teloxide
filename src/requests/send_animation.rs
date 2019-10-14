@@ -86,15 +86,19 @@ impl SendAnimation<'_> {
 }
 
 impl<'a> SendAnimation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        animation: String,
-    ) -> Self {
+        chat_id: C,
+        animation: S,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        S: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            animation,
+            chat_id: chat_id.into(),
+            animation: animation.into(),
             duration: None,
             width: None,
             height: None,
@@ -107,76 +111,76 @@ impl<'a> SendAnimation<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn duration<T>(mut self, duration: T) -> Self
+    pub fn duration<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.duration = Some(duration.into());
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn width<T>(mut self, width: T) -> Self
+    pub fn width<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.width = Some(width.into());
+        self.width = Some(value.into());
         self
     }
-    pub fn height<T>(mut self, height: T) -> Self
+    pub fn height<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.height = Some(height.into());
+        self.height = Some(value.into());
         self
     }
-    pub fn thumb<T>(mut self, thumb: T) -> Self
+    pub fn thumb<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.thumb = Some(thumb.into());
+        self.thumb = Some(value.into());
         self
     }
-    pub fn caption<T>(mut self, caption: T) -> Self
+    pub fn caption<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.caption = Some(caption.into());
+        self.caption = Some(value.into());
         self
     }
-    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
+    pub fn parse_mode<T>(mut self, value: T) -> Self
     where
         T: Into<ParseMode>,
     {
-        self.parse_mode = Some(parse_mode.into());
+        self.parse_mode = Some(value.into());
         self
     }
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }
