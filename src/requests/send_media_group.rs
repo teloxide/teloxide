@@ -106,14 +106,3 @@ impl<'a> SendMediaGroup<'a> {
         self
     }
 }
-
-#[tokio::test]
-async fn main() {
-    use crate::types::InputMedia;
-
-    let bot = crate::bot::Bot::new("457569668:AAF4mhmoPmH1Ud943bZqX-EYRCxKXmTt0f8");
-        bot.send_media_group(218485655, vec![
-            InputMedia::Photo { media: InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/28b.png")), caption: None, parse_mode: None },
-            InputMedia::Photo { media: InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/334-3341035_free-png-download-tide-pod-chan-transparent-png.png")), caption: None, parse_mode: None }]).send().await.unwrap();
-    bot.send_photo(218485655, InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/28b.png"))).send().await.unwrap();
-}
