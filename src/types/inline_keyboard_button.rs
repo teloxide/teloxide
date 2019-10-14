@@ -44,15 +44,13 @@ pub enum InlineKeyboardButtonKind {
 /// Build buttons
 ///
 /// Example:
-/// ```edition2018
+/// ```
 /// use async_telegram_bot::types::InlineKeyboardButton;
 ///
-/// fn main() {
-///     let url_button = InlineKeyboardButton::url(
-///         "Text".to_string(),
-///         "http://url.com".to_string(),
-///     );
-/// }
+/// let url_button = InlineKeyboardButton::url(
+///     "Text".to_string(),
+///     "http://url.com".to_string(),
+/// );
 /// ```
 impl InlineKeyboardButton {
     pub fn url(text: String, url: String) -> InlineKeyboardButton {

@@ -29,7 +29,7 @@ pub struct RestrictChatMember<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for RestrictChatMember<'a> {
+impl Request for RestrictChatMember<'_> {
     type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
@@ -50,50 +50,55 @@ impl RestrictChatMember<'_> {
 }
 
 impl<'a> RestrictChatMember<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, U, P>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        user_id: i32,
-        permissions: ChatPermissions,
-    ) -> Self {
+        chat_id: C,
+        user_id: U,
+        permissions: P,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        U: Into<i32>,
+        P: Into<ChatPermissions>,
+    {
         Self {
             ctx,
-            chat_id,
-            user_id,
-            permissions,
+            chat_id: chat_id.into(),
+            user_id: user_id.into(),
+            permissions: permissions.into(),
             until_date: None,
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
-        T: Into<ChatId>,
+        C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn user_id<T>(mut self, user_id: T) -> Self
+    pub fn user_id<U>(mut self, value: U) -> Self
     where
-        T: Into<i32>,
+        U: Into<i32>,
     {
-        self.user_id = user_id.into();
+        self.user_id = value.into();
         self
     }
 
-    pub fn permissions<T>(mut self, permissions: T) -> Self
+    pub fn permissions<P>(mut self, value: P) -> Self
     where
-        T: Into<ChatPermissions>,
+        P: Into<ChatPermissions>,
     {
-        self.permissions = permissions.into();
+        self.permissions = value.into();
         self
     }
 
-    pub fn until_date<T>(mut self, until_date: T) -> Self
+    pub fn until_date<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.until_date = Some(until_date.into());
+        self.until_date = Some(value.into());
         self
     }
 }

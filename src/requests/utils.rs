@@ -36,6 +36,5 @@ pub fn file_to_part(path_to_file: PathBuf) -> Part {
             )
         })
         .flatten_stream();
-    let part = Part::stream(Body::wrap_stream(file)).file_name(file_name);
-    part
+    Part::stream(Body::wrap_stream(file)).file_name(file_name)
 }

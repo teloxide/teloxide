@@ -43,15 +43,21 @@ impl GetFile<'_> {
 }
 
 impl<'a> GetFile<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>, file_id: String) -> Self {
-        Self { ctx, file_id }
+    pub(crate) fn new<F>(ctx: RequestContext<'a>, value: F) -> Self
+    where
+        F: Into<String>,
+    {
+        Self {
+            ctx,
+            file_id: value.into(),
+        }
     }
 
-    pub fn file_id<T>(mut self, file_id: T) -> Self
+    pub fn file_id<F>(mut self, value: F) -> Self
     where
-        T: Into<String>,
+        F: Into<String>,
     {
-        self.file_id = file_id.into();
+        self.file_id = value.into();
         self
     }
 }

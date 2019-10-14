@@ -86,6 +86,7 @@ impl SendAudio<'_> {
             .add("audio", self.audio)
             .add("thumb", self.thumb);
 
+
         network::request_multipart(
             &self.ctx.client,
             &self.ctx.token,
@@ -97,15 +98,19 @@ impl SendAudio<'_> {
 }
 
 impl<'a> SendAudio<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, A>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        audio: InputFile,
-    ) -> Self {
+        chat_id: C,
+        audio: A,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        A: Into<InputFile>,
+    {
         Self {
             ctx,
-            chat_id,
-            audio,
+            chat_id: chat_id.into(),
+            audio: audio.into(),
             caption: None,
             parse_mode: None,
             duration: None,
@@ -118,59 +123,83 @@ impl<'a> SendAudio<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
-        self.chat_id = chat_id.into();
+    pub fn chat_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = value.into();
         self
     }
 
-    pub fn audio<T: Into<InputFile>>(mut self, audio: T) -> Self {
-        self.audio = audio.into();
+    pub fn audio<T>(mut self, value: T) -> Self
+    where
+        T: Into<InputFile>,
+    {
+        self.audio = value.into();
         self
     }
 
-    pub fn caption<T: Into<String>>(mut self, caption: T) -> Self {
-        self.caption = Some(caption.into());
+    pub fn caption<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.caption = Some(value.into());
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, parse_mode: T) -> Self {
-        self.parse_mode = Some(parse_mode.into());
+    pub fn parse_mode<T>(mut self, value: T) -> Self
+    where
+        T: Into<ParseMode>,
+    {
+        self.parse_mode = Some(value.into());
         self
     }
 
-    pub fn duration<T: Into<i32>>(mut self, duration: T) -> Self {
-        self.duration = Some(duration.into());
+    pub fn duration<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn performer<T: Into<String>>(mut self, performer: T) -> Self {
-        self.performer = Some(performer.into());
+    pub fn performer<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.performer = Some(value.into());
         self
     }
 
-    pub fn title<T: Into<String>>(mut self, title: T) -> Self {
-        self.title = Some(title.into());
+    pub fn title<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.title = Some(value.into());
         self
     }
 
-    pub fn thumb<T: Into<InputFile>>(mut self, thumb: T) -> Self {
-        self.thumb = Some(thumb.into());
+    pub fn thumb<T>(mut self, value: T) -> Self
+    where
+        T: Into<InputFile>,
+    {
+        self.thumb = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(
-        mut self,
-        disable_notification: T,
-    ) -> Self {
-        self.disable_notification = Some(disable_notification.into());
+    pub fn disable_notification<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(
-        mut self,
-        reply_to_message_id: T,
-    ) -> Self {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(value.into());
         self
     }
 }

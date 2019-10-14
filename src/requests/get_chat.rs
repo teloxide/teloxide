@@ -41,11 +41,11 @@ impl GetChat<'_> {
 }
 
 impl<'a> GetChat<'a> {
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
-        T: Into<ChatId>,
+        C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 }

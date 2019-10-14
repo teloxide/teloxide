@@ -69,21 +69,28 @@ impl SendVenue<'_> {
 }
 
 impl<'a> SendVenue<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Lt, Lg, C, T, A>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        latitude: f64,
-        longitude: f64,
-        title: String,
-        address: String,
-    ) -> Self {
+        chat_id: C,
+        latitude: Lt,
+        longitude: Lg,
+        title: T,
+        address: A,
+    ) -> Self
+    where
+        Lt: Into<f64>,
+        Lg: Into<f64>,
+        C: Into<ChatId>,
+        T: Into<String>,
+        A: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            latitude,
-            longitude,
-            title,
-            address,
+            chat_id: chat_id.into(),
+            latitude: latitude.into(),
+            longitude: longitude.into(),
+            title: title.into(),
+            address: address.into(),
             foursquare_id: None,
             foursquare_type: None,
             disable_notification: None,
@@ -91,75 +98,75 @@ impl<'a> SendVenue<'a> {
             reply_markup: None,
         }
     }
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn longitude<T>(mut self, longitude: T) -> Self
+    pub fn longitude<Lg>(mut self, value: Lg) -> Self
     where
-        T: Into<f64>,
+        Lg: Into<f64>,
     {
-        self.longitude = longitude.into();
+        self.longitude = value.into();
         self
     }
 
-    pub fn latitude<T>(mut self, latitude: T) -> Self
+    pub fn latitude<Lt>(mut self, value: Lt) -> Self
     where
-        T: Into<f64>,
+        Lt: Into<f64>,
     {
-        self.latitude = latitude.into();
+        self.latitude = value.into();
         self
     }
 
-    pub fn title<T>(mut self, title: T) -> Self
-    where
-        T: Into<String>,
-    {
-        self.title = title.into();
-        self
-    }
-
-    pub fn address<T>(mut self, address: T) -> Self
+    pub fn title<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.address = address.into();
+        self.title = value.into();
         self
     }
 
-    pub fn foursquare_id<T>(mut self, foursquare_id: T) -> Self
+    pub fn address<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.foursquare_id = Some(foursquare_id.into());
+        self.address = value.into();
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn foursquare_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.foursquare_id = Some(value.into());
+        self
+    }
+
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn foursquare_type<T>(mut self, foursquare_type: T) -> Self
+    pub fn foursquare_type<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.foursquare_type = Some(foursquare_type.into());
+        self.foursquare_type = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }
