@@ -19,7 +19,7 @@
   <img src="ICON.jpg" width="300"/>
   <br>
   
-  Bla-bla-bla
+  Lorem ipsum dolor sit amet consectetur adipiscing elit nibh cubilia, nostra ultricies class torquent integer scelerisque netus euismod vehicula, metus aliquam morbi leo risus cursus massa potenti.
   
   <h4>
     <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
