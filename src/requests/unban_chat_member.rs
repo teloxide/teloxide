@@ -59,19 +59,19 @@ impl<'a> UnbanChatMember<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn user_id<T>(mut self, user_id: T) -> Self
+    pub fn user_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.user_id = user_id.into();
+        self.user_id = value.into();
         self
     }
 }

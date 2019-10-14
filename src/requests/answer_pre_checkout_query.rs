@@ -75,27 +75,27 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
         }
     }
 
-    pub fn pre_checkout_query_id<T>(mut self, pre_checkout_query_id: T) -> Self
+    pub fn pre_checkout_query_id<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.pre_checkout_query_id = pre_checkout_query_id.into();
+        self.pre_checkout_query_id = value.into();
         self
     }
 
-    pub fn ok<B>(mut self, ok: B) -> Self
+    pub fn ok<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.ok = ok.into();
+        self.ok = value.into();
         self
     }
 
-    pub fn error_message<S>(mut self, error_message: S) -> Self
+    pub fn error_message<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.error_message = Some(error_message.into());
+        self.error_message = Some(value.into());
         self
     }
 }

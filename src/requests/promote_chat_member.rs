@@ -96,83 +96,83 @@ impl<'a> PromoteChatMember<'a> {
         }
     }
 
-    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn user_id<U>(mut self, user_id: U) -> Self
+    pub fn user_id<U>(mut self, value: U) -> Self
     where
         U: Into<i32>,
     {
-        self.user_id = user_id.into();
+        self.user_id = value.into();
         self
     }
 
-    pub fn can_change_info<B>(mut self, can_change_info: B) -> Self
+    pub fn can_change_info<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_change_info = Some(can_change_info.into());
+        self.can_change_info = Some(value.into());
         self
     }
 
-    pub fn can_post_messages<B>(mut self, can_post_messages: B) -> Self
+    pub fn can_post_messages<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_post_messages = Some(can_post_messages.into());
+        self.can_post_messages = Some(value.into());
         self
     }
 
-    pub fn can_edit_messages<B>(mut self, can_edit_messages: B) -> Self
+    pub fn can_edit_messages<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_edit_messages = Some(can_edit_messages.into());
+        self.can_edit_messages = Some(value.into());
         self
     }
 
-    pub fn can_delete_messages<B>(mut self, can_delete_messages: B) -> Self
+    pub fn can_delete_messages<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_delete_messages = Some(can_delete_messages.into());
+        self.can_delete_messages = Some(value.into());
         self
     }
 
-    pub fn can_invite_users<B>(mut self, can_invite_users: B) -> Self
+    pub fn can_invite_users<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_invite_users = Some(can_invite_users.into());
+        self.can_invite_users = Some(value.into());
         self
     }
 
-    pub fn can_restrict_members<B>(mut self, can_restrict_members: B) -> Self
+    pub fn can_restrict_members<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_restrict_members = Some(can_restrict_members.into());
+        self.can_restrict_members = Some(value.into());
         self
     }
 
-    pub fn can_pin_messages<B>(mut self, can_pin_messages: B) -> Self
+    pub fn can_pin_messages<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_pin_messages = Some(can_pin_messages.into());
+        self.can_pin_messages = Some(value.into());
         self
     }
 
-    pub fn can_promote_members<B>(mut self, can_promote_members: B) -> Self
+    pub fn can_promote_members<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.can_promote_members = Some(can_promote_members.into());
+        self.can_promote_members = Some(value.into());
         self
     }
 }

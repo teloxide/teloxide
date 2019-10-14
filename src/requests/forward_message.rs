@@ -70,35 +70,35 @@ impl<'a> ForwardMessage<'a> {
         }
     }
 
-    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn from_chat_id<C>(mut self, from_chat_id: C) -> Self
+    pub fn from_chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.from_chat_id = from_chat_id.into();
+        self.from_chat_id = value.into();
         self
     }
 
-    pub fn message_id<M>(mut self, message_id: M) -> Self
+    pub fn message_id<M>(mut self, value: M) -> Self
     where
         M: Into<i32>,
     {
-        self.message_id = message_id.into();
+        self.message_id = value.into();
         self
     }
 
-    pub fn disable_notification<B>(mut self, disable_notification: B) -> Self
+    pub fn disable_notification<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 }

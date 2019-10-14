@@ -58,27 +58,27 @@ impl<'a> GetUserProfilePhotos<'a> {
         }
     }
 
-    pub fn user_id<T>(mut self, user_id: T) -> Self
+    pub fn user_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.user_id = user_id.into();
+        self.user_id = value.into();
         self
     }
 
-    pub fn offset<T>(mut self, offset: T) -> Self
+    pub fn offset<T>(mut self, value: T) -> Self
     where
         T: Into<i64>,
     {
-        self.offset = Some(offset.into());
+        self.offset = Some(value.into());
         self
     }
 
-    pub fn limit<T>(mut self, limit: T) -> Self
+    pub fn limit<T>(mut self, value: T) -> Self
     where
         T: Into<i64>,
     {
-        self.limit = Some(limit.into());
+        self.limit = Some(value.into());
         self
     }
 }

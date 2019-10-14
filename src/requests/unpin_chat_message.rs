@@ -36,21 +36,21 @@ impl UnpinChatMessage<'_> {
 }
 
 impl<'a> UnpinChatMessage<'a> {
-    pub(crate) fn new<C>(ctx: RequestContext<'a>, chat_id: C) -> Self
+    pub(crate) fn new<C>(ctx: RequestContext<'a>, value: C) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
             ctx,
-            chat_id: chat_id.into(),
+            chat_id: value.into(),
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 }

@@ -106,51 +106,51 @@ impl<'a> SendPhoto<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn photo<T>(mut self, photo: T) -> Self
+    pub fn photo<T>(mut self, value: T) -> Self
     where
         T: Into<InputFile>,
     {
-        self.photo = photo.into();
+        self.photo = value.into();
         self
     }
 
-    pub fn caption<T>(mut self, caption: T) -> Self
+    pub fn caption<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.caption = Some(caption.into());
+        self.caption = Some(value.into());
         self
     }
 
-    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
+    pub fn parse_mode<T>(mut self, value: T) -> Self
     where
         T: Into<ParseMode>,
     {
-        self.parse_mode = Some(parse_mode.into());
+        self.parse_mode = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 }

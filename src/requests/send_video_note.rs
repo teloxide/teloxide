@@ -97,67 +97,67 @@ impl<'a> SendVideoNote<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn video_note<T>(mut self, video_note: T) -> Self
+    pub fn video_note<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.video_note = video_note.into();
+        self.video_note = value.into();
         self
     }
 
-    pub fn duration<T>(mut self, duration: T) -> Self
+    pub fn duration<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.duration = Some(duration.into());
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn length<T>(mut self, length: T) -> Self
+    pub fn length<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.length = Some(length.into());
+        self.length = Some(value.into());
         self
     }
 
-    pub fn thumb<T>(mut self, thumb: T) -> Self
+    pub fn thumb<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.thumb = Some(thumb.into());
+        self.thumb = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

@@ -83,51 +83,51 @@ impl<'a> SendLocation<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
+    pub fn latitude<Lt>(mut self, value: Lt) -> Self
     where
         Lt: Into<f64>,
     {
-        self.latitude = latitude.into();
+        self.latitude = value.into();
         self
     }
 
-    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
+    pub fn longitude<Lg>(mut self, value: Lg) -> Self
     where
         Lg: Into<f64>,
     {
-        self.longitude = longitude.into();
+        self.longitude = value.into();
         self
     }
 
-    pub fn live_period<T>(mut self, live_period: T) -> Self
+    pub fn live_period<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.live_period = Some(live_period.into());
+        self.live_period = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 }

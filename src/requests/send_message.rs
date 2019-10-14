@@ -86,62 +86,59 @@ impl<'a> SendMessage<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn text<T>(mut self, text: T) -> Self
+    pub fn text<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.text = text.into();
+        self.text = value.into();
         self
     }
 
-    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
+    pub fn parse_mode<T>(mut self, value: T) -> Self
     where
         T: Into<ParseMode>,
     {
-        self.parse_mode = Some(parse_mode.into());
+        self.parse_mode = Some(value.into());
         self
     }
 
-    pub fn disable_web_page_preview<T>(
-        mut self,
-        disable_web_page_preview: T,
-    ) -> Self
+    pub fn disable_web_page_preview<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_web_page_preview = Some(disable_web_page_preview.into());
+        self.disable_web_page_preview = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

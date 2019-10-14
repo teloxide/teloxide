@@ -77,35 +77,35 @@ impl<'a> AnswerShippingQuery<'a> {
         }
     }
 
-    pub fn shipping_query_id<S>(mut self, shipping_query_id: S) -> Self
+    pub fn shipping_query_id<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.shipping_query_id = shipping_query_id.into();
+        self.shipping_query_id = value.into();
         self
     }
 
-    pub fn ok<B>(mut self, ok: B) -> Self
+    pub fn ok<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.ok = ok.into();
+        self.ok = value.into();
         self
     }
 
-    pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
+    pub fn shipping_options<T>(mut self, value: T) -> Self
     where
         T: Into<Vec<ShippingOption>>,
     {
-        self.shipping_options = Some(shipping_options.into());
+        self.shipping_options = Some(value.into());
         self
     }
 
-    pub fn error_message<S>(mut self, error_message: S) -> Self
+    pub fn error_message<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.error_message = Some(error_message.into());
+        self.error_message = Some(value.into());
         self
     }
 }

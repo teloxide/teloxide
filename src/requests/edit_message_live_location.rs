@@ -83,43 +83,43 @@ impl<'a> EditMessageLiveLocation<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = Some(chat_id.into());
+        self.chat_id = Some(value.into());
         self
     }
 
-    pub fn message_id<T>(mut self, message_id: T) -> Self
+    pub fn message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.message_id = Some(message_id.into());
+        self.message_id = Some(value.into());
         self
     }
 
-    pub fn inline_message_id<S>(mut self, inline_message_id: S) -> Self
+    pub fn inline_message_id<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.inline_message_id = Some(inline_message_id.into());
+        self.inline_message_id = Some(value.into());
         self
     }
 
-    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
+    pub fn latitude<Lt>(mut self, value: Lt) -> Self
     where
         Lt: Into<f64>,
     {
-        self.latitude = latitude.into();
+        self.latitude = value.into();
         self
     }
 
-    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
+    pub fn longitude<Lg>(mut self, value: Lg) -> Self
     where
         Lg: Into<f64>,
     {
-        self.longitude = longitude.into();
+        self.longitude = value.into();
         self
     }
 }

@@ -63,19 +63,19 @@ impl<'a> SendChatAction<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn action<T>(mut self, action: T) -> Self
+    pub fn action<T>(mut self, value: T) -> Self
     where
         T: Into<ChatAction>,
     {
-        self.action = action.into();
+        self.action = value.into();
         self
     }
 }

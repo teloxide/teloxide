@@ -66,27 +66,27 @@ impl<'a> KickChatMember<'a> {
         }
     }
 
-    pub fn chat_id<C>(mut self, chat_id: C) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn user_id<U>(mut self, user_id: U) -> Self
+    pub fn user_id<U>(mut self, value: U) -> Self
     where
         U: Into<i32>,
     {
-        self.user_id = user_id.into();
+        self.user_id = value.into();
         self
     }
 
-    pub fn until_date<T>(mut self, until_date: T) -> Self
+    pub fn until_date<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.until_date = Some(until_date.into());
+        self.until_date = Some(value.into());
         self
     }
 }

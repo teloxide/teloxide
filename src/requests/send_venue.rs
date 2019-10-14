@@ -98,75 +98,75 @@ impl<'a> SendVenue<'a> {
             reply_markup: None,
         }
     }
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn longitude<Lg>(mut self, longitude: Lg) -> Self
+    pub fn longitude<Lg>(mut self, value: Lg) -> Self
     where
         Lg: Into<f64>,
     {
-        self.longitude = longitude.into();
+        self.longitude = value.into();
         self
     }
 
-    pub fn latitude<Lt>(mut self, latitude: Lt) -> Self
+    pub fn latitude<Lt>(mut self, value: Lt) -> Self
     where
         Lt: Into<f64>,
     {
-        self.latitude = latitude.into();
+        self.latitude = value.into();
         self
     }
 
-    pub fn title<T>(mut self, title: T) -> Self
+    pub fn title<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.title = title.into();
+        self.title = value.into();
         self
     }
 
-    pub fn address<T>(mut self, address: T) -> Self
+    pub fn address<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.address = address.into();
+        self.address = value.into();
         self
     }
 
-    pub fn foursquare_id<T>(mut self, foursquare_id: T) -> Self
+    pub fn foursquare_id<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.foursquare_id = Some(foursquare_id.into());
+        self.foursquare_id = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn foursquare_type<T>(mut self, foursquare_type: T) -> Self
+    pub fn foursquare_type<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.foursquare_type = Some(foursquare_type.into());
+        self.foursquare_type = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

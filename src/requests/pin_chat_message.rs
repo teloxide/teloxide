@@ -39,11 +39,11 @@ impl<'a> PinChatMessage<'a> {
         }
     }
 
-    pub fn disable_notification<B>(mut self, disable_notification: B) -> Self
+    pub fn disable_notification<B>(mut self, value: B) -> Self
     where
         B: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 }
