@@ -5,7 +5,7 @@ use crate::{
     requests::{
         form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
-    types::{ChatId, InputMedia, Message},
+    types::{ChatId, InputMedia, Message, InputFile},
 };
 
 /// Use this method to send a group of photos or videos as an album.
@@ -32,21 +32,15 @@ impl Request for SendMediaGroup<'_> {
 impl SendMediaGroup<'_> {
     pub async fn send(self) -> ResponseResult<Vec<Message>> {
         let form = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add("media", &self.media)
-            .add_if_some(
-                "disable_notification",
-                self.disable_notification.as_ref(),
-            )
-            .add_if_some(
-                "reply_to_message_id",
-                self.reply_to_message_id.as_ref(),
-            );
+            .add("chat_id", self.chat_id)
+            .add("media", &self.media[..])
+            .add("disable_notification", self.disable_notification)
+            .add("reply_to_message_id", self.reply_to_message_id);
 
-        let form = self.media.iter().filter_map(|e| e.media().as_file())
-                .fold(form, |acc, path|
+        let form = self.media.into_iter().filter_map(|e| InputFile::from(e).into())
+                .fold(form, |acc, path: std::path::PathBuf|
                     acc.add_file(
-                        &path.file_name().unwrap().to_string_lossy(),
+                        &path.file_name().unwrap().to_string_lossy().into_owned(),
                         path,
                     )
                 );
@@ -95,4 +89,15 @@ impl<'a> SendMediaGroup<'a> {
         self.reply_to_message_id = Some(val.into());
         self
     }
+}
+
+#[tokio::test]
+async fn main() {
+    use crate::types::InputMedia;
+
+    let bot = crate::bot::Bot::new("457569668:AAF4mhmoPmH1Ud943bZqX-EYRCxKXmTt0f8");
+        bot.send_media_group(218485655, vec![
+            InputMedia::Photo { media: InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/28b.png")), caption: None, parse_mode: None },
+            InputMedia::Photo { media: InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/334-3341035_free-png-download-tide-pod-chan-transparent-png.png")), caption: None, parse_mode: None }]).send().await.unwrap();
+    bot.send_photo(218485655, InputFile::File(std::path::PathBuf::from("/home/waffle/Pictures/28b.png"))).send().await.unwrap();
 }

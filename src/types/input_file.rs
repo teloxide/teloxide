@@ -30,6 +30,15 @@ impl InputFile {
     }
 }
 
+impl From<InputFile> for Option<PathBuf> {
+    fn from(file: InputFile) -> Self {
+        match file {
+            InputFile::File(path) => Some(path),
+            _ => None,
+        }
+    }
+}
+
 impl serde::Serialize for InputFile {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
