@@ -15,6 +15,7 @@
     <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
   </a>
   
+  <br>
   <img src="ICON.jpg" width="300"/>
   <br>
 </div>
