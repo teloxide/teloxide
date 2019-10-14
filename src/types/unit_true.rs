@@ -8,6 +8,7 @@ impl std::convert::TryFrom<bool> for True {
     type Error = ();
 
     fn try_from(value: bool) -> Result<Self, Self::Error> {
+        #[allow(clippy::match_bool)]
         match value {
             true => Ok(True),
             false => Err(()),
@@ -37,6 +38,7 @@ impl<'de> Visitor<'de> for TrueVisitor {
     where
         E: de::Error,
     {
+        #[allow(clippy::match_bool)]
         match value {
             true => Ok(True),
             false => Err(E::custom("expected `true`, found `false`")),

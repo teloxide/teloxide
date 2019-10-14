@@ -29,7 +29,7 @@ pub struct RestrictChatMember<'a> {
 }
 
 #[async_trait]
-impl<'a> Request for RestrictChatMember<'a> {
+impl Request for RestrictChatMember<'_> {
     type ReturnValue = True;
 
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {

@@ -78,6 +78,7 @@ impl<'a> ForwardMessage<'a> {
         self
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub fn from_chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
