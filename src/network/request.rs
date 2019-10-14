@@ -1,5 +1,5 @@
 use apply::Apply;
-use reqwest::r#async::{multipart::Form, Client, Response};
+use reqwest::{multipart::Form, Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{requests::ResponseResult, RequestError};
@@ -29,12 +29,16 @@ where
     .await
 }
 
-pub async fn request_json<T: DeserializeOwned, P: Serialize>(
+pub async fn request_json<T, P>(
     client: &Client,
     token: &str,
     method_name: &str,
     params: &P,
-) -> ResponseResult<T> {
+) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+    P: Serialize,
+{
     process_response(
         client
             .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
@@ -46,9 +50,10 @@ pub async fn request_json<T: DeserializeOwned, P: Serialize>(
     .await
 }
 
-async fn process_response<T: DeserializeOwned>(
-    mut response: Response,
-) -> ResponseResult<T> {
+async fn process_response<T>(response: Response) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+{
     serde_json::from_str::<TelegramResponse<T>>(
         &response.text().await.map_err(RequestError::NetworkError)?,
     )

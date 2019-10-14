@@ -1,13 +1,13 @@
 use apply::Apply;
+
 use async_trait::async_trait;
 
 use crate::{
     network::request_multipart,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
-    types::{InputFile, InputMedia, Message},
+    types::{ChatId, InputFile, InputMedia, Message},
 };
 
 /// Use this method to send a group of photos or videos as an album.
@@ -71,37 +71,53 @@ impl SendMediaGroup<'_> {
 }
 
 impl<'a> SendMediaGroup<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, M>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        media: Vec<InputMedia>,
-    ) -> Self {
+        chat_id: C,
+        media: M,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        M: Into<Vec<InputMedia>>,
+    {
         SendMediaGroup {
             ctx,
-            chat_id,
-            media,
+            chat_id: chat_id.into(),
+            media: media.into(),
             disable_notification: None,
             reply_to_message_id: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
-        self.chat_id = val.into();
+    pub fn chat_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = value.into();
         self
     }
 
-    pub fn media<T: Into<Vec<InputMedia>>>(mut self, val: T) -> Self {
-        self.media = val.into();
+    pub fn media<T>(mut self, value: T) -> Self
+    where
+        T: Into<Vec<InputMedia>>,
+    {
+        self.media = value.into();
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
-        self.disable_notification = Some(val.into());
+    pub fn disable_notification<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
-        self.reply_to_message_id = Some(val.into());
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(value.into());
         self
     }
 }

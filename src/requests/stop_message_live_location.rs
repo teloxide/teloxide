@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{InlineKeyboardMarkup, Message},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, InlineKeyboardMarkup, Message},
 };
 
 /// Use this method to stop updating a live location message before live_period
@@ -64,35 +64,35 @@ impl<'a> StopMessageLiveLocation<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = Some(chat_id.into());
+        self.chat_id = Some(value.into());
         self
     }
 
-    pub fn message_id<T>(mut self, message_id: T) -> Self
+    pub fn message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.message_id = Some(message_id.into());
+        self.message_id = Some(value.into());
         self
     }
 
-    pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
+    pub fn inline_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.inline_message_id = Some(inline_message_id.into());
+        self.inline_message_id = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<InlineKeyboardMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

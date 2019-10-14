@@ -1,10 +1,11 @@
-use self::not_implemented_types::*;
 pub use self::{
     animation::Animation,
     audio::Audio,
     callback_game::CallbackGame,
     callback_query::CallbackQuery,
     chat::{Chat, ChatKind, NonPrivateChatKind},
+    chat_action::ChatAction,
+    chat_id::ChatId,
     chat_member::{ChatMember, ChatMemberStatus},
     chat_permissions::ChatPermissions,
     chat_photo::ChatPhoto,
@@ -90,6 +91,8 @@ mod audio;
 mod callback_game;
 mod callback_query;
 mod chat;
+mod chat_action;
+mod chat_id;
 mod chat_member;
 mod chat_permissions;
 mod chat_photo;
@@ -113,7 +116,6 @@ mod login_url;
 mod mask_position;
 mod message;
 mod message_entity;
-mod not_implemented_types;
 mod order_info;
 mod parse_mode;
 mod photo_size;

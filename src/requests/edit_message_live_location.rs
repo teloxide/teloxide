@@ -2,16 +2,19 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{Message, ReplyMarkup},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ReplyMarkup},
 };
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
 /// until its live_period expires or editing is explicitly disabled by a
-/// call to [`stopMessageLiveLocation`]. On success, if the edited message
+/// call to [`StopMessageLiveLocation`]. On success, if the edited message
 /// was sent by the bot, the edited [`Message`] is returned, otherwise True
 /// is returned.
+///
+/// [`StopMessageLiveLocation`]: crate::requests::StopMessageLiveLocation
+/// [`Message`]: crate::types::Message
 pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
@@ -60,47 +63,63 @@ impl EditMessageLiveLocation<'_> {
 }
 
 impl<'a> EditMessageLiveLocation<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Lt, Lg>(
         ctx: RequestContext<'a>,
-        latitude: f64,
-        longitude: f64,
-    ) -> Self {
+        latitude: Lt,
+        longitude: Lg,
+    ) -> Self
+    where
+        Lt: Into<f64>,
+        Lg: Into<f64>,
+    {
         Self {
             ctx,
             chat_id: None,
             message_id: None,
             inline_message_id: None,
-            latitude,
-            longitude,
+            latitude: latitude.into(),
+            longitude: longitude.into(),
             reply_markup: None,
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
-        self.chat_id = Some(chat_id.into());
-        self
-    }
-
-    pub fn message_id<T: Into<i32>>(mut self, message_id: T) -> Self {
-        self.message_id = Some(message_id.into());
-        self
-    }
-
-    pub fn inline_message_id<T>(mut self, inline_message_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<ChatId>,
     {
-        self.inline_message_id = Some(inline_message_id.into());
+        self.chat_id = Some(value.into());
         self
     }
 
-    pub fn latitude<T: Into<f64>>(mut self, latitude: T) -> Self {
-        self.latitude = latitude.into();
+    pub fn message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.message_id = Some(value.into());
         self
     }
 
-    pub fn longitude<T: Into<f64>>(mut self, longitude: T) -> Self {
-        self.longitude = longitude.into();
+    pub fn inline_message_id<S>(mut self, value: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.inline_message_id = Some(value.into());
+        self
+    }
+
+    pub fn latitude<Lt>(mut self, value: Lt) -> Self
+    where
+        Lt: Into<f64>,
+    {
+        self.latitude = value.into();
+        self
+    }
+
+    pub fn longitude<Lg>(mut self, value: Lg) -> Self
+    where
+        Lg: Into<f64>,
+    {
+        self.longitude = value.into();
         self
     }
 }

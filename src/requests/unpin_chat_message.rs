@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::True,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, True},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -36,15 +36,21 @@ impl UnpinChatMessage<'_> {
 }
 
 impl<'a> UnpinChatMessage<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>, chat_id: ChatId) -> Self {
-        Self { ctx, chat_id }
+    pub(crate) fn new<C>(ctx: RequestContext<'a>, value: C) -> Self
+    where
+        C: Into<ChatId>,
+    {
+        Self {
+            ctx,
+            chat_id: value.into(),
+        }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 }

@@ -11,6 +11,8 @@ use crate::{
 /// is_flexible was specified, the Bot API will send an [`Update`] with a
 /// shipping_query field to the bot. Use this method to reply to shipping
 /// queries. On success, True is returned.
+///
+/// [`Update`]: crate::types::Update
 pub struct AnswerShippingQuery<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
@@ -57,49 +59,53 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<S, B>(
         ctx: RequestContext<'a>,
-        shipping_query_id: String,
-        ok: bool,
-    ) -> Self {
+        shipping_query_id: S,
+        ok: B,
+    ) -> Self
+    where
+        S: Into<String>,
+        B: Into<bool>,
+    {
         Self {
             ctx,
-            shipping_query_id,
-            ok,
+            shipping_query_id: shipping_query_id.into(),
+            ok: ok.into(),
             shipping_options: None,
             error_message: None,
         }
     }
 
-    pub fn shipping_query_id<T>(mut self, shipping_query_id: T) -> Self
+    pub fn shipping_query_id<S>(mut self, value: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
-        self.shipping_query_id = shipping_query_id.into();
+        self.shipping_query_id = value.into();
         self
     }
 
-    pub fn ok<T>(mut self, ok: T) -> Self
+    pub fn ok<B>(mut self, value: B) -> Self
     where
-        T: Into<bool>,
+        B: Into<bool>,
     {
-        self.ok = ok.into();
+        self.ok = value.into();
         self
     }
 
-    pub fn shipping_options<T>(mut self, shipping_options: T) -> Self
+    pub fn shipping_options<T>(mut self, value: T) -> Self
     where
         T: Into<Vec<ShippingOption>>,
     {
-        self.shipping_options = Some(shipping_options.into());
+        self.shipping_options = Some(value.into());
         self
     }
 
-    pub fn error_message<T>(mut self, error_message: T) -> Self
+    pub fn error_message<S>(mut self, value: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
-        self.error_message = Some(error_message.into());
+        self.error_message = Some(value.into());
         self
     }
 }

@@ -3,6 +3,8 @@
 /// By default, custom keyboards are displayed until a new keyboard is sent
 /// by a bot. An exception is made for one-time keyboards that are hidden
 /// immediately after the user presses a button (see [`ReplyKeyboardMarkup`]).
+///
+/// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
 #[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
 pub struct ReplyKeyboardRemove {
     /// equests clients to remove the custom keyboard (user will not be able to
@@ -19,5 +21,7 @@ pub struct ReplyKeyboardRemove {
     /// Example: A user requests to change the bot‘s language, bot replies to
     /// the request with a keyboard to select the new language. Other users in
     /// the group don’t see the keyboard.
+    ///
+    /// [`Message`]: crate::types::Message
     pub selective: Option<bool>,
 }

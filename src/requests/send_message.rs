@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::{Message, ParseMode, ReplyMarkup},
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -24,7 +24,7 @@ pub struct SendMessage<'a> {
     /// or inline URLs] in the media caption.
     ///
     /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [Html]: crate::types::ParseMode::Html
+    /// [HTML]: crate::types::ParseMode::HTML
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::types::ParseMode
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -65,15 +65,19 @@ impl SendMessage<'_> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, S>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        text: String,
-    ) -> Self {
+        chat_id: C,
+        text: S,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        S: Into<String>,
+    {
         SendMessage {
             ctx,
-            chat_id,
-            text,
+            chat_id: chat_id.into(),
+            text: text.into(),
             parse_mode: None,
             disable_web_page_preview: None,
             disable_notification: None,
@@ -82,38 +86,59 @@ impl<'a> SendMessage<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, val: T) -> Self {
-        self.chat_id = val.into();
+    pub fn chat_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = value.into();
         self
     }
 
-    pub fn text<T: Into<String>>(mut self, val: T) -> Self {
-        self.text = val.into();
+    pub fn text<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.text = value.into();
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, val: T) -> Self {
-        self.parse_mode = Some(val.into());
+    pub fn parse_mode<T>(mut self, value: T) -> Self
+    where
+        T: Into<ParseMode>,
+    {
+        self.parse_mode = Some(value.into());
         self
     }
 
-    pub fn disable_web_page_preview<T: Into<bool>>(mut self, val: T) -> Self {
-        self.disable_web_page_preview = Some(val.into());
+    pub fn disable_web_page_preview<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_web_page_preview = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(mut self, val: T) -> Self {
-        self.disable_notification = Some(val.into());
+    pub fn disable_notification<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(mut self, val: T) -> Self {
-        self.reply_to_message_id = Some(val.into());
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T: Into<ReplyMarkup>>(mut self, val: T) -> Self {
-        self.reply_markup = Some(val.into());
+    pub fn reply_markup<T>(mut self, value: T) -> Self
+    where
+        T: Into<ReplyMarkup>,
+    {
+        self.reply_markup = Some(value.into());
         self
     }
 }

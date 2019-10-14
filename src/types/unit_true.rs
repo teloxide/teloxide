@@ -4,16 +4,11 @@ use serde::ser::{Serialize, Serializer};
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct True;
 
-impl std::process::Termination for True {
-    fn report(self) -> i32 {
-        libc::EXIT_SUCCESS
-    }
-}
-
 impl std::convert::TryFrom<bool> for True {
     type Error = ();
 
     fn try_from(value: bool) -> Result<Self, Self::Error> {
+        #[allow(clippy::match_bool)]
         match value {
             true => Ok(True),
             false => Err(()),
@@ -43,6 +38,7 @@ impl<'de> Visitor<'de> for TrueVisitor {
     where
         E: de::Error,
     {
+        #[allow(clippy::match_bool)]
         match value {
             true => Ok(True),
             false => Err(E::custom("expected `true`, found `false`")),

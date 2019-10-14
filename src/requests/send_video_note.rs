@@ -1,7 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ReplyMarkup};
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ReplyMarkup},
+};
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
@@ -17,7 +20,8 @@ pub struct SendVideoNote<'a> {
     /// exists on the Telegram servers (recommended) or upload a new video
     /// using multipart/form-data. More info on Sending Files ». Sending video
     /// notes by a URL is currently unsupported
-    pub video_note: String, //	InputFile or String
+    pub video_note: String,
+    //	InputFile or String
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -33,7 +37,8 @@ pub struct SendVideoNote<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>, //	InputFile or String
+    pub thumb: Option<String>,
+    //	InputFile or String
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -70,15 +75,19 @@ impl SendVideoNote<'_> {
 }
 
 impl<'a> SendVideoNote<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, V>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        video_note: String,
-    ) -> Self {
+        chat_id: C,
+        video_note: V,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        V: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            video_note,
+            chat_id: chat_id.into(),
+            video_note: video_note.into(),
             duration: None,
             length: None,
             thumb: None,
@@ -88,67 +97,67 @@ impl<'a> SendVideoNote<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn video_note<T>(mut self, video_note: T) -> Self
+    pub fn video_note<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.video_note = video_note.into();
+        self.video_note = value.into();
         self
     }
 
-    pub fn duration<T>(mut self, duration: T) -> Self
+    pub fn duration<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.duration = Some(duration.into());
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn length<T>(mut self, length: T) -> Self
+    pub fn length<T>(mut self, value: T) -> Self
     where
         T: Into<u64>,
     {
-        self.length = Some(length.into());
+        self.length = Some(value.into());
         self
     }
 
-    pub fn thumb<T>(mut self, thumb: T) -> Self
+    pub fn thumb<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.thumb = Some(thumb.into());
+        self.thumb = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
+    pub fn disable_notification<T>(mut self, value: T) -> Self
     where
         T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
     where
         T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
+    pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

@@ -1,6 +1,7 @@
-use async_trait::async_trait;
-use reqwest::r#async::Client;
+use reqwest::Client;
 use serde::de::DeserializeOwned;
+
+use async_trait::async_trait;
 
 use crate::RequestError;
 
@@ -26,61 +27,6 @@ pub use self::{
 
 mod form_builder;
 mod utils;
-
-pub type ResponseResult<T> = Result<T, RequestError>;
-
-/// Request that can be sent to telegram.
-/// `ReturnValue` - a type that will be returned from Telegram.
-#[async_trait]
-pub trait Request {
-    type ReturnValue: DeserializeOwned;
-
-    /// Send request to telegram
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>;
-}
-
-#[derive(Debug, Clone)]
-pub struct RequestContext<'a> {
-    pub client: &'a Client,
-    pub token: &'a str,
-}
-
-/// Unique identifier for the target chat or username of the target channel (in
-/// the format @channelusername)
-#[derive(Debug, Display, Serialize, From, PartialEq, Eq, Clone)]
-#[serde(untagged)]
-pub enum ChatId {
-    /// chat identifier
-    #[display(fmt = "{}", _0)]
-    Id(i64),
-    /// _channel_ username (in the format @channelusername)
-    #[display(fmt = "{}", _0)]
-    ChannelUsername(String),
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn chat_id_id_serialization() {
-        let expected_json = String::from(r#"123456"#);
-        let actual_json = serde_json::to_string(&ChatId::Id(123456)).unwrap();
-
-        assert_eq!(expected_json, actual_json)
-    }
-
-    #[test]
-    fn chat_id_channel_username_serialization() {
-        let expected_json = String::from(r#""@username""#);
-        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(
-            String::from("@username"),
-        ))
-        .unwrap();
-
-        assert_eq!(expected_json, actual_json)
-    }
-}
 
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
@@ -112,3 +58,21 @@ mod send_voice;
 mod stop_message_live_location;
 mod unban_chat_member;
 mod unpin_chat_message;
+
+pub type ResponseResult<T> = Result<T, RequestError>;
+
+/// A request that can be sent to Telegram.
+#[async_trait]
+pub trait Request {
+    /// A type of response.
+    type ReturnValue: DeserializeOwned;
+
+    /// Send this request.
+    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>;
+}
+
+#[derive(Debug, Clone)]
+pub struct RequestContext<'a> {
+    pub client: &'a Client,
+    pub token: &'a str,
+}

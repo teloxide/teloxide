@@ -1,11 +1,11 @@
-use reqwest::r#async::Chunk;
-use tokio::{io::AsyncWrite, stream::Stream};
+use tokio::io::AsyncWrite;
 
-use crate::{
-    bot::Bot,
-    network::{download_file, download_file_stream},
-    DownloadError,
-};
+#[cfg(feature = "unstable-stream")]
+use ::{bytes::Bytes, tokio::stream::Stream};
+
+#[cfg(feature = "unstable-stream")]
+use crate::network::download_file_stream;
+use crate::{bot::Bot, network::download_file, DownloadError};
 
 impl Bot {
     /// Download file from telegram into `destination`.
@@ -26,8 +26,7 @@ impl Bot {
     /// let bot = Bot::new("TOKEN");
     /// let mut file = File::create("/home/waffle/Pictures/test.png").await?;
     ///
-    /// let TgFile { file_path, .. } =
-    ///     bot.get_file("*file_id*").send_boxed().await?;
+    /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
     /// bot.download_file(&file_path, &mut file).await?;
     /// # Ok(()) }
     /// ```
@@ -56,10 +55,11 @@ impl Bot {
     /// [`AsyncWrite`]: tokio::io::AsyncWrite
     /// [`tokio::fs::File`]: tokio::fs::File
     /// [`download_file`]: crate::bot::Bot::download_file
+    #[cfg(feature = "unstable-stream")]
     pub async fn download_file_stream(
         &self,
         path: &str,
-    ) -> Result<impl Stream<Item = Result<Chunk, reqwest::Error>>, reqwest::Error>
+    ) -> Result<impl Stream<Item = Result<Bytes, reqwest::Error>>, reqwest::Error>
     {
         download_file_stream(&self.client, &self.token, path).await
     }

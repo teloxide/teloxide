@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use bytes::{Bytes, BytesMut};
-use reqwest::r#async::multipart::Part;
+use reqwest::{multipart::Part, Body};
 use tokio::{codec::FramedRead, prelude::*};
 
 struct FileDecoder;
@@ -30,12 +30,11 @@ pub fn file_to_part(path_to_file: &PathBuf) -> Part {
             )
         })
         .flatten_stream();
-    let part = Part::stream(file).file_name(
+    Part::stream(Body::wrap_stream(file)).file_name(
         path_to_file
             .file_name()
             .unwrap()
             .to_string_lossy()
             .into_owned(),
-    );
-    part
+    )
 }

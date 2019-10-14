@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::Chat,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{Chat, ChatId},
 };
 
 /// Use this method to get up to date information about the chat
@@ -41,11 +41,11 @@ impl GetChat<'_> {
 }
 
 impl<'a> GetChat<'a> {
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<C>(mut self, value: C) -> Self
     where
-        T: Into<ChatId>,
+        C: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 }

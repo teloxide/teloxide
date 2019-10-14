@@ -5,6 +5,8 @@ use crate::types::KeyboardButton;
 pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
+    ///
+    /// [`KeyboardButton`]: crate::types::KeyboardButton
     pub keyboard: Vec<Vec<KeyboardButton>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -32,5 +34,7 @@ pub struct ReplyKeyboardMarkup {
     /// Example: A user requests to change the bot‘s language, bot replies to
     /// the request with a keyboard to select the new language. Other users in
     /// the group don’t see the keyboard.
+    ///
+    /// [`Message`]: crate::types::Message
     pub selective: Option<bool>,
 }

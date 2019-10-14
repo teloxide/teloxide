@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::True,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, True},
 };
 
 /// Use this method to get up to date information about the chat
@@ -22,30 +22,34 @@ pub struct PinChatMessage<'a> {
 }
 
 impl<'a> PinChatMessage<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, M>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        message_id: i32,
-    ) -> Self {
+        chat_id: C,
+        message_id: M,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        M: Into<i32>,
+    {
         Self {
             ctx,
-            chat_id,
-            message_id,
+            chat_id: chat_id.into(),
+            message_id: message_id.into(),
             disable_notification: None,
         }
     }
 
-    pub fn disable_notification<T>(mut self, val: T) -> Self
+    pub fn disable_notification<B>(mut self, value: B) -> Self
     where
-        T: Into<bool>,
+        B: Into<bool>,
     {
-        self.disable_notification = Some(val.into());
+        self.disable_notification = Some(value.into());
         self
     }
 }
 
 #[async_trait]
-impl<'a> Request for PinChatMessage<'a> {
+impl Request for PinChatMessage<'_> {
     type ReturnValue = True;
     async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
         self.send().await

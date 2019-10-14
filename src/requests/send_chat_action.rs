@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{ChatId, Request, RequestContext, ResponseResult},
-    types::True,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatAction, ChatId, True},
 };
 
 ///Use this method when you need to tell the user that something is happening
@@ -23,21 +23,6 @@ pub struct SendChatAction<'a> {
     /// for audio files, upload_document for general files, find_location for
     /// location data, record_video_note or upload_video_note for video notes.
     pub action: ChatAction,
-}
-
-#[derive(Debug, Serialize, From, Clone)]
-#[serde(rename_all = "snake_case")]
-pub enum ChatAction {
-    Typing,
-    UploadPhoto,
-    RecordVideo,
-    UploadVideo,
-    RecordAudio,
-    UploadAudio,
-    UploadDocument,
-    FindLocation,
-    RecordVideoNote,
-    UploadVideoNote,
 }
 
 #[async_trait]
@@ -62,31 +47,35 @@ impl SendChatAction<'_> {
 }
 
 impl<'a> SendChatAction<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<Cid, Ca>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        action: ChatAction,
-    ) -> Self {
+        chat_id: Cid,
+        action: Ca,
+    ) -> Self
+    where
+        Cid: Into<ChatId>,
+        Ca: Into<ChatAction>,
+    {
         Self {
             ctx,
-            chat_id,
-            action,
+            chat_id: chat_id.into(),
+            action: action.into(),
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
+    pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn action<T>(mut self, action: T) -> Self
+    pub fn action<T>(mut self, value: T) -> Self
     where
         T: Into<ChatAction>,
     {
-        self.action = action.into();
+        self.action = value.into();
         self
     }
 }

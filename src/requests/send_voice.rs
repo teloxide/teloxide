@@ -1,7 +1,10 @@
-use crate::network;
-use crate::requests::{ChatId, Request, RequestContext, ResponseResult};
-use crate::types::{Message, ReplyMarkup, ParseMode};
 use async_trait::async_trait;
+
+use crate::{
+    network,
+    requests::{Request, RequestContext, ResponseResult},
+    types::{ChatId, Message, ParseMode, ReplyMarkup},
+};
 
 ///Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message. For this to work, your audio must be
@@ -20,7 +23,8 @@ pub struct SendVoice<'a> {
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: String, //InputFile or String
+    pub voice: String,
+    //InputFile or String
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
@@ -68,15 +72,19 @@ impl SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, V>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        voice: String,
-    ) -> Self {
+        chat_id: C,
+        voice: V,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        V: Into<String>,
+    {
         Self {
             ctx,
-            chat_id,
-            voice,
+            chat_id: chat_id.into(),
+            voice: voice.into(),
             caption: None,
             parse_mode: None,
             duration: None,
@@ -86,70 +94,67 @@ impl<'a> SendVoice<'a> {
         }
     }
 
-    pub fn chat_id<T>(mut self, chat_id: T) -> Self
-        where
-            T: Into<ChatId>,
+    pub fn chat_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<ChatId>,
     {
-        self.chat_id = chat_id.into();
+        self.chat_id = value.into();
         self
     }
 
-    pub fn voice<T>(mut self, voice: T) -> Self
-        where
-            T: Into<String>,
+    pub fn voice<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
     {
-        self.voice = voice.into();
+        self.voice = value.into();
         self
     }
 
-    pub fn caption<T>(mut self, caption: T) -> Self
-        where
-            T: Into<String>,
+    pub fn caption<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
     {
-        self.caption = Some(caption.into());
+        self.caption = Some(value.into());
         self
     }
 
-    pub fn parse_mode<T>(mut self, parse_mode: T) -> Self
-        where
-            T: Into<ParseMode>,
+    pub fn parse_mode<T>(mut self, value: T) -> Self
+    where
+        T: Into<ParseMode>,
     {
-        self.parse_mode = Some(parse_mode.into());
+        self.parse_mode = Some(value.into());
         self
     }
 
-
-    pub fn duration<T>(mut self, duration: T) -> Self
-        where
-            T: Into<u64>,
+    pub fn duration<T>(mut self, value: T) -> Self
+    where
+        T: Into<u64>,
     {
-        self.duration = Some(duration.into());
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T>(mut self, disable_notification: T) -> Self
-        where
-            T: Into<bool>,
+    pub fn disable_notification<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
     {
-        self.disable_notification = Some(disable_notification.into());
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T>(mut self, reply_to_message_id: T) -> Self
-        where
-            T: Into<i32>,
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
     {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+        self.reply_to_message_id = Some(value.into());
         self
     }
 
-
-    pub fn reply_markup<T>(mut self, reply_markup: T) -> Self
-        where
-            T: Into<ReplyMarkup>,
+    pub fn reply_markup<T>(mut self, value: T) -> Self
+    where
+        T: Into<ReplyMarkup>,
     {
-        self.reply_markup = Some(reply_markup.into());
+        self.reply_markup = Some(value.into());
         self
     }
-
 }

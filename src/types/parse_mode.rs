@@ -28,16 +28,16 @@ use serde::{Deserialize, Serialize};
 ///
 /// Use the following syntax in your message:
 ///
-/// ```ignore
+/// <pre>
 /// *bold text*
 /// _italic text_
 /// [inline URL](http://www.example.com/)
 /// [inline mention of a user](tg://user?id=123456789)
-/// `inline fixed-width code`
+/// &#96;inline fixed-width code&#96;
 /// &#96;&#96;&#96;block_language
 /// pre-formatted fixed-width code block
 /// &#96;&#96;&#96;
-/// ```
+/// </pre>
 ///
 /// ## HTML style
 /// To use this mode, pass [HTML] in the `parse_mode` field when using
@@ -45,14 +45,14 @@ use serde::{Deserialize, Serialize};
 ///
 /// The following tags are currently supported:
 ///
-/// ```ignore
-/// <b>bold</b>, <strong>bold</strong>
-/// <i>italic</i>, <em>italic</em>
-/// <a href="http://www.example.com/">inline URL</a>
-/// <a href="tg://user?id=123456789">inline mention of a user</a>
-/// <code>inline fixed-width code</code>
-/// <pre>pre-formatted fixed-width code block</pre>
-/// ```
+/// <pre>
+/// &lt;b&gt;bold&lt;/b&gt;, &lt;strong&gt;bold&lt;/strong&gt;
+/// &lt;i&gt;italic&lt;/i&gt;, &lt;em&gt;italic&lt;/em&gt;
+/// &lt;a href="http://www.example.com/"&gt;inline URL&lt;/a&gt;
+/// &lt;a href="tg://user?id=123456789"&gt;inline mention of a user&lt;/a&gt;
+/// &lt;code&gt;inline fixed-width code&lt;/code&gt;
+/// &lt;pre&gt;pre-formatted fixed-width code block&lt;/pre&gt;
+/// </pre>
 ///
 /// Please note:
 ///
@@ -64,6 +64,10 @@ use serde::{Deserialize, Serialize};
 /// - All numerical HTML entities are supported.
 /// - The API currently supports only the following named HTML entities: `&lt;`,
 ///   `&gt;`, `&amp;` and `&quot;`.
+///
+/// [Markdown]: crate::types::ParseMode::Markdown
+/// [HTML]: crate::types::ParseMode::HTML
+/// [SendMessage]: crate::requests::SendMessage
 pub enum ParseMode {
     HTML,
     Markdown,

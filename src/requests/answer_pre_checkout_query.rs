@@ -12,6 +12,8 @@ use crate::{
 /// pre_checkout_query. Use this method to respond to such pre-checkout queries.
 /// On success, True is returned. Note: The Bot API must receive an answer
 /// within 10 seconds after the pre-checkout query was sent.
+///
+/// [`Update`]: crate::types::Update
 pub struct AnswerPreCheckoutQuery<'a> {
     #[serde(skip_serializing)]
     ctx: RequestContext<'a>,
@@ -56,40 +58,44 @@ impl AnswerPreCheckoutQuery<'_> {
 }
 
 impl<'a> AnswerPreCheckoutQuery<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<S, B>(
         ctx: RequestContext<'a>,
-        pre_checkout_query_id: String,
-        ok: bool,
-    ) -> Self {
+        pre_checkout_query_id: S,
+        ok: B,
+    ) -> Self
+    where
+        S: Into<String>,
+        B: Into<bool>,
+    {
         Self {
             ctx,
-            pre_checkout_query_id,
-            ok,
+            pre_checkout_query_id: pre_checkout_query_id.into(),
+            ok: ok.into(),
             error_message: None,
         }
     }
 
-    pub fn pre_checkout_query_id<T>(mut self, pre_checkout_query_id: T) -> Self
+    pub fn pre_checkout_query_id<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
     {
-        self.pre_checkout_query_id = pre_checkout_query_id.into();
+        self.pre_checkout_query_id = value.into();
         self
     }
 
-    pub fn ok<T>(mut self, ok: T) -> Self
+    pub fn ok<B>(mut self, value: B) -> Self
     where
-        T: Into<bool>,
+        B: Into<bool>,
     {
-        self.ok = ok.into();
+        self.ok = value.into();
         self
     }
 
-    pub fn error_message<T>(mut self, error_message: T) -> Self
+    pub fn error_message<S>(mut self, value: S) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
-        self.error_message = Some(error_message.into());
+        self.error_message = Some(value.into());
         self
     }
 }

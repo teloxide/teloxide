@@ -3,10 +3,9 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, ChatId, Request, RequestContext,
-        ResponseResult,
+        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
     },
-    types::{InputFile, Message, ParseMode, ReplyMarkup},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 /// Use this method to send audio files, if you want Telegram clients to display
@@ -15,6 +14,9 @@ use crate::{
 /// to 50 MB in size, this limit may be changed in the future.
 ///
 /// For sending voice messages, use the [`SendVoice`] method instead.
+///
+/// [`Message`]: crate::types::Message
+/// [`SendVoice`]: crate::requests::SendVoice
 pub struct SendAudio<'a> {
     ctx: RequestContext<'a>,
 
@@ -35,7 +37,7 @@ pub struct SendAudio<'a> {
     /// or inline URLs] in the media caption.
     ///
     /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [Html]: crate::types::ParseMode::Html
+    /// [HTML]: crate::types::ParseMode::HTML
     /// [bold, italic, fixed-width text or inline URLs]:
     /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
@@ -87,11 +89,13 @@ impl SendAudio<'_> {
                 "reply_to_message_id",
                 self.reply_to_message_id.as_ref(),
             );
+
         params = match self.audio {
             InputFile::File(file) => params.add_file("audio", &file),
             InputFile::Url(url) => params.add("audio", &url),
             InputFile::FileId(file_id) => params.add("audio", &file_id),
         };
+
         if let Some(thumb) = self.thumb {
             params = match thumb {
                 InputFile::File(file) => params.add_file("thumb", &file),
@@ -99,28 +103,31 @@ impl SendAudio<'_> {
                 InputFile::FileId(file_id) => params.add("thumb", &file_id),
             }
         }
-        let params = params.build();
 
         network::request_multipart(
             &self.ctx.client,
             &self.ctx.token,
             "sendAudio",
-            Some(params),
+            Some(params.build()),
         )
         .await
     }
 }
 
 impl<'a> SendAudio<'a> {
-    pub(crate) fn new(
+    pub(crate) fn new<C, A>(
         ctx: RequestContext<'a>,
-        chat_id: ChatId,
-        audio: InputFile,
-    ) -> Self {
+        chat_id: C,
+        audio: A,
+    ) -> Self
+    where
+        C: Into<ChatId>,
+        A: Into<InputFile>,
+    {
         Self {
             ctx,
-            chat_id,
-            audio,
+            chat_id: chat_id.into(),
+            audio: audio.into(),
             caption: None,
             parse_mode: None,
             duration: None,
@@ -133,59 +140,83 @@ impl<'a> SendAudio<'a> {
         }
     }
 
-    pub fn chat_id<T: Into<ChatId>>(mut self, chat_id: T) -> Self {
-        self.chat_id = chat_id.into();
+    pub fn chat_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = value.into();
         self
     }
 
-    pub fn audio<T: Into<InputFile>>(mut self, audio: T) -> Self {
-        self.audio = audio.into();
+    pub fn audio<T>(mut self, value: T) -> Self
+    where
+        T: Into<InputFile>,
+    {
+        self.audio = value.into();
         self
     }
 
-    pub fn caption<T: Into<String>>(mut self, caption: T) -> Self {
-        self.caption = Some(caption.into());
+    pub fn caption<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.caption = Some(value.into());
         self
     }
 
-    pub fn parse_mode<T: Into<ParseMode>>(mut self, parse_mode: T) -> Self {
-        self.parse_mode = Some(parse_mode.into());
+    pub fn parse_mode<T>(mut self, value: T) -> Self
+    where
+        T: Into<ParseMode>,
+    {
+        self.parse_mode = Some(value.into());
         self
     }
 
-    pub fn duration<T: Into<i32>>(mut self, duration: T) -> Self {
-        self.duration = Some(duration.into());
+    pub fn duration<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.duration = Some(value.into());
         self
     }
 
-    pub fn performer<T: Into<String>>(mut self, performer: T) -> Self {
-        self.performer = Some(performer.into());
+    pub fn performer<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.performer = Some(value.into());
         self
     }
 
-    pub fn title<T: Into<String>>(mut self, title: T) -> Self {
-        self.title = Some(title.into());
+    pub fn title<T>(mut self, value: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.title = Some(value.into());
         self
     }
 
-    pub fn thumb<T: Into<InputFile>>(mut self, thumb: T) -> Self {
-        self.thumb = Some(thumb.into());
+    pub fn thumb<T>(mut self, value: T) -> Self
+    where
+        T: Into<InputFile>,
+    {
+        self.thumb = Some(value.into());
         self
     }
 
-    pub fn disable_notification<T: Into<bool>>(
-        mut self,
-        disable_notification: T,
-    ) -> Self {
-        self.disable_notification = Some(disable_notification.into());
+    pub fn disable_notification<T>(mut self, value: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.disable_notification = Some(value.into());
         self
     }
 
-    pub fn reply_to_message_id<T: Into<i32>>(
-        mut self,
-        reply_to_message_id: T,
-    ) -> Self {
-        self.reply_to_message_id = Some(reply_to_message_id.into());
+    pub fn reply_to_message_id<T>(mut self, value: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.reply_to_message_id = Some(value.into());
         self
     }
 }
