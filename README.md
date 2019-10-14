@@ -22,9 +22,9 @@
   Lorem ipsum dolor sit amet consectetur adipiscing elit nibh cubilia, nostra ultricies class torquent integer scelerisque netus euismod vehicula, metus aliquam morbi leo risus cursus massa potenti.
   
   <h4>
-    <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
-    <a href="https://github.com/Gymmasssorla/anevicon/stargazers">Stargazers</a> &middot;
-    <a href="https://github.com/Gymmasssorla/anevicon/releases">Releases</a> &middot;
-    <a href="https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md">Contributing</a>
+    <a href="https://github.com/async-telegram-bot/async-telegram-bot/pulse">Pulse</a> &middot;
+    <a href="https://github.com/async-telegram-bot/async-telegram-bot/stargazers">Stargazers</a> &middot;
+    <a href="https://github.com/async-telegram-bot/async-telegram-bot/releases">Releases</a> &middot;
+    <a href="https://github.com/async-telegram-bot/async-telegram-bot/blob/master/CONTRIBUTING.md">Contributing</a>
   </h4>
 </div>
