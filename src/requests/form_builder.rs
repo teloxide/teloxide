@@ -10,7 +10,7 @@ use crate::types::InputFile;
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
 /// from scratch.
-pub struct FormBuilder {
+pub(crate) struct FormBuilder {
     form: Form,
 }
 
@@ -48,12 +48,12 @@ impl FormBuilder {
     }
 }
 
-pub enum FormValue {
+pub(crate) enum FormValue {
     File(PathBuf),
     Str(String),
 }
 
-pub trait IntoFormValue {
+pub(crate) trait IntoFormValue {
     fn into_form_value(self) -> Option<FormValue>;
 }
 
