@@ -18,4 +18,13 @@
   <br>
   <img src="ICON.jpg" width="300"/>
   <br>
+  
+  Bla-bla-bla
+  
+  <h4>
+    <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/stargazers">Stargazers</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/releases">Releases</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md">Contributing</a>
+  </h4>
 </div>
