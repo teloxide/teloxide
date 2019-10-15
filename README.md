@@ -39,7 +39,8 @@ fn main() {
     <h3>aiogram (Python)</h3>
       <pre lang="python">
 import logging
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor,
+  types
 <br>
 API_TOKEN = 'BOT TOKEN HERE'
 <br>
@@ -56,7 +57,8 @@ async def cats(message: types.Message):
 <br>
 @dp.message_handler()
 async def echo(message: types.Message):
-    await message.reply(message.text, reply=False)
+    await message.reply
+      (message.text, reply=False)
 <br>
 executor.start_polling(dp, skip_updates=True)
       </pre>
