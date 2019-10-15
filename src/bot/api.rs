@@ -6,7 +6,7 @@ use crate::{
         PromoteChatMember, RestrictChatMember, SendAudio, SendChatAction,
         SendContact, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
         SendPoll, SendVenue, SendVideoNote, SendVoice, StopMessageLiveLocation,
-        UnbanChatMember, UnpinChatMessage,
+        UnbanChatMember, UnpinChatMessage, GetUpdates
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -15,6 +15,10 @@ use crate::{
 impl Bot {
     pub fn get_me(&self) -> GetMe {
         GetMe::new(self.ctx())
+    }
+
+    pub fn get_updates(&self) -> GetUpdates {
+        GetUpdates::new(self.ctx())
     }
 
     pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage

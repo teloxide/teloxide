@@ -12,6 +12,8 @@ serde = { version = "1.0.101", features = ["derive"] }
 derive_more = "0.15.0"
 tokio = "0.2.0-alpha.6"
 bytes = "0.4.12"
+log = "0.4.8"
+pin-project = "0.4.0-alpha.7"
 futures-preview = "0.3.0-alpha.19"
 async-trait = "0.1.13"
 thiserror = "1.0.2"
