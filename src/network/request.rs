@@ -1,4 +1,3 @@
-use apply::Apply;
 use reqwest::{multipart::Form, Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -10,18 +9,33 @@ pub async fn request_multipart<T>(
     client: &Client,
     token: &str,
     method_name: &str,
-    params: Option<Form>,
+    params: Form,
 ) -> ResponseResult<T>
-where
-    T: DeserializeOwned,
+    where
+        T: DeserializeOwned,
 {
     process_response(
         client
             .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-            .apply(|request_builder| match params {
-                Some(params) => request_builder.multipart(params),
-                None => request_builder,
-            })
+            .multipart(params)
+            .send()
+            .await
+            .map_err(RequestError::NetworkError)?,
+    )
+    .await
+}
+
+pub async fn request_simple<T>(
+    client: &Client,
+    token: &str,
+    method_name: &str,
+) -> ResponseResult<T>
+    where
+        T: DeserializeOwned,
+{
+    process_response(
+        client
+            .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
             .send()
             .await
             .map_err(RequestError::NetworkError)?,
