@@ -5,7 +5,7 @@
   <a href="https://docs.rs/telebofr/">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
   </a>
-  <a href="https://travis-ci.com/async-telegram-bot/async-telegram-bot">
+  <a href="https://travis-ci.com/telebofr/telebofr">
     <img src="https://travis-ci.com/telebofr/telebofr.svg?branch=dev" />
   </a>
   <a href="LICENSE">
