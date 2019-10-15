@@ -6,7 +6,7 @@ pub trait Filter<T> {
 }
 
 /// ```
-/// use async_telegram_bot::dispatcher::filter::Filter;
+/// use telebofr::dispatcher::filter::Filter;
 ///
 /// let closure = |i: &i32| -> bool { *i >= 42 };
 /// assert!(closure.test(&42));
@@ -22,7 +22,7 @@ impl<T, F: Fn(&T) -> bool> Filter<T> for F {
 }
 
 /// ```
-/// use async_telegram_bot::dispatcher::filter::Filter;
+/// use telebofr::dispatcher::filter::Filter;
 ///
 /// assert!(true.test(&()));
 /// assert_eq!(false.test(&()), false);
@@ -40,7 +40,7 @@ impl<T> Filter<T> for bool {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{And, Filter};
+/// use telebofr::dispatcher::filter::{And, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert_eq!(And::new(true, false).test(&()), false);
@@ -71,7 +71,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{and, Filter};
+/// use telebofr::dispatcher::filter::{and, Filter};
 ///
 /// assert!(and(true, true).test(&()));
 /// assert_eq!(and(true, false).test(&()), false);
@@ -92,7 +92,7 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Or, Filter};
+/// use telebofr::dispatcher::filter::{Or, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Or::new(true, false).test(&()));
@@ -123,7 +123,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{or, Filter};
+/// use telebofr::dispatcher::filter::{or, Filter};
 ///
 /// assert!(or(true, false).test(&()));
 /// assert_eq!(or(false, false).test(&()), false);
@@ -141,7 +141,7 @@ pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Not, Filter};
+/// use telebofr::dispatcher::filter::{Not, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Not::new(false).test(&()));
@@ -169,7 +169,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{not, Filter};
+/// use telebofr::dispatcher::filter::{not, Filter};
 ///
 /// assert!(not(false).test(&()));
 /// assert_eq!(not(true).test(&()), false);
@@ -187,7 +187,7 @@ pub fn not<A>(a: A) -> Not<A> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::{all, dispatcher::filter::Filter};
+/// use telebofr::{all, dispatcher::filter::Filter};
 ///
 /// assert!(all![true].test(&()));
 /// assert!(all![true, true].test(&()));
@@ -218,7 +218,7 @@ macro_rules! all {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::{any, dispatcher::filter::Filter};
+/// use telebofr::{any, dispatcher::filter::Filter};
 ///
 /// assert!(any![true].test(&()));
 /// assert!(any![true, true].test(&()));
@@ -247,7 +247,7 @@ macro_rules! any {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Filter, f, F, And, Or};
+/// use telebofr::dispatcher::filter::{Filter, f, F, And, Or};
 ///
 /// let flt1 = |i: &i32| -> bool { *i > 17 };
 /// let flt2 = |i: &i32| -> bool { *i < 42 };
@@ -316,7 +316,7 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.not();
@@ -333,7 +333,7 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.and(|i: &i32| *i < 42);
@@ -352,7 +352,7 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i < 0 };
     /// let flt = flt.or(|i: &i32| *i > 42);

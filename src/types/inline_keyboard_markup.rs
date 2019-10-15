@@ -16,7 +16,7 @@ pub struct InlineKeyboardMarkup {
 ///
 /// Example:
 /// ```
-/// use async_telegram_bot::types::{
+/// use telebofr::types::{
 ///     InlineKeyboardButton, InlineKeyboardMarkup,
 /// };
 ///

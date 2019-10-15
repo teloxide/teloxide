@@ -40,7 +40,7 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 /// ```no_run
 /// # async fn run() {
 /// use std::convert::Infallible;
-/// use async_telegram_bot::{
+/// use telebofr::{
 ///     bot::Bot,
 ///     types::Message,
 ///     dispatcher::{

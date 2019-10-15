@@ -16,11 +16,11 @@ impl Bot {
     /// ## Examples
     ///
     /// ```no_run
-    /// use async_telegram_bot::{
+    /// use telebofr::{
     ///     bot::Bot, requests::Request, types::File as TgFile,
     /// };
     /// use tokio::fs::File;
-    /// # use async_telegram_bot::RequestError;
+    /// # use telebofr::RequestError;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
