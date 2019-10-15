@@ -50,8 +50,8 @@ impl<'a> PinChatMessage<'a> {
 
 #[async_trait]
 impl Request for PinChatMessage<'_> {
-    type ReturnValue = True;
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    type Output = True;
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

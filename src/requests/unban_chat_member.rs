@@ -23,9 +23,9 @@ pub struct UnbanChatMember<'a> {
 
 #[async_trait]
 impl Request for UnbanChatMember<'_> {
-    type ReturnValue = bool;
+    type Output = bool;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

@@ -31,9 +31,9 @@ pub enum AllowedUpdate {
 
 #[async_trait]
 impl Request for GetUpdates<'_> {
-    type ReturnValue = Vec<Update>;
+    type Output = Vec<Update>;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

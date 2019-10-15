@@ -23,9 +23,9 @@ pub struct GetFile<'a> {
 
 #[async_trait]
 impl Request for GetFile<'_> {
-    type ReturnValue = File;
+    type Output = File;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

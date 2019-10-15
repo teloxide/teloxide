@@ -30,9 +30,9 @@ pub struct ForwardMessage<'a> {
 
 #[async_trait]
 impl Request for ForwardMessage<'_> {
-    type ReturnValue = Message;
+    type Output = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

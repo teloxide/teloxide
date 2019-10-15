@@ -29,9 +29,9 @@ pub struct KickChatMember<'a> {
 
 #[async_trait]
 impl Request for KickChatMember<'_> {
-    type ReturnValue = True;
+    type Output = True;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

@@ -65,9 +65,9 @@ pub struct SendAudio<'a> {
 
 #[async_trait]
 impl Request for SendAudio<'_> {
-    type ReturnValue = Message;
+    type Output = Message;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

@@ -65,10 +65,10 @@ pub type ResponseResult<T> = Result<T, RequestError>;
 #[async_trait]
 pub trait Request {
     /// A type of response.
-    type ReturnValue: DeserializeOwned;
+    type Output: DeserializeOwned;
 
     /// Send this request.
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue>;
+    async fn send_boxed(self) -> ResponseResult<Self::Output>;
 }
 
 #[derive(Debug, Clone)]

@@ -21,9 +21,9 @@ pub struct GetChat<'a> {
 
 #[async_trait]
 impl Request for GetChat<'_> {
-    type ReturnValue = Chat;
+    type Output = Chat;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

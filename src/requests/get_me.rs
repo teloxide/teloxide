@@ -15,9 +15,9 @@ pub struct GetMe<'a> {
 
 #[async_trait]
 impl Request for GetMe<'_> {
-    type ReturnValue = User;
+    type Output = User;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

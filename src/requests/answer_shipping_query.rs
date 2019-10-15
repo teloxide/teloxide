@@ -39,9 +39,9 @@ pub struct AnswerShippingQuery<'a> {
 
 #[async_trait]
 impl Request for AnswerShippingQuery<'_> {
-    type ReturnValue = True;
+    type Output = True;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }

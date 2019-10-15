@@ -26,9 +26,9 @@ pub struct GetUserProfilePhotos<'a> {
 
 #[async_trait]
 impl Request for GetUserProfilePhotos<'_> {
-    type ReturnValue = UserProfilePhotos;
+    type Output = UserProfilePhotos;
 
-    async fn send_boxed(self) -> ResponseResult<Self::ReturnValue> {
+    async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }
