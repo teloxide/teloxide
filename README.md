@@ -23,45 +23,8 @@
 </div>
 
 ## An echo bot
-<table>
-  <tr valign="top">
-    <td>
-    <h3>async-telegram-bot (Rust)</h3>
-      <pre lang="rust">
-const API_TOKEN: &str = "BOT TOKEN HERE";
-<br>
+```rust
 fn main() {
   let bot = Bot::new(API_TOKEN).bla().bla();
 }
-      </pre>
-    </td>
-    <td>
-    <h3>aiogram (Python)</h3>
-      <pre lang="python">
-import logging
-from aiogram import Bot, Dispatcher, executor,
-  types
-<br>
-API_TOKEN = 'BOT TOKEN HERE'
-<br>
-logging.basicConfig(level=logging.INFO)
-<br>
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
-<br>
-@dp.message_handler(regexp='(^cat[s]?$|puss)')
-async def cats(message: types.Message):
-    with open('data/cats.jpg', 'rb') as photo:
-        await message.reply_photo
-          (photo, caption='Cats are here 😺')
-<br>
-@dp.message_handler()
-async def echo(message: types.Message):
-    await message.reply
-      (message.text, reply=False)
-<br>
-executor.start_polling(dp, skip_updates=True)
-      </pre>
-    </td>
-  </tr>
-</table>
+```
