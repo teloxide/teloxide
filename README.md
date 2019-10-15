@@ -16,7 +16,7 @@
   </a>
   
   <br>
-  <img src="ICON.jpg" width="300"/>
+  <img src="ICON.png" width="300"/>
   <br>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
