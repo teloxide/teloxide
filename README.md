@@ -19,5 +19,5 @@
   <img src="ICON.jpg" width="300"/>
   <br>
   
-  Lorem ipsum dolor sit amet consectetur adipiscing elit nibh cubilia, nostra ultricies class torquent integer scelerisque netus euismod vehicula, metus aliquam morbi leo risus cursus massa potenti.
+  A full-featured framework that empowers you to easily build Telegram bots using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
