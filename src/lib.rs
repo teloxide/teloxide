@@ -11,5 +11,6 @@ mod errors;
 mod network;
 
 pub mod bot;
+pub mod dispatcher;
 pub mod requests;
 pub mod types;

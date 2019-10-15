@@ -74,41 +74,24 @@ impl Request for SendAudio<'_> {
 
 impl SendAudio<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
-        let mut params = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add_if_some("caption", self.caption.as_ref())
-            .add_if_some("parse_mode", self.parse_mode.as_ref())
-            .add_if_some("duration", self.duration.as_ref())
-            .add_if_some("performer", self.performer.as_ref())
-            .add_if_some("title", self.title.as_ref())
-            .add_if_some(
-                "disable_notification",
-                self.disable_notification.as_ref(),
-            )
-            .add_if_some(
-                "reply_to_message_id",
-                self.reply_to_message_id.as_ref(),
-            );
+        let params = FormBuilder::new()
+            .add("chat_id", self.chat_id)
+            .add("caption", self.caption)
+            .add("parse_mode", self.parse_mode)
+            .add("duration", self.duration)
+            .add("performer", self.performer)
+            .add("title", self.title)
+            .add("disable_notification", self.disable_notification)
+            .add("reply_to_message_id", self.reply_to_message_id)
+            .add("audio", self.audio)
+            .add("thumb", self.thumb);
 
-        params = match self.audio {
-            InputFile::File(file) => params.add_file("audio", &file),
-            InputFile::Url(url) => params.add("audio", &url),
-            InputFile::FileId(file_id) => params.add("audio", &file_id),
-        };
-
-        if let Some(thumb) = self.thumb {
-            params = match thumb {
-                InputFile::File(file) => params.add_file("thumb", &file),
-                InputFile::Url(url) => params.add("thumb", &url),
-                InputFile::FileId(file_id) => params.add("thumb", &file_id),
-            }
-        }
 
         network::request_multipart(
             &self.ctx.client,
             &self.ctx.token,
             "sendAudio",
-            Some(params.build()),
+            params.build(),
         )
         .await
     }

@@ -177,6 +177,18 @@ impl InputMedia {
     }
 }
 
+impl From<InputMedia> for InputFile {
+    fn from(media: InputMedia) -> InputFile {
+        match media {
+            InputMedia::Photo { media, .. }
+            | InputMedia::Document { media, .. }
+            | InputMedia::Audio { media, .. }
+            | InputMedia::Animation { media, .. }
+            | InputMedia::Video { media, .. } => media,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -55,30 +55,19 @@ impl Request for SendPhoto<'_> {
 
 impl SendPhoto<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
-        let mut params = FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add_if_some("caption", self.caption.as_ref())
-            .add_if_some("parse_mode", self.parse_mode.as_ref())
-            .add_if_some(
-                "disable_notification",
-                self.disable_notification.as_ref(),
-            )
-            .add_if_some(
-                "reply_to_message_id",
-                self.reply_to_message_id.as_ref(),
-            );
-
-        params = match self.photo {
-            InputFile::File(path) => params.add_file("photo", &path),
-            InputFile::Url(url) => params.add("photo", &url),
-            InputFile::FileId(file_id) => params.add("photo", &file_id),
-        };
+        let params = FormBuilder::new()
+            .add("chat_id", self.chat_id)
+            .add("caption", self.caption)
+            .add("parse_mode", self.parse_mode)
+            .add("disable_notification", self.disable_notification)
+            .add("reply_to_message_id", self.reply_to_message_id)
+            .add("photo", self.photo);
 
         network::request_multipart(
             &self.ctx.client,
             &self.ctx.token,
             "sendPhoto",
-            Some(params.build()),
+            params.build(),
         )
         .await
     }
