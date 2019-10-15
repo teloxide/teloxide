@@ -1,3 +1,5 @@
+//! Raw API functions.
+
 use reqwest::Client;
 use serde::de::DeserializeOwned;
 
@@ -59,6 +61,7 @@ mod stop_message_live_location;
 mod unban_chat_member;
 mod unpin_chat_message;
 
+/// A type that is returned from `Request::send_boxed`.
 pub type ResponseResult<T> = Result<T, RequestError>;
 
 /// A request that can be sent to Telegram.
@@ -71,8 +74,11 @@ pub trait Request {
     async fn send_boxed(self) -> ResponseResult<Self::Output>;
 }
 
+/// A context used to send all the requests.
 #[derive(Debug, Clone)]
 pub struct RequestContext<'a> {
+    /// An HTTPS client.
     pub client: &'a Client,
+    /// A token of your bot.
     pub token: &'a str,
 }

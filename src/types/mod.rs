@@ -1,3 +1,5 @@
+//! Raw API structures.
+
 pub use self::{
     animation::Animation,
     audio::Audio,

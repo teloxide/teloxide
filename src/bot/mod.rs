@@ -1,3 +1,5 @@
+//! A Telegram bot.
+
 use reqwest::Client;
 
 use crate::requests::RequestContext;
