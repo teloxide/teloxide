@@ -2,10 +2,6 @@
 <div align="center">
   <h1>async-telegram-bot</h1>
   
-  <br>
-  <img src="ICON.jpg" width="300"/>
-  <br>
-  
   <a href="https://docs.rs/async-telegram-bot/">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
   </a>
@@ -18,6 +14,10 @@
   <a href="https://crates.io/crates/async-telegram-bot">
     <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
   </a>
+  
+  <br>
+  <img src="ICON.jpg" width="300"/>
+  <br>
   
   Lorem ipsum dolor sit amet consectetur adipiscing elit nibh cubilia, nostra ultricies class torquent integer scelerisque netus euismod vehicula, metus aliquam morbi leo risus cursus massa potenti.
 </div>
