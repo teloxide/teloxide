@@ -99,7 +99,9 @@ use crate::{
 /// [GetUpdates]: crate::requests::GetUpdates
 /// [getting updates]: https://core.telegram.org/bots/api#getting-updates
 /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
-pub trait Updater<E>: Stream<Item=Result<Update, E>> {}
+pub trait Updater: Stream<Item=Result<Update, <Self as Updater>::Error>> {
+    type Error;
+}
 
 #[pin_project]
 pub struct StreamUpdater<S> {
@@ -116,14 +118,16 @@ impl<S> StreamUpdater<S> {
 impl<S, E> Stream for StreamUpdater<S> where S: Stream<Item=Result<Update, E>> {
     type Item = Result<Update, E>;
 
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         self.project().stream.poll_next(cx)
     }
 }
 
-impl<S, E> Updater<E> for StreamUpdater<S> where S: Stream<Item=Result<Update, E>> {}
+impl<S, E> Updater for StreamUpdater<S> where S: Stream<Item=Result<Update, E>> {
+    type Error = E;
+}
 
-pub fn polling<'a>(bot: &'a Bot) -> impl Updater<RequestError> + 'a {
+pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
     let stream = stream::unfold((bot, 0), |(bot, mut offset)| async move {
         // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
         let updates = match bot.get_updates().offset(offset).send().await {

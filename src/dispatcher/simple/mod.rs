@@ -1,10 +1,14 @@
 pub mod error_policy;
 
+use futures::StreamExt;
+use async_trait::async_trait;
+
 use crate::{
     dispatcher::{
         filter::Filter,
         handler::Handler,
         updater::Updater,
+        simple::error_policy::ErrorPolicy,
     },
     types::{
         Update,
@@ -14,10 +18,6 @@ use crate::{
         ChosenInlineResult,
     },
 };
-
-use futures::StreamExt;
-use crate::dispatcher::simple::error_policy::ErrorPolicy;
-
 
 type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
 
@@ -166,9 +166,9 @@ where
     }
 
     // TODO: Can someone simplify this?
-    pub async fn dispatch<U, UE>(&mut self, updates: U)
+    pub async fn dispatch<U>(&mut self, updates: U)
     where
-        U: Updater<UE> + 'a
+        U: Updater + 'a
     {
         updates.for_each(|res| {
             async {
@@ -219,6 +219,16 @@ where
     }
 }
 
+#[async_trait(?Send)]
+impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for Dispatcher<'a, E>
+where
+    E: std::fmt::Debug,
+    U: Updater + 'a,
+{
+    async fn dispatch(&'a mut self, updater: U) {
+        Dispatcher::dispatch(self, updater).await
+    }
+}
 
 #[cfg(test)]
 mod tests {
