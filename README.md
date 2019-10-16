@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="ICON.png" width="300"/>
+  <img src="ICON.png" width="200"/>
   <h1>telebofr</h1>
   
   <a href="https://docs.rs/telebofr/">
