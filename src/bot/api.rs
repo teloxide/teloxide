@@ -1,5 +1,5 @@
 use crate::bot::Bot;
-use crate::requests::AnswerCallbackQuery;
+use crate::requests::{AnswerCallbackQuery, DeleteChatStickerSet};
 use crate::{
     requests::{
         AnswerPreCheckoutQuery, AnswerShippingQuery, EditMessageLiveLocation,
@@ -284,5 +284,12 @@ impl Bot {
         S: Into<String>,
     {
         AnswerCallbackQuery::new(self, callback_query_id)
+    }
+
+    pub fn delete_chat_sticker_set<C>(&self, chat_id: C) -> DeleteChatStickerSet
+    where
+        C: Into<ChatId>,
+    {
+        DeleteChatStickerSet::new(self, chat_id)
     }
 }
