@@ -1,25 +1,19 @@
-pub mod error_policy;
-
 use futures::StreamExt;
+
 use async_trait::async_trait;
 
 use crate::{
     dispatcher::{
-        filter::Filter,
-        handler::Handler,
+        filter::Filter, handler::Handler, simple::error_policy::ErrorPolicy,
         updater::Updater,
-        simple::error_policy::ErrorPolicy,
     },
-    types::{
-        Update,
-        Message,
-        UpdateKind,
-        CallbackQuery,
-        ChosenInlineResult,
-    },
+    types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
 };
 
-type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
+pub mod error_policy;
+
+type Handlers<'a, T, E> =
+    Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
 
 /// Dispatcher that dispatches updates from telegram.
 ///
@@ -29,23 +23,23 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 /// - Handler's fututres are also boxed
 /// - [Custom error policy] is also boxed
 /// - All errors from [updater] are ignored (TODO: remove this limitation)
-/// - All handlers executed in order (this means that in dispatcher have
-///   2 upadtes it will first execute some handler into complition with
-///   first update and **then** search for handler for second update,
-///   this is probably wrong)
+/// - All handlers executed in order (this means that in dispatcher have 2
+///   upadtes it will first execute some handler into complition with first
+///   update and **then** search for handler for second update, this is probably
+///   wrong)
 ///
 /// ## Examples
 ///
 /// Simplest example:
 /// ```no_run
-/// # async fn run() {
+/// # use telebofr::bot::Bot;
+/// use telebofr::types::Message;
+///  async fn run() {
 /// use std::convert::Infallible;
 /// use telebofr::{
-///     bot::Bot,
-///     types::Message,
 ///     dispatcher::{
+///         simple::{error_policy::ErrorPolicy, Dispatcher},
 ///         updater::polling,
-///         simple::{Dispatcher, error_policy::ErrorPolicy},
 ///     },
 /// };
 ///
@@ -59,8 +53,8 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 /// // with error policy that just ignores all errors (that can't ever happen)
 /// let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
 ///     // Add 'handler' that will handle all messages sent to the bot
-///     .message_handler(true, |mes: Message| async move {
-///         println!("New message: {:?}", mes)
+///     .message_handler(true, |mes: Message| {
+///         async move { println!("New message: {:?}", mes) }
 ///     })
 ///     // Add 'handler' that will handle all
 ///     // messages edited in chat with the bot
@@ -72,8 +66,9 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 /// ```
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
-/// [Custom error policy]: crate::dispatcher::simple::error_policy::ErrorPolicy::Custom
-/// [updater]: crate::dispatcher::updater
+/// [Custom error policy]:
+/// crate::dispatcher::simple::error_policy::ErrorPolicy::Custom [updater]:
+/// crate::dispatcher::updater
 pub struct Dispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
@@ -98,7 +93,7 @@ where
             inline_query_handlers: Vec::new(),
             chosen_inline_result_handlers: Vec::new(),
             callback_query_handlers: Vec::new(),
-            error_policy
+            error_policy,
         }
     }
 
@@ -107,7 +102,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.message_handlers.push((Box::new(filter), Box::new(handler)));
+        self.message_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -116,7 +112,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.edited_message_handlers.push((Box::new(filter), Box::new(handler)));
+        self.edited_message_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -125,16 +122,22 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.channel_post_handlers.push((Box::new(filter), Box::new(handler)));
+        self.channel_post_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
-    pub fn edited_channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
+    pub fn edited_channel_post_handler<F, H>(
+        mut self,
+        filter: F,
+        handler: H,
+    ) -> Self
     where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.edited_channel_post_handlers.push((Box::new(filter), Box::new(handler)));
+        self.edited_channel_post_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -143,16 +146,22 @@ where
         F: Filter<()> + 'a,
         H: Handler<'a, (), E> + 'a,
     {
-        self.inline_query_handlers.push((Box::new(filter), Box::new(handler)));
+        self.inline_query_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
-    pub fn chosen_inline_result_handler<F, H>(mut self, filter: F, handler: H) -> Self
+    pub fn chosen_inline_result_handler<F, H>(
+        mut self,
+        filter: F,
+        handler: H,
+    ) -> Self
     where
         F: Filter<ChosenInlineResult> + 'a,
         H: Handler<'a, ChosenInlineResult, E> + 'a,
     {
-        self.chosen_inline_result_handlers.push((Box::new(filter), Box::new(handler)));
+        self.chosen_inline_result_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -161,65 +170,91 @@ where
         F: Filter<CallbackQuery> + 'a,
         H: Handler<'a, CallbackQuery, E> + 'a,
     {
-        self.callback_query_handlers.push((Box::new(filter), Box::new(handler)));
+        self.callback_query_handlers
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
     // TODO: Can someone simplify this?
     pub async fn dispatch<U>(&mut self, updates: U)
     where
-        U: Updater + 'a
+        U: Updater + 'a,
     {
-        updates.for_each(|res| {
-            async {
-                let res = res;
-                let Update { kind, id } = match res {
-                    Ok(upd) => upd,
-                    _ => return // TODO: proper error handling
-                };
+        updates
+            .for_each(|res| {
+                async {
+                    let res = res;
+                    let Update { kind, id } = match res {
+                        Ok(upd) => upd,
+                        _ => return, // TODO: proper error handling
+                    };
 
-                log::debug!("Handled update#{id:?}: {kind:?}", id = id, kind = kind);
+                    log::debug!(
+                        "Handled update#{id:?}: {kind:?}",
+                        id = id,
+                        kind = kind
+                    );
 
-                // TODO: can someone extract this to a function?
-                macro_rules! call {
-                    ($h:expr, $value:expr) => {{
-                        let value = $value;
-                        let handler = $h.iter().find_map(|e| {
-                            let (filter, handler) = e;
-                            if filter.test(&value) {
-                                Some(handler)
-                            } else {
-                                None
+                    // TODO: can someone extract this to a function?
+                    macro_rules! call {
+                        ($h:expr, $value:expr) => {{
+                            let value = $value;
+                            let handler = $h.iter().find_map(|e| {
+                                let (filter, handler) = e;
+                                if filter.test(&value) {
+                                    Some(handler)
+                                } else {
+                                    None
+                                }
+                            });
+
+                            match handler {
+                                Some(handler) => {
+                                    if let Err(err) =
+                                        handler.handle(value).await
+                                    {
+                                        self.error_policy
+                                            .handle_error(err)
+                                            .await;
+                                    }
+                                }
+                                None => {
+                                    log::warn!("Unhandled update: {:?}", value)
+                                }
                             }
-                        });
+                        }};
+                    }
 
-                        match handler {
-                            Some(handler) => {
-                                 if let Err(err) = handler.handle(value).await {
-                                    self.error_policy.handle_error(err).await;
-                                 }
-                            },
-                            None => log::warn!("Unhandled update: {:?}", value)
+                    match kind {
+                        UpdateKind::Message(mes) => {
+                            call!(self.message_handlers, mes)
                         }
-                    }};
+                        UpdateKind::EditedMessage(mes) => {
+                            call!(self.edited_message_handlers, mes)
+                        }
+                        UpdateKind::ChannelPost(post) => {
+                            call!(self.channel_post_handlers, post)
+                        }
+                        UpdateKind::EditedChannelPost(post) => {
+                            call!(self.edited_channel_post_handlers, post)
+                        }
+                        UpdateKind::InlineQuery(query) => {
+                            call!(self.inline_query_handlers, query)
+                        }
+                        UpdateKind::ChosenInlineResult(result) => {
+                            call!(self.chosen_inline_result_handlers, result)
+                        }
+                        UpdateKind::CallbackQuery(callback) => {
+                            call!(self.callback_query_handlers, callback)
+                        }
+                    }
                 }
-
-                match kind {
-                    UpdateKind::Message(mes) => call!(self.message_handlers, mes),
-                    UpdateKind::EditedMessage(mes) => call!(self.edited_message_handlers, mes),
-                    UpdateKind::ChannelPost(post) => call!(self.channel_post_handlers, post),
-                    UpdateKind::EditedChannelPost(post) => call!(self.edited_channel_post_handlers, post),
-                    UpdateKind::InlineQuery(query) => call!(self.inline_query_handlers, query),
-                    UpdateKind::ChosenInlineResult(result) => call!(self.chosen_inline_result_handlers, result),
-                    UpdateKind::CallbackQuery(callback) => call!(self.callback_query_handlers, callback),
-                }
-            }
-        })
+            })
             .await;
     }
 }
 
-#[async_trait(?Send)]
+#[async_trait(? Send)]
 impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for Dispatcher<'a, E>
 where
     E: std::fmt::Debug,
@@ -235,13 +270,18 @@ mod tests {
     use std::convert::Infallible;
     use std::sync::atomic::{AtomicI32, Ordering};
 
-    use crate::{
-        types::{
-            Message, ChatKind, MessageKind, Sender, ForwardKind, MediaKind, Chat, User, Update, UpdateKind
-        },
-        dispatcher::{simple::{Dispatcher, error_policy::ErrorPolicy}, updater::StreamUpdater},
-    };
     use futures::Stream;
+
+    use crate::{
+        dispatcher::{
+            simple::{error_policy::ErrorPolicy, Dispatcher},
+            updater::StreamUpdater,
+        },
+        types::{
+            Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
+            Sender, Update, UpdateKind, User,
+        },
+    };
 
     #[tokio::test]
     async fn first_handler_executes_1_time() {
@@ -249,12 +289,16 @@ mod tests {
         let counter2 = &AtomicI32::new(0);
 
         let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
-            .message_handler(true, |_mes: Message| async move {
-                counter.fetch_add(1, Ordering::SeqCst);
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter.fetch_add(1, Ordering::SeqCst);
+                }
             })
-            .message_handler(true, |_mes: Message| async move {
-                counter2.fetch_add(1, Ordering::SeqCst);
-                Ok::<_, Infallible>(())
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter2.fetch_add(1, Ordering::SeqCst);
+                    Ok::<_, Infallible>(())
+                }
             });
 
         dp.dispatch(one_message_updater()).await;
@@ -300,15 +344,17 @@ mod tests {
     }
 
     fn message_update() -> Update {
-        Update { id: 0, kind: UpdateKind::Message(message()) }
+        Update {
+            id: 0,
+            kind: UpdateKind::Message(message()),
+        }
     }
 
-    fn one_message_updater() -> StreamUpdater<impl Stream<Item=Result<Update, Infallible>>> {
+    fn one_message_updater(
+    ) -> StreamUpdater<impl Stream<Item = Result<Update, Infallible>>> {
         use futures::future::ready;
         use futures::stream;
 
-        StreamUpdater::new(
-            stream::once(ready(Ok(message_update())))
-        )
+        StreamUpdater::new(stream::once(ready(Ok(message_update()))))
     }
 }

@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
@@ -14,7 +15,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct SendDocument<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or username of the target
     /// channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -69,8 +70,8 @@ impl Request for SendDocument<'_> {
 impl SendDocument<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendDocument",
             &self,
         )
@@ -79,17 +80,13 @@ impl SendDocument<'_> {
 }
 
 impl<'a> SendDocument<'a> {
-    pub(crate) fn new<C, D>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        document: D,
-    ) -> Self
+    pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
     where
         C: Into<ChatId>,
         D: Into<String>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             document: document.into(),
             thumb: None,

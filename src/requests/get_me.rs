@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::User,
 };
 
@@ -10,7 +11,7 @@ use crate::{
 /// A simple method for testing your bot's auth token. Requires no parameters.
 /// Returns basic information about the bot in form of a [`User`] object.
 pub struct GetMe<'a> {
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 }
 
 #[async_trait]
@@ -24,12 +25,13 @@ impl Request for GetMe<'_> {
 
 impl GetMe<'_> {
     pub async fn send(self) -> ResponseResult<User> {
-        network::request_simple(self.ctx.client, self.ctx.token, "getMe").await
+        network::request_simple(self.bot.client(), self.bot.token(), "getMe")
+            .await
     }
 }
 
 impl<'a> GetMe<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
-        GetMe { ctx }
+    pub(crate) fn new(bot: &'a Bot) -> Self {
+        GetMe { bot }
     }
 }

@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -16,7 +17,7 @@ use crate::{
 /// [`Update`]: crate::types::Update
 pub struct AnswerPreCheckoutQuery<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     /// Unique identifier for the query to be answered
     pub pre_checkout_query_id: String,
@@ -48,8 +49,8 @@ impl Request for AnswerPreCheckoutQuery<'_> {
 impl AnswerPreCheckoutQuery<'_> {
     pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "answerPreCheckoutQuery",
             &self,
         )
@@ -59,7 +60,7 @@ impl AnswerPreCheckoutQuery<'_> {
 
 impl<'a> AnswerPreCheckoutQuery<'a> {
     pub(crate) fn new<S, B>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         pre_checkout_query_id: S,
         ok: B,
     ) -> Self
@@ -68,7 +69,7 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
         B: Into<bool>,
     {
         Self {
-            ctx,
+            bot,
             pre_checkout_query_id: pre_checkout_query_id.into(),
             ok: ok.into(),
             error_message: None,

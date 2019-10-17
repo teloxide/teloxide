@@ -1,6 +1,5 @@
 //! Raw API functions.
 
-use reqwest::Client;
 use serde::de::DeserializeOwned;
 
 use async_trait::async_trait;
@@ -72,13 +71,4 @@ pub trait Request {
 
     /// Send this request.
     async fn send_boxed(self) -> ResponseResult<Self::Output>;
-}
-
-/// A context used to send all the requests.
-#[derive(Debug, Clone)]
-pub struct RequestContext<'a> {
-    /// An HTTPS client.
-    pub client: &'a Client,
-    /// A token of your bot.
-    pub token: &'a str,
 }
