@@ -10,7 +10,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct UnpinChatMessage<'a> {
     #[serde(skip_serializing)]
-    pub bot: &'a Bot,
+    bot: &'a Bot,
 
     pub chat_id: ChatId,
 }
