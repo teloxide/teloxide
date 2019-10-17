@@ -1,4 +1,8 @@
 use crate::bot::Bot;
+use crate::requests::{
+    AnswerCallbackQuery, DeleteChatStickerSet, GetChatMember,
+    GetChatMembersCount, SetChatStickerSet,
+};
 use crate::{
     requests::{
         AnswerPreCheckoutQuery, AnswerShippingQuery, EditMessageLiveLocation,
@@ -280,5 +284,49 @@ impl Bot {
         C: Into<ChatId>,
     {
         UnpinChatMessage::new(self, chat_id)
+    }
+
+    pub fn answer_callback_query<S>(
+        &self,
+        callback_query_id: S,
+    ) -> AnswerCallbackQuery
+    where
+        S: Into<String>,
+    {
+        AnswerCallbackQuery::new(self, callback_query_id)
+    }
+
+    pub fn delete_chat_sticker_set<C>(&self, chat_id: C) -> DeleteChatStickerSet
+    where
+        C: Into<ChatId>,
+    {
+        DeleteChatStickerSet::new(self, chat_id)
+    }
+
+    pub fn set_chat_sticker_set<C, S>(
+        &self,
+        chat_id: C,
+        sticker_set_name: S,
+    ) -> SetChatStickerSet
+    where
+        C: Into<ChatId>,
+        S: Into<String>,
+    {
+        SetChatStickerSet::new(self, chat_id, sticker_set_name)
+    }
+
+    pub fn get_chat_member<C, I>(&self, chat_id: C, user_id: I) -> GetChatMember
+    where
+        C: Into<ChatId>,
+        I: Into<i32>,
+    {
+        GetChatMember::new(self, chat_id, user_id)
+    }
+
+    pub fn get_chat_members_count<C>(&self, chat_id: C) -> GetChatMembersCount
+    where
+        C: Into<ChatId>,
+    {
+        GetChatMembersCount::new(self, chat_id)
     }
 }
