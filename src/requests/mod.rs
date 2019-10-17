@@ -1,30 +1,38 @@
 //! Raw API functions.
 
+use async_trait::async_trait;
 use serde::de::DeserializeOwned;
 
-use async_trait::async_trait;
-
-use crate::RequestError;
-
-pub use self::{
-    answer_pre_checkout_query::AnswerPreCheckoutQuery,
-    answer_shipping_query::AnswerShippingQuery,
-    edit_message_live_location::EditMessageLiveLocation,
-    forward_message::ForwardMessage, get_chat::GetChat, get_file::GetFile,
-    get_me::GetMe, get_updates::GetUpdates,
-    get_user_profile_photos::GetUserProfilePhotos,
-    kick_chat_member::KickChatMember, pin_chat_message::PinChatMessage,
-    promote_chat_member::PromoteChatMember,
-    restrict_chat_member::RestrictChatMember, send_animation::SendAnimation,
-    send_audio::SendAudio, send_chat_action::SendChatAction,
-    send_contact::SendContact, send_document::SendDocument,
-    send_location::SendLocation, send_media_group::SendMediaGroup,
-    send_message::SendMessage, send_photo::SendPhoto, send_poll::SendPoll,
-    send_venue::SendVenue, send_video::SendVideo,
-    send_video_note::SendVideoNote, send_voice::SendVoice,
-    stop_message_live_location::StopMessageLiveLocation,
-    unban_chat_member::UnbanChatMember, unpin_chat_message::UnpinChatMessage,
-};
+pub use answer_pre_checkout_query::*;
+pub use answer_shipping_query::*;
+pub use edit_message_live_location::*;
+pub use forward_message::*;
+pub use get_chat::*;
+pub use get_file::*;
+pub use get_me::*;
+pub use get_updates::*;
+pub use get_user_profile_photos::*;
+pub use kick_chat_member::*;
+pub use pin_chat_message::*;
+pub use promote_chat_member::*;
+pub use restrict_chat_member::*;
+pub use send_animation::*;
+pub use send_audio::*;
+pub use send_chat_action::*;
+pub use send_contact::*;
+pub use send_document::*;
+pub use send_location::*;
+pub use send_media_group::*;
+pub use send_message::*;
+pub use send_photo::*;
+pub use send_poll::*;
+pub use send_venue::*;
+pub use send_video::*;
+pub use send_video_note::*;
+pub use send_voice::*;
+pub use stop_message_live_location::*;
+pub use unban_chat_member::*;
+pub use unpin_chat_message::*;
 
 mod form_builder;
 mod utils;
@@ -61,7 +69,7 @@ mod unban_chat_member;
 mod unpin_chat_message;
 
 /// A type that is returned from `Request::send_boxed`.
-pub type ResponseResult<T> = Result<T, RequestError>;
+pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
 /// A request that can be sent to Telegram.
 #[async_trait]
