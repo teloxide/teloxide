@@ -2,9 +2,10 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
@@ -17,7 +18,7 @@ use crate::{
 /// [`Message`]: crate::types::Message
 pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     /// Required if inline_message_id is not specified. Unique identifier for
@@ -53,8 +54,8 @@ impl Request for EditMessageLiveLocation<'_> {
 impl EditMessageLiveLocation<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "editMessageLiveLocation",
             &self,
         )
@@ -64,7 +65,7 @@ impl EditMessageLiveLocation<'_> {
 
 impl<'a> EditMessageLiveLocation<'a> {
     pub(crate) fn new<Lt, Lg>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         latitude: Lt,
         longitude: Lg,
     ) -> Self
@@ -73,7 +74,7 @@ impl<'a> EditMessageLiveLocation<'a> {
         Lg: Into<f64>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: None,
             message_id: None,
             inline_message_id: None,

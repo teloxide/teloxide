@@ -7,10 +7,10 @@ use pin_project::pin_project;
 use futures::{Stream, StreamExt, stream};
 
 use crate::{
-    bot::Bot,
     types::Update,
     RequestError,
 };
+use crate::bot::Bot;
 
 // Currently just a placeholder, but I'll  add here some methods
 /// Updater is stream of updates.
@@ -148,4 +148,4 @@ pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
 
 // TODO implement webhook (this actually require webserver and probably we
 //   should add cargo feature that adds webhook)
-//pub fn webhook<'a>(bot: &'a Bot, cfg: WebhookConfig) -> Updater<impl Stream<Item=Result<Update, ???>> + 'a> {}
+//pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl Stream<Item=Result<Update, ???>> + 'a> {}

@@ -3,10 +3,11 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
+        form_builder::FormBuilder, Request,  ResponseResult,
     },
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// them in the music player. Your audio must be in the .mp3 format. On success,
@@ -18,7 +19,7 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`SendVoice`]: crate::requests::SendVoice
 pub struct SendAudio<'a> {
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
@@ -88,8 +89,8 @@ impl SendAudio<'_> {
 
 
         network::request_multipart(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendAudio",
             params.build(),
         )
@@ -99,7 +100,7 @@ impl SendAudio<'_> {
 
 impl<'a> SendAudio<'a> {
     pub(crate) fn new<C, A>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         audio: A,
     ) -> Self
@@ -108,7 +109,7 @@ impl<'a> SendAudio<'a> {
         A: Into<InputFile>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             audio: audio.into(),
             caption: None,

@@ -4,16 +4,17 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send point on the map. On success, the sent [`Message`]
 /// is returned.
 pub struct SendLocation<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
@@ -50,8 +51,8 @@ impl Request for SendLocation<'_> {
 impl SendLocation<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendLocation",
             &self,
         )
@@ -61,7 +62,7 @@ impl SendLocation<'_> {
 
 impl<'a> SendLocation<'a> {
     pub(crate) fn new<Lt, Lg, C>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         latitude: Lt,
         longitude: Lg,
@@ -72,7 +73,7 @@ impl<'a> SendLocation<'a> {
         C: Into<ChatId>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             latitude: latitude.into(),
             longitude: longitude.into(),

@@ -2,11 +2,10 @@
 
 use reqwest::Client;
 
-use crate::requests::RequestContext;
-
 mod api;
 mod download;
 
+#[derive(Debug, Clone)]
 pub struct Bot {
     token: String,
     client: Client,
@@ -30,10 +29,11 @@ impl Bot {
 }
 
 impl Bot {
-    fn ctx(&self) -> RequestContext {
-        RequestContext {
-            token: &self.token,
-            client: &self.client,
-        }
+    pub fn token(&self) -> &str {
+        &self.token
+    }
+
+    pub fn client(&self) -> &Client {
+        &self.client
     }
 }

@@ -2,9 +2,10 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::File,
 };
+use crate::bot::Bot;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading. For the moment, bots can download files of up to 20MB in size.
@@ -16,7 +17,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct GetFile<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// File identifier to get info about
     pub file_id: String,
 }
@@ -33,8 +34,8 @@ impl Request for GetFile<'_> {
 impl GetFile<'_> {
     pub async fn send(self) -> ResponseResult<File> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "getFile",
             &self,
         )
@@ -43,12 +44,12 @@ impl GetFile<'_> {
 }
 
 impl<'a> GetFile<'a> {
-    pub(crate) fn new<F>(ctx: RequestContext<'a>, value: F) -> Self
+    pub(crate) fn new<F>(bot: &'a Bot, value: F) -> Self
     where
         F: Into<String>,
     {
         Self {
-            ctx,
+            bot,
             file_id: value.into(),
         }
     }

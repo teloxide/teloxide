@@ -2,16 +2,17 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 /// Use this method to send information about a venue.
 /// Message is returned.
 #[derive(Debug, Clone, Serialize)]
 pub struct SendVenue<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -59,8 +60,8 @@ impl Request for SendVenue<'_> {
 impl SendVenue<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendVenue",
             &self,
         )
@@ -70,7 +71,7 @@ impl SendVenue<'_> {
 
 impl<'a> SendVenue<'a> {
     pub(crate) fn new<Lt, Lg, C, T, A>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         latitude: Lt,
         longitude: Lg,
@@ -85,7 +86,7 @@ impl<'a> SendVenue<'a> {
         A: Into<String>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             latitude: latitude.into(),
             longitude: longitude.into(),

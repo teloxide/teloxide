@@ -2,16 +2,17 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::UserProfilePhotos,
 };
+use crate::bot::Bot;
 
 ///Use this method to get a list of profile pictures for a user. Returns a
 /// UserProfilePhotos object.
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUserProfilePhotos<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier of the target user
     pub user_id: i32,
     /// Sequential number of the first photo to be returned. By default, all
@@ -36,8 +37,8 @@ impl Request for GetUserProfilePhotos<'_> {
 impl GetUserProfilePhotos<'_> {
     async fn send(self) -> ResponseResult<UserProfilePhotos> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "getUserProfilePhotos",
             &self,
         )
@@ -46,12 +47,12 @@ impl GetUserProfilePhotos<'_> {
 }
 
 impl<'a> GetUserProfilePhotos<'a> {
-    pub fn new<U>(ctx: RequestContext<'a>, user_id: U) -> Self
+    pub fn new<U>(bot: &'a Bot, user_id: U) -> Self
     where
         U: Into<i32>,
     {
         Self {
-            ctx,
+            bot,
             user_id: user_id.into(),
             offset: None,
             limit: None,

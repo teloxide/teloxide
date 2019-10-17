@@ -2,16 +2,17 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 /// Use this method to send phone contacts.
 /// returned.
 #[derive(Debug, Clone, Serialize)]
 pub struct SendContact<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or
     /// username of the target channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -54,8 +55,8 @@ impl Request for SendContact<'_> {
 impl SendContact<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendContact",
             &self,
         )
@@ -65,7 +66,7 @@ impl SendContact<'_> {
 
 impl<'a> SendContact<'a> {
     pub(crate) fn new<C, P, F>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         phone_number: P,
         first_name: F,
@@ -76,7 +77,7 @@ impl<'a> SendContact<'a> {
         F: Into<String>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             phone_number: phone_number.into(),
             first_name: first_name.into(),

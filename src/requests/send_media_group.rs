@@ -3,15 +3,16 @@ use async_trait::async_trait;
 use crate::{
     network::request_multipart,
     requests::{
-        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
+        form_builder::FormBuilder, Request,  ResponseResult,
     },
     types::{ChatId, InputMedia, Message, InputFile},
 };
+use crate::bot::Bot;
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     pub chat_id: ChatId,
     pub media: Vec<InputMedia>,
@@ -46,8 +47,8 @@ impl SendMediaGroup<'_> {
                 );
 
         request_multipart(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendMediaGroup",
             form.build(),
         )
@@ -57,7 +58,7 @@ impl SendMediaGroup<'_> {
 
 impl<'a> SendMediaGroup<'a> {
     pub(crate) fn new<C, M>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         media: M,
     ) -> Self
@@ -66,7 +67,7 @@ impl<'a> SendMediaGroup<'a> {
         M: Into<Vec<InputMedia>>,
     {
         SendMediaGroup {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             media: media.into(),
             disable_notification: None,

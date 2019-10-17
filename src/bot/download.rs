@@ -5,7 +5,8 @@ use ::{bytes::Bytes, tokio::stream::Stream};
 
 #[cfg(feature = "unstable-stream")]
 use crate::network::download_file_stream;
-use crate::{bot::Bot, network::download_file, DownloadError};
+use crate::{network::download_file, DownloadError};
+use crate::bot::Bot;
 
 impl Bot {
     /// Download file from telegram into `destination`.
@@ -17,7 +18,7 @@ impl Bot {
     ///
     /// ```no_run
     /// use telebofr::{
-    ///     bot::Bot, requests::Request, types::File as TgFile,
+    ///     bot:: requests::Request, types::File as TgFile,
     /// };
     /// use tokio::fs::File;
     /// # use telebofr::RequestError;

@@ -3,16 +3,17 @@ use async_trait::async_trait;
 use crate::{
     network,
     requests::{
-        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
+        form_builder::FormBuilder, Request,  ResponseResult,
     },
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 #[derive(Debug, Clone)]
 /// Use this method to send photos. On success, the sent [`Message`] is
 /// returned.
 pub struct SendPhoto<'a> {
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
@@ -64,8 +65,8 @@ impl SendPhoto<'_> {
             .add("photo", self.photo);
 
         network::request_multipart(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendPhoto",
             params.build(),
         )
@@ -75,7 +76,7 @@ impl SendPhoto<'_> {
 
 impl<'a> SendPhoto<'a> {
     pub(crate) fn new<C, P>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         photo: P,
     ) -> Self
@@ -84,7 +85,7 @@ impl<'a> SendPhoto<'a> {
         P: Into<InputFile>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             photo: photo.into(),
             caption: None,

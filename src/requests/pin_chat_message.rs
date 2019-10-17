@@ -2,9 +2,10 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, True},
 };
+use crate::bot::Bot;
 
 /// Use this method to get up to date information about the chat
 /// (current name of the user for one-on-one conversations,
@@ -13,7 +14,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct PinChatMessage<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or username
     /// of the target supergroup or channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -23,7 +24,7 @@ pub struct PinChatMessage<'a> {
 
 impl<'a> PinChatMessage<'a> {
     pub(crate) fn new<C, M>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         message_id: M,
     ) -> Self
@@ -32,7 +33,7 @@ impl<'a> PinChatMessage<'a> {
         M: Into<i32>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             message_id: message_id.into(),
             disable_notification: None,
@@ -59,8 +60,8 @@ impl Request for PinChatMessage<'_> {
 impl PinChatMessage<'_> {
     async fn send(self) -> ResponseResult<True> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "pinChatMessage",
             &self,
         )

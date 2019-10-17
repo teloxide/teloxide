@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::network;
-use crate::requests::{Request, RequestContext, ResponseResult};
+use crate::requests::{Request,  ResponseResult};
 use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::bot::Bot;
 
 //TODO: add action to bot api
 ///Use this method to send video files, Telegram clients support mp4 videos
@@ -12,7 +13,7 @@ use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 #[derive(Debug, Clone, Serialize)]
 pub struct SendVideo<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     ///Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     pub chat_id: ChatId,
@@ -78,8 +79,8 @@ impl Request for SendVideo<'_> {
 impl SendVideo<'_> {
     async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendVideo",
             &self,
         )
@@ -89,7 +90,7 @@ impl SendVideo<'_> {
 
 impl<'a> SendVideo<'a> {
     pub(crate) fn new<C, V>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         video: V,
     ) -> Self
@@ -98,7 +99,7 @@ impl<'a> SendVideo<'a> {
         V: Into<String>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             video: video.into(),
             duration: None,

@@ -2,14 +2,15 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, True},
 };
+use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct UnpinChatMessage<'a> {
     #[serde(skip_serializing)]
-    pub ctx: RequestContext<'a>,
+    pub bot: &'a Bot,
 
     pub chat_id: ChatId,
 }
@@ -26,8 +27,8 @@ impl Request for UnpinChatMessage<'_> {
 impl UnpinChatMessage<'_> {
     pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "unpinChatMessage",
             &self,
         )
@@ -36,12 +37,12 @@ impl UnpinChatMessage<'_> {
 }
 
 impl<'a> UnpinChatMessage<'a> {
-    pub(crate) fn new<C>(ctx: RequestContext<'a>, value: C) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, value: C) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: value.into(),
         }
     }

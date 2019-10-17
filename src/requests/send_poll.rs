@@ -2,16 +2,17 @@ use async_trait::async_trait;
 
 use crate::{
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request,  ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
+use crate::bot::Bot;
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.
 #[derive(Debug, Clone, Serialize)]
 pub struct SendPoll<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// identifier for the target chat or username of the target channel (in
     /// the format @channelusername). A native poll can't be sent to a private
     /// chat.
@@ -44,8 +45,8 @@ impl Request for SendPoll<'_> {
 impl SendPoll<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendPoll",
             &self,
         )
@@ -55,7 +56,7 @@ impl SendPoll<'_> {
 
 impl<'a> SendPoll<'a> {
     pub(crate) fn new<C, Q, O>(
-        ctx: RequestContext<'a>,
+        bot: &'a Bot,
         chat_id: C,
         question: Q,
         options: O,
@@ -66,7 +67,7 @@ impl<'a> SendPoll<'a> {
         O: Into<Vec<String>>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             question: question.into(),
             options: options.into(),

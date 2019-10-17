@@ -41,7 +41,7 @@ type Handlers<'a, T, E> = Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E
 /// # async fn run() {
 /// use std::convert::Infallible;
 /// use telebofr::{
-///     bot::Bot,
+///     bot::
 ///     types::Message,
 ///     dispatcher::{
 ///         updater::polling,
