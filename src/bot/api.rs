@@ -9,7 +9,7 @@ use crate::{
         SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
         SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
-        UnpinChatMessage,
+        UnpinChatMessage, SetChatTitle
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -355,5 +355,17 @@ impl Bot {
         S: Into<InputFile>,
     {
         SendAnimation::new(self, chat_id, animation)
+    }
+
+    pub fn set_chat_title<C, T>(
+        &self,
+        chat_id: C,
+        title: T,
+    ) -> SetChatTitle
+    where
+        C: Into<ChatId>,
+        T: Into<String>,
+    {
+        SetChatTitle::new(self, chat_id, title)
     }
 }
