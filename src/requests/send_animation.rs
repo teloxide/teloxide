@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::bot::Bot;
 use crate::network;
 use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile};
 
 ///TODO: add to bot api
 ///Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -21,8 +21,7 @@ pub struct SendAnimation<'a> {
     /// exists on the Telegram servers (recommended), pass an HTTP URL as a
     /// String for Telegram to get an animation from the Internet, or upload a
     /// new animation using multipart/form-data. More info on Sending Files »
-    pub animation: String,
-    //	InputFile or String
+    pub animation: InputFile,
     ///Duration of sent animation in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -41,8 +40,7 @@ pub struct SendAnimation<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name> »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //	InputFile or String 	Optional
+    pub thumb: Option<InputFile>,
     ///Animation caption (may also be used when resending animation by
     /// file_id), 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -90,7 +88,7 @@ impl<'a> SendAnimation<'a> {
     pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, animation: S) -> Self
     where
         C: Into<ChatId>,
-        S: Into<String>,
+        S: Into<InputFile>,
     {
         Self {
             bot,
@@ -140,7 +138,7 @@ impl<'a> SendAnimation<'a> {
     }
     pub fn thumb<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.thumb = Some(value.into());
         self

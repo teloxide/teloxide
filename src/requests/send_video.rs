@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::bot::Bot;
 use crate::network;
 use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile};
 
 //TODO: add action to bot api
 ///Use this method to send video files, Telegram clients support mp4 videos
@@ -21,7 +21,7 @@ pub struct SendVideo<'a> {
     /// the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a video from the Internet, or upload a new video using
     /// multipart/form-data. More info on Sending Files »
-    pub video: String,
+    pub video: InputFile,
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -40,8 +40,7 @@ pub struct SendVideo<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //InputFile or String
+    pub thumb: Option<InputFile>,
     ///Video caption (may also be used when resending videos by file_id),
     /// 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -92,7 +91,7 @@ impl<'a> SendVideo<'a> {
     pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video: V) -> Self
     where
         C: Into<ChatId>,
-        V: Into<String>,
+        V: Into<InputFile>,
     {
         Self {
             bot,
@@ -120,7 +119,7 @@ impl<'a> SendVideo<'a> {
 
     pub fn video<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.video = value.into();
         self
@@ -149,7 +148,7 @@ impl<'a> SendVideo<'a> {
     }
     pub fn thumb<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.thumb = Some(value.into());
         self
