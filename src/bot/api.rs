@@ -1,4 +1,5 @@
 use crate::bot::Bot;
+use crate::requests::AnswerCallbackQuery;
 use crate::{
     requests::{
         AnswerPreCheckoutQuery, AnswerShippingQuery, EditMessageLiveLocation,
@@ -273,5 +274,15 @@ impl Bot {
         C: Into<ChatId>,
     {
         UnpinChatMessage::new(self, chat_id)
+    }
+
+    pub fn answer_callback_query<S>(
+        &self,
+        callback_query_id: S,
+    ) -> AnswerCallbackQuery
+    where
+        S: Into<String>,
+    {
+        AnswerCallbackQuery::new(self, callback_query_id)
     }
 }
