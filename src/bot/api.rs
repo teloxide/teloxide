@@ -6,7 +6,7 @@ use crate::{
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAudio,
         SendChatAction, SendContact, SendLocation, SendMediaGroup, SendMessage,
         SendPhoto, SendPoll, SendVenue, SendVideoNote, SendVoice,
-        StopMessageLiveLocation, UnbanChatMember, UnpinChatMessage,
+        SetChatDescription, StopMessageLiveLocation, UnbanChatMember, UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -254,6 +254,13 @@ impl Bot {
         V: Into<String>, // TODO: InputFile
     {
         SendVoice::new(self, chat_id, voice)
+    }
+
+    pub fn send_chat_description<C>(&self, chat_id: C) -> SetChatDescription
+    where
+        C: Into<ChatId>,
+    {
+        SetChatDescription::new(self, chat_id)
     }
 
     pub fn unban_chat_member<C, U>(
