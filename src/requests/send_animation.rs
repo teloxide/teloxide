@@ -40,8 +40,7 @@ pub struct SendAnimation<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name> »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //	InputFile or String 	Optional
+    pub thumb: Option<InputFile>,
     ///Animation caption (may also be used when resending animation by
     /// file_id), 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
