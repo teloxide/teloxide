@@ -4,7 +4,7 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ReplyMarkup, InputFile},
+    types::{ChatId, InputFile, Message, ReplyMarkup},
 };
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1

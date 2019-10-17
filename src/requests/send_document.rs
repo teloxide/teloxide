@@ -4,10 +4,8 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
-
-// TODO: add method to bot/api
 
 ///Use this method to send general files. On success, the sent Message is
 /// returned. Bots can currently send files of any type of up to 50 MB in size,

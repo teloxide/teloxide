@@ -4,7 +4,7 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 ///Use this method to send audio files, if you want Telegram clients to display

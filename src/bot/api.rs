@@ -1,7 +1,8 @@
 use crate::bot::Bot;
 use crate::requests::{
     AnswerCallbackQuery, DeleteChatStickerSet, GetChatMember,
-    GetChatMembersCount, SetChatStickerSet,
+    GetChatMembersCount, SendAnimation, SendDocument, SendVideo,
+    SetChatStickerSet,
 };
 use crate::{
     requests::{
@@ -10,7 +11,8 @@ use crate::{
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAudio,
         SendChatAction, SendContact, SendLocation, SendMediaGroup, SendMessage,
         SendPhoto, SendPoll, SendVenue, SendVideoNote, SendVoice,
-        SetChatDescription, StopMessageLiveLocation, UnbanChatMember, UnpinChatMessage,
+        SetChatDescription, StopMessageLiveLocation, UnbanChatMember,
+        UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -328,5 +330,33 @@ impl Bot {
         C: Into<ChatId>,
     {
         GetChatMembersCount::new(self, chat_id)
+    }
+
+    pub fn send_video<C, V>(&self, chat_id: C, video: V) -> SendVideo
+    where
+        C: Into<ChatId>,
+        V: Into<InputFile>,
+    {
+        SendVideo::new(self, chat_id, video)
+    }
+
+    pub fn send_document<C, D>(&self, chat_id: C, document: D) -> SendDocument
+    where
+        C: Into<ChatId>,
+        D: Into<InputFile>,
+    {
+        SendDocument::new(self, chat_id, document)
+    }
+
+    pub fn send_animation<C, S>(
+        &self,
+        chat_id: C,
+        animation: S,
+    ) -> SendAnimation
+    where
+        C: Into<ChatId>,
+        S: Into<InputFile>,
+    {
+        SendAnimation::new(self, chat_id, animation)
     }
 }

@@ -3,9 +3,8 @@ use async_trait::async_trait;
 use crate::bot::Bot;
 use crate::network;
 use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile};
+use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
 
-//TODO: add action to bot api
 ///Use this method to send video files, Telegram clients support mp4 videos
 /// (other formats may be sent as Document). On success, the sent Message is
 /// returned. Bots can currently send video files of up to 50 MB in size, this

@@ -3,9 +3,8 @@ use async_trait::async_trait;
 use crate::bot::Bot;
 use crate::network;
 use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile};
+use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
 
-///TODO: add to bot api
 ///Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound). On success, the sent Message is returned. Bots can currently
 /// send animation files of up to 50 MB in size, this limit may be changed in
