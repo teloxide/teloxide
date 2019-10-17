@@ -32,10 +32,11 @@ type Handlers<'a, T, E> =
 ///
 /// Simplest example:
 /// ```no_run
-/// # async fn run() {
+/// # use telebofr::bot::Bot;
+/// use telebofr::types::Message;
+///  async fn run() {
 /// use std::convert::Infallible;
 /// use telebofr::{
-///     bot::types::Message,
 ///     dispatcher::{
 ///         simple::{error_policy::ErrorPolicy, Dispatcher},
 ///         updater::polling,
