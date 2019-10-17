@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{Chat, ChatId},
 };
-use crate::bot::Bot;
 
 /// Use this method to get up to date information about the chat
 /// (current name of the user for one-on-one conversations,

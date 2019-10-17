@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::UserProfilePhotos,
 };
-use crate::bot::Bot;
 
 ///Use this method to get a list of profile pictures for a user. Returns a
 /// UserProfilePhotos object.

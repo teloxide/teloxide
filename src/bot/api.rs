@@ -1,15 +1,15 @@
+use crate::bot::Bot;
 use crate::{
     requests::{
         AnswerPreCheckoutQuery, AnswerShippingQuery, EditMessageLiveLocation,
-        ForwardMessage, GetFile, GetMe, KickChatMember, PinChatMessage,
-        PromoteChatMember, RestrictChatMember, SendAudio, SendChatAction,
-        SendContact, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
-        SendPoll, SendVenue, SendVideoNote, SendVoice, StopMessageLiveLocation,
-        UnbanChatMember, UnpinChatMessage, GetUpdates
+        ForwardMessage, GetFile, GetMe, GetUpdates, KickChatMember,
+        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAudio,
+        SendChatAction, SendContact, SendLocation, SendMediaGroup, SendMessage,
+        SendPhoto, SendPoll, SendVenue, SendVideoNote, SendVoice,
+        StopMessageLiveLocation, UnbanChatMember, UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
-use crate::bot::Bot;
 
 /// Telegram functions
 impl Bot {

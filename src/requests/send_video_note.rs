@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
@@ -76,11 +76,7 @@ impl SendVideoNote<'_> {
 }
 
 impl<'a> SendVideoNote<'a> {
-    pub(crate) fn new<C, V>(
-        bot: &'a Bot,
-        chat_id: C,
-        video_note: V,
-    ) -> Self
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video_note: V) -> Self
     where
         C: Into<ChatId>,
         V: Into<String>,

@@ -28,7 +28,9 @@ impl<T, F: Fn(&T) -> bool> Filter<T> for F {
 /// assert_eq!(false.test(&()), false);
 /// ```
 impl<T> Filter<T> for bool {
-    fn test(&self, _: &T) -> bool { *self }
+    fn test(&self, _: &T) -> bool {
+        *self
+    }
 }
 
 /// And filter.
@@ -82,7 +84,6 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
     And::new(a, b)
 }
 
-
 /// Or filter.
 ///
 /// Passes if at least one underlying filters passes.
@@ -92,7 +93,7 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{Or, Filter};
+/// use telebofr::dispatcher::filter::{Filter, Or};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Or::new(true, false).test(&()));
@@ -134,14 +135,13 @@ pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
     Or::new(a, b)
 }
 
-
 /// Not filter.
 ///
 /// Passes if underlying filter don't pass.
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{Not, Filter};
+/// use telebofr::dispatcher::filter::{Filter, Not};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Not::new(false).test(&()));
@@ -242,12 +242,11 @@ macro_rules! any {
     };
 }
 
-
 /// Simple wrapper around `Filter` that adds `|` and `&` operators.
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{Filter, f, F, And, Or};
+/// use telebofr::dispatcher::filter::{f, And, Filter, Or, F};
 ///
 /// let flt1 = |i: &i32| -> bool { *i > 17 };
 /// let flt2 = |i: &i32| -> bool { *i < 42 };
@@ -259,7 +258,6 @@ macro_rules! any {
 /// assert_eq!(and.test(&50), false); // `flt2` doesn't pass
 /// assert_eq!(and.test(&16), false); // `flt1` doesn't pass
 ///
-///
 /// let or = f(flt1) | flt3;
 /// assert!(or.test(&19)); // `flt1` passes
 /// assert!(or.test(&16)); // `flt2` passes
@@ -267,9 +265,8 @@ macro_rules! any {
 ///
 /// assert_eq!(or.test(&17), false); // both don't pass
 ///
-///
 /// // Note: only first filter in chain should be wrapped in `f(...)`
-/// let complicated: F<Or<And<_, _>, _>>= f(flt1) & flt2 | flt3;
+/// let complicated: F<Or<And<_, _>, _>> = f(flt1) & flt2 | flt3;
 /// assert!(complicated.test(&2)); // `flt3` passes
 /// assert!(complicated.test(&21)); // `flt1` and `flt2` pass
 ///
@@ -287,7 +284,7 @@ pub fn f<A>(a: A) -> F<A> {
 
 impl<T, A> Filter<T> for F<A>
 where
-    A: Filter<T>
+    A: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         self.0.test(value)
@@ -310,8 +307,9 @@ impl<A, B> std::ops::BitOr<B> for F<A> {
     }
 }
 
+/* workaround for `E0207` compiler error */
 /// Extensions for filters
-pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
+pub trait FilterExt<T> {
     /// Alias for [`Not::new`]
     ///
     /// ## Examples
@@ -325,7 +323,10 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// ```
     ///
     /// [`Not::new`]: crate::dispatcher::filter::Not::new
-    fn not(self) -> Not<Self> where Self: Sized {
+    fn not(self) -> Not<Self>
+    where
+        Self: Sized,
+    {
         Not::new(self)
     }
 
@@ -344,7 +345,10 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// ```
     ///
     /// [`Not::new`]: crate::dispatcher::filter::And::new
-    fn and<B>(self, other: B) -> And<Self, B> where Self: Sized {
+    fn and<B>(self, other: B) -> And<Self, B>
+    where
+        Self: Sized,
+    {
         And::new(self, other)
     }
 
@@ -363,7 +367,10 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// ```
     ///
     /// [`Not::new`]: crate::dispatcher::filter::Or::new
-    fn or<B>(self, other: B) -> Or<Self, B> where Self: Sized {
+    fn or<B>(self, other: B) -> Or<Self, B>
+    where
+        Self: Sized,
+    {
         Or::new(self, other)
     }
 }

@@ -2,11 +2,11 @@ use std::path::PathBuf;
 
 use reqwest::multipart::Form;
 
+use crate::types::InputFile;
 use crate::{
     requests::utils,
     types::{ChatId, InputMedia, ParseMode},
 };
-use crate::types::InputFile;
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
 /// from scratch.
@@ -73,7 +73,10 @@ macro_rules! impl_for_struct {
 
 impl_for_struct!(bool, i32, i64);
 
-impl<T> IntoFormValue for Option<T> where T: IntoFormValue {
+impl<T> IntoFormValue for Option<T>
+where
+    T: IntoFormValue,
+{
     fn into_form_value(self) -> Option<FormValue> {
         self.and_then(IntoFormValue::into_form_value)
     }
@@ -81,8 +84,8 @@ impl<T> IntoFormValue for Option<T> where T: IntoFormValue {
 
 impl IntoFormValue for &[InputMedia] {
     fn into_form_value(self) -> Option<FormValue> {
-        let json = serde_json::to_string(self)
-            .expect("serde_json::to_string failed");
+        let json =
+            serde_json::to_string(self).expect("serde_json::to_string failed");
         Some(FormValue::Str(json))
     }
 }

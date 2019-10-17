@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
-use crate::network;
-use crate::requests::{Request,  ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 use crate::bot::Bot;
+use crate::network;
+use crate::requests::{Request, ResponseResult};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 
 //TODO: add action to bot api
 ///Use this method to send video files, Telegram clients support mp4 videos
@@ -89,11 +89,7 @@ impl SendVideo<'_> {
 }
 
 impl<'a> SendVideo<'a> {
-    pub(crate) fn new<C, V>(
-        bot: &'a Bot,
-        chat_id: C,
-        video: V,
-    ) -> Self
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video: V) -> Self
     where
         C: Into<ChatId>,
         V: Into<String>,

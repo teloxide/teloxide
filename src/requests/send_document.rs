@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 // TODO: add method to bot/api
 
@@ -80,11 +80,7 @@ impl SendDocument<'_> {
 }
 
 impl<'a> SendDocument<'a> {
-    pub(crate) fn new<C, D>(
-        bot: &'a Bot,
-        chat_id: C,
-        document: D,
-    ) -> Self
+    pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
     where
         C: Into<ChatId>,
         D: Into<String>,

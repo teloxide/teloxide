@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
 };
-use crate::bot::Bot;
 
 /// Use this method to restrict a user in a supergroup. The bot must be an
 /// administrator in the supergroup for this to work and must have the

@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 ///Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message. For this to work, your audio must be
@@ -73,11 +73,7 @@ impl SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new<C, V>(
-        bot: &'a Bot,
-        chat_id: C,
-        voice: V,
-    ) -> Self
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, voice: V) -> Self
     where
         C: Into<ChatId>,
         V: Into<String>,

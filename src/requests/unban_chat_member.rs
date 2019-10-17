@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::ChatId,
 };
-use crate::bot::Bot;
 
 /// Use this method to unban a previously kicked user in a supergroup or
 /// channel. The user will not return to the group or channel automatically, but
@@ -44,11 +44,7 @@ impl UnbanChatMember<'_> {
 }
 
 impl<'a> UnbanChatMember<'a> {
-    pub(crate) fn new<C, U>(
-        bot: &'a Bot,
-        chat_id: C,
-        user_id: U,
-    ) -> Self
+    pub(crate) fn new<C, U>(bot: &'a Bot, chat_id: C, user_id: U) -> Self
     where
         C: Into<ChatId>,
         U: Into<i32>,

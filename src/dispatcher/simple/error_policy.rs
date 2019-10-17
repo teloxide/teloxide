@@ -1,6 +1,6 @@
-use std::pin::Pin;
-use std::future::Future;
 use std::fmt::Debug;
+use std::future::Future;
+use std::pin::Pin;
 
 // TODO: shouldn't it be trait?
 pub enum ErrorPolicy<'a, E> {
@@ -15,14 +15,12 @@ where
 {
     pub async fn handle_error(&self, error: E) {
         match self {
-            Self::Ignore => {},
+            Self::Ignore => {}
             Self::Log => {
                 // TODO: better message
                 log::error!("Error in handler: {:?}", error)
             }
-            Self::Custom(func) => {
-                func(error).await
-            }
+            Self::Custom(func) => func(error).await,
         }
     }
 

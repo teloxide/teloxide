@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
-use crate::bot::Bot;
 
 /// Use this method to get up to date information about the chat
 /// (current name of the user for one-on-one conversations,
@@ -23,11 +23,7 @@ pub struct PinChatMessage<'a> {
 }
 
 impl<'a> PinChatMessage<'a> {
-    pub(crate) fn new<C, M>(
-        bot: &'a Bot,
-        chat_id: C,
-        message_id: M,
-    ) -> Self
+    pub(crate) fn new<C, M>(bot: &'a Bot, chat_id: C, message_id: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<i32>,

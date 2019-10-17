@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
-use crate::bot::Bot;
 
 /// Use this method to kick a user from a group, a supergroup or a channel. In
 /// the case of supergroups and channels, the user will not be able to return to
@@ -50,11 +50,7 @@ impl KickChatMember<'_> {
 }
 
 impl<'a> KickChatMember<'a> {
-    pub(crate) fn new<C, U>(
-        bot: &'a Bot,
-        chat_id: C,
-        user_id: U,
-    ) -> Self
+    pub(crate) fn new<C, U>(bot: &'a Bot, chat_id: C, user_id: U) -> Self
     where
         C: Into<ChatId>,
         U: Into<i32>,

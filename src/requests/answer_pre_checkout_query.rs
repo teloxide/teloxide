@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::True,
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Serialize, Clone)]
 /// Once the user has confirmed their payment and shipping details, the Bot API

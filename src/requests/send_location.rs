@@ -2,12 +2,12 @@ use serde::Serialize;
 
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send point on the map. On success, the sent [`Message`]

@@ -3,10 +3,10 @@ use tokio::io::AsyncWrite;
 #[cfg(feature = "unstable-stream")]
 use ::{bytes::Bytes, tokio::stream::Stream};
 
+use crate::bot::Bot;
 #[cfg(feature = "unstable-stream")]
 use crate::network::download_file_stream;
 use crate::{network::download_file, DownloadError};
-use crate::bot::Bot;
 
 impl Bot {
     /// Download file from telegram into `destination`.
@@ -17,9 +17,7 @@ impl Bot {
     /// ## Examples
     ///
     /// ```no_run
-    /// use telebofr::{
-    ///     bot:: requests::Request, types::File as TgFile,
-    /// };
+    /// use telebofr::{bot::requests::Request, types::File as TgFile};
     /// use tokio::fs::File;
     /// # use telebofr::RequestError;
     ///

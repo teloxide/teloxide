@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatAction, ChatId, True},
 };
-use crate::bot::Bot;
 
 ///Use this method when you need to tell the user that something is happening
 /// on the bot's side. The status is set for 5 seconds or less (when a message
@@ -48,7 +48,7 @@ impl SendChatAction<'_> {
 }
 
 impl<'a> SendChatAction<'a> {
-    pub(crate) fn new<Cid, Ca>(bot: &'a Bot, chat_id: Cid, action: Ca,) -> Self
+    pub(crate) fn new<Cid, Ca>(bot: &'a Bot, chat_id: Cid, action: Ca) -> Self
     where
         Cid: Into<ChatId>,
         Ca: Into<ChatAction>,

@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.

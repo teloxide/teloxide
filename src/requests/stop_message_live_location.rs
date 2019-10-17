@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message},
 };
-use crate::bot::Bot;
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is

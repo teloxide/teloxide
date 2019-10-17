@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to send text messages. On success, the sent [`Message`] is
@@ -66,7 +66,7 @@ impl SendMessage<'_> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, text: S,) -> Self
+    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, text: S) -> Self
     where
         C: Into<ChatId>,
         S: Into<String>,

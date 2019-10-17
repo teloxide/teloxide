@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::Update,
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUpdates<'a> {

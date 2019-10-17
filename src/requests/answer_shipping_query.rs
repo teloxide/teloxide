@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ShippingOption, True},
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// If you sent an invoice requesting a shipping address and the parameter
@@ -60,11 +60,7 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new<S, B>(
-        bot: &'a Bot,
-        shipping_query_id: S,
-        ok: B,
-    ) -> Self
+    pub(crate) fn new<S, B>(bot: &'a Bot, shipping_query_id: S, ok: B) -> Self
     where
         S: Into<String>,
         B: Into<bool>,

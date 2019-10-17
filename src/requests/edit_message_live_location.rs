@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone, Serialize)]
 /// Use this method to edit live location messages. A location can be edited
@@ -64,11 +64,7 @@ impl EditMessageLiveLocation<'_> {
 }
 
 impl<'a> EditMessageLiveLocation<'a> {
-    pub(crate) fn new<Lt, Lg>(
-        bot: &'a Bot,
-        latitude: Lt,
-        longitude: Lg,
-    ) -> Self
+    pub(crate) fn new<Lt, Lg>(bot: &'a Bot, latitude: Lt, longitude: Lg) -> Self
     where
         Lt: Into<f64>,
         Lg: Into<f64>,

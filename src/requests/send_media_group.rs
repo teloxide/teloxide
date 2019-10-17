@@ -1,13 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network::request_multipart,
-    requests::{
-        form_builder::FormBuilder, Request,  ResponseResult,
-    },
-    types::{ChatId, InputMedia, Message, InputFile},
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    types::{ChatId, InputFile, InputMedia, Message},
 };
-use crate::bot::Bot;
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
@@ -38,13 +36,16 @@ impl SendMediaGroup<'_> {
             .add("disable_notification", self.disable_notification)
             .add("reply_to_message_id", self.reply_to_message_id);
 
-        let form = self.media.into_iter().filter_map(|e| InputFile::from(e).into())
-                .fold(form, |acc, path: std::path::PathBuf|
-                    acc.add_file(
-                        &path.file_name().unwrap().to_string_lossy().into_owned(),
-                        path,
-                    )
-                );
+        let form = self
+            .media
+            .into_iter()
+            .filter_map(|e| InputFile::from(e).into())
+            .fold(form, |acc, path: std::path::PathBuf| {
+                acc.add_file(
+                    &path.file_name().unwrap().to_string_lossy().into_owned(),
+                    path,
+                )
+            });
 
         request_multipart(
             self.bot.client(),
@@ -57,11 +58,7 @@ impl SendMediaGroup<'_> {
 }
 
 impl<'a> SendMediaGroup<'a> {
-    pub(crate) fn new<C, M>(
-        bot: &'a Bot,
-        chat_id: C,
-        media: M,
-    ) -> Self
+    pub(crate) fn new<C, M>(bot: &'a Bot, chat_id: C, media: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,

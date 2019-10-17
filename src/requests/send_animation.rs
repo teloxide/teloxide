@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
-use crate::network;
-use crate::requests::{Request,  ResponseResult};
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 use crate::bot::Bot;
+use crate::network;
+use crate::requests::{Request, ResponseResult};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 
 ///TODO: add to bot api
 ///Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -87,11 +87,7 @@ impl SendAnimation<'_> {
 }
 
 impl<'a> SendAnimation<'a> {
-    pub(crate) fn new<C, S>(
-        bot: &'a Bot,
-        chat_id: C,
-        animation: S,
-    ) -> Self
+    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, animation: S) -> Self
     where
         C: Into<ChatId>,
         S: Into<String>,

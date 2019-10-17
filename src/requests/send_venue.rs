@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{Request,  ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 /// Use this method to send information about a venue.
 /// Message is returned.

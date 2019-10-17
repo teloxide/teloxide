@@ -1,13 +1,11 @@
 use async_trait::async_trait;
 
+use crate::bot::Bot;
 use crate::{
     network,
-    requests::{
-        form_builder::FormBuilder, Request,  ResponseResult,
-    },
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
-use crate::bot::Bot;
 
 #[derive(Debug, Clone)]
 /// Use this method to send photos. On success, the sent [`Message`] is
@@ -75,11 +73,7 @@ impl SendPhoto<'_> {
 }
 
 impl<'a> SendPhoto<'a> {
-    pub(crate) fn new<C, P>(
-        bot: &'a Bot,
-        chat_id: C,
-        photo: P,
-    ) -> Self
+    pub(crate) fn new<C, P>(bot: &'a Bot, chat_id: C, photo: P) -> Self
     where
         C: Into<ChatId>,
         P: Into<InputFile>,
