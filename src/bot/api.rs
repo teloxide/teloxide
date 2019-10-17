@@ -8,13 +8,12 @@ use crate::{
         SendAnimation, SendAudio, SendChatAction, SendContact, SendDocument,
         SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
-        SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
-        UnpinChatMessage, SetChatTitle
+        SetChatStickerSet, SetChatTitle, StopMessageLiveLocation,
+        UnbanChatMember, UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
 
-/// Telegram functions
 impl Bot {
     pub fn get_me(&self) -> GetMe {
         GetMe::new(self)
@@ -357,11 +356,7 @@ impl Bot {
         SendAnimation::new(self, chat_id, animation)
     }
 
-    pub fn set_chat_title<C, T>(
-        &self,
-        chat_id: C,
-        title: T,
-    ) -> SetChatTitle
+    pub fn set_chat_title<C, T>(&self, chat_id: C, title: T) -> SetChatTitle
     where
         C: Into<ChatId>,
         T: Into<String>,

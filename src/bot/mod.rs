@@ -1,10 +1,9 @@
-//! A Telegram bot.
-
 use reqwest::Client;
 
 mod api;
 mod download;
 
+/// A Telegram bot used to build requests.
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: String,

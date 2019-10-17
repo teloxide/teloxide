@@ -1,4 +1,4 @@
-//! Raw API structures.
+//! API types.
 
 pub use animation::*;
 pub use audio::*;
