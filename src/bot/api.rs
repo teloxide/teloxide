@@ -1,6 +1,7 @@
 use crate::bot::Bot;
 use crate::requests::{
-    AnswerCallbackQuery, DeleteChatStickerSet, GetChatMember, SetChatStickerSet,
+    AnswerCallbackQuery, DeleteChatStickerSet, GetChatMember,
+    GetChatMembersCount, SetChatStickerSet,
 };
 use crate::{
     requests::{
@@ -313,5 +314,12 @@ impl Bot {
         I: Into<i32>,
     {
         GetChatMember::new(self, chat_id, user_id)
+    }
+
+    pub fn get_chat_members_count<C>(&self, chat_id: C) -> GetChatMembersCount
+    where
+        C: Into<ChatId>,
+    {
+        GetChatMembersCount::new(self, chat_id)
     }
 }
