@@ -243,7 +243,7 @@ impl Bot {
     ) -> SendVideoNote
     where
         C: Into<ChatId>,
-        V: Into<String>, // TODO: InputFile
+        V: Into<InputFile>,
     {
         SendVideoNote::new(self, chat_id, video_note)
     }
@@ -251,7 +251,7 @@ impl Bot {
     pub fn send_voice<C, V>(&self, chat_id: C, voice: V) -> SendVoice
     where
         C: Into<ChatId>,
-        V: Into<String>, // TODO: InputFile
+        V: Into<InputFile>,
     {
         SendVoice::new(self, chat_id, voice)
     }

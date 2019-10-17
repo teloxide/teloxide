@@ -4,7 +4,7 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup},
+    types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile},
 };
 
 // TODO: add method to bot/api
@@ -23,8 +23,7 @@ pub struct SendDocument<'a> {
     /// the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data.»
-    pub document: String,
-    //InputFile or String
+    pub document: InputFile,
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side. The thumbnail should be in JPEG
     /// format and less than 200 kB in size. A thumbnail‘s width and height
@@ -34,8 +33,7 @@ pub struct SendDocument<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //InputFile or String
+    pub thumb: Option<InputFile>,
     /// Document caption (may also be used when resending documents by
     /// file_id), 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -83,7 +81,7 @@ impl<'a> SendDocument<'a> {
     pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
     where
         C: Into<ChatId>,
-        D: Into<String>,
+        D: Into<InputFile>,
     {
         Self {
             bot,
@@ -108,7 +106,7 @@ impl<'a> SendDocument<'a> {
 
     pub fn document<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.document = value.into();
         self
@@ -116,7 +114,7 @@ impl<'a> SendDocument<'a> {
 
     pub fn thumb<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.thumb = Some(value.into());
         self

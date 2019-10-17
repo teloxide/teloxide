@@ -4,7 +4,7 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup},
+    types::{ChatId, Message, ParseMode, ReplyMarkup, InputFile},
 };
 
 ///Use this method to send audio files, if you want Telegram clients to display
@@ -24,8 +24,7 @@ pub struct SendVoice<'a> {
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: String,
-    //InputFile or String
+    pub voice: InputFile,
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
@@ -76,7 +75,7 @@ impl<'a> SendVoice<'a> {
     pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, voice: V) -> Self
     where
         C: Into<ChatId>,
-        V: Into<String>,
+        V: Into<InputFile>,
     {
         Self {
             bot,
@@ -101,7 +100,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn voice<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.voice = value.into();
         self

@@ -4,7 +4,7 @@ use crate::bot::Bot;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ReplyMarkup},
+    types::{ChatId, Message, ReplyMarkup, InputFile},
 };
 
 ///As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
@@ -21,8 +21,7 @@ pub struct SendVideoNote<'a> {
     /// exists on the Telegram servers (recommended) or upload a new video
     /// using multipart/form-data. More info on Sending Files ». Sending video
     /// notes by a URL is currently unsupported
-    pub video_note: String,
-    //	InputFile or String
+    pub video_note: InputFile,
     ///Duration of sent video in seconds
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<u64>,
@@ -38,8 +37,7 @@ pub struct SendVideoNote<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //	InputFile or String
+    pub thumb: Option<InputFile>,
     ///Sends the message silently. Users will receive a notification with no
     /// sound.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -79,7 +77,7 @@ impl<'a> SendVideoNote<'a> {
     pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video_note: V) -> Self
     where
         C: Into<ChatId>,
-        V: Into<String>,
+        V: Into<InputFile>,
     {
         Self {
             bot,
@@ -104,7 +102,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn video_note<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.video_note = value.into();
         self
@@ -128,7 +126,7 @@ impl<'a> SendVideoNote<'a> {
 
     pub fn thumb<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.thumb = Some(value.into());
         self
