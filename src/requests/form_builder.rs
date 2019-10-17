@@ -2,10 +2,9 @@ use std::path::PathBuf;
 
 use reqwest::multipart::Form;
 
-use crate::types::InputFile;
 use crate::{
     requests::utils,
-    types::{ChatId, InputMedia, ParseMode},
+    types::{ChatId, InputFile, InputMedia, ParseMode},
 };
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`

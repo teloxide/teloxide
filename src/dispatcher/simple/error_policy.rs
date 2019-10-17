@@ -1,6 +1,4 @@
-use std::fmt::Debug;
-use std::future::Future;
-use std::pin::Pin;
+use std::{fmt::Debug, future::Future, pin::Pin};
 
 // TODO: shouldn't it be trait?
 pub enum ErrorPolicy<'a, E> {

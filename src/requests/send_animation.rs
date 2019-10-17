@@ -1,9 +1,11 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::network;
-use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+};
 
 ///Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound). On success, the sent Message is returned. Bots can currently

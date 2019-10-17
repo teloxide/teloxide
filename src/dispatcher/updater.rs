@@ -7,8 +7,7 @@ use futures::{stream, Stream, StreamExt};
 
 use pin_project::pin_project;
 
-use crate::bot::Bot;
-use crate::{types::Update, RequestError};
+use crate::{bot::Bot, types::Update, RequestError};
 
 // Currently just a placeholder, but I'll  add here some methods
 /// Updater is stream of updates.

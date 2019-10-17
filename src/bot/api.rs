@@ -1,17 +1,14 @@
-use crate::bot::Bot;
-use crate::requests::{
-    AnswerCallbackQuery, DeleteChatStickerSet, GetChatMember,
-    GetChatMembersCount, SendAnimation, SendDocument, SendVideo,
-    SetChatStickerSet,
-};
 use crate::{
+    bot::Bot,
     requests::{
-        AnswerPreCheckoutQuery, AnswerShippingQuery, EditMessageLiveLocation,
-        ForwardMessage, GetFile, GetMe, GetUpdates, KickChatMember,
-        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAudio,
-        SendChatAction, SendContact, SendLocation, SendMediaGroup, SendMessage,
-        SendPhoto, SendPoll, SendVenue, SendVideoNote, SendVoice,
-        SetChatDescription, StopMessageLiveLocation, UnbanChatMember,
+        AnswerCallbackQuery, AnswerPreCheckoutQuery, AnswerShippingQuery,
+        DeleteChatStickerSet, EditMessageLiveLocation, ForwardMessage,
+        GetChatMember, GetChatMembersCount, GetFile, GetMe, GetUpdates,
+        KickChatMember, PinChatMessage, PromoteChatMember, RestrictChatMember,
+        SendAnimation, SendAudio, SendChatAction, SendContact, SendDocument,
+        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
+        SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
+        SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
         UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},

@@ -267,8 +267,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::convert::Infallible;
-    use std::sync::atomic::{AtomicI32, Ordering};
+    use std::{
+        convert::Infallible,
+        sync::atomic::{AtomicI32, Ordering},
+    };
 
     use futures::Stream;
 
@@ -352,8 +354,7 @@ mod tests {
 
     fn one_message_updater(
     ) -> StreamUpdater<impl Stream<Item = Result<Update, Infallible>>> {
-        use futures::future::ready;
-        use futures::stream;
+        use futures::{future::ready, stream};
 
         StreamUpdater::new(stream::once(ready(Ok(message_update()))))
     }

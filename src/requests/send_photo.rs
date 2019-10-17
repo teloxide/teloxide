@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
 use crate::{
+    bot::Bot,
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},

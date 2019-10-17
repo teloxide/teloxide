@@ -1,7 +1,9 @@
-use crate::bot::Bot;
-use crate::network;
-use crate::requests::{Request, ResponseResult};
-use crate::types::{ChatId, True};
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::{ChatId, True},
+};
 use async_trait::async_trait;
 
 /// Use this method to set a new group sticker set for a supergroup. The bot

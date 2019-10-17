@@ -1,7 +1,9 @@
-use crate::bot::Bot;
-use crate::network;
-use crate::requests::{Request, ResponseResult};
-use crate::types::True;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::True,
+};
 use async_trait::async_trait;
 
 /// Use this method to send answers to callback queries sent from inline

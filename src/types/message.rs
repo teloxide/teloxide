@@ -190,7 +190,6 @@ pub enum MediaKind {
 mod getters {
     use std::ops::Deref;
 
-    use crate::types::message::MessageKind::{Pinned, SupergroupChatCreated};
     use crate::types::{
         self,
         message::{
@@ -203,7 +202,7 @@ mod getters {
                 ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto,
                 GroupChatCreated, Invoice, LeftChatMember, Migrate,
                 NewChatMembers, NewChatPhoto, NewChatTitle, PassportData,
-                SuccessfulPayment,
+                Pinned, SuccessfulPayment, SupergroupChatCreated,
             },
         },
         Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, Sender, True,

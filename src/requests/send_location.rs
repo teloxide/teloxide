@@ -2,8 +2,8 @@ use serde::Serialize;
 
 use async_trait::async_trait;
 
-use crate::bot::Bot;
 use crate::{
+    bot::Bot,
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
