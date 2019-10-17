@@ -79,7 +79,7 @@ pub use inline_query_result_venue::*;
 pub use inline_query_result_video::*;
 pub use inline_query_result_voice::*;
 
-pub use encrypted_credintials::*;
+pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
 pub use passport_data::*;
 pub use passport_file::*;
@@ -163,7 +163,7 @@ mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
 
-mod encrypted_credintials;
+mod encrypted_credentials;
 mod encrypted_passport_element;
 mod passport_data;
 mod passport_file;
