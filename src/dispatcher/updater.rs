@@ -146,7 +146,7 @@ pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
                     if let Some(upd) = updates.last() {
                         offset = upd.id + 1;
                     }
-                    updates.into_iter().map(|u| Ok(u)).collect::<Vec<_>>()
+                    updates.into_iter().map(Ok).collect::<Vec<_>>()
                 }
                 Err(err) => vec![Err(err)],
             };
