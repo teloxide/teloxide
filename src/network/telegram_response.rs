@@ -2,6 +2,7 @@ use reqwest::StatusCode;
 
 use crate::{
     requests::ResponseResult, types::ResponseParameters, RequestError,
+    types::{True, False}
 };
 
 #[derive(Deserialize)]
@@ -10,14 +11,14 @@ pub enum TelegramResponse<R> {
     Ok {
         /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
-        ok: bool, // TODO: True type
+        ok: True,
 
         result: R,
     },
     Err {
         /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
-        ok: bool, // TODO: False type
+        ok: False,
 
         description: String,
         error_code: u16,
