@@ -62,7 +62,7 @@ mod tests {
     use super::False;
 
     #[test]
-    fn unit_true_de() {
+    fn unit_false_de() {
         let json = "false";
         let expected = False;
         let actual = from_str(json).unwrap();
@@ -70,7 +70,7 @@ mod tests {
     }
 
     #[test]
-    fn unit_true_se() {
+    fn unit_false_se() {
         let actual = to_string(&False).unwrap();
         let expected = "false";
         assert_eq!(expected, actual);
