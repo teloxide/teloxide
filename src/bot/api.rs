@@ -15,7 +15,6 @@ use crate::{
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
 
-/// Telegram functions
 impl Bot {
     pub fn get_me(&self) -> GetMe {
         GetMe::new(self)
