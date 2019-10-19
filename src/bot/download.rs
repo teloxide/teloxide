@@ -19,7 +19,7 @@ impl Bot {
     /// use telebofr::types::File as TgFile;
     /// use tokio::fs::File;
     /// # use telebofr::RequestError;
-    /// use telebofr::bot::Bot;
+    /// use telebofr::Bot;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");

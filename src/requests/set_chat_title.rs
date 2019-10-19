@@ -1,9 +1,11 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::types::{ChatId, True};
-use crate::requests::{Request, ResponseResult};
-use crate::network;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::{ChatId, True},
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatTitle<'a> {
@@ -29,8 +31,9 @@ impl SetChatTitle<'_> {
             &self.bot.client(),
             &self.bot.token(),
             "setChatTitle",
-            &self
-        ).await
+            &self,
+        )
+        .await
     }
 }
 
@@ -52,16 +55,16 @@ impl<'a> SetChatTitle<'a> {
     }
 
     pub fn chat_id<C>(mut self, chat_id: C) -> Self
-        where
-            C: Into<ChatId>,
+    where
+        C: Into<ChatId>,
     {
         self.chat_id = chat_id.into();
         self
     }
 
     pub fn title<C>(mut self, title: C) -> Self
-        where
-            C: Into<String>,
+    where
+        C: Into<String>,
     {
         self.title = title.into();
         self

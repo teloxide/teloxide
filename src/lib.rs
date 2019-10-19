@@ -5,12 +5,13 @@ extern crate serde;
 #[macro_use]
 extern crate thiserror;
 
+pub use bot::Bot;
 pub use errors::{DownloadError, RequestError};
 
 mod errors;
 mod network;
 
-pub mod bot;
+mod bot;
 pub mod dispatcher;
 pub mod requests;
 pub mod types;

@@ -1,38 +1,44 @@
-//! A Telegram bot.
-
 use reqwest::Client;
 
 mod api;
 mod download;
 
+/// A Telegram bot used to build requests.
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: String,
     client: Client,
 }
 
-/// Constructors
 impl Bot {
-    pub fn new(token: &str) -> Self {
+    pub fn new<S>(token: S) -> Self
+    where
+        S: Into<String>,
+    {
         Bot {
-            token: String::from(token),
+            token: token.into(),
             client: Client::new(),
         }
     }
 
-    pub fn with_client(token: &str, client: Client) -> Self {
+    pub fn with_client<S>(token: S, client: Client) -> Self
+    where
+        S: Into<String>,
+    {
         Bot {
-            token: String::from(token),
+            token: token.into(),
             client,
         }
     }
 }
 
 impl Bot {
+    #[inline]
     pub fn token(&self) -> &str {
         &self.token
     }
 
+    #[inline]
     pub fn client(&self) -> &Client {
         &self.client
     }

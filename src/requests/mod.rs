@@ -1,4 +1,4 @@
-//! Raw API functions.
+//! API requests.
 
 use async_trait::async_trait;
 use serde::de::DeserializeOwned;

@@ -358,11 +358,7 @@ impl Bot {
         SendAnimation::new(self, chat_id, animation)
     }
 
-    pub fn set_chat_title<C, T>(
-        &self,
-        chat_id: C,
-        title: T,
-    ) -> SetChatTitle
+    pub fn set_chat_title<C, T>(&self, chat_id: C, title: T) -> SetChatTitle
     where
         C: Into<ChatId>,
         T: Into<String>,
