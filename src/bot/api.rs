@@ -9,7 +9,8 @@ use crate::{
         SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
         SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
-        UnpinChatMessage, SetChatTitle, DeleteChatPhoto, SetChatPhoto
+        UnpinChatMessage, SetChatTitle, DeleteChatPhoto, SetChatPhoto,
+        ExportCharInviteLink
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -389,5 +390,15 @@ impl Bot {
         P: Into<InputFile>,
     {
         SetChatPhoto::new(self, chat_id, photo)
+    }
+
+    pub fn export_chat_invite_link<C>(
+        &self,
+        chat_id: C,
+    ) -> ExportCharInviteLink
+    where
+        C: Into<ChatId>,
+    {
+        ExportCharInviteLink::new(self, chat_id)
     }
 }
