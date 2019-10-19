@@ -10,7 +10,7 @@ use crate::{
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
         SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
         UnpinChatMessage, SetChatTitle, DeleteChatPhoto, SetChatPhoto,
-        ExportCharInviteLink
+        ExportCharInviteLink, SetChatPermissions
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -400,5 +400,17 @@ impl Bot {
         C: Into<ChatId>,
     {
         ExportCharInviteLink::new(self, chat_id)
+    }
+
+    pub fn set_chat_permissions<C, CP>(
+        &self,
+        chat_id: C,
+        permissions: CP,
+    ) -> SetChatPermissions
+    where
+        C: Into<ChatId>,
+        CP: Into<ChatPermissions>,
+    {
+        SetChatPermissions::new(self, chat_id, permissions)
     }
 }
