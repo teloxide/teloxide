@@ -9,7 +9,7 @@ use crate::{
         SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
         SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
-        UnpinChatMessage, SetChatTitle
+        UnpinChatMessage, SetChatTitle, DeleteChatPhoto
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -367,5 +367,15 @@ impl Bot {
         T: Into<String>,
     {
         SetChatTitle::new(self, chat_id, title)
+    }
+
+    pub fn delete_chat_photo<C>(
+        &self,
+        chat_id: C,
+    ) -> DeleteChatPhoto
+    where
+        C: Into<ChatId>,
+    {
+        DeleteChatPhoto::new(self, chat_id)
     }
 }
