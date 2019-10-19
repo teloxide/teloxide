@@ -227,16 +227,16 @@ where
 
                     match kind {
                         UpdateKind::Message(mes) => {
-                            call!(self.message_handlers, mes)
+                            self.handle_message(mes, &self.message_handlers).await;
                         }
                         UpdateKind::EditedMessage(mes) => {
-                            call!(self.edited_message_handlers, mes)
+                            self.handle_message(mes, &self.edited_message_handlers).await;
                         }
                         UpdateKind::ChannelPost(post) => {
-                            call!(self.channel_post_handlers, post)
+                            self.handle_message(post, &self.channel_post_handlers).await;
                         }
                         UpdateKind::EditedChannelPost(post) => {
-                            call!(self.edited_channel_post_handlers, post)
+                            self.handle_message(post, &self.edited_channel_post_handlers).await;
                         }
                         UpdateKind::InlineQuery(query) => {
                             call!(self.inline_query_handlers, query)
@@ -251,6 +251,27 @@ where
                 }
             })
             .await;
+    }
+
+    async fn handle_message(&self, message: Message, handlers: &Handlers<'a, Message, E>) {
+        let handler = handlers.iter().find_map(|e|{
+            let (filter, handler) = e;
+            if filter.test(&message) {
+                Some(handler)
+            } else {
+                None
+            }
+        });
+        match handler {
+            Some(handler) => {
+                if let Err(err) = handler.handle(message).await {
+                    self.error_policy.handle_error(err).await
+                }
+            }
+            None => {
+                log::warn!("unhandled update {:?}", message);
+            }
+        }
     }
 }
 
