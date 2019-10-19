@@ -28,7 +28,7 @@ impl SetChatTitle<'_> {
         network::request_json(
             &self.bot.client(),
             &self.bot.token(),
-            "SetChatTitle",
+            "setChatTitle",
             &self
         ).await
     }
