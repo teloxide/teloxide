@@ -1,10 +1,11 @@
+use async_trait::async_trait;
+
 use crate::{
     bot::Bot,
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
 };
-use async_trait::async_trait;
 
 /// Use this method to get a list of administrators in a chat. On success,
 /// returns an Array of ChatMember objects that contains information about all

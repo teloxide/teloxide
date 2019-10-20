@@ -1,12 +1,12 @@
 //! Update dispatching.
 
 use async_trait::async_trait;
-pub use filter::Filter;
+pub use filters::Filter;
 pub use handler::Handler;
 
+pub mod dispatchers;
 pub mod filters;
 pub mod handler;
-pub mod filters;
 pub mod updater;
 
 #[async_trait(? Send)]
