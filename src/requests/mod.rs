@@ -1,11 +1,8 @@
 //! API requests.
 
-use serde::de::DeserializeOwned;
-
 pub use answer_callback_query::*;
 pub use answer_pre_checkout_query::*;
 pub use answer_shipping_query::*;
-use async_trait::async_trait;
 pub use delete_chat_photo::*;
 pub use delete_chat_sticker_set::*;
 pub use edit_message_live_location::*;
@@ -93,6 +90,9 @@ mod set_chat_title;
 mod stop_message_live_location;
 mod unban_chat_member;
 mod unpin_chat_message;
+
+use async_trait::async_trait;
+use serde::de::DeserializeOwned;
 
 /// A type that is returned from `Request::send_boxed`.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
