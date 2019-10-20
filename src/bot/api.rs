@@ -2,16 +2,16 @@ use crate::{
     bot::Bot,
     requests::{
         AnswerCallbackQuery, AnswerPreCheckoutQuery, AnswerShippingQuery,
-        DeleteChatStickerSet, EditMessageLiveLocation, ForwardMessage,
+        DeleteChatPhoto, DeleteChatStickerSet, EditMessageLiveLocation,
+        ExportCharInviteLink, ForwardMessage, GetChat, GetChatAdministrators,
         GetChatMember, GetChatMembersCount, GetFile, GetMe, GetUpdates,
-        KickChatMember, PinChatMessage, PromoteChatMember, RestrictChatMember,
-        SendAnimation, SendAudio, SendChatAction, SendContact, SendDocument,
-        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll,
-        SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
-        SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
-        UnpinChatMessage, SetChatTitle, DeleteChatPhoto, SetChatPhoto,
-        ExportCharInviteLink, SetChatPermissions, LeaveChat, GetChatAdministrators,
-        GetChat,
+        KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember,
+        RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
+        SendContact, SendDocument, SendLocation, SendMediaGroup, SendMessage,
+        SendPhoto, SendPoll, SendVenue, SendVideo, SendVideoNote, SendVoice,
+        SetChatDescription, SetChatPermissions, SetChatPhoto,
+        SetChatStickerSet, SetChatTitle, StopMessageLiveLocation,
+        UnbanChatMember, UnpinChatMessage,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -330,7 +330,10 @@ impl Bot {
         GetChatMember::new(self, chat_id, user_id)
     }
 
-    pub fn get_chat_administrators<C, I>(&self, chat_id: C) -> GetChatAdministrators
+    pub fn get_chat_administrators<C, I>(
+        &self,
+        chat_id: C,
+    ) -> GetChatAdministrators
     where
         C: Into<ChatId>,
     {
@@ -380,31 +383,21 @@ impl Bot {
         SetChatTitle::new(self, chat_id, title)
     }
 
-    pub fn delete_chat_photo<C>(
-        &self,
-        chat_id: C,
-    ) -> DeleteChatPhoto
+    pub fn delete_chat_photo<C>(&self, chat_id: C) -> DeleteChatPhoto
     where
         C: Into<ChatId>,
     {
         DeleteChatPhoto::new(self, chat_id)
     }
 
-    pub fn leave_chat<C>(
-        &self,
-        chat_id: C,
-    ) -> LeaveChat
+    pub fn leave_chat<C>(&self, chat_id: C) -> LeaveChat
     where
         C: Into<ChatId>,
     {
         LeaveChat::new(self, chat_id)
     }
 
-    pub fn set_chat_photo<C, P>(
-        &self,
-        chat_id: C,
-        photo: P,
-    ) -> SetChatPhoto
+    pub fn set_chat_photo<C, P>(&self, chat_id: C, photo: P) -> SetChatPhoto
     where
         C: Into<ChatId>,
         P: Into<InputFile>,
@@ -412,10 +405,7 @@ impl Bot {
         SetChatPhoto::new(self, chat_id, photo)
     }
 
-    pub fn export_chat_invite_link<C>(
-        &self,
-        chat_id: C,
-    ) -> ExportCharInviteLink
+    pub fn export_chat_invite_link<C>(&self, chat_id: C) -> ExportCharInviteLink
     where
         C: Into<ChatId>,
     {

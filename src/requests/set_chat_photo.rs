@@ -1,10 +1,11 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::types::{ChatId, True, InputFile};
-use crate::requests::{Request, ResponseResult};
-use crate::network;
-use crate::requests::form_builder::FormBuilder;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    types::{ChatId, InputFile, True},
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatPhoto<'a> {
@@ -35,16 +36,13 @@ impl SetChatPhoto<'_> {
             self.bot.token(),
             "setChatPhoto",
             params.build(),
-        ).await
+        )
+        .await
     }
 }
 
 impl<'a> SetChatPhoto<'a> {
-    pub(crate) fn new<C, P>(
-        bot: &'a Bot,
-        chat_id: C,
-        photo: P
-    ) -> Self
+    pub(crate) fn new<C, P>(bot: &'a Bot, chat_id: C, photo: P) -> Self
     where
         C: Into<ChatId>,
         P: Into<InputFile>,
@@ -82,7 +80,8 @@ mod tests {
         let bot = Bot::new("token");
         let chat_id = 123;
         let photo_url = "https://some_url".to_string();
-        let method = SetChatPhoto::new(&bot, chat_id, InputFile::Url(photo_url));
+        let method =
+            SetChatPhoto::new(&bot, chat_id, InputFile::Url(photo_url));
 
         let expected = r#"{"chat_id":123,"photo":"https://some_url"}"#;
         let actual = serde_json::to_string::<SetChatPhoto>(&method).unwrap();

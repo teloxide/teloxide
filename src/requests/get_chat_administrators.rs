@@ -6,7 +6,11 @@ use crate::{
 };
 use async_trait::async_trait;
 
-/// Use this method to get a list of administrators in a chat. On success, returns an Array of ChatMember objects that contains information about all chat administrators except other bots. If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned
+/// Use this method to get a list of administrators in a chat. On success,
+/// returns an Array of ChatMember objects that contains information about all
+/// chat administrators except other bots. If the chat is a group or a
+/// supergroup and no administrators were appointed, only the creator will be
+/// returned
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChatAdministrators<'a> {
     #[serde(skip_serializing)]
@@ -56,5 +60,4 @@ impl<'a> GetChatAdministrators<'a> {
         self.chat_id = value.into();
         self
     }
-
 }

@@ -1,16 +1,18 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::types::{ChatId, True};
-use crate::requests::{ResponseResult, Request};
-use crate::network;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::{ChatId, True},
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteChatPhoto<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    chat_id: ChatId
+    chat_id: ChatId,
 }
 
 #[async_trait]
@@ -28,15 +30,16 @@ impl DeleteChatPhoto<'_> {
             self.bot.client(),
             self.bot.token(),
             "deleteChatPhoto",
-            &self
-        ).await
+            &self,
+        )
+        .await
     }
 }
 
 impl<'a> DeleteChatPhoto<'a> {
     pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
     where
-        C: Into<ChatId>
+        C: Into<ChatId>,
     {
         Self {
             bot,

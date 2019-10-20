@@ -1,16 +1,18 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::types::ChatId;
-use crate::requests::{ResponseResult, Request};
-use crate::network;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::ChatId,
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ExportCharInviteLink<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    chat_id: ChatId
+    chat_id: ChatId,
 }
 
 #[async_trait]
@@ -28,15 +30,16 @@ impl ExportCharInviteLink<'_> {
             self.bot.client(),
             self.bot.token(),
             "exportChatInviteLink",
-            &self
-        ).await
+            &self,
+        )
+        .await
     }
 }
 
 impl<'a> ExportCharInviteLink<'a> {
     pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
     where
-        C: Into<ChatId>
+        C: Into<ChatId>,
     {
         Self {
             bot,
@@ -64,7 +67,8 @@ mod tests {
         let method = ExportCharInviteLink::new(&bot, chat_id);
 
         let expected = r#"{"chat_id":123}"#;
-        let actual = serde_json::to_string::<ExportCharInviteLink>(&method).unwrap();
+        let actual =
+            serde_json::to_string::<ExportCharInviteLink>(&method).unwrap();
         assert_eq!(actual, expected);
     }
 }
