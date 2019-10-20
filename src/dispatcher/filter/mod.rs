@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use crate::{
     dispatcher::{
-        filter::Filter, handler::Handler, simple::error_policy::ErrorPolicy,
+        filter::Filter, handler::Handler, filter::error_policy::ErrorPolicy,
         updater::Updater,
     },
     types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
@@ -17,7 +17,7 @@ type Handlers<'a, T, E> =
 
 /// Dispatcher that dispatches updates from telegram.
 ///
-/// This is 'simple' implementation with following limitations:
+/// This is 'filter' implementation with following limitations:
 /// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
 /// - All 'handlers' are boxed
 /// - Handler's fututres are also boxed
@@ -38,7 +38,7 @@ type Handlers<'a, T, E> =
 /// use std::convert::Infallible;
 /// use telebofr::{
 ///     dispatcher::{
-///         simple::{error_policy::ErrorPolicy, FilterDispatcher},
+///         filter::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
 ///     },
 /// };
@@ -67,7 +67,7 @@ type Handlers<'a, T, E> =
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
 /// [Custom error policy]:
-/// crate::dispatcher::simple::error_policy::ErrorPolicy::Custom [updater]:
+/// crate::dispatcher::filter::error_policy::ErrorPolicy::Custom [updater]:
 /// crate::dispatcher::updater
 pub struct FilterDispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
@@ -314,7 +314,7 @@ mod tests {
 
     use crate::{
         dispatcher::{
-            simple::{error_policy::ErrorPolicy, FilterDispatcher},
+            filter::{error_policy::ErrorPolicy, FilterDispatcher},
             updater::StreamUpdater,
         },
         types::{
