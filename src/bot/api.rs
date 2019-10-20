@@ -10,7 +10,8 @@ use crate::{
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
         SetChatStickerSet, StopMessageLiveLocation, UnbanChatMember,
         UnpinChatMessage, SetChatTitle, DeleteChatPhoto, SetChatPhoto,
-        ExportCharInviteLink, SetChatPermissions
+        ExportCharInviteLink, SetChatPermissions, LeaveChat, GetChatAdministrators,
+        GetChat,
     },
     types::{ChatAction, ChatId, ChatPermissions, InputFile, InputMedia},
 };
@@ -117,6 +118,13 @@ impl Bot {
         O: Into<bool>,
     {
         AnswerPreCheckoutQuery::new(self, pre_checkout_query_id, ok)
+    }
+
+    pub fn get_chat<I>(&self, chat_id: I) -> GetChat
+    where
+        I: Into<ChatId>,
+    {
+        GetChat::new(self, chat_id)
     }
 
     pub fn answer_shipping_query<I, O>(
@@ -322,6 +330,13 @@ impl Bot {
         GetChatMember::new(self, chat_id, user_id)
     }
 
+    pub fn get_chat_administrators<C, I>(&self, chat_id: C) -> GetChatAdministrators
+    where
+        C: Into<ChatId>,
+    {
+        GetChatAdministrators::new(self, chat_id)
+    }
+
     pub fn get_chat_members_count<C>(&self, chat_id: C) -> GetChatMembersCount
     where
         C: Into<ChatId>,
@@ -373,6 +388,16 @@ impl Bot {
         C: Into<ChatId>,
     {
         DeleteChatPhoto::new(self, chat_id)
+    }
+
+    pub fn leave_chat<C>(
+        &self,
+        chat_id: C,
+    ) -> LeaveChat
+    where
+        C: Into<ChatId>,
+    {
+        LeaveChat::new(self, chat_id)
     }
 
     pub fn set_chat_photo<C, P>(

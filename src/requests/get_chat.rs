@@ -42,6 +42,16 @@ impl GetChat<'_> {
 }
 
 impl<'a> GetChat<'a> {
+    pub(crate) fn new<F>(bot: &'a Bot, value: F) -> Self
+    where
+        F: Into<ChatId>,
+    {
+        Self {
+            bot,
+            chat_id: value.into(),
+        }
+    }
+
     pub fn chat_id<C>(mut self, value: C) -> Self
     where
         C: Into<ChatId>,
