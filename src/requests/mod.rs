@@ -1,11 +1,11 @@
 //! API requests.
 
-use async_trait::async_trait;
 use serde::de::DeserializeOwned;
 
 pub use answer_callback_query::*;
 pub use answer_pre_checkout_query::*;
 pub use answer_shipping_query::*;
+use async_trait::async_trait;
 pub use delete_chat_photo::*;
 pub use delete_chat_sticker_set::*;
 pub use edit_message_live_location::*;

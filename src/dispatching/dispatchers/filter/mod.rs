@@ -3,9 +3,9 @@ use futures::StreamExt;
 use async_trait::async_trait;
 
 use crate::{
-    dispatcher::{
-        filter::Filter, handler::Handler, filter::error_policy::ErrorPolicy,
-        updater::Updater,
+    dispatching::{
+        dispatchers::filter::error_policy::ErrorPolicy, filters::Filter,
+        handler::Handler, updater::Updater,
     },
     types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
 };
@@ -38,7 +38,7 @@ type Handlers<'a, T, E> =
 /// use std::convert::Infallible;
 /// use telebofr::{
 ///     dispatching::{
-///         filter::{error_policy::ErrorPolicy, FilterDispatcher},
+///         dispatchers::filter::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
 ///     },
 /// };
@@ -293,7 +293,7 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for FilterDispatcher<'a, E>
+impl<'a, U, E> crate::dispatching::Dispatcher<'a, U> for FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
@@ -313,8 +313,10 @@ mod tests {
     use futures::Stream;
 
     use crate::{
-        dispatcher::{
-            filter::{error_policy::ErrorPolicy, FilterDispatcher},
+        dispatching::{
+            dispatchers::filter::{
+                error_policy::ErrorPolicy, FilterDispatcher,
+            },
             updater::StreamUpdater,
         },
         types::{

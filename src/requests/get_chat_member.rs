@@ -1,10 +1,11 @@
+use async_trait::async_trait;
+
 use crate::{
     bot::Bot,
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
 };
-use async_trait::async_trait;
 
 /// Use this method to get information about a member of a chat. Returns a
 /// ChatMember object on success.
