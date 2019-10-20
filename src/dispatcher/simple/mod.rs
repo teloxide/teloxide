@@ -38,7 +38,7 @@ type Handlers<'a, T, E> =
 /// use std::convert::Infallible;
 /// use telebofr::{
 ///     dispatcher::{
-///         simple::{error_policy::ErrorPolicy, Dispatcher},
+///         simple::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
 ///     },
 /// };
@@ -51,7 +51,7 @@ type Handlers<'a, T, E> =
 ///
 /// // create dispatcher which handlers can't fail
 /// // with error policy that just ignores all errors (that can't ever happen)
-/// let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+/// let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
 ///     // Add 'handler' that will handle all messages sent to the bot
 ///     .message_handler(true, |mes: Message| {
 ///         async move { println!("New message: {:?}", mes) }
@@ -69,7 +69,7 @@ type Handlers<'a, T, E> =
 /// [Custom error policy]:
 /// crate::dispatcher::simple::error_policy::ErrorPolicy::Custom [updater]:
 /// crate::dispatcher::updater
-pub struct Dispatcher<'a, E> {
+pub struct FilterDispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
     channel_post_handlers: Handlers<'a, Message, E>,
@@ -80,12 +80,12 @@ pub struct Dispatcher<'a, E> {
     error_policy: ErrorPolicy<'a, E>,
 }
 
-impl<'a, E> Dispatcher<'a, E>
+impl<'a, E> FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug, // TODO: Is this really necessary?
 {
     pub fn new(error_policy: ErrorPolicy<'a, E>) -> Self {
-        Dispatcher {
+        FilterDispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
             channel_post_handlers: Vec::new(),
@@ -293,13 +293,13 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for Dispatcher<'a, E>
+impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
 {
     async fn dispatch(&'a mut self, updater: U) {
-        Dispatcher::dispatch(self, updater).await
+        FilterDispatcher::dispatch(self, updater).await
     }
 }
 
@@ -314,7 +314,7 @@ mod tests {
 
     use crate::{
         dispatcher::{
-            simple::{error_policy::ErrorPolicy, Dispatcher},
+            simple::{error_policy::ErrorPolicy, FilterDispatcher},
             updater::StreamUpdater,
         },
         types::{
@@ -328,7 +328,7 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+        let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);
