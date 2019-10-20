@@ -1,7 +1,6 @@
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde::de::Visitor;
+use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq)]
 pub struct False;
 
 impl std::convert::TryFrom<bool> for False {
@@ -19,7 +18,7 @@ impl std::convert::TryFrom<bool> for False {
 impl<'de> Deserialize<'de> for False {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
         deserializer.deserialize_bool(FalseVisitor)
     }
@@ -30,7 +29,10 @@ struct FalseVisitor;
 impl<'de> Visitor<'de> for FalseVisitor {
     type Value = False;
 
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn expecting(
+        &self,
+        formatter: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
         write!(formatter, "bool, equal to `false`")
     }
 
@@ -41,7 +43,7 @@ impl<'de> Visitor<'de> for FalseVisitor {
         #[allow(clippy::match_bool)]
         match value {
             true => Err(E::custom("expected `false`, found `true`")),
-            false => Ok(False)
+            false => Ok(False),
         }
     }
 }
@@ -49,7 +51,7 @@ impl<'de> Visitor<'de> for FalseVisitor {
 impl Serialize for False {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer
+        S: Serializer,
     {
         serializer.serialize_bool(false)
     }
