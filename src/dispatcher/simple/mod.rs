@@ -227,16 +227,29 @@ where
 
                     match kind {
                         UpdateKind::Message(mes) => {
-                            self.handle_message(mes, &self.message_handlers).await;
+                            self.handle_message(mes, &self.message_handlers)
+                                .await;
                         }
                         UpdateKind::EditedMessage(mes) => {
-                            self.handle_message(mes, &self.edited_message_handlers).await;
+                            self.handle_message(
+                                mes,
+                                &self.edited_message_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::ChannelPost(post) => {
-                            self.handle_message(post, &self.channel_post_handlers).await;
+                            self.handle_message(
+                                post,
+                                &self.channel_post_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::EditedChannelPost(post) => {
-                            self.handle_message(post, &self.edited_channel_post_handlers).await;
+                            self.handle_message(
+                                post,
+                                &self.edited_channel_post_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::InlineQuery(query) => {
                             call!(self.inline_query_handlers, query)
@@ -253,8 +266,12 @@ where
             .await;
     }
 
-    async fn handle_message(&self, message: Message, handlers: &Handlers<'a, Message, E>) {
-        let handler = handlers.iter().find_map(|e|{
+    async fn handle_message(
+        &self,
+        message: Message,
+        handlers: &Handlers<'a, Message, E>,
+    ) {
+        let handler = handlers.iter().find_map(|e| {
             let (filter, handler) = e;
             if filter.test(&message) {
                 Some(handler)

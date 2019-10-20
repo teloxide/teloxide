@@ -1,8 +1,9 @@
 use reqwest::StatusCode;
 
 use crate::{
-    requests::ResponseResult, types::ResponseParameters, RequestError,
-    types::{True, False}
+    requests::ResponseResult,
+    types::{False, ResponseParameters, True},
+    RequestError,
 };
 
 #[derive(Deserialize)]
