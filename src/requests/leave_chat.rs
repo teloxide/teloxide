@@ -40,20 +40,20 @@ impl LeaveChat<'_> {
 }
 
 impl<'a> LeaveChat<'a> {
-    pub(crate) fn new<F>(bot: &'a Bot, value: F) -> Self
+    pub(crate) fn new<F>(bot: &'a Bot, chat_id: F) -> Self
     where
         F: Into<ChatId>,
     {
         Self {
             bot,
-            chat_id: value.into(),
+            chat_id: chat_id.into(),
         }
     }
-    pub fn chat_id<C>(mut self, value: C) -> Self
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.chat_id = value.into();
+        self.chat_id = chat_id.into();
         self
     }
 }
