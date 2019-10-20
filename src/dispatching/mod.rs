@@ -4,9 +4,9 @@ use async_trait::async_trait;
 pub use filter::Filter;
 pub use handler::Handler;
 
-pub mod filter;
+pub mod filters;
 pub mod handler;
-pub mod filter;
+pub mod filters;
 pub mod updater;
 
 #[async_trait(? Send)]

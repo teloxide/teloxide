@@ -6,7 +6,7 @@ pub trait Filter<T> {
 }
 
 /// ```
-/// use telebofr::dispatcher::filter::Filter;
+/// use telebofr::dispatching::filter::Filter;
 ///
 /// let closure = |i: &i32| -> bool { *i >= 42 };
 /// assert!(closure.test(&42));
@@ -22,7 +22,7 @@ impl<T, F: Fn(&T) -> bool> Filter<T> for F {
 }
 
 /// ```
-/// use telebofr::dispatcher::filter::Filter;
+/// use telebofr::dispatching::filter::Filter;
 ///
 /// assert!(true.test(&()));
 /// assert_eq!(false.test(&()), false);
@@ -42,7 +42,7 @@ impl<T> Filter<T> for bool {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{And, Filter};
+/// use telebofr::dispatching::filter::{And, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert_eq!(And::new(true, false).test(&()), false);
@@ -73,13 +73,13 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{and, Filter};
+/// use telebofr::dispatching::filter::{and, Filter};
 ///
 /// assert!(and(true, true).test(&()));
 /// assert_eq!(and(true, false).test(&()), false);
 /// ```
 ///
-/// [`And::new`]: crate::dispatcher::filter::And::new
+/// [`And::new`]: crate::dispatching::filter::And::new
 pub fn and<A, B>(a: A, b: B) -> And<A, B> {
     And::new(a, b)
 }
@@ -93,7 +93,7 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{Filter, Or};
+/// use telebofr::dispatching::filter::{Filter, Or};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Or::new(true, false).test(&()));
@@ -124,13 +124,13 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{or, Filter};
+/// use telebofr::dispatching::filter::{or, Filter};
 ///
 /// assert!(or(true, false).test(&()));
 /// assert_eq!(or(false, false).test(&()), false);
 /// ```
 ///
-/// [`Or::new`]: crate::dispatcher::filter::Or::new
+/// [`Or::new`]: crate::dispatching::filter::Or::new
 pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
     Or::new(a, b)
 }
@@ -141,7 +141,7 @@ pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{Filter, Not};
+/// use telebofr::dispatching::filter::{Filter, Not};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Not::new(false).test(&()));
@@ -169,13 +169,13 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{not, Filter};
+/// use telebofr::dispatching::filter::{not, Filter};
 ///
 /// assert!(not(false).test(&()));
 /// assert_eq!(not(true).test(&()), false);
 /// ```
 ///
-/// [`Not::new`]: crate::dispatcher::filter::Not::new
+/// [`Not::new`]: crate::dispatching::filter::Not::new
 pub fn not<A>(a: A) -> Not<A> {
     Not::new(a)
 }
@@ -187,7 +187,7 @@ pub fn not<A>(a: A) -> Not<A> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::{all, dispatcher::filter::Filter};
+/// use telebofr::{all, dispatching::filter::Filter};
 ///
 /// assert!(all![true].test(&()));
 /// assert!(all![true, true].test(&()));
@@ -199,7 +199,7 @@ pub fn not<A>(a: A) -> Not<A> {
 /// assert_eq!(all![false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatcher::filter::Filter
+/// [filter]: crate::dispatching::filter::Filter
 #[macro_export]
 macro_rules! all {
     ($one:expr) => { $one };
@@ -218,7 +218,7 @@ macro_rules! all {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::{any, dispatcher::filter::Filter};
+/// use telebofr::{any, dispatching::filter::Filter};
 ///
 /// assert!(any![true].test(&()));
 /// assert!(any![true, true].test(&()));
@@ -230,7 +230,7 @@ macro_rules! all {
 /// assert_eq!(any![false, false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatcher::filter::Filter
+/// [filter]: crate::dispatching::filter::Filter
 #[macro_export]
 macro_rules! any {
     ($one:expr) => { $one };
@@ -246,7 +246,7 @@ macro_rules! any {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatcher::filter::{f, And, Filter, Or, F};
+/// use telebofr::dispatching::filter::{f, And, Filter, Or, F};
 ///
 /// let flt1 = |i: &i32| -> bool { *i > 17 };
 /// let flt2 = |i: &i32| -> bool { *i < 42 };
@@ -277,7 +277,7 @@ pub struct F<A>(A);
 
 /// Constructor fn for [F]
 ///
-/// [F]: crate::dispatcher::filter::F;
+/// [F]: crate::dispatching::filter::F;
 pub fn f<A>(a: A) -> F<A> {
     F(a)
 }
@@ -314,7 +314,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.not();
@@ -322,7 +322,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&1), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::Not::new
+    /// [`Not::new`]: crate::dispatching::filter::Not::new
     fn not(self) -> Not<Self>
     where
         Self: Sized,
@@ -334,7 +334,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.and(|i: &i32| *i < 42);
@@ -344,7 +344,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&43), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::And::new
+    /// [`Not::new`]: crate::dispatching::filter::And::new
     fn and<B>(self, other: B) -> And<Self, B>
     where
         Self: Sized,
@@ -356,7 +356,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filter::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i < 0 };
     /// let flt = flt.or(|i: &i32| *i > 42);
@@ -366,7 +366,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&17), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::Or::new
+    /// [`Not::new`]: crate::dispatching::filter::Or::new
     fn or<B>(self, other: B) -> Or<Self, B>
     where
         Self: Sized,

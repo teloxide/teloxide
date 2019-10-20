@@ -23,7 +23,7 @@ type Handlers<'a, T, E> =
 /// - Handler's fututres are also boxed
 /// - [Custom error policy] is also boxed
 /// - All errors from [updater] are ignored (TODO: remove this limitation)
-/// - All handlers executed in order (this means that in dispatcher have 2
+/// - All handlers executed in order (this means that in dispatching have 2
 ///   upadtes it will first execute some handler into complition with first
 ///   update and **then** search for handler for second update, this is probably
 ///   wrong)
@@ -37,7 +37,7 @@ type Handlers<'a, T, E> =
 ///  async fn run() {
 /// use std::convert::Infallible;
 /// use telebofr::{
-///     dispatcher::{
+///     dispatching::{
 ///         filter::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
 ///     },
@@ -49,7 +49,7 @@ type Handlers<'a, T, E> =
 ///
 /// let bot = Bot::new("TOKEN");
 ///
-/// // create dispatcher which handlers can't fail
+/// // create dispatching which handlers can't fail
 /// // with error policy that just ignores all errors (that can't ever happen)
 /// let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
 ///     // Add 'handler' that will handle all messages sent to the bot
@@ -67,8 +67,8 @@ type Handlers<'a, T, E> =
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
 /// [Custom error policy]:
-/// crate::dispatcher::filter::error_policy::ErrorPolicy::Custom [updater]:
-/// crate::dispatcher::updater
+/// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
+/// crate::dispatching::updater
 pub struct FilterDispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
