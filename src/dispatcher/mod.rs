@@ -6,7 +6,7 @@ pub use handler::Handler;
 
 pub mod filter;
 pub mod handler;
-pub mod simple;
+pub mod filter;
 pub mod updater;
 
 #[async_trait(? Send)]

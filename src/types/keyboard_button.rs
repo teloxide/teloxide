@@ -1,4 +1,4 @@
-/// This object represents one button of the reply keyboard. For simple text
+/// This object represents one button of the reply keyboard. For filter text
 /// buttons String can be used instead of this object to specify text of the
 /// button. Optional fields are mutually exclusive.
 #[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
