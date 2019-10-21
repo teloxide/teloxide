@@ -3,9 +3,9 @@ use futures::StreamExt;
 use async_trait::async_trait;
 
 use crate::{
-    dispatcher::{
-        filter::Filter, handler::Handler, simple::error_policy::ErrorPolicy,
-        updater::Updater,
+    dispatching::{
+        dispatchers::filter::error_policy::ErrorPolicy, filters::Filter,
+        handler::Handler, updater::Updater,
     },
     types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
 };
@@ -17,13 +17,13 @@ type Handlers<'a, T, E> =
 
 /// Dispatcher that dispatches updates from telegram.
 ///
-/// This is 'simple' implementation with following limitations:
+/// This is 'filter' implementation with following limitations:
 /// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
 /// - All 'handlers' are boxed
 /// - Handler's fututres are also boxed
 /// - [Custom error policy] is also boxed
 /// - All errors from [updater] are ignored (TODO: remove this limitation)
-/// - All handlers executed in order (this means that in dispatcher have 2
+/// - All handlers executed in order (this means that in dispatching have 2
 ///   upadtes it will first execute some handler into complition with first
 ///   update and **then** search for handler for second update, this is probably
 ///   wrong)
@@ -37,8 +37,8 @@ type Handlers<'a, T, E> =
 ///  async fn run() {
 /// use std::convert::Infallible;
 /// use telebofr::{
-///     dispatcher::{
-///         simple::{error_policy::ErrorPolicy, Dispatcher},
+///     dispatching::{
+///         dispatchers::filter::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
 ///     },
 /// };
@@ -49,9 +49,9 @@ type Handlers<'a, T, E> =
 ///
 /// let bot = Bot::new("TOKEN");
 ///
-/// // create dispatcher which handlers can't fail
+/// // create dispatching which handlers can't fail
 /// // with error policy that just ignores all errors (that can't ever happen)
-/// let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+/// let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
 ///     // Add 'handler' that will handle all messages sent to the bot
 ///     .message_handler(true, |mes: Message| {
 ///         async move { println!("New message: {:?}", mes) }
@@ -67,9 +67,9 @@ type Handlers<'a, T, E> =
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
 /// [Custom error policy]:
-/// crate::dispatcher::simple::error_policy::ErrorPolicy::Custom [updater]:
-/// crate::dispatcher::updater
-pub struct Dispatcher<'a, E> {
+/// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
+/// crate::dispatching::updater
+pub struct FilterDispatcher<'a, E> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
     channel_post_handlers: Handlers<'a, Message, E>,
@@ -80,12 +80,12 @@ pub struct Dispatcher<'a, E> {
     error_policy: ErrorPolicy<'a, E>,
 }
 
-impl<'a, E> Dispatcher<'a, E>
+impl<'a, E> FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug, // TODO: Is this really necessary?
 {
     pub fn new(error_policy: ErrorPolicy<'a, E>) -> Self {
-        Dispatcher {
+        FilterDispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
             channel_post_handlers: Vec::new(),
@@ -197,16 +197,29 @@ where
 
                     match kind {
                         UpdateKind::Message(mes) => {
-                            self.handle(mes, &self.message_handlers).await;
+                            self.handle(mes, &self.message_handlers)
+                                .await;
                         }
                         UpdateKind::EditedMessage(mes) => {
-                            self.handle(mes, &self.edited_message_handlers).await;
+                            self.handle(
+                                mes,
+                                &self.edited_message_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::ChannelPost(post) => {
-                            self.handle(post, &self.channel_post_handlers).await;
+                            self.handle(
+                                post,
+                                &self.channel_post_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::EditedChannelPost(post) => {
-                            self.handle(post, &self.edited_channel_post_handlers).await;
+                            self.handle(
+                                post,
+                                &self.edited_channel_post_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::InlineQuery(query) => {
                             self.handle(query, &self.inline_query_handlers).await;
@@ -249,13 +262,13 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> crate::dispatcher::Dispatcher<'a, U> for Dispatcher<'a, E>
+impl<'a, U, E> crate::dispatching::Dispatcher<'a, U> for FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
 {
     async fn dispatch(&'a mut self, updater: U) {
-        Dispatcher::dispatch(self, updater).await
+        FilterDispatcher::dispatch(self, updater).await
     }
 }
 
@@ -269,8 +282,10 @@ mod tests {
     use futures::Stream;
 
     use crate::{
-        dispatcher::{
-            simple::{error_policy::ErrorPolicy, Dispatcher},
+        dispatching::{
+            dispatchers::filter::{
+                error_policy::ErrorPolicy, FilterDispatcher,
+            },
             updater::StreamUpdater,
         },
         types::{
@@ -284,7 +299,7 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = Dispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+        let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);

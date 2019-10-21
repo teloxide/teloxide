@@ -1,9 +1,11 @@
 use async_trait::async_trait;
 
-use crate::bot::Bot;
-use crate::types::{ChatId, ChatPermissions, True};
-use crate::requests::{ResponseResult, Request};
-use crate::network;
+use crate::{
+    bot::Bot,
+    network,
+    requests::{Request, ResponseResult},
+    types::{ChatId, ChatPermissions, True},
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatPermissions<'a> {
@@ -11,7 +13,7 @@ pub struct SetChatPermissions<'a> {
     bot: &'a Bot,
 
     chat_id: ChatId,
-    permissions: ChatPermissions
+    permissions: ChatPermissions,
 }
 
 #[async_trait]
@@ -29,17 +31,14 @@ impl SetChatPermissions<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatPermissions",
-            &self
-        ).await
+            &self,
+        )
+        .await
     }
 }
 
 impl<'a> SetChatPermissions<'a> {
-    pub(crate) fn new<C, CP>(
-        bot: &'a Bot,
-        chat_id: C,
-        permissions: CP,
-    ) -> Self
+    pub(crate) fn new<C, CP>(bot: &'a Bot, chat_id: C, permissions: CP) -> Self
     where
         C: Into<ChatId>,
         CP: Into<ChatPermissions>,
@@ -61,7 +60,7 @@ impl<'a> SetChatPermissions<'a> {
 
     pub fn permissions<CP>(mut self, permissions: CP) -> Self
     where
-        CP: Into<ChatPermissions>
+        CP: Into<ChatPermissions>,
     {
         self.permissions = permissions.into();
         self
@@ -84,12 +83,14 @@ mod tests {
             can_add_web_page_previews: None,
             can_change_info: None,
             can_invite_users: None,
-            can_pin_messages: None
+            can_pin_messages: None,
         };
         let method = SetChatPermissions::new(&bot, chat_id, permissions);
 
-        let expected = r#"{"chat_id":123,"permissions":{"can_send_messages":true}}"#;
-        let actual = serde_json::to_string::<SetChatPermissions>(&method).unwrap();
+        let expected =
+            r#"{"chat_id":123,"permissions":{"can_send_messages":true}}"#;
+        let actual =
+            serde_json::to_string::<SetChatPermissions>(&method).unwrap();
         assert_eq!(actual, expected);
     }
 }

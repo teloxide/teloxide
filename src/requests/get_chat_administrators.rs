@@ -7,52 +7,50 @@ use crate::{
     types::{ChatId, ChatMember},
 };
 
-/// Use this method to get information about a member of a chat. Returns a
-/// ChatMember object on success.
+/// Use this method to get a list of administrators in a chat. On success,
+/// returns an Array of ChatMember objects that contains information about all
+/// chat administrators except other bots. If the chat is a group or a
+/// supergroup and no administrators were appointed, only the creator will be
+/// returned
 #[derive(Debug, Clone, Serialize)]
-pub struct GetChatMember<'a> {
+pub struct GetChatAdministrators<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target
     /// supergroup or channel (in the format @channelusername)
     chat_id: ChatId,
-
-    /// Unique identifier of the target user
-    user_id: i32,
 }
 
 #[async_trait]
-impl Request for GetChatMember<'_> {
-    type Output = ChatMember;
+impl Request for GetChatAdministrators<'_> {
+    type Output = Vec<ChatMember>;
 
     async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }
 
-impl GetChatMember<'_> {
-    async fn send(&self) -> ResponseResult<ChatMember> {
+impl GetChatAdministrators<'_> {
+    async fn send(&self) -> ResponseResult<Vec<ChatMember>> {
         network::request_json(
             self.bot.client(),
             self.bot.token(),
-            "getChatMember",
+            "getChatAdministrators",
             &self,
         )
         .await
     }
 }
 
-impl<'a> GetChatMember<'a> {
-    pub(crate) fn new<C, I>(bot: &'a Bot, chat_id: C, user_id: I) -> Self
+impl<'a> GetChatAdministrators<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
-        I: Into<i32>,
     {
         Self {
             bot,
             chat_id: chat_id.into(),
-            user_id: user_id.into(),
         }
     }
 
@@ -61,14 +59,6 @@ impl<'a> GetChatMember<'a> {
         C: Into<ChatId>,
     {
         self.chat_id = value.into();
-        self
-    }
-
-    pub fn user_id<I>(mut self, value: I) -> Self
-    where
-        I: Into<i32>,
-    {
-        self.user_id = value.into();
         self
     }
 }

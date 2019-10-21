@@ -1,10 +1,11 @@
+use async_trait::async_trait;
+
 use crate::{
     bot::Bot,
     network,
     requests::{Request, ResponseResult},
     types::True,
 };
-use async_trait::async_trait;
 
 /// Use this method to send answers to callback queries sent from inline
 /// keyboards. The answer will be displayed to the user as a notification at the

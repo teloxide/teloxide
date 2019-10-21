@@ -38,14 +38,10 @@ impl SetChatTitle<'_> {
 }
 
 impl<'a> SetChatTitle<'a> {
-    pub(crate) fn new<C, T>(
-        bot: &'a Bot,
-        chat_id: C,
-        title: T
-    ) -> Self
-        where
-            C: Into<ChatId>,
-            T: Into<String>,
+    pub(crate) fn new<C, T>(bot: &'a Bot, chat_id: C, title: T) -> Self
+    where
+        C: Into<ChatId>,
+        T: Into<String>,
     {
         Self {
             bot,
