@@ -4,15 +4,13 @@ use crate::{
     bot::Bot,
     network,
     requests::{Request, ResponseResult},
-    types::{Chat, ChatId},
+    types::ChatId,
 };
 
-/// Use this method to get up to date information about the chat
-/// (current name of the user for one-on-one conversations,
-/// current username of a user, group or channel, etc.).
-/// Returns a Chat object on success.
+/// Use this method for your bot to leave a group, supergroup or channel.
+/// Returns True on success.
 #[derive(Debug, Clone, Serialize)]
-pub struct GetChat<'a> {
+pub struct LeaveChat<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
     /// Unique identifier for the target chat or username
@@ -21,27 +19,27 @@ pub struct GetChat<'a> {
 }
 
 #[async_trait]
-impl Request for GetChat<'_> {
-    type Output = Chat;
+impl Request for LeaveChat<'_> {
+    type Output = bool;
 
     async fn send_boxed(self) -> ResponseResult<Self::Output> {
         self.send().await
     }
 }
 
-impl GetChat<'_> {
-    pub async fn send(self) -> ResponseResult<Chat> {
+impl LeaveChat<'_> {
+    pub async fn send(self) -> ResponseResult<bool> {
         network::request_json(
             self.bot.client(),
             self.bot.token(),
-            "getChat",
+            "leaveChat",
             &self,
         )
         .await
     }
 }
 
-impl<'a> GetChat<'a> {
+impl<'a> LeaveChat<'a> {
     pub(crate) fn new<F>(bot: &'a Bot, chat_id: F) -> Self
     where
         F: Into<ChatId>,
@@ -51,7 +49,6 @@ impl<'a> GetChat<'a> {
             chat_id: chat_id.into(),
         }
     }
-
     pub fn chat_id<C>(mut self, chat_id: C) -> Self
     where
         C: Into<ChatId>,

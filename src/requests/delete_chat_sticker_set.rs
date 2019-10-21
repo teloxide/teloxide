@@ -1,10 +1,11 @@
+use async_trait::async_trait;
+
 use crate::{
     bot::Bot,
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
-use async_trait::async_trait;
 
 /// Use this method to delete a group sticker set from a supergroup. The bot
 /// must be an administrator in the chat for this to work and must have the

@@ -1,8 +1,5 @@
 //! API requests.
 
-use async_trait::async_trait;
-use serde::de::DeserializeOwned;
-
 pub use answer_callback_query::*;
 pub use answer_pre_checkout_query::*;
 pub use answer_shipping_query::*;
@@ -12,6 +9,7 @@ pub use edit_message_live_location::*;
 pub use export_chat_invite_link::*;
 pub use forward_message::*;
 pub use get_chat::*;
+pub use get_chat_administrators::*;
 pub use get_chat_member::*;
 pub use get_chat_members_count::*;
 pub use get_file::*;
@@ -19,6 +17,7 @@ pub use get_me::*;
 pub use get_updates::*;
 pub use get_user_profile_photos::*;
 pub use kick_chat_member::*;
+pub use leave_chat::*;
 pub use pin_chat_message::*;
 pub use promote_chat_member::*;
 pub use restrict_chat_member::*;
@@ -57,6 +56,7 @@ mod edit_message_live_location;
 mod export_chat_invite_link;
 mod forward_message;
 mod get_chat;
+mod get_chat_administrators;
 mod get_chat_member;
 mod get_chat_members_count;
 mod get_file;
@@ -64,6 +64,7 @@ mod get_me;
 mod get_updates;
 mod get_user_profile_photos;
 mod kick_chat_member;
+mod leave_chat;
 mod pin_chat_message;
 mod promote_chat_member;
 mod restrict_chat_member;
@@ -89,6 +90,9 @@ mod set_chat_title;
 mod stop_message_live_location;
 mod unban_chat_member;
 mod unpin_chat_message;
+
+use async_trait::async_trait;
+use serde::de::DeserializeOwned;
 
 /// A type that is returned from `Request::send_boxed`.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
