@@ -195,62 +195,56 @@ where
                         kind = kind
                     );
 
-                    // TODO: can someone extract this to a function?
-                    macro_rules! call {
-                        ($h:expr, $value:expr) => {{
-                            let value = $value;
-                            let handler = $h.iter().find_map(|e| {
-                                let (filter, handler) = e;
-                                if filter.test(&value) {
-                                    Some(handler)
-                                } else {
-                                    None
-                                }
-                            });
-
-                            match handler {
-                                Some(handler) => {
-                                    if let Err(err) =
-                                        handler.handle(value).await
-                                    {
-                                        self.error_policy
-                                            .handle_error(err)
-                                            .await;
-                                    }
-                                }
-                                None => {
-                                    log::warn!("Unhandled update: {:?}", value)
-                                }
-                            }
-                        }};
-                    }
-
                     match kind {
                         UpdateKind::Message(mes) => {
-                            call!(self.message_handlers, mes)
+                            self.handle(mes, &self.message_handlers).await;
                         }
                         UpdateKind::EditedMessage(mes) => {
-                            call!(self.edited_message_handlers, mes)
+                            self.handle(mes, &self.edited_message_handlers).await;
                         }
                         UpdateKind::ChannelPost(post) => {
-                            call!(self.channel_post_handlers, post)
+                            self.handle(post, &self.channel_post_handlers).await;
                         }
                         UpdateKind::EditedChannelPost(post) => {
-                            call!(self.edited_channel_post_handlers, post)
+                            self.handle(post, &self.edited_channel_post_handlers).await;
                         }
                         UpdateKind::InlineQuery(query) => {
-                            call!(self.inline_query_handlers, query)
+                            self.handle(query, &self.inline_query_handlers).await;
                         }
                         UpdateKind::ChosenInlineResult(result) => {
-                            call!(self.chosen_inline_result_handlers, result)
+                            self.handle(result, &self.chosen_inline_result_handlers).await;
                         }
                         UpdateKind::CallbackQuery(callback) => {
-                            call!(self.callback_query_handlers, callback)
+                            self.handle(callback, &self.callback_query_handlers).await;
                         }
                     }
                 }
             })
             .await;
+    }
+
+    async fn handle<T>(&self, update: T, handlers: &Handlers<'a, T, E>)
+    where
+        T: std::fmt::Debug
+    {
+        let handler = handlers.iter().find_map(|e|{
+            let (filter, handler) = e;
+            if filter.test(&update) {
+                Some(handler)
+            } else {
+                None
+            }
+        });
+        match handler {
+            Some(handler) => {
+                if let Err(err) = handler.handle(update).await {
+                    self.error_policy.handle_error(err).await
+                }
+            }
+            None => {
+                log::warn!("unhandled update {:?}", update);
+            }
+        }
     }
 }
 
