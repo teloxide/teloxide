@@ -5,7 +5,7 @@ use async_trait::async_trait;
 use crate::{
     dispatching::{
         dispatchers::filter::error_policy::ErrorPolicy, filters::Filter,
-        handler::Handler, updater::Updater,
+        handler::Handler, updater::Updater, Dispatcher,
     },
     types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
 };
@@ -197,22 +197,15 @@ where
 
                     match kind {
                         UpdateKind::Message(mes) => {
-                            self.handle(mes, &self.message_handlers)
-                                .await;
+                            self.handle(mes, &self.message_handlers).await
                         }
                         UpdateKind::EditedMessage(mes) => {
-                            self.handle(
-                                mes,
-                                &self.edited_message_handlers,
-                            )
-                            .await;
+                            self.handle(mes, &self.edited_message_handlers)
+                                .await;
                         }
                         UpdateKind::ChannelPost(post) => {
-                            self.handle(
-                                post,
-                                &self.channel_post_handlers,
-                            )
-                            .await;
+                            self.handle(post, &self.channel_post_handlers)
+                                .await;
                         }
                         UpdateKind::EditedChannelPost(post) => {
                             self.handle(
@@ -222,13 +215,22 @@ where
                             .await;
                         }
                         UpdateKind::InlineQuery(query) => {
-                            self.handle(query, &self.inline_query_handlers).await;
+                            self.handle(query, &self.inline_query_handlers)
+                                .await;
                         }
                         UpdateKind::ChosenInlineResult(result) => {
-                            self.handle(result, &self.chosen_inline_result_handlers).await;
+                            self.handle(
+                                result,
+                                &self.chosen_inline_result_handlers,
+                            )
+                            .await;
                         }
                         UpdateKind::CallbackQuery(callback) => {
-                            self.handle(callback, &self.callback_query_handlers).await;
+                            self.handle(
+                                callback,
+                                &self.callback_query_handlers,
+                            )
+                            .await;
                         }
                     }
                 }
@@ -238,9 +240,9 @@ where
 
     async fn handle<T>(&self, update: T, handlers: &Handlers<'a, T, E>)
     where
-        T: std::fmt::Debug
+        T: std::fmt::Debug,
     {
-        let handler = handlers.iter().find_map(|e|{
+        let handler = handlers.iter().find_map(|e| {
             let (filter, handler) = e;
             if filter.test(&update) {
                 Some(handler)
@@ -248,6 +250,7 @@ where
                 None
             }
         });
+
         match handler {
             Some(handler) => {
                 if let Err(err) = handler.handle(update).await {
@@ -262,7 +265,7 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> crate::dispatching::Dispatcher<'a, U> for FilterDispatcher<'a, E>
+impl<'a, U, E> Dispatcher<'a, U> for FilterDispatcher<'a, E>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
