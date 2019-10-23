@@ -1,6 +1,19 @@
 use crate::dispatching::Filter;
 use crate::types::Message;
 
+/// Filter which compare message text with another text.
+/// Returns true if the message text is equal to another text, otherwise false.
+///
+/// NOTE: filter compares only text message, does not compare caption of media!
+///
+/// If you want to compare caption use
+/// [MessageCaptionFilter]
+///
+/// If you want to compare text and caption use
+/// [MessageTextCaptionFilter]
+///
+/// [MessageCaptionFilter]: telebofr::dispatching::dispatchers::filter::filters::MessageCaptionFilter
+/// [MessageTextCaptionFilter]: telebofr::dispatching::dispatchers::filter::filters::MessageTextCaptionFilter
 pub struct MessageTextFilter {
     text: String,
 }
