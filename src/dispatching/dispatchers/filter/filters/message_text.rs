@@ -9,12 +9,7 @@ impl Filter<Message> for MessageTextFilter {
     fn test(&self, value: &Message) -> bool {
         match value.text() {
             Some(text) => self.text == text,
-            None => {
-                match value.caption() {
-                    Some(caption) => self.text == caption,
-                    None => false
-                }
-            }
+            None => false
         }
     }
 }
