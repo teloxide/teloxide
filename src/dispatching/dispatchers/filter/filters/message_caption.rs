@@ -15,9 +15,12 @@ impl Filter<Message> for MessageCaptionFilter {
 }
 
 impl MessageCaptionFilter {
-    pub fn new(text: String) -> Self {
+    pub fn new<T>(text: T) -> Self
+    where
+        T: Into<String>,
+    {
         Self {
-            text
+            text: text.into(),
         }
     }
 }
