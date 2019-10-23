@@ -15,9 +15,12 @@ impl Filter<Message> for MessageTextFilter {
 }
 
 impl MessageTextFilter {
-    pub fn new(text: String) -> Self {
+    pub fn new<T>(text: T) -> Self
+    where
+        T: Into<String>
+    {
         Self {
-            text
+            text: text.into(),
         }
     }
 }
@@ -28,7 +31,7 @@ mod tests {
 
     #[test]
     fn texts_are_equal() {
-        let filter = MessageTextFilter::new("text".to_string());
+        let filter = MessageTextFilter::new("text");
         let json = r#"{
           "message_id": 199785,
           "from": {
@@ -55,7 +58,7 @@ mod tests {
 
     #[test]
     fn texts_are_not_equal() {
-        let filter = MessageTextFilter::new("text".to_string());
+        let filter = MessageTextFilter::new("text");
         let json = r#"{
           "message_id": 199785,
           "from": {

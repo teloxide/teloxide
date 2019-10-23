@@ -2,7 +2,7 @@ use crate::dispatching::Filter;
 use crate::types::Message;
 use std::ops::Add;
 
-struct CommandFilter {
+pub struct CommandFilter {
     command: String,
 }
 
@@ -21,14 +21,20 @@ impl Filter<Message> for CommandFilter {
 }
 
 impl CommandFilter {
-    pub fn new(command: String) -> Self {
+    pub fn new<T>(command: T) -> Self
+    where
+        T: Into<String>,
+    {
         Self {
-            command: '/'.to_string() + command.as_str()
+            command: '/'.to_string() + command.into().as_str()
         }
     }
-    pub fn with_start_string(command: String, start_string: String) -> Self {
+    pub fn with_start_string<T>(command: T, start_string: T) -> Self
+    where
+        T: Into<String>,
+    {
         Self {
-            command: start_string.add(command.as_str())
+            command: start_string.into().add(command.into().as_str())
         }
     }
 }
