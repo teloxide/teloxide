@@ -60,9 +60,9 @@ impl<A, B> And<A, B> {
 }
 
 impl<T, A, B> Filter<T> for And<A, B>
-where
-    A: Filter<T>,
-    B: Filter<T>,
+    where
+        A: Filter<T>,
+        B: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         self.0.test(value) && self.1.test(value)
@@ -111,9 +111,9 @@ impl<A, B> Or<A, B> {
 }
 
 impl<T, A, B> Filter<T> for Or<A, B>
-where
-    A: Filter<T>,
-    B: Filter<T>,
+    where
+        A: Filter<T>,
+        B: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         self.0.test(value) || self.1.test(value)
@@ -157,8 +157,8 @@ impl<A> Not<A> {
 }
 
 impl<T, A> Filter<T> for Not<A>
-where
-    A: Filter<T>,
+    where
+        A: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         !self.0.test(value)
@@ -283,8 +283,8 @@ pub fn f<A>(a: A) -> F<A> {
 }
 
 impl<T, A> Filter<T> for F<A>
-where
-    A: Filter<T>,
+    where
+        A: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         self.0.test(value)
@@ -324,8 +324,8 @@ pub trait FilterExt<T> {
     ///
     /// [`Not::new`]: crate::dispatching::filter::Not::new
     fn not(self) -> Not<Self>
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
         Not::new(self)
     }
@@ -346,8 +346,8 @@ pub trait FilterExt<T> {
     ///
     /// [`Not::new`]: crate::dispatching::filter::And::new
     fn and<B>(self, other: B) -> And<Self, B>
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
         And::new(self, other)
     }
@@ -368,8 +368,8 @@ pub trait FilterExt<T> {
     ///
     /// [`Not::new`]: crate::dispatching::filter::Or::new
     fn or<B>(self, other: B) -> Or<Self, B>
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
         Or::new(self, other)
     }
