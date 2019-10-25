@@ -41,58 +41,55 @@ impl MessageTextFilter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{Chat, Sender, ChatKind, MessageKind, ForwardKind, User, MediaKind};
 
     #[test]
     fn texts_are_equal() {
         let filter = MessageTextFilter::new("text");
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": "text"
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text("text".to_string());
         assert!(filter.test(&message));
     }
 
     #[test]
     fn texts_are_not_equal() {
         let filter = MessageTextFilter::new("text");
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": "not equal text"
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text("not equal text".to_string());
         assert_eq!(filter.test(&message), false);
+    }
+
+    fn create_message_with_text(text: String) -> Message {
+        Message {
+            id: 0,
+            date: 0,
+            chat: Chat {
+                id: 0,
+                kind: ChatKind::Private {
+                    type_: (),
+                    username: None,
+                    first_name: None,
+                    last_name: None
+                },
+                photo: None
+            },
+            kind: MessageKind::Common {
+                from: Sender::User(User {
+                    id: 0,
+                    is_bot: false,
+                    first_name: "".to_string(),
+                    last_name: None,
+                    username: None,
+                    language_code: None
+                }),
+                forward_kind: ForwardKind::Origin {
+                    reply_to_message: None
+                },
+                edit_date: None,
+                media_kind: MediaKind::Text {
+                    text,
+                    entities: vec![]
+                },
+                reply_markup: None
+            }
+        }
     }
 }

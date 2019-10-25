@@ -1,6 +1,5 @@
 use crate::dispatching::Filter;
 use crate::types::Message;
-use std::ops::Add;
 
 pub struct CommandFilter {
     command: String,
@@ -26,15 +25,15 @@ impl CommandFilter {
         T: Into<String>,
     {
         Self {
-            command: '/'.to_string() + command.into().as_str()
+            command: '/'.to_string() + &command.into()
         }
     }
-    pub fn with_start_string<T>(command: T, start_string: T) -> Self
+    pub fn with_prefix<T>(command: T, prefix: T) -> Self
     where
         T: Into<String>,
     {
         Self {
-            command: start_string.into().add(command.into().as_str())
+            command: prefix.into() + &command.into()
         }
     }
 }
@@ -42,112 +41,69 @@ impl CommandFilter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{Chat, ChatKind, MessageKind, Sender, User, ForwardKind, MediaKind};
 
     #[test]
     fn commands_are_equal() {
         let filter = CommandFilter::new("command".to_string());
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": "/command"
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text("/command".to_string());
         assert!(filter.test(&message));
     }
 
     #[test]
     fn commands_are_not_equal() {
         let filter = CommandFilter::new("command".to_string());
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": "/command_not_equal"
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text("/not_equal_command".to_string());
         assert_eq!(filter.test(&message), false);
     }
 
     #[test]
     fn command_have_args() {
         let filter = CommandFilter::new("command".to_string());
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": "/command arg1 arg2"
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text("/command arg1 arg2".to_string());
         assert!(filter.test(&message));
     }
 
     #[test]
     fn message_have_only_whitespace() {
         let filter = CommandFilter::new("command".to_string());
-        let json = r#"{
-          "message_id": 199785,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568289890,
-          "text": " "
-         }"#;
-        let message = serde_json::from_str::<Message>(json).unwrap();
+        let message = create_message_with_text(" ".to_string());
         assert_eq!(filter.test(&message), false);
+    }
+
+    fn create_message_with_text(text: String) -> Message {
+        Message {
+            id: 0,
+            date: 0,
+            chat: Chat {
+                id: 0,
+                kind: ChatKind::Private {
+                    type_: (),
+                    username: None,
+                    first_name: None,
+                    last_name: None
+                },
+                photo: None
+            },
+            kind: MessageKind::Common {
+                from: Sender::User(User {
+                    id: 0,
+                    is_bot: false,
+                    first_name: "".to_string(),
+                    last_name: None,
+                    username: None,
+                    language_code: None
+                }),
+                forward_kind: ForwardKind::Origin {
+                    reply_to_message: None
+                },
+                edit_date: None,
+                media_kind: MediaKind::Text {
+                    text,
+                    entities: vec![]
+                },
+                reply_markup: None
+            }
+        }
     }
 }
