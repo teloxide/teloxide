@@ -10,7 +10,6 @@ use crate::{
     types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
 };
 
-pub mod filters;
 pub mod error_policy;
 
 type Handlers<'a, T, E> =

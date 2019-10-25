@@ -1,36 +1,36 @@
 use crate::dispatching::Filter;
 use crate::types::Message;
 
-/// Filter which compare caption of media with another text.
-/// Returns true if the caption of media is equal to another text, otherwise false.
+/// Filter which compare message text with another text.
+/// Returns true if the message text is equal to another text, otherwise false.
 ///
-/// NOTE: filter compares only caption of media, does not compare text of message!
+/// NOTE: filter compares only text message, does not compare caption of media!
 ///
-/// If you want to compare text of message use
-/// [MessageTextFilter]
+/// If you want to compare caption use
+/// [MessageCaptionFilter]
 ///
 /// If you want to compare text and caption use
 /// [MessageTextCaptionFilter]
 ///
-/// [MessageTextFilter]: telebofr::dispatching::dispatchers::filter::filters::MessageTextFilter
-/// [MessageTextCaptionFilter]: telebofr::dispatching::dispatchers::filter::filters::MessageTextCaptionFilter
-pub struct MessageCaptionFilter {
+/// [MessageCaptionFilter]: telebofr::dispatching::filters::MessageCaptionFilter
+/// [MessageTextCaptionFilter]: telebofr::dispatching::filters::MessageTextCaptionFilter
+pub struct MessageTextFilter {
     text: String,
 }
 
-impl Filter<Message> for MessageCaptionFilter {
+impl Filter<Message> for MessageTextFilter {
     fn test(&self, value: &Message) -> bool {
-        match value.caption() {
-            Some(caption) => self.text == caption,
+        match value.text() {
+            Some(text) => self.text == text,
             None => false
         }
     }
 }
 
-impl MessageCaptionFilter {
+impl MessageTextFilter {
     pub fn new<T>(text: T) -> Self
     where
-        T: Into<String>,
+        T: Into<String>
     {
         Self {
             text: text.into(),
@@ -44,20 +44,20 @@ mod tests {
     use crate::types::{Chat, Sender, ChatKind, MessageKind, ForwardKind, User, MediaKind};
 
     #[test]
-    fn captions_are_equal() {
-        let filter = MessageCaptionFilter::new("caption".to_string());
-        let message = create_message_with_caption("caption".to_string());
+    fn texts_are_equal() {
+        let filter = MessageTextFilter::new("text");
+        let message = create_message_with_text("text".to_string());
         assert!(filter.test(&message));
     }
 
     #[test]
-    fn captions_are_not_equal() {
-        let filter = MessageCaptionFilter::new("caption".to_string());
-        let message = create_message_with_caption("not equal caption".to_string());
+    fn texts_are_not_equal() {
+        let filter = MessageTextFilter::new("text");
+        let message = create_message_with_text("not equal text".to_string());
         assert_eq!(filter.test(&message), false);
     }
 
-    fn create_message_with_caption(caption: String) -> Message {
+    fn create_message_with_text(text: String) -> Message {
         Message {
             id: 0,
             date: 0,
@@ -84,11 +84,9 @@ mod tests {
                     reply_to_message: None
                 },
                 edit_date: None,
-                media_kind: MediaKind::Photo {
-                    photo: vec![],
-                    caption: Some(caption),
-                    caption_entities: vec![],
-                    media_group_id: None
+                media_kind: MediaKind::Text {
+                    text,
+                    entities: vec![]
                 },
                 reply_markup: None
             }
