@@ -1,5 +1,4 @@
-use crate::dispatching::Filter;
-use crate::types::Message;
+use crate::{dispatching::Filter, types::Message};
 
 pub struct CommandFilter {
     command: String,
@@ -8,13 +7,11 @@ pub struct CommandFilter {
 impl Filter<Message> for CommandFilter {
     fn test(&self, value: &Message) -> bool {
         match value.text() {
-            Some(text) => {
-                match text.split_whitespace().next() {
-                    Some(command) => self.command == command,
-                    None => false
-                }
-            }
-            None => false
+            Some(text) => match text.split_whitespace().next() {
+                Some(command) => self.command == command,
+                None => false,
+            },
+            None => false,
         }
     }
 }
@@ -25,7 +22,7 @@ impl CommandFilter {
         T: Into<String>,
     {
         Self {
-            command: '/'.to_string() + &command.into()
+            command: '/'.to_string() + &command.into(),
         }
     }
     pub fn with_prefix<T>(command: T, prefix: T) -> Self
@@ -33,7 +30,7 @@ impl CommandFilter {
         T: Into<String>,
     {
         Self {
-            command: prefix.into() + &command.into()
+            command: prefix.into() + &command.into(),
         }
     }
 }
@@ -41,7 +38,9 @@ impl CommandFilter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Chat, ChatKind, MessageKind, Sender, User, ForwardKind, MediaKind};
+    use crate::types::{
+        Chat, ChatKind, ForwardKind, MediaKind, MessageKind, Sender, User,
+    };
 
     #[test]
     fn commands_are_equal() {
@@ -53,14 +52,16 @@ mod tests {
     #[test]
     fn commands_are_not_equal() {
         let filter = CommandFilter::new("command".to_string());
-        let message = create_message_with_text("/not_equal_command".to_string());
+        let message =
+            create_message_with_text("/not_equal_command".to_string());
         assert_eq!(filter.test(&message), false);
     }
 
     #[test]
     fn command_have_args() {
         let filter = CommandFilter::new("command".to_string());
-        let message = create_message_with_text("/command arg1 arg2".to_string());
+        let message =
+            create_message_with_text("/command arg1 arg2".to_string());
         assert!(filter.test(&message));
     }
 
@@ -81,9 +82,9 @@ mod tests {
                     type_: (),
                     username: None,
                     first_name: None,
-                    last_name: None
+                    last_name: None,
                 },
-                photo: None
+                photo: None,
             },
             kind: MessageKind::Common {
                 from: Sender::User(User {
@@ -92,18 +93,18 @@ mod tests {
                     first_name: "".to_string(),
                     last_name: None,
                     username: None,
-                    language_code: None
+                    language_code: None,
                 }),
                 forward_kind: ForwardKind::Origin {
-                    reply_to_message: None
+                    reply_to_message: None,
                 },
                 edit_date: None,
                 media_kind: MediaKind::Text {
                     text,
-                    entities: vec![]
+                    entities: vec![],
                 },
-                reply_markup: None
-            }
+                reply_markup: None,
+            },
         }
     }
 }
