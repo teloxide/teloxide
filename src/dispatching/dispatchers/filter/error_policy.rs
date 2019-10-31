@@ -1,32 +1,26 @@
-use std::{fmt::Debug, future::Future, pin::Pin};
+use std::future::Future;
 
-// TODO: shouldn't it be trait?
-pub enum ErrorPolicy<'a, E> {
-    Ignore,
-    Log,
-    Custom(Box<dyn Fn(E) -> Pin<Box<dyn Future<Output = ()> + 'a>>>),
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait ErrorPolicy {
+    type Error;
+
+    async fn handle_error(&mut self, error: Self::Error);
 }
 
-impl<'a, E> ErrorPolicy<'a, E>
-where
-    E: Debug,
-{
-    pub async fn handle_error(&self, error: E) {
-        match self {
-            Self::Ignore => {}
-            Self::Log => {
-                // TODO: better message
-                log::error!("Error in handler: {:?}", error)
-            }
-            Self::Custom(func) => func(error).await,
-        }
-    }
+pub struct FnErrorPolicy<F>(pub F);
 
-    pub fn custom<F, Fut>(f: F) -> Self
-    where
-        F: Fn(E) -> Fut + 'static,
-        Fut: Future<Output = ()> + 'a,
-    {
-        Self::Custom(Box::new(move |e| Box::pin(f(e))))
+#[async_trait]
+impl<E, F, Fut> ErrorPolicy<Error = E> for FnErrorPolicy<F>
+where
+    F: FnMut(E) -> Fut + Send,
+    Fut: Future<Output = ()>,
+    E: Send,
+{
+    type Error = E;
+
+    async fn handle_error(&mut self, error: E) {
+        self.0(error);
     }
 }
