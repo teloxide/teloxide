@@ -69,7 +69,7 @@ type Handlers<'a, T, E> =
 /// [Custom error policy]:
 /// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
 /// crate::dispatching::updater
-pub struct FilterDispatcher<'a, E> {
+pub struct FilterDispatcher<'a, E, Ep> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
     channel_post_handlers: Handlers<'a, Message, E>,
@@ -77,14 +77,15 @@ pub struct FilterDispatcher<'a, E> {
     inline_query_handlers: Handlers<'a, (), E>,
     chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
     callback_query_handlers: Handlers<'a, CallbackQuery, E>,
-    error_policy: ErrorPolicy<'a, E>,
+    error_policy: Ep,
 }
 
-impl<'a, E> FilterDispatcher<'a, E>
+impl<'a, E, Ep> FilterDispatcher<'a, E, Ep>
 where
+    Ep: ErrorPolicy<Error = E>,
     E: std::fmt::Debug, // TODO: Is this really necessary?
 {
-    pub fn new(error_policy: ErrorPolicy<'a, E>) -> Self {
+    pub fn new(error_policy: Ep) -> Self {
         FilterDispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
@@ -183,7 +184,6 @@ where
         updates
             .for_each(|res| {
                 async {
-                    let res = res;
                     let Update { kind, id } = match res {
                         Ok(upd) => upd,
                         _ => return, // TODO: proper error handling
@@ -238,7 +238,7 @@ where
             .await;
     }
 
-    async fn handle<T>(&self, update: T, handlers: &Handlers<'a, T, E>)
+    async fn handle<T>(&mut self, update: T, handlers: &Handlers<'a, T, E>)
     where
         T: std::fmt::Debug,
     {
@@ -265,10 +265,11 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> Dispatcher<'a, U> for FilterDispatcher<'a, E>
+impl<'a, U, E, Ep> Dispatcher<'a, U> for FilterDispatcher<'a, E, Ep>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
+    Ep: ErrorPolicy<Error = E>,
 {
     async fn dispatch(&'a mut self, updater: U) {
         FilterDispatcher::dispatch(self, updater).await
@@ -287,7 +288,7 @@ mod tests {
     use crate::{
         dispatching::{
             dispatchers::filter::{
-                error_policy::ErrorPolicy, FilterDispatcher,
+                error_policy::FnErrorPolicy, FilterDispatcher,
             },
             updater::StreamUpdater,
         },
@@ -302,7 +303,10 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+        let mut dp =
+            FilterDispatcher::<Infallible, _>::new(FnErrorPolicy(|_| {
+                async { () }
+            }))
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);
