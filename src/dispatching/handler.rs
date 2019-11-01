@@ -1,12 +1,15 @@
+use std::{future::Future, pin::Pin};
+
 use futures::FutureExt;
-use std::future::Future;
-use std::pin::Pin;
 
 pub type HandlerResult<E> = Result<(), E>;
 
 /// Asynchronous handler for event `T` (like `&self, I -> Future` fn)
 pub trait Handler<'a, T, E> {
-    fn handle(&self, value: T) -> Pin<Box<dyn Future<Output = HandlerResult<E>> + 'a>>;
+    fn handle(
+        &self,
+        value: T,
+    ) -> Pin<Box<dyn Future<Output = HandlerResult<E>> + 'a>>;
 }
 
 pub trait IntoHandlerResult<E> {
@@ -32,7 +35,10 @@ where
     R: IntoHandlerResult<E> + 'a,
     E: 'a,
 {
-    fn handle(&self, value: T) -> Pin<Box<dyn Future<Output = HandlerResult<E>> + 'a>> {
+    fn handle(
+        &self,
+        value: T,
+    ) -> Pin<Box<dyn Future<Output = HandlerResult<E>> + 'a>> {
         Box::pin(self(value).map(IntoHandlerResult::into_hr))
     }
 }

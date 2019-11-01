@@ -1,92 +1,87 @@
-//! Raw API structures.
+//! API types.
 
-pub use self::{
-    animation::Animation,
-    audio::Audio,
-    callback_game::CallbackGame,
-    callback_query::CallbackQuery,
-    chat::{Chat, ChatKind, NonPrivateChatKind},
-    chat_action::ChatAction,
-    chat_id::ChatId,
-    chat_member::{ChatMember, ChatMemberStatus},
-    chat_permissions::ChatPermissions,
-    chat_photo::ChatPhoto,
-    chosen_inline_result::ChosenInlineResult,
-    contact::Contact,
-    document::Document,
-    encrypted_credintials::EncryptedCredentials,
-    encrypted_passport_element::{
-        EncryptedPassportElement, EncryptedPassportElementKind,
-    },
-    file::File,
-    force_reply::ForceReply,
-    game::Game,
-    game_high_score::GameHighScore,
-    inline_keyboard_button::{InlineKeyboardButton, InlineKeyboardButtonKind},
-    inline_keyboard_markup::InlineKeyboardMarkup,
-    inline_query::InlineQuery,
-    inline_query_result::InlineQueryResult,
-    inline_query_result_article::InlineQueryResultArticle,
-    inline_query_result_audio::InlineQueryResultAudio,
-    inline_query_result_cached_audio::InlineQueryResultCachedAudio,
-    inline_query_result_cached_document::InlineQueryResultCachedDocument,
-    inline_query_result_cached_gif::InlineQueryResultCachedGif,
-    inline_query_result_cached_mpeg4_gif::InlineQueryResultCachedMpeg4Gif,
-    inline_query_result_cached_photo::InlineQueryResultCachedPhoto,
-    inline_query_result_cached_sticker::InlineQueryResultCachedSticker,
-    inline_query_result_cached_video::InlineQueryResultCachedVideo,
-    inline_query_result_cached_voice::InlineQueryResultCachedVoice,
-    inline_query_result_contact::InlineQueryResultContact,
-    inline_query_result_document::InlineQueryResultDocument,
-    inline_query_result_game::InlineQueryResultGame,
-    inline_query_result_gif::InlineQueryResultGif,
-    inline_query_result_location::InlineQueryResultLocation,
-    inline_query_result_mpeg4_gif::InlineQueryResultMpeg4Gif,
-    inline_query_result_photo::InlineQueryResultPhoto,
-    inline_query_result_venue::InlineQueryResultVenue,
-    inline_query_result_video::InlineQueryResultVideo,
-    inline_query_result_voice::InlineQueryResultVoice,
-    input_file::InputFile,
-    input_media::InputMedia,
-    input_message_content::InputMessageContent,
-    invoice::Invoice,
-    keyboard_button::KeyboardButton,
-    label_price::LabeledPrice,
-    location::Location,
-    login_url::LoginUrl,
-    mask_position::MaskPosition,
-    message::{
-        ForwardKind, ForwardedFrom, MediaKind, Message, MessageKind, Sender,
-    },
-    message_entity::MessageEntity,
-    order_info::OrderInfo,
-    parse_mode::ParseMode,
-    passport_data::PassportData,
-    passport_file::PassportFile,
-    photo_size::PhotoSize,
-    poll::{Poll, PollOption},
-    pre_checkout_query::PreCheckoutQuery,
-    reply_keyboard_markup::ReplyKeyboardMarkup,
-    reply_keyboard_remove::ReplyKeyboardRemove,
-    reply_markup::ReplyMarkup,
-    response_parameters::ResponseParameters,
-    send_invoice::SendInvoice,
-    shipping_address::ShippingAddress,
-    shipping_option::ShippingOption,
-    shipping_query::ShippingQuery,
-    sticker::Sticker,
-    sticker_set::StickerSet,
-    successful_payment::SuccessfulPayment,
-    unit_true::True,
-    update::{Update, UpdateKind},
-    user::User,
-    user_profile_photos::UserProfilePhotos,
-    venue::Venue,
-    video::Video,
-    video_note::VideoNote,
-    voice::Voice,
-    webhook_info::WebhookInfo,
-};
+pub use animation::*;
+pub use audio::*;
+pub use callback_game::*;
+pub use callback_query::*;
+pub use chat::*;
+pub use chat_action::*;
+pub use chat_id::*;
+pub use chat_member::*;
+pub use chat_permissions::*;
+pub use chat_photo::*;
+pub use chosen_inline_result::*;
+pub use contact::*;
+pub use document::*;
+pub use encrypted_credentials::*;
+pub use encrypted_passport_element::*;
+pub use file::*;
+pub use force_reply::*;
+pub use game::*;
+pub use game_high_score::*;
+pub use inline_keyboard_button::*;
+pub use inline_keyboard_markup::*;
+pub use inline_query::*;
+pub use inline_query_result::*;
+pub use inline_query_result_article::*;
+pub use inline_query_result_audio::*;
+pub use inline_query_result_cached_audio::*;
+pub use inline_query_result_cached_document::*;
+pub use inline_query_result_cached_gif::*;
+pub use inline_query_result_cached_mpeg4_gif::*;
+pub use inline_query_result_cached_photo::*;
+pub use inline_query_result_cached_sticker::*;
+pub use inline_query_result_cached_video::*;
+pub use inline_query_result_cached_voice::*;
+pub use inline_query_result_contact::*;
+pub use inline_query_result_document::*;
+pub use inline_query_result_game::*;
+pub use inline_query_result_gif::*;
+pub use inline_query_result_location::*;
+pub use inline_query_result_mpeg4_gif::*;
+pub use inline_query_result_photo::*;
+pub use inline_query_result_venue::*;
+pub use inline_query_result_video::*;
+pub use inline_query_result_voice::*;
+pub use input_file::*;
+pub use input_media::*;
+pub use input_message_content::*;
+pub use invoice::*;
+pub use keyboard_button::*;
+pub use label_price::*;
+pub use location::*;
+pub use login_url::*;
+pub use mask_position::*;
+pub use message::*;
+pub use message_entity::*;
+pub use order_info::*;
+pub use parse_mode::*;
+pub use passport_data::*;
+pub use passport_file::*;
+pub use photo_size::*;
+pub use poll::*;
+pub use pre_checkout_query::*;
+pub use reply_keyboard_markup::*;
+pub use reply_keyboard_remove::*;
+pub use reply_markup::*;
+pub use response_parameters::*;
+pub use send_invoice::*;
+pub use shipping_address::*;
+pub use shipping_option::*;
+pub use shipping_query::*;
+pub use sticker::*;
+pub use sticker_set::*;
+pub use successful_payment::*;
+pub use unit_false::*;
+pub use unit_true::*;
+pub use update::*;
+pub use user::*;
+pub use user_profile_photos::*;
+pub use venue::*;
+pub use video::*;
+pub use video_note::*;
+pub use voice::*;
+pub use webhook_info::*;
 
 mod animation;
 mod audio;
@@ -134,6 +129,7 @@ mod shipping_query;
 mod sticker;
 mod sticker_set;
 mod successful_payment;
+mod unit_false;
 mod unit_true;
 mod update;
 mod user;
@@ -167,7 +163,7 @@ mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
 
-mod encrypted_credintials;
+mod encrypted_credentials;
 mod encrypted_passport_element;
 mod passport_data;
 mod passport_file;

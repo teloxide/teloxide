@@ -1,15 +1,16 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::Update,
 };
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUpdates<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     pub offset: Option<i32>,
     pub limit: Option<u8>,
@@ -41,8 +42,8 @@ impl Request for GetUpdates<'_> {
 impl GetUpdates<'_> {
     pub async fn send(self) -> ResponseResult<Vec<Update>> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "getUpdates",
             &self,
         )
@@ -51,9 +52,9 @@ impl GetUpdates<'_> {
 }
 
 impl<'a> GetUpdates<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
+    pub(crate) fn new(bot: &'a Bot) -> Self {
         Self {
-            ctx,
+            bot,
             offset: None,
             limit: None,
             timeout: None,

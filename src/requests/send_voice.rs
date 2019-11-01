@@ -1,9 +1,10 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup},
+    requests::{Request, ResponseResult},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
 ///Use this method to send audio files, if you want Telegram clients to display
@@ -15,7 +16,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct SendVoice<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     pub chat_id: ChatId,
@@ -23,8 +24,7 @@ pub struct SendVoice<'a> {
     /// on the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data. More info on Sending Files »
-    pub voice: String,
-    //InputFile or String
+    pub voice: InputFile,
     /// Voice message caption, 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
@@ -62,8 +62,8 @@ impl Request for SendVoice<'_> {
 impl SendVoice<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendVoice",
             &self,
         )
@@ -72,17 +72,13 @@ impl SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new<C, V>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        voice: V,
-    ) -> Self
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, voice: V) -> Self
     where
         C: Into<ChatId>,
-        V: Into<String>,
+        V: Into<InputFile>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             voice: voice.into(),
             caption: None,
@@ -104,7 +100,7 @@ impl<'a> SendVoice<'a> {
 
     pub fn voice<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.voice = value.into();
         self

@@ -49,9 +49,8 @@ pub enum InlineQueryResult {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::inline_keyboard_markup::InlineKeyboardMarkup;
-    use crate::types::parse_mode::ParseMode;
     use crate::types::{
+        inline_keyboard_markup::InlineKeyboardMarkup, parse_mode::ParseMode,
         InlineQueryResult, InlineQueryResultCachedAudio, InputMessageContent,
     };
 

@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
@@ -11,7 +12,7 @@ use crate::{
 /// returned.
 pub struct SendMessage<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     ///	Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
@@ -55,8 +56,8 @@ impl Request for SendMessage<'_> {
 impl SendMessage<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            self.ctx.client,
-            self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendMessage",
             &self,
         )
@@ -65,17 +66,13 @@ impl SendMessage<'_> {
 }
 
 impl<'a> SendMessage<'a> {
-    pub(crate) fn new<C, S>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        text: S,
-    ) -> Self
+    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, text: S) -> Self
     where
         C: Into<ChatId>,
         S: Into<String>,
     {
         SendMessage {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             text: text.into(),
             parse_mode: None,

@@ -11,8 +11,8 @@ pub async fn request_multipart<T>(
     method_name: &str,
     params: Form,
 ) -> ResponseResult<T>
-    where
-        T: DeserializeOwned,
+where
+    T: DeserializeOwned,
 {
     process_response(
         client
@@ -30,8 +30,8 @@ pub async fn request_simple<T>(
     token: &str,
     method_name: &str,
 ) -> ResponseResult<T>
-    where
-        T: DeserializeOwned,
+where
+    T: DeserializeOwned,
 {
     process_response(
         client

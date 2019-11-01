@@ -79,7 +79,10 @@ macro_rules! impl_for_struct {
 
 impl_for_struct!(bool, i32, i64);
 
-impl<T> IntoFormValue for Option<T> where T: IntoFormValue {
+impl<T> IntoFormValue for Option<T>
+where
+    T: IntoFormValue,
+{
     fn into_form_value(self) -> Option<FormValue> {
         self.and_then(IntoFormValue::into_form_value)
     }
@@ -87,8 +90,8 @@ impl<T> IntoFormValue for Option<T> where T: IntoFormValue {
 
 impl IntoFormValue for &[InputMedia] {
     fn into_form_value(self) -> Option<FormValue> {
-        let json = serde_json::to_string(self)
-            .expect("serde_json::to_string failed");
+        let json =
+            serde_json::to_string(self).expect("serde_json::to_string failed");
         Some(FormValue::Str(json))
     }
 }
@@ -113,7 +116,7 @@ impl IntoFormValue for ChatId {
     fn into_form_value(self) -> Option<FormValue> {
         let string = match self {
             ChatId::Id(id) => id.to_string(),
-            ChatId::ChannelUsername(username) => username.clone(),
+            ChatId::ChannelUsername(username) => username,
         };
         Some(FormValue::Str(string))
     }
@@ -121,7 +124,7 @@ impl IntoFormValue for ChatId {
 
 impl IntoFormValue for String {
     fn into_form_value(self) -> Option<FormValue> {
-        Some(FormValue::Str(self.to_owned()))
+        Some(FormValue::Str(self))
     }
 }
 

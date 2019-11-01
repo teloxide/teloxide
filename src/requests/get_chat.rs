@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{Chat, ChatId},
 };
 
@@ -13,7 +14,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChat<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or username
     /// of the target supergroup or channel (in the format @channelusername)
     chat_id: ChatId,
@@ -31,8 +32,8 @@ impl Request for GetChat<'_> {
 impl GetChat<'_> {
     pub async fn send(self) -> ResponseResult<Chat> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "getChat",
             &self,
         )
@@ -41,11 +42,21 @@ impl GetChat<'_> {
 }
 
 impl<'a> GetChat<'a> {
-    pub fn chat_id<C>(mut self, value: C) -> Self
+    pub(crate) fn new<F>(bot: &'a Bot, chat_id: F) -> Self
+    where
+        F: Into<ChatId>,
+    {
+        Self {
+            bot,
+            chat_id: chat_id.into(),
+        }
+    }
+
+    pub fn chat_id<C>(mut self, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.chat_id = value.into();
+        self.chat_id = chat_id.into();
         self
     }
 }

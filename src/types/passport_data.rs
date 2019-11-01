@@ -1,5 +1,4 @@
-use super::encrypted_credintials::EncryptedCredentials;
-use super::encrypted_passport_element::EncryptedPassportElement;
+use super::{EncryptedCredentials, EncryptedPassportElement};
 
 #[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
 pub struct PassportData {
