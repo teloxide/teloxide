@@ -8,7 +8,7 @@ use crate::network::download_file_stream;
 use crate::{bot::Bot, network::download_file, DownloadError};
 
 impl Bot {
-    /// Download file from telegram into `destination`.
+    /// Download a file from Telegram into `destination`.
     /// `path` can be obtained from [`get_file`] method.
     ///
     /// For downloading as Stream of Chunks see [`download_file_stream`].
@@ -16,11 +16,10 @@ impl Bot {
     /// ## Examples
     ///
     /// ```no_run
-    /// use async_telegram_bot::{
-    ///     bot::Bot, requests::Request, types::File as TgFile,
-    /// };
+    /// use telebofr::types::File as TgFile;
     /// use tokio::fs::File;
-    /// # use async_telegram_bot::RequestError;
+    /// # use telebofr::RequestError;
+    /// use telebofr::Bot;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
@@ -44,9 +43,9 @@ impl Bot {
         download_file(&self.client, &self.token, path, destination).await
     }
 
-    /// Download file from telegram.
+    /// Download a file from Telegram.
     ///
-    /// `path` can be obtained from [`get_file`] method.
+    /// `path` can be obtained from the [`get_file`] method.
     ///
     /// For downloading into [`AsyncWrite`] (e.g. [`tokio::fs::File`])
     /// see  [`download_file`].

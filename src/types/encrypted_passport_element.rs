@@ -1,4 +1,4 @@
-use super::passport_file::PassportFile;
+use super::PassportFile;
 
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct EncryptedPassportElement {

@@ -1,17 +1,16 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network::request_multipart,
-    requests::{
-        form_builder::FormBuilder, Request, RequestContext, ResponseResult,
-    },
-    types::{ChatId, InputMedia, Message, InputFile},
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    types::{ChatId, InputFile, InputMedia, Message},
 };
 
 /// Use this method to send a group of photos or videos as an album.
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     pub chat_id: ChatId,
     pub media: Vec<InputMedia>,
@@ -37,17 +36,20 @@ impl SendMediaGroup<'_> {
             .add("disable_notification", self.disable_notification)
             .add("reply_to_message_id", self.reply_to_message_id);
 
-        let form = self.media.into_iter().filter_map(|e| InputFile::from(e).into())
-                .fold(form, |acc, path: std::path::PathBuf|
-                    acc.add_file(
-                        &path.file_name().unwrap().to_string_lossy().into_owned(),
-                        path,
-                    )
-                );
+        let form = self
+            .media
+            .into_iter()
+            .filter_map(|e| InputFile::from(e).into())
+            .fold(form, |acc, path: std::path::PathBuf| {
+                acc.add_file(
+                    &path.file_name().unwrap().to_string_lossy().into_owned(),
+                    path,
+                )
+            });
 
         request_multipart(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendMediaGroup",
             form.build(),
         )
@@ -56,17 +58,13 @@ impl SendMediaGroup<'_> {
 }
 
 impl<'a> SendMediaGroup<'a> {
-    pub(crate) fn new<C, M>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        media: M,
-    ) -> Self
+    pub(crate) fn new<C, M>(bot: &'a Bot, chat_id: C, media: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,
     {
         SendMediaGroup {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             media: media.into(),
             disable_notification: None,

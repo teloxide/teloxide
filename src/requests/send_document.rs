@@ -1,12 +1,11 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
-    types::{ChatId, Message, ParseMode, ReplyMarkup},
+    requests::{Request, ResponseResult},
+    types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
-
-// TODO: add method to bot/api
 
 ///Use this method to send general files. On success, the sent Message is
 /// returned. Bots can currently send files of any type of up to 50 MB in size,
@@ -14,7 +13,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct SendDocument<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Unique identifier for the target chat or username of the target
     /// channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -22,8 +21,7 @@ pub struct SendDocument<'a> {
     /// the Telegram servers (recommended), pass an HTTP URL as a String for
     /// Telegram to get a file from the Internet, or upload a new one using
     /// multipart/form-data.»
-    pub document: String,
-    //InputFile or String
+    pub document: InputFile,
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side. The thumbnail should be in JPEG
     /// format and less than 200 kB in size. A thumbnail‘s width and height
@@ -33,8 +31,7 @@ pub struct SendDocument<'a> {
     /// if the thumbnail was uploaded using multipart/form-data under
     /// <file_attach_name>. More info on Sending Files »
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub thumb: Option<String>,
-    //InputFile or String
+    pub thumb: Option<InputFile>,
     /// Document caption (may also be used when resending documents by
     /// file_id), 0-1024 characters
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -69,8 +66,8 @@ impl Request for SendDocument<'_> {
 impl SendDocument<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "sendDocument",
             &self,
         )
@@ -79,17 +76,13 @@ impl SendDocument<'_> {
 }
 
 impl<'a> SendDocument<'a> {
-    pub(crate) fn new<C, D>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        document: D,
-    ) -> Self
+    pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
     where
         C: Into<ChatId>,
-        D: Into<String>,
+        D: Into<InputFile>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             document: document.into(),
             thumb: None,
@@ -111,7 +104,7 @@ impl<'a> SendDocument<'a> {
 
     pub fn document<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.document = value.into();
         self
@@ -119,7 +112,7 @@ impl<'a> SendDocument<'a> {
 
     pub fn thumb<T>(mut self, value: T) -> Self
     where
-        T: Into<String>,
+        T: Into<InputFile>,
     {
         self.thumb = Some(value.into());
         self

@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ShippingOption, True},
 };
 
@@ -15,7 +16,7 @@ use crate::{
 /// [`Update`]: crate::types::Update
 pub struct AnswerShippingQuery<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
 
     /// Unique identifier for the query to be answered
     pub shipping_query_id: String,
@@ -49,8 +50,8 @@ impl Request for AnswerShippingQuery<'_> {
 impl AnswerShippingQuery<'_> {
     pub async fn send(self) -> ResponseResult<True> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "answerShippingQuery",
             &self,
         )
@@ -59,17 +60,13 @@ impl AnswerShippingQuery<'_> {
 }
 
 impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new<S, B>(
-        ctx: RequestContext<'a>,
-        shipping_query_id: S,
-        ok: B,
-    ) -> Self
+    pub(crate) fn new<S, B>(bot: &'a Bot, shipping_query_id: S, ok: B) -> Self
     where
         S: Into<String>,
         B: Into<bool>,
     {
         Self {
-            ctx,
+            bot,
             shipping_query_id: shipping_query_id.into(),
             ok: ok.into(),
             shipping_options: None,

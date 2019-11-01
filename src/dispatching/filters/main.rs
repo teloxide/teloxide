@@ -6,7 +6,7 @@ pub trait Filter<T> {
 }
 
 /// ```
-/// use async_telegram_bot::dispatcher::filter::Filter;
+/// use telebofr::dispatching::filters::Filter;
 ///
 /// let closure = |i: &i32| -> bool { *i >= 42 };
 /// assert!(closure.test(&42));
@@ -22,13 +22,15 @@ impl<T, F: Fn(&T) -> bool> Filter<T> for F {
 }
 
 /// ```
-/// use async_telegram_bot::dispatcher::filter::Filter;
+/// use telebofr::dispatching::filters::Filter;
 ///
 /// assert!(true.test(&()));
 /// assert_eq!(false.test(&()), false);
 /// ```
 impl<T> Filter<T> for bool {
-    fn test(&self, _: &T) -> bool { *self }
+    fn test(&self, _: &T) -> bool {
+        *self
+    }
 }
 
 /// And filter.
@@ -40,7 +42,7 @@ impl<T> Filter<T> for bool {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{And, Filter};
+/// use telebofr::dispatching::filters::{And, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert_eq!(And::new(true, false).test(&()), false);
@@ -71,17 +73,16 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{and, Filter};
+/// use telebofr::dispatching::filters::{and, Filter};
 ///
 /// assert!(and(true, true).test(&()));
 /// assert_eq!(and(true, false).test(&()), false);
 /// ```
 ///
-/// [`And::new`]: crate::dispatcher::filter::And::new
+/// [`And::new`]: crate::dispatching::filter::And::new
 pub fn and<A, B>(a: A, b: B) -> And<A, B> {
     And::new(a, b)
 }
-
 
 /// Or filter.
 ///
@@ -92,7 +93,7 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Or, Filter};
+/// use telebofr::dispatching::filters::{Filter, Or};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Or::new(true, false).test(&()));
@@ -123,17 +124,16 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{or, Filter};
+/// use telebofr::dispatching::filters::{or, Filter};
 ///
 /// assert!(or(true, false).test(&()));
 /// assert_eq!(or(false, false).test(&()), false);
 /// ```
 ///
-/// [`Or::new`]: crate::dispatcher::filter::Or::new
+/// [`Or::new`]: crate::dispatching::filter::Or::new
 pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
     Or::new(a, b)
 }
-
 
 /// Not filter.
 ///
@@ -141,7 +141,7 @@ pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Not, Filter};
+/// use telebofr::dispatching::filters::{Filter, Not};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Not::new(false).test(&()));
@@ -169,13 +169,13 @@ where
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{not, Filter};
+/// use telebofr::dispatching::filters::{not, Filter};
 ///
 /// assert!(not(false).test(&()));
 /// assert_eq!(not(true).test(&()), false);
 /// ```
 ///
-/// [`Not::new`]: crate::dispatcher::filter::Not::new
+/// [`Not::new`]: crate::dispatching::filter::Not::new
 pub fn not<A>(a: A) -> Not<A> {
     Not::new(a)
 }
@@ -187,7 +187,7 @@ pub fn not<A>(a: A) -> Not<A> {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::{all, dispatcher::filter::Filter};
+/// use telebofr::{all, dispatching::filters::Filter};
 ///
 /// assert!(all![true].test(&()));
 /// assert!(all![true, true].test(&()));
@@ -199,12 +199,12 @@ pub fn not<A>(a: A) -> Not<A> {
 /// assert_eq!(all![false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatcher::filter::Filter
+/// [filter]: crate::dispatching::filter::Filter
 #[macro_export]
 macro_rules! all {
     ($one:expr) => { $one };
     ($head:expr, $($tail:tt)+) => {
-        $crate::dispatcher::filter::And::new(
+        $crate::dispatching::filters::And::new(
             $head,
             $crate::all!($($tail)+)
         )
@@ -218,7 +218,7 @@ macro_rules! all {
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::{any, dispatcher::filter::Filter};
+/// use telebofr::{any, dispatching::filters::Filter};
 ///
 /// assert!(any![true].test(&()));
 /// assert!(any![true, true].test(&()));
@@ -230,24 +230,23 @@ macro_rules! all {
 /// assert_eq!(any![false, false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatcher::filter::Filter
+/// [filter]: crate::dispatching::filter::Filter
 #[macro_export]
 macro_rules! any {
     ($one:expr) => { $one };
     ($head:expr, $($tail:tt)+) => {
-        $crate::dispatcher::filter::Or::new(
+        $crate::dispatching::filters::Or::new(
             $head,
             $crate::all!($($tail)+)
         )
     };
 }
 
-
 /// Simple wrapper around `Filter` that adds `|` and `&` operators.
 ///
 /// ## Examples
 /// ```
-/// use async_telegram_bot::dispatcher::filter::{Filter, f, F, And, Or};
+/// use telebofr::dispatching::filters::{f, And, Filter, Or, F};
 ///
 /// let flt1 = |i: &i32| -> bool { *i > 17 };
 /// let flt2 = |i: &i32| -> bool { *i < 42 };
@@ -259,7 +258,6 @@ macro_rules! any {
 /// assert_eq!(and.test(&50), false); // `flt2` doesn't pass
 /// assert_eq!(and.test(&16), false); // `flt1` doesn't pass
 ///
-///
 /// let or = f(flt1) | flt3;
 /// assert!(or.test(&19)); // `flt1` passes
 /// assert!(or.test(&16)); // `flt2` passes
@@ -267,9 +265,8 @@ macro_rules! any {
 ///
 /// assert_eq!(or.test(&17), false); // both don't pass
 ///
-///
 /// // Note: only first filter in chain should be wrapped in `f(...)`
-/// let complicated: F<Or<And<_, _>, _>>= f(flt1) & flt2 | flt3;
+/// let complicated: F<Or<And<_, _>, _>> = f(flt1) & flt2 | flt3;
 /// assert!(complicated.test(&2)); // `flt3` passes
 /// assert!(complicated.test(&21)); // `flt1` and `flt2` pass
 ///
@@ -280,14 +277,14 @@ pub struct F<A>(A);
 
 /// Constructor fn for [F]
 ///
-/// [F]: crate::dispatcher::filter::F;
+/// [F]: crate::dispatching::filter::F;
 pub fn f<A>(a: A) -> F<A> {
     F(a)
 }
 
 impl<T, A> Filter<T> for F<A>
 where
-    A: Filter<T>
+    A: Filter<T>,
 {
     fn test(&self, value: &T) -> bool {
         self.0.test(value)
@@ -310,13 +307,14 @@ impl<A, B> std::ops::BitOr<B> for F<A> {
     }
 }
 
+/* workaround for `E0207` compiler error */
 /// Extensions for filters
-pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
+pub trait FilterExt<T> {
     /// Alias for [`Not::new`]
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.not();
@@ -324,8 +322,11 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// assert_eq!(flt.test(&1), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::Not::new
-    fn not(self) -> Not<Self> where Self: Sized {
+    /// [`Not::new`]: crate::dispatching::filter::Not::new
+    fn not(self) -> Not<Self>
+    where
+        Self: Sized,
+    {
         Not::new(self)
     }
 
@@ -333,7 +334,7 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.and(|i: &i32| *i < 42);
@@ -343,8 +344,11 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// assert_eq!(flt.test(&43), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::And::new
-    fn and<B>(self, other: B) -> And<Self, B> where Self: Sized {
+    /// [`Not::new`]: crate::dispatching::filter::And::new
+    fn and<B>(self, other: B) -> And<Self, B>
+    where
+        Self: Sized,
+    {
         And::new(self, other)
     }
 
@@ -352,7 +356,7 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     ///
     /// ## Examples
     /// ```
-    /// use async_telegram_bot::dispatcher::filter::{Filter, FilterExt};
+    /// use telebofr::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i < 0 };
     /// let flt = flt.or(|i: &i32| *i > 42);
@@ -362,8 +366,11 @@ pub trait FilterExt<T /* workaround for `E0207` compiler error */> {
     /// assert_eq!(flt.test(&17), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatcher::filter::Or::new
-    fn or<B>(self, other: B) -> Or<Self, B> where Self: Sized {
+    /// [`Not::new`]: crate::dispatching::filter::Or::new
+    fn or<B>(self, other: B) -> Or<Self, B>
+    where
+        Self: Sized,
+    {
         Or::new(self, other)
     }
 }

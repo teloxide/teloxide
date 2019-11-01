@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message},
 };
 
@@ -12,7 +13,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct StopMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     /// Required if inline_message_id is not specified. Unique identifier for
     /// the target chat or username of the target channel (in the format
     /// @channelusername)
@@ -44,8 +45,8 @@ impl Request for StopMessageLiveLocation<'_> {
 impl StopMessageLiveLocation<'_> {
     pub async fn send(self) -> ResponseResult<Message> {
         network::request_json(
-            &self.ctx.client,
-            &self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "stopMessageLiveLocation",
             &self,
         )
@@ -54,9 +55,9 @@ impl StopMessageLiveLocation<'_> {
 }
 
 impl<'a> StopMessageLiveLocation<'a> {
-    pub(crate) fn new(ctx: RequestContext<'a>) -> Self {
+    pub(crate) fn new(bot: &'a Bot) -> Self {
         Self {
-            ctx,
+            bot,
             chat_id: None,
             message_id: None,
             inline_message_id: None,

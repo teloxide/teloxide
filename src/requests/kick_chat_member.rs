@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
+    bot::Bot,
     network,
-    requests::{Request, RequestContext, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -14,7 +15,7 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct KickChatMember<'a> {
     #[serde(skip_serializing)]
-    ctx: RequestContext<'a>,
+    bot: &'a Bot,
     ///Unique identifier for the target group or username of the target
     /// supergroup or channel (in the format @channelusername)
     pub chat_id: ChatId,
@@ -39,8 +40,8 @@ impl Request for KickChatMember<'_> {
 impl KickChatMember<'_> {
     async fn send(self) -> ResponseResult<True> {
         network::request_json(
-            self.ctx.client,
-            self.ctx.token,
+            self.bot.client(),
+            self.bot.token(),
             "kickChatMember",
             &self,
         )
@@ -49,17 +50,13 @@ impl KickChatMember<'_> {
 }
 
 impl<'a> KickChatMember<'a> {
-    pub(crate) fn new<C, U>(
-        ctx: RequestContext<'a>,
-        chat_id: C,
-        user_id: U,
-    ) -> Self
+    pub(crate) fn new<C, U>(bot: &'a Bot, chat_id: C, user_id: U) -> Self
     where
         C: Into<ChatId>,
         U: Into<i32>,
     {
         Self {
-            ctx,
+            bot,
             chat_id: chat_id.into(),
             user_id: user_id.into(),
             until_date: None,
