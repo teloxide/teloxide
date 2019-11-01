@@ -82,7 +82,7 @@ pub struct FilterDispatcher<'a, E, Ep> {
 
 impl<'a, E, Ep> FilterDispatcher<'a, E, Ep>
 where
-    Ep: ErrorPolicy<Error = E>,
+    Ep: ErrorPolicy<E>,
     E: std::fmt::Debug, // TODO: Is this really necessary?
 {
     pub fn new(error_policy: Ep) -> Self {
@@ -269,7 +269,7 @@ impl<'a, U, E, Ep> Dispatcher<'a, U> for FilterDispatcher<'a, E, Ep>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
-    Ep: ErrorPolicy<Error = E>,
+    Ep: ErrorPolicy<E>,
 {
     async fn dispatch(&'a mut self, updater: U) {
         FilterDispatcher::dispatch(self, updater).await
