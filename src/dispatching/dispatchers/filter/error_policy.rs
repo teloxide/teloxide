@@ -8,18 +8,14 @@ pub trait ErrorPolicy<E> {
     async fn handle_error(&mut self, error: E);
 }
 
-/// A convenient structure with an error-handling closure. Implements
-/// `ErrorPolicy`.
-pub struct FnErrorPolicy<F>(pub F);
-
 #[async_trait]
-impl<E, F, Fut> ErrorPolicy<E> for FnErrorPolicy<F>
+impl<E, F, Fut> ErrorPolicy<E> for F
 where
     F: FnMut(E) -> Fut + Send,
-    Fut: Future<Output = ()>,
+    Fut: Future<Output = ()> + Send,
     E: Send,
 {
     async fn handle_error(&mut self, error: E) {
-        self.0(error);
+        self(error).await;
     }
 }
