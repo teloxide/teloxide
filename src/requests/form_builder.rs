@@ -1,12 +1,14 @@
-use std::path::PathBuf;
+use std::{
+    path::PathBuf,
+    borrow::Cow,
+};
 
 use reqwest::multipart::Form;
 
 use crate::{
-    requests::utils,
-    types::{ChatId, InputMedia, ParseMode},
+    requests::utils::file_to_part,
+    types::{ChatId, InputMedia, ParseMode, InputFile},
 };
-use crate::types::InputFile;
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
 /// from scratch.
@@ -20,26 +22,30 @@ impl FormBuilder {
     }
 
     /// Add the supplied key-value pair to this `FormBuilder`.
-    pub fn add<T>(self, name: &str, value: T) -> Self
+    pub fn add<'a, T, N>(self, name: N, value: T) -> Self
     where
+        N: Into<Cow<'a, str>>,
         T: IntoFormValue,
     {
-        let name = name.to_owned();
+        let name = name.into().into_owned();
         match value.into_form_value() {
             Some(FormValue::Str(string)) => Self {
                 form: self.form.text(name, string),
             },
-            Some(FormValue::File(path)) => self.add_file(&name, path),
+            Some(FormValue::File(path)) => self.add_file(name, path),
             None => self,
         }
     }
 
     // used in SendMediaGroup
-    pub fn add_file(self, name: &str, path_to_file: PathBuf) -> Self {
+    pub fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> Self
+    where
+        N: Into<Cow<'a, str>>
+    {
         Self {
             form: self
                 .form
-                .part(name.to_owned(), utils::file_to_part(path_to_file)),
+                .part(name.into().into_owned(), file_to_part(path_to_file)),
         }
     }
 
