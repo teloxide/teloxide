@@ -238,7 +238,7 @@ where
             .await;
     }
 
-    async fn handle<T>(&mut self, update: T, handlers: &Handlers<'a, T, E>)
+    async fn handle<T>(&self, update: T, handlers: &Handlers<'a, T, E>)
     where
         T: std::fmt::Debug,
     {
@@ -287,9 +287,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dispatchers::filter::{
-                error_policy::FnErrorPolicy, FilterDispatcher,
-            },
+            dispatchers::filter::FilterDispatcher,
             updater::StreamUpdater,
         },
         types::{
@@ -304,9 +302,9 @@ mod tests {
         let counter2 = &AtomicI32::new(0);
 
         let mut dp =
-            FilterDispatcher::<Infallible, _>::new(FnErrorPolicy(|_| {
+            FilterDispatcher::<Infallible, _>::new(|_| {
                 async { () }
-            }))
+            })
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);
