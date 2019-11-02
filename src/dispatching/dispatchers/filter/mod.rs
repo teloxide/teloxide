@@ -32,11 +32,12 @@ type Handlers<'a, T, E> =
 ///
 /// Simplest example:
 /// ```no_run
-/// # use telebofr::Bot;
-/// use telebofr::types::Message;
-///  async fn run() {
+/// # async fn run() {
 /// use std::convert::Infallible;
+///
 /// use telebofr::{
+///     Bot,
+///     types::Message,
 ///     dispatching::{
 ///         dispatchers::filter::{error_policy::ErrorPolicy, FilterDispatcher},
 ///         updater::polling,
@@ -51,7 +52,7 @@ type Handlers<'a, T, E> =
 ///
 /// // create dispatching which handlers can't fail
 /// // with error policy that just ignores all errors (that can't ever happen)
-/// let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+/// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () })
 ///     // Add 'handler' that will handle all messages sent to the bot
 ///     .message_handler(true, |mes: Message| {
 ///         async move { println!("New message: {:?}", mes) }
@@ -66,10 +67,9 @@ type Handlers<'a, T, E> =
 /// ```
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
-/// [Custom error policy]:
-/// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
-/// crate::dispatching::updater
-pub struct FilterDispatcher<'a, E> {
+/// [Custom error policy]: crate::dispatching::filter::error_policy::ErrorPolicy::Custom
+/// [updater]: crate::dispatching::updater
+pub struct FilterDispatcher<'a, E, Ep> {
     message_handlers: Handlers<'a, Message, E>,
     edited_message_handlers: Handlers<'a, Message, E>,
     channel_post_handlers: Handlers<'a, Message, E>,
@@ -77,14 +77,15 @@ pub struct FilterDispatcher<'a, E> {
     inline_query_handlers: Handlers<'a, (), E>,
     chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
     callback_query_handlers: Handlers<'a, CallbackQuery, E>,
-    error_policy: ErrorPolicy<'a, E>,
+    error_policy: Ep,
 }
 
-impl<'a, E> FilterDispatcher<'a, E>
+impl<'a, E, Ep> FilterDispatcher<'a, E, Ep>
 where
+    Ep: ErrorPolicy<E>,
     E: std::fmt::Debug, // TODO: Is this really necessary?
 {
-    pub fn new(error_policy: ErrorPolicy<'a, E>) -> Self {
+    pub fn new(error_policy: Ep) -> Self {
         FilterDispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
@@ -183,7 +184,6 @@ where
         updates
             .for_each(|res| {
                 async {
-                    let res = res;
                     let Update { kind, id } = match res {
                         Ok(upd) => upd,
                         _ => return, // TODO: proper error handling
@@ -265,10 +265,11 @@ where
 }
 
 #[async_trait(? Send)]
-impl<'a, U, E> Dispatcher<'a, U> for FilterDispatcher<'a, E>
+impl<'a, U, E, Ep> Dispatcher<'a, U> for FilterDispatcher<'a, E, Ep>
 where
     E: std::fmt::Debug,
     U: Updater + 'a,
+    Ep: ErrorPolicy<E>,
 {
     async fn dispatch(&'a mut self, updater: U) {
         FilterDispatcher::dispatch(self, updater).await
@@ -286,9 +287,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dispatchers::filter::{
-                error_policy::ErrorPolicy, FilterDispatcher,
-            },
+            dispatchers::filter::FilterDispatcher,
             updater::StreamUpdater,
         },
         types::{
@@ -302,7 +301,7 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = FilterDispatcher::<Infallible>::new(ErrorPolicy::Ignore)
+        let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () } )
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);

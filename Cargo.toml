@@ -22,3 +22,4 @@ thiserror = "1.0.2"
 default = []
 
 unstable-stream = [] # add streams to public API
+never-type = [] # add never type (`!`) to punlic API
