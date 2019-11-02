@@ -12,10 +12,10 @@ pub trait ErrorPolicy<E> {
 }
 
 impl<E, F, Fut> ErrorPolicy<E> for F
-    where
-        F: Fn(E) -> Fut + Sync,
-        Fut: Future<Output = ()> + Send,
-        E: Send,
+where
+    F: Fn(E) -> Fut + Sync,
+    Fut: Future<Output = ()> + Send,
+    E: Send,
 {
     fn handle_error<'s, 'async_trait>(&'s self, error: E) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
     where
