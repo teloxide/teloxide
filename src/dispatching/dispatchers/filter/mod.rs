@@ -17,6 +17,15 @@ struct FilterAndHandler<'a, T, E> {
     handler: Box<dyn Handler<'a, T, E> + 'a>,
 }
 
+impl<'a, T, E> FilterAndHandler<'a, T, E> {
+    fn new(
+        filter: Box<dyn Filter<T> + 'a>,
+        handler: Box<dyn Handler<'a, T, E> + 'a>,
+    ) -> Self {
+        FilterAndHandler { filter, handler }
+    }
+}
+
 type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 
 /// Dispatcher that dispatches updates from telegram.
@@ -111,10 +120,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.message_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.message_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -123,10 +130,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.edited_message_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.edited_message_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -135,10 +140,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.channel_post_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.channel_post_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -151,10 +154,8 @@ where
         F: Filter<Message> + 'a,
         H: Handler<'a, Message, E> + 'a,
     {
-        self.edited_channel_post_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.edited_channel_post_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -163,10 +164,8 @@ where
         F: Filter<()> + 'a,
         H: Handler<'a, (), E> + 'a,
     {
-        self.inline_query_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.inline_query_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -179,10 +178,8 @@ where
         F: Filter<ChosenInlineResult> + 'a,
         H: Handler<'a, ChosenInlineResult, E> + 'a,
     {
-        self.chosen_inline_result_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.chosen_inline_result_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -191,10 +188,8 @@ where
         F: Filter<CallbackQuery> + 'a,
         H: Handler<'a, CallbackQuery, E> + 'a,
     {
-        self.callback_query_handlers.push(FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        });
+        self.callback_query_handlers
+            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
         self
     }
 
