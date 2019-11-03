@@ -18,11 +18,15 @@ struct FilterAndHandler<'a, T, E> {
 }
 
 impl<'a, T, E> FilterAndHandler<'a, T, E> {
-    fn new(
-        filter: Box<dyn Filter<T> + 'a>,
-        handler: Box<dyn Handler<'a, T, E> + 'a>,
-    ) -> Self {
-        FilterAndHandler { filter, handler }
+    fn new<F, H>(filter: F, handler: H) -> Self
+    where
+        F: Filter<T> + 'a,
+        H: Handler<'a, T, E> + 'a,
+    {
+        FilterAndHandler {
+            filter: Box::new(filter),
+            handler: Box::new(handler),
+        }
     }
 }
 
@@ -121,7 +125,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.message_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -131,7 +135,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.edited_message_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -141,7 +145,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.channel_post_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -155,7 +159,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.edited_channel_post_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -165,7 +169,7 @@ where
         H: Handler<'a, (), E> + 'a,
     {
         self.inline_query_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -179,7 +183,7 @@ where
         H: Handler<'a, ChosenInlineResult, E> + 'a,
     {
         self.chosen_inline_result_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -189,7 +193,7 @@ where
         H: Handler<'a, CallbackQuery, E> + 'a,
     {
         self.callback_query_handlers
-            .push(FilterAndHandler::new(Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
