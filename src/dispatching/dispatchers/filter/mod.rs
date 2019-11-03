@@ -12,8 +12,25 @@ use crate::{
 
 pub mod error_policy;
 
-type Handlers<'a, T, E> =
-    Vec<(Box<dyn Filter<T> + 'a>, Box<dyn Handler<'a, T, E> + 'a>)>;
+struct FilterAndHandler<'a, T, E> {
+    filter: Box<dyn Filter<T> + 'a>,
+    handler: Box<dyn Handler<'a, T, E> + 'a>,
+}
+
+impl<'a, T, E> FilterAndHandler<'a, T, E> {
+    fn new<F, H>(filter: F, handler: H) -> Self
+    where
+        F: Filter<T> + 'a,
+        H: Handler<'a, T, E> + 'a,
+    {
+        FilterAndHandler {
+            filter: Box::new(filter),
+            handler: Box::new(handler),
+        }
+    }
+}
+
+type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 
 /// Dispatcher that dispatches updates from telegram.
 ///
@@ -36,12 +53,14 @@ type Handlers<'a, T, E> =
 /// use std::convert::Infallible;
 ///
 /// use telebofr::{
-///     Bot,
-///     types::Message,
 ///     dispatching::{
-///         dispatchers::filter::{error_policy::ErrorPolicy, FilterDispatcher},
+///         dispatchers::filter::{
+///             error_policy::ErrorPolicy, FilterDispatcher,
+///         },
 ///         updater::polling,
 ///     },
+///     types::Message,
+///     Bot,
 /// };
 ///
 /// async fn handle_edited_message(mes: Message) {
@@ -67,16 +86,18 @@ type Handlers<'a, T, E> =
 /// ```
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
-/// [Custom error policy]: crate::dispatching::filter::error_policy::ErrorPolicy::Custom
-/// [updater]: crate::dispatching::updater
+/// [Custom error policy]:
+/// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
+/// crate::dispatching::updater
 pub struct FilterDispatcher<'a, E, Ep> {
-    message_handlers: Handlers<'a, Message, E>,
-    edited_message_handlers: Handlers<'a, Message, E>,
-    channel_post_handlers: Handlers<'a, Message, E>,
-    edited_channel_post_handlers: Handlers<'a, Message, E>,
-    inline_query_handlers: Handlers<'a, (), E>,
-    chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, E>,
-    callback_query_handlers: Handlers<'a, CallbackQuery, E>,
+    message_handlers: FiltersAndHandlers<'a, Message, E>,
+    edited_message_handlers: FiltersAndHandlers<'a, Message, E>,
+    channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
+    edited_channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
+    inline_query_handlers: FiltersAndHandlers<'a, (), E>,
+    chosen_inline_result_handlers:
+        FiltersAndHandlers<'a, ChosenInlineResult, E>,
+    callback_query_handlers: FiltersAndHandlers<'a, CallbackQuery, E>,
     error_policy: Ep,
 }
 
@@ -104,7 +125,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.message_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -114,7 +135,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.edited_message_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -124,7 +145,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.channel_post_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -138,7 +159,7 @@ where
         H: Handler<'a, Message, E> + 'a,
     {
         self.edited_channel_post_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -148,7 +169,7 @@ where
         H: Handler<'a, (), E> + 'a,
     {
         self.inline_query_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -162,7 +183,7 @@ where
         H: Handler<'a, ChosenInlineResult, E> + 'a,
     {
         self.chosen_inline_result_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -172,7 +193,7 @@ where
         H: Handler<'a, CallbackQuery, E> + 'a,
     {
         self.callback_query_handlers
-            .push((Box::new(filter), Box::new(handler)));
+            .push(FilterAndHandler::new(filter, handler));
         self
     }
 
@@ -238,29 +259,24 @@ where
             .await;
     }
 
-    async fn handle<T>(&self, update: T, handlers: &Handlers<'a, T, E>)
-    where
+    async fn handle<T>(
+        &self,
+        update: T,
+        handlers: &FiltersAndHandlers<'a, T, E>,
+    ) where
         T: std::fmt::Debug,
     {
-        let handler = handlers.iter().find_map(|e| {
-            let (filter, handler) = e;
-            if filter.test(&update) {
-                Some(handler)
-            } else {
-                None
-            }
-        });
-
-        match handler {
-            Some(handler) => {
-                if let Err(err) = handler.handle(update).await {
+        for x in handlers {
+            if x.filter.test(&update) {
+                if let Err(err) = x.handler.handle(update).await {
                     self.error_policy.handle_error(err).await
                 }
-            }
-            None => {
-                log::warn!("unhandled update {:?}", update);
+
+                return;
             }
         }
+
+        log::warn!("unhandled update {:?}", update);
     }
 }
 
@@ -287,8 +303,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dispatchers::filter::FilterDispatcher,
-            updater::StreamUpdater,
+            dispatchers::filter::FilterDispatcher, updater::StreamUpdater,
         },
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
@@ -301,7 +316,7 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () } )
+        let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () })
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);

@@ -1,13 +1,10 @@
-use std::{
-    path::PathBuf,
-    borrow::Cow,
-};
+use std::{borrow::Cow, path::PathBuf};
 
 use reqwest::multipart::Form;
 
 use crate::{
     requests::utils::file_to_part,
-    types::{ChatId, InputMedia, ParseMode, InputFile},
+    types::{ChatId, InputFile, InputMedia, ParseMode},
 };
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
@@ -40,7 +37,7 @@ impl FormBuilder {
     // used in SendMediaGroup
     pub fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> Self
     where
-        N: Into<Cow<'a, str>>
+        N: Into<Cow<'a, str>>,
     {
         Self {
             form: self

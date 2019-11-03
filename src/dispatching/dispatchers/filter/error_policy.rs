@@ -1,8 +1,4 @@
-use std::{
-    pin::Pin,
-    future::Future,
-    convert::Infallible,
-};
+use std::{convert::Infallible, future::Future, pin::Pin};
 
 use async_trait::async_trait;
 
@@ -21,8 +17,7 @@ pub trait ErrorPolicy<E> {
 /// # #[tokio::main]
 /// # async fn main() {
 /// use telebofr::dispatching::dispatchers::filter::error_policy::{
-///     ErrorPolicy,
-///     Ignore,
+///     ErrorPolicy, Ignore,
 /// };
 ///
 /// Ignore.handle_error(()).await;
@@ -39,11 +34,13 @@ where
 {
     async fn handle_error(&self, _: E)
     where
-        E: 'async_trait
-    {}
+        E: 'async_trait,
+    {
+    }
 }
 
-/// Error policy that silently ignores all errors that can never happen (e.g.: [`!`] or [`Infallible`])
+/// Error policy that silently ignores all errors that can never happen (e.g.:
+/// [`!`] or [`Infallible`])
 ///
 /// ## Examples
 /// ```
@@ -68,8 +65,7 @@ where
 ///
 /// ```compile_fail
 /// use telebofr::dispatching::dispatchers::filter::error_policy::{
-///     ErrorPolicy,
-///     IgnoreSafe,
+///     ErrorPolicy, IgnoreSafe,
 /// };
 ///
 /// IgnoreSafe.handle_error(0);
@@ -90,7 +86,7 @@ pub struct IgnoreSafe;
 impl ErrorPolicy<!> for IgnoreSafe {
     async fn handle_error(&self, never: !)
     where
-        !: 'async_trait
+        !: 'async_trait,
     {
         never
     }
@@ -100,7 +96,7 @@ impl ErrorPolicy<!> for IgnoreSafe {
 impl ErrorPolicy<Infallible> for IgnoreSafe {
     async fn handle_error(&self, inf: Infallible)
     where
-        Infallible: 'async_trait
+        Infallible: 'async_trait,
     {
         match inf {}
     }
@@ -114,9 +110,7 @@ impl ErrorPolicy<Infallible> for IgnoreSafe {
 /// # async fn main() {
 /// use telebofr::dispatching::dispatchers::filter::error_policy::ErrorPolicy;
 ///
-/// let closure = |e: i32| async move {
-///     eprintln!("Error code{}", e)
-/// };
+/// let closure = |e: i32| async move { eprintln!("Error code{}", e) };
 ///
 /// closure.handle_error(404).await;
 /// # }
@@ -127,11 +121,14 @@ where
     Fut: Future<Output = ()> + Send,
     E: Send,
 {
-    fn handle_error<'s, 'async_trait>(&'s self, error: E) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    fn handle_error<'s, 'async_trait>(
+        &'s self,
+        error: E,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
     where
         's: 'async_trait,
         Self: 'async_trait,
-        E: 'async_trait
+        E: 'async_trait,
     {
         Box::pin(async move { self(error).await })
     }
