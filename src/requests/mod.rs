@@ -109,17 +109,19 @@ pub type ResponseResult<T> = Result<T, crate::RequestError>;
 //    async fn send_boxed(self) -> ResponseResult<Self::Output>;
 //}
 
+pub trait Method {
+    type Output;
+
+    const METHOD: &'static str;
+}
+
 pub mod json {
     use serde::{de::DeserializeOwned, Serialize};
 
     use crate::{Bot, network};
-    use super::ResponseResult;
+    use super::{ResponseResult, Method};
 
-    pub trait Payload: Serialize {
-        type Output;
-
-        const METHOD: &'static str;
-    }
+    pub trait Payload: Serialize + Method {}
 
     pub struct Request<'b, P> {
         pub(crate) bot: &'b Bot,
@@ -147,13 +149,9 @@ pub mod multipart {
     use reqwest::multipart;
 
     use crate::{Bot, network};
-    use super::ResponseResult;
+    use super::{ResponseResult, Method};
 
-    pub trait Payload {
-        type Output;
-
-        const METHOD: &'static str;
-
+    pub trait Payload: Method {
         fn payload(&self) -> multipart::Form;
     }
 
