@@ -5,6 +5,7 @@ use super::{ResponseResult, Method};
 
 pub trait Payload: Serialize + Method {}
 
+#[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
     pub(crate) payload: P,

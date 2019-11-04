@@ -8,6 +8,7 @@ pub trait Payload: Method {
     fn payload(&self) -> multipart::Form;
 }
 
+#[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
     pub(crate) payload: P,

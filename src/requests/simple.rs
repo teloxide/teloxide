@@ -5,6 +5,7 @@ use crate::{Bot, network};
 use super::{ResponseResult, Method};
 use std::marker::PhantomData;
 
+#[must_use = "requests do nothing until sent"]
 pub struct Request<'b, M> {
     bot: &'b Bot,
     marker: PhantomData<M>,
