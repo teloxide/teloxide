@@ -118,3 +118,4 @@ pub trait Method {
 pub mod json;
 pub mod multipart;
 pub mod simple;
+pub mod dynamic;
