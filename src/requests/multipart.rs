@@ -8,6 +8,11 @@ pub trait Payload: Method {
     fn payload(&self) -> multipart::Form;
 }
 
+/// Ready-to-send telegram request.
+///
+/// Note: params will be sent to telegram using [`multipart/form-data`]
+///
+/// [`multipart/form-data`]: // TODO: libk to tgdoc
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
@@ -23,6 +28,7 @@ where
         Self { bot, payload }
     }
 
+    /// Send request to telegram
     pub async fn send(&self) -> ResponseResult<P::Output> {
         network::request_multipart(
             self.bot.client(),

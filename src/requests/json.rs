@@ -5,6 +5,11 @@ use super::{ResponseResult, Method};
 
 pub trait Payload: Serialize + Method {}
 
+/// Ready-to-send telegram request.
+///
+/// Note: params will be sent to telegram using [`json`]
+///
+/// [`json`]: // TODO: libk to tgdoc
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
@@ -20,6 +25,7 @@ where
         Self { bot, payload }
     }
 
+    /// Send request to telegram
     pub async fn send(&self) -> ResponseResult<P::Output> {
         network::request_json(
             self.bot.client(),

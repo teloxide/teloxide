@@ -96,7 +96,7 @@ mod utils;
 use async_trait::async_trait;
 use serde::de::DeserializeOwned;
 
-/// A type that is returned from `Request::send_boxed`.
+/// A type that is returned when making requests to telegram
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
 ///// A request that can be sent to Telegram.
@@ -109,9 +109,12 @@ pub type ResponseResult<T> = Result<T, crate::RequestError>;
 //    async fn send_boxed(self) -> ResponseResult<Self::Output>;
 //}
 
+/// Signature of telegram method.
 pub trait Method {
+    /// Return-type of the method.
     type Output;
 
+    /// Name of the method.
     const METHOD: &'static str;
 }
 

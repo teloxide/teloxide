@@ -20,6 +20,15 @@ pub trait Payload {
     fn kind(&self) -> Kind;
 }
 
+/// Dynamic ready-to-send telegram request.
+///
+/// This type is useful for storing different requests in one place, however
+/// this type has _little_ overhead, so prefer using [json], [multipart] or
+/// [simple] requests when possible.
+///
+/// [json]: crate::requests::json::Request
+/// [multipart]: crate::requests::multipart::Request
+/// [simple]: crate::requests::simple::Request
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
@@ -35,6 +44,7 @@ where
         Self { bot, payload }
     }
 
+    /// Send request to telegram
     pub async fn send(&self) -> ResponseResult<P::Output> {
         network::request_dynamic(
             self.bot.client(),
