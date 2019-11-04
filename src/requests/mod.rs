@@ -141,3 +141,39 @@ pub mod json {
         }
     }
 }
+
+pub mod multipart {
+    use serde::de::DeserializeOwned;
+    use reqwest::multipart;
+
+    use crate::{Bot, network};
+    use super::ResponseResult;
+
+    pub trait Payload {
+        type Output;
+
+        const METHOD: &'static str;
+
+        fn payload(&self) -> multipart::Form;
+    }
+
+    pub struct Request<'b, P> {
+        pub(crate) bot: &'b Bot,
+        pub(crate) payload: P,
+    }
+
+    impl<P> Request<'_, P>
+    where
+        P: Payload,
+        P::Output: DeserializeOwned,
+    {
+        pub async fn send(&self) -> ResponseResult<P::Output> {
+            network::request_multipart(
+                self.bot.client(),
+                self.bot.token(),
+                P::METHOD,
+                self.payload.payload(),
+            ).await
+        }
+    }
+}
