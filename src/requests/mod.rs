@@ -99,12 +99,45 @@ use serde::de::DeserializeOwned;
 /// A type that is returned from `Request::send_boxed`.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
-/// A request that can be sent to Telegram.
-#[async_trait]
-pub trait Request {
-    /// A type of response.
-    type Output: DeserializeOwned; // TODO: do we need this bound _here_?
+///// A request that can be sent to Telegram.
+//#[async_trait]
+//pub trait Request {
+//    /// A type of response.
+//    type Output: DeserializeOwned; // TODO: do we need this bound _here_?
+//
+//    /// Send this request.
+//    async fn send_boxed(self) -> ResponseResult<Self::Output>;
+//}
 
-    /// Send this request.
-    async fn send_boxed(self) -> ResponseResult<Self::Output>;
+pub mod json {
+    use serde::{de::DeserializeOwned, Serialize};
+
+    use crate::{Bot, network};
+    use super::ResponseResult;
+
+    pub trait Payload: Serialize {
+        type Output;
+
+        const METHOD: &'static str;
+    }
+
+    pub struct Request<'b, P> {
+        pub(crate) bot: &'b Bot,
+        pub(crate) payload: P,
+    }
+
+    impl<P> Request<'_, P>
+    where
+        P: Payload,
+        P::Output: DeserializeOwned,
+    {
+        pub async fn send(&self) -> ResponseResult<P::Output> {
+            network::request_json(
+                self.bot.client(),
+                self.bot.token(),
+                P::METHOD,
+                &self.payload,
+            ).await
+        }
+    }
 }
