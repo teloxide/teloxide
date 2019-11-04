@@ -175,3 +175,30 @@ pub mod multipart {
         }
     }
 }
+
+pub mod simple {
+    use serde::de::DeserializeOwned;
+    use reqwest::multipart;
+
+    use crate::{Bot, network};
+    use super::{ResponseResult, Method};
+
+    pub struct Request<'b, M> {
+        pub(crate) bot: &'b Bot,
+        marker: std::marker::PhantomData<M>,
+    }
+
+    impl<M> Request<'_, M>
+    where
+        M: Method,
+        M::Output: DeserializeOwned,
+    {
+        pub async fn send(&self) -> ResponseResult<M::Output> {
+            network::request_simple(
+                self.bot.client(),
+                self.bot.token(),
+                M::METHOD,
+            ).await
+        }
+    }
+}
