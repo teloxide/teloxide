@@ -30,22 +30,21 @@ pub trait Payload {
 /// [multipart]: crate::requests::multipart::Request
 /// [simple]: crate::requests::simple::Request
 #[must_use = "requests do nothing until sent"]
-pub struct Request<'b, P> {
+pub struct Request<'b, O> {
     bot: &'b Bot,
-    pub(crate) payload: P,
+    pub(crate) payload: &'b dyn Payload<Output = O>, // TODO: Box?
 }
 
-impl<'b, P> Request<'b, P>
+impl<'b, O> Request<'b, O>
 where
-    P: Payload,
-    P::Output: DeserializeOwned,
+    O: DeserializeOwned,
 {
-    pub fn new(bot: &'b Bot, payload: P) -> Self {
+    pub fn new(bot: &'b Bot, payload: &'b dyn Payload<Output = O>) -> Self {
         Self { bot, payload }
     }
 
     /// Send request to telegram
-    pub async fn send(&self) -> ResponseResult<P::Output> {
+    pub async fn send(&self) -> ResponseResult<O> {
         network::request_dynamic(
             self.bot.client(),
             self.bot.token(),
