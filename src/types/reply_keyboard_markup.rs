@@ -1,7 +1,7 @@
 use crate::types::KeyboardButton;
 
 /// This object represents a custom keyboard with reply options.
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
 pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects

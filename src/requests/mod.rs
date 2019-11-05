@@ -52,3 +52,25 @@ where
         T::METHOD
     }
 }
+
+pub mod payloads {
+    // payloads are sorted as in tg docs (https://core.telegram.org/bots/api)
+
+    // Getting updates
+    mod get_updates;
+
+    pub use get_updates::{GetUpdates, AllowedUpdate};
+
+    // Available methods
+    mod get_me;
+    mod send_message;
+
+    mod send_animation;
+
+    pub use self::{
+        get_me::GetMe,
+        send_message::SendMessage,
+
+        send_animation::SendAnimation,
+    };
+}
