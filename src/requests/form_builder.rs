@@ -4,7 +4,7 @@ use reqwest::multipart::Form;
 
 use crate::{
     requests::utils::file_to_part,
-    types::{ChatId, InputFile, InputMedia, ParseMode},
+    types::{ChatId, InputFile, InputMedia, ParseMode, ReplyMarkup},
 };
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
@@ -19,7 +19,7 @@ impl FormBuilder {
     }
 
     /// Add the supplied key-value pair to this `FormBuilder`.
-    pub fn add<'a, T, N>(self, name: N, value: T) -> Self
+    pub fn add<'a, T, N>(self, name: N, value: &T) -> Self
     where
         N: Into<Cow<'a, str>>,
         T: IntoFormValue,
@@ -57,15 +57,15 @@ pub(crate) enum FormValue {
 }
 
 pub(crate) trait IntoFormValue {
-    fn into_form_value(self) -> Option<FormValue>;
+    fn into_form_value(&self) -> Option<FormValue>;
 }
 
 macro_rules! impl_for_struct {
     ($($name:ty),*) => {
         $(
             impl IntoFormValue for $name {
-                fn into_form_value(self) -> Option<FormValue> {
-                    let json = serde_json::to_string(&self)
+                fn into_form_value(&self) -> Option<FormValue> {
+                    let json = serde_json::to_string(self)
                         .expect("serde_json::to_string failed");
                     Some(FormValue::Str(json))
                 }
@@ -74,33 +74,33 @@ macro_rules! impl_for_struct {
     };
 }
 
-impl_for_struct!(bool, i32, i64);
+impl_for_struct!(bool, i32, i64, u32, ReplyMarkup);
 
 impl<T> IntoFormValue for Option<T>
 where
     T: IntoFormValue,
 {
-    fn into_form_value(self) -> Option<FormValue> {
-        self.and_then(IntoFormValue::into_form_value)
+    fn into_form_value(&self) -> Option<FormValue> {
+        self.as_ref().and_then(IntoFormValue::into_form_value)
     }
 }
 
-impl IntoFormValue for &[InputMedia] {
-    fn into_form_value(self) -> Option<FormValue> {
+impl IntoFormValue for [InputMedia] {
+    fn into_form_value(&self) -> Option<FormValue> {
         let json =
             serde_json::to_string(self).expect("serde_json::to_string failed");
         Some(FormValue::Str(json))
     }
 }
 
-impl IntoFormValue for &str {
-    fn into_form_value(self) -> Option<FormValue> {
+impl IntoFormValue for str {
+    fn into_form_value(&self) -> Option<FormValue> {
         Some(FormValue::Str(self.to_owned()))
     }
 }
 
 impl IntoFormValue for ParseMode {
-    fn into_form_value(self) -> Option<FormValue> {
+    fn into_form_value(&self) -> Option<FormValue> {
         let string = match self {
             ParseMode::HTML => String::from("HTML"),
             ParseMode::Markdown => String::from("Markdown"),
@@ -110,27 +110,27 @@ impl IntoFormValue for ParseMode {
 }
 
 impl IntoFormValue for ChatId {
-    fn into_form_value(self) -> Option<FormValue> {
+    fn into_form_value(&self) -> Option<FormValue> {
         let string = match self {
             ChatId::Id(id) => id.to_string(),
-            ChatId::ChannelUsername(username) => username,
+            ChatId::ChannelUsername(username) => username.clone(),
         };
         Some(FormValue::Str(string))
     }
 }
 
 impl IntoFormValue for String {
-    fn into_form_value(self) -> Option<FormValue> {
-        Some(FormValue::Str(self))
+    fn into_form_value(&self) -> Option<FormValue> {
+        Some(FormValue::Str(self.clone()))
     }
 }
 
 impl IntoFormValue for InputFile {
-    fn into_form_value(self) -> Option<FormValue> {
+    fn into_form_value(&self) -> Option<FormValue> {
         match self {
-            InputFile::File(path) => Some(FormValue::File(path)),
-            InputFile::Url(url) => Some(FormValue::Str(url)),
-            InputFile::FileId(file_id) => Some(FormValue::Str(file_id)),
+            InputFile::File(path) => Some(FormValue::File(path.clone())),
+            InputFile::Url(url) => Some(FormValue::Str(url.clone())),
+            InputFile::FileId(file_id) => Some(FormValue::Str(file_id.clone())),
         }
     }
 }
