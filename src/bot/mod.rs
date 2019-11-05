@@ -1,8 +1,6 @@
 use reqwest::Client;
 
-// TODO: commented due to WIP changes.
-//   See https://github.com/telebofr/telebofr/issues/81.
-//mod api;
+mod api;
 mod download;
 
 /// A Telegram bot used to build requests.
