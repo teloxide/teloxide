@@ -12,7 +12,10 @@ pub trait Payload: Method {
 ///
 /// Note: params will be sent to telegram using [`multipart/form-data`]
 ///
+/// See [SendAnimation] for reference implementation.
+///
 /// [`multipart/form-data`]: https://core.telegram.org/bots/api#making-requests
+/// [SendAnimation]: crate::requests::payloads::SendAnimation
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,

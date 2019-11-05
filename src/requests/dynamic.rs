@@ -21,9 +21,16 @@ pub trait Payload: DynMethod {
 /// this type has _little_ overhead, so prefer using [json], [multipart] or
 /// [simple] requests when possible.
 ///
+/// See [GetMe], [GetUpdates], [SendMessage] and [SendAnimation] for reference
+/// implementations.
+///
 /// [json]: crate::requests::json::Request
 /// [multipart]: crate::requests::multipart::Request
 /// [simple]: crate::requests::simple::Request
+/// [GetMe]: crate::requests::payloads::GetMe
+/// [GetUpdates]: crate::requests::payloads::GetUpdates
+/// [SendMessage]: crate::requests::payloads::SendMessage
+/// [SendAnimation]: crate::requests::payloads::SendAnimation
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, O> {
     bot: &'b Bot,

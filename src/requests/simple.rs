@@ -9,7 +9,9 @@ use std::marker::PhantomData;
 ///
 /// NOTE: Currently where is only one request without params - [GetMe]
 ///
-/// [GetMe]: // TODO
+/// See [GetMe] for reference implementation.
+///
+/// [GetMe]: crate::requests::payloads::GetMe
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, M> {
     bot: &'b Bot,

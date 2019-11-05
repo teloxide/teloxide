@@ -9,7 +9,11 @@ pub trait Payload: Serialize + Method {}
 ///
 /// Note: params will be sent to telegram using [`application/json`]
 ///
+/// See [GetUpdates] and [SendMessage] for reference implementations.
+///
 /// [`application/json`]: https://core.telegram.org/bots/api#making-requests
+/// [GetUpdates]: crate::requests::payloads::GetUpdates
+/// [SendMessage]: crate::requests::payloads::SendMessage
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
