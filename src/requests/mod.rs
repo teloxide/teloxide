@@ -118,7 +118,24 @@ pub trait Method {
     const METHOD: &'static str;
 }
 
-pub mod json;
-pub mod multipart;
-pub mod simple;
-pub mod dynamic;
+/// Signature of telegram method.
+///
+/// Note: this trait is very similar to [`Method`] trait, however it can be used
+/// as trait object.
+pub trait DynMethod {
+    type Output;
+
+    /// Return name of the method.
+    fn method(&self) -> &str;
+}
+
+impl<T> DynMethod for T
+where
+    T: Method
+{
+    type Output = T::Output;
+
+    fn method(&self) -> &str {
+        T::METHOD
+    }
+}

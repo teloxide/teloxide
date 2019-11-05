@@ -2,21 +2,16 @@ use serde::de::DeserializeOwned;
 use reqwest::multipart;
 
 use crate::{Bot, network};
-use super::{ResponseResult, Method};
+use super::{ResponseResult, DynMethod};
 
+/// [`Payload`] kind. Used to determinate the way for sending request.
 pub enum Kind {
     Simple,
     Json(String),
     Multipart(multipart::Form),
 }
 
-pub trait Payload {
-    // NOTE: This payload doesn't use `Method` and reinvent `type Output`
-    //  because the trait `Method` cannot be made into an object.
-    type Output;
-
-    fn method(&self) -> &str;
-
+pub trait Payload: DynMethod {
     fn kind(&self) -> Kind;
 }
 

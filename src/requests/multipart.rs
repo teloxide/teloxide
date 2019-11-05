@@ -12,7 +12,7 @@ pub trait Payload: Method {
 ///
 /// Note: params will be sent to telegram using [`multipart/form-data`]
 ///
-/// [`multipart/form-data`]: // TODO: libk to tgdoc
+/// [`multipart/form-data`]: https://core.telegram.org/bots/api#making-requests
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,

@@ -7,9 +7,9 @@ pub trait Payload: Serialize + Method {}
 
 /// Ready-to-send telegram request.
 ///
-/// Note: params will be sent to telegram using [`json`]
+/// Note: params will be sent to telegram using [`application/json`]
 ///
-/// [`json`]: // TODO: libk to tgdoc
+/// [`application/json`]: https://core.telegram.org/bots/api#making-requests
 #[must_use = "requests do nothing until sent"]
 pub struct Request<'b, P> {
     bot: &'b Bot,
