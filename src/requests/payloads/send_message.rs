@@ -51,10 +51,10 @@ impl dynamic::Payload for SendMessage {
 }
 
 impl SendMessage {
-    pub fn new<C, S>(chat_id: C, text: S) -> Self
+    pub fn new<C, T>(chat_id: C, text: T) -> Self
     where
         C: Into<ChatId>,
-        S: Into<String>, // TODO: into?
+        T: Into<String>, // TODO: into?
     {
         SendMessage {
             chat_id: chat_id.into(),

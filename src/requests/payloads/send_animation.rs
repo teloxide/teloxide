@@ -87,8 +87,8 @@ impl dynamic::Payload for SendAnimation {
 
 impl SendAnimation {
     pub fn new<C>(chat_id: C, animation: InputFile) -> Self
-        where
-            C: Into<ChatId>,
+    where
+        C: Into<ChatId>,
     {
         Self {
             chat_id: chat_id.into(),
