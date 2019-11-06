@@ -50,7 +50,7 @@ where
         network::request_dynamic(
             self.bot.client(),
             self.bot.token(),
-            self.payload.method(),
+            self.payload.name(),
             self.payload.kind(),
         ).await
     }

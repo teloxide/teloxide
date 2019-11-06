@@ -28,7 +28,7 @@ pub trait Method {
     type Output;
 
     /// Name of the method.
-    const METHOD: &'static str;
+    const NAME: &'static str;
 }
 
 /// Signature of telegram method.
@@ -39,7 +39,7 @@ pub trait DynMethod {
     type Output;
 
     /// Return name of the method.
-    fn method(&self) -> &str;
+    fn name(&self) -> &str;
 }
 
 impl<T> DynMethod for T
@@ -48,8 +48,8 @@ where
 {
     type Output = T::Output;
 
-    fn method(&self) -> &str {
-        T::METHOD
+    fn name(&self) -> &str {
+        T::NAME
     }
 }
 

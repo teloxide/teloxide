@@ -32,7 +32,7 @@ where
         network::request_simple(
             self.bot.client(),
             self.bot.token(),
-            M::METHOD,
+            M::NAME,
         ).await
     }
 }

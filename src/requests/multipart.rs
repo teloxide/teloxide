@@ -36,7 +36,7 @@ where
         network::request_multipart(
             self.bot.client(),
             self.bot.token(),
-            P::METHOD,
+            P::NAME,
             self.payload.payload(),
         ).await
     }

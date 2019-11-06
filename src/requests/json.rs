@@ -34,7 +34,7 @@ where
         network::request_json(
             self.bot.client(),
             self.bot.token(),
-            P::METHOD,
+            P::NAME,
             &self.payload,
         ).await
     }

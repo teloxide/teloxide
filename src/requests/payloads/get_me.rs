@@ -13,7 +13,7 @@ pub struct GetMe;
 impl Method for GetMe {
     type Output = User;
 
-    const METHOD: &'static str = "getMe";
+    const NAME: &'static str = "getMe";
 }
 
 impl dynamic::Payload for GetMe {

@@ -74,7 +74,7 @@ pub enum AllowedUpdate {
 impl Method for GetUpdates {
     type Output = Vec<Update>;
 
-    const METHOD: &'static str = "getUpdates";
+    const NAME: &'static str = "getUpdates";
 }
 
 impl json::Payload for GetUpdates {}

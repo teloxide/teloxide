@@ -58,7 +58,7 @@ pub struct SendAnimation {
 impl Method for SendAnimation {
     type Output = Message;
 
-    const METHOD: &'static str = "sendAnimation";
+    const NAME: &'static str = "sendAnimation";
 }
 
 impl multipart::Payload for SendAnimation {

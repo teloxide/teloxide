@@ -39,7 +39,7 @@ pub struct SendMessage {
 impl Method for SendMessage {
     type Output = Message;
 
-    const METHOD: &'static str = "sendMessage";
+    const NAME: &'static str = "sendMessage";
 }
 
 impl json::Payload for SendMessage {}
