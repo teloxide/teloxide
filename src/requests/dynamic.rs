@@ -6,7 +6,6 @@ use super::{ResponseResult, DynMethod};
 
 /// [`Payload`] kind. Used to determinate the way for sending request.
 pub enum Kind {
-    Simple,
     Json(String),
     Multipart(multipart::Form),
 }
@@ -18,16 +17,14 @@ pub trait Payload: DynMethod {
 /// Dynamic ready-to-send telegram request.
 ///
 /// This type is useful for storing different requests in one place, however
-/// this type has _little_ overhead, so prefer using [json], [multipart] or
-/// [simple] requests when possible.
+/// this type has _little_ overhead, so prefer using [json] or [multipart]
+/// requests when possible.
 ///
-/// See [GetMe], [GetUpdates], [SendMessage] and [SendAnimation] for reference
+/// See [GetUpdates], [SendMessage] and [SendAnimation] for reference
 /// implementations.
 ///
 /// [json]: crate::requests::json::Request
 /// [multipart]: crate::requests::multipart::Request
-/// [simple]: crate::requests::simple::Request
-/// [GetMe]: crate::requests::payloads::GetMe
 /// [GetUpdates]: crate::requests::payloads::GetUpdates
 /// [SendMessage]: crate::requests::payloads::SendMessage
 /// [SendAnimation]: crate::requests::payloads::SendAnimation

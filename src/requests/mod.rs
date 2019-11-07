@@ -5,7 +5,6 @@ mod utils;
 
 pub mod json;
 pub mod multipart;
-pub mod simple;
 pub mod dynamic;
 
 

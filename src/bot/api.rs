@@ -1,7 +1,7 @@
 use crate::{
     Bot,
     requests::{
-        simple, json, multipart,
+        json, multipart,
         payloads::{GetMe, GetUpdates, SendMessage, SendAnimation}
     },
     types::{ChatId, InputFile},
@@ -22,8 +22,8 @@ impl Bot {
     /// For tg-method documentation see [`GetMe`]
     ///
     /// [`GetMe`]: crate::requests::payloads::GetMe
-    pub fn get_me(&self) -> simple::Request<GetMe> {
-        simple::Request::new(self)
+    pub fn get_me(&self) -> json::Request<GetMe> {
+        json::Request::new(self, GetMe {})
     }
 
     /// For tg-method documentation see [`SendMessage`]

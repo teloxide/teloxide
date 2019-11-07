@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 use crate::{
     Bot,
     requests::{dynamic, json, multipart, Method, ResponseResult},
-    network::{request_dynamic, request_json, request_multipart, request_simple},
+    network::{request_dynamic, request_json, request_multipart},
 };
 
 impl Bot {
@@ -23,12 +23,11 @@ impl Bot {
     /// 1. we recommend to use `bot.send_message(id, "text").send().await`
     ///   instead
     /// 2. this is _dynamic_ version of execute, so it has a _little_ overhead,
-    ///   prefer using [`execute_json`], [`execute_multipart`] or
-    ///   [`execute_simple`] depending on type of payload when possible.
+    ///   prefer using [`execute_json`] or [`execute_multipart`] depending on
+    ///   type of payload when possible.
     ///
     /// [`execute_json`]: self::Bot::execute_json
     /// [`execute_multipart`]: self::Bot::execute_multipart
-    /// [`execute_simple`]: self::Bot::execute_simple
     pub async fn execute_dyn<O>(
         &self,
         payload: &dyn dynamic::Payload<Output = O>
@@ -94,26 +93,5 @@ impl Bot {
             P::NAME,
             payload.payload()
         ).await
-    }
-
-    /// Execute simple-request
-    ///
-    /// ## Example
-    /// ```no_run
-    /// # use telebofr::{Bot, requests::payloads::GetMe};
-    /// # #[tokio::main] async fn main() {
-    /// let bot = Bot::new("TOKEN");
-    /// bot.execute_simple(&GetMe /* the only one "simple" request */).await;
-    /// # }
-    /// ```
-    ///
-    /// **NOTE**: we recommend to use
-    ///   `bot.get_me().send().await` instead
-    pub async fn execute_simple<P>(&self, payload: &P) -> ResponseResult<P::Output>
-    where
-        P: Method,
-        P::Output: DeserializeOwned,
-    {
-        request_simple(self.client(), self.token(), P::NAME).await
     }
 }

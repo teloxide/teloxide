@@ -24,23 +24,6 @@ where
     process_response(response).await
 }
 
-pub async fn request_simple<T>(
-    client: &Client,
-    token: &str,
-    method_name: &str,
-) -> ResponseResult<T>
-where
-    T: DeserializeOwned,
-{
-    let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    process_response(response).await
-}
-
 pub async fn request_json<T, P>(
     client: &Client,
     token: &str,
@@ -92,7 +75,6 @@ pub async fn request_dynamic<T>(
     use crate::requests::dynamic::Kind;
 
     match params {
-        Kind::Simple => request_simple(client, token, method_name).await,
         Kind::Json(str) => request_body(client, token, method_name, str).await,
         Kind::Multipart(form) => request_multipart(
             client,
