@@ -19,11 +19,11 @@ impl InputFile {
         Self::Url(url.into())
     }
 
-    pub fn file_id(file_id: T) -> Self
+    pub fn file_id<T>(file_id: T) -> Self
     where
         T: Into<String>
     {
-        Self::FileId(fiel_id.into())
+        Self::FileId(file_id.into())
     }
 
     pub fn as_file(&self) -> Option<&PathBuf> {
