@@ -69,19 +69,16 @@ pub async fn request_dynamic<T>(
     method_name: &str,
     params: crate::requests::dynamic::Kind,
 ) -> ResponseResult<T>
-    where
-        T: DeserializeOwned,
+where
+    T: DeserializeOwned,
 {
     use crate::requests::dynamic::Kind;
 
     match params {
         Kind::Json(str) => request_body(client, token, method_name, str).await,
-        Kind::Multipart(form) => request_multipart(
-            client,
-            token,
-            method_name,
-            form
-        ).await
+        Kind::Multipart(form) => {
+            request_multipart(client, token, method_name, form).await
+        }
     }
 }
 

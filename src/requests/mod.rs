@@ -3,10 +3,9 @@
 mod form_builder;
 mod utils;
 
+pub mod dynamic;
 pub mod json;
 pub mod multipart;
-pub mod dynamic;
-
 
 /// A type that is returned when making requests to telegram
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
@@ -43,7 +42,7 @@ pub trait DynMethod {
 
 impl<T> DynMethod for T
 where
-    T: Method
+    T: Method,
 {
     type Output = T::Output;
 
@@ -52,13 +51,14 @@ where
     }
 }
 
+#[rustfmt::skip]
 pub mod payloads {
     // payloads are sorted as in tg docs (https://core.telegram.org/bots/api)
 
     // Getting updates
     mod get_updates;
 
-    pub use get_updates::{GetUpdates, AllowedUpdate};
+    pub use get_updates::{AllowedUpdate, GetUpdates};
 
     // Available methods
     mod get_me;

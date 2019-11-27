@@ -1,7 +1,7 @@
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{Bot, network};
-use super::{ResponseResult, Method};
+use super::{Method, ResponseResult};
+use crate::{network, Bot};
 
 pub trait Payload: Serialize + Method {}
 
@@ -36,6 +36,7 @@ where
             self.bot.token(),
             P::NAME,
             &self.payload,
-        ).await
+        )
+        .await
     }
 }

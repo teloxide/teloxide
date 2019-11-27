@@ -1,9 +1,9 @@
 use serde::de::DeserializeOwned;
 
 use crate::{
-    Bot,
-    requests::{dynamic, json, multipart, ResponseResult},
     network::{request_dynamic, request_json, request_multipart},
+    requests::{dynamic, json, multipart, ResponseResult},
+    Bot,
 };
 
 impl Bot {
@@ -30,7 +30,7 @@ impl Bot {
     /// [`execute_multipart`]: self::Bot::execute_multipart
     pub async fn execute_dyn<O>(
         &self,
-        payload: &dyn dynamic::Payload<Output = O>
+        payload: &dyn dynamic::Payload<Output = O>,
     ) -> ResponseResult<O>
     where
         O: DeserializeOwned,
@@ -39,8 +39,9 @@ impl Bot {
             self.client(),
             self.token(),
             payload.name(),
-            payload.kind()
-        ).await
+            payload.kind(),
+        )
+        .await
     }
 
     /// Execute json-request
@@ -57,7 +58,10 @@ impl Bot {
     ///
     /// **NOTE**: we recommend to use
     ///   `bot.send_message(id, "text").send().await` instead
-    pub async fn execute_json<P>(&self, payload: &P) -> ResponseResult<P::Output>
+    pub async fn execute_json<P>(
+        &self,
+        payload: &P,
+    ) -> ResponseResult<P::Output>
     where
         P: json::Payload,
         P::Output: DeserializeOwned,
@@ -82,7 +86,10 @@ impl Bot {
     ///
     /// **NOTE**: we recommend to use
     ///   `bot.send_animation(id, InputFile::...).send().await` instead
-    pub async fn execute_multipart<P>(&self, payload: &P) -> ResponseResult<P::Output>
+    pub async fn execute_multipart<P>(
+        &self,
+        payload: &P,
+    ) -> ResponseResult<P::Output>
     where
         P: multipart::Payload,
         P::Output: DeserializeOwned,
@@ -91,7 +98,8 @@ impl Bot {
             self.client(),
             self.token(),
             P::NAME,
-            payload.payload()
-        ).await
+            payload.payload(),
+        )
+        .await
     }
 }

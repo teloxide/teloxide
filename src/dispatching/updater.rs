@@ -93,7 +93,7 @@ use crate::{bot::Bot, types::Update, RequestError};
 /// <a id="4" href="#4b">^4</a> `offset = N` means that we've already received
 ///   updates `0..=N`
 ///
-/// [GetUpdates]: crate::requests::GetUpdates
+/// [GetUpdates]: crate::requests::payloads::GetUpdates
 /// [getting updates]: https://core.telegram.org/bots/api#getting-updates
 /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 pub trait Updater:

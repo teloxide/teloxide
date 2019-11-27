@@ -14,9 +14,9 @@ pub enum InputMessageContent {
         /// Text of the message to be sent, 1-4096 characters
         message_text: String,
 
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show
+        /// [bold, italic, fixed-width text or inline URLs] in the media
+        /// caption.
         ///
         /// [Markdown]: crate::types::ParseMode::Markdown
         /// [HTML]: crate::types::ParseMode::HTML

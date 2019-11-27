@@ -1,10 +1,11 @@
 use crate::{
-    requests::{Method, dynamic},
+    requests::{dynamic, json, Method},
     types::User,
 };
-use crate::requests::json;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Default, Deserialize, Serialize)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Default, Deserialize, Serialize,
+)]
 /// A filter method for testing your bot's auth token. Requires no parameters.
 /// Returns basic information about the bot in form of a [`User`] object.
 ///

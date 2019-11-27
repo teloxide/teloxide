@@ -1,8 +1,7 @@
 use crate::{
-    requests::{json, Method},
+    requests::{dynamic, json, Method},
     types::File,
 };
-use crate::requests::dynamic;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading.
@@ -47,7 +46,7 @@ impl dynamic::Payload for GetFile {
 impl GetFile {
     pub fn new<F>(file_id: F) -> Self
     where
-        F: Into<String>
+        F: Into<String>,
     {
         Self {
             file_id: file_id.into(),

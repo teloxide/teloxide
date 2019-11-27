@@ -1,8 +1,8 @@
-use serde::de::DeserializeOwned;
 use reqwest::multipart;
+use serde::de::DeserializeOwned;
 
-use crate::{Bot, network};
-use super::{ResponseResult, DynMethod};
+use super::{DynMethod, ResponseResult};
+use crate::{network, Bot};
 
 /// [`Payload`] kind. Used to determinate the way for sending request.
 pub enum Kind {
@@ -49,6 +49,7 @@ where
             self.bot.token(),
             self.payload.name(),
             self.payload.kind(),
-        ).await
+        )
+        .await
     }
 }

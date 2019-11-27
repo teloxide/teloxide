@@ -1,5 +1,5 @@
 use crate::{
-    requests::{json, Method, dynamic},
+    requests::{dynamic, json, Method},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
@@ -21,7 +21,8 @@ pub struct SendMessage {
     ///
     /// [Markdown]: crate::types::ParseMode::Markdown
     /// [HTML]: crate::types::ParseMode::HTML
-    /// [bold, italic, fixed-width text or inline URLs]: crate::types::ParseMode
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
     /// Disables link previews for links in this message
     pub disable_web_page_preview: Option<bool>,

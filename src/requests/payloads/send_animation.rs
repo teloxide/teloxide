@@ -1,7 +1,7 @@
 use reqwest::multipart::Form;
 
 use crate::{
-    requests::{multipart, Method, dynamic, form_builder::FormBuilder},
+    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
@@ -42,7 +42,8 @@ pub struct SendAnimation {
     ///
     /// [Markdown]: crate::types::ParseMode::Markdown
     /// [HTML]: crate::types::ParseMode::HTML
-    /// [bold, italic, fixed-width text or inline URLs]: crate::types::ParseMode
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
     /// Sends the message silently. Users will receive a notification with no
     /// sound.

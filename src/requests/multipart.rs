@@ -1,8 +1,8 @@
-use serde::de::DeserializeOwned;
 use reqwest::multipart;
+use serde::de::DeserializeOwned;
 
-use crate::{Bot, network};
-use super::{ResponseResult, Method};
+use super::{Method, ResponseResult};
+use crate::{network, Bot};
 
 pub trait Payload: Method {
     fn payload(&self) -> multipart::Form;
@@ -38,6 +38,7 @@ where
             self.bot.token(),
             P::NAME,
             self.payload.payload(),
-        ).await
+        )
+        .await
     }
 }

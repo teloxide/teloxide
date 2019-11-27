@@ -1,10 +1,10 @@
 use crate::{
-    Bot,
     requests::{
         json, multipart,
-        payloads::{GetMe, GetUpdates, SendMessage, SendAnimation, GetFile}
+        payloads::{GetFile, GetMe, GetUpdates, SendAnimation, SendMessage},
     },
     types::{ChatId, InputFile},
+    Bot,
 };
 
 impl Bot {
@@ -29,8 +29,11 @@ impl Bot {
     /// For tg-method documentation see [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::requests::payloads::SendMessage
-    pub fn send_message<C, T>(&self, chat_id: C, text: T)
-        -> json::Request<SendMessage>
+    pub fn send_message<C, T>(
+        &self,
+        chat_id: C,
+        text: T,
+    ) -> json::Request<SendMessage>
     where
         C: Into<ChatId>,
         T: Into<String>,
@@ -41,8 +44,11 @@ impl Bot {
     /// For tg-method documentation see [`SendAnimation`]
     ///
     /// [`SendAnimation`]: crate::requests::payloads::SendAnimation
-    pub fn send_animation<C>(&self, chat_id: C, animation: InputFile)
-        -> multipart::Request<SendAnimation>
+    pub fn send_animation<C>(
+        &self,
+        chat_id: C,
+        animation: InputFile,
+    ) -> multipart::Request<SendAnimation>
     where
         C: Into<ChatId>,
     {
