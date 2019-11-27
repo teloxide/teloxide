@@ -14,14 +14,14 @@ impl InputFile {
 
     pub fn url<T>(url: T) -> Self
     where
-        T: Into<String>
+        T: Into<String>,
     {
         Self::Url(url.into())
     }
 
     pub fn file_id<T>(file_id: T) -> Self
     where
-        T: Into<String>
+        T: Into<String>,
     {
         Self::FileId(file_id.into())
     }

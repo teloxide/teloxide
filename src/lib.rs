@@ -1,5 +1,3 @@
-#![cfg_attr(feature = "never-type", feature(never_type))]
-
 #[macro_use]
 extern crate derive_more;
 #[macro_use]
