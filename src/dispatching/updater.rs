@@ -138,12 +138,7 @@ where
 pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
     let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
         async move {
-            // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
-            // TODO: for now `get_updates` are removed, but when we implement it
-            //   back, we need to fix this code.
-            //   See https://github.com/telebofr/telebofr/issues/81.
-            let updates: Result<Vec<Update>, RequestError> = todo!();
-            let updates = match /* bot.get_updates().offset(offset).send().await */ updates {
+            let updates = match bot.get_updates().offset(offset).send().await {
                 Ok(updates) => {
                     if let Some(upd) = updates.last() {
                         offset = upd.id + 1;
