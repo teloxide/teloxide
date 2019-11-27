@@ -1,6 +1,6 @@
-use std::{future::Future, pin::Pin};
 #[cfg(not(feature = "never-type"))]
 use std::convert::Infallible;
+use std::{future::Future, pin::Pin};
 
 use async_trait::async_trait;
 
