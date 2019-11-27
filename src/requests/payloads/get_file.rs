@@ -1,6 +1,4 @@
 use crate::{
-    bot::Bot,
-    network,
     requests::{json, Method},
     types::File,
 };

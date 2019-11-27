@@ -1,7 +1,5 @@
-use async_trait::async_trait;
-
 use crate::{
-    requests::{ResponseResult, json, Method, dynamic},
+    requests::{json, Method, dynamic},
     types::Update,
 };
 

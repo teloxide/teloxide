@@ -1,7 +1,7 @@
 use reqwest::multipart::Form;
 
 use crate::{
-    requests::{ResponseResult, multipart, Method, dynamic, form_builder::FormBuilder},
+    requests::{multipart, Method, dynamic, form_builder::FormBuilder},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 

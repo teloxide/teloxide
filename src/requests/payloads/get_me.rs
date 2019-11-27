@@ -26,7 +26,7 @@ impl dynamic::Payload for GetMe {
 }
 
 impl GetMe {
-    fn new() -> Self {
+    pub fn new() -> Self {
         GetMe {}
     }
 }

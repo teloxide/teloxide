@@ -1,5 +1,5 @@
 use crate::{
-    requests::{ResponseResult, json, Method, dynamic},
+    requests::{json, Method, dynamic},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 

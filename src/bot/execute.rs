@@ -2,7 +2,7 @@ use serde::de::DeserializeOwned;
 
 use crate::{
     Bot,
-    requests::{dynamic, json, multipart, Method, ResponseResult},
+    requests::{dynamic, json, multipart, ResponseResult},
     network::{request_dynamic, request_json, request_multipart},
 };
 
