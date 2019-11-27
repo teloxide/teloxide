@@ -10,16 +10,6 @@ pub mod multipart;
 /// A type that is returned when making requests to telegram
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
-///// A request that can be sent to Telegram.
-//#[async_trait]
-//pub trait Request {
-//    /// A type of response.
-//    type Output: DeserializeOwned; // TODO: do we need this bound _here_?
-//
-//    /// Send this request.
-//    async fn send_boxed(self) -> ResponseResult<Self::Output>;
-//}
-
 /// Signature of telegram method.
 pub trait Method {
     /// Return-type of the method.
