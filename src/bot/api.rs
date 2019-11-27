@@ -2,7 +2,7 @@ use crate::{
     Bot,
     requests::{
         json, multipart,
-        payloads::{GetMe, GetUpdates, SendMessage, SendAnimation}
+        payloads::{GetMe, GetUpdates, SendMessage, SendAnimation, GetFile}
     },
     types::{ChatId, InputFile},
 };
@@ -47,5 +47,15 @@ impl Bot {
         C: Into<ChatId>,
     {
         multipart::Request::new(self, SendAnimation::new(chat_id, animation))
+    }
+
+    /// For tg-method documentation see [`GetFile`]
+    ///
+    /// [`GetFile`]: crate::requests::payloads::GetFile
+    pub fn get_file<F>(&self, file_id: F) -> json::Request<GetFile>
+    where
+        F: Into<String>,
+    {
+        json::Request::new(self, GetFile::new(file_id))
     }
 }

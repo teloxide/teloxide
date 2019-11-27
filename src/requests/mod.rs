@@ -66,10 +66,14 @@ pub mod payloads {
 
     mod send_animation;
 
+    mod get_file;
+
     pub use self::{
         get_me::GetMe,
         send_message::SendMessage,
 
         send_animation::SendAnimation,
+
+        get_file::GetFile,
     };
 }
