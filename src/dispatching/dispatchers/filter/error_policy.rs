@@ -1,4 +1,6 @@
-use std::{convert::Infallible, future::Future, pin::Pin};
+use std::{future::Future, pin::Pin};
+#[cfg(not(feature = "never-type"))]
+use std::convert::Infallible;
 
 use async_trait::async_trait;
 
@@ -82,23 +84,24 @@ where
 pub struct IgnoreSafe;
 
 #[cfg(feature = "never-type")]
+#[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<!> for IgnoreSafe {
-    async fn handle_error(&self, never: !)
+    async fn handle_error(&self, _: !)
     where
         !: 'async_trait,
     {
-        never
     }
 }
 
+#[cfg(not(feature = "never-type"))]
+#[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<Infallible> for IgnoreSafe {
-    async fn handle_error(&self, inf: Infallible)
+    async fn handle_error(&self, _: Infallible)
     where
         Infallible: 'async_trait,
     {
-        match inf {}
     }
 }
 
