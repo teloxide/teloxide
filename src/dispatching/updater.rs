@@ -102,7 +102,7 @@ pub trait Updater:
     type Error;
 }
 
-type StreamItem = Result<Update, RequestError>;
+pub type StreamItem = Result<Update, RequestError>;
 
 struct InnerUpdater<'a> {
     stream: Box<dyn Stream<Item = StreamItem> + 'a>,
