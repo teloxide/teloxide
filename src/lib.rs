@@ -1,3 +1,4 @@
+#![feature(type_alias_impl_trait)]
 #![cfg_attr(feature = "never-type", feature(never_type))]
 
 #[macro_use]

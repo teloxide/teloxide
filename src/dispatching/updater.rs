@@ -5,8 +5,12 @@ use std::{
 
 use futures::{stream, Stream, StreamExt};
 
+use pin_project::pin_project;
+
 use crate::{bot::Bot, types::Update, RequestError};
-use std::ops::DerefMut;
+
+// updater::Updater trait
+// **********************************************************************
 
 // Currently just a placeholder, but I'll  add here some methods
 /// Updater is stream of updates.
@@ -97,61 +101,88 @@ use std::ops::DerefMut;
 /// [getting updates]: https://core.telegram.org/bots/api#getting-updates
 /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 pub trait Updater:
-    Stream<Item = Result<Update, <Self as Updater>::Error>>
+Stream<Item = Result<Update, <Self as Updater>::Error>>
 {
     type Error;
 }
 
-pub type StreamItem = Result<Update, RequestError>;
+// updater::LongPolling struct
+// **********************************************************************
 
-struct InnerUpdater<'a> {
-    stream: Box<dyn Stream<Item = StreamItem> + 'a>,
-}
+type LongPollingStream<'a> = impl Stream<Item = Result<Update, RequestError>> + 'a;
 
-impl<'a> InnerUpdater<'a> {
-    pub fn new<S>(stream: S) -> Self where S: Stream<Item = StreamItem> + 'a {
-        Self { stream: Box::new(stream) }
+#[pin_project]
+pub struct LongPolling<'a>(#[pin] StreamUpdater<LongPollingStream<'a>>);
+
+impl<'a> LongPolling<'a> {
+    pub fn new(bot: &'a Bot) -> Self {
+        let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
+            async move {
+                // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
+                let updates = match bot.get_updates().offset(offset).send().await {
+                    Ok(updates) => {
+                        if let Some(upd) = updates.last() {
+                            offset = upd.id + 1;
+                        }
+                        updates.into_iter().map(Ok).collect::<Vec<_>>()
+                    }
+                    Err(err) => vec![Err(err)],
+                };
+                Some((stream::iter(updates), (bot, offset)))
+            }
+        })
+            .flatten();
+
+        LongPolling(StreamUpdater(stream))
     }
 }
 
-impl Stream for InnerUpdater<'_> {
-    type Item = StreamItem;
+impl Stream for LongPolling<'_> {
+    type Item = Result<Update, RequestError>;
 
     fn poll_next(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Self::Item>> {
-        let i = &mut *self.stream;
-        Pin::new(i).poll_next(cx)
+        self.project().0.poll_next(cx)
     }
 }
 
-impl Updater for InnerUpdater<'_> {
+impl Updater for LongPolling<'_> {
     type Error = RequestError;
 }
 
-pub fn polling<'a>(bot: &'a Bot) -> InnerUpdater<'a>  {
-    let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
-        async move {
-            // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
-            let updates = match bot.get_updates().offset(offset).send().await {
-                Ok(updates) => {
-                    if let Some(upd) = updates.last() {
-                        offset = upd.id + 1;
-                    }
-                    updates.into_iter().map(Ok).collect::<Vec<_>>()
-                }
-                Err(err) => vec![Err(err)],
-            };
-            Some((stream::iter(updates), (bot, offset)))
-        }
-    })
-    .flatten();
-
-    InnerUpdater::new(stream)
-}
+// updater::Webhook struct
+// **********************************************************************
 
 // TODO implement webhook (this actually require webserver and probably we
 //   should add cargo feature that adds webhook)
 //pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl
 // Stream<Item=Result<Update, ???>> + 'a> {}
+
+// StreamUpdater struct
+// **********************************************************************
+
+#[pin_project]
+struct StreamUpdater<S>(#[pin] S);
+
+impl<S, E> Stream for StreamUpdater<S>
+    where
+        S: Stream<Item = Result<Update, E>>,
+{
+    type Item = Result<Update, E>;
+
+    fn poll_next(
+        self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+    ) -> Poll<Option<Self::Item>> {
+        self.project().0.poll_next(cx)
+    }
+}
+
+impl<S, E> Updater for StreamUpdater<S>
+    where
+        S: Stream<Item = Result<Update, E>>,
+{
+    type Error = E;
+}
