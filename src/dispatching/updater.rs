@@ -5,9 +5,8 @@ use std::{
 
 use futures::{stream, Stream, StreamExt};
 
-use pin_project::pin_project;
-
 use crate::{bot::Bot, types::Update, RequestError};
+use std::ops::DerefMut;
 
 // Currently just a placeholder, but I'll  add here some methods
 /// Updater is stream of updates.
@@ -103,40 +102,35 @@ pub trait Updater:
     type Error;
 }
 
-#[pin_project]
-pub struct StreamUpdater<S> {
-    #[pin]
-    stream: S,
+type StreamItem = Result<Update, RequestError>;
+
+struct InnerUpdater<'a> {
+    stream: Box<dyn Stream<Item = StreamItem> + 'a>,
 }
 
-impl<S> StreamUpdater<S> {
-    pub fn new(stream: S) -> Self {
-        Self { stream }
+impl<'a> InnerUpdater<'a> {
+    pub fn new<S>(stream: S) -> Self where S: Stream<Item = StreamItem> + 'a {
+        Self { stream: Box::new(stream) }
     }
 }
 
-impl<S, E> Stream for StreamUpdater<S>
-where
-    S: Stream<Item = Result<Update, E>>,
-{
-    type Item = Result<Update, E>;
+impl Stream for InnerUpdater<'_> {
+    type Item = StreamItem;
 
     fn poll_next(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Self::Item>> {
-        self.project().stream.poll_next(cx)
+        let i = &mut *self.stream;
+        Pin::new(i).poll_next(cx)
     }
 }
 
-impl<S, E> Updater for StreamUpdater<S>
-where
-    S: Stream<Item = Result<Update, E>>,
-{
-    type Error = E;
+impl Updater for InnerUpdater<'_> {
+    type Error = RequestError;
 }
 
-pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
+pub fn polling<'a>(bot: &'a Bot) -> InnerUpdater<'a>  {
     let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
         async move {
             // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
@@ -154,7 +148,7 @@ pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
     })
     .flatten();
 
-    StreamUpdater { stream }
+    InnerUpdater::new(stream)
 }
 
 // TODO implement webhook (this actually require webserver and probably we

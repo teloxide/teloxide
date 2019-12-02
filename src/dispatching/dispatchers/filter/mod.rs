@@ -303,7 +303,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dispatchers::filter::FilterDispatcher, updater::StreamUpdater,
+            dispatchers::filter::FilterDispatcher, updater::LongPollingUpdater,
         },
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
@@ -379,9 +379,10 @@ mod tests {
     }
 
     fn one_message_updater(
-    ) -> StreamUpdater<impl Stream<Item = Result<Update, Infallible>>> {
+    ) -> LongPollingUpdater<impl Stream<Item = Result<Update, Infallible>>>
+    {
         use futures::{future::ready, stream};
 
-        StreamUpdater::new(stream::once(ready(Ok(message_update()))))
+        LongPollingUpdater::new(stream::once(ready(Ok(message_update()))))
     }
 }
