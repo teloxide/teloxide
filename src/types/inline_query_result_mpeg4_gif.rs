@@ -1,6 +1,6 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
-#[derive(Debug, Serialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct InlineQueryResultMpeg4Gif {
     pub id: String,
     pub mpeg4_url: String,

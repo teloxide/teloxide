@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::types::ParseMode;
 
-#[derive(Debug, Serialize, Clone, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 #[serde(untagged)]
 /// This object represents the content of a message to be sent as
 /// a result of an inline query.

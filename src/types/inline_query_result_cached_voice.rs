@@ -1,6 +1,6 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
-#[derive(Debug, Serialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct InlineQueryResultCachedVoice {
     pub id: String,
     pub voice_file_id: String,
