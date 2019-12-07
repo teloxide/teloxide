@@ -106,7 +106,7 @@ mod tests {
                 language_code: None,
             },
             status: ChatMemberStatus::Creator,
-            until_date: Some(123456),
+            until_date: Some(123_456),
             can_be_edited: Some(true),
             can_change_info: Some(true),
             can_post_messages: Some(true),

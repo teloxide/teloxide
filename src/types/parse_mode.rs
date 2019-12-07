@@ -67,7 +67,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [Markdown]: crate::types::ParseMode::Markdown
 /// [HTML]: crate::types::ParseMode::HTML
-/// [SendMessage]: crate::requests::SendMessage
+/// [SendMessage]: crate::requests::payloads::SendMessage
 pub enum ParseMode {
     HTML,
     Markdown,

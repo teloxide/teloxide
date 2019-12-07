@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::types::ParseMode;
 
-#[derive(Debug, Serialize, Clone, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 #[serde(untagged)]
 /// This object represents the content of a message to be sent as
 /// a result of an inline query.
@@ -14,9 +14,9 @@ pub enum InputMessageContent {
         /// Text of the message to be sent, 1-4096 characters
         message_text: String,
 
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show
+        /// [bold, italic, fixed-width text or inline URLs] in the media
+        /// caption.
         ///
         /// [Markdown]: crate::types::ParseMode::Markdown
         /// [HTML]: crate::types::ParseMode::HTML

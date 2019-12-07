@@ -5,7 +5,7 @@ use crate::types::InlineKeyboardButton;
 ///
 /// *Note*: This will only work in Telegram versions released after
 /// 9 April, 2016. Older clients will display unsupported message.
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
 pub struct InlineKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`InlineKeyboardButton`] objects
@@ -61,11 +61,14 @@ mod tests {
             "text 2".to_string(),
             "url 2".to_string(),
         );
+
         let markup = InlineKeyboardMarkup::new()
             .append_row(vec![button1.clone(), button2.clone()]);
+
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1.clone(), button2.clone()]],
+            inline_keyboard: vec![vec![button1, button2]],
         };
+
         assert_eq!(markup, expected);
     }
 
@@ -79,12 +82,15 @@ mod tests {
             "text 2".to_string(),
             "url 2".to_string(),
         );
+
         let markup = InlineKeyboardMarkup::new()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 0);
+
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1.clone(), button2.clone()]],
+            inline_keyboard: vec![vec![button1, button2]],
         };
+
         assert_eq!(markup, expected);
     }
 
@@ -98,12 +104,15 @@ mod tests {
             "text 2".to_string(),
             "url 2".to_string(),
         );
+
         let markup = InlineKeyboardMarkup::new()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 1);
+
         let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1.clone()], vec![button2.clone()]],
+            inline_keyboard: vec![vec![button1], vec![button2]],
         };
+
         assert_eq!(markup, expected);
     }
 }

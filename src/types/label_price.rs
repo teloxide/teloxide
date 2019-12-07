@@ -1,4 +1,4 @@
-#[derive(Debug, Hash, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
 /// This object represents a portion of the price for goods or services.
 pub struct LabeledPrice {
     /// Portion label

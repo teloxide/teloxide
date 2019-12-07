@@ -1,3 +1,5 @@
+#![allow(clippy::large_enum_variant)]
+
 use crate::types::{
     InlineQueryResultArticle, InlineQueryResultAudio,
     InlineQueryResultCachedAudio, InlineQueryResultCachedDocument,
@@ -11,7 +13,7 @@ use crate::types::{
 };
 
 /// This object represents one result of an inline query.
-#[derive(Debug, Serialize, PartialEq, Clone, From)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InlineQueryResult {
@@ -53,21 +55,6 @@ mod tests {
         inline_keyboard_markup::InlineKeyboardMarkup, parse_mode::ParseMode,
         InlineQueryResult, InlineQueryResultCachedAudio, InputMessageContent,
     };
-
-    #[test]
-    fn into() {
-        let structure =
-            InlineQueryResult::CachedAudio(InlineQueryResultCachedAudio {
-                id: String::from("id"),
-                audio_file_id: String::from("audio_file_id"),
-                caption: None,
-                parse_mode: None,
-                reply_markup: None,
-                input_message_content: None,
-            });
-
-        let _: InlineQueryResult = structure.into();
-    }
 
     #[test]
     fn cached_audio_min_serialize() {

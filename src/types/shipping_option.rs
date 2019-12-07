@@ -1,6 +1,6 @@
 use crate::types::LabeledPrice;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
 /// This object represents one shipping option.
 pub struct ShippingOption {
     /// Shipping option identifier

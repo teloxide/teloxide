@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize)]
 pub enum InputFile {
     File(PathBuf),
     Url(String),
@@ -8,6 +8,24 @@ pub enum InputFile {
 }
 
 impl InputFile {
+    pub fn file(path: PathBuf) -> Self {
+        Self::File(path)
+    }
+
+    pub fn url<T>(url: T) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::Url(url.into())
+    }
+
+    pub fn file_id<T>(file_id: T) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::FileId(file_id.into())
+    }
+
     pub fn as_file(&self) -> Option<&PathBuf> {
         match self {
             Self::File(path) => Some(path),
