@@ -99,7 +99,8 @@ impl ErrorPolicy<Infallible> for IgnoreSafe {
     async fn handle_error(&self, _: Infallible)
     where
         Infallible: 'async_trait,
-    {}
+    {
+    }
 }
 
 /// Implementation of `ErrorPolicy` for `async fn`s
