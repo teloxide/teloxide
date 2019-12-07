@@ -16,7 +16,7 @@ pub struct InlineKeyboardMarkup {
 ///
 /// Example:
 /// ```
-/// use telebofr::types::{InlineKeyboardButton, InlineKeyboardMarkup};
+/// use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 ///
 /// let url_button = InlineKeyboardButton::url(
 ///     "text".to_string(),

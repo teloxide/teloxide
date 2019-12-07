@@ -6,7 +6,7 @@ pub trait Filter<T> {
 }
 
 /// ```
-/// use telebofr::dispatching::filters::Filter;
+/// use teloxide::dispatching::filters::Filter;
 ///
 /// let closure = |i: &i32| -> bool { *i >= 42 };
 /// assert!(closure.test(&42));
@@ -22,7 +22,7 @@ impl<T, F: Fn(&T) -> bool> Filter<T> for F {
 }
 
 /// ```
-/// use telebofr::dispatching::filters::Filter;
+/// use teloxide::dispatching::filters::Filter;
 ///
 /// assert!(true.test(&()));
 /// assert_eq!(false.test(&()), false);
@@ -42,7 +42,7 @@ impl<T> Filter<T> for bool {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{And, Filter};
+/// use teloxide::dispatching::filters::{And, Filter};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert_eq!(And::new(true, false).test(&()), false);
@@ -73,7 +73,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{and, Filter};
+/// use teloxide::dispatching::filters::{and, Filter};
 ///
 /// assert!(and(true, true).test(&()));
 /// assert_eq!(and(true, false).test(&()), false);
@@ -93,7 +93,7 @@ pub fn and<A, B>(a: A, b: B) -> And<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{Filter, Or};
+/// use teloxide::dispatching::filters::{Filter, Or};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Or::new(true, false).test(&()));
@@ -124,7 +124,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{or, Filter};
+/// use teloxide::dispatching::filters::{or, Filter};
 ///
 /// assert!(or(true, false).test(&()));
 /// assert_eq!(or(false, false).test(&()), false);
@@ -141,7 +141,7 @@ pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{Filter, Not};
+/// use teloxide::dispatching::filters::{Filter, Not};
 ///
 /// // Note: bool can be treated as `Filter` that always return self.
 /// assert!(Not::new(false).test(&()));
@@ -169,7 +169,7 @@ where
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{not, Filter};
+/// use teloxide::dispatching::filters::{not, Filter};
 ///
 /// assert!(not(false).test(&()));
 /// assert_eq!(not(true).test(&()), false);
@@ -187,7 +187,7 @@ pub fn not<A>(a: A) -> Not<A> {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::{all, dispatching::filters::Filter};
+/// use teloxide::{all, dispatching::filters::Filter};
 ///
 /// assert!(all![true].test(&()));
 /// assert!(all![true, true].test(&()));
@@ -218,7 +218,7 @@ macro_rules! all {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::{any, dispatching::filters::Filter};
+/// use teloxide::{any, dispatching::filters::Filter};
 ///
 /// assert!(any![true].test(&()));
 /// assert!(any![true, true].test(&()));
@@ -246,7 +246,7 @@ macro_rules! any {
 ///
 /// ## Examples
 /// ```
-/// use telebofr::dispatching::filters::{f, And, Filter, Or, F};
+/// use teloxide::dispatching::filters::{f, And, Filter, Or, F};
 ///
 /// let flt1 = |i: &i32| -> bool { *i > 17 };
 /// let flt2 = |i: &i32| -> bool { *i < 42 };
@@ -314,7 +314,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatching::filters::{Filter, FilterExt};
+    /// use teloxide::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.not();
@@ -334,7 +334,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatching::filters::{Filter, FilterExt};
+    /// use teloxide::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i > 0 };
     /// let flt = flt.and(|i: &i32| *i < 42);
@@ -356,7 +356,7 @@ pub trait FilterExt<T> {
     ///
     /// ## Examples
     /// ```
-    /// use telebofr::dispatching::filters::{Filter, FilterExt};
+    /// use teloxide::dispatching::filters::{Filter, FilterExt};
     ///
     /// let flt = |i: &i32| -> bool { *i < 0 };
     /// let flt = flt.or(|i: &i32| *i > 42);

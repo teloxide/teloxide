@@ -18,7 +18,7 @@ pub trait ErrorPolicy<E> {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use telebofr::dispatching::dispatchers::filter::error_policy::{
+/// use teloxide::dispatching::dispatchers::filter::error_policy::{
 ///     ErrorPolicy, Ignore,
 /// };
 ///
@@ -50,7 +50,7 @@ where
 /// # async fn main_() {
 /// use std::convert::{TryInto, Infallible};
 ///
-/// use telebofr::dispatching::dispatchers::filter::error_policy::{
+/// use teloxide::dispatching::dispatchers::filter::error_policy::{
 ///     ErrorPolicy,
 ///     IgnoreSafe,
 /// };
@@ -66,7 +66,7 @@ where
 /// ```
 ///
 /// ```compile_fail
-/// use telebofr::dispatching::dispatchers::filter::error_policy::{
+/// use teloxide::dispatching::dispatchers::filter::error_policy::{
 ///     ErrorPolicy, IgnoreSafe,
 /// };
 ///
@@ -111,7 +111,7 @@ impl ErrorPolicy<Infallible> for IgnoreSafe {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use telebofr::dispatching::dispatchers::filter::error_policy::ErrorPolicy;
+/// use teloxide::dispatching::dispatchers::filter::error_policy::ErrorPolicy;
 ///
 /// let closure = |e: i32| async move { eprintln!("Error code{}", e) };
 ///
