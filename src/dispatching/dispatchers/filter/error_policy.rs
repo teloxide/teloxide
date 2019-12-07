@@ -1,4 +1,6 @@
-use std::{convert::Infallible, future::Future, pin::Pin};
+#[cfg(not(feature = "never-type"))]
+use std::convert::Infallible;
+use std::{future::Future, pin::Pin};
 
 use async_trait::async_trait;
 
@@ -15,7 +17,7 @@ pub trait ErrorPolicy<E> {
 /// ## Example
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use telebofr::dispatching::dispatchers::filter::error_policy::{
 ///     ErrorPolicy, Ignore,
 /// };
@@ -45,7 +47,7 @@ where
 /// ## Examples
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use std::convert::{TryInto, Infallible};
 ///
 /// use telebofr::dispatching::dispatchers::filter::error_policy::{
@@ -89,10 +91,10 @@ impl ErrorPolicy<!> for IgnoreSafe {
     where
         !: 'async_trait,
     {
-        never
     }
 }
 
+#[cfg(not(feature = "never-type"))]
 #[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<Infallible> for IgnoreSafe {
@@ -108,7 +110,7 @@ impl ErrorPolicy<Infallible> for IgnoreSafe {
 /// ## Example
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use telebofr::dispatching::dispatchers::filter::error_policy::ErrorPolicy;
 ///
 /// let closure = |e: i32| async move { eprintln!("Error code{}", e) };

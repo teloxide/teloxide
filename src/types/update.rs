@@ -1,6 +1,6 @@
 #![allow(clippy::large_enum_variant)]
 
-use crate::types::{CallbackQuery, ChosenInlineResult, Message};
+use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Update {
@@ -17,8 +17,7 @@ pub enum UpdateKind {
     EditedMessage(Message),
     ChannelPost(Message),
     EditedChannelPost(Message),
-    InlineQuery(()),
-    // TODO
+    InlineQuery(InlineQuery),
     ChosenInlineResult(ChosenInlineResult),
     CallbackQuery(CallbackQuery),
 }

@@ -7,7 +7,10 @@ use crate::{
         dispatchers::filter::error_policy::ErrorPolicy, filters::Filter,
         handler::Handler, updater::Updater, Dispatcher,
     },
-    types::{CallbackQuery, ChosenInlineResult, Message, Update, UpdateKind},
+    types::{
+        CallbackQuery, ChosenInlineResult, InlineQuery, Message, Update,
+        UpdateKind,
+    },
 };
 
 pub mod error_policy;
@@ -70,7 +73,7 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 ///
 /// // create dispatching which handlers can't fail
 /// // with error policy that just ignores all errors (that can't ever happen)
-/// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () })
+/// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
 ///     // Add 'handler' that will handle all messages sent to the bot
 ///     .message_handler(true, |mes: Message| {
 ///         async move { println!("New message: {:?}", mes) }
@@ -91,7 +94,7 @@ pub struct FilterDispatcher<'a, E, Ep> {
     edited_message_handlers: FiltersAndHandlers<'a, Message, E>,
     channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
     edited_channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
-    inline_query_handlers: FiltersAndHandlers<'a, (), E>,
+    inline_query_handlers: FiltersAndHandlers<'a, InlineQuery, E>,
     chosen_inline_result_handlers:
         FiltersAndHandlers<'a, ChosenInlineResult, E>,
     callback_query_handlers: FiltersAndHandlers<'a, CallbackQuery, E>,
@@ -162,8 +165,8 @@ where
 
     pub fn inline_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
-        F: Filter<()> + 'a,
-        H: Handler<'a, (), E> + 'a,
+        F: Filter<InlineQuery> + 'a,
+        H: Handler<'a, InlineQuery, E> + 'a,
     {
         self.inline_query_handlers
             .push(FilterAndHandler::new(filter, handler));
@@ -256,6 +259,7 @@ where
             .await;
     }
 
+    #[allow(clippy::ptr_arg)] // TODO: proper fix
     async fn handle<T>(
         &self,
         update: T,
