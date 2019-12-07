@@ -82,9 +82,10 @@ where
 pub struct IgnoreSafe;
 
 #[cfg(feature = "never-type")]
+#[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<!> for IgnoreSafe {
-    async fn handle_error(&self, never: !)
+    async fn handle_error(&self, _: !)
     where
         !: 'async_trait,
     {
@@ -92,14 +93,13 @@ impl ErrorPolicy<!> for IgnoreSafe {
     }
 }
 
+#[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<Infallible> for IgnoreSafe {
-    async fn handle_error(&self, inf: Infallible)
+    async fn handle_error(&self, _: Infallible)
     where
         Infallible: 'async_trait,
-    {
-        match inf {}
-    }
+    {}
 }
 
 /// Implementation of `ErrorPolicy` for `async fn`s

@@ -313,7 +313,7 @@ mod tests {
         let counter = &AtomicI32::new(0);
         let counter2 = &AtomicI32::new(0);
 
-        let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async { () })
+        let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
             .message_handler(true, |_mes: Message| {
                 async move {
                     counter.fetch_add(1, Ordering::SeqCst);
@@ -335,9 +335,9 @@ mod tests {
     fn message() -> Message {
         Message {
             id: 6534,
-            date: 1567898953,
+            date: 1_567_898_953,
             chat: Chat {
-                id: 218485655,
+                id: 218_485_655,
                 photo: None,
                 kind: ChatKind::Private {
                     type_: (),
@@ -348,7 +348,7 @@ mod tests {
             },
             kind: MessageKind::Common {
                 from: Sender::User(User {
-                    id: 457569668,
+                    id: 457_569_668,
                     is_bot: true,
                     first_name: "BT".to_string(),
                     last_name: None,

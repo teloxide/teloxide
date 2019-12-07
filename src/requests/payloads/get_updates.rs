@@ -15,7 +15,7 @@ use crate::{
 /// [Update]: crate::types::Update
 /// [Vec]: std::alloc::Vec
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
 pub struct GetUpdates {
     /// Identifier of the first update to be returned. Must be greater by one
     /// than the highest among the identifiers of previously received updates.

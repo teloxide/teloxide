@@ -1,3 +1,5 @@
+#![allow(clippy::large_enum_variant)]
+
 use crate::types::{
     Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
     Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,

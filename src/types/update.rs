@@ -1,3 +1,5 @@
+#![allow(clippy::large_enum_variant)]
+
 use crate::types::{CallbackQuery, ChosenInlineResult, Message};
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
@@ -54,12 +56,12 @@ mod test {
         }"#;
 
         let expected: Update = Update {
-            id: 892252934,
+            id: 892_252_934,
             kind: UpdateKind::Message(Message {
                 id: 6557,
-                date: 1569518342,
+                date: 1_569_518_342,
                 chat: Chat {
-                    id: 218485655,
+                    id: 218_485_655,
                     kind: ChatKind::Private {
                         type_: (),
                         username: Some(String::from("WaffleLapkin")),
@@ -70,7 +72,7 @@ mod test {
                 },
                 kind: MessageKind::Common {
                     from: Sender::User(User {
-                        id: 218485655,
+                        id: 218_485_655,
                         is_bot: false,
                         first_name: String::from("Waffle"),
                         last_name: None,

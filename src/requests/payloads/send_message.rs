@@ -97,7 +97,7 @@ impl json::Request<'_, SendMessage> {
     }
 
     pub fn disable_notification(mut self, value: bool) -> Self {
-        self.payload.disable_notification = Some(value.into());
+        self.payload.disable_notification = Some(value);
         self
     }
 

@@ -37,7 +37,7 @@ mod tests {
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("MimeType".to_string()),
-            file_size: Some(123456),
+            file_size: Some(123_456),
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),
                 width: 320,
