@@ -2,6 +2,7 @@ use reqwest::Client;
 
 mod api;
 mod download;
+mod execute;
 
 /// A Telegram bot used to build requests.
 #[derive(Debug, Clone)]

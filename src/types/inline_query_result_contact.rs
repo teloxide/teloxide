@@ -1,6 +1,6 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
-#[derive(Debug, Serialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct InlineQueryResultContact {
     pub id: String,
     pub phone_number: String,

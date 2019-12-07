@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize)]
 pub enum InputFile {
     File(PathBuf),
     Url(String),

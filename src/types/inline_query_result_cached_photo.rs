@@ -1,6 +1,6 @@
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
-#[derive(Debug, Serialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct InlineQueryResultCachedPhoto {
     pub id: String,
     pub photo_file_id: String,

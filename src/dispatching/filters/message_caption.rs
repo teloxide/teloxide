@@ -13,9 +13,9 @@ use crate::{dispatching::Filter, types::Message};
 /// If you want to compare text and caption use
 /// [MessageTextCaptionFilter]
 ///
-/// [MessageTextFilter]: telebofr::dispatching::filters::MessageTextFilter
+/// [MessageTextFilter]: crate::dispatching::filters::MessageTextFilter
 /// [MessageTextCaptionFilter]:
-/// telebofr::dispatching::filters::MessageTextCaptionFilter
+/// crate::dispatching::filters::MessageTextCaptionFilter
 pub struct MessageCaptionFilter {
     text: String,
 }

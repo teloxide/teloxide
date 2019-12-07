@@ -1,4 +1,4 @@
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct MaskPosition {
     pub point: String,
     pub x_shift: f64,

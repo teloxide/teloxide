@@ -4,7 +4,6 @@ use std::{
 };
 
 use futures::{stream, Stream, StreamExt};
-
 use pin_project::pin_project;
 
 use crate::{bot::Bot, types::Update, RequestError};
@@ -94,7 +93,7 @@ use crate::{bot::Bot, types::Update, RequestError};
 /// <a id="4" href="#4b">^4</a> `offset = N` means that we've already received
 ///   updates `0..=N`
 ///
-/// [GetUpdates]: crate::requests::GetUpdates
+/// [GetUpdates]: crate::requests::payloads::GetUpdates
 /// [getting updates]: https://core.telegram.org/bots/api#getting-updates
 /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 pub trait Updater:
@@ -139,7 +138,6 @@ where
 pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
     let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
         async move {
-            // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
             let updates = match bot.get_updates().offset(offset).send().await {
                 Ok(updates) => {
                     if let Some(upd) = updates.last() {

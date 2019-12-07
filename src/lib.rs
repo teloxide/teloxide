@@ -1,3 +1,6 @@
+#![allow(clippy::unit_arg)] // TODO
+#![allow(clippy::ptr_arg)] // TODO
+
 #[macro_use]
 extern crate derive_more;
 #[macro_use]

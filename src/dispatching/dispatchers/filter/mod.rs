@@ -41,7 +41,6 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 /// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
 /// - All 'handlers' are boxed
 /// - Handler's fututres are also boxed
-/// - [Custom error policy] is also boxed
 /// - All errors from [updater] are ignored (TODO: remove this limitation)
 /// - All handlers executed in order (this means that in dispatching have 2
 ///   upadtes it will first execute some handler into complition with first
@@ -89,9 +88,7 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 /// ```
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
-/// [Custom error policy]:
-/// crate::dispatching::filter::error_policy::ErrorPolicy::Custom [updater]:
-/// crate::dispatching::updater
+/// [updater]: crate::dispatching::updater
 pub struct FilterDispatcher<'a, E, Ep> {
     message_handlers: FiltersAndHandlers<'a, Message, E>,
     edited_message_handlers: FiltersAndHandlers<'a, Message, E>,

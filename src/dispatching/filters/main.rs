@@ -79,7 +79,7 @@ where
 /// assert_eq!(and(true, false).test(&()), false);
 /// ```
 ///
-/// [`And::new`]: crate::dispatching::filter::And::new
+/// [`And::new`]: crate::dispatching::filters::And::new
 pub fn and<A, B>(a: A, b: B) -> And<A, B> {
     And::new(a, b)
 }
@@ -130,7 +130,7 @@ where
 /// assert_eq!(or(false, false).test(&()), false);
 /// ```
 ///
-/// [`Or::new`]: crate::dispatching::filter::Or::new
+/// [`Or::new`]: crate::dispatching::filters::Or::new
 pub fn or<A, B>(a: A, b: B) -> Or<A, B> {
     Or::new(a, b)
 }
@@ -175,7 +175,7 @@ where
 /// assert_eq!(not(true).test(&()), false);
 /// ```
 ///
-/// [`Not::new`]: crate::dispatching::filter::Not::new
+/// [`Not::new`]: crate::dispatching::filters::Not::new
 pub fn not<A>(a: A) -> Not<A> {
     Not::new(a)
 }
@@ -199,7 +199,7 @@ pub fn not<A>(a: A) -> Not<A> {
 /// assert_eq!(all![false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatching::filter::Filter
+/// [filter]: crate::dispatching::filters::Filter
 #[macro_export]
 macro_rules! all {
     ($one:expr) => { $one };
@@ -230,7 +230,7 @@ macro_rules! all {
 /// assert_eq!(any![false, false, false].test(&()), false);
 /// ```
 ///
-/// [filter]: crate::dispatching::filter::Filter
+/// [filter]: crate::dispatching::filters::Filter
 #[macro_export]
 macro_rules! any {
     ($one:expr) => { $one };
@@ -277,7 +277,7 @@ pub struct F<A>(A);
 
 /// Constructor fn for [F]
 ///
-/// [F]: crate::dispatching::filter::F;
+/// [F]: crate::dispatching::filters::F;
 pub fn f<A>(a: A) -> F<A> {
     F(a)
 }
@@ -322,7 +322,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&1), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatching::filter::Not::new
+    /// [`Not::new`]: crate::dispatching::filters::Not::new
     fn not(self) -> Not<Self>
     where
         Self: Sized,
@@ -344,7 +344,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&43), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatching::filter::And::new
+    /// [`Not::new`]: crate::dispatching::filters::And::new
     fn and<B>(self, other: B) -> And<Self, B>
     where
         Self: Sized,
@@ -366,7 +366,7 @@ pub trait FilterExt<T> {
     /// assert_eq!(flt.test(&17), false);
     /// ```
     ///
-    /// [`Not::new`]: crate::dispatching::filter::Or::new
+    /// [`Not::new`]: crate::dispatching::filters::Or::new
     fn or<B>(self, other: B) -> Or<Self, B>
     where
         Self: Sized,

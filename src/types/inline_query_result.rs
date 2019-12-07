@@ -13,7 +13,7 @@ use crate::types::{
 };
 
 /// This object represents one result of an inline query.
-#[derive(Debug, Serialize, PartialEq, Clone, From)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InlineQueryResult {

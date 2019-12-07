@@ -13,8 +13,8 @@ use crate::{dispatching::Filter, types::Message};
 /// If you want to compare only text use
 /// [MessageTextFilter]
 ///
-/// [MessageCaptionFilter]: telebofr::dispatching::filters::MessageCaptionFilter
-/// [MessageTextFilter]: telebofr::filter::filters::MessageTextFilter
+/// [MessageCaptionFilter]: crate::dispatching::filters::MessageCaptionFilter
+/// [MessageTextFilter]: crate::dispatching::filters::MessageTextFilter
 pub struct MessageTextCaptionFilter {
     text: String,
 }

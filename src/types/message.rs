@@ -84,6 +84,14 @@ pub enum Sender {
     Signature(String),
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+pub enum ForwardedFrom {
+    #[serde(rename = "forward_from")]
+    User(User),
+    #[serde(rename = "forward_sender_name")]
+    SenderName(String),
+}
+
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ForwardKind {
@@ -106,14 +114,6 @@ pub enum ForwardKind {
     Origin {
         reply_to_message: Option<Box<Message>>,
     },
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub enum ForwardedFrom {
-    #[serde(rename = "forward_from")]
-    User(User),
-    #[serde(rename = "forward_sender_name")]
-    SenderName(String),
 }
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
