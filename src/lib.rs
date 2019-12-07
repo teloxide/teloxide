@@ -1,4 +1,3 @@
-#![allow(clippy::needless_doctest_main)]
 #![allow(clippy::unit_arg)] // TODO
 #![allow(clippy::ptr_arg)] // TODO
 

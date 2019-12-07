@@ -12,7 +12,7 @@ impl Bot {
     /// ## Example
     /// ```no_run
     /// # use telebofr::{Bot, requests::payloads::SendMessage};
-    /// # #[tokio::main] async fn main() {
+    /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendMessage::new(123456, "text");
     /// bot.execute_dyn(&payload).await;
@@ -49,7 +49,7 @@ impl Bot {
     /// ## Example
     /// ```no_run
     /// # use telebofr::{Bot, requests::payloads::SendMessage};
-    /// # #[tokio::main] async fn main() {
+    /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendMessage::new(123456, "text");
     /// bot.execute_json(&payload).await;
@@ -74,7 +74,7 @@ impl Bot {
     /// ## Example
     /// ```no_run
     /// # use telebofr::{Bot, requests::payloads::SendAnimation, types::InputFile};
-    /// # #[tokio::main] async fn main() {
+    /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendAnimation::new(
     ///     123456,
