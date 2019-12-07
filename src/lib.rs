@@ -1,7 +1,6 @@
 #![allow(clippy::needless_doctest_main)]
 #![allow(clippy::unit_arg)] // TODO
 #![allow(clippy::ptr_arg)] // TODO
-#![cfg_attr(feature = "never-type", feature(never_type))]
 
 #[macro_use]
 extern crate derive_more;
