@@ -4,7 +4,7 @@ use reqwest::multipart::Form;
 
 use crate::{
     requests::utils::file_to_part,
-    types::{ChatId, InputFile, InputMedia, ParseMode, ReplyMarkup},
+    types::{ChatId, InputFile, InputMedia, ParseMode, ReplyMarkup, InlineKeyboardMarkup, MaskPosition},
 };
 
 /// This is a convenient struct that builds `reqwest::multipart::Form`
@@ -54,6 +54,7 @@ impl FormBuilder {
 pub(crate) enum FormValue {
     File(PathBuf),
     Str(String),
+
 }
 
 pub(crate) trait IntoFormValue {
@@ -74,7 +75,7 @@ macro_rules! impl_for_struct {
     };
 }
 
-impl_for_struct!(bool, i32, i64, u32, ReplyMarkup);
+impl_for_struct!(bool, i32, i64, u32, ReplyMarkup, InlineKeyboardMarkup, MaskPosition);
 
 impl<T> IntoFormValue for Option<T>
 where
@@ -85,7 +86,16 @@ where
     }
 }
 
-impl IntoFormValue for [InputMedia] {
+// TODO: fix InputMedia implementation of IntoFormValue (for now it doesn't encode files :|)
+impl IntoFormValue for Vec<InputMedia> {
+    fn into_form_value(&self) -> Option<FormValue> {
+        let json =
+            serde_json::to_string(self).expect("serde_json::to_string failed");
+        Some(FormValue::Str(json))
+    }
+}
+
+impl IntoFormValue for InputMedia {
     fn into_form_value(&self) -> Option<FormValue> {
         let json =
             serde_json::to_string(self).expect("serde_json::to_string failed");

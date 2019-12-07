@@ -1,7 +1,7 @@
 use crate::types::{InputFile, ParseMode};
 
 // TODO: should variants use new-type?
-#[derive(Debug, Serialize, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 /// This object represents the content of a media message to be sent.
