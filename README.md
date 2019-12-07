@@ -6,8 +6,8 @@
   <a href="https://docs.rs/telebofr/">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
   </a>
-  <a href="https://travis-ci.com/telebofr/telebofr">
-    <img src="https://travis-ci.com/telebofr/telebofr.svg?branch=dev" />
+  <a href="https://github.com/WaffleLapkin/fntools/actions">
+    <img src="https://github.com/WaffleLapkin/fntools/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg">
