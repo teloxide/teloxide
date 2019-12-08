@@ -1,18 +1,18 @@
 
 <div align="center">
   <img src="ICON.png" width="200"/>
-  <h1>telebofr</h1>
+  <h1>teloxide</h1>
   
-  <a href="https://docs.rs/telebofr/">
+  <a href="https://docs.rs/teloxide/">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
   </a>
-  <a href="https://travis-ci.com/telebofr/telebofr">
-    <img src="https://travis-ci.com/telebofr/telebofr.svg?branch=dev" />
+  <a href="https://travis-ci.com/teloxide/teloxide">
+    <img src="https://travis-ci.com/teloxide/teloxide.svg?branch=dev" />
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
-  <a href="https://crates.io/crates/telebofr">
+  <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
   </a>
   
