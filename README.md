@@ -6,8 +6,8 @@
   <a href="https://docs.rs/teloxide/">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
   </a>
-  <a href="https://travis-ci.com/teloxide/teloxide">
-    <img src="https://travis-ci.com/teloxide/teloxide.svg?branch=dev" />
+  <a href="https://github.com/teloxide/teloxide/actions">
+    <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg">
