@@ -54,7 +54,7 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 /// # async fn run() {
 /// use std::convert::Infallible;
 ///
-/// use telebofr::{
+/// use teloxide::{
 ///     dispatching::{
 ///         dispatchers::filter::{
 ///             error_policy::ErrorPolicy, FilterDispatcher,

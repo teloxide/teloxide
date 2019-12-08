@@ -45,7 +45,7 @@ pub enum InlineKeyboardButtonKind {
 ///
 /// Example:
 /// ```
-/// use telebofr::types::InlineKeyboardButton;
+/// use teloxide::types::InlineKeyboardButton;
 ///
 /// let url_button = InlineKeyboardButton::url(
 ///     "Text".to_string(),

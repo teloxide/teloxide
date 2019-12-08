@@ -11,7 +11,7 @@ impl Bot {
     ///
     /// ## Example
     /// ```no_run
-    /// # use telebofr::{Bot, requests::payloads::SendMessage};
+    /// # use teloxide::{Bot, requests::payloads::SendMessage};
     /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendMessage::new(123456, "text");
@@ -48,7 +48,7 @@ impl Bot {
     ///
     /// ## Example
     /// ```no_run
-    /// # use telebofr::{Bot, requests::payloads::SendMessage};
+    /// # use teloxide::{Bot, requests::payloads::SendMessage};
     /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendMessage::new(123456, "text");
@@ -73,7 +73,7 @@ impl Bot {
     ///
     /// ## Example
     /// ```no_run
-    /// # use telebofr::{Bot, requests::payloads::SendAnimation, types::InputFile};
+    /// # use teloxide::{Bot, requests::payloads::SendAnimation, types::InputFile};
     /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
     /// let payload = SendAnimation::new(
