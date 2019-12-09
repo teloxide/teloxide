@@ -59,7 +59,7 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 ///         dispatchers::filter::{
 ///             error_policy::ErrorPolicy, FilterDispatcher,
 ///         },
-///         updater::polling,
+///         updater,
 ///     },
 ///     types::Message,
 ///     Bot,
@@ -83,7 +83,7 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 ///     .edited_message_handler(true, handle_edited_message);
 ///
 /// // Start dispatching updates from long polling
-/// dp.dispatch(polling(&bot)).await;
+/// dp.dispatch(updater::long_polling(&bot)).await;
 /// # }
 /// ```
 ///
@@ -304,7 +304,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dispatchers::filter::FilterDispatcher, updater::LongPollingUpdater,
+            dispatchers::filter::FilterDispatcher, updater::StreamUpdater,
         },
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
@@ -379,11 +379,9 @@ mod tests {
         }
     }
 
-    fn one_message_updater(
-    ) -> LongPollingUpdater<impl Stream<Item = Result<Update, Infallible>>>
-    {
+    fn one_message_updater() -> StreamUpdater<impl Stream<Item=Result<Update, Infallible>>> {
         use futures::{future::ready, stream};
 
-        LongPollingUpdater::new(stream::once(ready(Ok(message_update()))))
+        StreamUpdater::new(stream::once(ready(Ok(message_update()))))
     }
 }

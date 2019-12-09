@@ -1,3 +1,4 @@
+
 use std::{
     pin::Pin,
     task::{Context, Poll},
@@ -7,9 +8,6 @@ use futures::{stream, Stream, StreamExt};
 use pin_project::pin_project;
 
 use crate::{bot::Bot, types::Update, RequestError};
-
-// updater::Updater trait
-// **********************************************************************
 
 // Currently just a placeholder, but I'll  add here some methods
 /// Updater is stream of updates.
@@ -105,65 +103,17 @@ Stream<Item = Result<Update, <Self as Updater>::Error>>
     type Error;
 }
 
-// updater::LongPolling struct
-// **********************************************************************
-
-type LongPollingStream<'a> = impl Stream<Item = Result<Update, RequestError>> + 'a;
-
-#[pin_project]
-pub struct LongPolling<'a>(#[pin] StreamUpdater<LongPollingStream<'a>>);
-
-impl<'a> LongPolling<'a> {
-    pub fn new(bot: &'a Bot) -> Self {
-        let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
-            async move {
-                // this match converts Result<Vec<_>, _> -> Vec<Result<_, _>>
-                let updates = match bot.get_updates().offset(offset).send().await {
-                    Ok(updates) => {
-                        if let Some(upd) = updates.last() {
-                            offset = upd.id + 1;
-                        }
-                        updates.into_iter().map(Ok).collect::<Vec<_>>()
-                    }
-                    Err(err) => vec![Err(err)],
-                };
-                Some((stream::iter(updates), (bot, offset)))
-            }
-        })
-            .flatten();
-
-        LongPolling(StreamUpdater(stream))
-    }
-}
-
-impl Stream for LongPolling<'_> {
-    type Item = Result<Update, RequestError>;
-
-    fn poll_next(
-        self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-    ) -> Poll<Option<Self::Item>> {
-        self.project().0.poll_next(cx)
-    }
-}
-
-impl Updater for LongPolling<'_> {
-    type Error = RequestError;
-}
-
-// updater::Webhook struct
-// **********************************************************************
-
-// TODO implement webhook (this actually require webserver and probably we
-//   should add cargo feature that adds webhook)
-//pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl
-// Stream<Item=Result<Update, ???>> + 'a> {}
-
-// StreamUpdater struct
+// StreamUpdater
 // **********************************************************************
 
 #[pin_project]
-struct StreamUpdater<S>(#[pin] S);
+pub struct StreamUpdater<S>(#[pin] S);
+
+impl<S> StreamUpdater<S> {
+    pub fn new(stream: S) -> Self {
+        Self(stream)
+    }
+}
 
 impl<S, E> Stream for StreamUpdater<S>
     where
@@ -185,3 +135,36 @@ impl<S, E> Updater for StreamUpdater<S>
 {
     type Error = E;
 }
+
+// updater::LongPolling
+// **********************************************************************
+
+pub type LongPolling<'a> = impl Updater<Error = RequestError> + 'a;
+
+pub fn long_polling(bot: &Bot) -> LongPolling<'_> {
+    let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
+        async move {
+            let updates = match bot.get_updates().offset(offset).send().await {
+                Ok(updates) => {
+                    if let Some(upd) = updates.last() {
+                        offset = upd.id + 1;
+                    }
+                    updates.into_iter().map(Ok).collect::<Vec<_>>()
+                }
+                Err(err) => vec![Err(err)],
+            };
+            Some((stream::iter(updates), (bot, offset)))
+        }
+    })
+        .flatten();
+
+    StreamUpdater(stream)
+}
+
+// updater::Webhook
+// **********************************************************************
+
+// TODO implement webhook (this actually require webserver and probably we
+//   should add cargo feature that adds webhook)
+//pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl
+// Stream<Item=Result<Update, ???>> + 'a> {}
