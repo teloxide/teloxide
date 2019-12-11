@@ -8,7 +8,7 @@
 /// [`Bot::get_file`]: ../../teloxide/struct.Bot.html#method.get_file
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct File {
-    ///  	Identifier for this file.
+    /// Identifier for this file.
     pub file_id: String,
 
     /// File size, if known.
