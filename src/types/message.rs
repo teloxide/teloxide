@@ -146,7 +146,7 @@ pub enum Sender {
     #[serde(rename = "from")]
     User(User),
 
-    /// If a message is sent from a channel.
+    /// Signature of a sender of a message from a channel.
     #[serde(rename = "author_signature")]
     Signature(String),
 }
