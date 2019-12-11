@@ -19,9 +19,9 @@ pub struct VideoNote {
     /// Duration of the video in seconds as defined by sender.
     pub duration: u32,
 
-    /// Optional. Video thumbnail.
+    /// Video thumbnail.
     pub thumb: Option<PhotoSize>,
 
-    /// Optional. File size.
+    /// File size.
     pub file_size: Option<u32>,
 }

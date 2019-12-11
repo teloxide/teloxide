@@ -13,7 +13,7 @@ pub struct PhotoSize {
     /// Photo height.
     pub height: i32,
 
-    /// Optional. File size.
+    /// File size.
     pub file_size: Option<u32>,
 }
 
