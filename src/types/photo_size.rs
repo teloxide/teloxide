@@ -1,17 +1,19 @@
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Clone)]
-/// This object represents one size of a photo or a [`Document`] /
-/// [`Sticker`] thumbnail.
+/// This object represents one size of a photo or a [file]/[sticker] thumbnail.
 ///
-/// [`Document`]: crate::types::Document
-/// [`Sticker`]: crate::types::Sticker
+/// [file]: ./../types/struct.Document.html
+/// [sticker]: ./../struct.Sticker.html
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct PhotoSize {
-    /// Identifier for this file
+    /// Identifier for this file.
     pub file_id: String,
-    /// Photo width
+
+    /// Photo width.
     pub width: i32,
-    /// Photo height
+
+    /// Photo height.
     pub height: i32,
-    /// Optional. File size
+
+    /// Optional. File size.
     pub file_size: Option<u32>,
 }
 

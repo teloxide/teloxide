@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages.
-/// You can use **bold** and *italic* text, as well as [inline links](https://example.com) and `pre-formatted code` in
-/// your bots' messages. Telegram clients will render them accordingly. You can
-/// use either markdown-style or HTML-style formatting.
+/// You can use **bold** and *italic* text, as well as [inline links](https://example.com)
+/// and `pre-formatted code` in your bots' messages. Telegram clients will
+/// render them accordingly. You can use either markdown-style or HTML-style
+/// formatting.
 ///
 /// Note that Telegram clients will display an alert to the user before opening
 /// an inline link (‘Open this link?’ together with the full URL).
@@ -68,6 +68,7 @@ use serde::{Deserialize, Serialize};
 /// [Markdown]: crate::types::ParseMode::Markdown
 /// [HTML]: crate::types::ParseMode::HTML
 /// [SendMessage]: crate::requests::payloads::SendMessage
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum ParseMode {
     HTML,
     Markdown,
