@@ -17,7 +17,7 @@ pub struct Update {
     /// week, then identifier of the next update will be chosen randomly
     /// instead of sequentially.
     ///
-    /// [Webhooks]: ./../teloxide/struct.Bot.html#method.set_webhook
+    /// [Webhooks]: crate::Bot::set_webhook
     #[serde(rename = "update_id")]
     pub id: i32,
 

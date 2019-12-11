@@ -63,7 +63,7 @@ pub struct InlineQueryResultVideo {
     /// as a result (e.g., a YouTube video).
     ///
     /// [`InlineQueryResultVideo`]:
-    /// ./../types/struct.InlineQueryResultVideo.html
+    /// crate::types::InlineQueryResultVideo
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

@@ -21,7 +21,7 @@ pub enum InlineKeyboardButtonKind {
     /// Data to be sent in a [`CallbackQuery`] to the bot when button is
     /// pressed, 1-64 bytes.
     ///
-    /// [`CallbackQuery`]: ./../types/struct.CallbackQuery.html
+    /// [`CallbackQuery`]: crate::types::CallbackQuery
     CallbackData(String),
 
     /// If set, pressing the button will prompt the user to select one of their

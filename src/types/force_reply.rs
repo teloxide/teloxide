@@ -20,7 +20,7 @@ pub struct ForceReply {
     /// [`Message`] object; 2) if the bot's message is a reply
     /// (has reply_to_message_id), sender of the original message.
     ///
-    /// [`Message`]: ./../types/struct.Message.html
+    /// [`Message`]: crate::types::Message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }

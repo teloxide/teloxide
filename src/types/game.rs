@@ -22,11 +22,9 @@ pub struct Game {
     /// for the game when the bot calls [`Bot::set_game_score`], or manually
     /// edited using [`Bot::edit_message_text`]. 0-4096 characters.
     ///
-    /// [`Bot::set_game_score`]:
-    /// ../../teloxide/struct.Bot.html#method.set_game_score
+    /// [`Bot::set_game_score`]: crate::Bot::set_game_score
     ///
-    /// [`Bot::edit_message_text`]:
-    /// ../../teloxide/struct.Bot.html#method.edit_message_text
+    /// [`Bot::edit_message_text`]: crate::Bot::edit_message_text
     pub text: Option<String>,
 
     /// Special entities that appear in text, such as usernames, URLs, bot

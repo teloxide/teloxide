@@ -5,7 +5,7 @@
 ///
 /// [The official docs](https://core.telegram.org/bots/api#file).
 ///
-/// [`Bot::get_file`]: ../../teloxide/struct.Bot.html#method.get_file
+/// [`Bot::get_file`]: crate::Bot::get_file
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct File {
     /// Identifier for this file.

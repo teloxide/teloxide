@@ -17,7 +17,7 @@ pub struct Chat {
 
     /// A chat photo. Returned only in [`Bot::get_chat`].
     ///
-    /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
     pub photo: Option<ChatPhoto>,
 }
 
@@ -34,7 +34,7 @@ pub enum ChatKind {
         /// A description, for groups, supergroups and channel chats. Returned
         /// only in [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         description: Option<String>,
 
         /// A chat invite link, for groups, supergroups and channel chats. Each
@@ -44,14 +44,14 @@ pub enum ChatKind {
         /// [`Bot::get_chat`].
         ///
         /// [`Bot::export_chat_invite_link`]:
-        /// ../../teloxide/struct.Bot.html#method.export_chat_invite_link
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// crate::Bot::export_chat_invite_link [`Bot::get_chat`]:
+        /// crate::Bot::get_chat
         invite_link: Option<String>,
 
         /// Pinned message, for groups, supergroups and channels. Returned only
         /// in [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         pinned_message: Option<Box<Message>>,
     },
     Private {
@@ -86,7 +86,7 @@ pub enum NonPrivateChatKind {
         /// A default chat member permissions, for groups and supergroups.
         /// Returned only in [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         permissions: Option<ChatPermissions>,
     },
     Supergroup {
@@ -97,19 +97,19 @@ pub enum NonPrivateChatKind {
         /// For supergroups, name of group sticker set. Returned only in
         /// [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         sticker_set_name: Option<String>,
 
         /// `true`, if the bot can change the group sticker set. Returned only
         /// in [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         can_set_sticker_set: Option<bool>,
 
         /// A default chat member permissions, for groups and supergroups.
         /// Returned only in [`Bot::get_chat`].
         ///
-        /// [`Bot::get_chat`]: ../../teloxide/struct.Bot.html#method.get_chat
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         permissions: Option<ChatPermissions>,
     },
 }

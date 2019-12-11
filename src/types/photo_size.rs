@@ -1,7 +1,7 @@
 /// This object represents one size of a photo or a [file]/[sticker] thumbnail.
 ///
-/// [file]: ./../types/struct.Document.html
-/// [sticker]: ./../struct.Sticker.html
+/// [file]: crate::types::Document
+/// [sticker]: crate::types::Sticker
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct PhotoSize {
     /// Identifier for this file.

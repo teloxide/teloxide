@@ -12,7 +12,7 @@ pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
     ///
-    /// [`KeyboardButton`]: ./../types/struct.KeyboardButton.html
+    /// [`KeyboardButton`]: crate::types::KeyboardButton
     pub keyboard: Vec<Vec<KeyboardButton>>,
 
     /// Requests clients to resize the keyboard vertically for optimal fit
@@ -39,7 +39,7 @@ pub struct ReplyKeyboardMarkup {
     /// the request with a keyboard to select the new language. Other users
     /// in the group don’t see the keyboard.
     ///
-    /// [`Message`]: ./../types/struct.Message.html
+    /// [`Message`]: crate::types::Message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }

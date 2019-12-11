@@ -10,7 +10,7 @@ pub struct EncryptedPassportElement {
     /// [`PassportElementErrorUnspecified`].
     ///
     /// [`PassportElementErrorUnspecified`]:
-    /// ./../types/struct.PassportElementErrorUnspecified.html
+    /// crate::types::PassportElementErrorUnspecified
     pub hash: String,
 
     #[serde(flatten)]
@@ -28,7 +28,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
     },
     Passport {
@@ -39,7 +39,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
 
         /// Encrypted file with the front side of the document, provided by the
@@ -48,7 +48,7 @@ pub enum EncryptedPassportElementKind {
         /// using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         front_side: PassportFile,
 
         /// Encrypted file with the selfie of the user holding a document,
@@ -57,7 +57,7 @@ pub enum EncryptedPassportElementKind {
         /// and verified using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         selfie: PassportFile,
 
         /// Array of encrypted files with translated versions of documents
@@ -69,7 +69,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     DriverLicense {
@@ -80,7 +80,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
 
         /// Encrypted file with the front side of the document, provided by the
@@ -89,7 +89,7 @@ pub enum EncryptedPassportElementKind {
         /// using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         front_side: PassportFile,
 
         /// Encrypted file with the reverse side of the document, provided by
@@ -98,7 +98,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         reverse_side: PassportFile,
 
         /// Encrypted file with the selfie of the user holding a document,
@@ -107,7 +107,7 @@ pub enum EncryptedPassportElementKind {
         /// and verified using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         selfie: PassportFile,
 
         /// Array of encrypted files with translated versions of documents
@@ -119,7 +119,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     IdentityCard {
@@ -130,7 +130,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
 
         /// Encrypted file with the front side of the document, provided by the
@@ -139,7 +139,7 @@ pub enum EncryptedPassportElementKind {
         /// using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         front_side: PassportFile,
 
         /// Encrypted file with the reverse side of the document, provided by
@@ -148,7 +148,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         reverse_side: PassportFile,
 
         /// Encrypted file with the selfie of the user holding a document,
@@ -157,7 +157,7 @@ pub enum EncryptedPassportElementKind {
         /// and verified using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         selfie: PassportFile,
 
         /// Array of encrypted files with translated versions of documents
@@ -169,7 +169,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     InternalPassport {
@@ -180,7 +180,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
 
         /// Encrypted file with the front side of the document, provided by the
@@ -189,7 +189,7 @@ pub enum EncryptedPassportElementKind {
         /// using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         front_side: PassportFile,
 
         /// Encrypted file with the selfie of the user holding a document,
@@ -198,7 +198,7 @@ pub enum EncryptedPassportElementKind {
         /// and verified using the accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         selfie: PassportFile,
 
         /// Array of encrypted files with translated versions of documents
@@ -210,7 +210,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     Address {
@@ -221,7 +221,7 @@ pub enum EncryptedPassportElementKind {
         /// accompanying [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         data: String,
     },
     UtilityBill {
@@ -232,7 +232,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         files: Vec<PassportFile>,
 
         /// Array of encrypted files with translated versions of documents
@@ -244,7 +244,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     BankStatement {
@@ -255,7 +255,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         files: Vec<PassportFile>,
 
         /// Array of encrypted files with translated versions of documents
@@ -267,7 +267,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     RentalAgreement {
@@ -278,7 +278,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         files: Vec<PassportFile>,
 
         /// Array of encrypted files with translated versions of documents
@@ -290,7 +290,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     PassportRegistration {
@@ -301,7 +301,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         files: Vec<PassportFile>,
 
         /// Array of encrypted files with translated versions of documents
@@ -313,7 +313,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     TemporaryRegistration {
@@ -324,7 +324,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         files: Vec<PassportFile>,
 
         /// Array of encrypted files with translated versions of documents
@@ -336,7 +336,7 @@ pub enum EncryptedPassportElementKind {
         /// [`EncryptedCredentials`].
         ///
         /// [`EncryptedCredentials`]:
-        /// ./../types/struct.EncryptedCredentials.html
+        /// crate::types::EncryptedCredentials
         translation: Option<Vec<PassportFile>>,
     },
     PhoneNumber {

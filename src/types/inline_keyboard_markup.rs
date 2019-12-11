@@ -14,7 +14,7 @@ pub struct InlineKeyboardMarkup {
     /// Array of button rows, each represented by an array of
     /// [`InlineKeyboardButton`] objects.
     ///
-    /// [`InlineKeyboardButton`]: ./../types/struct.InlineKeyboardButton.html
+    /// [`InlineKeyboardButton`]: crate::types::InlineKeyboardButton
     pub inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
 }
 

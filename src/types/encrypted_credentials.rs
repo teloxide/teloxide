@@ -5,7 +5,7 @@
 /// [The official docs](https://core.telegram.org/bots/api#encryptedcredentials).
 ///
 /// [`EncryptedPassportElement`]:
-/// ./../types/struct.EncryptedPassportElement.html
+/// crate::types::EncryptedPassportElement
 /// [Telegram Passport Documentation]: https://core.telegram.org/passport#receiving-information
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct EncryptedCredentials {
@@ -14,7 +14,7 @@ pub struct EncryptedCredentials {
     /// [`EncryptedPassportElement`] decryption and authentication.
     ///
     /// [`EncryptedPassportElement`]:
-    /// ./../types/struct.EncryptedPassportElement.html
+    /// crate::types::EncryptedPassportElement
     pub data: String, // TODO: check base64 type
 
     /// Base64-encoded data hash for data authentication.

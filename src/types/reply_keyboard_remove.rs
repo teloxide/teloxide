@@ -8,7 +8,7 @@ use crate::types::True;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#replykeyboardremove).
 ///
-/// [`ReplyKeyboardMarkup`]: ./../types/struct.ReplyKeyboardMarkup.html
+/// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ReplyKeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
@@ -16,7 +16,7 @@ pub struct ReplyKeyboardRemove {
     /// but keep it accessible, use one_time_keyboard in
     /// [`ReplyKeyboardMarkup`]).
     ///
-    /// [`ReplyKeyboardMarkup`]: ./../types/struct.ReplyKeyboardMarkup.html
+    /// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
     pub remove_keyboard: True,
 
     /// Use this parameter if you want to remove the keyboard for specific
@@ -28,7 +28,7 @@ pub struct ReplyKeyboardRemove {
     /// reply to the vote and removes the keyboard for that user, while still
     /// showing the keyboard with poll options to users who haven't voted yet.
     ///
-    /// [`Message`]: ./../types/struct.Message.html
+    /// [`Message`]: crate::types::Message
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }
