@@ -1,8 +1,27 @@
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+/// Contains data required for decrypting and authenticating
+/// [`EncryptedPassportElement`]. See the [Telegram Passport Documentation] for
+/// a complete description of the data decryption and authentication processes.
+///
+/// [The official docs](https://core.telegram.org/bots/api#encryptedcredentials).
+///
+/// [`EncryptedPassportElement`]:
+/// crate::types::EncryptedPassportElement
+/// [Telegram Passport Documentation]: https://core.telegram.org/passport#receiving-information
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct EncryptedCredentials {
-    // TODO: check base64 type
-    pub data: String,
+    /// Base64-encoded encrypted JSON-serialized data with unique user's
+    /// payload, data hashes and secrets required for
+    /// [`EncryptedPassportElement`] decryption and authentication.
+    ///
+    /// [`EncryptedPassportElement`]:
+    /// crate::types::EncryptedPassportElement
+    pub data: String, // TODO: check base64 type
+
+    /// Base64-encoded data hash for data authentication.
     pub hash: String,
+
+    /// A base64-encoded secret, encrypted with the bot's public RSA key,
+    /// required for data decryption.
     pub secret: String,
 }
 

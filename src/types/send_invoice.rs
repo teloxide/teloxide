@@ -1,6 +1,6 @@
 use crate::types::{ChatId, InlineKeyboardMarkup, LabeledPrice};
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct SendInvoice {
     pub chat_id: ChatId,
     pub title: String,

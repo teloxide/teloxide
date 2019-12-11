@@ -1,6 +1,9 @@
 use std::path::PathBuf;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize)]
+/// This object represents the contents of a file to be uploaded.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputfile).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub enum InputFile {
     File(PathBuf),
     Url(String),

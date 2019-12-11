@@ -6,80 +6,147 @@ use crate::types::{
     SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
 };
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+/// This object represents a message.
+///
+/// [The official docs](https://core.telegram.org/bots/api#message).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message {
+    /// Unique message identifier inside this chat.
     #[serde(rename = "message_id")]
     pub id: i32,
+
+    /// Date the message was sent in Unix time.
     pub date: i32,
+
+    /// Conversation the message belongs to.
     pub chat: Chat,
+
     #[serde(flatten)]
     pub kind: MessageKind,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MessageKind {
     Common {
+        /// Sender, empty for messages sent to channels.
         #[serde(flatten)]
         from: Sender,
+
         #[serde(flatten)]
         forward_kind: ForwardKind,
+
+        /// Date the message was last edited in Unix time.
         edit_date: Option<i32>,
+
         #[serde(flatten)]
         media_kind: MediaKind,
+
+        /// Inline keyboard attached to the message. `login_url` buttons are
+        /// represented as ordinary `url` buttons.
         reply_markup: Option<InlineKeyboardMarkup>,
     },
     NewChatMembers {
+        /// New members that were added to the group or supergroup and
+        /// information about them (the bot itself may be one of these
+        /// members).
         new_chat_members: Vec<User>,
     },
     LeftChatMember {
+        /// A member was removed from the group, information about them (this
+        /// member may be the bot itself).
         left_chat_member: User,
     },
     NewChatTitle {
+        /// A chat title was changed to this value.
         new_chat_title: String,
     },
     NewChatPhoto {
+        /// A chat photo was change to this value.
         new_chat_photo: Vec<PhotoSize>,
     },
     DeleteChatPhoto {
+        /// Service message: the chat photo was deleted.
         delete_chat_photo: True,
     },
     GroupChatCreated {
+        /// Service message: the group has been created.
         group_chat_created: True,
     },
     SupergroupChatCreated {
+        /// Service message: the supergroup has been created. This field can‘t
+        /// be received in a message coming through updates, because bot can’t
+        /// be a member of a supergroup when it is created. It can only be
+        /// found in `reply_to_message` if someone replies to a very first
+        /// message in a directly created supergroup.
         supergroup_chat_created: True,
     },
     ChannelChatCreated {
+        /// Service message: the channel has been created. This field can‘t be
+        /// received in a message coming through updates, because bot can’t be
+        /// a member of a channel when it is created. It can only be found in
+        /// `reply_to_message` if someone replies to a very first message in a
+        /// channel.
         channel_chat_created: True,
     },
     Migrate {
+        /// The group has been migrated to a supergroup with the specified
+        /// identifier. This number may be greater than 32 bits and some
+        /// programming languages may have difficulty/silent defects in
+        /// interpreting it. But it is smaller than 52 bits, so a signed 64 bit
+        /// integer or double-precision float type are safe for storing this
+        /// identifier.
         migrate_to_chat_id: i64,
+
+        /// The supergroup has been migrated from a group with the specified
+        /// identifier. This number may be greater than 32 bits and some
+        /// programming languages may have difficulty/silent defects in
+        /// interpreting it. But it is smaller than 52 bits, so a signed 64 bit
+        /// integer or double-precision float type are safe for storing this
+        /// identifier.
         migrate_from_chat_id: i64,
     },
     Pinned {
+        /// Specified message was pinned. Note that the Message object in this
+        /// field will not contain further `reply_to_message` fields even if it
+        /// is itself a reply.
         pinned: Box<Message>,
     },
     Invoice {
+        /// Message is an invoice for a [payment], information about the
+        /// invoice. [More about payments »].
+        ///
+        /// [payment]: https://core.telegram.org/bots/api#payments
+        /// [More about payments »]: https://core.telegram.org/bots/api#payments
         invoice: Invoice,
     },
     SuccessfulPayment {
+        /// Message is a service message about a successful payment,
+        /// information about the payment. [More about payments »].
+        ///
+        /// [More about payments »]: https://core.telegram.org/bots/api#payments
         successful_payment: SuccessfulPayment,
     },
     ConnectedWebsite {
+        /// The domain name of the website on which the user has logged in.
+        /// [More about Telegram Login »].
+        ///
+        /// [More about Telegram Login »]: https://core.telegram.org/widgets/login
         connected_website: String,
     },
     PassportData {
+        /// Telegram Passport data.
         passport_data: PassportData,
     },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum Sender {
-    /// If message is sent from Chat
+    /// Sender of a message from chat.
     #[serde(rename = "from")]
     User(User),
-    /// If message is sent from Channel
+
+    /// Signature of a sender of a message from a channel.
     #[serde(rename = "author_signature")]
     Signature(String),
 }
@@ -92,7 +159,7 @@ pub enum ForwardedFrom {
     SenderName(String),
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -116,75 +183,137 @@ pub enum ForwardKind {
     },
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MediaKind {
     Animation {
+        /// Message is an animation, information about the animation. For
+        /// backward compatibility, when this field is set, the document field
+        /// will also be set.
         animation: Animation,
+
         #[doc(hidden)]
-        /// "For backward compatibility" (c) Telegram Docs
+        /// "For backward compatibility" (c) Telegram Docs.
         #[serde(skip)]
         document: (),
+
+        /// Caption for the animation, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
     },
     Audio {
+        /// Message is an audio file, information about the file.
         audio: Audio,
+
+        /// Caption for the audio, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
     },
     Contact {
+        /// Message is a shared contact, information about the contact.
         contact: Contact,
     },
     Document {
+        /// Message is a general file, information about the file.
         document: Document,
+
+        /// Caption for the document, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
     },
     Game {
+        /// Message is a game, information about the game. [More
+        /// about games »].
+        ///
+        /// [More about games »]: https://core.telegram.org/bots/api#games
         game: Game,
     },
     Location {
+        /// Message is a shared location, information about the location.
         location: Location,
     },
     Photo {
+        /// Message is a photo, available sizes of the photo.
         photo: Vec<PhotoSize>,
+
+        /// Caption for the photo, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
+
+        /// The unique identifier of a media message group this message belongs
+        /// to.
         media_group_id: Option<String>,
     },
     Poll {
+        /// Message is a native poll, information about the poll.
         poll: Poll,
     },
     Sticker {
+        /// Message is a sticker, information about the sticker.
         sticker: Sticker,
     },
     Text {
+        /// For text messages, the actual UTF-8 text of the message, 0-4096
+        /// characters.
         text: String,
+
+        /// For text messages, special entities like usernames, URLs, bot
+        /// commands, etc. that appear in the text.
         #[serde(default = "Vec::new")]
         entities: Vec<MessageEntity>,
     },
     Video {
+        /// Message is a video, information about the video.
         video: Video,
+
+        /// Caption for the video, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
+
+        /// The unique identifier of a media message group this message belongs
+        /// to.
         media_group_id: Option<String>,
     },
     VideoNote {
+        /// Message is a [video note], information about the video message.
+        ///
+        /// [video note]: https://telegram.org/blog/video-messages-and-telescope
         video_note: VideoNote,
     },
     Voice {
+        /// Message is a voice message, information about the file.
         voice: Voice,
+
+        /// Caption for the voice, 0-1024 characters.
         caption: Option<String>,
+
+        /// For messages with a caption, special entities like usernames, URLs,
+        /// bot commands, etc. that appear in the caption.
         #[serde(default = "Vec::new")]
         caption_entities: Vec<MessageEntity>,
     },
     Venue {
+        /// Message is a venue, information about the venue.
         venue: Venue,
     },
 }

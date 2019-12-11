@@ -1,20 +1,26 @@
 use crate::types::InlineKeyboardButton;
 
-/// This object represents an inline keyboard that appears right next to the
+/// This object represents an [inline keyboard] that appears right next to the
 /// message it belongs to.
 ///
-/// *Note*: This will only work in Telegram versions released after
-/// 9 April, 2016. Older clients will display unsupported message.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
+/// *Note*: This will only work in Telegram versions released after 9 April,
+/// 2016. Older clients will display unsupported message.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardmarkup).
+///
+/// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Default)]
 pub struct InlineKeyboardMarkup {
-    /// Array of button rows, each represented by an Array of
-    /// [`InlineKeyboardButton`] objects
+    /// Array of button rows, each represented by an array of
+    /// [`InlineKeyboardButton`] objects.
+    ///
+    /// [`InlineKeyboardButton`]: crate::types::InlineKeyboardButton
     pub inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
 }
 
-/// Build Markup
+/// Build `InlineKeyboardMarkup`.
 ///
-/// Example:
+/// # Examples
 /// ```
 /// use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 ///

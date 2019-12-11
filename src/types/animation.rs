@@ -1,24 +1,33 @@
 use crate::types::PhotoSize;
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 /// This object represents an animation file (GIF or H.264/MPEG-4 AVC video
 /// without sound).
+///
+/// [The official docs](https://core.telegram.org/bots/api#animation).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Animation {
-    /// Identifier for this file
+    /// An identifier for this file.
     pub file_id: String,
-    /// Video width as defined by sender
+
+    /// A video width as defined by a sender.
     pub width: u32,
-    /// Video height as defined by sender
+
+    /// A video height as defined by a sender.
     pub height: u32,
-    /// Duration of the video in seconds as defined by sender
+
+    /// A duration of the video in seconds as defined by a sender.
     pub duration: u32,
-    /// Optional. Animation thumbnail as defined by sender
+
+    /// An animation thumbnail as defined by a sender.
     pub thumb: Option<PhotoSize>,
-    /// Optional. Original animation filename as defined by sender
+
+    /// An original animation filename as defined by a sender.
     pub file_name: Option<String>,
-    /// Optional. MIME type of the file as defined by sender
+
+    /// A MIME type of the file as defined by a sender.
     pub mime_type: Option<String>,
-    /// Optional. File size
+
+    /// A size of a file.
     pub file_size: Option<u32>,
 }
 

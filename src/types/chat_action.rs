@@ -1,4 +1,4 @@
-#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ChatAction {
     Typing,

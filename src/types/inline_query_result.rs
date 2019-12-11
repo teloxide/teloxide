@@ -13,7 +13,9 @@ use crate::types::{
 };
 
 /// This object represents one result of an inline query.
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, From)]
+///
+/// [The official docs](https://core.telegram.org/bots/api#inlinequeryresult).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InlineQueryResult {

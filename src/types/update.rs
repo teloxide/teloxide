@@ -2,24 +2,60 @@
 
 use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message};
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+/// This [object] represents an incoming update.
+///
+/// [The official docs](https://core.telegram.org/bots/api#update).
+///
+/// [object]: https://core.telegram.org/bots/api#available-types
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Update {
+    /// The update‘s unique identifier. Update identifiers start from a certain
+    /// positive number and increase sequentially. This ID becomes especially
+    /// handy if you’re using [Webhooks], since it allows you to ignore
+    /// repeated updates or to restore the correct update sequence, should
+    /// they get out of order. If there are no new updates for at least a
+    /// week, then identifier of the next update will be chosen randomly
+    /// instead of sequentially.
+    ///
+    /// [Webhooks]: crate::Bot::set_webhook
     #[serde(rename = "update_id")]
     pub id: i32,
+
     #[serde(flatten)]
     pub kind: UpdateKind,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UpdateKind {
+    /// New incoming message of any kind — text, photo, sticker, etc.
     Message(Message),
+
+    /// New version of a message that is known to the bot and was edited.
     EditedMessage(Message),
+
+    /// New incoming channel post of any kind — text, photo, sticker, etc.
     ChannelPost(Message),
+
+    /// New version of a channel post that is known to the bot and was edited.
     EditedChannelPost(Message),
+
+    /// New incoming [inline] query.
+    ///
+    /// [inline]: https://core.telegram.org/bots/api#inline-mode
     InlineQuery(InlineQuery),
+
+    /// The result of an [inline] query that was chosen by a user and sent to
+    /// their chat partner. Please see our documentation on the [feedback
+    /// collecting] for details on how to enable these updates for your bot.
+    ///
+    /// [inline]: https://core.telegram.org/bots/api#inline-mode
+    /// [feedback collecting]: https://core.telegram.org/bots/inline#collecting-feedback
     ChosenInlineResult(ChosenInlineResult),
+
+    /// New incoming callback query.
     CallbackQuery(CallbackQuery),
+    // TODO: Add more variants
 }
 
 #[cfg(test)]
