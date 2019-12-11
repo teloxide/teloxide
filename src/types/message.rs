@@ -234,8 +234,8 @@ pub enum MediaKind {
         caption_entities: Vec<MessageEntity>,
     },
     Game {
-        /// Message is a game, information about the game. [More about games
-        /// »].
+        /// Message is a game, information about the game. [More
+        /// about games »].
         ///
         /// [More about games »]: https://core.telegram.org/bots/api#games
         game: Game,
