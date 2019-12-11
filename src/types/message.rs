@@ -142,7 +142,7 @@ pub enum MessageKind {
 
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub enum Sender {
-    /// If a message is sent from a chat.
+    /// Sender of a message from chat.
     #[serde(rename = "from")]
     User(User),
 
