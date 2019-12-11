@@ -44,8 +44,9 @@ pub enum ChatKind {
         /// [`Bot::get_chat`].
         ///
         /// [`Bot::export_chat_invite_link`]:
-        /// crate::Bot::export_chat_invite_link [`Bot::get_chat`]:
-        /// crate::Bot::get_chat
+        /// crate::Bot::export_chat_invite_link
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         invite_link: Option<String>,
 
         /// Pinned message, for groups, supergroups and channels. Returned only

@@ -22,11 +22,12 @@ pub struct InlineQueryResultCachedGif {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
 
-    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-    /// italic, fixed-width text or inline URLs] in the media caption.
+    /// Send [`ParseMode::Markdown`] or [`ParseMode::HTML`], if you want
+    /// Telegram apps to show [bold, italic, fixed-width text or inline
+    /// URLs] in the media caption.
     ///
-    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [`ParseMode::Markdown`]: crate::types::ParseMode::Markdown
+    /// [`ParseMode::HTML`]: crate::types::ParseMode::HTML
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_mode: Option<ParseMode>,
