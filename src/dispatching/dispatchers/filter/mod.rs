@@ -75,8 +75,8 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 /// // with error policy that just ignores all errors (that can't ever happen)
 /// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
 ///     // Add 'handler' that will handle all messages sent to the bot
-///     .message_handler(true, |mes: Message| {
-///         async move { println!("New message: {:?}", mes) }
+///     .message_handler(true, |mes: Message| async move {
+///         println!("New message: {:?}", mes)
 ///     })
 ///     // Add 'handler' that will handle all
 ///     // messages edited in chat with the bot
@@ -318,16 +318,12 @@ mod tests {
         let counter2 = &AtomicI32::new(0);
 
         let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
-            .message_handler(true, |_mes: Message| {
-                async move {
-                    counter.fetch_add(1, Ordering::SeqCst);
-                }
+            .message_handler(true, |_mes: Message| async move {
+                counter.fetch_add(1, Ordering::SeqCst);
             })
-            .message_handler(true, |_mes: Message| {
-                async move {
-                    counter2.fetch_add(1, Ordering::SeqCst);
-                    Ok::<_, Infallible>(())
-                }
+            .message_handler(true, |_mes: Message| async move {
+                counter2.fetch_add(1, Ordering::SeqCst);
+                Ok::<_, Infallible>(())
             });
 
         dp.dispatch(one_message_updater()).await;
