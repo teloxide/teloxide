@@ -318,12 +318,16 @@ mod tests {
         let counter2 = &AtomicI32::new(0);
 
         let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
-            .message_handler(true, |_mes: Message| async move {
-                counter.fetch_add(1, Ordering::SeqCst);
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter.fetch_add(1, Ordering::SeqCst);
+                }
             })
-            .message_handler(true, |_mes: Message| async move {
-                counter2.fetch_add(1, Ordering::SeqCst);
-                Ok::<_, Infallible>(())
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter2.fetch_add(1, Ordering::SeqCst);
+                    Ok::<_, Infallible>(())
+                }
             });
 
         dp.dispatch(one_message_updater()).await;

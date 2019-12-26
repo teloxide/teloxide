@@ -136,17 +136,19 @@ where
 }
 
 pub fn polling<'a>(bot: &'a Bot) -> impl Updater<Error = RequestError> + 'a {
-    let stream = stream::unfold((bot, 0), |(bot, mut offset)| async move {
-        let updates = match bot.get_updates().offset(offset).send().await {
-            Ok(updates) => {
-                if let Some(upd) = updates.last() {
-                    offset = upd.id + 1;
+    let stream = stream::unfold((bot, 0), |(bot, mut offset)| {
+        async move {
+            let updates = match bot.get_updates().offset(offset).send().await {
+                Ok(updates) => {
+                    if let Some(upd) = updates.last() {
+                        offset = upd.id + 1;
+                    }
+                    updates.into_iter().map(Ok).collect::<Vec<_>>()
                 }
-                updates.into_iter().map(Ok).collect::<Vec<_>>()
-            }
-            Err(err) => vec![Err(err)],
-        };
-        Some((stream::iter(updates), (bot, offset)))
+                Err(err) => vec![Err(err)],
+            };
+            Some((stream::iter(updates), (bot, offset)))
+        }
     })
     .flatten();
 
