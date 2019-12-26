@@ -1,5 +1,6 @@
 #![allow(clippy::unit_arg)] // TODO
 #![allow(clippy::ptr_arg)] // TODO
+#![feature(never_type)]
 
 #[macro_use]
 extern crate derive_more;
