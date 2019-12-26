@@ -1,6 +1,4 @@
-#[cfg(not(feature = "never-type"))]
-use std::convert::Infallible;
-use std::{future::Future, pin::Pin};
+use std::{future::Future, pin::Pin, convert::Infallible /* used instead of `!` to be compatible with rust <1.41 */};
 
 use async_trait::async_trait;
 
@@ -73,28 +71,10 @@ where
 /// IgnoreSafe.handle_error(0);
 /// ```
 ///
-/// ## Note
-/// Never type is not stabilized yet (see [`#35121`]) so all API that uses [`!`]
-/// (including `impl ErrorPolicy<!> for IgnoreSafe`) we hide under the
-/// `never-type` cargo feature.
-///
 /// [`!`]: https://doc.rust-lang.org/std/primitive.never.html
 /// [`Infallible`]: std::convert::Infallible
-/// [`#35121`]: https://github.com/rust-lang/rust/issues/35121
 pub struct IgnoreSafe;
 
-#[cfg(feature = "never-type")]
-#[allow(unreachable_code)]
-#[async_trait]
-impl ErrorPolicy<!> for IgnoreSafe {
-    async fn handle_error(&self, _: !)
-    where
-        !: 'async_trait,
-    {
-    }
-}
-
-#[cfg(not(feature = "never-type"))]
 #[allow(unreachable_code)]
 #[async_trait]
 impl ErrorPolicy<Infallible> for IgnoreSafe {
