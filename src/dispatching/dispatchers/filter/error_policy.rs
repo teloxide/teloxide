@@ -1,4 +1,6 @@
-use std::{future::Future, pin::Pin, convert::Infallible /* used instead of `!` to be compatible with rust <1.41 */};
+// used instead of `!` to be compatible with rust <1.41
+use convert::Infallible;
+use std::{future::Future, pin::Pin};
 
 use async_trait::async_trait;
 
