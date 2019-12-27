@@ -1,15 +1,23 @@
 use crate::types::{Location, User};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+/// This object represents an incoming inline query. When the user sends an
+/// empty query, your bot could return some default or trending results.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inlinequery).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQuery {
-    /// Unique identifier for this query
+    /// Unique identifier for this query.
     pub id: String,
-    /// Sender
+
+    /// Sender.
     pub from: User,
-    /// Optional. Sender location, only for bots that request user location
+
+    /// Sender location, only for bots that request user location.
     pub location: Option<Location>,
-    /// Text of the query (up to 512 characters)
+
+    /// Text of the query (up to 512 characters).
     pub query: String,
-    /// Offset of the results to be returned, can be controlled by the bot
+
+    /// Offset of the results to be returned, can be controlled by the bot.
     pub offset: String,
 }

@@ -1,13 +1,17 @@
 use crate::types::LabeledPrice;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
 /// This object represents one shipping option.
+///
+/// [The official docs](https://core.telegram.org/bots/api#shippingoption).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ShippingOption {
-    /// Shipping option identifier
+    /// Shipping option identifier.
     pub id: String,
-    /// Option title
+
+    /// Option title.
     pub title: String,
-    /// List of price portions
+
+    /// List of price portions.
     pub prices: Vec<LabeledPrice>,
 }
 

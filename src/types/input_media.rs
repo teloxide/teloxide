@@ -1,165 +1,187 @@
 use crate::types::{InputFile, ParseMode};
 
 // TODO: should variants use new-type?
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 /// This object represents the content of a media message to be sent.
-/// [More](https://core.telegram.org/bots/api#inputmedia)
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmedia).
 pub enum InputMedia {
     /// Represents a photo to be sent.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
     Photo {
         /// File to send.
         media: InputFile,
-        /// Caption of the photo to be sent, 0-1024 characters
+
+        /// Caption of the photo to be sent, 0-1024 characters.
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+        /// italic, fixed-width text or inline URLs] in the media caption.
         ///
-        /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [HTML]: crate::types::ParseMode::HTML
-        /// [bold, italic, fixed-width text or inline URLs]:
-        /// crate::types::ParseMode
+        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+        /// [HTML]: https://core.telegram.org/bots/api#html-style
+        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },
+
+    /// Represents a video to be sent.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
     Video {
-        /// File to send.File to send.
+        // File to send.
         media: InputFile,
-        #[serde(skip_serializing_if = "Option::is_none")]
+
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in
-        /// size. A thumbnail‘s width and height should not exceed 320.
-        /// Ignored if the file is not uploaded using [InputFile::File].
-        ///
-        /// [InputFile::File]: crate::types::InputFile::File
+        /// for the file is supported server-side. The thumbnail should be in
+        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+        /// height should not exceed 320. Ignored if the file is not uploaded
+        /// using multipart/form-data.
+        #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
+
         /// Caption of the video to be sent, 0-1024 characters.
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+        /// italic, fixed-width text or inline URLs] in the media caption.
         ///
-        /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [HTML]: crate::types::ParseMode::HTML
-        /// [bold, italic, fixed-width text or inline URLs]:
-        /// crate::types::ParseMode
+        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+        /// [HTML]: https://core.telegram.org/bots/api#html-style
+        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
-        /// Video width
+
+        /// Video width.
         #[serde(skip_serializing_if = "Option::is_none")]
         width: Option<u16>,
-        /// Video height
+
+        /// Video height.
         #[serde(skip_serializing_if = "Option::is_none")]
         height: Option<u16>,
-        /// Video duration
+
+        /// Video duration.
         #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
-        /// Pass `true`, if the uploaded video is suitable for streaming
+
+        /// Pass `true`, if the uploaded video is suitable for streaming.
         #[serde(skip_serializing_if = "Option::is_none")]
         supports_streaming: Option<bool>,
     },
+
     /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
     /// sound) to be sent.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
     Animation {
         /// File to send.
         media: InputFile,
+
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in
-        /// size. A thumbnail‘s width and height should not exceed 320.
-        /// Ignored if the file is not uploaded using [InputFile::File].
-        ///
-        /// [InputFile::File]: crate::types::InputFile::File
+        /// for the file is supported server-side. The thumbnail should be in
+        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+        /// height should not exceed 320. Ignored if the file is not uploaded
+        /// using multipart/form-data.
         #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
-        /// Caption of the animation to be sent, 0-1024 characters
+
+        /// Caption of the animation to be sent, 0-1024 characters.
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+        /// italic, fixed-width text or inline URLs] in the media caption.
         ///
-        /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [HTML]: crate::types::ParseMode::HTML
-        /// [bold, italic, fixed-width text or inline URLs]:
-        /// crate::types::ParseMode
+        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+        /// [HTML]: https://core.telegram.org/bots/api#html-style
+        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
-        /// Animation width
+
+        /// Animation width.
         #[serde(skip_serializing_if = "Option::is_none")]
         width: Option<u16>,
-        /// Animation height
+
+        /// Animation height.
         #[serde(skip_serializing_if = "Option::is_none")]
         height: Option<u16>,
-        /// Animation duration
+
+        /// Animation duration.
         #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
     },
+
     /// Represents an audio file to be treated as music to be sent.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
     Audio {
-        /// File to send,
+        /// File to send.
         media: InputFile,
+
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in
-        /// size. A thumbnail‘s width and height should not exceed 320.
-        /// Ignored if the file is not uploaded using [InputFile::File].
-        ///
-        /// [InputFile::File]: crate::types::InputFile::File
+        /// for the file is supported server-side. The thumbnail should be in
+        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+        /// height should not exceed 320. Ignored if the file is not uploaded
+        /// using multipart/form-data.
         #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
-        /// Caption of the audio to be sent, 0-1024 characters
+
+        /// Caption of the audio to be sent, 0-1024 characters.
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+        /// italic, fixed-width text or inline URLs] in the media caption.
         ///
-        /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [HTML]: crate::types::ParseMode::HTML
-        /// [bold, italic, fixed-width text or inline URLs]:
-        /// crate::types::ParseMode
+        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+        /// [HTML]: https://core.telegram.org/bots/api#html-style
+        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<String>,
-        /// Duration of the audio in seconds
+
+        /// Duration of the audio in seconds.
         #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
-        /// Performer of the audio
+
+        /// Performer of the audio.
         #[serde(skip_serializing_if = "Option::is_none")]
         performer: Option<String>,
-        /// Title of the audio
+
+        /// Title of the audio.
         #[serde(skip_serializing_if = "Option::is_none")]
         title: Option<String>,
     },
+
     /// Represents a general file to be sent.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
     Document {
         /// File to send.
         media: InputFile,
+
         /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side.
-        /// The thumbnail should be in JPEG format and less than 200 kB in
-        /// size. A thumbnail‘s width and height should not exceed 320.
-        /// Ignored if the file is not uploaded using [InputFile::File].
-        ///
-        /// [InputFile::File]: crate::types::InputFile::File
+        /// for the file is supported server-side. The thumbnail should be in
+        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+        /// height should not exceed 320. Ignored if the file is not uploaded
+        /// using multipart/form-data.
         #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
-        /// Caption of the document to be sent, 0-1024 characters
+
+        /// Caption of the document to be sent, 0-1024 charactersю
         #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
-        /// Send [Markdown] or [HTML],
-        /// if you want Telegram apps to show [bold, italic, fixed-width text
-        /// or inline URLs] in the media caption.
+
+        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+        /// italic, fixed-width text or inline URLs] in the media caption.
         ///
-        /// [Markdown]: crate::types::ParseMode::Markdown
-        /// [HTML]: crate::types::ParseMode::HTML
-        /// [bold, italic, fixed-width text or inline URLs]:
-        /// crate::types::ParseMode
+        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+        /// [HTML]: https://core.telegram.org/bots/api#html-style
+        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
         #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },

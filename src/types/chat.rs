@@ -1,49 +1,116 @@
 use crate::types::{ChatPermissions, ChatPhoto, Message};
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+/// This object represents a chat.
+///
+/// [The official docs](https://core.telegram.org/bots/api#chat).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Chat {
+    /// A unique identifier for this chat. This number may be greater than 32
+    /// bits and some programming languages may have difficulty/silent defects
+    /// in interpreting it. But it is smaller than 52 bits, so a signed 64 bit
+    /// integer or double-precision float type are safe for storing this
+    /// identifier.
     pub id: i64,
+
     #[serde(flatten)]
     pub kind: ChatKind,
+
+    /// A chat photo. Returned only in [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
     pub photo: Option<ChatPhoto>,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum ChatKind {
     NonPrivate {
+        /// A title, for supergroups, channels and group chats.
         title: Option<String>,
+
         #[serde(flatten)]
         kind: NonPrivateChatKind,
+
+        /// A description, for groups, supergroups and channel chats. Returned
+        /// only in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         description: Option<String>,
+
+        /// A chat invite link, for groups, supergroups and channel chats. Each
+        /// administrator in a chat generates their own invite links, so the
+        /// bot must first generate the link using
+        /// [`Bot::export_chat_invite_link`]. Returned only in
+        /// [`Bot::get_chat`].
+        ///
+        /// [`Bot::export_chat_invite_link`]:
+        /// crate::Bot::export_chat_invite_link
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         invite_link: Option<String>,
+
+        /// Pinned message, for groups, supergroups and channels. Returned only
+        /// in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         pinned_message: Option<Box<Message>>,
     },
     Private {
-        /// Dummy field. Used to ensure that "type" field is equal to "private"
+        /// A dummy field. Used to ensure that the `type` field is equal to
+        /// `private`.
         #[serde(rename = "type")]
         #[serde(deserialize_with = "assert_private_field")]
         type_: (),
+
+        /// A username, for private chats, supergroups and channels if
+        /// available.
         username: Option<String>,
+
+        /// A first name of the other party in a private chat.
         first_name: Option<String>,
+
+        /// A last name of the other party in a private chat.
         last_name: Option<String>,
     },
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NonPrivateChatKind {
     Channel {
+        /// A username, for private chats, supergroups and channels if
+        /// available.
         username: Option<String>,
     },
     Group {
+        /// A default chat member permissions, for groups and supergroups.
+        /// Returned only in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         permissions: Option<ChatPermissions>,
     },
     Supergroup {
+        /// A username, for private chats, supergroups and channels if
+        /// available.
         username: Option<String>,
+
+        /// For supergroups, name of group sticker set. Returned only in
+        /// [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         sticker_set_name: Option<String>,
+
+        /// `true`, if the bot can change the group sticker set. Returned only
+        /// in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         can_set_sticker_set: Option<bool>,
+
+        /// A default chat member permissions, for groups and supergroups.
+        /// Returned only in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
         permissions: Option<ChatPermissions>,
     },
 }

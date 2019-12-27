@@ -1,15 +1,22 @@
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 /// This object represents a phone contact.
+///
+/// [The official docs](https://core.telegram.org/bots/api#contact).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Contact {
-    /// Contact's phone number
+    /// A contact's phone number.
     pub phone_number: String,
-    /// Contact's first name
+
+    /// A contact's first name.
     pub first_name: String,
-    /// Optional. Contact's last name
+
+    /// A contact's last name.
     pub last_name: Option<String>,
-    /// Optional. Contact's user identifier in Telegram
+
+    /// A contact's user identifier in Telegram.
     pub user_id: Option<i32>,
-    /// Optional. Additional data about the contact in the form of a
-    /// [vCard](https://en.wikipedia.org/wiki/VCard)
+
+    /// Additional data about the contact in the form of a [vCard].
+    ///
+    /// [vCard]: https://en.wikipedia.org/wiki/VCard
     pub vcard: Option<String>,
 }

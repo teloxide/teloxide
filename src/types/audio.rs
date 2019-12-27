@@ -1,13 +1,30 @@
 use crate::types::PhotoSize;
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone)]
+/// This object represents an audio file to be treated as music by the Telegram
+/// clients.
+///
+/// [The official docs](https://core.telegram.org/bots/api#audio).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Audio {
+    /// An identifier for this file.
     pub file_id: String,
+
+    /// A duration of the audio in seconds as defined by a sender.
     pub duration: u32,
+
+    /// A performer of the audio as defined by a sender or by audio tags.
     pub performer: Option<String>,
+
+    /// A title of the audio as defined by sender or by audio tags.
     pub title: Option<String>,
+
+    /// A MIME type of the file as defined by a sender.
     pub mime_type: Option<String>,
+
+    /// A size of a file.
     pub file_size: Option<u32>,
+
+    /// A thumbnail of the album cover to which the music file belongs.
     pub thumb: Option<PhotoSize>,
 }
 

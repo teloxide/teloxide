@@ -3,7 +3,7 @@ use serde::{
     ser::{Serialize, Serializer},
 };
 
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
 pub struct True;
 
 impl std::convert::TryFrom<bool> for True {

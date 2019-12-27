@@ -1,14 +1,22 @@
 use crate::types::User;
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+/// This object represents one special entity in a text message. For example,
+/// hashtags, usernames, URLs, etc.
+///
+/// [The official docs](https://core.telegram.org/bots/api#messageentity).
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct MessageEntity {
     #[serde(flatten)]
     pub kind: MessageEntityKind,
+
+    /// Offset in UTF-16 code units to the start of the entity.
     pub offset: usize,
+
+    /// Length of the entity in UTF-16 code units.
     pub length: usize,
 }
 
-#[derive(Debug, Deserialize, Eq, Hash, PartialEq, Clone, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageEntityKind {

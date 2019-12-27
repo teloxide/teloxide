@@ -16,10 +16,10 @@ impl Bot {
     /// ## Examples
     ///
     /// ```no_run
-    /// use telebofr::types::File as TgFile;
+    /// use teloxide::types::File as TgFile;
     /// use tokio::fs::File;
-    /// # use telebofr::RequestError;
-    /// use telebofr::Bot;
+    /// # use teloxide::RequestError;
+    /// use teloxide::Bot;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
