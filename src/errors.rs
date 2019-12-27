@@ -66,9 +66,12 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: message text is empty")]
     MessageTextIsEmpty,
 
-    MessageCantBeEdited, //?
+    /// Occurs when bot trying to edit the message after long time
+    #[serde(rename = "Bad Request: message can't be edited")]
+    MessageCantBeEdited,
 
-    MessageCantBeDeleted, //?
+    #[serde(rename = "Bad Request: message can't be deleted")]
+    MessageCantBeDeleted, // TODO: docs
 
     /// Occurs when bot trying to edit a message which does not exists
     #[serde(rename = "Bad Request: message to edit not found")]
@@ -78,11 +81,60 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: reply message not found")]
     MessageToReplyNotFound,
 
-    ToMuchMessages, //?
+    #[serde(rename = "Bad Request: message identifier is not specified")]
+    MessageIdentifierNotSpecified, // TODO: docs
 
-    PollCantBeStopped, //?
+    /// Occurs when bot trying to send a message with text size greater then 4096 symbols
+    #[serde(rename = "Bad Request: message is too long")]
+    MessageIsTooLong,
+
+    /// Occurs when bot trying to send media group with more than 10 items
+    #[serde(rename = "Bad Request: Too much messages to send as an album")]
+    ToMuchMessages,
+
+    #[serde(rename = "Bad Request: poll can't be stopped")]
+    PollCantBeStopped, // TODO: docs
 
     /// Occurs when bot trying to stop poll that has already been stopped
     #[serde(rename = "Bad Request: poll has already been closed")]
     PollHasAlreadyClosed,
+
+    /// Occurs when bot trying to send poll with less than 2 options
+    #[serde(rename = "Bad Request: poll must have at least 2 option")]
+    PollMustHaveMoreOptions,
+
+    /// Occurs when bot trying to send poll with more than 10 options
+    #[serde(rename = "Bad Request: poll can't have more than 10 options")]
+    PollCantHaveMoreOptions,
+
+    /// Occurs when bot trying to send poll with empty option (without text)
+    #[serde(rename = "Bad Request: poll options must be non-empty")]
+    PollOptionsMustBeNonEmpty,
+
+    /// Occurs when bot trying to send poll with empty question (without text)
+    #[serde(rename = "Bad Request: poll question must be non-empty")]
+    PollQuestionMustBeNonEmpty,
+
+    /// Occurs when bot trying to send poll with total size of options more than 100 symbols
+    #[serde(rename = "Bad Request: poll options length must not exceed 100")]
+    PollOptionsLengthTooLong,
+
+    /// Occurs when bot trying to send poll with question size more than 255 symbols
+    #[serde(rename = "Bad Request: poll question length must not exceed 255")]
+    PollQuestionLengthTooLong,
+
+    /// Occurs when bot trying to stop poll with message without poll
+    #[serde(rename = "Bad Request: message with poll to stop not found")]
+    MessageWithPollNotFound,
+
+    /// Occurs when bot trying to stop poll with message without poll
+    #[serde(rename = "Bad Request: message is not a poll")]
+    MessageIsNotAPoll,
+
+    /// Occurs when bot trying to send a message to chat in which it is not a member
+    #[serde(rename = "Bad Request: chat not found")]
+    ChatNotFound,
+
+    #[serde(rename = "Bad Request: user_id_invalid")]
+    InvalidUserId, // TODO: docs
 }
