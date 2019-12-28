@@ -268,4 +268,7 @@ enum ApiErrorKind {
 
     #[serde(rename = "bot can't send messages to bots")]
     CantTalkWithBots, // TODO: docs
+
+    #[serde(other)]
+    OtherKind(String)
 }
