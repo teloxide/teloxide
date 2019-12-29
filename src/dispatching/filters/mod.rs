@@ -1,3 +1,5 @@
+//! Filters of messages.
+
 pub use main::*;
 
 pub use command::*;

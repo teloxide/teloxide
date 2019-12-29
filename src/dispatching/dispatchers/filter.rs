@@ -1,47 +1,25 @@
+//! A dispatcher based on filters.
+
 use futures::StreamExt;
 
-use async_trait::async_trait;
-
 use crate::{
-    dispatching::{
-        dispatchers::filter::error_policy::ErrorPolicy, filters::Filter,
-        handler::Handler, updater::Updater, Dispatcher,
-    },
+    dispatching::{filters::Filter, ErrorHandler, Handler, Updater},
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Update,
         UpdateKind,
     },
 };
 
-pub mod error_policy;
+type FilterWithHandler<'a, T, E> =
+    (Box<dyn Filter<T> + 'a>, Box<dyn Handler<T, E> + 'a>);
+type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 
-struct FilterAndHandler<'a, T, E> {
-    filter: Box<dyn Filter<T> + 'a>,
-    handler: Box<dyn Handler<'a, T, E> + 'a>,
-}
-
-impl<'a, T, E> FilterAndHandler<'a, T, E> {
-    fn new<F, H>(filter: F, handler: H) -> Self
-    where
-        F: Filter<T> + 'a,
-        H: Handler<'a, T, E> + 'a,
-    {
-        FilterAndHandler {
-            filter: Box::new(filter),
-            handler: Box::new(handler),
-        }
-    }
-}
-
-type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
-
-/// Dispatcher that dispatches updates from telegram.
+/// A dispatcher based on filters.
 ///
 /// This is 'filter' implementation with following limitations:
 /// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
 /// - All 'handlers' are boxed
 /// - Handler's fututres are also boxed
-/// - All errors from [updater] are ignored (TODO: remove this limitation)
 /// - All handlers executed in order (this means that in dispatching have 2
 ///   upadtes it will first execute some handler into complition with first
 ///   update and **then** search for handler for second update, this is probably
@@ -89,24 +67,32 @@ type FiltersAndHandlers<'a, T, E> = Vec<FilterAndHandler<'a, T, E>>;
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
 /// [updater]: crate::dispatching::updater
-pub struct FilterDispatcher<'a, E, Ep> {
-    message_handlers: FiltersAndHandlers<'a, Message, E>,
-    edited_message_handlers: FiltersAndHandlers<'a, Message, E>,
-    channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
-    edited_channel_post_handlers: FiltersAndHandlers<'a, Message, E>,
-    inline_query_handlers: FiltersAndHandlers<'a, InlineQuery, E>,
+pub struct FilterDispatcher<'a, E, Eh> {
+    message_handlers: FiltersWithHandlers<'a, Message, E>,
+    edited_message_handlers: FiltersWithHandlers<'a, Message, E>,
+    channel_post_handlers: FiltersWithHandlers<'a, Message, E>,
+    edited_channel_post_handlers: FiltersWithHandlers<'a, Message, E>,
+    inline_query_handlers: FiltersWithHandlers<'a, InlineQuery, E>,
     chosen_inline_result_handlers:
-        FiltersAndHandlers<'a, ChosenInlineResult, E>,
-    callback_query_handlers: FiltersAndHandlers<'a, CallbackQuery, E>,
-    error_policy: Ep,
+        FiltersWithHandlers<'a, ChosenInlineResult, E>,
+    callback_query_handlers: FiltersWithHandlers<'a, CallbackQuery, E>,
+    error_handler: Eh,
 }
 
-impl<'a, E, Ep> FilterDispatcher<'a, E, Ep>
-where
-    Ep: ErrorPolicy<E>,
-    E: std::fmt::Debug, // TODO: Is this really necessary?
-{
-    pub fn new(error_policy: Ep) -> Self {
+/// An error produced either from [`Updater`] or [`Handler`].
+///
+/// [`Updater`]: crate::dispatching::Updater
+/// [`Handler`]: crate::dispatching::Handler
+pub enum ErrorKind<E1, E2> {
+    FromUpdater(E1),
+    FromHandler(E2),
+}
+
+impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
+    pub fn new<E1>(error_handler: Eh) -> Self
+    where
+        Eh: ErrorHandler<ErrorKind<E1, E2>>,
+    {
         FilterDispatcher {
             message_handlers: Vec::new(),
             edited_message_handlers: Vec::new(),
@@ -115,37 +101,37 @@ where
             inline_query_handlers: Vec::new(),
             chosen_inline_result_handlers: Vec::new(),
             callback_query_handlers: Vec::new(),
-            error_policy,
+            error_handler,
         }
     }
 
     pub fn message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message, E> + 'a,
+        H: Handler<Message, E2> + 'a,
     {
         self.message_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
     pub fn edited_message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message, E> + 'a,
+        H: Handler<Message, E2> + 'a,
     {
         self.edited_message_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
     pub fn channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message, E> + 'a,
+        H: Handler<Message, E2> + 'a,
     {
         self.channel_post_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -156,20 +142,20 @@ where
     ) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<'a, Message, E> + 'a,
+        H: Handler<Message, E2> + 'a,
     {
         self.edited_channel_post_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
     pub fn inline_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<InlineQuery> + 'a,
-        H: Handler<'a, InlineQuery, E> + 'a,
+        H: Handler<InlineQuery, E2> + 'a,
     {
         self.inline_query_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
@@ -180,97 +166,121 @@ where
     ) -> Self
     where
         F: Filter<ChosenInlineResult> + 'a,
-        H: Handler<'a, ChosenInlineResult, E> + 'a,
+        H: Handler<ChosenInlineResult, E2> + 'a,
     {
         self.chosen_inline_result_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
     pub fn callback_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<CallbackQuery> + 'a,
-        H: Handler<'a, CallbackQuery, E> + 'a,
+        H: Handler<CallbackQuery, E2> + 'a,
     {
         self.callback_query_handlers
-            .push(FilterAndHandler::new(filter, handler));
+            .push((Box::new(filter), Box::new(handler)));
         self
     }
 
-    // TODO: Can someone simplify this?
-    pub async fn dispatch<U>(&mut self, updates: U)
+    pub async fn dispatch<E1, U>(&mut self, updater: U)
     where
-        U: Updater + 'a,
+        U: Updater<E1> + 'a,
+        Eh: ErrorHandler<ErrorKind<E1, E2>>,
     {
-        updates
-            .for_each(|res| {
-                async {
-                    let Update { kind, id } = match res {
-                        Ok(upd) => upd,
-                        _ => return, // TODO: proper error handling
-                    };
+        updater
+            .for_each(|res| async {
+                let Update { kind, id } = match res {
+                    Ok(upd) => upd,
+                    Err(err) => {
+                        self.error_handler
+                            .handle_error(ErrorKind::FromUpdater(err));
+                        return;
+                    }
+                };
 
-                    log::debug!(
-                        "Handled update#{id:?}: {kind:?}",
-                        id = id,
-                        kind = kind
-                    );
+                log::debug!(
+                    "Handled update#{id:?}: {kind:?}",
+                    id = id,
+                    kind = kind
+                );
 
-                    match kind {
-                        UpdateKind::Message(mes) => {
-                            self.handle(mes, &self.message_handlers).await
-                        }
-                        UpdateKind::EditedMessage(mes) => {
-                            self.handle(mes, &self.edited_message_handlers)
-                                .await;
-                        }
-                        UpdateKind::ChannelPost(post) => {
-                            self.handle(post, &self.channel_post_handlers)
-                                .await;
-                        }
-                        UpdateKind::EditedChannelPost(post) => {
-                            self.handle(
-                                post,
-                                &self.edited_channel_post_handlers,
-                            )
-                            .await;
-                        }
-                        UpdateKind::InlineQuery(query) => {
-                            self.handle(query, &self.inline_query_handlers)
-                                .await;
-                        }
-                        UpdateKind::ChosenInlineResult(result) => {
-                            self.handle(
-                                result,
-                                &self.chosen_inline_result_handlers,
-                            )
-                            .await;
-                        }
-                        UpdateKind::CallbackQuery(callback) => {
-                            self.handle(
-                                callback,
-                                &self.callback_query_handlers,
-                            )
-                            .await;
-                        }
+                match kind {
+                    UpdateKind::Message(mes) => {
+                        Self::handle(
+                            mes,
+                            &mut self.message_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await
+                    }
+                    UpdateKind::EditedMessage(mes) => {
+                        Self::handle(
+                            mes,
+                            &mut self.edited_message_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
+                    }
+                    UpdateKind::ChannelPost(post) => {
+                        Self::handle(
+                            post,
+                            &mut self.channel_post_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
+                    }
+                    UpdateKind::EditedChannelPost(post) => {
+                        Self::handle(
+                            post,
+                            &mut self.edited_channel_post_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
+                    }
+                    UpdateKind::InlineQuery(query) => {
+                        Self::handle(
+                            query,
+                            &mut self.inline_query_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
+                    }
+                    UpdateKind::ChosenInlineResult(result) => {
+                        Self::handle(
+                            result,
+                            &mut self.chosen_inline_result_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
+                    }
+                    UpdateKind::CallbackQuery(callback) => {
+                        Self::handle(
+                            callback,
+                            &mut self.callback_query_handlers,
+                            &mut self.error_handler,
+                        )
+                        .await;
                     }
                 }
             })
             .await;
     }
 
-    #[allow(clippy::ptr_arg)] // TODO: proper fix
-    async fn handle<T>(
-        &self,
+    async fn handle<T, E1>(
         update: T,
-        handlers: &FiltersAndHandlers<'a, T, E>,
+        handlers: &mut FiltersWithHandlers<'a, T, E2>,
+        error_handler: &mut Eh,
     ) where
         T: std::fmt::Debug,
+        Eh: ErrorHandler<ErrorKind<E1, E2>>,
     {
         for x in handlers {
-            if x.filter.test(&update) {
-                if let Err(err) = x.handler.handle(update).await {
-                    self.error_policy.handle_error(err).await
+            if x.0.test(&update) {
+                if let Err(err) = x.1.handle(update).await {
+                    error_handler
+                        .handle_error(ErrorKind::FromHandler(err))
+                        .await
                 }
 
                 return;
@@ -278,18 +288,6 @@ where
         }
 
         log::warn!("unhandled update {:?}", update);
-    }
-}
-
-#[async_trait(? Send)]
-impl<'a, U, E, Ep> Dispatcher<'a, U> for FilterDispatcher<'a, E, Ep>
-where
-    E: std::fmt::Debug,
-    U: Updater + 'a,
-    Ep: ErrorPolicy<E>,
-{
-    async fn dispatch(&'a mut self, updater: U) {
-        FilterDispatcher::dispatch(self, updater).await
     }
 }
 
