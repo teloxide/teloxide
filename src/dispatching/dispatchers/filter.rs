@@ -16,14 +16,19 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 
 /// A dispatcher based on filters.
 ///
-/// This is 'filter' implementation with following limitations:
-/// - Error (`E` generic parameter) _must_ implement [`std::fmt::Debug`]
-/// - All 'handlers' are boxed
-/// - Handler's fututres are also boxed
-/// - All handlers executed in order (this means that in dispatching have 2
-///   upadtes it will first execute some handler into complition with first
-///   update and **then** search for handler for second update, this is probably
-///   wrong)
+/// Filters and handlers are executed in order of registering. The pseudocode
+/// looks like this:
+///
+/// ```
+/// for pair in handlers_and_filters {
+///     if pair.filter.test(update) {
+///         pair.handle(update);
+///         return;
+///     }
+/// }
+///
+/// log("unhandeled update: " + update);
+/// ```
 ///
 /// ## Examples
 ///
