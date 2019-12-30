@@ -21,7 +21,7 @@ pub trait ErrorHandler<E> {
 /// ## Example
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use teloxide::dispatching::error_handler::{ErrorHandler, Ignore};
 ///
 /// Ignore.handle_error(()).await;
@@ -50,7 +50,7 @@ impl<E> ErrorHandler<E> for Ignore {
 /// ## Examples
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use std::convert::{Infallible, TryInto};
 ///
 /// use teloxide::dispatching::error_handler::{ErrorHandler, IgnoreSafe};
@@ -95,7 +95,7 @@ impl ErrorHandler<Infallible> for IgnoreSafe {
 /// ## Example
 /// ```
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// use teloxide::dispatching::error_handler::{ErrorHandler, Print};
 ///
 /// Print.handle_error(()).await;
