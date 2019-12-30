@@ -12,7 +12,7 @@ pub trait Handler<T, E> {
 }
 
 /// The implementation of `Handler` for `Fn(U) -> Future<Output = Result<(),
-/// E>`.
+/// E>>`.
 ///
 /// Looks quite strange for now, but with stabilised asynchronous traits it
 /// should be prettier.
