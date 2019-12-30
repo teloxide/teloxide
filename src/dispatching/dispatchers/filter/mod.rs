@@ -259,11 +259,10 @@ where
             .await;
     }
 
-    #[allow(clippy::ptr_arg)] // TODO: proper fix
     async fn handle<T>(
         &self,
         update: T,
-        handlers: &FiltersAndHandlers<'a, T, E>,
+        handlers: &[FilterAndHandler<'a, T, E>],
     ) where
         T: std::fmt::Debug,
     {
