@@ -20,7 +20,7 @@ pub trait ErrorHandler<E> {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::error_handler::{ErrorHandler, Ignore};
+/// use teloxide::dispatching::error_handlers::{ErrorHandler, Ignore};
 ///
 /// Ignore.handle_error(()).await;
 /// Ignore.handle_error(404).await;
@@ -51,7 +51,7 @@ impl<E> ErrorHandler<E> for Ignore {
 /// # async fn main_() {
 /// use std::convert::{Infallible, TryInto};
 ///
-/// use teloxide::dispatching::error_handler::{ErrorHandler, IgnoreSafe};
+/// use teloxide::dispatching::error_handlers::{ErrorHandler, IgnoreSafe};
 ///
 /// let result: Result<String, Infallible> = "str".try_into();
 /// match result {
@@ -59,7 +59,7 @@ impl<E> ErrorHandler<E> for Ignore {
 ///     Err(inf) => IgnoreSafe.handle_error(inf).await,
 /// }
 ///
-/// IgnoreSafe.handle_error(return).await; // return type of `return` is `!` (aka never)
+/// IgnoreSafe.handle_error(return;).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///
@@ -94,7 +94,7 @@ impl ErrorHandler<Infallible> for IgnoreSafe {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::error_handler::{ErrorHandler, Print};
+/// use teloxide::dispatching::error_handlers::{ErrorHandler, Print};
 ///
 /// Print.handle_error(()).await;
 /// Print.handle_error(404).await;
@@ -125,7 +125,7 @@ where
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::error_handler::ErrorHandler;
+/// use teloxide::dispatching::error_handlers::ErrorHandler;
 ///
 /// let mut closure = |e: i32| async move { eprintln!("Error code{}", e) };
 ///
