@@ -194,7 +194,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
         Eh: ErrorHandler<ErrorKind<E1, E2>>,
     {
         updater
-            .for_each(|res| async {
+            .for_each_concurrent(None, |res| async {
                 let Update { kind, id } = match res {
                     Ok(upd) => upd,
                     Err(err) => {
