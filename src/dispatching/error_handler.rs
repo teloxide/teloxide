@@ -5,6 +5,7 @@ use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 
 /// An asynchronous handler of an error.
 pub trait ErrorHandler<E> {
+    #[must_use]
     fn handle_error<'a>(
         &'a self,
         error: E,
