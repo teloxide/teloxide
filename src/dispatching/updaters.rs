@@ -115,12 +115,9 @@ impl<S, E> Updater<E> for S where S: Stream<Item = Result<Update, E>> {}
 
 /// Returns a long polling updater with the default configuration.
 ///
-/// It is the same as calling [`polling_advanced`] with `timeout` of 30 seconds,
-/// `limit=100` and receive all kinds of updates.
-///
-/// [`polling_advanced`]: polling_advanced
-pub fn polling_basic(bot: &Bot) -> impl Updater<RequestError> + '_ {
-    polling_advanced::<&[_]>(bot, Duration::from_secs(30), 100, &[])
+/// [`polling`]: polling
+pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
+    polling(bot, None, None, None)
 }
 
 /// Returns a long/short polling updater with some additional options.
@@ -130,38 +127,41 @@ pub fn polling_basic(bot: &Bot) -> impl Updater<RequestError> + '_ {
 /// - `limit`: Limits the number of updates to be retrieved at once. Values
 ///   between 1—100 are accepted.
 /// - `allowed_updates`: A list the types of updates you want to receive.
-pub fn polling_advanced<'a, A>(
-    bot: &'a Bot,
-    timeout: Duration,
-    limit: u8,
-    allowed_updates: A,
-) -> impl Updater<RequestError> + 'a
-where
-    A: Into<&'a [AllowedUpdate]>,
-{
-    let mut allowed_updates = Some(allowed_updates.into());
+/// See [`GetUpdates`] for defaults.
+///
+/// See also: [`polling_default`](polling_default)
+///
+/// [`GetUpdates`]: crate::requests::payloads::GetUpdates
+pub fn polling(
+    bot: &Bot,
+    timeout: Option<Duration>,
+    limit: Option<u8>,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+) -> impl Updater<RequestError> + '_ {
+    let timeout =
+        timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
 
-    stream::unfold((bot, 0), move |(bot, mut offset)| async move {
-        let updates = match bot
-            .get_updates()
-            .offset(offset)
-            .timeout(timeout.as_secs().try_into().expect("timeout is too big"))
-            .limit(limit)
-            .allowed_updates(allowed_updates.take().unwrap_or(&[]))
-            .send()
-            .await
-        {
-            Err(err) => vec![Err(err)],
-            Ok(updates) => {
-                if let Some(upd) = updates.last() {
-                    offset = upd.id + 1;
+    stream::unfold(
+        (allowed_updates, bot, 0),
+        move |(mut allowed_updates, bot, mut offset)| async move {
+            let mut req = bot.get_updates().offset(offset);
+            req.payload.timeout = timeout;
+            req.payload.limit = limit;
+            req.payload.allowed_updates = allowed_updates.take();
+
+            let updates = match req.send().await {
+                Err(err) => vec![Err(err)],
+                Ok(updates) => {
+                    if let Some(upd) = updates.last() {
+                        offset = upd.id + 1;
+                    }
+                    updates.into_iter().map(Ok).collect::<Vec<_>>()
                 }
-                updates.into_iter().map(Ok).collect::<Vec<_>>()
-            }
-        };
+            };
 
-        Some((stream::iter(updates), (bot, offset)))
-    })
+            Some((stream::iter(updates), (allowed_updates, bot, offset)))
+        },
+    )
     .flatten()
 }
 
