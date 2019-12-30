@@ -2,8 +2,8 @@
 //!
 //! The key trait here is [`Updater`]. You can get it by these functions:
 //!
-//!  - [`polling_basic`], which returns a default long polling updater.
-//!  - [`polling_advanced`], which returns a long/short polling updater with
+//!  - [`polling_default`], which returns a default long polling updater.
+//!  - [`polling`], which returns a long/short polling updater with
 //!    your configuration.
 //!
 //! And then you can pass it directly to a dispatcher.
@@ -91,8 +91,8 @@
 //!   updates `0..=N`.
 //!
 //! [`Updater`]: Updater
-//! [`polling_basic`]: polling_basic
-//! [`polling_advanced`]: polling_advanced
+//! [`polling_default`]: polling_default
+//! [`polling`]: polling
 //! [`Dispatcher`]: crate::dispatching::Dispatcher::dispatch
 //! [`Box::get_updates`]: crate::Bot::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
