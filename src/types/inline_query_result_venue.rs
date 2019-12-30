@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 /// Represents a venue. By default, the venue will be sent by the user.

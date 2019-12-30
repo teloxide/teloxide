@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 /// Represents a location on a map. By default, the location will be sent by the

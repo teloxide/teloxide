@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{ChatPermissions, ChatPhoto, Message};
 
 /// This object represents a chat.

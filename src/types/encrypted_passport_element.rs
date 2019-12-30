@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use super::PassportFile;
 
 /// Contains information about documents or other Telegram Passport elements

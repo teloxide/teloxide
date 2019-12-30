@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 /// Represents a link to a photo stored on the Telegram servers. By default,

@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{OrderInfo, User};
 
 /// This object contains information about an incoming pre-checkout query.

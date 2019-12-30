@@ -1,5 +1,8 @@
 #![allow(clippy::large_enum_variant)]
 
+use derive_more::From;
+use serde::{Deserialize, Serialize};
+
 use crate::types::{
     InlineQueryResultArticle, InlineQueryResultAudio,
     InlineQueryResultCachedAudio, InlineQueryResultCachedDocument,

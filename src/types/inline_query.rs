@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{Location, User};
 
 /// This object represents an incoming inline query. When the user sends an

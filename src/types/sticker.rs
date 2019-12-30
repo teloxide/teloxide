@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{MaskPosition, PhotoSize};
 
 /// This object represents a sticker.

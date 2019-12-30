@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::types::{Animation, MessageEntity, PhotoSize};
 

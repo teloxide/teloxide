@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object contains basic information about an invoice.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#invoice).

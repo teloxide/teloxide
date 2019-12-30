@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 /// Represents a link to a video animation (H.264/MPEG-4 AVC video without

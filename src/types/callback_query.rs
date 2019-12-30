@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{Message, User};
 
 /// This object represents an incoming callback query from a callback button in

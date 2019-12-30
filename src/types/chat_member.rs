@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::User;
 
 /// This object contains information about one member of the chat.

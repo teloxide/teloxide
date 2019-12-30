@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents one button of the reply keyboard. For filter text
 /// buttons String can be used instead of this object to specify text of the
 /// button. Optional fields are mutually exclusive.

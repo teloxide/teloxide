@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents a shipping address.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#shippingaddress).

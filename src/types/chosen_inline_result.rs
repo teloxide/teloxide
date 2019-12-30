@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{Location, User};
 
 /// Represents a [result] of an inline query that was chosen by the user and
