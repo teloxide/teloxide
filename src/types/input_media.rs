@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InputFile, ParseMode};
 
 // TODO: should variants use new-type?

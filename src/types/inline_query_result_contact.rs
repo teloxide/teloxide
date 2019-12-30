@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 /// Represents a contact with a phone number. By default, this contact will be

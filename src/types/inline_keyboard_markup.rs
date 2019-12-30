@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::InlineKeyboardButton;
 
 /// This object represents an [inline keyboard] that appears right next to the

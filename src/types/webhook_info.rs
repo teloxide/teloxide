@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// Contains information about the current status of a webhook.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).

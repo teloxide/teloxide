@@ -1,7 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     requests::{dynamic, json, Method},
+    types::{ChatId, ReplyMarkup, Message},
 };
-use crate::types::{ChatId, ReplyMarkup, Message};
 
 /// Use this method to send a native poll. A native poll can't be sent to a private chat. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]

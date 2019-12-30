@@ -1,10 +1,9 @@
-
+use serde::{Deserialize, Serialize};
 
 use crate::{
     requests::{dynamic, json, Method},
-    types::{ParseMode, InlineKeyboardMarkup},
+    types::{ParseMode, InlineKeyboardMarkup, Message},
 };
-use crate::types::Message;
 
 /// Use this method to edit captions of messages. On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]

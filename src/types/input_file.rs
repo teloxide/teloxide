@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use std::path::PathBuf;
 
 /// This object represents the contents of a file to be uploaded.
@@ -60,7 +62,7 @@ impl From<InputFile> for Option<PathBuf> {
     }
 }
 
-impl serde::Serialize for InputFile {
+impl Serialize for InputFile {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

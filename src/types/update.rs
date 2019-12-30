@@ -1,5 +1,7 @@
 #![allow(clippy::large_enum_variant)]
 
+use serde::{Deserialize, Serialize};
+
 use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message};
 
 /// This [object] represents an incoming update.

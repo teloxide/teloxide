@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::LabeledPrice;
 
 /// This object represents one shipping option.

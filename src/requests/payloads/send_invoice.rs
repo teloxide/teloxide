@@ -1,7 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     requests::{dynamic, json, Method},
+    types::{LabeledPrice, InlineKeyboardMarkup, Message},
 };
-use crate::types::{LabeledPrice, InlineKeyboardMarkup, Message};
 
 /// Use this method to send invoices. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]

@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents a phone contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#contact).

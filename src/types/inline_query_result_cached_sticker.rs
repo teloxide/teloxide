@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
 /// Represents a link to a sticker stored on the Telegram servers. By default,

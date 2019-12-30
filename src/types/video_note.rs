@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::PhotoSize;
 
 /// This object represents a [video message] (available in Telegram apps as of

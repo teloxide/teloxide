@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::PhotoSize;
 
 /// This object represents a general file (as opposed to [photos], [voice

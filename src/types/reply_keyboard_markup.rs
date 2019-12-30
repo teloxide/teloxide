@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::KeyboardButton;
 
 /// This object represents a [custom keyboard] with reply options (see

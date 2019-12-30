@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents one button of an inline keyboard.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardbutton).

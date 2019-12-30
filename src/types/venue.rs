@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::Location;
 
 /// This object represents a venue.

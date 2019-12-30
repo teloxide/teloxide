@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::True;
 
 /// Upon receiving a message with this object, Telegram clients will display a
