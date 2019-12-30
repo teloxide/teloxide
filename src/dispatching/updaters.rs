@@ -142,7 +142,7 @@ where
     let mut allowed_updates = Some(allowed_updates.into());
 
     stream::unfold((bot, 0), move |(bot, mut offset)| async move {
-        let updates = bot
+        let updates = match bot
             .get_updates()
             .offset(offset)
             .timeout(timeout.as_secs().try_into().expect("timeout is too big"))
@@ -150,15 +150,15 @@ where
             .allowed_updates(allowed_updates.take().unwrap_or(&[]))
             .send()
             .await
-            .map_or_else(
-                |err| vec![Err(err)],
-                |updates| {
-                    if let Some(upd) = updates.last() {
-                        offset = upd.id + 1;
-                    }
-                    updates.into_iter().map(Ok).collect::<Vec<_>>()
-                },
-            );
+        {
+            Err(err) => vec![Err(err)],
+            Ok(updates) => {
+                if let Some(upd) = updates.last() {
+                    offset = upd.id + 1;
+                }
+                updates.into_iter().map(Ok).collect::<Vec<_>>()
+            }
+        };
 
         Some((stream::iter(updates), (bot, offset)))
     })
