@@ -214,56 +214,56 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
                     UpdateKind::Message(mes) => {
                         Self::handle(
                             mes,
-                            &mut self.message_handlers,
-                            &mut self.error_handler,
+                            &self.message_handlers,
+                            &self.error_handler,
                         )
                         .await
                     }
                     UpdateKind::EditedMessage(mes) => {
                         Self::handle(
                             mes,
-                            &mut self.edited_message_handlers,
-                            &mut self.error_handler,
+                            &self.edited_message_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
                     UpdateKind::ChannelPost(post) => {
                         Self::handle(
                             post,
-                            &mut self.channel_post_handlers,
-                            &mut self.error_handler,
+                            &self.channel_post_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
                     UpdateKind::EditedChannelPost(post) => {
                         Self::handle(
                             post,
-                            &mut self.edited_channel_post_handlers,
-                            &mut self.error_handler,
+                            &self.edited_channel_post_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
                     UpdateKind::InlineQuery(query) => {
                         Self::handle(
                             query,
-                            &mut self.inline_query_handlers,
-                            &mut self.error_handler,
+                            &self.inline_query_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
                     UpdateKind::ChosenInlineResult(result) => {
                         Self::handle(
                             result,
-                            &mut self.chosen_inline_result_handlers,
-                            &mut self.error_handler,
+                            &self.chosen_inline_result_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
                     UpdateKind::CallbackQuery(callback) => {
                         Self::handle(
                             callback,
-                            &mut self.callback_query_handlers,
-                            &mut self.error_handler,
+                            &self.callback_query_handlers,
+                            &self.error_handler,
                         )
                         .await;
                     }
@@ -274,8 +274,8 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
 
     async fn handle<T, E1>(
         update: T,
-        handlers: &mut FiltersWithHandlers<'a, T, E2>,
-        error_handler: &mut Eh,
+        handlers: &FiltersWithHandlers<'a, T, E2>,
+        error_handler: &Eh,
     ) where
         T: std::fmt::Debug,
         Eh: ErrorHandler<ErrorKind<E1, E2>>,
@@ -303,12 +303,8 @@ mod tests {
         sync::atomic::{AtomicI32, Ordering},
     };
 
-    use futures::Stream;
-
     use crate::{
-        dispatching::{
-            dispatchers::filter::FilterDispatcher, updater::StreamUpdater,
-        },
+        dispatching::{dispatchers::filter::FilterDispatcher, Updater},
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
             Sender, Update, UpdateKind, User,
@@ -378,10 +374,9 @@ mod tests {
         }
     }
 
-    fn one_message_updater(
-    ) -> StreamUpdater<impl Stream<Item = Result<Update, Infallible>>> {
+    fn one_message_updater() -> impl Updater<Infallible> {
         use futures::{future::ready, stream};
 
-        StreamUpdater::new(stream::once(ready(Ok(message_update()))))
+        stream::once(ready(Ok(message_update())))
     }
 }

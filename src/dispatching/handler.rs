@@ -4,7 +4,7 @@ use std::{future::Future, pin::Pin};
 pub trait Handler<T, E> {
     #[must_use]
     fn handle<'a>(
-        &'a mut self,
+        &'a self,
         value: T,
     ) -> Pin<Box<dyn Future<Output = Result<(), E>> + 'a>>
     where
@@ -18,11 +18,11 @@ pub trait Handler<T, E> {
 /// should be prettier.
 impl<T, E, F, Fut> Handler<T, E> for F
 where
-    F: FnMut(T) -> Fut,
+    F: Fn(T) -> Fut,
     Fut: Future<Output = Result<(), E>>,
 {
     fn handle<'a>(
-        &'a mut self,
+        &'a self,
         value: T,
     ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where

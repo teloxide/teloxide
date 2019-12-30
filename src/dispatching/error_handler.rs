@@ -9,7 +9,7 @@ use std::{convert::Infallible, future::Future, pin::Pin};
 /// A handler of an error.
 pub trait ErrorHandler<E> {
     fn handle_error<'a>(
-        &'a mut self,
+        &'a self,
         error: E,
     ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
     where
@@ -34,7 +34,7 @@ pub struct Ignore;
 impl<E> ErrorHandler<E> for Ignore {
     #[must_use]
     fn handle_error<'a>(
-        &'a mut self,
+        &'a self,
         _: E,
     ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
     where
@@ -80,7 +80,7 @@ pub struct IgnoreSafe;
 #[allow(unreachable_code)]
 impl ErrorHandler<Infallible> for IgnoreSafe {
     fn handle_error<'a>(
-        &'a mut self,
+        &'a self,
         _: Infallible,
     ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
     where
@@ -105,11 +105,11 @@ impl ErrorHandler<Infallible> for IgnoreSafe {
 /// ```
 impl<E, F, Fut> ErrorHandler<E> for F
 where
-    F: FnMut(E) -> Fut,
+    F: Fn(E) -> Fut,
     Fut: Future<Output = ()>,
 {
     fn handle_error<'a>(
-        &'a mut self,
+        &'a self,
         error: E,
     ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
     where
