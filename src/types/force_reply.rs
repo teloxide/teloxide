@@ -11,6 +11,7 @@ use crate::types::True;
 /// [The official docs](https://core.telegram.org/bots/api#forcereply).
 ///
 /// [privacy mode]: https://core.telegram.org/bots#privacy-mode
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ForceReply {
     /// Shows reply interface to the user, as if they manually selected the
@@ -23,6 +24,5 @@ pub struct ForceReply {
     /// (has reply_to_message_id), sender of the original message.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }

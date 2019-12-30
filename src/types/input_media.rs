@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::{InputFile, ParseMode};
 
 // TODO: should variants use new-type?
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
@@ -18,7 +19,6 @@ pub enum InputMedia {
         media: InputFile,
 
         /// Caption of the photo to be sent, 0-1024 characters.
-        #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
 
         /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -27,7 +27,6 @@ pub enum InputMedia {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },
 
@@ -43,11 +42,9 @@ pub enum InputMedia {
         /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
         /// height should not exceed 320. Ignored if the file is not uploaded
         /// using multipart/form-data.
-        #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
 
         /// Caption of the video to be sent, 0-1024 characters.
-        #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
 
         /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -56,23 +53,18 @@ pub enum InputMedia {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
 
         /// Video width.
-        #[serde(skip_serializing_if = "Option::is_none")]
         width: Option<u16>,
 
         /// Video height.
-        #[serde(skip_serializing_if = "Option::is_none")]
         height: Option<u16>,
 
         /// Video duration.
-        #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
 
         /// Pass `true`, if the uploaded video is suitable for streaming.
-        #[serde(skip_serializing_if = "Option::is_none")]
         supports_streaming: Option<bool>,
     },
 
@@ -89,11 +81,9 @@ pub enum InputMedia {
         /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
         /// height should not exceed 320. Ignored if the file is not uploaded
         /// using multipart/form-data.
-        #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
 
         /// Caption of the animation to be sent, 0-1024 characters.
-        #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
 
         /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -102,19 +92,15 @@ pub enum InputMedia {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
 
         /// Animation width.
-        #[serde(skip_serializing_if = "Option::is_none")]
         width: Option<u16>,
 
         /// Animation height.
-        #[serde(skip_serializing_if = "Option::is_none")]
         height: Option<u16>,
 
         /// Animation duration.
-        #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
     },
 
@@ -130,11 +116,9 @@ pub enum InputMedia {
         /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
         /// height should not exceed 320. Ignored if the file is not uploaded
         /// using multipart/form-data.
-        #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
 
         /// Caption of the audio to be sent, 0-1024 characters.
-        #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
 
         /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -143,19 +127,15 @@ pub enum InputMedia {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<String>,
 
         /// Duration of the audio in seconds.
-        #[serde(skip_serializing_if = "Option::is_none")]
         duration: Option<u16>,
 
         /// Performer of the audio.
-        #[serde(skip_serializing_if = "Option::is_none")]
         performer: Option<String>,
 
         /// Title of the audio.
-        #[serde(skip_serializing_if = "Option::is_none")]
         title: Option<String>,
     },
 
@@ -171,11 +151,9 @@ pub enum InputMedia {
         /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
         /// height should not exceed 320. Ignored if the file is not uploaded
         /// using multipart/form-data.
-        #[serde(skip_serializing_if = "Option::is_none")]
         thumb: Option<InputFile>,
 
         /// Caption of the document to be sent, 0-1024 charactersю
-        #[serde(skip_serializing_if = "Option::is_none")]
         caption: Option<String>,
 
         /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -184,7 +162,6 @@ pub enum InputMedia {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
     },
 }

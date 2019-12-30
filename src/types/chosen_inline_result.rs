@@ -8,6 +8,7 @@ use crate::types::{Location, User};
 /// [The official docs](https://core.telegram.org/bots/api#choseninlineresult).
 ///
 /// [result]: https://core.telegram.org/bots/api#inlinequeryresult
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct ChosenInlineResult {
     /// The unique identifier for the result that was chosen.
