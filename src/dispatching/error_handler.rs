@@ -4,7 +4,7 @@
 //! should be prettier.
 
 // Infallible used here instead of `!` to be compatible with rust <1.41.
-use std::{convert::Infallible, future::Future, pin::Pin};
+use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 
 /// An asynchronous handler of an error.
 pub trait ErrorHandler<E> {
@@ -21,7 +21,7 @@ pub trait ErrorHandler<E> {
 /// ## Example
 /// ```
 /// # #[tokio::main]
-/// # async fn main_() {
+/// # async fn main() {
 /// use teloxide::dispatching::error_handler::{ErrorHandler, Ignore};
 ///
 /// Ignore.handle_error(()).await;
@@ -50,7 +50,7 @@ impl<E> ErrorHandler<E> for Ignore {
 /// ## Examples
 /// ```
 /// # #[tokio::main]
-/// # async fn main_() {
+/// # async fn main() {
 /// use std::convert::{Infallible, TryInto};
 ///
 /// use teloxide::dispatching::error_handler::{ErrorHandler, IgnoreSafe};
@@ -86,6 +86,37 @@ impl ErrorHandler<Infallible> for IgnoreSafe {
     where
         Infallible: 'a,
     {
+        Box::pin(async {})
+    }
+}
+
+/// An error handler that prints all errors passed into it.
+///
+/// ## Example
+/// ```
+/// # #[tokio::main]
+/// # async fn main() {
+/// use teloxide::dispatching::error_handler::{ErrorHandler, Print};
+///
+/// Print.handle_error(()).await;
+/// Print.handle_error(404).await;
+/// Print.handle_error(String::from("error")).await;
+/// # }
+/// ```
+pub struct Print;
+
+impl<E> ErrorHandler<E> for Print
+where
+    E: Debug,
+{
+    fn handle_error<'a>(
+        &'a self,
+        error: E,
+    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
+    where
+        E: 'a,
+    {
+        log::debug!("error: {:?}", error);
         Box::pin(async {})
     }
 }
