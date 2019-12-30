@@ -6,7 +6,7 @@
 // Infallible used here instead of `!` to be compatible with rust <1.41.
 use std::{convert::Infallible, future::Future, pin::Pin};
 
-/// A handler of an error.
+/// An asynchronous handler of an error.
 pub trait ErrorHandler<E> {
     fn handle_error<'a>(
         &'a self,

@@ -1,6 +1,6 @@
 use std::{future::Future, pin::Pin};
 
-/// A handler of a successful value.
+/// An asynchronous handler of a value.
 pub trait Handler<T, E> {
     #[must_use]
     fn handle<'a>(
