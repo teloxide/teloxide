@@ -6,6 +6,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 /// instead of the voice message.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedvideo).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQueryResultCachedVoice {
     /// Unique identifier for this result, 1-64 bytes.
@@ -18,7 +19,6 @@ pub struct InlineQueryResultCachedVoice {
     pub title: String,
 
     /// Caption, 0-1024 characters.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
 
     /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -27,16 +27,13 @@ pub struct InlineQueryResultCachedVoice {
     /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_mode: Option<ParseMode>,
 
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// Content of the message to be sent instead of the voice message.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

@@ -4,6 +4,7 @@ use crate::types::PhotoSize;
 /// without sound).
 ///
 /// [The official docs](https://core.telegram.org/bots/api#animation).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Animation {
     /// An identifier for this file.

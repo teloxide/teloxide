@@ -25,6 +25,7 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MessageKind {

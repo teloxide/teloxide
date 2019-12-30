@@ -1,6 +1,7 @@
 use crate::types::Location;
 
 /// This object represents a venue.
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Venue {
     /// Venue location.
@@ -13,12 +14,10 @@ pub struct Venue {
     pub address: String,
 
     /// Foursquare identifier of the venue.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub foursquare_id: Option<String>,
 
     /// Foursquare type of the venue. (For example,
     /// `arts_entertainment/default`, `arts_entertainment/aquarium` or
     /// `food/icecream`.)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub foursquare_type: Option<String>, // TODO: is this enum?...
+    pub foursquare_type: Option<String>,
 }

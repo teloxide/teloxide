@@ -3,6 +3,7 @@ use crate::types::{OrderInfo, User};
 /// This object contains information about an incoming pre-checkout query.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#precheckoutquery).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct PreCheckoutQuery {
     /// Unique query identifier.

@@ -5,6 +5,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// with the specified content instead of the location.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultlocation).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQueryResultLocation {
     /// Unique identifier for this result, 1-64 Bytes.
@@ -21,28 +22,22 @@ pub struct InlineQueryResultLocation {
 
     /// Period in seconds for which the location can be updated, should be
     /// between 60 and 86400.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub live_period: Option<i32>,
 
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// Content of the message to be sent instead of the location.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 
     /// Url of the thumbnail for the result.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_url: Option<String>,
 
     /// Thumbnail width.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_width: Option<i32>,
 
     /// Thumbnail height.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_height: Option<i32>,
 }

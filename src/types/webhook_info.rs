@@ -1,6 +1,7 @@
 /// Contains information about the current status of a webhook.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct WebhookInfo {
     /// Webhook URL, may be empty if webhook is not set up.

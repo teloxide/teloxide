@@ -3,6 +3,7 @@ use crate::types::PhotoSize;
 /// This object represents a video file.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#video).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Video {
     /// Identifier for this file.

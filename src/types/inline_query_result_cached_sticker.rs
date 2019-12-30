@@ -6,6 +6,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// of the sticker.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedsticker).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQueryResultCachedSticker {
     /// Unique identifier for this result, 1-64 bytes.
@@ -17,10 +18,8 @@ pub struct InlineQueryResultCachedSticker {
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// Content of the message to be sent instead of the sticker.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

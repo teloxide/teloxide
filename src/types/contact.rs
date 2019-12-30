@@ -1,6 +1,7 @@
 /// This object represents a phone contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#contact).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Contact {
     /// A contact's phone number.

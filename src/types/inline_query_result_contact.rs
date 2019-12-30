@@ -5,6 +5,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// a message with the specified content instead of the contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedvideo).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQueryResultContact {
     /// Unique identifier for this result, 1-64 Bytes.
@@ -17,35 +18,28 @@ pub struct InlineQueryResultContact {
     pub first_name: String,
 
     /// Contact's last name.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
 
     /// Additional data about the contact in the form of a [vCard], 0-2048
     /// bytes.
     ///
     /// [VCard]: https://en.wikipedia.org/wiki/VCard
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub vcard: Option<String>,
 
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// Content of the message to be sent instead of the contact.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 
     /// Url of the thumbnail for the result.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_url: Option<String>,
 
     /// Thumbnail width.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_width: Option<i32>,
 
     /// Thumbnail height.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb_height: Option<i32>,
 }

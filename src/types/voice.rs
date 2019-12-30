@@ -1,6 +1,7 @@
 /// This object represents a voice note.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#voice).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Voice {
     /// Identifier for this file.

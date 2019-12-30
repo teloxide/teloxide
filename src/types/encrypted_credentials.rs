@@ -7,6 +7,7 @@
 /// [`EncryptedPassportElement`]:
 /// crate::types::EncryptedPassportElement
 /// [Telegram Passport Documentation]: https://core.telegram.org/passport#receiving-information
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct EncryptedCredentials {
     /// Base64-encoded encrypted JSON-serialized data with unique user's

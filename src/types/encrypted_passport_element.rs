@@ -17,6 +17,7 @@ pub struct EncryptedPassportElement {
     pub kind: EncryptedPassportElementKind,
 }
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum EncryptedPassportElementKind {

@@ -7,6 +7,7 @@ use crate::types::KeyboardButton;
 ///
 /// [custom keyboard]: https://core.telegram.org/bots#keyboards
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
@@ -19,7 +20,6 @@ pub struct ReplyKeyboardMarkup {
     /// (e.g., make the keyboard smaller if there are just two rows of
     /// buttons). Defaults to `false`, in which case the custom keyboard is
     /// always of the same height as the app's standard keyboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub resize_keyboard: Option<bool>,
 
     /// Requests clients to hide the keyboard as soon as it's been used. The
@@ -27,7 +27,6 @@ pub struct ReplyKeyboardMarkup {
     /// display the usual letter-keyboard in the chat – the user can press a
     /// special button in the input field to see the custom keyboard again.
     /// Defaults to `false`.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub one_time_keyboard: Option<bool>,
 
     /// Use this parameter if you want to show the keyboard to specific users
@@ -40,6 +39,5 @@ pub struct ReplyKeyboardMarkup {
     /// in the group don’t see the keyboard.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }

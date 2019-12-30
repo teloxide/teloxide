@@ -14,6 +14,7 @@ pub struct File {
     /// File size, if known.
     pub file_size: u32,
 
+    // TODO: chacge "Use ..." to use bot.download...
     /// File path. Use `https://api.telegram.org/file/bot<token>/<file_path>`
     /// to get the file.
     pub file_path: String,
