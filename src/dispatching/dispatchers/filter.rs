@@ -198,7 +198,8 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
                     Ok(upd) => upd,
                     Err(err) => {
                         self.error_handler
-                            .handle_error(ErrorKind::FromUpdater(err)).await;
+                            .handle_error(ErrorKind::FromUpdater(err))
+                            .await;
                         return;
                     }
                 };
