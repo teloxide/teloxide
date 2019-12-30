@@ -59,7 +59,7 @@ impl<E> ErrorHandler<E> for Ignore {
 ///     Err(inf) => IgnoreSafe.handle_error(inf).await,
 /// }
 ///
-/// IgnoreSafe.handle_error(return;).await; // return type of `return` is `!` (aka never)
+/// IgnoreSafe.handle_error(return).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///
