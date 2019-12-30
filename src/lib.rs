@@ -1,8 +1,8 @@
 #![allow(clippy::unit_arg)] // TODO
 #![allow(clippy::ptr_arg)] // TODO
 #![doc(
-    html_logo_url = "https://github.com/teloxide/teloxide/raw/dev/ICON.png",
-    html_favicon_url = "https://github.com/teloxide/teloxide/raw/dev/ICON.png"
+    html_logo_url = "https://github.com/teloxide/teloxide/raw/dev/logo.svg",
+    html_favicon_url = "https://github.com/teloxide/teloxide/raw/dev/ICON.png",
 )]
 
 #[macro_use]
