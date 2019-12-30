@@ -19,7 +19,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// Filters and handlers are executed in order of registering. The pseudocode
 /// looks like this:
 ///
-/// ```
+/// ```no
 /// for pair in handlers_and_filters {
 ///     if pair.filter.test(update) {
 ///         pair.handle(update);
@@ -39,17 +39,15 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///
 /// use teloxide::{
 ///     dispatching::{
-///         dispatchers::filter::{
-///             error_policy::ErrorPolicy, FilterDispatcher,
-///         },
-///         updater::polling,
+///         dispatchers::filter::FilterDispatcher, updaters::polling_basic,
 ///     },
 ///     types::Message,
 ///     Bot,
 /// };
 ///
-/// async fn handle_edited_message(mes: Message) {
-///     println!("Edited message: {:?}", mes)
+/// async fn handle_edited_message(mes: Message) -> Result<(), Infallible> {
+///     println!("Edited message: {:?}", mes);
+///     Ok(())
 /// }
 ///
 /// let bot = Bot::new("TOKEN");
@@ -59,14 +57,15 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
 ///     // Add 'handler' that will handle all messages sent to the bot
 ///     .message_handler(true, |mes: Message| async move {
-///         println!("New message: {:?}", mes)
+///         println!("New message: {:?}", mes);
+///         Ok(())
 ///     })
 ///     // Add 'handler' that will handle all
 ///     // messages edited in chat with the bot
 ///     .edited_message_handler(true, handle_edited_message);
 ///
 /// // Start dispatching updates from long polling
-/// dp.dispatch(polling(&bot)).await;
+/// dp.dispatch(polling_basic(&bot)).await;
 /// # }
 /// ```
 ///
@@ -319,6 +318,7 @@ mod tests {
         let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
             .message_handler(true, |_mes: Message| async move {
                 counter.fetch_add(1, Ordering::SeqCst);
+                Ok::<_, Infallible>(())
             })
             .message_handler(true, |_mes: Message| async move {
                 counter2.fetch_add(1, Ordering::SeqCst);
