@@ -3,8 +3,8 @@
 //! The key trait here is [`Updater`]. You can get it by these functions:
 //!
 //!  - [`polling_default`], which returns a default long polling updater.
-//!  - [`polling`], which returns a long/short polling updater with
-//!    your configuration.
+//!  - [`polling`], which returns a long/short polling updater with your
+//!    configuration.
 //!
 //! And then you can pass it directly to a dispatcher.
 //!
