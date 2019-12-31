@@ -33,7 +33,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///
 /// ## Examples
 ///
-/// Simplest example:
+/// The simplest example:
 /// ```no_run
 /// # async fn run() {
 /// use std::convert::Infallible;
@@ -51,19 +51,19 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///
 /// let bot = Bot::new("TOKEN");
 ///
-/// // create dispatching which handlers can't fail
-/// // with error policy that just ignores all errors (that can't ever happen)
+/// // Create a dispatcher which handlers can't fail with the
+/// // error handler that just ignores all errors (that can't ever happen).
 /// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
-///     // Add 'handler' that will handle all messages sent to the bot
+///     // Add a handler, which handles all messages sent to the bot.
 ///     .message_handler(true, |mes: Message| async move {
 ///         println!("New message: {:?}", mes);
 ///         Ok(())
 ///     })
-///     // Add 'handler' that will handle all
-///     // messages edited in chat with the bot
+///     // Add a handler, which handles all messages edited in a chat
+///     // with the bot.
 ///     .edited_message_handler(true, handle_edited_message);
 ///
-/// // Start dispatching updates from long polling
+/// // Start dispatching updates using long polling.
 /// dp.dispatch(polling_default(&bot)).await;
 /// # }
 /// ```
