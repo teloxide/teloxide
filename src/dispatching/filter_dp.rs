@@ -17,19 +17,19 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 
 /// A dispatcher based on filters.
 ///
-/// Filters and handlers are executed in order of registering. The pseudocode
-/// looks like this:
+/// It consists of:
+///  1. [`ErrorHandler`] than handles errors both from [`Updater`] and
+/// [`Handler`].
+///  2. Filters and handlers.
 ///
-/// ```no
-/// for pair in handlers_and_filters {
-///     if pair.filter.test(update) {
-///         pair.handle(update);
-///         return;
-///     }
-/// }
+/// First you register filters and handlers using the methods defined below, and
+/// then you call [`.dispatch(updater)`]. Filters and handlers are executed in
+/// order of registering. The following flowchart represents how this dispatcher
+/// acts:
 ///
-/// log("unhandeled update: " + update);
-/// ```
+/// <div align="center">
+///     <img src="https://github.com/teloxide/teloxide/blob/dev/media/FILTER_DP_FLOWCHART.png" width="700" />
+/// </div>
 ///
 /// ## Examples
 ///
@@ -70,6 +70,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
 /// [updater]: crate::dispatching::updater
+/// [`.dispatch(updater)`]: FilterDispatcher::dispatch
 pub struct FilterDispatcher<'a, E, Eh> {
     message_handlers: FiltersWithHandlers<'a, Message, E>,
     edited_message_handlers: FiltersWithHandlers<'a, Message, E>,

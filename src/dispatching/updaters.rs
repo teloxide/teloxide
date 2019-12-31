@@ -115,7 +115,7 @@ impl<S, E> Updater<E> for S where S: Stream<Item = Result<Update, E>> {}
 
 /// Returns a long polling updater with the default configuration.
 ///
-/// [`polling`]: polling
+/// See also: [`polling`](polling).
 pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
     polling(bot, None, None, None)
 }
@@ -129,7 +129,7 @@ pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
 /// - `allowed_updates`: A list the types of updates you want to receive.
 /// See [`GetUpdates`] for defaults.
 ///
-/// See also: [`polling_default`](polling_default)
+/// See also: [`polling_default`](polling_default).
 ///
 /// [`GetUpdates`]: crate::requests::payloads::GetUpdates
 pub fn polling(
