@@ -9,6 +9,7 @@ use crate::{
         UpdateKind,
     },
 };
+use either::Either;
 
 type FilterWithHandler<'a, T, E> =
     (Box<dyn Filter<T> + 'a>, Box<dyn Handler<T, E> + 'a>);
@@ -38,9 +39,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// use std::convert::Infallible;
 ///
 /// use teloxide::{
-///     dispatching::{
-///         dispatchers::filter_dp::FilterDispatcher, updaters::polling_basic,
-///     },
+///     dispatching::{updaters::polling_basic, FilterDispatcher},
 ///     types::Message,
 ///     Bot,
 /// };
@@ -83,19 +82,10 @@ pub struct FilterDispatcher<'a, E, Eh> {
     error_handler: Eh,
 }
 
-/// An error produced either from [`Updater`] or [`Handler`].
-///
-/// [`Updater`]: crate::dispatching::Updater
-/// [`Handler`]: crate::dispatching::Handler
-pub enum ErrorKind<E1, E2> {
-    FromUpdater(E1),
-    FromHandler(E2),
-}
-
-impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
-    pub fn new<E1>(error_handler: Eh) -> Self
+impl<'a, HandlerE, Eh> FilterDispatcher<'a, HandlerE, Eh> {
+    pub fn new<UpdaterE>(error_handler: Eh) -> Self
     where
-        Eh: ErrorHandler<ErrorKind<E1, E2>>,
+        Eh: ErrorHandler<Either<UpdaterE, HandlerE>>,
     {
         FilterDispatcher {
             message_handlers: Vec::new(),
@@ -112,7 +102,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     pub fn message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<Message, E2> + 'a,
+        H: Handler<Message, HandlerE> + 'a,
     {
         self.message_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -122,7 +112,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     pub fn edited_message_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<Message, E2> + 'a,
+        H: Handler<Message, HandlerE> + 'a,
     {
         self.edited_message_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -132,7 +122,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     pub fn channel_post_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<Message, E2> + 'a,
+        H: Handler<Message, HandlerE> + 'a,
     {
         self.channel_post_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -146,7 +136,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     ) -> Self
     where
         F: Filter<Message> + 'a,
-        H: Handler<Message, E2> + 'a,
+        H: Handler<Message, HandlerE> + 'a,
     {
         self.edited_channel_post_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -156,7 +146,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     pub fn inline_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<InlineQuery> + 'a,
-        H: Handler<InlineQuery, E2> + 'a,
+        H: Handler<InlineQuery, HandlerE> + 'a,
     {
         self.inline_query_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -170,7 +160,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     ) -> Self
     where
         F: Filter<ChosenInlineResult> + 'a,
-        H: Handler<ChosenInlineResult, E2> + 'a,
+        H: Handler<ChosenInlineResult, HandlerE> + 'a,
     {
         self.chosen_inline_result_handlers
             .push((Box::new(filter), Box::new(handler)));
@@ -180,17 +170,17 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
     pub fn callback_query_handler<F, H>(mut self, filter: F, handler: H) -> Self
     where
         F: Filter<CallbackQuery> + 'a,
-        H: Handler<CallbackQuery, E2> + 'a,
+        H: Handler<CallbackQuery, HandlerE> + 'a,
     {
         self.callback_query_handlers
             .push((Box::new(filter), Box::new(handler)));
         self
     }
 
-    pub async fn dispatch<E1, U>(&mut self, updater: U)
+    pub async fn dispatch<UpdaterE, U>(&mut self, updater: U)
     where
-        U: Updater<E1> + 'a,
-        Eh: ErrorHandler<ErrorKind<E1, E2>>,
+        U: Updater<UpdaterE> + 'a,
+        Eh: ErrorHandler<Either<UpdaterE, HandlerE>>,
     {
         updater
             .for_each_concurrent(None, |res| async {
@@ -198,7 +188,7 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
                     Ok(upd) => upd,
                     Err(err) => {
                         self.error_handler
-                            .handle_error(ErrorKind::FromUpdater(err))
+                            .handle_error(Either::Left(err))
                             .await;
                         return;
                     }
@@ -272,20 +262,18 @@ impl<'a, E2, Eh> FilterDispatcher<'a, E2, Eh> {
             .await;
     }
 
-    async fn handle<T, E1>(
+    async fn handle<T, UpdaterE>(
         update: T,
-        handlers: &FiltersWithHandlers<'a, T, E2>,
+        handlers: &FiltersWithHandlers<'a, T, HandlerE>,
         error_handler: &Eh,
     ) where
         T: std::fmt::Debug,
-        Eh: ErrorHandler<ErrorKind<E1, E2>>,
+        Eh: ErrorHandler<Either<UpdaterE, HandlerE>>,
     {
         for x in handlers {
             if x.0.test(&update) {
                 if let Err(err) = x.1.handle(update).await {
-                    error_handler
-                        .handle_error(ErrorKind::FromHandler(err))
-                        .await
+                    error_handler.handle_error(Either::Right(err)).await
                 }
 
                 return;
@@ -304,7 +292,7 @@ mod tests {
     };
 
     use crate::{
-        dispatching::{dispatchers::filter_dp::FilterDispatcher, Updater},
+        dispatching::{FilterDispatcher, Updater},
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
             Sender, Update, UpdateKind, User,
