@@ -22,6 +22,7 @@ pub struct EncryptedPassportElement {
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
+#[allow(clippy::large_enum_variant)]
 pub enum EncryptedPassportElementKind {
     PersonalDetails {
         ///  Base64-encoded encrypted Telegram Passport element data provided
