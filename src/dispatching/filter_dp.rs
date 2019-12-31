@@ -39,7 +39,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///
 /// use teloxide::{
 ///     dispatching::{
-///         dispatchers::filter::FilterDispatcher, updaters::polling_basic,
+///         dispatchers::filter_dp::FilterDispatcher, updaters::polling_basic,
 ///     },
 ///     types::Message,
 ///     Bot,
@@ -304,7 +304,7 @@ mod tests {
     };
 
     use crate::{
-        dispatching::{dispatchers::filter::FilterDispatcher, Updater},
+        dispatching::{dispatchers::filter_dp::FilterDispatcher, Updater},
         types::{
             Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind,
             Sender, Update, UpdateKind, User,
