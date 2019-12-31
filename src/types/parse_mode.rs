@@ -1,4 +1,6 @@
+use serde::export::TryFrom;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages.
@@ -72,6 +74,45 @@ use serde::{Deserialize, Serialize};
 pub enum ParseMode {
     HTML,
     Markdown,
+}
+
+impl TryFrom<&str> for ParseMode {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let normalized = value.to_lowercase();
+        match normalized.as_ref() {
+            "html" => Ok(ParseMode::HTML),
+            "markdown" => Ok(ParseMode::Markdown),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<String> for ParseMode {
+    type Error = ();
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let normalized = value.to_lowercase();
+        match normalized.as_ref() {
+            "html" => Ok(ParseMode::HTML),
+            "markdown" => Ok(ParseMode::Markdown),
+            _ => Err(()),
+        }
+    }
+}
+
+impl FromStr for ParseMode {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let normalized = s.to_lowercase();
+        match normalized.as_ref() {
+            "html" => Ok(ParseMode::HTML),
+            "markdown" => Ok(ParseMode::Markdown),
+            _ => Err(()),
+        }
+    }
 }
 
 #[cfg(test)]
