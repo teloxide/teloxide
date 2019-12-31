@@ -265,7 +265,7 @@ impl<'a, HandlerE, Eh> FilterDispatcher<'a, HandlerE, Eh> {
 
     async fn handle<T, UpdaterE>(
         update: T,
-        handlers: &FiltersWithHandlers<'a, T, HandlerE>,
+        handlers: &[FilterWithHandler<'a, T, HandlerE>],
         error_handler: &Eh,
     ) where
         T: std::fmt::Debug,
