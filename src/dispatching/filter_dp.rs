@@ -39,7 +39,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// use std::convert::Infallible;
 ///
 /// use teloxide::{
-///     dispatching::{updaters::polling_basic, FilterDispatcher},
+///     dispatching::{updaters::polling_default, FilterDispatcher},
 ///     types::Message,
 ///     Bot,
 /// };
@@ -64,7 +64,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 ///     .edited_message_handler(true, handle_edited_message);
 ///
 /// // Start dispatching updates from long polling
-/// dp.dispatch(polling_basic(&bot)).await;
+/// dp.dispatch(polling_default(&bot)).await;
 /// # }
 /// ```
 ///
