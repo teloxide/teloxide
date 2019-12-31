@@ -18,7 +18,8 @@ use crate::{
             RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
             SendContact, SendDocument, SendGame, SendInvoice, SendLocation,
             SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
-            SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatDescription,
+            SendVenue, SendVideo, SendVideoNote, SendVoice,
+            SetChatAdministratorCustomTitle, SetChatDescription,
             SetChatPermission, SetChatPhoto, SetChatStickerSet, SetChatTitle,
             SetGameScore, SetGameScoreInline, SetStickerPositionInSet,
             SetWebhook, StopMessageLiveLocation, StopMessageLiveLocationInline,
@@ -1148,6 +1149,30 @@ impl Bot {
         json::Request::new(
             self,
             GetGameHighScore::new(chat_id, message_id, user_id),
+        )
+    }
+
+    /// For tg-method documentation see [`SetChatAdministratorCustomTitle`]
+    ///
+    /// [`SetChatAdministratorCustomTitle`]:
+    /// crate::requests::payloads::SetChatAdministratorCustomTitle
+    pub fn set_chat_administrator_custom_title<C, CT>(
+        &self,
+        chat_id: C,
+        user_id: i32,
+        custom_title: CT,
+    ) -> json::Request<SetChatAdministratorCustomTitle>
+    where
+        C: Into<ChatId>,
+        CT: Into<String>,
+    {
+        json::Request::new(
+            self,
+            SetChatAdministratorCustomTitle::new(
+                chat_id,
+                user_id,
+                custom_title,
+            ),
         )
     }
 }

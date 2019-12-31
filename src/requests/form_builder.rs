@@ -123,7 +123,9 @@ impl IntoFormValue for str {
 impl IntoFormValue for ParseMode {
     fn into_form_value(&self) -> Option<FormValue> {
         let string = match self {
+            ParseMode::MarkdownV2 => String::from("MarkdownV2"),
             ParseMode::HTML => String::from("HTML"),
+            #[allow(deprecated)]
             ParseMode::Markdown => String::from("Markdown"),
         };
         Some(FormValue::Str(string))

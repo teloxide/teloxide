@@ -115,6 +115,7 @@ pub mod payloads {
     mod set_game_score;
     mod get_game_high_scores;
     mod get_game_high_scores_inline;
+    mod set_chat_administrator_custom_title;
 
     pub use {
         get_updates::{GetUpdates, AllowedUpdate},
@@ -189,5 +190,6 @@ pub mod payloads {
         set_game_score::SetGameScore,
         get_game_high_scores_inline::GetGameHighScoreInline,
         get_game_high_scores::GetGameHighScore,
+        set_chat_administrator_custom_title::SetChatAdministratorCustomTitle,
     };
 }
