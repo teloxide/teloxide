@@ -1,3 +1,6 @@
+use derive_more::{Display, From};
+use serde::{Deserialize, Serialize};
+
 /// A unique identifier for the target chat or username of the target channel
 /// (in the format `@channelusername`).
 #[derive(

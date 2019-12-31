@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 /// Represents a link to a page containing an embedded video player or a video
@@ -6,6 +8,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 /// message with the specified content instead of the video.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultvideo).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct InlineQueryResultVideo {
     /// Unique identifier for this result, 1-64 bytes.
@@ -24,7 +27,6 @@ pub struct InlineQueryResultVideo {
     pub title: String,
 
     /// Caption of the video to be sent, 0-1024 characters.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
 
     /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
@@ -33,29 +35,23 @@ pub struct InlineQueryResultVideo {
     /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub parse_mode: Option<ParseMode>,
 
     /// Video width.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub video_width: Option<i32>,
 
     /// Video height.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub video_height: Option<i32>,
 
     /// Video duration in seconds.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub video_duration: Option<i32>,
 
     /// Short description of the result.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// Content of the message to be sent instead of the video. This field is
@@ -64,6 +60,5 @@ pub struct InlineQueryResultVideo {
     ///
     /// [`InlineQueryResultVideo`]:
     /// crate::types::InlineQueryResultVideo
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub input_message_content: Option<InputMessageContent>,
 }

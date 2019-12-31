@@ -1,4 +1,6 @@
+use derive_more::From;
 use reqwest::StatusCode;
+use thiserror::Error;
 
 //<editor-fold desc="download">
 #[derive(Debug, Error, From)]

@@ -1,7 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents one size of a photo or a [file]/[sticker] thumbnail.
 ///
 /// [file]: crate::types::Document
 /// [sticker]: crate::types::Sticker
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct PhotoSize {
     /// Identifier for this file.

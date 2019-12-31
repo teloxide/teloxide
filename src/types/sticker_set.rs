@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::Sticker;
 
 /// This object represents a sticker set.

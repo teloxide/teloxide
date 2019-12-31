@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sticker).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Sticker {
     /// Identifier for this file.

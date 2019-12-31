@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use reqwest::multipart::Form;
 
 use crate::{

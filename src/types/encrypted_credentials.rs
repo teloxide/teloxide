@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// Contains data required for decrypting and authenticating
 /// [`EncryptedPassportElement`]. See the [Telegram Passport Documentation] for
 /// a complete description of the data decryption and authentication processes.
@@ -7,6 +9,7 @@
 /// [`EncryptedPassportElement`]:
 /// crate::types::EncryptedPassportElement
 /// [Telegram Passport Documentation]: https://core.telegram.org/passport#receiving-information
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct EncryptedCredentials {
     /// Base64-encoded encrypted JSON-serialized data with unique user's

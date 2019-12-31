@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::PhotoSize;
 
 /// This object represents a general file (as opposed to [photos], [voice
@@ -8,6 +10,7 @@ use crate::types::PhotoSize;
 /// [photos]: https://core.telegram.org/bots/api#photosize
 /// [voice messages]: https://core.telegram.org/bots/api#voice
 /// [audio files]: https://core.telegram.org/bots/api#audio
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Document {
     /// An identifier for this file.

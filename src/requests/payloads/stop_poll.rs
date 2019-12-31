@@ -1,8 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     requests::{dynamic, json, Method},
-    types::{ChatId, InlineKeyboardMarkup},
+    types::{ChatId, InlineKeyboardMarkup, Poll},
 };
-use crate::types::Poll;
 
 /// Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
 #[serde_with_macros::skip_serializing_none]

@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::types::{Animation, MessageEntity, PhotoSize};
 
@@ -6,6 +6,7 @@ use crate::types::{Animation, MessageEntity, PhotoSize};
 /// their short names will act as unique identifiers.
 ///
 /// [@Botfather]: https://t.me/botfather
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Game {
     /// Title of the game.

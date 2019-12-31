@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::PhotoSize;
 
 /// This object represents a [video message] (available in Telegram apps as of
@@ -7,6 +9,7 @@ use crate::types::PhotoSize;
 ///
 /// [video message]: https://telegram.org/blog/video-messages-and-telescope
 /// [v4.0]: https://telegram.org/blog/video-messages-and-telescope
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct VideoNote {
     /// Identifier for this file.

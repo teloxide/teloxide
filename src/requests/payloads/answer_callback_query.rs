@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     requests::{dynamic, json, Method},
     types::True,

@@ -1,7 +1,8 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::types::ParseMode;
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 /// This object represents the content of a message to be sent as a result of an
@@ -21,11 +22,9 @@ pub enum InputMessageContent {
         /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
         /// [HTML]: https://core.telegram.org/bots/api#html-style
         /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        #[serde(skip_serializing_if = "Option::is_none")]
         parse_mode: Option<ParseMode>,
 
         /// Disables link previews for links in the sent message.
-        #[serde(skip_serializing_if = "Option::is_none")]
         disable_web_page_preview: Option<bool>,
     },
 
@@ -40,7 +39,6 @@ pub enum InputMessageContent {
 
         /// Period in seconds for which the location can be updated, should be
         /// between 60 and 86400.
-        #[serde(skip_serializing_if = "Option::is_none")]
         live_period: Option<u32>,
     },
 
@@ -60,13 +58,11 @@ pub enum InputMessageContent {
         address: String,
 
         /// Foursquare identifier of the venue, if known.
-        #[serde(skip_serializing_if = "Option::is_none")]
         foursquare_id: Option<String>,
 
         /// Foursquare type of the venue, if known. (For example,
         /// `arts_entertainment/default`, `arts_entertainment/aquarium`
         /// or `food/icecream`.)
-        #[serde(skip_serializing_if = "Option::is_none")]
         foursquare_type: Option<String>,
     },
 
@@ -80,14 +76,12 @@ pub enum InputMessageContent {
         first_name: String,
 
         /// Contact's last name.
-        #[serde(skip_serializing_if = "Option::is_none")]
         last_name: Option<String>,
 
         /// Additional data about the contact in the form of a [vCard], 0-2048
         /// bytes.
         ///
         /// [vCard]: https://en.wikipedia.org/wiki/VCard
-        #[serde(skip_serializing_if = "Option::is_none")]
         vcard: Option<String>,
     },
 }

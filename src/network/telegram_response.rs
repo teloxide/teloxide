@@ -1,4 +1,5 @@
 use reqwest::StatusCode;
+use serde::Deserialize;
 
 use crate::{
     requests::ResponseResult,

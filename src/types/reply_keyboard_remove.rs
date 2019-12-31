@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::True;
 
 /// Upon receiving a message with this object, Telegram clients will remove the
@@ -9,6 +11,7 @@ use crate::types::True;
 /// [The official docs](https://core.telegram.org/bots/api#replykeyboardremove).
 ///
 /// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct ReplyKeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
@@ -29,6 +32,5 @@ pub struct ReplyKeyboardRemove {
     /// showing the keyboard with poll options to users who haven't voted yet.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub selective: Option<bool>,
 }

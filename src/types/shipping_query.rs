@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::{ShippingAddress, User};
 
 /// This object contains information about an incoming shipping query.

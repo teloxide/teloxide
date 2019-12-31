@@ -1,5 +1,7 @@
 #![allow(clippy::large_enum_variant)]
 
+use serde::{Deserialize, Serialize};
+
 use crate::types::{
     Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
     Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
@@ -25,6 +27,7 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MessageKind {

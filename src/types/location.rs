@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object represents a point on the map.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Location {

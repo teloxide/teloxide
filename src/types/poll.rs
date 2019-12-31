@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// This object contains information about a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#poll).

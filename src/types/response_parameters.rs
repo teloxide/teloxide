@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// Contains information about why a request was unsuccessful.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#responseparameters).
