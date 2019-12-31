@@ -76,10 +76,7 @@ impl Bot {
     /// # use teloxide::{Bot, requests::payloads::SendAnimation, types::InputFile};
     /// # #[tokio::main] async fn main_() {
     /// let bot = Bot::new("TOKEN");
-    /// let payload = SendAnimation::new(
-    ///     123456,
-    ///     InputFile::Url(String::from("https://example.com"))
-    /// );
+    /// let payload = SendAnimation::new(123456, InputFile::Url(String::from("https://example.com")));
     /// bot.execute_multipart(&payload).await;
     /// # }
     /// ```

@@ -18,6 +18,7 @@ futures-preview = "0.3.0-alpha.19"
 async-trait = "0.1.13"
 thiserror = "1.0.2"
 serde_with_macros = "1.0.1"
+either = "1.5.3"
 
 [features]
 default = []
