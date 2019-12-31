@@ -40,7 +40,7 @@ pub enum RequestError {
 
 //</editor-fold>
 
-#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq)]
+#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
 enum ApiErrorKind {
     /// Occurs when the bot has been blocked by the user.
     #[serde(rename = "Forbidden: bot was blocked by the user")]
@@ -66,12 +66,13 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: message text is empty")]
     MessageTextIsEmpty,
 
-    /// Occurs when bot tries to edit the message after long time
+    /// Occurs when bot tries to edit a message after long time
     #[serde(rename = "Bad Request: message can't be edited")]
     MessageCantBeEdited,
 
+    /// Occurs when bot tries to delete a message in group where it does not have enough rights
     #[serde(rename = "Bad Request: message can't be deleted")]
-    MessageCantBeDeleted, // TODO: docs
+    MessageCantBeDeleted,
 
     /// Occurs when bot tries to edit a message which does not exists
     #[serde(rename = "Bad Request: message to edit not found")]
@@ -167,8 +168,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: wrong file identifier/HTTP URL specified")]
     WrongFileIdentifier, // TODO: docs
 
+    /// Occurs when bot tries to do some with group which was deactivated
     #[serde(rename = "Bad Request: group is deactivated")]
-    GroupDeactivated, // TODO: docs
+    GroupDeactivated,
 
     /// Occurs when bot tries to set chat photo from file ID (SetChatPhoto)
     #[serde(rename = "Bad Request: Photo should be uploaded as an InputFile")]
@@ -186,20 +188,25 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: need administrator rights in the channel chat")]
     NeedAdministratorRightsInTheChannel, // TODO: docs
 
+    /// Occurs when bot tries to pin a message without rights to pin in this chat
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
-    NotEnoughRightsToPinMessage, // TODO: docs
+    NotEnoughRightsToPinMessage,
 
+    /// Occurs when bot tries to use method in group which is allowed inly in a supergroup or channel
     #[serde(rename = "Bad Request: method is available only for supergroups and channel")]
-    MethodNotAvailableInPrivateChats, // TODO: docs
+    MethodNotAvailableInPrivateChats,
 
+    /// Occurs when bot tries to demote chat creator
     #[serde(rename = "Bad Request: can't demote chat creator")]
-    CantDemoteChatCreator, // TODO: docs
+    CantDemoteChatCreator,
 
+    /// Occurs when bot tries to restrict self in group chats
     #[serde(rename = "Bad Request: can't restrict self")]
-    CantRestrictSelf, // TODO: docs
+    CantRestrictSelf,
 
+    /// Occurs when bot tries to restrict chat member without rights to restrict in this chat
     #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
-    NotEnoughRightsToRestrict, // TODO: docs
+    NotEnoughRightsToRestrict,
 
     #[serde(rename = "Bad Request: PHOTO_INVALID_DIMENSIONS")]
     PhotoDimensions, // TODO: docs
@@ -237,8 +244,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: unsupported URL protocol")]
     UnsupportedUrlProtocol, // TODO: docs
 
+    /// Occurs when bot tries to send message with unfinished entities
     #[serde(rename = "Bad Request: can't parse entities")]
-    CantParseEntities, // TODO: docs
+    CantParseEntities,
 
     #[serde(rename = "Bad Request: result_id_duplicate")]
     ResultIdDuplicate, // TODO: docs
@@ -246,29 +254,35 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: bot_domain_invalid")]
     BotDomainInvalid, // TODO: docs
 
-    #[serde(rename = "method not found")]
-    MethodNotKnown, // TODO: docs
+    /// Occurs when bot tries to use getUpdates while webhook is active
+    #[serde(rename = "can't use getUpdates method while webhook is active")]
+    CantGetUpdates,
+
+    /// Occurs when bot tries to do some in group where bot was kicked
+    #[serde(rename = "Unauthorized: bot was kicked from a chat")]
+    BotKicked,
+
+    /// Occurs when bot tries to send message to deactivated user
+    #[serde(rename = "Unauthorized: user is deactivated")]
+    UserDeactivated,
+
+    /// Occurs when you tries to initiate conversation with a user
+    #[serde(rename = "Unauthorized: bot can't initiate conversation with a user")]
+    CantInitiateConversation,
+
+    /// Occurs when you tries to send message to bot
+    #[serde(rename = "Unauthorized: bot can't send messages to bots")]
+    CantTalkWithBots,
+
+    /// Occurs when bot tries to send button with invalid http url
+    #[serde(rename = "Bad Request: wrong HTTP URL")]
+    WrongHTTPurl,
 
     /// Occurs when bot tries GetUpdate before the timeout.
     /// Make sure that only one Updater is running.
     #[serde(rename = "terminated by other getUpdates request")]
-    TerminatedByOtherGetUpdates, // TODO: docs
-
-    #[serde(rename = "can't use getUpdates method while webhook is active")]
-    CantGetUpdates, // TODO: docs
-
-    #[serde(rename = "bot was kicked from a chat")]
-    BotKicked, // TODO: docs
-
-    #[serde(rename = "user is deactivated")]
-    UserDeactivated, // TODO: docs
-
-    #[serde(rename = "bot can't initiate conversation with a user")]
-    CantInitiateConversation, // TODO: docs
-
-    #[serde(rename = "bot can't send messages to bots")]
-    CantTalkWithBots, // TODO: docs
+    TerminatedByOtherGetUpdates,
 
     #[serde(other)]
-    OtherKind(String)
+    OtherKind
 }
