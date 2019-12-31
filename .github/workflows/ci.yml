@@ -62,11 +62,11 @@ jobs:
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
         with:
           command: clippy
-          args: --all-targets --features ""
+          args: --all-targets --features "" -- -D warnings
 
       - name: nightly clippy
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'nightly'
         with:
           command: clippy
-          args: --all-targets --all-features
+          args: --all-targets --all-features -- -D warnings
