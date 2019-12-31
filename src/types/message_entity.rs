@@ -35,6 +35,8 @@ pub enum MessageEntityKind {
     Pre,
     TextLink { url: String },
     TextMention { user: User },
+    Underline,
+    Strikethrough,
 }
 
 #[test]

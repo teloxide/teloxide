@@ -827,11 +827,13 @@ mod tests {
             "mime_type": "video/mp4",
             "thumb": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
+              "file_unique_id":"",
               "file_size": 10339,
               "width": 256,
               "height": 320
             },
             "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
+            "file_unique_id":"",
             "file_size": 1381334
           }
         }"#;
@@ -867,11 +869,13 @@ mod tests {
             "mime_type": "video/mp4",
             "thumb": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
+              "file_unique_id":"",
               "file_size": 10339,
               "width": 256,
               "height": 320
             },
             "file_id": "BAADAgADpgQAAgX9qEud6QcgPiOAlhYE",
+            "file_unique_id":"",
             "file_size": 1381334
           }
         }"#;
@@ -933,11 +937,13 @@ mod tests {
            "is_animated": true,
            "thumb": {
             "file_id": "AAQCAAMjAAOw0PgMaabKAcaXKCBLubkPAAQBAAdtAAPGKwACFgQ",
+            "file_unique_id":"",
             "file_size": 4118,
             "width": 128,
             "height": 128
            },
            "file_id": "CAADAgADIwADsND4DGmmygHGlyggFgQ",
+           "file_unique_id":"",
            "file_size": 16639
           }
          }"#;
@@ -968,18 +974,21 @@ mod tests {
           "photo": [
            {
             "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA20AAybcBAABFgQ",
+            "file_unique_id":"",
             "file_size": 18188,
             "width": 320,
             "height": 239
            },
            {
             "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA3gAAyfcBAABFgQ",
+            "file_unique_id":"",
             "file_size": 62123,
             "width": 800,
             "height": 598
            },
            {
             "file_id": "AgADAgAD36sxG-PX0UvQSXIn9rccdw-ACA4ABAEAAwIAA3kAAyTcBAABFgQ",
+            "file_unique_id":"",
             "file_size": 75245,
             "width": 962,
             "height": 719

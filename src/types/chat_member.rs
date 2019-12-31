@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::User;
 
+// TODO: ChatMemberKind?...
 /// This object contains information about one member of the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
@@ -12,6 +13,9 @@ pub struct ChatMember {
 
     /// The member's status in the chat.
     pub status: ChatMemberStatus,
+
+    /// Owner and administrators only. Custom title for this user
+    pub custom_title: Option<String>,
 
     /// Restricted and kicked only. Date when restrictions will be lifted for
     /// this user, unix time.
@@ -123,6 +127,7 @@ mod tests {
                 language_code: None,
             },
             status: ChatMemberStatus::Creator,
+            custom_title: None,
             until_date: Some(123_456),
             can_be_edited: Some(true),
             can_change_info: Some(true),

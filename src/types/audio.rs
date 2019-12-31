@@ -12,6 +12,11 @@ pub struct Audio {
     /// An identifier for this file.
     pub file_id: String,
 
+    /// Unique identifier for this file, which is supposed to be the same over
+    /// time and for different bots. Can't be used to download or reuse the
+    /// file.
+    pub file_unique_id: String,
+
     /// A duration of the audio in seconds as defined by a sender.
     pub duration: u32,
 
@@ -39,6 +44,7 @@ mod tests {
     fn deserialize() {
         let json = r#"{
             "file_id":"id",
+            "file_unique_id":"",
             "duration":60,
             "performer":"Performer",
             "title":"Title",
@@ -46,6 +52,7 @@ mod tests {
             "file_size":123456,
             "thumb":{
                 "file_id":"id",
+                "file_unique_id":"",
                 "width":320,
                 "height":320,
                 "file_size":3452
@@ -53,6 +60,7 @@ mod tests {
         }"#;
         let expected = Audio {
             file_id: "id".to_string(),
+            file_unique_id: "".to_string(),
             duration: 60,
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
@@ -60,6 +68,7 @@ mod tests {
             file_size: Some(123_456),
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),
+                file_unique_id: "".to_string(),
                 width: 320,
                 height: 320,
                 file_size: Some(3452),

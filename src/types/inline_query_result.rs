@@ -91,12 +91,12 @@ mod tests {
                 reply_markup: Some(InlineKeyboardMarkup::new()),
                 input_message_content: Some(InputMessageContent::Text {
                     message_text: String::from("message_text"),
-                    parse_mode: Some(ParseMode::Markdown),
+                    parse_mode: Some(ParseMode::MarkdownV2),
                     disable_web_page_preview: Some(true),
                 }),
             });
 
-        let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"Markdown","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
