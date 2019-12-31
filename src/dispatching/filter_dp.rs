@@ -28,7 +28,7 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// acts:
 ///
 /// <div align="center">
-///     <img src="https://github.com/teloxide/teloxide/blob/dev/media/FILTER_DP_FLOWCHART.png" width="700" />
+///     <img src="https://raw.githubusercontent.com/teloxide/teloxide/dev/media/FILTER_DP_FLOWCHART.png" width="700" />
 /// </div>
 ///
 /// ## Examples
@@ -69,8 +69,10 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// ```
 ///
 /// [`std::fmt::Debug`]: std::fmt::Debug
-/// [updater]: crate::dispatching::updater
 /// [`.dispatch(updater)`]: FilterDispatcher::dispatch
+/// [`ErrorHandler`]: crate::dispatching::error_handlers::ErrorHandler
+/// [`Updater`]: crate::dispatching::updaters::Updater
+/// [`Handler`]: crate::dispatching::Handler
 pub struct FilterDispatcher<'a, E, Eh> {
     message_handlers: FiltersWithHandlers<'a, Message, E>,
     edited_message_handlers: FiltersWithHandlers<'a, Message, E>,
