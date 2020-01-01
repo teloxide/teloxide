@@ -4,6 +4,7 @@ use crate::{
     requests::{dynamic, json, Method},
     types::Update,
 };
+use crate::types::AllowedUpdate;
 
 /// Use this method to receive incoming updates using long polling ([wiki]).
 /// An array ([`Vec`]) of [`Update`]s is returned.
@@ -58,18 +59,6 @@ pub struct GetUpdates {
     /// [`AllowedUpdate`]: self::AllowedUpdate
     /// [`GetUpdates`]: self::GetUpdates
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AllowedUpdate {
-    Message,
-    EditedMessage,
-    ChannelPost,
-    EditedChannelPost,
-    InlineQuery,
-    ChosenInlineResult,
-    CallbackQuery,
 }
 
 impl Method for GetUpdates {

@@ -1,5 +1,6 @@
 //! API types.
 
+pub use allowed_update::*;
 pub use animation::*;
 pub use audio::*;
 pub use callback_game::*;
@@ -83,6 +84,7 @@ pub use video_note::*;
 pub use voice::*;
 pub use webhook_info::*;
 
+mod allowed_update;
 mod animation;
 mod audio;
 mod callback_game;
