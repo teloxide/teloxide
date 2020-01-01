@@ -118,7 +118,7 @@ pub mod payloads {
     mod set_chat_administrator_custom_title;
 
     pub use {
-        get_updates::{GetUpdates, AllowedUpdate},
+        get_updates::GetUpdates,
         set_webhook::SetWebhook,
         delete_webhook::DeleteWebhook,
         get_webhook_info::GetWebhookInfo,

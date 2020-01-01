@@ -103,7 +103,9 @@
 use futures::{stream, Stream, StreamExt};
 
 use crate::{
-    bot::Bot, requests::payloads::AllowedUpdate, types::Update, RequestError,
+    bot::Bot,
+    types::{AllowedUpdate, Update},
+    RequestError,
 };
 use std::{convert::TryInto, time::Duration};
 
