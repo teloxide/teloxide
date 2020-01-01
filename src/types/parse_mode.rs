@@ -2,9 +2,10 @@
 // (for built ins there no warnings, but for (De)Serialize, there are)
 #![allow(deprecated)]
 
-use std::{str::FromStr, convert::TryFrom}
+use std::{str::FromStr, convert::TryFrom};
 
 use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages. You can use bold,
@@ -137,6 +138,7 @@ impl TryFrom<&str> for ParseMode {
         let normalized = value.to_lowercase();
         match normalized.as_ref() {
             "html" => Ok(ParseMode::HTML),
+            #[allow(depredecated)]
             "markdown" => Ok(ParseMode::Markdown),
             _ => Err(()),
         }
@@ -147,12 +149,7 @@ impl TryFrom<String> for ParseMode {
     type Error = ();
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        let normalized = value.to_lowercase();
-        match normalized.as_ref() {
-            "html" => Ok(ParseMode::HTML),
-            "markdown" => Ok(ParseMode::Markdown),
-            _ => Err(()),
-        }
+        value.as_str().try_into()
     }
 }
 
@@ -160,12 +157,7 @@ impl FromStr for ParseMode {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let normalized = s.to_lowercase();
-        match normalized.as_ref() {
-            "html" => Ok(ParseMode::HTML),
-            "markdown" => Ok(ParseMode::Markdown),
-            _ => Err(()),
-        }
+        s.try_into()
     }
 }
 
