@@ -2,10 +2,9 @@
 // (for built ins there no warnings, but for (De)Serialize, there are)
 #![allow(deprecated)]
 
-use std::{str::FromStr, convert::TryFrom};
+use std::{str::FromStr, convert::{TryFrom, TryInto}};
 
 use serde::{Deserialize, Serialize};
-use std::convert::TryInto;
 
 /// ## Formatting options
 /// The Bot API supports basic formatting for messages. You can use bold,
