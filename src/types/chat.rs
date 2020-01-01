@@ -117,6 +117,12 @@ pub enum NonPrivateChatKind {
         ///
         /// [`Bot::get_chat`]: crate::Bot::get_chat
         permissions: Option<ChatPermissions>,
+
+        /// The minimum allowed delay between consecutive messages sent by each
+        /// unpriviledged user. Returned only in [`Bot::get_chat`].
+        ///
+        /// [`Bot::get_chat`]: crate::Bot::get_chat
+        slow_mode_delay: Option<i32>,
     },
 }
 

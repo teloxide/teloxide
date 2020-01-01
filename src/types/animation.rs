@@ -12,6 +12,11 @@ pub struct Animation {
     /// An identifier for this file.
     pub file_id: String,
 
+    /// Unique identifier for this file, which is supposed to be the same over
+    /// time and for different bots. Can't be used to download or reuse the
+    /// file.
+    pub file_unique_id: String,
+
     /// A video width as defined by a sender.
     pub width: u32,
 
@@ -42,11 +47,13 @@ mod tests {
     fn deserialize() {
         let json = r#"{
         "file_id":"id",
+        "file_unique_id":"",
         "width":320,
         "height":320,
         "duration":59,
         "thumb":{
             "file_id":"id",
+            "file_unique_id":"",
             "width":320,
             "height":320,
             "file_size":3452
@@ -56,11 +63,13 @@ mod tests {
         "file_size":6500}"#;
         let expected = Animation {
             file_id: "id".to_string(),
+            file_unique_id: "".to_string(),
             width: 320,
             height: 320,
             duration: 59,
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),
+                file_unique_id: "".to_string(),
                 width: 320,
                 height: 320,
                 file_size: Some(3452),
