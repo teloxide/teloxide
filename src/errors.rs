@@ -47,7 +47,9 @@ enum ApiErrorKind {
     BotBlocked,
 
     /// Occurs when bot tries to modify a message without modification content
-    #[serde(rename = "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message")]
+    #[serde(rename = "Bad Request: message is not modified: specified new \
+                      message content and reply markup are exactly the same \
+                      as a current content and reply markup of the message")]
     MessageNotModified,
 
     /// Occurs when bot tries to forward or delete a message which was deleted
@@ -70,7 +72,8 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: message can't be edited")]
     MessageCantBeEdited,
 
-    /// Occurs when bot tries to delete a message in group where it does not have enough rights
+    /// Occurs when bot tries to delete a message in group where it does not
+    /// have enough rights
     #[serde(rename = "Bad Request: message can't be deleted")]
     MessageCantBeDeleted,
 
@@ -86,7 +89,8 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: message identifier is not specified")]
     MessageIdentifierNotSpecified,
 
-    /// Occurs when bot tries to send a message with text size greater then 4096 symbols
+    /// Occurs when bot tries to send a message with text size greater then
+    /// 4096 symbols
     #[serde(rename = "Bad Request: message is too long")]
     MessageIsTooLong,
 
@@ -114,11 +118,13 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: poll question must be non-empty")]
     PollQuestionMustBeNonEmpty,
 
-    /// Occurs when bot tries to send poll with total size of options more than 100 symbols
+    /// Occurs when bot tries to send poll with total size of options more than
+    /// 100 symbols
     #[serde(rename = "Bad Request: poll options length must not exceed 100")]
     PollOptionsLengthTooLong,
 
-    /// Occurs when bot tries to send poll with question size more than 255 symbols
+    /// Occurs when bot tries to send poll with question size more than 255
+    /// symbols
     #[serde(rename = "Bad Request: poll question length must not exceed 255")]
     PollQuestionLengthTooLong,
 
@@ -130,33 +136,39 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: message is not a poll")]
     MessageIsNotAPoll,
 
-    /// Occurs when bot tries to send a message to chat in which it is not a member
+    /// Occurs when bot tries to send a message to chat in which it is not a
+    /// member
     #[serde(rename = "Bad Request: chat not found")]
     ChatNotFound,
 
-    /// Occurs when bot tries to send method with unknown user_id (getUserProfilePhotos)
+    /// Occurs when bot tries to send method with unknown user_id
+    /// (getUserProfilePhotos)
     #[serde(rename = "Bad Request: user not found")]
     UserNotFound,
 
-    /// Occurs when bot tries to send SetChatDescription with same text as in the current description
+    /// Occurs when bot tries to send SetChatDescription with same text as in
+    /// the current description
     #[serde(rename = "Bad Request: chat description is not modified")]
     ChatDescriptionIsNotModified,
 
-    /// Occurs when bot tries to answer to query after timeout expire (AnswerCallbackQuery)
-    #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is invalid")]
+    /// Occurs when bot tries to answer to query after timeout expire
+    /// (AnswerCallbackQuery)
+    #[serde(rename = "Bad Request: query is too old and response timeout \
+                      expired or query id is invalid")]
     InvalidQueryID,
 
-    /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button url
+    /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button
+    /// url
     #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
     ButtonURLInvalid,
-
 
     /// Occurs when bot tries to send button with data size more than 64 bytes
     #[serde(rename = "Bad Request: BUTTON_DATA_INVALID")]
     ButtonDataInvalid,
 
     /// Occurs when bot tries to send button with data size == 0
-    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in the inline keyboard")]
+    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text \
+                      buttons are unallowed in the inline keyboard")]
     TextButtonsAreUnallowed,
 
     /// Occurs when bot tries to get file by wrong file id
@@ -175,12 +187,15 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: STICKERSET_INVALID")]
     InvalidStickersSet,
 
-    /// Occurs when bot tries to pin a message without rights to pin in this chat
+    /// Occurs when bot tries to pin a message without rights to pin in this
+    /// chat
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
     NotEnoughRightsToPinMessage,
 
-    /// Occurs when bot tries to use method in group which is allowed inly in a supergroup or channel
-    #[serde(rename = "Bad Request: method is available only for supergroups and channel")]
+    /// Occurs when bot tries to use method in group which is allowed inly in a
+    /// supergroup or channel
+    #[serde(rename = "Bad Request: method is available only for supergroups \
+                      and channel")]
     MethodNotAvailableInPrivateChats,
 
     /// Occurs when bot tries to demote chat creator
@@ -191,20 +206,26 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: can't restrict self")]
     CantRestrictSelf,
 
-    /// Occurs when bot tries to restrict chat member without rights to restrict in this chat
-    #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
+    /// Occurs when bot tries to restrict chat member without rights to
+    /// restrict in this chat
+    #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict \
+                      chat member")]
     NotEnoughRightsToRestrict,
 
     /// Occurs when bot tries set webhook to protocol other than HTTPS
-    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
+    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided \
+                      for webhook")]
     WebhookRequireHTTPS,
 
-    /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or 8443
-    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or 8443")]
+    /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or
+    /// 8443
+    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only \
+                      on ports 80, 88, 443 or 8443")]
     BadWebhookPort,
 
     /// Occurs when bot tries to set webhook to unknown host
-    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
+    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: \
+                      Name or service not known")]
     UnknownHost,
 
     /// Occurs when bot tries to set webhook to invalid URL
@@ -228,7 +249,9 @@ enum ApiErrorKind {
     UserDeactivated,
 
     /// Occurs when you tries to initiate conversation with a user
-    #[serde(rename = "Unauthorized: bot can't initiate conversation with a user")]
+    #[serde(
+        rename = "Unauthorized: bot can't initiate conversation with a user"
+    )]
     CantInitiateConversation,
 
     /// Occurs when you tries to send message to bot
@@ -241,7 +264,8 @@ enum ApiErrorKind {
 
     /// Occurs when bot tries GetUpdate before the timeout.
     /// Make sure that only one Updater is running.
-    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one bot instance is running")]
+    #[serde(rename = "Conflict: terminated by other getUpdates request; \
+                      make sure that only one bot instance is running")]
     TerminatedByOtherGetUpdates,
 
     /// Occurs when bot tries to get file by invalid file id
@@ -249,5 +273,5 @@ enum ApiErrorKind {
     FileIdInvalid,
 
     #[serde(other)]
-    OtherKind
+    OtherKind,
 }
