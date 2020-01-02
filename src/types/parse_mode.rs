@@ -140,7 +140,6 @@ impl TryFrom<&str> for ParseMode {
         let normalized = value.to_lowercase();
         match normalized.as_ref() {
             "html" => Ok(ParseMode::HTML),
-            #[allow(depredecated)]
             "markdown" => Ok(ParseMode::Markdown),
             "markdownv2" => Ok(ParseMode::MarkdownV2),
             _ => Err(()),
