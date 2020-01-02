@@ -71,10 +71,13 @@ impl Request<Message> for SendVideoNote<'_> {
 }
 
 impl<'a> SendVideoNote<'a> {
-    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video_note: V) -> Self
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
+        chat_id: C,
+        video_note: InputFile,
+    ) -> Self
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let video_note = video_note.into();
@@ -99,10 +102,7 @@ impl<'a> SendVideoNote<'a> {
         self
     }
 
-    pub fn video_note<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn video_note(mut self, val: InputFile) -> Self {
         self.video_note = val.into();
         self
     }
@@ -117,10 +117,7 @@ impl<'a> SendVideoNote<'a> {
         self
     }
 
-    pub fn thumb<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn thumb(mut self, val: InputFile) -> Self {
         self.thumb = Some(val.into());
         self
     }

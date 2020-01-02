@@ -61,10 +61,9 @@ impl Request<Message> for SendPhoto<'_> {
 }
 
 impl<'a> SendPhoto<'a> {
-    pub(crate) fn new<C, P>(bot: &'a Bot, chat_id: C, photo: P) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, photo: InputFile) -> Self
     where
         C: Into<ChatId>,
-        P: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let photo = photo.into();
@@ -88,10 +87,7 @@ impl<'a> SendPhoto<'a> {
         self
     }
 
-    pub fn photo<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn photo(mut self, val: InputFile) -> Self {
         self.photo = val.into();
         self
     }

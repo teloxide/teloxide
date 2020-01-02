@@ -83,10 +83,9 @@ impl Request<Message> for SendAudio<'_> {
 }
 
 impl<'a> SendAudio<'a> {
-    pub(crate) fn new<C, A>(bot: &'a Bot, chat_id: C, audio: A) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, audio: InputFile) -> Self
     where
         C: Into<ChatId>,
-        A: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let audio = audio.into();
@@ -114,10 +113,7 @@ impl<'a> SendAudio<'a> {
         self
     }
 
-    pub fn audio<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn audio(mut self, val: InputFile) -> Self {
         self.audio = val.into();
         self
     }
@@ -156,10 +152,7 @@ impl<'a> SendAudio<'a> {
         self
     }
 
-    pub fn thumb<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn thumb(mut self, val: InputFile) -> Self {
         self.thumb = Some(val.into());
         self
     }

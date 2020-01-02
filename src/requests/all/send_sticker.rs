@@ -54,10 +54,9 @@ impl Request<Message> for SendSticker<'_> {
 }
 
 impl<'a> SendSticker<'a> {
-    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, sticker: S) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, sticker: InputFile) -> Self
     where
         C: Into<ChatId>,
-        S: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let sticker = sticker.into();
@@ -79,10 +78,7 @@ impl<'a> SendSticker<'a> {
         self
     }
 
-    pub fn sticker<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn sticker(mut self, val: InputFile) -> Self {
         self.sticker = val.into();
         self
     }

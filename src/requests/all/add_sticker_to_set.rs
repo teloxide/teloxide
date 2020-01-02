@@ -55,16 +55,15 @@ impl Request<True> for AddStickerToSet<'_> {
 }
 
 impl<'a> AddStickerToSet<'a> {
-    pub(crate) fn new<N, P, E>(
+    pub(crate) fn new<N, E>(
         bot: &'a Bot,
         user_id: i32,
         name: N,
-        png_sticker: P,
+        png_sticker: InputFile,
         emojis: E,
     ) -> Self
     where
         N: Into<String>,
-        P: Into<InputFile>,
         E: Into<String>,
     {
         let name = name.into();
@@ -93,10 +92,7 @@ impl<'a> AddStickerToSet<'a> {
         self
     }
 
-    pub fn png_sticker<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn png_sticker(mut self, val: InputFile) -> Self {
         self.png_sticker = val.into();
         self
     }

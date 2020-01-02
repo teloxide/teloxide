@@ -68,10 +68,9 @@ impl Request<Message> for SendVoice<'_> {
 }
 
 impl<'a> SendVoice<'a> {
-    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, voice: V) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, voice: InputFile) -> Self
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let voice = voice.into();
@@ -96,10 +95,7 @@ impl<'a> SendVoice<'a> {
         self
     }
 
-    pub fn voice<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn voice(mut self, val: InputFile) -> Self {
         self.voice = val.into();
         self
     }

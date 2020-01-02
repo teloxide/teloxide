@@ -73,10 +73,9 @@ impl Request<Message> for SendDocument<'_> {
 }
 
 impl<'a> SendDocument<'a> {
-    pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, document: InputFile) -> Self
     where
         C: Into<ChatId>,
-        D: Into<InputFile>,
     {
         let chat_id = chat_id.into();
         let document = document.into();
@@ -101,18 +100,12 @@ impl<'a> SendDocument<'a> {
         self
     }
 
-    pub fn document<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn document(mut self, val: InputFile) -> Self {
         self.document = val.into();
         self
     }
 
-    pub fn thumb<T>(mut self, val: T) -> Self
-    where
-        T: Into<InputFile>,
-    {
+    pub fn thumb(mut self, val: InputFile) -> Self {
         self.thumb = Some(val.into());
         self
     }

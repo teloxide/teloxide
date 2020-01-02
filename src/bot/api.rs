@@ -74,34 +74,34 @@ impl Bot {
         ForwardMessage::new(self, chat_id, from_chat_id, message_id)
     }
 
-    pub fn send_photo<C, P>(&self, chat_id: C, photo: P) -> SendPhoto
+    pub fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> SendPhoto
     where
         C: Into<ChatId>,
-        P: Into<InputFile>,
     {
         SendPhoto::new(self, chat_id, photo)
     }
 
-    pub fn send_audio<C, A>(&self, chat_id: C, audio: A) -> SendAudio
+    pub fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> SendAudio
     where
         C: Into<ChatId>,
-        A: Into<InputFile>,
     {
         SendAudio::new(self, chat_id, audio)
     }
 
-    pub fn send_document<C, D>(&self, chat_id: C, document: D) -> SendDocument
+    pub fn send_document<C>(
+        &self,
+        chat_id: C,
+        document: InputFile,
+    ) -> SendDocument
     where
         C: Into<ChatId>,
-        D: Into<InputFile>,
     {
         SendDocument::new(self, chat_id, document)
     }
 
-    pub fn send_video<C, V>(&self, chat_id: C, video: V) -> SendVideo
+    pub fn send_video<C>(&self, chat_id: C, video: InputFile) -> SendVideo
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
         SendVideo::new(self, chat_id, video)
     }
@@ -117,22 +117,20 @@ impl Bot {
         SendAnimation::new(self, chat_id, animation)
     }
 
-    pub fn send_voice<C, V>(&self, chat_id: C, voice: V) -> SendVoice
+    pub fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> SendVoice
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
         SendVoice::new(self, chat_id, voice)
     }
 
-    pub fn send_video_note<C, V>(
+    pub fn send_video_note<C>(
         &self,
         chat_id: C,
-        video_note: V,
+        video_note: InputFile,
     ) -> SendVideoNote
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
         SendVideoNote::new(self, chat_id, video_note)
     }
@@ -569,10 +567,9 @@ impl Bot {
         DeleteMessage::new(self, chat_id, message_id)
     }
 
-    pub fn send_sticker<C, S>(&self, chat_id: C, sticker: S) -> SendSticker
+    pub fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> SendSticker
     where
         C: Into<ChatId>,
-        S: Into<InputFile>,
     {
         SendSticker::new(self, chat_id, sticker)
     }
@@ -592,18 +589,17 @@ impl Bot {
         UploadStickerFile::new(self, user_id, png_sticker)
     }
 
-    pub fn create_new_sticker_set<N, T, P, E>(
+    pub fn create_new_sticker_set<N, T, E>(
         &self,
         user_id: i32,
         name: N,
         title: T,
-        png_sticker: P,
+        png_sticker: InputFile,
         emojis: E,
     ) -> CreateNewStickerSet
     where
         N: Into<String>,
         T: Into<String>,
-        P: Into<InputFile>,
         E: Into<String>,
     {
         CreateNewStickerSet::new(
@@ -616,16 +612,15 @@ impl Bot {
         )
     }
 
-    pub fn add_sticker_to_set<N, P, E>(
+    pub fn add_sticker_to_set<N, E>(
         &self,
         user_id: i32,
         name: N,
-        png_sticker: P,
+        png_sticker: InputFile,
         emojis: E,
     ) -> AddStickerToSet
     where
         N: Into<String>,
-        P: Into<InputFile>,
         E: Into<String>,
     {
         AddStickerToSet::new(self, user_id, name, png_sticker, emojis)
