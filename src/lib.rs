@@ -14,3 +14,4 @@ mod bot;
 pub mod dispatching;
 pub mod requests;
 pub mod types;
+pub mod utils;
