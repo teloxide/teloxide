@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
+    Bot,
 };
 
 /// As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
 /// Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendVideoNote {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendVideoNote<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -45,11 +49,11 @@ pub struct SendVideoNote {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendVideoNote {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendVideoNote<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendVideoNote",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -66,8 +70,8 @@ impl Request<Message> for SendVideoNote {
     }
 }
 
-impl SendVideoNote {
-    pub fn new<C, V>(chat_id: C, video_note: V) -> Self
+impl<'a> SendVideoNote<'a> {
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video_note: V) -> Self
     where
         C: Into<ChatId>,
         V: Into<InputFile>,
@@ -75,6 +79,7 @@ impl SendVideoNote {
         let chat_id = chat_id.into();
         let video_note = video_note.into();
         Self {
+            bot,
             chat_id,
             video_note,
             duration: None,

@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send point on the map. On success, the sent Message is
 /// returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct SendLocation {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendLocation<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -33,11 +37,11 @@ pub struct SendLocation {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendLocation {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendLocation<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendLocation",
             &serde_json::to_string(self).unwrap(),
         )
@@ -45,13 +49,19 @@ impl Request<Message> for SendLocation {
     }
 }
 
-impl SendLocation {
-    pub fn new<C>(chat_id: C, latitude: f32, longitude: f32) -> Self
+impl<'a> SendLocation<'a> {
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
+        chat_id: C,
+        latitude: f32,
+        longitude: f32,
+    ) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             latitude,
             longitude,

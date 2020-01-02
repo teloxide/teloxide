@@ -1,5 +1,6 @@
 use reqwest::Client;
 
+mod api;
 mod download;
 
 /// A Telegram bot used to send requests.
@@ -32,11 +33,11 @@ impl Bot {
 }
 
 impl Bot {
-    pub fn token(&self) -> &str {
+    pub const fn token(&self) -> &str {
         &self.token
     }
 
-    pub fn client(&self) -> &Client {
+    pub const fn client(&self) -> &Client {
         &self.client
     }
 }

@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send static .WEBP or animated .TGS stickers. On success,
 /// the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendSticker {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendSticker<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -31,11 +35,11 @@ pub struct SendSticker {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendSticker {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendSticker<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendSticker",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -49,8 +53,8 @@ impl Request<Message> for SendSticker {
     }
 }
 
-impl SendSticker {
-    pub fn new<C, S>(chat_id: C, sticker: S) -> Self
+impl<'a> SendSticker<'a> {
+    pub(crate) fn new<C, S>(bot: &'a Bot, chat_id: C, sticker: S) -> Self
     where
         C: Into<ChatId>,
         S: Into<InputFile>,
@@ -58,6 +62,7 @@ impl SendSticker {
         let chat_id = chat_id.into();
         let sticker = sticker.into();
         Self {
+            bot,
             chat_id,
             sticker,
             disable_notification: None,

@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
+    Bot,
 };
 
 /// Use this method to unban a previously kicked user in a supergroup or
@@ -11,8 +12,11 @@ use crate::{
 /// will be able to join via link, etc. The bot must be an administrator for
 /// this to work. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct UnbanChatMember {
+#[derive(Debug, Clone, Serialize)]
+pub struct UnbanChatMember<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target group or username of the target
     /// supergroup or channel (in the format @username)
     chat_id: ChatId,
@@ -21,11 +25,11 @@ pub struct UnbanChatMember {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for UnbanChatMember {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for UnbanChatMember<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "unbanChatMember",
             &serde_json::to_string(self).unwrap(),
         )
@@ -33,13 +37,17 @@ impl Request<True> for UnbanChatMember {
     }
 }
 
-impl UnbanChatMember {
-    pub fn new<C>(chat_id: C, user_id: i32) -> Self
+impl<'a> UnbanChatMember<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self { chat_id, user_id }
+        Self {
+            bot,
+            chat_id,
+            user_id,
+        }
     }
 
     pub fn chat_id<T>(mut self, val: T) -> Self

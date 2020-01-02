@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message},
+    Bot,
 };
 
 /// Use this method to edit live location messages. A location can be edited
@@ -11,8 +12,11 @@ use crate::{
 /// stopMessageLiveLocation. On success, if the edited message was sent by the
 /// bot, the edited Message is returned, otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct EditMessageLiveLocation {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageLiveLocation<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -27,11 +31,11 @@ pub struct EditMessageLiveLocation {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageLiveLocation {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageLiveLocation<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageLiveLocation",
             &serde_json::to_string(self).unwrap(),
         )
@@ -39,8 +43,9 @@ impl Request<Message> for EditMessageLiveLocation {
     }
 }
 
-impl EditMessageLiveLocation {
-    pub fn new<C>(
+impl<'a> EditMessageLiveLocation<'a> {
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
         chat_id: C,
         message_id: i32,
         latitude: f32,
@@ -51,6 +56,7 @@ impl EditMessageLiveLocation {
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             latitude,

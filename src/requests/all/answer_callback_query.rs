@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::True,
+    Bot,
 };
 
 /// Use this method to send answers to callback queries sent from inline
@@ -14,8 +15,11 @@ use crate::{
 /// @Botfather and accept the terms. Otherwise, you may use links like
 /// t.me/your_bot?start=XXXX that open your bot with a parameter.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct AnswerCallbackQuery {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerCallbackQuery<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the query to be answered
     callback_query_id: String,
     /// Text of the notification. If not specified, nothing will be shown to
@@ -37,11 +41,11 @@ pub struct AnswerCallbackQuery {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerCallbackQuery {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for AnswerCallbackQuery<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "answerCallbackQuery",
             &serde_json::to_string(self).unwrap(),
         )
@@ -49,13 +53,14 @@ impl Request<True> for AnswerCallbackQuery {
     }
 }
 
-impl AnswerCallbackQuery {
-    pub fn new<C>(callback_query_id: C) -> Self
+impl<'a> AnswerCallbackQuery<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, callback_query_id: C) -> Self
     where
         C: Into<String>,
     {
         let callback_query_id = callback_query_id.into();
         Self {
+            bot,
             callback_query_id,
             text: None,
             show_alert: None,

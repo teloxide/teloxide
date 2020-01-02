@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message},
+    Bot,
 };
 
 /// Use this method to set the score of the specified user in a game. On
@@ -11,8 +12,11 @@ use crate::{
 /// otherwise returns True. Returns an error, if the new score is not greater
 /// than the user's current score in the chat and force is False.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SetGameScore {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetGameScore<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat
     chat_id: ChatId,
     /// Identifier of the sent message
@@ -30,11 +34,11 @@ pub struct SetGameScore {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SetGameScore {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SetGameScore<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "setGameScore",
             &serde_json::to_string(self).unwrap(),
         )
@@ -42,13 +46,20 @@ impl Request<Message> for SetGameScore {
     }
 }
 
-impl SetGameScore {
-    pub fn new<C>(chat_id: C, message_id: i32, user_id: i32, score: i32) -> Self
+impl<'a> SetGameScore<'a> {
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
+        chat_id: C,
+        message_id: i32,
+        user_id: i32,
+        score: i32,
+    ) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             user_id,

@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ShippingOption, True},
+    Bot,
 };
 
 /// If you sent an invoice requesting a shipping address and the parameter
@@ -11,8 +12,11 @@ use crate::{
 /// shipping_query field to the bot. Use this method to reply to shipping
 /// queries. On success, True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct AnswerShippingQuery {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerShippingQuery<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the query to be answered
     shipping_query_id: String,
     /// Specify True if delivery to the specified address is possible and False
@@ -30,11 +34,11 @@ pub struct AnswerShippingQuery {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerShippingQuery {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for AnswerShippingQuery<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "answerShippingQuery",
             &serde_json::to_string(self).unwrap(),
         )
@@ -42,13 +46,14 @@ impl Request<True> for AnswerShippingQuery {
     }
 }
 
-impl AnswerShippingQuery {
-    pub fn new<S>(shipping_query_id: S, ok: bool) -> Self
+impl<'a> AnswerShippingQuery<'a> {
+    pub(crate) fn new<S>(bot: &'a Bot, shipping_query_id: S, ok: bool) -> Self
     where
         S: Into<String>,
     {
         let shipping_query_id = shipping_query_id.into();
         Self {
+            bot,
             shipping_query_id,
             ok,
             shipping_options: None,

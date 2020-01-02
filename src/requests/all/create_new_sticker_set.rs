@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InputFile, MaskPosition, True},
+    Bot,
 };
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct CreateNewStickerSet {
+#[derive(Debug, Clone, Serialize)]
+pub struct CreateNewStickerSet<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// User identifier of created sticker set owner
     user_id: i32,
     /// Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g.,
@@ -38,11 +42,11 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for CreateNewStickerSet {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for CreateNewStickerSet<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "createNewStickerSet",
             FormBuilder::new()
                 .add("user_id", &self.user_id)
@@ -58,8 +62,9 @@ impl Request<True> for CreateNewStickerSet {
     }
 }
 
-impl CreateNewStickerSet {
-    pub fn new<N, T, P, E>(
+impl<'a> CreateNewStickerSet<'a> {
+    pub(crate) fn new<N, T, P, E>(
+        bot: &'a Bot,
         user_id: i32,
         name: N,
         title: T,
@@ -77,6 +82,7 @@ impl CreateNewStickerSet {
         let png_sticker = png_sticker.into();
         let emojis = emojis.into();
         Self {
+            bot,
             user_id,
             name,
             title,

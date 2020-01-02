@@ -1,28 +1,32 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
+    Bot,
 };
 
 /// Use this method to delete a chat photo. Photos can't be changed for private
 /// chats. The bot must be an administrator in the chat for this to work and
 /// must have the appropriate admin rights. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct DeleteChatPhoto {
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteChatPhoto<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteChatPhoto {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for DeleteChatPhoto<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "deleteChatPhoto",
             &serde_json::to_string(self).unwrap(),
         )
@@ -30,13 +34,13 @@ impl Request<True> for DeleteChatPhoto {
     }
 }
 
-impl DeleteChatPhoto {
-    pub fn new<C>(chat_id: C) -> Self
+impl<'a> DeleteChatPhoto<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self { chat_id }
+        Self { bot, chat_id }
     }
 
     pub fn chat_id<T>(mut self, val: T) -> Self

@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
+    Bot,
 };
 
 /// Use this method to set a new group sticker set for a supergroup. The bot
@@ -12,8 +13,11 @@ use crate::{
 /// returned in getChat requests to check if the bot can use this method.
 /// Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SetChatStickerSet {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatStickerSet<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target
     /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
@@ -22,11 +26,11 @@ pub struct SetChatStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetChatStickerSet {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for SetChatStickerSet<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "setChatStickerSet",
             &serde_json::to_string(self).unwrap(),
         )
@@ -34,8 +38,12 @@ impl Request<True> for SetChatStickerSet {
     }
 }
 
-impl SetChatStickerSet {
-    pub fn new<C, S>(chat_id: C, sticker_set_name: S) -> Self
+impl<'a> SetChatStickerSet<'a> {
+    pub(crate) fn new<C, S>(
+        bot: &'a Bot,
+        chat_id: C,
+        sticker_set_name: S,
+    ) -> Self
     where
         C: Into<ChatId>,
         S: Into<String>,
@@ -43,6 +51,7 @@ impl SetChatStickerSet {
         let chat_id = chat_id.into();
         let sticker_set_name = sticker_set_name.into();
         Self {
+            bot,
             chat_id,
             sticker_set_name,
         }

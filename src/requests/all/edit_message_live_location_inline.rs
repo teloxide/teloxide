@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
+    Bot,
 };
 
 /// Use this method to edit live location messages. A location can be edited
@@ -11,8 +12,11 @@ use crate::{
 /// stopMessageLiveLocation. On success, if the edited message was sent by the
 /// bot, the edited Message is returned, otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct EditMessageLiveLocationInline {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageLiveLocationInline<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the inline message
     inline_message_id: String,
     /// Latitude of new location
@@ -24,11 +28,11 @@ pub struct EditMessageLiveLocationInline {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageLiveLocationInline {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageLiveLocationInline<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageLiveLocation",
             &serde_json::to_string(self).unwrap(),
         )
@@ -36,13 +40,19 @@ impl Request<Message> for EditMessageLiveLocationInline {
     }
 }
 
-impl EditMessageLiveLocationInline {
-    pub fn new<I>(inline_message_id: I, latitude: f32, longitude: f32) -> Self
+impl<'a> EditMessageLiveLocationInline<'a> {
+    pub(crate) fn new<I>(
+        bot: &'a Bot,
+        inline_message_id: I,
+        latitude: f32,
+        longitude: f32,
+    ) -> Self
     where
         I: Into<String>,
     {
         let inline_message_id = inline_message_id.into();
         Self {
+            bot,
             inline_message_id,
             latitude,
             longitude,

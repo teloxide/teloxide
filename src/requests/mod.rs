@@ -6,8 +6,6 @@ mod utils;
 
 pub use all::*;
 
-use crate::Bot;
-
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
@@ -15,5 +13,5 @@ pub type ResponseResult<T> = Result<T, crate::RequestError>;
 #[async_trait::async_trait]
 pub trait Request<T> {
     /// Asynchronously sends this request to Telegram and returns the result.
-    async fn send(&self, bot: &Bot) -> ResponseResult<T>;
+    async fn send(&self) -> ResponseResult<T>;
 }

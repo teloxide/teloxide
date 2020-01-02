@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
+    Bot,
 };
 
 /// Use this method to restrict a user in a supergroup. The bot must be an
@@ -11,8 +12,11 @@ use crate::{
 /// appropriate admin rights. Pass True for all permissions to lift restrictions
 /// from a user. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct RestrictChatMember {
+#[derive(Debug, Clone, Serialize)]
+pub struct RestrictChatMember<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target
     /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
@@ -27,11 +31,11 @@ pub struct RestrictChatMember {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for RestrictChatMember {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for RestrictChatMember<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "restrictChatMember",
             &serde_json::to_string(self).unwrap(),
         )
@@ -39,8 +43,9 @@ impl Request<True> for RestrictChatMember {
     }
 }
 
-impl RestrictChatMember {
-    pub fn new<C>(
+impl<'a> RestrictChatMember<'a> {
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,
@@ -50,6 +55,7 @@ impl RestrictChatMember {
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             user_id,
             permissions,

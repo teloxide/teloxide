@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendPoll {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendPoll<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername). A native poll can't be sent to a
     /// private chat.
@@ -31,11 +35,11 @@ pub struct SendPoll {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendPoll {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendPoll<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendPoll",
             &serde_json::to_string(self).unwrap(),
         )
@@ -43,8 +47,13 @@ impl Request<Message> for SendPoll {
     }
 }
 
-impl SendPoll {
-    pub fn new<C, Q, O>(chat_id: C, question: Q, options: O) -> Self
+impl<'a> SendPoll<'a> {
+    pub(crate) fn new<C, Q, O>(
+        bot: &'a Bot,
+        chat_id: C,
+        question: Q,
+        options: O,
+    ) -> Self
     where
         C: Into<ChatId>,
         Q: Into<String>,
@@ -54,6 +63,7 @@ impl SendPoll {
         let question = question.into();
         let options = options.into();
         Self {
+            bot,
             chat_id,
             question,
             options,

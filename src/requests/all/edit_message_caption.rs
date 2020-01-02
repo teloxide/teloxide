@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message, ParseMode},
+    Bot,
 };
 
 /// Use this method to edit captions of messages. On success, if edited message
 /// is sent by the bot, the edited Message is returned, otherwise True is
 /// returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct EditMessageCaption {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageCaption<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -27,11 +31,11 @@ pub struct EditMessageCaption {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageCaption {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageCaption<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageCaption",
             &serde_json::to_string(self).unwrap(),
         )
@@ -39,13 +43,14 @@ impl Request<Message> for EditMessageCaption {
     }
 }
 
-impl EditMessageCaption {
-    pub fn new<C>(chat_id: C, message_id: i32) -> Self
+impl<'a> EditMessageCaption<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             caption: None,

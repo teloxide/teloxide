@@ -17,7 +17,7 @@ pub(crate) struct FormBuilder {
 }
 
 impl FormBuilder {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self { form: Form::new() }
     }
 

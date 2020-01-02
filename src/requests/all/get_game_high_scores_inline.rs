@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::GameHighScore,
+    Bot,
 };
 
 /// Use this method to get data for high score tables. Will return the score of
@@ -13,8 +14,11 @@ use crate::{
 /// Will also return the top three users if the user and his neighbors are not
 /// among them. Please note that this behavior is subject to change.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct GetGameHighScoresInline {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetGameHighScoresInline<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the inline message
     inline_message_id: String,
     /// Target user id
@@ -22,14 +26,11 @@ pub struct GetGameHighScoresInline {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<GameHighScore>> for GetGameHighScoresInline {
-    async fn send(
-        &self,
-        bot: &crate::Bot,
-    ) -> ResponseResult<Vec<GameHighScore>> {
+impl Request<Vec<GameHighScore>> for GetGameHighScoresInline<'_> {
+    async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "getGameHighScores",
             &serde_json::to_string(self).unwrap(),
         )
@@ -37,13 +38,18 @@ impl Request<Vec<GameHighScore>> for GetGameHighScoresInline {
     }
 }
 
-impl GetGameHighScoresInline {
-    pub fn new<I>(inline_message_id: I, user_id: i32) -> Self
+impl<'a> GetGameHighScoresInline<'a> {
+    pub(crate) fn new<I>(
+        bot: &'a Bot,
+        inline_message_id: I,
+        user_id: i32,
+    ) -> Self
     where
         I: Into<String>,
     {
         let inline_message_id = inline_message_id.into();
         Self {
+            bot,
             inline_message_id,
             user_id,
         }

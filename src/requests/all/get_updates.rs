@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{AllowedUpdate, Update},
+    Bot,
 };
 
 /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -18,8 +19,11 @@ use crate::{
 /// [Update]: crate::types::Update
 /// [Vec]: std::alloc::Vec
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
-pub struct GetUpdates {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetUpdates<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the first update to be returned. Must be greater by one
     /// than the highest among the identifiers of previously received updates.
     /// By default, updates starting with the earliest unconfirmed update are
@@ -62,11 +66,11 @@ pub struct GetUpdates {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<Update>> for GetUpdates {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Vec<Update>> {
+impl Request<Vec<Update>> for GetUpdates<'_> {
+    async fn send(&self) -> ResponseResult<Vec<Update>> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "getUpdates",
             &serde_json::to_string(self).unwrap(),
         )
@@ -74,9 +78,10 @@ impl Request<Vec<Update>> for GetUpdates {
     }
 }
 
-impl GetUpdates {
-    pub fn new() -> Self {
+impl<'a> GetUpdates<'a> {
+    pub(crate) fn new(bot: &'a Bot) -> Self {
         Self {
+            bot,
             offset: None,
             limit: None,
             timeout: None,

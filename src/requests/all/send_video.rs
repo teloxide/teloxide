@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send video files, Telegram clients support mp4 videos
@@ -11,8 +12,11 @@ use crate::{
 /// returned. Bots can currently send video files of up to 50 MB in size, this
 /// limit may be changed in the future.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendVideo {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendVideo<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -56,11 +60,11 @@ pub struct SendVideo {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendVideo {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendVideo<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendVideo",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -81,8 +85,8 @@ impl Request<Message> for SendVideo {
     }
 }
 
-impl SendVideo {
-    pub fn new<C, V>(chat_id: C, video: V) -> Self
+impl<'a> SendVideo<'a> {
+    pub(crate) fn new<C, V>(bot: &'a Bot, chat_id: C, video: V) -> Self
     where
         C: Into<ChatId>,
         V: Into<InputFile>,
@@ -90,6 +94,7 @@ impl SendVideo {
         let chat_id = chat_id.into();
         let video = video.into();
         Self {
+            bot,
             chat_id,
             video,
             duration: None,

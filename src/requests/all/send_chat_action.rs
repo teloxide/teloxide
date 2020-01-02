@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
+    Bot,
 };
 
 /// Use this method when you need to tell the user that something is happening
@@ -16,8 +17,11 @@ use crate::{
 /// only recommend using this method when a response from the bot will take a
 /// noticeable amount of time to arrive.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendChatAction {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendChatAction<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -30,11 +34,11 @@ pub struct SendChatAction {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SendChatAction {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for SendChatAction<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendChatAction",
             &serde_json::to_string(self).unwrap(),
         )
@@ -42,15 +46,19 @@ impl Request<True> for SendChatAction {
     }
 }
 
-impl SendChatAction {
-    pub fn new<C, A>(chat_id: C, action: A) -> Self
+impl<'a> SendChatAction<'a> {
+    pub(crate) fn new<C, A>(bot: &'a Bot, chat_id: C, action: A) -> Self
     where
         C: Into<ChatId>,
         A: Into<String>,
     {
         let chat_id = chat_id.into();
         let action = action.into();
-        Self { chat_id, action }
+        Self {
+            bot,
+            chat_id,
+            action,
+        }
     }
 
     pub fn chat_id<T>(mut self, val: T) -> Self

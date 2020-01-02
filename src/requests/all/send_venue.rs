@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send information about a venue. On success, the sent
 /// Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct SendVenue {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendVenue<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -40,11 +44,11 @@ pub struct SendVenue {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendVenue {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendVenue<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendVenue",
             &serde_json::to_string(self).unwrap(),
         )
@@ -52,8 +56,9 @@ impl Request<Message> for SendVenue {
     }
 }
 
-impl SendVenue {
-    pub fn new<C, T, A>(
+impl<'a> SendVenue<'a> {
+    pub(crate) fn new<C, T, A>(
+        bot: &'a Bot,
         chat_id: C,
         latitude: f32,
         longitude: f32,
@@ -69,6 +74,7 @@ impl SendVenue {
         let title = title.into();
         let address = address.into();
         Self {
+            bot,
             chat_id,
             latitude,
             longitude,

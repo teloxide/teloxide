@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{File, InputFile},
+    Bot,
 };
 
 /// Use this method to upload a .png file with a sticker for later use in
 /// createNewStickerSet and addStickerToSet methods (can be used multiple
 /// times). Returns the uploaded File on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct UploadStickerFile {
+#[derive(Debug, Clone, Serialize)]
+pub struct UploadStickerFile<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// User identifier of sticker file owner
     user_id: i32,
     /// Png image with the sticker, must be up to 512 kilobytes in size,
@@ -20,11 +24,11 @@ pub struct UploadStickerFile {
     png_sticker: InputFile,
 }
 #[async_trait::async_trait]
-impl Request<File> for UploadStickerFile {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<File> {
+impl Request<File> for UploadStickerFile<'_> {
+    async fn send(&self) -> ResponseResult<File> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "uploadStickerFile",
             &serde_json::to_string(self).unwrap(),
         )
@@ -32,9 +36,14 @@ impl Request<File> for UploadStickerFile {
     }
 }
 
-impl UploadStickerFile {
-    pub fn new(user_id: i32, png_sticker: InputFile) -> Self {
+impl<'a> UploadStickerFile<'a> {
+    pub(crate) fn new(
+        bot: &'a Bot,
+        user_id: i32,
+        png_sticker: InputFile,
+    ) -> Self {
         Self {
+            bot,
             user_id,
             png_sticker,
         }

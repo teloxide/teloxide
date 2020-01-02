@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InlineKeyboardMarkup, InputMedia, Message},
+    Bot,
 };
 
 /// Use this method to edit animation, audio, document, photo, or video
@@ -14,8 +15,11 @@ use crate::{
 /// the edited message was sent by the bot, the edited Message is returned,
 /// otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct EditMessageMediaInline {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageMediaInline<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the inline message
     inline_message_id: String,
     /// A JSON-serialized object for a new media content of the message
@@ -25,11 +29,11 @@ pub struct EditMessageMediaInline {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageMediaInline {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageMediaInline<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageMedia",
             FormBuilder::new()
                 .add("inline_message_id", &self.inline_message_id)
@@ -41,13 +45,18 @@ impl Request<Message> for EditMessageMediaInline {
     }
 }
 
-impl EditMessageMediaInline {
-    pub fn new<I>(inline_message_id: I, media: InputMedia) -> Self
+impl<'a> EditMessageMediaInline<'a> {
+    pub(crate) fn new<I>(
+        bot: &'a Bot,
+        inline_message_id: I,
+        media: InputMedia,
+    ) -> Self
     where
         I: Into<String>,
     {
         let inline_message_id = inline_message_id.into();
         Self {
+            bot,
             inline_message_id,
             media,
             reply_markup: None,

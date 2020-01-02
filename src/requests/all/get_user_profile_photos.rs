@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::UserProfilePhotos,
+    Bot,
 };
 
 /// Use this method to get a list of profile pictures for a user. Returns a
 /// UserProfilePhotos object.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct GetUserProfilePhotos {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetUserProfilePhotos<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier of the target user
     user_id: i32,
     /// Sequential number of the first photo to be returned. By default, all
@@ -22,14 +26,11 @@ pub struct GetUserProfilePhotos {
 }
 
 #[async_trait::async_trait]
-impl Request<UserProfilePhotos> for GetUserProfilePhotos {
-    async fn send(
-        &self,
-        bot: &crate::Bot,
-    ) -> ResponseResult<UserProfilePhotos> {
+impl Request<UserProfilePhotos> for GetUserProfilePhotos<'_> {
+    async fn send(&self) -> ResponseResult<UserProfilePhotos> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "getUserProfilePhotos",
             &serde_json::to_string(self).unwrap(),
         )
@@ -37,9 +38,10 @@ impl Request<UserProfilePhotos> for GetUserProfilePhotos {
     }
 }
 
-impl GetUserProfilePhotos {
-    pub fn new(user_id: i32) -> Self {
+impl<'a> GetUserProfilePhotos<'a> {
+    pub(crate) fn new(bot: &'a Bot, user_id: i32) -> Self {
         Self {
+            bot,
             user_id,
             offset: None,
             limit: None,

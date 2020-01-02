@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send audio files, if you want Telegram clients to display
@@ -12,8 +13,11 @@ use crate::{
 /// of up to 50 MB in size, this limit may be changed in the future.For sending
 /// voice messages, use the sendVoice method instead.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendAudio {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendAudio<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -54,11 +58,11 @@ pub struct SendAudio {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendAudio {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendAudio<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendAudio",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -78,8 +82,8 @@ impl Request<Message> for SendAudio {
     }
 }
 
-impl SendAudio {
-    pub fn new<C, A>(chat_id: C, audio: A) -> Self
+impl<'a> SendAudio<'a> {
+    pub(crate) fn new<C, A>(bot: &'a Bot, chat_id: C, audio: A) -> Self
     where
         C: Into<ChatId>,
         A: Into<InputFile>,
@@ -87,6 +91,7 @@ impl SendAudio {
         let chat_id = chat_id.into();
         let audio = audio.into();
         Self {
+            bot,
             chat_id,
             audio,
             caption: None,

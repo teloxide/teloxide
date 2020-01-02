@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, InputMedia, Message},
+    Bot,
 };
 
 /// Use this method to edit animation, audio, document, photo, or video
@@ -14,8 +15,11 @@ use crate::{
 /// the edited message was sent by the bot, the edited Message is returned,
 /// otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct EditMessageMedia {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageMedia<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -28,11 +32,11 @@ pub struct EditMessageMedia {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageMedia {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageMedia<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageMedia",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -45,13 +49,19 @@ impl Request<Message> for EditMessageMedia {
     }
 }
 
-impl EditMessageMedia {
-    pub fn new<C>(chat_id: C, message_id: i32, media: InputMedia) -> Self
+impl<'a> EditMessageMedia<'a> {
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
+        chat_id: C,
+        message_id: i32,
+        media: InputMedia,
+    ) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             media,

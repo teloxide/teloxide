@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message},
+    Bot,
 };
 
 /// Use this method to forward messages of any kind. On success, the sent
 /// Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct ForwardMessage {
+#[derive(Debug, Clone, Serialize)]
+pub struct ForwardMessage<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -25,11 +29,11 @@ pub struct ForwardMessage {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for ForwardMessage {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for ForwardMessage<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "forwardMessage",
             &serde_json::to_string(self).unwrap(),
         )
@@ -37,8 +41,13 @@ impl Request<Message> for ForwardMessage {
     }
 }
 
-impl ForwardMessage {
-    pub fn new<C, F>(chat_id: C, from_chat_id: F, message_id: i32) -> Self
+impl<'a> ForwardMessage<'a> {
+    pub(crate) fn new<C, F>(
+        bot: &'a Bot,
+        chat_id: C,
+        from_chat_id: F,
+        message_id: i32,
+    ) -> Self
     where
         C: Into<ChatId>,
         F: Into<ChatId>,
@@ -46,6 +55,7 @@ impl ForwardMessage {
         let chat_id = chat_id.into();
         let from_chat_id = from_chat_id.into();
         Self {
+            bot,
             chat_id,
             from_chat_id,
             message_id,

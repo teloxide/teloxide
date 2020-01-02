@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send phone contacts. On success, the sent Message is
 /// returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendContact {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendContact<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -34,11 +38,11 @@ pub struct SendContact {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendContact {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendContact<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendContact",
             &serde_json::to_string(self).unwrap(),
         )
@@ -46,8 +50,13 @@ impl Request<Message> for SendContact {
     }
 }
 
-impl SendContact {
-    pub fn new<C, P, F>(chat_id: C, phone_number: P, first_name: F) -> Self
+impl<'a> SendContact<'a> {
+    pub(crate) fn new<C, P, F>(
+        bot: &'a Bot,
+        chat_id: C,
+        phone_number: P,
+        first_name: F,
+    ) -> Self
     where
         C: Into<ChatId>,
         P: Into<String>,
@@ -57,6 +66,7 @@ impl SendContact {
         let phone_number = phone_number.into();
         let first_name = first_name.into();
         Self {
+            bot,
             chat_id,
             phone_number,
             first_name,

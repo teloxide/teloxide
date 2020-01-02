@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
+    Bot,
 };
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is
 /// returned, otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct StopMessageLiveLocationInline {
+#[derive(Debug, Clone, Serialize)]
+pub struct StopMessageLiveLocationInline<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the inline message
     inline_message_id: String,
     /// A JSON-serialized object for a new inline keyboard.
@@ -19,11 +23,11 @@ pub struct StopMessageLiveLocationInline {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for StopMessageLiveLocationInline {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for StopMessageLiveLocationInline<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "stopMessageLiveLocation",
             &serde_json::to_string(self).unwrap(),
         )
@@ -31,13 +35,14 @@ impl Request<Message> for StopMessageLiveLocationInline {
     }
 }
 
-impl StopMessageLiveLocationInline {
-    pub fn new<I>(inline_message_id: I) -> Self
+impl<'a> StopMessageLiveLocationInline<'a> {
+    pub(crate) fn new<I>(bot: &'a Bot, inline_message_id: I) -> Self
     where
         I: Into<String>,
     {
         let inline_message_id = inline_message_id.into();
         Self {
+            bot,
             inline_message_id,
             reply_markup: None,
         }

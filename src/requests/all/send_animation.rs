@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -14,8 +15,11 @@ use crate::{
 /// Bots can currently send animation files of up to 50 MB in size, this limit
 /// may be changed in the future.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendAnimation {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendAnimation<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format `@channelusername`)
     pub chat_id: ChatId,
@@ -58,11 +62,11 @@ pub struct SendAnimation {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendAnimation {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendAnimation<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendAnimation",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -82,12 +86,13 @@ impl Request<Message> for SendAnimation {
     }
 }
 
-impl SendAnimation {
-    pub fn new<C>(chat_id: C, animation: InputFile) -> Self
+impl<'a> SendAnimation<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, animation: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
+            bot,
             chat_id: chat_id.into(),
             animation,
             duration: None,

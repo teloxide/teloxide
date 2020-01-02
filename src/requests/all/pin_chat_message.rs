@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
+    Bot,
 };
 
 /// Use this method to pin a message in a group, a supergroup, or a channel. The
@@ -11,8 +12,11 @@ use crate::{
 /// ‘can_pin_messages’ admin right in the supergroup or ‘can_edit_messages’
 /// admin right in the channel. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct PinChatMessage {
+#[derive(Debug, Clone, Serialize)]
+pub struct PinChatMessage<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -25,11 +29,11 @@ pub struct PinChatMessage {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for PinChatMessage {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for PinChatMessage<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "pinChatMessage",
             &serde_json::to_string(self).unwrap(),
         )
@@ -37,13 +41,14 @@ impl Request<True> for PinChatMessage {
     }
 }
 
-impl PinChatMessage {
-    pub fn new<C>(chat_id: C, message_id: i32) -> Self
+impl<'a> PinChatMessage<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             disable_notification: None,

@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::True,
+    Bot,
 };
 
 /// Once the user has confirmed their payment and shipping details, the Bot API
@@ -12,8 +13,11 @@ use crate::{
 /// On success, True is returned. Note: The Bot API must receive an answer
 /// within 10 seconds after the pre-checkout query was sent.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct AnswerPreCheckoutQuery {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerPreCheckoutQuery<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the query to be answered
     pre_checkout_query_id: String,
     /// Specify True if everything is alright (goods are available, etc.) and
@@ -30,11 +34,11 @@ pub struct AnswerPreCheckoutQuery {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerPreCheckoutQuery {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for AnswerPreCheckoutQuery<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "answerPreCheckoutQuery",
             &serde_json::to_string(self).unwrap(),
         )
@@ -42,13 +46,18 @@ impl Request<True> for AnswerPreCheckoutQuery {
     }
 }
 
-impl AnswerPreCheckoutQuery {
-    pub fn new<P>(pre_checkout_query_id: P, ok: bool) -> Self
+impl<'a> AnswerPreCheckoutQuery<'a> {
+    pub(crate) fn new<P>(
+        bot: &'a Bot,
+        pre_checkout_query_id: P,
+        ok: bool,
+    ) -> Self
     where
         P: Into<String>,
     {
         let pre_checkout_query_id = pre_checkout_query_id.into();
         Self {
+            bot,
             pre_checkout_query_id,
             ok,
             error_message: None,

@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineQueryResult, True},
+    Bot,
 };
 
 /// Use this method to send answers to an inline query. On success, True is
 /// returned.No more than 50 results per query are allowed.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct AnswerInlineQuery {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerInlineQuery<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the answered query
     inline_query_id: String,
     /// A JSON-serialized array of results for the inline query
@@ -46,11 +50,11 @@ pub struct AnswerInlineQuery {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerInlineQuery {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for AnswerInlineQuery<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "answerInlineQuery",
             &serde_json::to_string(self).unwrap(),
         )
@@ -58,8 +62,12 @@ impl Request<True> for AnswerInlineQuery {
     }
 }
 
-impl AnswerInlineQuery {
-    pub fn new<I, R>(inline_query_id: I, results: R) -> Self
+impl<'a> AnswerInlineQuery<'a> {
+    pub(crate) fn new<I, R>(
+        bot: &'a Bot,
+        inline_query_id: I,
+        results: R,
+    ) -> Self
     where
         I: Into<String>,
         R: Into<Vec<InlineQueryResult>>,
@@ -67,6 +75,7 @@ impl AnswerInlineQuery {
         let inline_query_id = inline_query_id.into();
         let results = results.into();
         Self {
+            bot,
             inline_query_id,
             results,
             cache_time: None,

@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send general files. On success, the sent Message is
 /// returned. Bots can currently send files of any type of up to 50 MB in size,
 /// this limit may be changed in the future.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendDocument {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendDocument<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -47,11 +51,11 @@ pub struct SendDocument {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendDocument {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendDocument<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendDocument",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -68,8 +72,8 @@ impl Request<Message> for SendDocument {
     }
 }
 
-impl SendDocument {
-    pub fn new<C, D>(chat_id: C, document: D) -> Self
+impl<'a> SendDocument<'a> {
+    pub(crate) fn new<C, D>(bot: &'a Bot, chat_id: C, document: D) -> Self
     where
         C: Into<ChatId>,
         D: Into<InputFile>,
@@ -77,6 +81,7 @@ impl SendDocument {
         let chat_id = chat_id.into();
         let document = document.into();
         Self {
+            bot,
             chat_id,
             document,
             thumb: None,

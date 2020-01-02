@@ -1,15 +1,19 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
+    Bot,
 };
 
 /// Use this method to send a game. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendGame {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendGame<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat
     chat_id: i32,
     /// Short name of the game, serves as the unique identifier for the game.
@@ -27,11 +31,11 @@ pub struct SendGame {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendGame {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendGame<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendGame",
             &serde_json::to_string(self).unwrap(),
         )
@@ -39,13 +43,14 @@ impl Request<Message> for SendGame {
     }
 }
 
-impl SendGame {
-    pub fn new<G>(chat_id: i32, game_short_name: G) -> Self
+impl<'a> SendGame<'a> {
+    pub(crate) fn new<G>(bot: &'a Bot, chat_id: i32, game_short_name: G) -> Self
     where
         G: Into<String>,
     {
         let game_short_name = game_short_name.into();
         Self {
+            bot,
             chat_id,
             game_short_name,
             disable_notification: None,

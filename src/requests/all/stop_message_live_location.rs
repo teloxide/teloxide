@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message},
+    Bot,
 };
 
 /// Use this method to stop updating a live location message before live_period
 /// expires. On success, if the message was sent by the bot, the sent Message is
 /// returned, otherwise True is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct StopMessageLiveLocation {
+#[derive(Debug, Clone, Serialize)]
+pub struct StopMessageLiveLocation<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -22,11 +26,11 @@ pub struct StopMessageLiveLocation {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for StopMessageLiveLocation {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for StopMessageLiveLocation<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "stopMessageLiveLocation",
             &serde_json::to_string(self).unwrap(),
         )
@@ -34,13 +38,14 @@ impl Request<Message> for StopMessageLiveLocation {
     }
 }
 
-impl StopMessageLiveLocation {
-    pub fn new<C>(chat_id: C, message_id: i32) -> Self
+impl<'a> StopMessageLiveLocation<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
+            bot,
             chat_id,
             message_id,
             reply_markup: None,

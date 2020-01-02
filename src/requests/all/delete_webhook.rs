@@ -1,23 +1,27 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::True,
+    Bot,
 };
 
 /// Use this method to remove webhook integration if you decide to switch back
 /// to getUpdates. Returns True on success. Requires no parameters.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
-pub struct DeleteWebhook;
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteWebhook<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+}
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteWebhook {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for DeleteWebhook<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "deleteWebhook",
             &serde_json::to_string(self).unwrap(),
         )
@@ -25,8 +29,8 @@ impl Request<True> for DeleteWebhook {
     }
 }
 
-impl DeleteWebhook {
-    pub fn new() -> Self {
-        Self
+impl<'a> DeleteWebhook<'a> {
+    pub(crate) fn new(bot: &'a Bot) -> Self {
+        Self { bot }
     }
 }

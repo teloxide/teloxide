@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::ChatId,
+    Bot,
 };
 
 /// Use this method to generate a new invite link for a chat; any previously
@@ -17,19 +18,22 @@ use crate::{
 /// bot needs to generate a new invite link replacing its previous one, use
 /// exportChatInviteLink again.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct ExportChatInviteLink {
+#[derive(Debug, Clone, Serialize)]
+pub struct ExportChatInviteLink<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request<String> for ExportChatInviteLink {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<String> {
+impl Request<String> for ExportChatInviteLink<'_> {
+    async fn send(&self) -> ResponseResult<String> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "exportChatInviteLink",
             &serde_json::to_string(self).unwrap(),
         )
@@ -37,13 +41,13 @@ impl Request<String> for ExportChatInviteLink {
     }
 }
 
-impl ExportChatInviteLink {
-    pub fn new<C>(chat_id: C) -> Self
+impl<'a> ExportChatInviteLink<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self { chat_id }
+        Self { bot, chat_id }
     }
 
     pub fn chat_id<T>(mut self, val: T) -> Self

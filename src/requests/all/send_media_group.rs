@@ -1,16 +1,20 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputMedia, Message},
+    Bot,
 };
 
 /// Use this method to send a group of photos or videos as an album. On success,
 /// an array of the sent Messages is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct SendMediaGroup {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendMediaGroup<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -25,11 +29,11 @@ pub struct SendMediaGroup {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<Message>> for SendMediaGroup {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Vec<Message>> {
+impl Request<Vec<Message>> for SendMediaGroup<'_> {
+    async fn send(&self) -> ResponseResult<Vec<Message>> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendMediaGroup",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -42,8 +46,8 @@ impl Request<Vec<Message>> for SendMediaGroup {
     }
 }
 
-impl SendMediaGroup {
-    pub fn new<C, M>(chat_id: C, media: M) -> Self
+impl<'a> SendMediaGroup<'a> {
+    pub(crate) fn new<C, M>(bot: &'a Bot, chat_id: C, media: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,
@@ -51,6 +55,7 @@ impl SendMediaGroup {
         let chat_id = chat_id.into();
         let media = media.into();
         Self {
+            bot,
             chat_id,
             media,
             disable_notification: None,

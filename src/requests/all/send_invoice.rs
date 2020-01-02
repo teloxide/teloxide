@@ -1,15 +1,19 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
+    Bot,
 };
 
 /// Use this method to send invoices. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendInvoice {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendInvoice<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target private chat
     chat_id: i32,
     /// Product name, 1-32 characters
@@ -71,11 +75,11 @@ pub struct SendInvoice {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendInvoice {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendInvoice<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendInvoice",
             &serde_json::to_string(self).unwrap(),
         )
@@ -83,9 +87,10 @@ impl Request<Message> for SendInvoice {
     }
 }
 
-impl SendInvoice {
+impl<'a> SendInvoice<'a> {
     #[allow(clippy::too_many_arguments)]
-    pub fn new<T, D, Pl, Pt, S, C, Pr>(
+    pub(crate) fn new<T, D, Pl, Pt, S, C, Pr>(
+        bot: &'a Bot,
         chat_id: i32,
         title: T,
         description: D,
@@ -112,6 +117,7 @@ impl SendInvoice {
         let currency = currency.into();
         let prices = prices.into();
         Self {
+            bot,
             chat_id,
             title,
             description,

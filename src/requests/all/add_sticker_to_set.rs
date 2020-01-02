@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::form_builder::FormBuilder,
     types::{InputFile, MaskPosition, True},
+    Bot,
 };
 
 use crate::requests::{Request, ResponseResult};
@@ -11,8 +12,11 @@ use crate::requests::{Request, ResponseResult};
 /// Use this method to add a new sticker to a set created by the bot. Returns
 /// True on success.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
-pub struct AddStickerToSet {
+#[derive(Debug, Clone, Serialize)]
+pub struct AddStickerToSet<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// User identifier of sticker set owner
     user_id: i32,
     /// Sticker set name
@@ -32,11 +36,11 @@ pub struct AddStickerToSet {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AddStickerToSet {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for AddStickerToSet<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "addStickerToSet",
             FormBuilder::new()
                 .add("user_id", &self.user_id)
@@ -50,8 +54,9 @@ impl Request<True> for AddStickerToSet {
     }
 }
 
-impl AddStickerToSet {
-    pub fn new<N, P, E>(
+impl<'a> AddStickerToSet<'a> {
+    pub(crate) fn new<N, P, E>(
+        bot: &'a Bot,
         user_id: i32,
         name: N,
         png_sticker: P,
@@ -66,6 +71,7 @@ impl AddStickerToSet {
         let png_sticker = png_sticker.into();
         let emojis = emojis.into();
         Self {
+            bot,
             user_id,
             name,
             png_sticker,

@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InputFile, True},
+    Bot,
 };
 
 /// Use this method to specify a url and receive incoming updates via an
@@ -20,8 +21,11 @@ use crate::{
 /// Webhooks: 443, 80, 88, 8443.NEW! If you're having any trouble setting up
 /// webhooks, please check out this amazing guide to Webhooks.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SetWebhook {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetWebhook<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// HTTPS url to send updates to. Use an empty string to remove webhook
     /// integration
     url: String,
@@ -45,11 +49,11 @@ pub struct SetWebhook {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetWebhook {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+impl Request<True> for SetWebhook<'_> {
+    async fn send(&self) -> ResponseResult<True> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "setWebhook",
             &serde_json::to_string(self).unwrap(),
         )
@@ -57,13 +61,14 @@ impl Request<True> for SetWebhook {
     }
 }
 
-impl SetWebhook {
-    pub fn new<U>(url: U) -> Self
+impl<'a> SetWebhook<'a> {
+    pub(crate) fn new<U>(bot: &'a Bot, url: U) -> Self
     where
         U: Into<String>,
     {
         let url = url.into();
         Self {
+            bot,
             url,
             certificate: None,
             max_connections: None,

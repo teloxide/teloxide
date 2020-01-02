@@ -1,17 +1,21 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message, ParseMode},
+    Bot,
 };
 
 /// Use this method to edit text and game messages. On success, if edited
 /// message is sent by the bot, the edited Message is returned, otherwise True
 /// is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct EditMessageTextInline {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageTextInline<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Identifier of the inline message
     inline_message_id: String,
     /// New text of the message
@@ -26,11 +30,11 @@ pub struct EditMessageTextInline {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageTextInline {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for EditMessageTextInline<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "editMessageText",
             &serde_json::to_string(self).unwrap(),
         )
@@ -38,8 +42,8 @@ impl Request<Message> for EditMessageTextInline {
     }
 }
 
-impl EditMessageTextInline {
-    pub fn new<I, T>(inline_message_id: I, text: T) -> Self
+impl<'a> EditMessageTextInline<'a> {
+    pub(crate) fn new<I, T>(bot: &'a Bot, inline_message_id: I, text: T) -> Self
     where
         I: Into<String>,
         T: Into<String>,
@@ -47,6 +51,7 @@ impl EditMessageTextInline {
         let inline_message_id = inline_message_id.into();
         let text = text.into();
         Self {
+            bot,
             inline_message_id,
             text,
             parse_mode: None,

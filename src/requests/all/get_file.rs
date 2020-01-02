@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::File,
+    Bot,
 };
 
 /// Use this method to get basic info about a file and prepare it for
@@ -26,18 +27,21 @@ use crate::{
 /// [`File`]: crate::types::file
 /// [`GetFile`]: self::GetFile
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct GetFile {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetFile<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// File identifier to get info about
     pub file_id: String,
 }
 
 #[async_trait::async_trait]
-impl Request<File> for GetFile {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<File> {
+impl Request<File> for GetFile<'_> {
+    async fn send(&self) -> ResponseResult<File> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "getFile",
             &serde_json::to_string(self).unwrap(),
         )
@@ -45,12 +49,13 @@ impl Request<File> for GetFile {
     }
 }
 
-impl GetFile {
-    pub fn new<F>(file_id: F) -> Self
+impl<'a> GetFile<'a> {
+    pub(crate) fn new<F>(bot: &'a Bot, file_id: F) -> Self
     where
         F: Into<String>,
     {
         Self {
+            bot,
             file_id: file_id.into(),
         }
     }

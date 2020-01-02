@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send text messages.
@@ -12,8 +13,11 @@ use crate::{
 ///
 /// [`Message`]: crate::types::Message
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendMessage {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendMessage<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     ///	Unique identifier for the target chat or username of the target channel
     /// (in the format `@channelusername`)
     pub chat_id: ChatId,
@@ -41,11 +45,11 @@ pub struct SendMessage {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendMessage {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendMessage<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendMessage",
             &serde_json::to_string(self).unwrap(),
         )
@@ -53,13 +57,14 @@ impl Request<Message> for SendMessage {
     }
 }
 
-impl SendMessage {
-    pub fn new<C, T>(chat_id: C, text: T) -> Self
+impl<'a> SendMessage<'a> {
+    pub(crate) fn new<C, T>(bot: &'a Bot, chat_id: C, text: T) -> Self
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
-        SendMessage {
+        Self {
+            bot,
             chat_id: chat_id.into(),
             text: text.into(),
             parse_mode: None,

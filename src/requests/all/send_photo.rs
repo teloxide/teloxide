@@ -1,15 +1,19 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
+    Bot,
 };
 
 /// Use this method to send photos. On success, the sent Message is returned.
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendPhoto {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendPhoto<'a> {
+    #[serde(skip_serializing)]
+    bot: &'a Bot,
+
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
@@ -36,11 +40,11 @@ pub struct SendPhoto {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendPhoto {
-    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+impl Request<Message> for SendPhoto<'_> {
+    async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
-            bot.client(),
-            bot.token(),
+            self.bot.client(),
+            self.bot.token(),
             "sendPhoto",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
@@ -56,8 +60,8 @@ impl Request<Message> for SendPhoto {
     }
 }
 
-impl SendPhoto {
-    pub fn new<C, P>(chat_id: C, photo: P) -> Self
+impl<'a> SendPhoto<'a> {
+    pub(crate) fn new<C, P>(bot: &'a Bot, chat_id: C, photo: P) -> Self
     where
         C: Into<ChatId>,
         P: Into<InputFile>,
@@ -65,6 +69,7 @@ impl SendPhoto {
         let chat_id = chat_id.into();
         let photo = photo.into();
         Self {
+            bot,
             chat_id,
             photo,
             caption: None,
