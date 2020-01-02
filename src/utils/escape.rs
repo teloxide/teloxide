@@ -5,7 +5,7 @@ use std::string::String;
 // Because they shoudn't be escaped by the spec: https://core.telegram.org/bots/api#html-style
 pub fn escape_html(raw: &str) -> String {
     let mut last = 0;
-    let mut out = String::new();
+    let mut out = String::with_capacity(raw.len());
 
     for (i, ch) in raw.bytes().enumerate() {
         match ch as char {
