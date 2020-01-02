@@ -41,8 +41,8 @@ pub enum RequestError {
 //</editor-fold>
 
 #[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
-enum ApiErrorKind {
-    /// Occurs when the bot has been blocked by the user.
+pub enum ApiErrorKind {
+    /// Occurs when the bot tries to send message to user who blocked the bot.
     #[serde(rename = "Forbidden: bot was blocked by the user")]
     BotBlocked,
 
