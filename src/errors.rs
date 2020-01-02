@@ -171,17 +171,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: Photo should be uploaded as an InputFile")]
     PhotoAsInputFileRequired,
 
+    /// Occurs when bot tries to add sticker to stickerset by invalid name
     #[serde(rename = "Bad Request: STICKERSET_INVALID")]
-    InvalidStickersSet, // TODO: docs
-
-    #[serde(rename = "Bad Request: there is no sticker in the request")]
-    NoStickerInRequest, // TODO: docs
-
-    #[serde(rename = "Bad Request: Admin permissions is required!")]
-    ChatAdminRequired, // TODO: docs
-
-    #[serde(rename = "Bad Request: need administrator rights in the channel chat")]
-    NeedAdministratorRightsInTheChannel, // TODO: docs
+    InvalidStickersSet,
 
     /// Occurs when bot tries to pin a message without rights to pin in this chat
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
