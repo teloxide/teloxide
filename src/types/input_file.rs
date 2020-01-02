@@ -13,8 +13,11 @@ pub enum InputFile {
 }
 
 impl InputFile {
-    pub fn file(path: PathBuf) -> Self {
-        Self::File(path)
+    pub fn file<P>(path: P) -> Self
+    where
+        P: Into<PathBuf>,
+    {
+        Self::File(path.into())
     }
 
     pub fn url<T>(url: T) -> Self
