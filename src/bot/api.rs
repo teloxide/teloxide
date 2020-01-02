@@ -13,14 +13,15 @@ use crate::{
         GetGameHighScoresInline, GetMe, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
-        SendAudio, SendChatAction, SendContact, SendDocument, SendGame,
-        SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
-        SendPoll, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
-        SetChatAdministratorCustomTitle, SetChatDescription,
-        SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
-        SetGameScore, SetGameScoreInline, SetStickerPositionInSet, SetWebhook,
-        StopMessageLiveLocation, StopMessageLiveLocationInline, StopPoll,
-        UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        SendAudio, SendChatAction, SendChatActionKind, SendContact,
+        SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
+        SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
+        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
+        SetChatDescription, SetChatPermissions, SetChatPhoto,
+        SetChatStickerSet, SetChatTitle, SetGameScore, SetGameScoreInline,
+        SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation,
+        StopMessageLiveLocationInline, StopPoll, UnbanChatMember,
+        UnpinChatMessage, UploadStickerFile,
     },
     types::{
         ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
@@ -252,14 +253,13 @@ impl Bot {
         SendPoll::new(self, chat_id, question, options)
     }
 
-    pub fn send_chat_action<C, A>(
+    pub fn send_chat_action<C>(
         &self,
         chat_id: C,
-        action: A,
+        action: SendChatActionKind,
     ) -> SendChatAction
     where
         C: Into<ChatId>,
-        A: Into<String>,
     {
         SendChatAction::new(self, chat_id, action)
     }

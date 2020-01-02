@@ -25,12 +25,46 @@ pub struct SendChatAction<'a> {
     /// Unique identifier for the target chat or username of the target channel
     /// (in the format @channelusername)
     chat_id: ChatId,
-    /// Type of action to broadcast. Choose one, depending on what the user is
-    /// about to receive: typing for text messages, upload_photo for photos,
-    /// record_video or upload_video for videos, record_audio or upload_audio
-    /// for audio files, upload_document for general files, find_location for
-    /// location data, record_video_note or upload_video_note for video notes.
-    action: String,
+
+    /// Type of action to broadcast.
+    action: SendChatActionKind,
+}
+
+/// A type of action used in [`SendChatAction`].
+///
+/// [`SendChatAction`]: crate::requests::SendChatAction
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SendChatActionKind {
+    /// For [text messages](crate::Bot::send_message).
+    Typing,
+
+    /// For [photos](crate::Bot::send_photo).
+    UploadPhoto,
+
+    /// For [videos](crate::Bot::send_video).
+    RecordVideo,
+
+    /// For [videos](crate::Bot::send_video).
+    UploadVideo,
+
+    /// For [audio files](crate::Bot::send_audio).
+    RecordAudio,
+
+    /// For [audio files](crate::Bot::send_audio).
+    UploadAudio,
+
+    /// For [general files](crate::Bot::send_document).
+    UploadDocument,
+
+    /// For [location data](crate::Bot::send_location).
+    FindLocation,
+
+    /// For [video notes](crate::Bot::send_video_note).
+    RecordVideoNote,
+
+    /// For [video notes](crate::Bot::send_video_note).
+    UploadVideoNote,
 }
 
 #[async_trait::async_trait]
@@ -47,16 +81,17 @@ impl Request<True> for SendChatAction<'_> {
 }
 
 impl<'a> SendChatAction<'a> {
-    pub(crate) fn new<C, A>(bot: &'a Bot, chat_id: C, action: A) -> Self
+    pub(crate) fn new<C>(
+        bot: &'a Bot,
+        chat_id: C,
+        action: SendChatActionKind,
+    ) -> Self
     where
         C: Into<ChatId>,
-        A: Into<String>,
     {
-        let chat_id = chat_id.into();
-        let action = action.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             action,
         }
     }
@@ -69,11 +104,8 @@ impl<'a> SendChatAction<'a> {
         self
     }
 
-    pub fn action<T>(mut self, val: T) -> Self
-    where
-        T: Into<String>,
-    {
-        self.action = val.into();
+    pub fn action(mut self, val: SendChatActionKind) -> Self {
+        self.action = val;
         self
     }
 }

@@ -134,7 +134,7 @@ pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
 ///
 /// See also: [`polling_default`](polling_default).
 ///
-/// [`GetUpdates`]: crate::requests::payloads::GetUpdates
+/// [`GetUpdates`]: crate::requests::GetUpdates
 pub fn polling(
     bot: &Bot,
     timeout: Option<Duration>,
