@@ -82,8 +82,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: reply message not found")]
     MessageToReplyNotFound,
 
+    /// Occurs when bot tries to
     #[serde(rename = "Bad Request: message identifier is not specified")]
-    MessageIdentifierNotSpecified, // TODO: docs
+    MessageIdentifierNotSpecified,
 
     /// Occurs when bot tries to send a message with text size greater then 4096 symbols
     #[serde(rename = "Bad Request: message is too long")]
@@ -136,8 +137,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: chat not found")]
     ChatNotFound,
 
-    #[serde(rename = "Bad Request: user_id_invalid")]
-    InvalidUserId, // TODO: docs
+    /// Occurs when bot tries to send method with unknown user_id (getUserProfilePhotos)
+    #[serde(rename = "Bad Request: user not found")]
+    UserNotFound,
 
     /// Occurs when bot tries to send SetChatDescription with same text as in the current description
     #[serde(rename = "Bad Request: chat description is not modified")]
@@ -153,8 +155,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: Failed to get HTTP URL content")]
     InvalidHTTPUrlContent, // TODO: docs
 
-    #[serde(rename = "Bad Request: Button URL invalid")]
-    ButtonURLInvalid, // TODO: docs
+    /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button url
+    #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
+    ButtonURLInvalid,
 
     #[serde(rename = "Bad Request: URL host is empty")]
     URLHostIsEmpty, // TODO: docs
@@ -162,11 +165,17 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: START_PARAM_INVALID")]
     StartParamInvalid, // TODO: docs
 
+    /// Occurs when bot tries to send button with data size more than 64 bytes
     #[serde(rename = "Bad Request: BUTTON_DATA_INVALID")]
-    ButtonDataInvalid, // TODO: docs
+    ButtonDataInvalid,
 
-    #[serde(rename = "Bad Request: wrong file identifier/HTTP URL specified")]
-    WrongFileIdentifier, // TODO: docs
+    /// Occurs when bot tries to send button with data size == 0
+    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in the inline keyboard")]
+    TextButtonsAreUnallowed,
+
+    /// Occurs when bot tries to get file by wrong file id
+    #[serde(rename = "Bad Request: wrong file id")]
+    WrongFileID,
 
     /// Occurs when bot tries to do some with group which was deactivated
     #[serde(rename = "Bad Request: group is deactivated")]
@@ -226,11 +235,17 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: currency_total_amount_invalid")]
     CurrencyTotalAmountInvalid, // TODO: docs
 
-    #[serde(rename = "Bad Request: HTTPS url must be provided for webhook")]
-    WebhookRequireHTTPS, // TODO: docs
+    /// Occurs when bot tries set webhook to protocol other than HTTPS
+    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
+    WebhookRequireHTTPS,
 
-    #[serde(rename = "Bad Request: Webhook can be set up only on ports 80, 88, 443 or 8443")]
-    BadWebhookPort, // TODO: docs
+    /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or 8443
+    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or 8443")]
+    BadWebhookPort,
+
+    /// Occurs when bot tries to set webhook to unknown host
+    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
+    UnknownHost,
 
     #[serde(rename = "Bad Request: getaddrinfo: Temporary failure in name resolution")]
     BadWebhookAddrInfo, // TODO: docs
@@ -238,8 +253,9 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: failed to resolve host: no address associated with hostname")]
     BadWebhookNoAddressAssociatedWithHostname, // TODO: docs
 
+    /// Occurs when bot tries to set webhook to invalid URL
     #[serde(rename = "Bad Request: can't parse URL")]
-    CantParseUrl, // TODO: docs
+    CantParseUrl,
 
     #[serde(rename = "Bad Request: unsupported URL protocol")]
     UnsupportedUrlProtocol, // TODO: docs
@@ -280,8 +296,12 @@ enum ApiErrorKind {
 
     /// Occurs when bot tries GetUpdate before the timeout.
     /// Make sure that only one Updater is running.
-    #[serde(rename = "terminated by other getUpdates request")]
+    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one bot instance is running")]
     TerminatedByOtherGetUpdates,
+
+    /// Occurs when bot tries to get file by invalid file id
+    #[serde(rename = "Bad Request: invalid file id")]
+    FileIdInvalid,
 
     #[serde(other)]
     OtherKind
