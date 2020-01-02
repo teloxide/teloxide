@@ -20,7 +20,7 @@ impl Bot {
     /// use tokio::fs::File;
     /// # use teloxide::RequestError;
     /// use teloxide::{
-    ///     requests::{GetFile, Request},
+    ///     requests::Request,
     ///     Bot,
     /// };
     ///
