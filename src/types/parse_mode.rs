@@ -2,6 +2,11 @@
 // (for built ins there no warnings, but for (De)Serialize, there are)
 #![allow(deprecated)]
 
+use std::{
+    convert::{TryFrom, TryInto},
+    str::FromStr,
+};
+
 use serde::{Deserialize, Serialize};
 
 /// ## Formatting options
@@ -126,6 +131,36 @@ pub enum ParseMode {
     #[deprecated = "This is a legacy mode, retained for backward \
                     compatibility. Use `MarkdownV2` instead."]
     Markdown,
+}
+
+impl TryFrom<&str> for ParseMode {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let normalized = value.to_lowercase();
+        match normalized.as_ref() {
+            "html" => Ok(ParseMode::HTML),
+            "markdown" => Ok(ParseMode::Markdown),
+            "markdownv2" => Ok(ParseMode::MarkdownV2),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<String> for ParseMode {
+    type Error = ();
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        value.as_str().try_into()
+    }
+}
+
+impl FromStr for ParseMode {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.try_into()
+    }
 }
 
 #[cfg(test)]
