@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    network,
     requests::form_builder::FormBuilder,
     types::{InputFile, MaskPosition, True},
 };
 
-use crate::impl_multipart;
+use crate::requests::{Request, ResponseResult};
 
 /// Use this method to add a new sticker to a set created by the bot. Returns
 /// True on success.
@@ -30,18 +31,24 @@ pub struct AddStickerToSet {
     mask_position: Option<MaskPosition>,
 }
 
-impl_multipart!(
-    AddStickerToSet,
-    True,
-    "addStickerToSet",
-    FormBuilder::new()
-        .add("user_id", &self.user_id)
-        .add("name", &self.name)
-        .add("png_sticker", &self.png_sticker)
-        .add("emojis", &self.emojis)
-        .add("mask_position", &self.mask_position)
-        .build()
-);
+#[async_trait::async_trait]
+impl Request<True> for AddStickerToSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "addStickerToSet",
+            FormBuilder::new()
+                .add("user_id", &self.user_id)
+                .add("name", &self.name)
+                .add("png_sticker", &self.png_sticker)
+                .add("emojis", &self.emojis)
+                .add("mask_position", &self.mask_position)
+                .build(),
+        )
+        .await
+    }
+}
 
 impl AddStickerToSet {
     pub fn new<N, P, E>(
@@ -68,7 +75,7 @@ impl AddStickerToSet {
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
@@ -76,7 +83,7 @@ impl AddStickerToSet {
     where
         T: Into<String>,
     {
-        self.payload.name = val.into();
+        self.name = val.into();
         self
     }
 
@@ -84,7 +91,7 @@ impl AddStickerToSet {
     where
         T: Into<InputFile>,
     {
-        self.payload.png_sticker = val.into();
+        self.png_sticker = val.into();
         self
     }
 
@@ -92,12 +99,12 @@ impl AddStickerToSet {
     where
         T: Into<String>,
     {
-        self.payload.emojis = val.into();
+        self.emojis = val.into();
         self
     }
 
     pub fn mask_position(mut self, val: MaskPosition) -> Self {
-        self.payload.mask_position = Some(val);
+        self.mask_position = Some(val);
         self
     }
 }

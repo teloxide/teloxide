@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -28,17 +29,16 @@ pub struct AnswerPreCheckoutQuery {
     error_message: Option<String>,
 }
 
-impl Method for AnswerPreCheckoutQuery {
-    type Output = True;
-
-    const NAME: &'static str = "answerPreCheckoutQuery";
-}
-
-impl json::Payload for AnswerPreCheckoutQuery {}
-
-impl dynamic::Payload for AnswerPreCheckoutQuery {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for AnswerPreCheckoutQuery {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "answerPreCheckoutQuery",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -54,19 +54,17 @@ impl AnswerPreCheckoutQuery {
             error_message: None,
         }
     }
-}
 
-impl json::Request<'_, AnswerPreCheckoutQuery> {
     pub fn pre_checkout_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.pre_checkout_query_id = val.into();
+        self.pre_checkout_query_id = val.into();
         self
     }
 
     pub fn ok(mut self, val: bool) -> Self {
-        self.payload.ok = val;
+        self.ok = val;
         self
     }
 
@@ -74,7 +72,7 @@ impl json::Request<'_, AnswerPreCheckoutQuery> {
     where
         T: Into<String>,
     {
-        self.payload.error_message = Some(val.into());
+        self.error_message = Some(val.into());
         self
     }
 }

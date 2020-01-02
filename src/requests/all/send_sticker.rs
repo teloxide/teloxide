@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
 };
 
@@ -30,27 +30,22 @@ pub struct SendSticker {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendSticker {
-    type Output = Message;
-
-    const NAME: &'static str = "sendSticker";
-}
-
-impl multipart::Payload for SendSticker {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add("sticker", &self.sticker)
-            .add("disable_notification", &self.disable_notification)
-            .add("reply_to_message_id", &self.reply_to_message_id)
-            .add("reply_markup", &self.reply_markup)
-            .build()
-    }
-}
-
-impl dynamic::Payload for SendSticker {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Multipart(multipart::Payload::payload(self))
+#[async_trait::async_trait]
+impl Request<Message> for SendSticker {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "sendSticker",
+            FormBuilder::new()
+                .add("chat_id", &self.chat_id)
+                .add("sticker", &self.sticker)
+                .add("disable_notification", &self.disable_notification)
+                .add("reply_to_message_id", &self.reply_to_message_id)
+                .add("reply_markup", &self.reply_markup)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -70,14 +65,12 @@ impl SendSticker {
             reply_markup: None,
         }
     }
-}
 
-impl multipart::Request<'_, SendSticker> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -85,22 +78,22 @@ impl multipart::Request<'_, SendSticker> {
     where
         T: Into<InputFile>,
     {
-        self.payload.sticker = val.into();
+        self.sticker = val.into();
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

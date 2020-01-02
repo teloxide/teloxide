@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InlineKeyboardMarkup, InputMedia, Message},
 };
 
@@ -24,25 +24,20 @@ pub struct EditMessageMediaInline {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for EditMessageMediaInline {
-    type Output = Message;
-
-    const NAME: &'static str = "editMessageMedia";
-}
-
-impl multipart::Payload for EditMessageMediaInline {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("inline_message_id", &self.inline_message_id)
-            .add("media", &self.media)
-            .add("reply_markup", &self.reply_markup)
-            .build()
-    }
-}
-
-impl dynamic::Payload for EditMessageMediaInline {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Multipart(multipart::Payload::payload(self))
+#[async_trait::async_trait]
+impl Request<Message> for EditMessageMediaInline {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "editMessageMedia",
+            FormBuilder::new()
+                .add("inline_message_id", &self.inline_message_id)
+                .add("media", &self.media)
+                .add("reply_markup", &self.reply_markup)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -58,24 +53,22 @@ impl EditMessageMediaInline {
             reply_markup: None,
         }
     }
-}
 
-impl multipart::Request<'_, EditMessageMediaInline> {
     pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_message_id = val.into();
+        self.inline_message_id = val.into();
         self
     }
 
     pub fn media(mut self, val: InputMedia) -> Self {
-        self.payload.media = val;
+        self.media = val;
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

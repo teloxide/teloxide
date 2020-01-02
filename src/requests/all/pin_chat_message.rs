@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -23,17 +24,16 @@ pub struct PinChatMessage {
     disable_notification: Option<bool>,
 }
 
-impl Method for PinChatMessage {
-    type Output = True;
-
-    const NAME: &'static str = "pinChatMessage";
-}
-
-impl json::Payload for PinChatMessage {}
-
-impl dynamic::Payload for PinChatMessage {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for PinChatMessage {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "pinChatMessage",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -49,24 +49,22 @@ impl PinChatMessage {
             disable_notification: None,
         }
     }
-}
 
-impl json::Request<'_, PinChatMessage> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 }

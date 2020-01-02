@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::Message,
 };
 
@@ -26,17 +27,16 @@ pub struct SetGameScoreInline {
     disable_edit_message: Option<bool>,
 }
 
-impl Method for SetGameScoreInline {
-    type Output = Message;
-
-    const NAME: &'static str = "setGameScore";
-}
-
-impl json::Payload for SetGameScoreInline {}
-
-impl dynamic::Payload for SetGameScoreInline {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SetGameScoreInline {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "setGameScore",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -54,34 +54,32 @@ impl SetGameScoreInline {
             disable_edit_message: None,
         }
     }
-}
 
-impl json::Request<'_, SetGameScoreInline> {
     pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_message_id = val.into();
+        self.inline_message_id = val.into();
         self
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
     pub fn score(mut self, val: i32) -> Self {
-        self.payload.score = val;
+        self.score = val;
         self
     }
 
     pub fn force(mut self, val: bool) -> Self {
-        self.payload.force = Some(val);
+        self.force = Some(val);
         self
     }
 
     pub fn disable_edit_message(mut self, val: bool) -> Self {
-        self.payload.disable_edit_message = Some(val);
+        self.disable_edit_message = Some(val);
         self
     }
 }

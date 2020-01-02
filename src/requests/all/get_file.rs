@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::File,
 };
 
@@ -31,17 +32,16 @@ pub struct GetFile {
     pub file_id: String,
 }
 
-impl Method for GetFile {
-    type Output = File;
-
-    const NAME: &'static str = "getFile";
-}
-
-impl json::Payload for GetFile {}
-
-impl dynamic::Payload for GetFile {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<File> for GetFile {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<File> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "getFile",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -54,14 +54,12 @@ impl GetFile {
             file_id: file_id.into(),
         }
     }
-}
 
-impl json::Request<'_, GetFile> {
     pub fn file_id<F>(mut self, value: F) -> Self
     where
         F: Into<String>,
     {
-        self.payload.file_id = value.into();
+        self.file_id = value.into();
         self
     }
 }

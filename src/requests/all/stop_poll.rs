@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Poll},
 };
 
@@ -19,20 +20,18 @@ pub struct StopPoll {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for StopPoll {
-    type Output = Poll;
-
-    const NAME: &'static str = "stopPoll";
-}
-
-impl json::Payload for StopPoll {}
-
-impl dynamic::Payload for StopPoll {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Poll> for StopPoll {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Poll> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "stopPoll",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
-
 impl StopPoll {
     pub fn new<C>(chat_id: C, message_id: i32) -> Self
     where
@@ -45,24 +44,22 @@ impl StopPoll {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, StopPoll> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

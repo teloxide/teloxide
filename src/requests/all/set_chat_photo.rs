@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, InputFile, True},
 };
 
@@ -19,17 +20,16 @@ pub struct SetChatPhoto {
     photo: InputFile,
 }
 
-impl Method for SetChatPhoto {
-    type Output = True;
-
-    const NAME: &'static str = "setChatPhoto";
-}
-
-impl json::Payload for SetChatPhoto {}
-
-impl dynamic::Payload for SetChatPhoto {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for SetChatPhoto {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "setChatPhoto",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -41,19 +41,17 @@ impl SetChatPhoto {
         let chat_id = chat_id.into();
         Self { chat_id, photo }
     }
-}
 
-impl json::Request<'_, SetChatPhoto> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn photo(mut self, val: InputFile) -> Self {
-        self.payload.photo = val;
+        self.photo = val;
         self
     }
 }

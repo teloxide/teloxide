@@ -19,13 +19,16 @@ impl Bot {
     /// use teloxide::types::File as TgFile;
     /// use tokio::fs::File;
     /// # use teloxide::RequestError;
-    /// use teloxide::Bot;
+    /// use teloxide::{
+    ///     requests::{GetFile, Request},
+    ///     Bot,
+    /// };
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
     /// let mut file = File::create("/home/waffle/Pictures/test.png").await?;
     ///
-    /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
+    /// let TgFile { file_path, .. } = GetFile::new("*file_id*").send(&bot).await?;
     /// bot.download_file(&file_path, &mut file).await?;
     /// # Ok(()) }
     /// ```

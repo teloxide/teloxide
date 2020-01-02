@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -17,17 +18,16 @@ pub struct UnpinChatMessage {
     chat_id: ChatId,
 }
 
-impl Method for UnpinChatMessage {
-    type Output = True;
-
-    const NAME: &'static str = "unpinChatMessage";
-}
-
-impl json::Payload for UnpinChatMessage {}
-
-impl dynamic::Payload for UnpinChatMessage {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for UnpinChatMessage {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "unpinChatMessage",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -39,14 +39,12 @@ impl UnpinChatMessage {
         let chat_id = chat_id.into();
         Self { chat_id }
     }
-}
 
-impl json::Request<'_, UnpinChatMessage> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 }

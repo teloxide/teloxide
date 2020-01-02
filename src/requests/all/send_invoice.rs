@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
 };
 
@@ -69,17 +70,16 @@ pub struct SendInvoice {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for SendInvoice {
-    type Output = Message;
-
-    const NAME: &'static str = "sendInvoice";
-}
-
-impl json::Payload for SendInvoice {}
-
-impl dynamic::Payload for SendInvoice {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendInvoice {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendInvoice",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -137,11 +137,9 @@ impl SendInvoice {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendInvoice> {
     pub fn chat_id(mut self, val: i32) -> Self {
-        self.payload.chat_id = val;
+        self.chat_id = val;
         self
     }
 
@@ -149,7 +147,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.title = val.into();
+        self.title = val.into();
         self
     }
 
@@ -157,7 +155,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.description = val.into();
+        self.description = val.into();
         self
     }
 
@@ -165,7 +163,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.payload = val.into();
+        self.payload = val.into();
         self
     }
 
@@ -173,7 +171,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.provider_token = val.into();
+        self.provider_token = val.into();
         self
     }
 
@@ -181,7 +179,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.start_parameter = val.into();
+        self.start_parameter = val.into();
         self
     }
 
@@ -189,7 +187,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.currency = val.into();
+        self.currency = val.into();
         self
     }
 
@@ -197,7 +195,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<Vec<LabeledPrice>>,
     {
-        self.payload.prices = val.into();
+        self.prices = val.into();
         self
     }
 
@@ -205,7 +203,7 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.provider_data = Some(val.into());
+        self.provider_data = Some(val.into());
         self
     }
 
@@ -213,73 +211,73 @@ impl json::Request<'_, SendInvoice> {
     where
         T: Into<String>,
     {
-        self.payload.photo_url = Some(val.into());
+        self.photo_url = Some(val.into());
         self
     }
 
     pub fn photo_size(mut self, val: i32) -> Self {
-        self.payload.photo_size = Some(val);
+        self.photo_size = Some(val);
         self
     }
 
     pub fn photo_width(mut self, val: i32) -> Self {
-        self.payload.photo_width = Some(val);
+        self.photo_width = Some(val);
         self
     }
 
     pub fn photo_height(mut self, val: i32) -> Self {
-        self.payload.photo_height = Some(val);
+        self.photo_height = Some(val);
         self
     }
 
     pub fn need_name(mut self, val: bool) -> Self {
-        self.payload.need_name = Some(val);
+        self.need_name = Some(val);
         self
     }
 
     pub fn need_phone_number(mut self, val: bool) -> Self {
-        self.payload.need_phone_number = Some(val);
+        self.need_phone_number = Some(val);
         self
     }
 
     pub fn need_email(mut self, val: bool) -> Self {
-        self.payload.need_email = Some(val);
+        self.need_email = Some(val);
         self
     }
 
     pub fn need_shipping_address(mut self, val: bool) -> Self {
-        self.payload.need_shipping_address = Some(val);
+        self.need_shipping_address = Some(val);
         self
     }
 
     pub fn send_phone_number_to_provider(mut self, val: bool) -> Self {
-        self.payload.send_phone_number_to_provider = Some(val);
+        self.send_phone_number_to_provider = Some(val);
         self
     }
 
     pub fn send_email_to_provider(mut self, val: bool) -> Self {
-        self.payload.send_email_to_provider = Some(val);
+        self.send_email_to_provider = Some(val);
         self
     }
 
     #[allow(clippy::wrong_self_convention)]
     pub fn is_flexible(mut self, val: bool) -> Self {
-        self.payload.is_flexible = Some(val);
+        self.is_flexible = Some(val);
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

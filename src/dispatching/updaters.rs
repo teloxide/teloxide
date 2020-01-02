@@ -104,6 +104,7 @@ use futures::{stream, Stream, StreamExt};
 
 use crate::{
     bot::Bot,
+    requests::{GetUpdates, Request},
     types::{AllowedUpdate, Update},
     RequestError,
 };
@@ -146,12 +147,12 @@ pub fn polling(
     stream::unfold(
         (allowed_updates, bot, 0),
         move |(mut allowed_updates, bot, mut offset)| async move {
-            let mut req = bot.get_updates().offset(offset);
-            req.payload.timeout = timeout;
-            req.payload.limit = limit;
-            req.payload.allowed_updates = allowed_updates.take();
+            let mut req = GetUpdates::new().offset(offset);
+            req.timeout = timeout;
+            req.limit = limit;
+            req.allowed_updates = allowed_updates.take();
 
-            let updates = match req.send().await {
+            let updates = match req.send(bot).await {
                 Err(err) => vec![Err(err)],
                 Ok(updates) => {
                     if let Some(upd) = updates.last() {

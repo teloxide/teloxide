@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{AllowedUpdate, Update},
 };
 
@@ -60,17 +61,16 @@ pub struct GetUpdates {
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
-impl Method for GetUpdates {
-    type Output = Vec<Update>;
-
-    const NAME: &'static str = "getUpdates";
-}
-
-impl json::Payload for GetUpdates {}
-
-impl dynamic::Payload for GetUpdates {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Vec<Update>> for GetUpdates {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Vec<Update>> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "getUpdates",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -83,21 +83,19 @@ impl GetUpdates {
             allowed_updates: None,
         }
     }
-}
 
-impl json::Request<'_, GetUpdates> {
     pub fn offset(mut self, value: i32) -> Self {
-        self.payload.offset = Some(value);
+        self.offset = Some(value);
         self
     }
 
     pub fn limit(mut self, value: u8) -> Self {
-        self.payload.limit = Some(value);
+        self.limit = Some(value);
         self
     }
 
     pub fn timeout(mut self, value: u32) -> Self {
-        self.payload.timeout = Some(value);
+        self.timeout = Some(value);
         self
     }
 
@@ -105,7 +103,7 @@ impl json::Request<'_, GetUpdates> {
     where
         T: Into<Vec<AllowedUpdate>>, // TODO: into or other trait?
     {
-        self.payload.allowed_updates = Some(value.into());
+        self.allowed_updates = Some(value.into());
         self
     }
 }

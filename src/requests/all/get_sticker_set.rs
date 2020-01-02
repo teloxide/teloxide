@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::StickerSet,
 };
 
@@ -14,17 +15,16 @@ pub struct GetStickerSet {
     name: String,
 }
 
-impl Method for GetStickerSet {
-    type Output = StickerSet;
-
-    const NAME: &'static str = "getStickerSet";
-}
-
-impl json::Payload for GetStickerSet {}
-
-impl dynamic::Payload for GetStickerSet {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<StickerSet> for GetStickerSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<StickerSet> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "getStickerSet",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -36,14 +36,12 @@ impl GetStickerSet {
         let name = name.into();
         Self { name }
     }
-}
 
-impl json::Request<'_, GetStickerSet> {
     pub fn name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.name = val.into();
+        self.name = val.into();
         self
     }
 }

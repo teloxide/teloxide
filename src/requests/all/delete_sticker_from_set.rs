@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -14,17 +15,16 @@ pub struct DeleteStickerFromSet {
     sticker: String,
 }
 
-impl Method for DeleteStickerFromSet {
-    type Output = True;
-
-    const NAME: &'static str = "deleteStickerFromSet";
-}
-
-impl json::Payload for DeleteStickerFromSet {}
-
-impl dynamic::Payload for DeleteStickerFromSet {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for DeleteStickerFromSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "deleteStickerFromSet",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -36,14 +36,12 @@ impl DeleteStickerFromSet {
         let sticker = sticker.into();
         Self { sticker }
     }
-}
 
-impl json::Request<'_, DeleteStickerFromSet> {
     pub fn sticker<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.sticker = val.into();
+        self.sticker = val.into();
         self
     }
 }

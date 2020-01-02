@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message},
 };
 
@@ -23,17 +24,16 @@ pub struct ForwardMessage {
     message_id: i32,
 }
 
-impl Method for ForwardMessage {
-    type Output = Message;
-
-    const NAME: &'static str = "forwardMessage";
-}
-
-impl json::Payload for ForwardMessage {}
-
-impl dynamic::Payload for ForwardMessage {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for ForwardMessage {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "forwardMessage",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -52,14 +52,12 @@ impl ForwardMessage {
             disable_notification: None,
         }
     }
-}
 
-impl json::Request<'_, ForwardMessage> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -68,17 +66,17 @@ impl json::Request<'_, ForwardMessage> {
     where
         T: Into<ChatId>,
     {
-        self.payload.from_chat_id = val.into();
+        self.from_chat_id = val.into();
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 }

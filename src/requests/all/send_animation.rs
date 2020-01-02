@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
@@ -57,33 +57,28 @@ pub struct SendAnimation {
     pub reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendAnimation {
-    type Output = Message;
-
-    const NAME: &'static str = "sendAnimation";
-}
-
-impl multipart::Payload for SendAnimation {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add("animation", &self.animation)
-            .add("duration", &self.duration)
-            .add("width", &self.width)
-            .add("height", &self.height)
-            .add("thumb", &self.thumb)
-            .add("caption", &self.caption)
-            .add("parse_mode", &self.parse_mode)
-            .add("disable_notification", &self.disable_notification)
-            .add("reply_to_message_id", &self.reply_to_message_id)
-            .add("reply_markup", &self.reply_markup)
-            .build()
-    }
-}
-
-impl dynamic::Payload for SendAnimation {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Multipart(multipart::Payload::payload(self))
+#[async_trait::async_trait]
+impl Request<Message> for SendAnimation {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "sendAnimation",
+            FormBuilder::new()
+                .add("chat_id", &self.chat_id)
+                .add("animation", &self.animation)
+                .add("duration", &self.duration)
+                .add("width", &self.width)
+                .add("height", &self.height)
+                .add("thumb", &self.thumb)
+                .add("caption", &self.caption)
+                .add("parse_mode", &self.parse_mode)
+                .add("disable_notification", &self.disable_notification)
+                .add("reply_to_message_id", &self.reply_to_message_id)
+                .add("reply_markup", &self.reply_markup)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -106,32 +101,30 @@ impl SendAnimation {
             reply_markup: None,
         }
     }
-}
 
-impl multipart::Request<'_, SendAnimation> {
     pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = value.into();
+        self.chat_id = value.into();
         self
     }
 
     pub fn duration(mut self, value: u32) -> Self {
-        self.payload.duration = Some(value);
+        self.duration = Some(value);
         self
     }
 
     pub fn width(mut self, value: u32) -> Self {
-        self.payload.width = Some(value);
+        self.width = Some(value);
         self
     }
     pub fn height(mut self, value: u32) -> Self {
-        self.payload.height = Some(value);
+        self.height = Some(value);
         self
     }
     pub fn thumb(mut self, value: InputFile) -> Self {
-        self.payload.thumb = Some(value);
+        self.thumb = Some(value);
         self
     }
 
@@ -139,26 +132,26 @@ impl multipart::Request<'_, SendAnimation> {
     where
         T: Into<String>,
     {
-        self.payload.caption = Some(value.into());
+        self.caption = Some(value.into());
         self
     }
     pub fn parse_mode(mut self, value: ParseMode) -> Self {
-        self.payload.parse_mode = Some(value);
+        self.parse_mode = Some(value);
         self
     }
     pub fn disable_notification(mut self, value: bool) -> Self {
-        self.payload.disable_notification = Some(value);
+        self.disable_notification = Some(value);
         self
     }
     pub fn reply_to_message_id(mut self, value: i32) -> Self {
-        self.payload.reply_to_message_id = Some(value);
+        self.reply_to_message_id = Some(value);
         self
     }
     pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,
     {
-        self.payload.reply_markup = Some(value.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

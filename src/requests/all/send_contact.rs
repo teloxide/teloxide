@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
 
@@ -32,17 +33,16 @@ pub struct SendContact {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendContact {
-    type Output = Message;
-
-    const NAME: &'static str = "sendContact";
-}
-
-impl json::Payload for SendContact {}
-
-impl dynamic::Payload for SendContact {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendContact {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendContact",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -67,14 +67,12 @@ impl SendContact {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendContact> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -82,7 +80,7 @@ impl json::Request<'_, SendContact> {
     where
         T: Into<String>,
     {
-        self.payload.phone_number = val.into();
+        self.phone_number = val.into();
         self
     }
 
@@ -90,7 +88,7 @@ impl json::Request<'_, SendContact> {
     where
         T: Into<String>,
     {
-        self.payload.first_name = val.into();
+        self.first_name = val.into();
         self
     }
 
@@ -98,7 +96,7 @@ impl json::Request<'_, SendContact> {
     where
         T: Into<String>,
     {
-        self.payload.last_name = Some(val.into());
+        self.last_name = Some(val.into());
         self
     }
 
@@ -106,22 +104,22 @@ impl json::Request<'_, SendContact> {
     where
         T: Into<String>,
     {
-        self.payload.vcard = Some(val.into());
+        self.vcard = Some(val.into());
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

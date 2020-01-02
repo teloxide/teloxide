@@ -44,25 +44,6 @@ where
     process_response(response).await
 }
 
-pub async fn request_body<T>(
-    client: &Client,
-    token: &str,
-    method_name: &str,
-    params: String,
-) -> ResponseResult<T>
-where
-    T: DeserializeOwned,
-{
-    let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-        .body(params)
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    process_response(response).await
-}
-
 async fn process_response<T>(response: Response) -> ResponseResult<T>
 where
     T: DeserializeOwned,

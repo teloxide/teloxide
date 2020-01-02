@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -28,17 +29,16 @@ pub struct SendChatAction {
     action: String,
 }
 
-impl Method for SendChatAction {
-    type Output = True;
-
-    const NAME: &'static str = "sendChatAction";
-}
-
-impl json::Payload for SendChatAction {}
-
-impl dynamic::Payload for SendChatAction {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for SendChatAction {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendChatAction",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -52,14 +52,12 @@ impl SendChatAction {
         let action = action.into();
         Self { chat_id, action }
     }
-}
 
-impl json::Request<'_, SendChatAction> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -67,7 +65,7 @@ impl json::Request<'_, SendChatAction> {
     where
         T: Into<String>,
     {
-        self.payload.action = val.into();
+        self.action = val.into();
         self
     }
 }

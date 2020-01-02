@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
 
@@ -22,17 +23,16 @@ pub struct EditMessageLiveLocationInline {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for EditMessageLiveLocationInline {
-    type Output = Message;
-
-    const NAME: &'static str = "editMessageLiveLocation";
-}
-
-impl json::Payload for EditMessageLiveLocationInline {}
-
-impl dynamic::Payload for EditMessageLiveLocationInline {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for EditMessageLiveLocationInline {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "editMessageLiveLocation",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -49,29 +49,27 @@ impl EditMessageLiveLocationInline {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, EditMessageLiveLocationInline> {
     pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_message_id = val.into();
+        self.inline_message_id = val.into();
         self
     }
 
     pub fn latitude(mut self, val: f32) -> Self {
-        self.payload.latitude = val;
+        self.latitude = val;
         self
     }
 
     pub fn longitude(mut self, val: f32) -> Self {
-        self.payload.longitude = val;
+        self.longitude = val;
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

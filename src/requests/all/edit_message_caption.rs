@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Message, ParseMode},
 };
 
@@ -25,17 +26,16 @@ pub struct EditMessageCaption {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for EditMessageCaption {
-    type Output = Message;
-
-    const NAME: &'static str = "editMessageCaptionInline";
-}
-
-impl json::Payload for EditMessageCaption {}
-
-impl dynamic::Payload for EditMessageCaption {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for EditMessageCaption {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "editMessageCaption",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -53,19 +53,17 @@ impl EditMessageCaption {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, EditMessageCaption> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 
@@ -73,17 +71,17 @@ impl json::Request<'_, EditMessageCaption> {
     where
         T: Into<String>,
     {
-        self.payload.caption = Some(val.into());
+        self.caption = Some(val.into());
         self
     }
 
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
-        self.payload.parse_mode = Some(val);
+        self.parse_mode = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
@@ -39,17 +40,16 @@ pub struct SendMessage {
     pub reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendMessage {
-    type Output = Message;
-
-    const NAME: &'static str = "sendMessage";
-}
-
-impl json::Payload for SendMessage {}
-
-impl dynamic::Payload for SendMessage {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendMessage {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendMessage",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -57,7 +57,7 @@ impl SendMessage {
     pub fn new<C, T>(chat_id: C, text: T) -> Self
     where
         C: Into<ChatId>,
-        T: Into<String>, // TODO: into?
+        T: Into<String>,
     {
         SendMessage {
             chat_id: chat_id.into(),
@@ -69,42 +69,40 @@ impl SendMessage {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendMessage> {
     pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = value.into();
+        self.chat_id = value.into();
         self
     }
 
     pub fn text<T>(mut self, value: T) -> Self
     where
-        T: Into<String>, // TODO: into?
+        T: Into<String>,
     {
-        self.payload.text = value.into();
+        self.text = value.into();
         self
     }
 
     pub fn parse_mode(mut self, value: ParseMode) -> Self {
-        self.payload.parse_mode = Some(value);
+        self.parse_mode = Some(value);
         self
     }
 
     pub fn disable_web_page_preview(mut self, value: bool) -> Self {
-        self.payload.disable_web_page_preview = Some(value);
+        self.disable_web_page_preview = Some(value);
         self
     }
 
     pub fn disable_notification(mut self, value: bool) -> Self {
-        self.payload.disable_notification = Some(value);
+        self.disable_notification = Some(value);
         self
     }
 
     pub fn reply_to_message_id(mut self, value: i32) -> Self {
-        self.payload.reply_to_message_id = Some(value);
+        self.reply_to_message_id = Some(value);
         self
     }
 
@@ -112,7 +110,7 @@ impl json::Request<'_, SendMessage> {
     where
         T: Into<ReplyMarkup>,
     {
-        self.payload.reply_markup = Some(value.into());
+        self.reply_markup = Some(value.into());
         self
     }
 }

@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -9,24 +10,23 @@ use crate::{
 /// to getUpdates. Returns True on success. Requires no parameters.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, Default)]
-pub struct DeleteWebhook {}
+pub struct DeleteWebhook;
 
-impl Method for DeleteWebhook {
-    type Output = True;
-
-    const NAME: &'static str = "deleteWebhook";
-}
-
-impl json::Payload for DeleteWebhook {}
-
-impl dynamic::Payload for DeleteWebhook {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for DeleteWebhook {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "deleteWebhook",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
 impl DeleteWebhook {
     pub fn new() -> Self {
-        Self {}
+        Self
     }
 }

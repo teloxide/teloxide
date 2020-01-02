@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
 
@@ -17,17 +18,16 @@ pub struct EditMessageReplyMarkupInline {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for EditMessageReplyMarkupInline {
-    type Output = Message;
-
-    const NAME: &'static str = "editMessageReplyMarkup";
-}
-
-impl json::Payload for EditMessageReplyMarkupInline {}
-
-impl dynamic::Payload for EditMessageReplyMarkupInline {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for EditMessageReplyMarkupInline {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "editMessageReplyMarkup",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -42,19 +42,17 @@ impl EditMessageReplyMarkupInline {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, EditMessageReplyMarkupInline> {
     pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_message_id = val.into();
+        self.inline_message_id = val.into();
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

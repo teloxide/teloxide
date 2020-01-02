@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
 };
 
@@ -25,17 +26,16 @@ pub struct RestrictChatMember {
     until_date: Option<i32>,
 }
 
-impl Method for RestrictChatMember {
-    type Output = True;
-
-    const NAME: &'static str = "restrictChatMember";
-}
-
-impl json::Payload for RestrictChatMember {}
-
-impl dynamic::Payload for RestrictChatMember {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for RestrictChatMember {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "restrictChatMember",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -56,29 +56,27 @@ impl RestrictChatMember {
             until_date: None,
         }
     }
-}
 
-impl json::Request<'_, RestrictChatMember> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
     pub fn permissions(mut self, val: ChatPermissions) -> Self {
-        self.payload.permissions = val;
+        self.permissions = val;
         self
     }
 
     pub fn until_date(mut self, val: i32) -> Self {
-        self.payload.until_date = Some(val);
+        self.until_date = Some(val);
         self
     }
 }

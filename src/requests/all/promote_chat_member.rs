@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -40,17 +41,16 @@ pub struct PromoteChatMember {
     can_promote_members: Option<bool>,
 }
 
-impl Method for PromoteChatMember {
-    type Output = True;
-
-    const NAME: &'static str = "promoteChatMember";
-}
-
-impl json::Payload for PromoteChatMember {}
-
-impl dynamic::Payload for PromoteChatMember {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for PromoteChatMember {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "promoteChatMember",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -73,59 +73,57 @@ impl PromoteChatMember {
             can_promote_members: None,
         }
     }
-}
 
-impl json::Request<'_, PromoteChatMember> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
     pub fn can_change_info(mut self, val: bool) -> Self {
-        self.payload.can_change_info = Some(val);
+        self.can_change_info = Some(val);
         self
     }
 
     pub fn can_post_messages(mut self, val: bool) -> Self {
-        self.payload.can_post_messages = Some(val);
+        self.can_post_messages = Some(val);
         self
     }
 
     pub fn can_edit_messages(mut self, val: bool) -> Self {
-        self.payload.can_edit_messages = Some(val);
+        self.can_edit_messages = Some(val);
         self
     }
 
     pub fn can_delete_messages(mut self, val: bool) -> Self {
-        self.payload.can_delete_messages = Some(val);
+        self.can_delete_messages = Some(val);
         self
     }
 
     pub fn can_invite_users(mut self, val: bool) -> Self {
-        self.payload.can_invite_users = Some(val);
+        self.can_invite_users = Some(val);
         self
     }
 
     pub fn can_restrict_members(mut self, val: bool) -> Self {
-        self.payload.can_restrict_members = Some(val);
+        self.can_restrict_members = Some(val);
         self
     }
 
     pub fn can_pin_messages(mut self, val: bool) -> Self {
-        self.payload.can_pin_messages = Some(val);
+        self.can_pin_messages = Some(val);
         self
     }
 
     pub fn can_promote_members(mut self, val: bool) -> Self {
-        self.payload.can_promote_members = Some(val);
+        self.can_promote_members = Some(val);
         self
     }
 }

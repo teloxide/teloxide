@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
 };
 
@@ -25,17 +26,16 @@ pub struct SendGame {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for SendGame {
-    type Output = Message;
-
-    const NAME: &'static str = "sendGame";
-}
-
-impl json::Payload for SendGame {}
-
-impl dynamic::Payload for SendGame {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendGame {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendGame",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -53,11 +53,9 @@ impl SendGame {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendGame> {
     pub fn chat_id(mut self, val: i32) -> Self {
-        self.payload.chat_id = val;
+        self.chat_id = val;
         self
     }
 
@@ -65,22 +63,22 @@ impl json::Request<'_, SendGame> {
     where
         T: Into<String>,
     {
-        self.payload.game_short_name = val.into();
+        self.game_short_name = val.into();
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

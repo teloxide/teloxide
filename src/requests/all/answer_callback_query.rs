@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -35,17 +36,16 @@ pub struct AnswerCallbackQuery {
     cache_time: Option<i32>,
 }
 
-impl Method for AnswerCallbackQuery {
-    type Output = True;
-
-    const NAME: &'static str = "answerCallbackQuery";
-}
-
-impl json::Payload for AnswerCallbackQuery {}
-
-impl dynamic::Payload for AnswerCallbackQuery {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for AnswerCallbackQuery {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "answerCallbackQuery",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -63,14 +63,12 @@ impl AnswerCallbackQuery {
             cache_time: None,
         }
     }
-}
 
-impl json::Request<'_, AnswerCallbackQuery> {
     pub fn callback_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.callback_query_id = val.into();
+        self.callback_query_id = val.into();
         self
     }
 
@@ -78,12 +76,12 @@ impl json::Request<'_, AnswerCallbackQuery> {
     where
         T: Into<String>,
     {
-        self.payload.text = Some(val.into());
+        self.text = Some(val.into());
         self
     }
 
     pub fn show_alert(mut self, val: bool) -> Self {
-        self.payload.show_alert = Some(val);
+        self.show_alert = Some(val);
         self
     }
 
@@ -91,12 +89,12 @@ impl json::Request<'_, AnswerCallbackQuery> {
     where
         T: Into<String>,
     {
-        self.payload.url = Some(val.into());
+        self.url = Some(val.into());
         self
     }
 
     pub fn cache_time(mut self, val: i32) -> Self {
-        self.payload.cache_time = Some(val);
+        self.cache_time = Some(val);
         self
     }
 }

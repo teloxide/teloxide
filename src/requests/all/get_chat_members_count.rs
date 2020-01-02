@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::ChatId,
 };
 
@@ -15,17 +16,16 @@ pub struct GetChatMembersCount {
     chat_id: ChatId,
 }
 
-impl Method for GetChatMembersCount {
-    type Output = i32;
-
-    const NAME: &'static str = "getChatMembersCount";
-}
-
-impl json::Payload for GetChatMembersCount {}
-
-impl dynamic::Payload for GetChatMembersCount {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<i32> for GetChatMembersCount {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<i32> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "getChatMembersCount",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -37,14 +37,12 @@ impl GetChatMembersCount {
         let chat_id = chat_id.into();
         Self { chat_id }
     }
-}
 
-impl json::Request<'_, GetChatMembersCount> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 }

@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
 
@@ -38,17 +39,16 @@ pub struct SendVenue {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendVenue {
-    type Output = Message;
-
-    const NAME: &'static str = "sendVenue";
-}
-
-impl json::Payload for SendVenue {}
-
-impl dynamic::Payload for SendVenue {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendVenue {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendVenue",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -81,24 +81,22 @@ impl SendVenue {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendVenue> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn latitude(mut self, val: f32) -> Self {
-        self.payload.latitude = val;
+        self.latitude = val;
         self
     }
 
     pub fn longitude(mut self, val: f32) -> Self {
-        self.payload.longitude = val;
+        self.longitude = val;
         self
     }
 
@@ -106,7 +104,7 @@ impl json::Request<'_, SendVenue> {
     where
         T: Into<String>,
     {
-        self.payload.title = val.into();
+        self.title = val.into();
         self
     }
 
@@ -114,7 +112,7 @@ impl json::Request<'_, SendVenue> {
     where
         T: Into<String>,
     {
-        self.payload.address = val.into();
+        self.address = val.into();
         self
     }
 
@@ -122,7 +120,7 @@ impl json::Request<'_, SendVenue> {
     where
         T: Into<String>,
     {
-        self.payload.foursquare_id = Some(val.into());
+        self.foursquare_id = Some(val.into());
         self
     }
 
@@ -130,22 +128,22 @@ impl json::Request<'_, SendVenue> {
     where
         T: Into<String>,
     {
-        self.payload.foursquare_type = Some(val.into());
+        self.foursquare_type = Some(val.into());
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -20,17 +21,16 @@ pub struct SetChatStickerSet {
     sticker_set_name: String,
 }
 
-impl Method for SetChatStickerSet {
-    type Output = True;
-
-    const NAME: &'static str = "setChatStickerSet";
-}
-
-impl json::Payload for SetChatStickerSet {}
-
-impl dynamic::Payload for SetChatStickerSet {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for SetChatStickerSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "setChatStickerSet",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -47,14 +47,12 @@ impl SetChatStickerSet {
             sticker_set_name,
         }
     }
-}
 
-impl json::Request<'_, SetChatStickerSet> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -62,7 +60,7 @@ impl json::Request<'_, SetChatStickerSet> {
     where
         T: Into<String>,
     {
-        self.payload.sticker_set_name = val.into();
+        self.sticker_set_name = val.into();
         self
     }
 }

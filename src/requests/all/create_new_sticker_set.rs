@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InputFile, MaskPosition, True},
 };
 
@@ -37,29 +37,24 @@ pub struct CreateNewStickerSet {
     mask_position: Option<MaskPosition>,
 }
 
-impl Method for CreateNewStickerSet {
-    type Output = True;
-
-    const NAME: &'static str = "createNewStickerSet";
-}
-
-impl multipart::Payload for CreateNewStickerSet {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("user_id", &self.user_id)
-            .add("name", &self.name)
-            .add("title", &self.title)
-            .add("png_sticker", &self.png_sticker)
-            .add("emojis", &self.emojis)
-            .add("contains_masks", &self.contains_masks)
-            .add("mask_position", &self.mask_position)
-            .build()
-    }
-}
-
-impl dynamic::Payload for CreateNewStickerSet {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Multipart(multipart::Payload::payload(self))
+#[async_trait::async_trait]
+impl Request<True> for CreateNewStickerSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "createNewStickerSet",
+            FormBuilder::new()
+                .add("user_id", &self.user_id)
+                .add("name", &self.name)
+                .add("title", &self.title)
+                .add("png_sticker", &self.png_sticker)
+                .add("emojis", &self.emojis)
+                .add("contains_masks", &self.contains_masks)
+                .add("mask_position", &self.mask_position)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -91,11 +86,9 @@ impl CreateNewStickerSet {
             mask_position: None,
         }
     }
-}
 
-impl multipart::Request<'_, CreateNewStickerSet> {
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
@@ -103,7 +96,7 @@ impl multipart::Request<'_, CreateNewStickerSet> {
     where
         T: Into<String>,
     {
-        self.payload.name = val.into();
+        self.name = val.into();
         self
     }
 
@@ -111,7 +104,7 @@ impl multipart::Request<'_, CreateNewStickerSet> {
     where
         T: Into<String>,
     {
-        self.payload.title = val.into();
+        self.title = val.into();
         self
     }
 
@@ -119,7 +112,7 @@ impl multipart::Request<'_, CreateNewStickerSet> {
     where
         T: Into<InputFile>,
     {
-        self.payload.png_sticker = val.into();
+        self.png_sticker = val.into();
         self
     }
 
@@ -127,17 +120,17 @@ impl multipart::Request<'_, CreateNewStickerSet> {
     where
         T: Into<String>,
     {
-        self.payload.emojis = val.into();
+        self.emojis = val.into();
         self
     }
 
     pub fn contains_masks(mut self, val: bool) -> Self {
-        self.payload.contains_masks = Some(val);
+        self.contains_masks = Some(val);
         self
     }
 
     pub fn mask_position(mut self, val: MaskPosition) -> Self {
-        self.payload.mask_position = Some(val);
+        self.mask_position = Some(val);
         self
     }
 }

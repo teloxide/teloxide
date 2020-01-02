@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, GameHighScore},
 };
 
@@ -13,7 +14,7 @@ use crate::{
 /// among them. Please note that this behavior is subject to change.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct GetGameHighScore {
+pub struct GetGameHighScores {
     /// Target user id
     user_id: i32,
     /// Unique identifier for the target chat
@@ -22,21 +23,23 @@ pub struct GetGameHighScore {
     message_id: i32,
 }
 
-impl Method for GetGameHighScore {
-    type Output = Vec<GameHighScore>;
-
-    const NAME: &'static str = "getGameHighScores";
-}
-
-impl json::Payload for GetGameHighScore {}
-
-impl dynamic::Payload for GetGameHighScore {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Vec<GameHighScore>> for GetGameHighScores {
+    async fn send(
+        &self,
+        bot: &crate::Bot,
+    ) -> ResponseResult<Vec<GameHighScore>> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "getGameHighScores",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
-impl GetGameHighScore {
+impl GetGameHighScores {
     pub fn new<C>(chat_id: C, message_id: i32, user_id: i32) -> Self
     where
         C: Into<ChatId>,
@@ -48,24 +51,22 @@ impl GetGameHighScore {
             user_id,
         }
     }
-}
 
-impl json::Request<'_, GetGameHighScore> {
     pub fn chat_id<C>(mut self, val: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 }

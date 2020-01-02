@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message, ParseMode},
 };
 
@@ -24,17 +25,16 @@ pub struct EditMessageTextInline {
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl Method for EditMessageTextInline {
-    type Output = Message;
-
-    const NAME: &'static str = "editMessageText";
-}
-
-impl json::Payload for EditMessageTextInline {}
-
-impl dynamic::Payload for EditMessageTextInline {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for EditMessageTextInline {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "editMessageText",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -54,14 +54,12 @@ impl EditMessageTextInline {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, EditMessageTextInline> {
     pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_message_id = val.into();
+        self.inline_message_id = val.into();
         self
     }
 
@@ -69,22 +67,22 @@ impl json::Request<'_, EditMessageTextInline> {
     where
         T: Into<String>,
     {
-        self.payload.text = val.into();
+        self.text = val.into();
         self
     }
 
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
-        self.payload.parse_mode = Some(val);
+        self.parse_mode = Some(val);
         self
     }
 
     pub fn disable_web_page_preview(mut self, val: bool) -> Self {
-        self.payload.disable_web_page_preview = Some(val);
+        self.disable_web_page_preview = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

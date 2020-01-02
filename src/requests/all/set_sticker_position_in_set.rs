@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::True,
 };
 
@@ -16,17 +17,16 @@ pub struct SetStickerPositionInSet {
     position: i32,
 }
 
-impl Method for SetStickerPositionInSet {
-    type Output = True;
-
-    const NAME: &'static str = "setStickerPositionInSet";
-}
-
-impl json::Payload for SetStickerPositionInSet {}
-
-impl dynamic::Payload for SetStickerPositionInSet {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for SetStickerPositionInSet {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "setStickerPositionInSet",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -38,19 +38,17 @@ impl SetStickerPositionInSet {
         let sticker = sticker.into();
         Self { sticker, position }
     }
-}
 
-impl json::Request<'_, SetStickerPositionInSet> {
     pub fn sticker<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.sticker = val.into();
+        self.sticker = val.into();
         self
     }
 
     pub fn position(mut self, val: i32) -> Self {
-        self.payload.position = val;
+        self.position = val;
         self
     }
 }

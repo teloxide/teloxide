@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message},
 };
 
@@ -28,17 +29,16 @@ pub struct SetGameScore {
     disable_edit_message: Option<bool>,
 }
 
-impl Method for SetGameScore {
-    type Output = Message;
-
-    const NAME: &'static str = "setGameScoreInline";
-}
-
-impl json::Payload for SetGameScore {}
-
-impl dynamic::Payload for SetGameScore {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SetGameScore {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "setGameScore",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -57,39 +57,37 @@ impl SetGameScore {
             disable_edit_message: None,
         }
     }
-}
 
-impl json::Request<'_, SetGameScore> {
     pub fn chat_id<C>(mut self, val: C) -> Self
     where
         C: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
     pub fn score(mut self, val: i32) -> Self {
-        self.payload.score = val;
+        self.score = val;
         self
     }
 
     pub fn force(mut self, val: bool) -> Self {
-        self.payload.force = Some(val);
+        self.force = Some(val);
         self
     }
 
     pub fn disable_edit_message(mut self, val: bool) -> Self {
-        self.payload.disable_edit_message = Some(val);
+        self.disable_edit_message = Some(val);
         self
     }
 }

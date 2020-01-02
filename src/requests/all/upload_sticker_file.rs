@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{File, InputFile},
 };
 
@@ -18,18 +19,16 @@ pub struct UploadStickerFile {
     /// exactly 512px. More info on Sending Files »
     png_sticker: InputFile,
 }
-
-impl Method for UploadStickerFile {
-    type Output = File;
-
-    const NAME: &'static str = "uploadStickerFile";
-}
-
-impl json::Payload for UploadStickerFile {}
-
-impl dynamic::Payload for UploadStickerFile {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<File> for UploadStickerFile {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<File> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "uploadStickerFile",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -40,16 +39,14 @@ impl UploadStickerFile {
             png_sticker,
         }
     }
-}
 
-impl json::Request<'_, UploadStickerFile> {
     pub fn user_id(mut self, val: i32) -> Self {
-        self.payload.user_id = val;
+        self.user_id = val;
         self
     }
 
     pub fn png_sticker(mut self, val: InputFile) -> Self {
-        self.payload.png_sticker = val;
+        self.png_sticker = val;
         self
     }
 }

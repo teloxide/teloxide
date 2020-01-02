@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputMedia, Message},
 };
 
@@ -24,26 +24,21 @@ pub struct SendMediaGroup {
     reply_to_message_id: Option<i32>,
 }
 
-impl Method for SendMediaGroup {
-    type Output = Vec<Message>;
-
-    const NAME: &'static str = "sendMediaGroup";
-}
-
-impl multipart::Payload for SendMediaGroup {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add("media", &self.media)
-            .add("disable_notification", &self.disable_notification)
-            .add("reply_to_message_id", &self.reply_to_message_id)
-            .build()
-    }
-}
-
-impl dynamic::Payload for SendMediaGroup {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Vec<Message>> for SendMediaGroup {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Vec<Message>> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "sendMediaGroup",
+            FormBuilder::new()
+                .add("chat_id", &self.chat_id)
+                .add("media", &self.media)
+                .add("disable_notification", &self.disable_notification)
+                .add("reply_to_message_id", &self.reply_to_message_id)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -62,14 +57,12 @@ impl SendMediaGroup {
             reply_to_message_id: None,
         }
     }
-}
 
-impl multipart::Request<'_, SendMediaGroup> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -77,17 +70,17 @@ impl multipart::Request<'_, SendMediaGroup> {
     where
         T: Into<Vec<InputMedia>>,
     {
-        self.payload.media = val.into();
+        self.media = val.into();
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 }

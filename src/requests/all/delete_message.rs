@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, True},
 };
 
@@ -24,17 +25,16 @@ pub struct DeleteMessage {
     message_id: i32,
 }
 
-impl Method for DeleteMessage {
-    type Output = True;
-
-    const NAME: &'static str = "deleteMessage";
-}
-
-impl json::Payload for DeleteMessage {}
-
-impl dynamic::Payload for DeleteMessage {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for DeleteMessage {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "deleteMessage",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -49,19 +49,17 @@ impl DeleteMessage {
             message_id,
         }
     }
-}
 
-impl json::Request<'_, DeleteMessage> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn message_id(mut self, val: i32) -> Self {
-        self.payload.message_id = val;
+        self.message_id = val;
         self
     }
 }

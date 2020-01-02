@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::ChatId,
 };
 
@@ -23,17 +24,16 @@ pub struct ExportChatInviteLink {
     chat_id: ChatId,
 }
 
-impl Method for ExportChatInviteLink {
-    type Output = String;
-
-    const NAME: &'static str = "exportChatInviteLink";
-}
-
-impl json::Payload for ExportChatInviteLink {}
-
-impl dynamic::Payload for ExportChatInviteLink {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<String> for ExportChatInviteLink {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<String> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "exportChatInviteLink",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -45,14 +45,12 @@ impl ExportChatInviteLink {
         let chat_id = chat_id.into();
         Self { chat_id }
     }
-}
 
-impl json::Request<'_, ExportChatInviteLink> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 }

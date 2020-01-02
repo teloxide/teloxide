@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ShippingOption, True},
 };
 
@@ -28,17 +29,16 @@ pub struct AnswerShippingQuery {
     error_message: Option<String>,
 }
 
-impl Method for AnswerShippingQuery {
-    type Output = True;
-
-    const NAME: &'static str = "answerShippingQuery";
-}
-
-impl json::Payload for AnswerShippingQuery {}
-
-impl dynamic::Payload for AnswerShippingQuery {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for AnswerShippingQuery {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "answerShippingQuery",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -55,19 +55,17 @@ impl AnswerShippingQuery {
             error_message: None,
         }
     }
-}
 
-impl json::Request<'_, AnswerShippingQuery> {
     pub fn shipping_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.shipping_query_id = val.into();
+        self.shipping_query_id = val.into();
         self
     }
 
     pub fn ok(mut self, val: bool) -> Self {
-        self.payload.ok = val;
+        self.ok = val;
         self
     }
 
@@ -75,7 +73,7 @@ impl json::Request<'_, AnswerShippingQuery> {
     where
         T: Into<Vec<ShippingOption>>,
     {
-        self.payload.shipping_options = Some(val.into());
+        self.shipping_options = Some(val.into());
         self
     }
 
@@ -83,7 +81,7 @@ impl json::Request<'_, AnswerShippingQuery> {
     where
         T: Into<String>,
     {
-        self.payload.error_message = Some(val.into());
+        self.error_message = Some(val.into());
         self
     }
 }

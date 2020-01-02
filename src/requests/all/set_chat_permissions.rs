@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
 };
 
@@ -10,7 +11,7 @@ use crate::{
 /// must have the can_restrict_members admin rights. Returns True on success.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SetChatPermission {
+pub struct SetChatPermissions {
     /// Unique identifier for the target chat or username of the target
     /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
@@ -18,21 +19,20 @@ pub struct SetChatPermission {
     permissions: ChatPermissions,
 }
 
-impl Method for SetChatPermission {
-    type Output = True;
-
-    const NAME: &'static str = "setChatPermissions";
-}
-
-impl json::Payload for SetChatPermission {}
-
-impl dynamic::Payload for SetChatPermission {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for SetChatPermissions {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendChatPermissions",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
-impl SetChatPermission {
+impl SetChatPermissions {
     pub fn new<C>(chat_id: C, permissions: ChatPermissions) -> Self
     where
         C: Into<ChatId>,
@@ -43,19 +43,17 @@ impl SetChatPermission {
             permissions,
         }
     }
-}
 
-impl json::Request<'_, SetChatPermission> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn permissions(mut self, val: ChatPermissions) -> Self {
-        self.payload.permissions = val;
+        self.permissions = val;
         self
     }
 }

@@ -1,8 +1,8 @@
-use reqwest::multipart::Form;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, form_builder::FormBuilder, multipart, Method},
+    network,
+    requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
 };
 
@@ -55,34 +55,29 @@ pub struct SendVideo {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendVideo {
-    type Output = Message;
-
-    const NAME: &'static str = "sendVideo";
-}
-
-impl multipart::Payload for SendVideo {
-    fn payload(&self) -> Form {
-        FormBuilder::new()
-            .add("chat_id", &self.chat_id)
-            .add("video", &self.video)
-            .add("duration", &self.duration)
-            .add("width", &self.width)
-            .add("height", &self.height)
-            .add("thumb", &self.thumb)
-            .add("caption", &self.caption)
-            .add("parse_mode", &self.parse_mode)
-            .add("supports_streaming", &self.supports_streaming)
-            .add("disable_notification", &self.disable_notification)
-            .add("reply_to_message_id", &self.reply_to_message_id)
-            .add("reply_markup", &self.reply_markup)
-            .build()
-    }
-}
-
-impl dynamic::Payload for SendVideo {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Multipart(multipart::Payload::payload(self))
+#[async_trait::async_trait]
+impl Request<Message> for SendVideo {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_multipart(
+            bot.client(),
+            bot.token(),
+            "sendVideo",
+            FormBuilder::new()
+                .add("chat_id", &self.chat_id)
+                .add("video", &self.video)
+                .add("duration", &self.duration)
+                .add("width", &self.width)
+                .add("height", &self.height)
+                .add("thumb", &self.thumb)
+                .add("caption", &self.caption)
+                .add("parse_mode", &self.parse_mode)
+                .add("supports_streaming", &self.supports_streaming)
+                .add("disable_notification", &self.disable_notification)
+                .add("reply_to_message_id", &self.reply_to_message_id)
+                .add("reply_markup", &self.reply_markup)
+                .build(),
+        )
+        .await
     }
 }
 
@@ -109,14 +104,12 @@ impl SendVideo {
             reply_markup: None,
         }
     }
-}
 
-impl multipart::Request<'_, SendVideo> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
@@ -124,22 +117,22 @@ impl multipart::Request<'_, SendVideo> {
     where
         T: Into<InputFile>,
     {
-        self.payload.video = val.into();
+        self.video = val.into();
         self
     }
 
     pub fn duration(mut self, val: i32) -> Self {
-        self.payload.duration = Some(val);
+        self.duration = Some(val);
         self
     }
 
     pub fn width(mut self, val: i32) -> Self {
-        self.payload.width = Some(val);
+        self.width = Some(val);
         self
     }
 
     pub fn height(mut self, val: i32) -> Self {
-        self.payload.height = Some(val);
+        self.height = Some(val);
         self
     }
 
@@ -147,7 +140,7 @@ impl multipart::Request<'_, SendVideo> {
     where
         T: Into<InputFile>,
     {
-        self.payload.thumb = Some(val.into());
+        self.thumb = Some(val.into());
         self
     }
 
@@ -155,32 +148,32 @@ impl multipart::Request<'_, SendVideo> {
     where
         T: Into<String>,
     {
-        self.payload.caption = Some(val.into());
+        self.caption = Some(val.into());
         self
     }
 
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
-        self.payload.parse_mode = Some(val);
+        self.parse_mode = Some(val);
         self
     }
 
     pub fn supports_streaming(mut self, val: bool) -> Self {
-        self.payload.supports_streaming = Some(val);
+        self.supports_streaming = Some(val);
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }

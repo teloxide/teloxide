@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{InlineQueryResult, True},
 };
 
@@ -44,17 +45,16 @@ pub struct AnswerInlineQuery {
     switch_pm_parameter: Option<String>,
 }
 
-impl Method for AnswerInlineQuery {
-    type Output = True;
-
-    const NAME: &'static str = "answerInlineQuery";
-}
-
-impl json::Payload for AnswerInlineQuery {}
-
-impl dynamic::Payload for AnswerInlineQuery {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<True> for AnswerInlineQuery {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<True> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "answerInlineQuery",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -76,14 +76,12 @@ impl AnswerInlineQuery {
             switch_pm_parameter: None,
         }
     }
-}
 
-impl json::Request<'_, AnswerInlineQuery> {
     pub fn inline_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
     {
-        self.payload.inline_query_id = val.into();
+        self.inline_query_id = val.into();
         self
     }
 
@@ -91,18 +89,18 @@ impl json::Request<'_, AnswerInlineQuery> {
     where
         T: Into<Vec<InlineQueryResult>>,
     {
-        self.payload.results = val.into();
+        self.results = val.into();
         self
     }
 
     pub fn cache_time(mut self, val: i32) -> Self {
-        self.payload.cache_time = Some(val);
+        self.cache_time = Some(val);
         self
     }
 
     #[allow(clippy::wrong_self_convention)]
     pub fn is_personal(mut self, val: bool) -> Self {
-        self.payload.is_personal = Some(val);
+        self.is_personal = Some(val);
         self
     }
 
@@ -110,7 +108,7 @@ impl json::Request<'_, AnswerInlineQuery> {
     where
         T: Into<String>,
     {
-        self.payload.next_offset = Some(val.into());
+        self.next_offset = Some(val.into());
         self
     }
 
@@ -118,7 +116,7 @@ impl json::Request<'_, AnswerInlineQuery> {
     where
         T: Into<String>,
     {
-        self.payload.switch_pm_text = Some(val.into());
+        self.switch_pm_text = Some(val.into());
         self
     }
 
@@ -126,7 +124,7 @@ impl json::Request<'_, AnswerInlineQuery> {
     where
         T: Into<String>,
     {
-        self.payload.switch_pm_parameter = Some(val.into());
+        self.switch_pm_parameter = Some(val.into());
         self
     }
 }

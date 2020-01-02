@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    requests::{dynamic, json, Method},
+    network,
+    requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
 };
 
@@ -31,17 +32,16 @@ pub struct SendLocation {
     reply_markup: Option<ReplyMarkup>,
 }
 
-impl Method for SendLocation {
-    type Output = Message;
-
-    const NAME: &'static str = "sendLocation";
-}
-
-impl json::Payload for SendLocation {}
-
-impl dynamic::Payload for SendLocation {
-    fn kind(&self) -> dynamic::Kind {
-        dynamic::Kind::Json(serde_json::to_string(self).unwrap())
+#[async_trait::async_trait]
+impl Request<Message> for SendLocation {
+    async fn send(&self, bot: &crate::Bot) -> ResponseResult<Message> {
+        network::request_json(
+            bot.client(),
+            bot.token(),
+            "sendLocation",
+            &serde_json::to_string(self).unwrap(),
+        )
+        .await
     }
 }
 
@@ -61,44 +61,42 @@ impl SendLocation {
             reply_markup: None,
         }
     }
-}
 
-impl json::Request<'_, SendLocation> {
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
     {
-        self.payload.chat_id = val.into();
+        self.chat_id = val.into();
         self
     }
 
     pub fn latitude(mut self, val: f32) -> Self {
-        self.payload.latitude = val;
+        self.latitude = val;
         self
     }
 
     pub fn longitude(mut self, val: f32) -> Self {
-        self.payload.longitude = val;
+        self.longitude = val;
         self
     }
 
     pub fn live_period(mut self, val: i64) -> Self {
-        self.payload.live_period = Some(val);
+        self.live_period = Some(val);
         self
     }
 
     pub fn disable_notification(mut self, val: bool) -> Self {
-        self.payload.disable_notification = Some(val);
+        self.disable_notification = Some(val);
         self
     }
 
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
-        self.payload.reply_to_message_id = Some(val);
+        self.reply_to_message_id = Some(val);
         self
     }
 
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
-        self.payload.reply_markup = Some(val);
+        self.reply_markup = Some(val);
         self
     }
 }
