@@ -33,11 +33,13 @@ impl Bot {
 }
 
 impl Bot {
-    pub const fn token(&self) -> &str {
+    // TODO: const fn
+    pub fn token(&self) -> &str {
         &self.token
     }
 
-    pub const fn client(&self) -> &Client {
+    // TODO: const fn
+    pub fn client(&self) -> &Client {
         &self.client
     }
 }
