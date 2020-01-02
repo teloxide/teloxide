@@ -72,6 +72,7 @@ mod unban_chat_member;
 mod unpin_chat_message;
 mod upload_sticker_file;
 
+pub use add_sticker_to_set::*;
 pub use answer_callback_query::*;
 pub use answer_inline_query::*;
 pub use answer_pre_checkout_query::*;
