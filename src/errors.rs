@@ -94,9 +94,6 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: Too much messages to send as an album")]
     ToMuchMessages,
 
-    #[serde(rename = "Bad Request: poll can't be stopped")]
-    PollCantBeStopped, // TODO: docs
-
     /// Occurs when bot tries to stop poll that has already been stopped
     #[serde(rename = "Bad Request: poll has already been closed")]
     PollHasAlreadyClosed,
@@ -149,21 +146,10 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is invalid")]
     InvalidQueryID,
 
-    #[serde(rename = "Bad Request: PEER_ID_INVALID")]
-    InvalidPeerID, // TODO: docs
-
-    #[serde(rename = "Bad Request: Failed to get HTTP URL content")]
-    InvalidHTTPUrlContent, // TODO: docs
-
     /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button url
     #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
     ButtonURLInvalid,
 
-    #[serde(rename = "Bad Request: URL host is empty")]
-    URLHostIsEmpty, // TODO: docs
-
-    #[serde(rename = "Bad Request: START_PARAM_INVALID")]
-    StartParamInvalid, // TODO: docs
 
     /// Occurs when bot tries to send button with data size more than 64 bytes
     #[serde(rename = "Bad Request: BUTTON_DATA_INVALID")]
@@ -217,24 +203,6 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
     NotEnoughRightsToRestrict,
 
-    #[serde(rename = "Bad Request: PHOTO_INVALID_DIMENSIONS")]
-    PhotoDimensions, // TODO: docs
-
-    #[serde(rename = "Bad Request: supergroup members are unavailable")]
-    UnavailableMembers, // TODO: docs
-
-    #[serde(rename = "Bad Request: type of file mismatch")]
-    TypeOfFileMismatch, // TODO: docs
-
-    #[serde(rename = "Bad Request: wrong remote file id specified")]
-    WrongRemoteFileIdSpecified, // TODO: docs
-
-    #[serde(rename = "Bad Request: PAYMENT_PROVIDER_INVALID")]
-    PaymentProviderInvalid, // TODO: docs
-
-    #[serde(rename = "Bad Request: currency_total_amount_invalid")]
-    CurrencyTotalAmountInvalid, // TODO: docs
-
     /// Occurs when bot tries set webhook to protocol other than HTTPS
     #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
     WebhookRequireHTTPS,
@@ -247,28 +215,13 @@ enum ApiErrorKind {
     #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
     UnknownHost,
 
-    #[serde(rename = "Bad Request: getaddrinfo: Temporary failure in name resolution")]
-    BadWebhookAddrInfo, // TODO: docs
-
-    #[serde(rename = "Bad Request: failed to resolve host: no address associated with hostname")]
-    BadWebhookNoAddressAssociatedWithHostname, // TODO: docs
-
     /// Occurs when bot tries to set webhook to invalid URL
     #[serde(rename = "Bad Request: can't parse URL")]
     CantParseUrl,
 
-    #[serde(rename = "Bad Request: unsupported URL protocol")]
-    UnsupportedUrlProtocol, // TODO: docs
-
     /// Occurs when bot tries to send message with unfinished entities
     #[serde(rename = "Bad Request: can't parse entities")]
     CantParseEntities,
-
-    #[serde(rename = "Bad Request: result_id_duplicate")]
-    ResultIdDuplicate, // TODO: docs
-
-    #[serde(rename = "Bad Request: bot_domain_invalid")]
-    BotDomainInvalid, // TODO: docs
 
     /// Occurs when bot tries to use getUpdates while webhook is active
     #[serde(rename = "can't use getUpdates method while webhook is active")]
