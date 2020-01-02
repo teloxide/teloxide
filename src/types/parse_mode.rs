@@ -2,7 +2,10 @@
 // (for built ins there no warnings, but for (De)Serialize, there are)
 #![allow(deprecated)]
 
-use std::{str::FromStr, convert::{TryFrom, TryInto}};
+use std::{
+    convert::{TryFrom, TryInto},
+    str::FromStr,
+};
 
 use serde::{Deserialize, Serialize};
 
