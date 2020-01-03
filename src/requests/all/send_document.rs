@@ -77,11 +77,9 @@ impl<'a> SendDocument<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let document = document.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             document,
             thumb: None,
             caption: None,
@@ -101,12 +99,12 @@ impl<'a> SendDocument<'a> {
     }
 
     pub fn document(mut self, val: InputFile) -> Self {
-        self.document = val.into();
+        self.document = val;
         self
     }
 
     pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val.into());
+        self.thumb = Some(val);
         self
     }
 

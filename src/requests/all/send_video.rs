@@ -90,11 +90,9 @@ impl<'a> SendVideo<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let video = video.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             video,
             duration: None,
             width: None,
@@ -118,7 +116,7 @@ impl<'a> SendVideo<'a> {
     }
 
     pub fn video(mut self, val: InputFile) -> Self {
-        self.video = val.into();
+        self.video = val;
         self
     }
 
@@ -138,7 +136,7 @@ impl<'a> SendVideo<'a> {
     }
 
     pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val.into());
+        self.thumb = Some(val);
         self
     }
 

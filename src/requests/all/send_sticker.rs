@@ -58,11 +58,9 @@ impl<'a> SendSticker<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let sticker = sticker.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             sticker,
             disable_notification: None,
             reply_to_message_id: None,
@@ -79,7 +77,7 @@ impl<'a> SendSticker<'a> {
     }
 
     pub fn sticker(mut self, val: InputFile) -> Self {
-        self.sticker = val.into();
+        self.sticker = val;
         self
     }
 

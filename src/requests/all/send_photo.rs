@@ -65,11 +65,9 @@ impl<'a> SendPhoto<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let photo = photo.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             photo,
             caption: None,
             parse_mode: None,
@@ -88,7 +86,7 @@ impl<'a> SendPhoto<'a> {
     }
 
     pub fn photo(mut self, val: InputFile) -> Self {
-        self.photo = val.into();
+        self.photo = val;
         self
     }
 

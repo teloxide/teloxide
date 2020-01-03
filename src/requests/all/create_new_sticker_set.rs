@@ -76,17 +76,13 @@ impl<'a> CreateNewStickerSet<'a> {
         T: Into<String>,
         E: Into<String>,
     {
-        let name = name.into();
-        let title = title.into();
-        let png_sticker = png_sticker.into();
-        let emojis = emojis.into();
         Self {
             bot,
             user_id,
-            name,
-            title,
+            name: name.into(),
+            title: title.into(),
             png_sticker,
-            emojis,
+            emojis: emojis.into(),
             contains_masks: None,
             mask_position: None,
         }
@@ -114,7 +110,7 @@ impl<'a> CreateNewStickerSet<'a> {
     }
 
     pub fn png_sticker(mut self, val: InputFile) -> Self {
-        self.png_sticker = val.into();
+        self.png_sticker = val;
         self
     }
 

@@ -72,11 +72,9 @@ impl<'a> SendVoice<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let voice = voice.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             voice,
             caption: None,
             parse_mode: None,
@@ -96,7 +94,7 @@ impl<'a> SendVoice<'a> {
     }
 
     pub fn voice(mut self, val: InputFile) -> Self {
-        self.voice = val.into();
+        self.voice = val;
         self
     }
 

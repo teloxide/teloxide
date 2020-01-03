@@ -87,11 +87,9 @@ impl<'a> SendAudio<'a> {
     where
         C: Into<ChatId>,
     {
-        let chat_id = chat_id.into();
-        let audio = audio.into();
         Self {
             bot,
-            chat_id,
+            chat_id: chat_id.into(),
             audio,
             caption: None,
             parse_mode: None,
@@ -114,7 +112,7 @@ impl<'a> SendAudio<'a> {
     }
 
     pub fn audio(mut self, val: InputFile) -> Self {
-        self.audio = val.into();
+        self.audio = val;
         self
     }
 
@@ -153,7 +151,7 @@ impl<'a> SendAudio<'a> {
     }
 
     pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val.into());
+        self.thumb = Some(val);
         self
     }
 
