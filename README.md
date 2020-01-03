@@ -1,3 +1,4 @@
+> WARNING: this library is still in active development under v0.1.0, use it at your own risk!
 
 <div align="center">
   <img src="ICON.png" width="200"/>
