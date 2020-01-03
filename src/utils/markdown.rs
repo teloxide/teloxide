@@ -176,7 +176,7 @@ mod tests {
     }
 
     #[test]
-    fn test_code_block_with_language() {
+    fn test_code_block_with_lang() {
         assert_eq!(
             code_block_with_lang(
                 "pre-'formatted'\nfixed-width \\code `block`",
