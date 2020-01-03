@@ -1,4 +1,4 @@
-//! Utils for working with the [HTML message style][spec]
+//! Utils for working with the [HTML message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#html-style
 use std::string::String;
