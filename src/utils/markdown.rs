@@ -43,6 +43,7 @@ pub fn underline(s: &str) -> String {
 }
 
 /// Applies the strikethrough font style to the string.
+///
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
 pub fn strike(s: &str) -> String {
@@ -61,7 +62,9 @@ pub fn user_mention(user_id: i32, text: &str) -> String {
     link(format!("tg://user?id={}", user_id).as_str(), text)
 }
 
-/// Formats the code block. Escapes ``` and `\` characters inside the block.
+/// Formats the code block.
+///
+/// Escapes ``` and `\` characters inside the block.
 pub fn code_block(code: &str) -> String {
     format!("```\n{}\n```", escape_code(code))
 }

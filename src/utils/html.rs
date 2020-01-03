@@ -3,34 +3,60 @@
 //! [spec]: https://core.telegram.org/bots/api#html-style
 use std::string::String;
 
+/// Applies the bold font style to the string.
+///
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn bold(s: &str) -> String {
     format!("<b>{}</b>", s)
 }
 
+/// Applies the italic font style to the string.
+///
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn italic(s: &str) -> String {
     format!("<i>{}</i>", s)
 }
 
+/// Applies the underline font style to the string.
+///
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn underline(s: &str) -> String {
     format!("<u>{}</u>", s)
 }
 
+/// Applies the strikethrough font style to the string.
+///
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn strike(s: &str) -> String {
     format!("<s>{}</s>", s)
 }
 
+/// Builds an inline link with an anchor.
+///
+/// Escapes the passed URL and the link text.
 pub fn link(url: &str, text: &str) -> String {
     format!("<a href=\"{}\">{}</a>", escape(url), escape(text))
 }
 
+/// Builds an inline user mention link with an anchor.
 pub fn user_mention(user_id: i32, text: &str) -> String {
     link(format!("tg://user?id={}", user_id).as_str(), text)
 }
 
+/// Formats the code block.
+///
+/// Escapes HTML characters inside the block.
 pub fn code_block(code: &str) -> String {
     format!("<pre>{}</pre>", escape(code))
 }
 
+/// Formats the code block with a specific language syntax.
+///
+/// Escapes HTML characters inside the block.
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     format!(
         "<pre><code class=\"language-{}\">{}</code></pre>",
@@ -39,6 +65,9 @@ pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     )
 }
 
+/// Formats the string as an inline code.
+///
+/// Escapes HTML characters inside the block.
 pub fn code_inline(s: &str) -> String {
     format!("<code>{}</code>", escape(s))
 }
