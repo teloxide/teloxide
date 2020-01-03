@@ -30,7 +30,9 @@ pub struct KickChatMember<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for KickChatMember<'_> {
+impl Request for KickChatMember<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

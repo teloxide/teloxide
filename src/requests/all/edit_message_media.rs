@@ -30,7 +30,9 @@ pub struct EditMessageMedia<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageMedia<'_> {
+impl Request for EditMessageMedia<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new();
 

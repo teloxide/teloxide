@@ -24,7 +24,9 @@ pub struct SetChatPermissions<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetChatPermissions<'_> {
+impl Request for SetChatPermissions<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

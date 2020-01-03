@@ -29,7 +29,9 @@ pub struct EditMessageLiveLocation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageLiveLocation<'_> {
+impl Request for EditMessageLiveLocation<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

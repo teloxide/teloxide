@@ -20,7 +20,9 @@ pub struct DeleteStickerFromSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteStickerFromSet<'_> {
+impl Request for DeleteStickerFromSet<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

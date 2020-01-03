@@ -42,7 +42,9 @@ pub struct CreateNewStickerSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for CreateNewStickerSet<'_> {
+impl Request for CreateNewStickerSet<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_multipart(
             self.bot.client(),

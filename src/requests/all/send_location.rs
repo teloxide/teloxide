@@ -37,7 +37,9 @@ pub struct SendLocation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendLocation<'_> {
+impl Request for SendLocation<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

@@ -22,7 +22,9 @@ pub struct SetStickerPositionInSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetStickerPositionInSet<'_> {
+impl Request for SetStickerPositionInSet<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

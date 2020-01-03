@@ -38,7 +38,9 @@ pub struct SendContact<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendContact<'_> {
+impl Request for SendContact<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

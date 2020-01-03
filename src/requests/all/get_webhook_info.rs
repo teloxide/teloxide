@@ -17,7 +17,9 @@ pub struct GetWebhookInfo<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<WebhookInfo> for GetWebhookInfo<'_> {
+impl Request for GetWebhookInfo<'_> {
+    type Output = WebhookInfo;
+
     async fn send(&self) -> ResponseResult<WebhookInfo> {
         network::request_json(
             self.bot.client(),

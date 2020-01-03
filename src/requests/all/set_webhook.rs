@@ -49,7 +49,9 @@ pub struct SetWebhook<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetWebhook<'_> {
+impl Request for SetWebhook<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

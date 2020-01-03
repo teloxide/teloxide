@@ -25,7 +25,9 @@ pub struct StopPoll<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Poll> for StopPoll<'_> {
+impl Request for StopPoll<'_> {
+    type Output = Poll;
+
     async fn send(&self) -> ResponseResult<Poll> {
         network::request_json(
             self.bot.client(),

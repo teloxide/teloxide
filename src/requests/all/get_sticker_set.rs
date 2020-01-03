@@ -20,7 +20,9 @@ pub struct GetStickerSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<StickerSet> for GetStickerSet<'_> {
+impl Request for GetStickerSet<'_> {
+    type Output = StickerSet;
+
     async fn send(&self) -> ResponseResult<StickerSet> {
         network::request_json(
             self.bot.client(),

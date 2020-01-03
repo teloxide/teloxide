@@ -40,7 +40,9 @@ pub struct SendPhoto<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendPhoto<'_> {
+impl Request for SendPhoto<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
             self.bot.client(),

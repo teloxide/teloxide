@@ -33,7 +33,9 @@ pub struct SetGameScore<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SetGameScore<'_> {
+impl Request for SetGameScore<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

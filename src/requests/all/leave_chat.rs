@@ -21,7 +21,9 @@ pub struct LeaveChat<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for LeaveChat<'_> {
+impl Request for LeaveChat<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

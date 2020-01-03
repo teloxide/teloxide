@@ -49,7 +49,9 @@ pub struct SendVideoNote<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendVideoNote<'_> {
+impl Request for SendVideoNote<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
             self.bot.client(),

@@ -28,7 +28,9 @@ pub struct SetChatAdministratorCustomTitle<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetChatAdministratorCustomTitle<'_> {
+impl Request for SetChatAdministratorCustomTitle<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

@@ -24,7 +24,9 @@ pub struct EditMessageReplyMarkup<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageReplyMarkup<'_> {
+impl Request for EditMessageReplyMarkup<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

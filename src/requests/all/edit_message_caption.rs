@@ -29,7 +29,9 @@ pub struct EditMessageCaption<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for EditMessageCaption<'_> {
+impl Request for EditMessageCaption<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

@@ -34,7 +34,9 @@ pub struct AnswerShippingQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerShippingQuery<'_> {
+impl Request for AnswerShippingQuery<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

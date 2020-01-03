@@ -62,7 +62,9 @@ pub struct SendAnimation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendAnimation<'_> {
+impl Request for SendAnimation<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
             self.bot.client(),

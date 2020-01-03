@@ -29,7 +29,9 @@ pub struct ExportChatInviteLink<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<String> for ExportChatInviteLink<'_> {
+impl Request for ExportChatInviteLink<'_> {
+    type Output = String;
+
     async fn send(&self) -> ResponseResult<String> {
         network::request_json(
             self.bot.client(),

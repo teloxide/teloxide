@@ -37,7 +37,9 @@ pub struct GetFile<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<File> for GetFile<'_> {
+impl Request for GetFile<'_> {
+    type Output = File;
+
     async fn send(&self) -> ResponseResult<File> {
         network::request_json(
             self.bot.client(),

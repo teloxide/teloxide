@@ -22,7 +22,9 @@ pub struct DeleteChatPhoto<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteChatPhoto<'_> {
+impl Request for DeleteChatPhoto<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

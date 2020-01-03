@@ -50,7 +50,9 @@ pub struct AnswerInlineQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerInlineQuery<'_> {
+impl Request for AnswerInlineQuery<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

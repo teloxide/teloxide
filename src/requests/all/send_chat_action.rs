@@ -68,7 +68,9 @@ pub enum SendChatActionKind {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SendChatAction<'_> {
+impl Request for SendChatAction<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

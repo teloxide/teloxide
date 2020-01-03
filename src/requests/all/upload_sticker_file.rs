@@ -24,7 +24,9 @@ pub struct UploadStickerFile<'a> {
     png_sticker: InputFile,
 }
 #[async_trait::async_trait]
-impl Request<File> for UploadStickerFile<'_> {
+impl Request for UploadStickerFile<'_> {
+    type Output = File;
+
     async fn send(&self) -> ResponseResult<File> {
         network::request_json(
             self.bot.client(),

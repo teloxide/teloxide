@@ -21,7 +21,9 @@ pub struct GetChatMembersCount<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<i32> for GetChatMembersCount<'_> {
+impl Request for GetChatMembersCount<'_> {
+    type Output = i32;
+
     async fn send(&self) -> ResponseResult<i32> {
         network::request_json(
             self.bot.client(),

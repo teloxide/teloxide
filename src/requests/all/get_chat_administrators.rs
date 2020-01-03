@@ -24,7 +24,9 @@ pub struct GetChatAdministrators<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<ChatMember>> for GetChatAdministrators<'_> {
+impl Request for GetChatAdministrators<'_> {
+    type Output = Vec<ChatMember>;
+
     async fn send(&self) -> ResponseResult<Vec<ChatMember>> {
         network::request_json(
             self.bot.client(),

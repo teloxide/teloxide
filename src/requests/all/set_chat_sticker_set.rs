@@ -26,7 +26,9 @@ pub struct SetChatStickerSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for SetChatStickerSet<'_> {
+impl Request for SetChatStickerSet<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

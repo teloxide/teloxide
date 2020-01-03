@@ -29,7 +29,9 @@ pub struct ForwardMessage<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for ForwardMessage<'_> {
+impl Request for ForwardMessage<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

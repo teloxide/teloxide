@@ -75,7 +75,9 @@ pub struct SendInvoice<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendInvoice<'_> {
+impl Request for SendInvoice<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

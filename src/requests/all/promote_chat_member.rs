@@ -46,7 +46,9 @@ pub struct PromoteChatMember<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for PromoteChatMember<'_> {
+impl Request for PromoteChatMember<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

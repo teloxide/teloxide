@@ -44,7 +44,9 @@ pub struct SendVenue<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendVenue<'_> {
+impl Request for SendVenue<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

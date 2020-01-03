@@ -22,7 +22,9 @@ pub struct GetChat<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Chat> for GetChat<'_> {
+impl Request for GetChat<'_> {
+    type Output = Chat;
+
     async fn send(&self) -> ResponseResult<Chat> {
         network::request_json(
             self.bot.client(),

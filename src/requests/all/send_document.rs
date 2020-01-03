@@ -51,7 +51,9 @@ pub struct SendDocument<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendDocument<'_> {
+impl Request for SendDocument<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
             self.bot.client(),

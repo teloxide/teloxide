@@ -17,7 +17,9 @@ pub struct GetMe<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<User> for GetMe<'_> {
+impl Request for GetMe<'_> {
+    type Output = User;
+
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<User> {
         network::request_json(

@@ -30,7 +30,9 @@ pub struct DeleteMessage<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteMessage<'_> {
+impl Request for DeleteMessage<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

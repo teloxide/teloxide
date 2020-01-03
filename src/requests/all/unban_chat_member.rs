@@ -25,7 +25,9 @@ pub struct UnbanChatMember<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for UnbanChatMember<'_> {
+impl Request for UnbanChatMember<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

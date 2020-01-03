@@ -24,7 +24,9 @@ pub struct StopMessageLiveLocation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for StopMessageLiveLocation<'_> {
+impl Request for StopMessageLiveLocation<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_json(
             self.bot.client(),

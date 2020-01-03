@@ -58,7 +58,9 @@ pub struct SendAudio<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Message> for SendAudio<'_> {
+impl Request for SendAudio<'_> {
+    type Output = Message;
+
     async fn send(&self) -> ResponseResult<Message> {
         network::request_multipart(
             self.bot.client(),

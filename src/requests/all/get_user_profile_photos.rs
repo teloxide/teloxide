@@ -26,7 +26,9 @@ pub struct GetUserProfilePhotos<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<UserProfilePhotos> for GetUserProfilePhotos<'_> {
+impl Request for GetUserProfilePhotos<'_> {
+    type Output = UserProfilePhotos;
+
     async fn send(&self) -> ResponseResult<UserProfilePhotos> {
         network::request_json(
             self.bot.client(),

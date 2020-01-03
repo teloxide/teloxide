@@ -29,7 +29,9 @@ pub struct SendMediaGroup<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<Message>> for SendMediaGroup<'_> {
+impl Request for SendMediaGroup<'_> {
+    type Output = Vec<Message>;
+
     async fn send(&self) -> ResponseResult<Vec<Message>> {
         network::request_multipart(
             self.bot.client(),

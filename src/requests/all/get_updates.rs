@@ -66,7 +66,9 @@ pub struct GetUpdates<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<Update>> for GetUpdates<'_> {
+impl Request for GetUpdates<'_> {
+    type Output = Vec<Update>;
+
     async fn send(&self) -> ResponseResult<Vec<Update>> {
         network::request_json(
             self.bot.client(),

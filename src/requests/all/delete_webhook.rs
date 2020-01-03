@@ -17,7 +17,9 @@ pub struct DeleteWebhook<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for DeleteWebhook<'_> {
+impl Request for DeleteWebhook<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),

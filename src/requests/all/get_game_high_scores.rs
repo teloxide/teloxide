@@ -27,7 +27,9 @@ pub struct GetGameHighScores<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<Vec<GameHighScore>> for GetGameHighScores<'_> {
+impl Request for GetGameHighScores<'_> {
+    type Output = Vec<GameHighScore>;
+
     async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
         network::request_json(
             self.bot.client(),

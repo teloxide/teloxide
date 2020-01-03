@@ -41,7 +41,9 @@ pub struct AnswerCallbackQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request<True> for AnswerCallbackQuery<'_> {
+impl Request for AnswerCallbackQuery<'_> {
+    type Output = True;
+
     async fn send(&self) -> ResponseResult<True> {
         network::request_json(
             self.bot.client(),
