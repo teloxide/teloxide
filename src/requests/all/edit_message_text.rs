@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, Message, ParseMode},
+    types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
 
@@ -16,11 +16,9 @@ pub struct EditMessageText<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
-    chat_id: ChatId,
-    /// Identifier of the message to edit
-    message_id: i32,
+    #[serde(flatten)]
+    chat_or_inline_message: ChatOrInlineMessage,
+
     /// New text of the message
     text: String,
     /// Send Markdown or HTML, if you want Telegram apps to show bold, italic,
@@ -46,39 +44,26 @@ impl Request<Message> for EditMessageText<'_> {
 }
 
 impl<'a> EditMessageText<'a> {
-    pub(crate) fn new<C, T>(
+    pub(crate) fn new<T>(
         bot: &'a Bot,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         text: T,
     ) -> Self
     where
-        C: Into<ChatId>,
         T: Into<String>,
     {
-        let chat_id = chat_id.into();
-        let text = text.into();
         Self {
             bot,
-            chat_id,
-            message_id,
-            text,
+            chat_or_inline_message,
+            text: text.into(),
             parse_mode: None,
             disable_web_page_preview: None,
             reply_markup: None,
         }
     }
 
-    pub fn chat_id<T>(mut self, val: T) -> Self
-    where
-        T: Into<ChatId>,
-    {
-        self.chat_id = val.into();
-        self
-    }
-
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
+        self.chat_or_inline_message = val;
         self
     }
 

@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, GameHighScore},
+    types::{ChatOrInlineMessage, GameHighScore},
     Bot,
 };
 
@@ -19,12 +19,11 @@ pub struct GetGameHighScores<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
+    #[serde(flatten)]
+    chat_or_inline_message: ChatOrInlineMessage,
+
     /// Target user id
     user_id: i32,
-    /// Unique identifier for the target chat
-    chat_id: ChatId,
-    /// Identifier of the sent message
-    message_id: i32,
 }
 
 #[async_trait::async_trait]
@@ -41,34 +40,20 @@ impl Request<Vec<GameHighScore>> for GetGameHighScores<'_> {
 }
 
 impl<'a> GetGameHighScores<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new(
         bot: &'a Bot,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
-    ) -> Self
-    where
-        C: Into<ChatId>,
-    {
-        let chat_id = chat_id.into();
+    ) -> Self {
         Self {
             bot,
-            chat_id,
-            message_id,
+            chat_or_inline_message,
             user_id,
         }
     }
 
-    pub fn chat_id<C>(mut self, val: C) -> Self
-    where
-        C: Into<ChatId>,
-    {
-        self.chat_id = val.into();
-        self
-    }
-
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
+        self.chat_or_inline_message = val;
         self
     }
 

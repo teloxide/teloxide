@@ -4,13 +4,10 @@ use crate::{
         AnswerPreCheckoutQuery, AnswerShippingQuery, CreateNewStickerSet,
         DeleteChatPhoto, DeleteChatStickerSet, DeleteMessage,
         DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
-        EditMessageCaptionInline, EditMessageLiveLocation,
-        EditMessageLiveLocationInline, EditMessageMedia,
-        EditMessageMediaInline, EditMessageReplyMarkup,
-        EditMessageReplyMarkupInline, EditMessageText, EditMessageTextInline,
-        ExportChatInviteLink, ForwardMessage, GetChat, GetChatAdministrators,
-        GetChatMember, GetChatMembersCount, GetFile, GetGameHighScores,
-        GetGameHighScoresInline, GetMe, GetStickerSet, GetUpdates,
+        EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup,
+        EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
+        GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile,
+        GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
         SendAudio, SendChatAction, SendChatActionKind, SendContact,
@@ -18,14 +15,13 @@ use crate::{
         SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
         SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
         SetChatDescription, SetChatPermissions, SetChatPhoto,
-        SetChatStickerSet, SetChatTitle, SetGameScore, SetGameScoreInline,
-        SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation,
-        StopMessageLiveLocationInline, StopPoll, UnbanChatMember,
+        SetChatStickerSet, SetChatTitle, SetGameScore, SetStickerPositionInSet,
+        SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
         UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice,
+        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult,
+        InputFile, InputMedia, LabeledPrice,
     },
     Bot,
 };
@@ -156,57 +152,25 @@ impl Bot {
         SendLocation::new(self, chat_id, latitude, longitude)
     }
 
-    pub fn edit_message_live_location_inline<I>(
+    pub fn edit_message_live_location(
         &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         latitude: f32,
         longitude: f32,
-    ) -> EditMessageLiveLocationInline
-    where
-        I: Into<String>,
-    {
-        EditMessageLiveLocationInline::new(
+    ) -> EditMessageLiveLocation {
+        EditMessageLiveLocation::new(
             self,
-            inline_message_id,
+            chat_or_inline_message,
             latitude,
             longitude,
         )
     }
 
-    pub fn edit_message_live_location<C>(
+    pub fn stop_message_live_location(
         &self,
-        chat_id: C,
-        message_id: i32,
-        latitude: f32,
-        longitude: f32,
-    ) -> EditMessageLiveLocation
-    where
-        C: Into<ChatId>,
-    {
-        EditMessageLiveLocation::new(
-            self, chat_id, message_id, latitude, longitude,
-        )
-    }
-
-    pub fn stop_message_live_location_inline<I>(
-        &self,
-        inline_message_id: I,
-    ) -> StopMessageLiveLocationInline
-    where
-        I: Into<String>,
-    {
-        StopMessageLiveLocationInline::new(self, inline_message_id)
-    }
-
-    pub fn stop_message_live_location<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> StopMessageLiveLocation
-    where
-        C: Into<ChatId>,
-    {
-        StopMessageLiveLocation::new(self, chat_id, message_id)
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> StopMessageLiveLocation {
+        StopMessageLiveLocation::new(self, chat_or_inline_message)
     }
 
     pub fn send_venue<C, T, A>(
@@ -459,94 +423,37 @@ impl Bot {
         AnswerCallbackQuery::new(self, callback_query_id)
     }
 
-    pub fn edit_message_text_inline<I, T>(
+    pub fn edit_message_text<T>(
         &self,
-        inline_message_id: I,
-        text: T,
-    ) -> EditMessageTextInline
-    where
-        I: Into<String>,
-        T: Into<String>,
-    {
-        EditMessageTextInline::new(self, inline_message_id, text)
-    }
-
-    pub fn edit_message_text<C, T>(
-        &self,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         text: T,
     ) -> EditMessageText
     where
-        C: Into<ChatId>,
         T: Into<String>,
     {
-        EditMessageText::new(self, chat_id, message_id, text)
+        EditMessageText::new(self, chat_or_inline_message, text)
     }
 
-    pub fn edit_message_caption_inline<I>(
+    pub fn edit_message_caption(
         &self,
-        inline_message_id: I,
-    ) -> EditMessageCaptionInline
-    where
-        I: Into<String>,
-    {
-        EditMessageCaptionInline::new(self, inline_message_id)
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> EditMessageCaption {
+        EditMessageCaption::new(self, chat_or_inline_message)
     }
 
-    pub fn edit_message_caption<C>(
+    pub fn edit_message_media(
         &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> EditMessageCaption
-    where
-        C: Into<ChatId>,
-    {
-        EditMessageCaption::new(self, chat_id, message_id)
-    }
-
-    pub fn edit_message_media_inline<I>(
-        &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
-    ) -> EditMessageMediaInline
-    where
-        I: Into<String>,
-    {
-        EditMessageMediaInline::new(self, inline_message_id, media)
+    ) -> EditMessageMedia {
+        EditMessageMedia::new(self, chat_or_inline_message, media)
     }
 
-    pub fn edit_message_media<C>(
+    pub fn edit_message_reply_markup(
         &self,
-        chat_id: C,
-        message_id: i32,
-        media: InputMedia,
-    ) -> EditMessageMedia
-    where
-        C: Into<ChatId>,
-    {
-        EditMessageMedia::new(self, chat_id, message_id, media)
-    }
-
-    pub fn edit_message_reply_markup_inline<I>(
-        &self,
-        inline_message_id: I,
-    ) -> EditMessageReplyMarkupInline
-    where
-        I: Into<String>,
-    {
-        EditMessageReplyMarkupInline::new(self, inline_message_id)
-    }
-
-    pub fn edit_message_reply_markup<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> EditMessageReplyMarkup
-    where
-        C: Into<ChatId>,
-    {
-        EditMessageReplyMarkup::new(self, chat_id, message_id)
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> EditMessageReplyMarkup {
+        EditMessageReplyMarkup::new(self, chat_or_inline_message)
     }
 
     pub fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> StopPoll
@@ -719,52 +626,21 @@ impl Bot {
         SendGame::new(self, chat_id, game_short_name)
     }
 
-    pub fn set_game_score_inline<I>(
+    pub fn set_game_score(
         &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
         score: i32,
-    ) -> SetGameScoreInline
-    where
-        I: Into<String>,
-    {
-        SetGameScoreInline::new(self, inline_message_id, user_id, score)
+    ) -> SetGameScore {
+        SetGameScore::new(self, chat_or_inline_message, user_id, score)
     }
 
-    pub fn set_game_score<C>(
+    pub fn get_game_high_scores(
         &self,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
-        score: i32,
-    ) -> SetGameScore
-    where
-        C: Into<ChatId>,
-    {
-        SetGameScore::new(self, chat_id, message_id, user_id, score)
-    }
-
-    pub fn get_game_high_scores_inline<I>(
-        &self,
-        inline_message_id: I,
-        user_id: i32,
-    ) -> GetGameHighScoresInline
-    where
-        I: Into<String>,
-    {
-        GetGameHighScoresInline::new(self, inline_message_id, user_id)
-    }
-
-    pub fn get_game_high_scores<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-        user_id: i32,
-    ) -> GetGameHighScores
-    where
-        C: Into<ChatId>,
-    {
-        GetGameHighScores::new(self, chat_id, message_id, user_id)
+    ) -> GetGameHighScores {
+        GetGameHighScores::new(self, chat_or_inline_message, user_id)
     }
 
     pub fn set_chat_administrator_custom_title<C, CT>(

@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     network,
     requests::{Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, Message},
+    types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
 
@@ -16,11 +16,9 @@ pub struct EditMessageReplyMarkup<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
-    chat_id: ChatId,
-    /// Identifier of the message to edit
-    message_id: i32,
+    #[serde(flatten)]
+    chat_or_inline_message: ChatOrInlineMessage,
+
     /// A JSON-serialized object for an inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
@@ -39,29 +37,19 @@ impl Request<Message> for EditMessageReplyMarkup<'_> {
 }
 
 impl<'a> EditMessageReplyMarkup<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
-    where
-        C: Into<ChatId>,
-    {
-        let chat_id = chat_id.into();
+    pub(crate) fn new(
+        bot: &'a Bot,
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> Self {
         Self {
             bot,
-            chat_id,
-            message_id,
+            chat_or_inline_message,
             reply_markup: None,
         }
     }
 
-    pub fn chat_id<T>(mut self, val: T) -> Self
-    where
-        T: Into<ChatId>,
-    {
-        self.chat_id = val.into();
-        self
-    }
-
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
+        self.chat_or_inline_message = val;
         self
     }
 

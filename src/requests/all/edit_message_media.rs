@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, InputMedia, Message},
+    types::{ChatOrInlineMessage, InlineKeyboardMarkup, InputMedia, Message},
     Bot,
 };
 
@@ -20,11 +20,9 @@ pub struct EditMessageMedia<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
-    chat_id: ChatId,
-    /// Identifier of the message to edit
-    message_id: i32,
+    #[serde(flatten)]
+    chat_or_inline_message: ChatOrInlineMessage,
+
     /// A JSON-serialized object for a new media content of the message
     media: InputMedia,
     /// A JSON-serialized object for a new inline keyboard.
@@ -34,13 +32,27 @@ pub struct EditMessageMedia<'a> {
 #[async_trait::async_trait]
 impl Request<Message> for EditMessageMedia<'_> {
     async fn send(&self) -> ResponseResult<Message> {
+        let mut params = FormBuilder::new();
+
+        match &self.chat_or_inline_message {
+            ChatOrInlineMessage::Chat {
+                chat_id,
+                message_id,
+            } => {
+                params = params
+                    .add("chat_id", chat_id)
+                    .add("message_id", message_id);
+            }
+            ChatOrInlineMessage::Inline { inline_message_id } => {
+                params = params.add("inline_message_id", inline_message_id);
+            }
+        }
+
         network::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "editMessageMedia",
-            FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .add("message_id", &self.message_id)
+            params
                 .add("media", &self.media)
                 .add("reply_markup", &self.reply_markup)
                 .build(),
@@ -50,35 +62,21 @@ impl Request<Message> for EditMessageMedia<'_> {
 }
 
 impl<'a> EditMessageMedia<'a> {
-    pub(crate) fn new<C>(
+    pub(crate) fn new(
         bot: &'a Bot,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
-    ) -> Self
-    where
-        C: Into<ChatId>,
-    {
-        let chat_id = chat_id.into();
+    ) -> Self {
         Self {
             bot,
-            chat_id,
-            message_id,
+            chat_or_inline_message,
             media,
             reply_markup: None,
         }
     }
 
-    pub fn chat_id<T>(mut self, val: T) -> Self
-    where
-        T: Into<ChatId>,
-    {
-        self.chat_id = val.into();
-        self
-    }
-
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
+        self.chat_or_inline_message = val;
         self
     }
 
