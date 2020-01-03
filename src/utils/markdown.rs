@@ -1,9 +1,18 @@
+//! Utils for working with the [MarkdownV2 message style.](https://core.telegram.org/bots/api#markdownv2-style)
+
 use std::string::String;
 
+/// Applies the bold font style to the string.
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn bold(s: &str) -> String {
     wrap(s, "*", "*")
 }
 
+/// Applies the italic font style to the string.
+/// Can be safely used with `utils::markdown::underline()`.
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn italic(s: &str) -> String {
     if s.starts_with("__") && s.ends_with("__") {
         return wrap(&s[..s.len() - 1], "_", r"\r__");
@@ -11,6 +20,10 @@ pub fn italic(s: &str) -> String {
     wrap(s, "_", "_")
 }
 
+/// Applies the underline font style to the string.
+/// Can be safely used with `utils::markdown::italic()`.
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn underline(s: &str) -> String {
     // In case of ambiguity between italic and underline entities
     // ‘__’ is always greadily treated from left to right as beginning or end of underline entity,
@@ -22,10 +35,15 @@ pub fn underline(s: &str) -> String {
     wrap(s, "__", "__")
 }
 
+/// Applies the strikethrough font style to the string.
+/// Passed string will not be automatically escaped
+/// because it can contain nested markup.
 pub fn strike(s: &str) -> String {
     wrap(s, "~", "~")
 }
 
+/// Builds an inline link with an anchor.
+/// Escapes `)` and ``` characters inside the link url.
 pub fn link(url: &str, text: &str) -> String {
     let mut out = String::with_capacity(url.len() + text.len() + 4);
     out.push_str(wrap(text, "[", "]").as_str());
@@ -33,14 +51,18 @@ pub fn link(url: &str, text: &str) -> String {
     out
 }
 
+/// Builds an inline user mention link with an anchor.
 pub fn user_mention(user_id: i32, text: &str) -> String {
     link(format!("tg://user?id={}", user_id).as_str(), text)
 }
 
+/// Formats the code block. Escapes ``` and `\` characters inside the block.
 pub fn code_block(code: &str) -> String {
     code_block_with_lang(code, "")
 }
 
+/// Formats the code block with a specific language syntax.
+/// Escapes ``` and `\` characters inside the block.
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     wrap(
         escape_code(code).as_str(),
@@ -49,12 +71,13 @@ pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     )
 }
 
+/// Formats the string as an inline code.
+/// Escapes ``` and `\` characters inside the block.
 pub fn code_inline(s: &str) -> String {
     wrap(escape_code(s).as_str(), "`", "`")
 }
 
-// Escapes all markdown special characters in the string
-// https://core.telegram.org/bots/api#markdownv2-style
+/// Escapes all markdown special characters in the passed string.
 pub fn escape(s: &str) -> String {
     s.replace("_", r"\_")
         .replace("*", r"\*")
@@ -75,12 +98,12 @@ pub fn escape(s: &str) -> String {
         .replace("!", r"\!")
 }
 
-// Escapes all markdown special characters in the link URL (...)
+/// Escapes all markdown special characters specific for the inline link URL (``` and `)`)
 pub fn escape_link_url(s: &str) -> String {
     s.replace("`", r"\`").replace(")", r"\)")
 }
 
-// Escapes all markdown special characters in the code block or line
+/// Escapes all markdown special characters specific for the code block (``` and `\`)
 pub fn escape_code(s: &str) -> String {
     s.replace(r"\", r"\\").replace("`", r"\`")
 }
