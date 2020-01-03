@@ -1,331 +1,178 @@
 use crate::{
     requests::{
-        json, multipart,
-        payloads::{
-            AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery,
-            AnswerPreCheckoutQuery, AnswerShippingQuery, CreateNewStickerSet,
-            DeleteChatPhoto, DeleteChatStickerSet, DeleteMessage,
-            DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
-            EditMessageCaptionInline, EditMessageLiveLocation,
-            EditMessageLiveLocationInline, EditMessageMedia,
-            EditMessageMediaInline, EditMessageReplyMarkup,
-            EditMessageReplyMarkupInline, EditMessageText,
-            EditMessageTextInline, ExportChatInviteLink, ForwardMessage,
-            GetChat, GetChatAdministrator, GetChatMember, GetChatMembersCount,
-            GetFile, GetGameHighScore, GetGameHighScoreInline, GetMe,
-            GetStickerSet, GetUpdates, GetUserProfilePhoto, GetWebhookInfo,
-            KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember,
-            RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
-            SendContact, SendDocument, SendGame, SendInvoice, SendLocation,
-            SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
-            SendVenue, SendVideo, SendVideoNote, SendVoice,
-            SetChatAdministratorCustomTitle, SetChatDescription,
-            SetChatPermission, SetChatPhoto, SetChatStickerSet, SetChatTitle,
-            SetGameScore, SetGameScoreInline, SetStickerPositionInSet,
-            SetWebhook, StopMessageLiveLocation, StopMessageLiveLocationInline,
-            StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
-        },
+        AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery,
+        AnswerPreCheckoutQuery, AnswerShippingQuery, CreateNewStickerSet,
+        DeleteChatPhoto, DeleteChatStickerSet, DeleteMessage,
+        DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
+        EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup,
+        EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
+        GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile,
+        GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
+        GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
+        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
+        SendAudio, SendChatAction, SendChatActionKind, SendContact,
+        SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
+        SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
+        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
+        SetChatDescription, SetChatPermissions, SetChatPhoto,
+        SetChatStickerSet, SetChatTitle, SetGameScore, SetStickerPositionInSet,
+        SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
+        UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice,
+        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult,
+        InputFile, InputMedia, LabeledPrice,
     },
     Bot,
 };
 
 impl Bot {
-    /// For tg-method documentation see [`GetUpdate`]
-    ///
-    /// [`GetUpdate`]: crate::requests::payloads::GetUpdate
-    pub fn get_updates(&self) -> json::Request<GetUpdates> {
-        json::Request::new(self, GetUpdates::new())
+    pub fn get_updates(&self) -> GetUpdates {
+        GetUpdates::new(self)
     }
 
-    /// For tg-method documentation see [`SetWebhook`]
-    ///
-    /// [`SetWebhook`]: crate::requests::payloads::SetWebhook
-    pub fn set_webhook<U>(&self, url: U) -> json::Request<SetWebhook>
+    pub fn set_webhook<U>(&self, url: U) -> SetWebhook
     where
         U: Into<String>,
     {
-        json::Request::new(self, SetWebhook::new(url))
+        SetWebhook::new(self, url)
     }
 
-    /// For tg-method documentation see [`DeleteWebhook`]
-    ///
-    /// [`DeleteWebhook`]: crate::requests::payloads::DeleteWebhook
-    pub fn delete_webhook(&self) -> json::Request<DeleteWebhook> {
-        json::Request::new(self, DeleteWebhook::new())
+    pub fn delete_webhook(&self) -> DeleteWebhook {
+        DeleteWebhook::new(self)
     }
 
-    /// For tg-method documentation see [`GetWebhookInfo`]
-    ///
-    /// [`GetWebhookInfo`]: crate::requests::payloads::GetWebhookInfo
-    pub fn get_webhook_info(&self) -> json::Request<GetWebhookInfo> {
-        json::Request::new(self, GetWebhookInfo::new())
+    pub fn get_webhook_info(&self) -> GetWebhookInfo {
+        GetWebhookInfo::new(self)
     }
 
-    /// For tg-method documentation see [`GetMe`]
-    ///
-    /// [`GetMe`]: crate::requests::payloads::GetMe
-    pub fn get_me(&self) -> json::Request<GetMe> {
-        json::Request::new(self, GetMe::new())
+    pub fn get_me(&self) -> GetMe {
+        GetMe::new(self)
     }
 
-    /// For tg-method documentation see [`SendMessage`]
-    ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
-    pub fn send_message<C, T>(
-        &self,
-        chat_id: C,
-        text: T,
-    ) -> json::Request<SendMessage>
+    pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
-        json::Request::new(self, SendMessage::new(chat_id, text))
+        SendMessage::new(self, chat_id, text)
     }
 
-    /// For tg-method documentation see [`ForwardMessage`]
-    ///
-    /// [`ForwardMessage`]: crate::requests::payloads::ForwardMessage
     pub fn forward_message<C, F>(
         &self,
         chat_id: C,
         from_chat_id: F,
         message_id: i32,
-    ) -> json::Request<ForwardMessage>
+    ) -> ForwardMessage
     where
         C: Into<ChatId>,
         F: Into<ChatId>,
     {
-        json::Request::new(
-            self,
-            ForwardMessage::new(chat_id, from_chat_id, message_id),
-        )
+        ForwardMessage::new(self, chat_id, from_chat_id, message_id)
     }
 
-    /// For tg-method documentation see [`SendPhoto`]
-    ///
-    /// [`SendPhoto`]: crate::requests::payloads::SendPhoto
-    pub fn send_photo<C, P>(
-        &self,
-        chat_id: C,
-        photo: P,
-    ) -> multipart::Request<SendPhoto>
+    pub fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> SendPhoto
     where
         C: Into<ChatId>,
-        P: Into<InputFile>,
     {
-        multipart::Request::new(self, SendPhoto::new(chat_id, photo))
+        SendPhoto::new(self, chat_id, photo)
     }
 
-    /// For tg-method documentation see [`SendAudio`]
-    ///
-    /// [`SendAudio`]: crate::requests::payloads::SendAudio
-    pub fn send_audio<C, A>(
-        &self,
-        chat_id: C,
-        audio: A,
-    ) -> multipart::Request<SendAudio>
+    pub fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> SendAudio
     where
         C: Into<ChatId>,
-        A: Into<InputFile>,
     {
-        multipart::Request::new(self, SendAudio::new(chat_id, audio))
+        SendAudio::new(self, chat_id, audio)
     }
 
-    /// For tg-method documentation see [`SendDocument`]
-    ///
-    /// [`SendDocument`]: crate::requests::payloads::SendDocument
-    pub fn send_document<C, D>(
+    pub fn send_document<C>(
         &self,
         chat_id: C,
-        document: D,
-    ) -> multipart::Request<SendDocument>
+        document: InputFile,
+    ) -> SendDocument
     where
         C: Into<ChatId>,
-        D: Into<InputFile>,
     {
-        multipart::Request::new(self, SendDocument::new(chat_id, document))
+        SendDocument::new(self, chat_id, document)
     }
 
-    /// For tg-method documentation see [`SendVideo`]
-    ///
-    /// [`SendVideo`]: crate::requests::payloads::SendVideo
-    pub fn send_video<C, V>(
-        &self,
-        chat_id: C,
-        video: V,
-    ) -> multipart::Request<SendVideo>
+    pub fn send_video<C>(&self, chat_id: C, video: InputFile) -> SendVideo
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
-        multipart::Request::new(self, SendVideo::new(chat_id, video))
+        SendVideo::new(self, chat_id, video)
     }
 
-    /// For tg-method documentation see [`SendAnimation`]
-    ///
-    /// [`SendAnimation`]: crate::requests::payloads::SendAnimation
     pub fn send_animation<C>(
         &self,
         chat_id: C,
         animation: InputFile,
-    ) -> multipart::Request<SendAnimation>
+    ) -> SendAnimation
     where
         C: Into<ChatId>,
     {
-        multipart::Request::new(self, SendAnimation::new(chat_id, animation))
+        SendAnimation::new(self, chat_id, animation)
     }
 
-    /// For tg-method documentation see [`SendVoice`]
-    ///
-    /// [`SendVoice`]: crate::requests::payloads::SendVoice
-    pub fn send_voice<C, V>(
-        &self,
-        chat_id: C,
-        voice: V,
-    ) -> multipart::Request<SendVoice>
+    pub fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> SendVoice
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
-        multipart::Request::new(self, SendVoice::new(chat_id, voice))
+        SendVoice::new(self, chat_id, voice)
     }
 
-    /// For tg-method documentation see [`SendVideoNote`]
-    ///
-    /// [`SendVideoNote`]: crate::requests::payloads::SendVideoNote
-    pub fn send_video_note<C, V>(
+    pub fn send_video_note<C>(
         &self,
         chat_id: C,
-        video_note: V,
-    ) -> multipart::Request<SendVideoNote>
+        video_note: InputFile,
+    ) -> SendVideoNote
     where
         C: Into<ChatId>,
-        V: Into<InputFile>,
     {
-        multipart::Request::new(self, SendVideoNote::new(chat_id, video_note))
+        SendVideoNote::new(self, chat_id, video_note)
     }
 
-    /// For tg-method documentation see [`SendMediaGroup`]
-    ///
-    /// [`SendMediaGroup`]: crate::requests::payloads::SendMediaGroup
-    pub fn send_media_group<C, M>(
-        &self,
-        chat_id: C,
-        media: M,
-    ) -> multipart::Request<SendMediaGroup>
+    pub fn send_media_group<C, M>(&self, chat_id: C, media: M) -> SendMediaGroup
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,
     {
-        multipart::Request::new(self, SendMediaGroup::new(chat_id, media))
+        SendMediaGroup::new(self, chat_id, media)
     }
 
-    /// For tg-method documentation see [`SendLocation`]
-    ///
-    /// [`SendLocation`]: crate::requests::payloads::SendLocation
     pub fn send_location<C>(
         &self,
         chat_id: C,
         latitude: f32,
         longitude: f32,
-    ) -> json::Request<SendLocation>
+    ) -> SendLocation
     where
         C: Into<ChatId>,
     {
-        json::Request::new(
-            self,
-            SendLocation::new(chat_id, latitude, longitude),
-        )
+        SendLocation::new(self, chat_id, latitude, longitude)
     }
 
-    /// For tg-method documentation see [`EditMessageLiveLocationInline`]
-    ///
-    /// [`EditMessageLiveLocationInline`]:
-    /// crate::requests::payloads::EditMessageLiveLocationInline
-    pub fn edit_message_live_location_inline<I>(
+    pub fn edit_message_live_location(
         &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         latitude: f32,
         longitude: f32,
-    ) -> json::Request<EditMessageLiveLocationInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
+    ) -> EditMessageLiveLocation {
+        EditMessageLiveLocation::new(
             self,
-            EditMessageLiveLocationInline::new(
-                inline_message_id,
-                latitude,
-                longitude,
-            ),
+            chat_or_inline_message,
+            latitude,
+            longitude,
         )
     }
 
-    /// For tg-method documentation see [`EditMessageLiveLocation`]
-    ///
-    /// [`EditMessageLiveLocation`]:
-    /// crate::requests::payloads::EditMessageLiveLocation
-    pub fn edit_message_live_location<C>(
+    pub fn stop_message_live_location(
         &self,
-        chat_id: C,
-        message_id: i32,
-        latitude: f32,
-        longitude: f32,
-    ) -> json::Request<EditMessageLiveLocation>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(
-            self,
-            EditMessageLiveLocation::new(
-                chat_id, message_id, latitude, longitude,
-            ),
-        )
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> StopMessageLiveLocation {
+        StopMessageLiveLocation::new(self, chat_or_inline_message)
     }
 
-    /// For tg-method documentation see [`StopMessageLiveLocationInline`]
-    ///
-    /// [`StopMessageLiveLocationInline`]:
-    /// crate::requests::payloads::StopMessageLiveLocationInline
-    pub fn stop_message_live_location_inline<I>(
-        &self,
-        inline_message_id: I,
-    ) -> json::Request<StopMessageLiveLocationInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
-            self,
-            StopMessageLiveLocationInline::new(inline_message_id),
-        )
-    }
-
-    /// For tg-method documentation see [`StopMessageLiveLocation`]
-    ///
-    /// [`StopMessageLiveLocation`]:
-    /// crate::requests::payloads::StopMessageLiveLocation
-    pub fn stop_message_live_location<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> json::Request<StopMessageLiveLocation>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(
-            self,
-            StopMessageLiveLocation::new(chat_id, message_id),
-        )
-    }
-
-    /// For tg-method documentation see [`SendVenue`]
-    ///
-    /// [`SendVenue`]: crate::requests::payloads::SendVenue
     pub fn send_venue<C, T, A>(
         &self,
         chat_id: C,
@@ -333,667 +180,389 @@ impl Bot {
         longitude: f32,
         title: T,
         address: A,
-    ) -> json::Request<SendVenue>
+    ) -> SendVenue
     where
         C: Into<ChatId>,
         T: Into<String>,
         A: Into<String>,
     {
-        json::Request::new(
-            self,
-            SendVenue::new(chat_id, latitude, longitude, title, address),
-        )
+        SendVenue::new(self, chat_id, latitude, longitude, title, address)
     }
 
-    /// For tg-method documentation see [`SendContact`]
-    ///
-    /// [`SendContact`]: crate::requests::payloads::SendContact
     pub fn send_contact<C, P, F>(
         &self,
         chat_id: C,
         phone_number: P,
         first_name: F,
-    ) -> json::Request<SendContact>
+    ) -> SendContact
     where
         C: Into<ChatId>,
         P: Into<String>,
         F: Into<String>,
     {
-        json::Request::new(
-            self,
-            SendContact::new(chat_id, phone_number, first_name),
-        )
+        SendContact::new(self, chat_id, phone_number, first_name)
     }
 
-    /// For tg-method documentation see [`SendPoll`]
-    ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
     pub fn send_poll<C, Q, O>(
         &self,
         chat_id: C,
         question: Q,
         options: O,
-    ) -> json::Request<SendPoll>
+    ) -> SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
-        json::Request::new(self, SendPoll::new(chat_id, question, options))
+        SendPoll::new(self, chat_id, question, options)
     }
 
-    /// For tg-method documentation see [`SendChatAction`]
-    ///
-    /// [`SendChatAction`]: crate::requests::payloads::SendChatAction
-    pub fn send_chat_action<C, A>(
+    pub fn send_chat_action<C>(
         &self,
         chat_id: C,
-        action: A,
-    ) -> json::Request<SendChatAction>
+        action: SendChatActionKind,
+    ) -> SendChatAction
     where
         C: Into<ChatId>,
-        A: Into<String>,
     {
-        json::Request::new(self, SendChatAction::new(chat_id, action))
+        SendChatAction::new(self, chat_id, action)
     }
 
-    /// For tg-method documentation see [`GetUserProfilePhoto`]
-    ///
-    /// [`GetUserProfilePhoto`]: crate::requests::payloads::GetUserProfilePhoto
     pub fn get_user_profile_photos(
         &self,
         user_id: i32,
-    ) -> json::Request<GetUserProfilePhoto> {
-        json::Request::new(self, GetUserProfilePhoto::new(user_id))
+    ) -> GetUserProfilePhotos {
+        GetUserProfilePhotos::new(self, user_id)
     }
 
-    /// For tg-method documentation see [`GetFile`]
-    ///
-    /// [`GetFile`]: crate::requests::payloads::GetFile
-    pub fn get_file<F>(&self, file_id: F) -> json::Request<GetFile>
+    pub fn get_file<F>(&self, file_id: F) -> GetFile
     where
         F: Into<String>,
     {
-        json::Request::new(self, GetFile::new(file_id))
+        GetFile::new(self, file_id)
     }
 
-    /// For tg-method documentation see [`KickChatMember`]
-    ///
-    /// [`KickChatMember`]: crate::requests::payloads::KickChatMember
     pub fn kick_chat_member<C>(
         &self,
         chat_id: C,
         user_id: i32,
-    ) -> json::Request<KickChatMember>
+    ) -> KickChatMember
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, KickChatMember::new(chat_id, user_id))
+        KickChatMember::new(self, chat_id, user_id)
     }
 
-    /// For tg-method documentation see [`UnbanChatMember`]
-    ///
-    /// [`UnbanChatMember`]: crate::requests::payloads::UnbanChatMember
     pub fn unban_chat_member<C>(
         &self,
         chat_id: C,
         user_id: i32,
-    ) -> json::Request<UnbanChatMember>
+    ) -> UnbanChatMember
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, UnbanChatMember::new(chat_id, user_id))
+        UnbanChatMember::new(self, chat_id, user_id)
     }
 
-    /// For tg-method documentation see [`RestrictChatMember`]
-    ///
-    /// [`RestrictChatMember`]: crate::requests::payloads::RestrictChatMember
     pub fn restrict_chat_member<C>(
         &self,
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,
-    ) -> json::Request<RestrictChatMember>
+    ) -> RestrictChatMember
     where
         C: Into<ChatId>,
     {
-        json::Request::new(
-            self,
-            RestrictChatMember::new(chat_id, user_id, permissions),
-        )
+        RestrictChatMember::new(self, chat_id, user_id, permissions)
     }
 
-    /// For tg-method documentation see [`PromoteChatMember`]
-    ///
-    /// [`PromoteChatMember`]: crate::requests::payloads::PromoteChatMember
     pub fn promote_chat_member<C>(
         &self,
         chat_id: C,
         user_id: i32,
-    ) -> json::Request<PromoteChatMember>
+    ) -> PromoteChatMember
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, PromoteChatMember::new(chat_id, user_id))
+        PromoteChatMember::new(self, chat_id, user_id)
     }
 
-    /// For tg-method documentation see [`SetChatPermission`]
-    ///
-    /// [`SetChatPermission`]: crate::requests::payloads::SetChatPermission
     pub fn set_chat_permissions<C>(
         &self,
         chat_id: C,
         permissions: ChatPermissions,
-    ) -> json::Request<SetChatPermission>
+    ) -> SetChatPermissions
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, SetChatPermission::new(chat_id, permissions))
+        SetChatPermissions::new(self, chat_id, permissions)
     }
 
-    /// For tg-method documentation see [`ExportChatInviteLink`]
-    ///
-    /// [`ExportChatInviteLink`]:
-    /// crate::requests::payloads::ExportChatInviteLink
-    pub fn export_chat_invite_link<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<ExportChatInviteLink>
+    pub fn export_chat_invite_link<C>(&self, chat_id: C) -> ExportChatInviteLink
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, ExportChatInviteLink::new(chat_id))
+        ExportChatInviteLink::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`SetChatPhoto`]
-    ///
-    /// [`SetChatPhoto`]: crate::requests::payloads::SetChatPhoto
     pub fn set_chat_photo<C>(
         &self,
         chat_id: C,
         photo: InputFile,
-    ) -> json::Request<SetChatPhoto>
+    ) -> SetChatPhoto
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, SetChatPhoto::new(chat_id, photo))
+        SetChatPhoto::new(self, chat_id, photo)
     }
 
-    /// For tg-method documentation see [`DeleteChatPhoto`]
-    ///
-    /// [`DeleteChatPhoto`]: crate::requests::payloads::DeleteChatPhoto
-    pub fn delete_chat_photo<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<DeleteChatPhoto>
+    pub fn delete_chat_photo<C>(&self, chat_id: C) -> DeleteChatPhoto
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, DeleteChatPhoto::new(chat_id))
+        DeleteChatPhoto::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`SetChatTitle`]
-    ///
-    /// [`SetChatTitle`]: crate::requests::payloads::SetChatTitle
-    pub fn set_chat_title<C, T>(
-        &self,
-        chat_id: C,
-        title: T,
-    ) -> json::Request<SetChatTitle>
+    pub fn set_chat_title<C, T>(&self, chat_id: C, title: T) -> SetChatTitle
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
-        json::Request::new(self, SetChatTitle::new(chat_id, title))
+        SetChatTitle::new(self, chat_id, title)
     }
 
-    /// For tg-method documentation see [`SetChatDescription`]
-    ///
-    /// [`SetChatDescription`]: crate::requests::payloads::SetChatDescription
-    pub fn set_chat_description<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<SetChatDescription>
+    pub fn set_chat_description<C>(&self, chat_id: C) -> SetChatDescription
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, SetChatDescription::new(chat_id))
+        SetChatDescription::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`PinChatMessage`]
-    ///
-    /// [`PinChatMessage`]: crate::requests::payloads::PinChatMessage
     pub fn pin_chat_message<C>(
         &self,
         chat_id: C,
         message_id: i32,
-    ) -> json::Request<PinChatMessage>
+    ) -> PinChatMessage
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, PinChatMessage::new(chat_id, message_id))
+        PinChatMessage::new(self, chat_id, message_id)
     }
 
-    /// For tg-method documentation see [`UnpinChatMessage`]
-    ///
-    /// [`UnpinChatMessage`]: crate::requests::payloads::UnpinChatMessage
-    pub fn unpin_chat_message<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<UnpinChatMessage>
+    pub fn unpin_chat_message<C>(&self, chat_id: C) -> UnpinChatMessage
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, UnpinChatMessage::new(chat_id))
+        UnpinChatMessage::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`LeaveChat`]
-    ///
-    /// [`LeaveChat`]: crate::requests::payloads::LeaveChat
-    pub fn leave_chat<C>(&self, chat_id: C) -> json::Request<LeaveChat>
+    pub fn leave_chat<C>(&self, chat_id: C) -> LeaveChat
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, LeaveChat::new(chat_id))
+        LeaveChat::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`GetChat`]
-    ///
-    /// [`GetChat`]: crate::requests::payloads::GetChat
-    pub fn get_chat<C>(&self, chat_id: C) -> json::Request<GetChat>
+    pub fn get_chat<C>(&self, chat_id: C) -> GetChat
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, GetChat::new(chat_id))
+        GetChat::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`GetChatAdministrator`]
-    ///
-    /// [`GetChatAdministrator`]:
-    /// crate::requests::payloads::GetChatAdministrator
     pub fn get_chat_administrators<C>(
         &self,
         chat_id: C,
-    ) -> json::Request<GetChatAdministrator>
+    ) -> GetChatAdministrators
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, GetChatAdministrator::new(chat_id))
+        GetChatAdministrators::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`GetChatMembersCount`]
-    ///
-    /// [`GetChatMembersCount`]: crate::requests::payloads::GetChatMembersCount
-    pub fn get_chat_members_count<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<GetChatMembersCount>
+    pub fn get_chat_members_count<C>(&self, chat_id: C) -> GetChatMembersCount
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, GetChatMembersCount::new(chat_id))
+        GetChatMembersCount::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`GetChatMember`]
-    ///
-    /// [`GetChatMember`]: crate::requests::payloads::GetChatMember
-    pub fn get_chat_member<C>(
-        &self,
-        chat_id: C,
-        user_id: i32,
-    ) -> json::Request<GetChatMember>
+    pub fn get_chat_member<C>(&self, chat_id: C, user_id: i32) -> GetChatMember
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, GetChatMember::new(chat_id, user_id))
+        GetChatMember::new(self, chat_id, user_id)
     }
 
-    /// For tg-method documentation see [`SetChatStickerSet`]
-    ///
-    /// [`SetChatStickerSet`]: crate::requests::payloads::SetChatStickerSet
     pub fn set_chat_sticker_set<C, S>(
         &self,
         chat_id: C,
         sticker_set_name: S,
-    ) -> json::Request<SetChatStickerSet>
+    ) -> SetChatStickerSet
     where
         C: Into<ChatId>,
         S: Into<String>,
     {
-        json::Request::new(
-            self,
-            SetChatStickerSet::new(chat_id, sticker_set_name),
-        )
+        SetChatStickerSet::new(self, chat_id, sticker_set_name)
     }
 
-    /// For tg-method documentation see [`DeleteChatStickerSet`]
-    ///
-    /// [`DeleteChatStickerSet`]:
-    /// crate::requests::payloads::DeleteChatStickerSet
-    pub fn delete_chat_sticker_set<C>(
-        &self,
-        chat_id: C,
-    ) -> json::Request<DeleteChatStickerSet>
+    pub fn delete_chat_sticker_set<C>(&self, chat_id: C) -> DeleteChatStickerSet
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, DeleteChatStickerSet::new(chat_id))
+        DeleteChatStickerSet::new(self, chat_id)
     }
 
-    /// For tg-method documentation see [`AnswerCallbackQuery`]
-    ///
-    /// [`AnswerCallbackQuery`]: crate::requests::payloads::AnswerCallbackQuery
     pub fn answer_callback_query<C>(
         &self,
         callback_query_id: C,
-    ) -> json::Request<AnswerCallbackQuery>
+    ) -> AnswerCallbackQuery
     where
         C: Into<String>,
     {
-        json::Request::new(self, AnswerCallbackQuery::new(callback_query_id))
+        AnswerCallbackQuery::new(self, callback_query_id)
     }
 
-    /// For tg-method documentation see [`EditMessageTextInline`]
-    ///
-    /// [`EditMessageTextInline`]:
-    /// crate::requests::payloads::EditMessageTextInline
-    pub fn edit_message_text_inline<I, T>(
+    pub fn edit_message_text<T>(
         &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         text: T,
-    ) -> json::Request<EditMessageTextInline>
+    ) -> EditMessageText
     where
-        I: Into<String>,
         T: Into<String>,
     {
-        json::Request::new(
-            self,
-            EditMessageTextInline::new(inline_message_id, text),
-        )
+        EditMessageText::new(self, chat_or_inline_message, text)
     }
 
-    /// For tg-method documentation see [`EditMessageText`]
-    ///
-    /// [`EditMessageText`]: crate::requests::payloads::EditMessageText
-    pub fn edit_message_text<C, T>(
+    pub fn edit_message_caption(
         &self,
-        chat_id: C,
-        message_id: i32,
-        text: T,
-    ) -> json::Request<EditMessageText>
-    where
-        C: Into<ChatId>,
-        T: Into<String>,
-    {
-        json::Request::new(
-            self,
-            EditMessageText::new(chat_id, message_id, text),
-        )
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> EditMessageCaption {
+        EditMessageCaption::new(self, chat_or_inline_message)
     }
 
-    /// For tg-method documentation see [`EditMessageCaptionInline`]
-    ///
-    /// [`EditMessageCaptionInline`]:
-    /// crate::requests::payloads::EditMessageCaptionInline
-    pub fn edit_message_caption_inline<I>(
+    pub fn edit_message_media(
         &self,
-        inline_message_id: I,
-    ) -> json::Request<EditMessageCaptionInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
-            self,
-            EditMessageCaptionInline::new(inline_message_id),
-        )
-    }
-
-    /// For tg-method documentation see [`EditMessageCaption`]
-    ///
-    /// [`EditMessageCaption`]: crate::requests::payloads::EditMessageCaption
-    pub fn edit_message_caption<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> json::Request<EditMessageCaption>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(self, EditMessageCaption::new(chat_id, message_id))
-    }
-
-    /// For tg-method documentation see [`EditMessageMediaInline`]
-    ///
-    /// [`EditMessageMediaInline`]:
-    /// crate::requests::payloads::EditMessageMediaInline
-    pub fn edit_message_media_inline<I>(
-        &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
-    ) -> multipart::Request<EditMessageMediaInline>
-    where
-        I: Into<String>,
-    {
-        multipart::Request::new(
-            self,
-            EditMessageMediaInline::new(inline_message_id, media),
-        )
+    ) -> EditMessageMedia {
+        EditMessageMedia::new(self, chat_or_inline_message, media)
     }
 
-    /// For tg-method documentation see [`EditMessageMedum`]
-    ///
-    /// [`EditMessageMedum`]: crate::requests::payloads::EditMessageMedum
-    pub fn edit_message_media<C>(
+    pub fn edit_message_reply_markup(
         &self,
-        chat_id: C,
-        message_id: i32,
-        media: InputMedia,
-    ) -> multipart::Request<EditMessageMedia>
+        chat_or_inline_message: ChatOrInlineMessage,
+    ) -> EditMessageReplyMarkup {
+        EditMessageReplyMarkup::new(self, chat_or_inline_message)
+    }
+
+    pub fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> StopPoll
     where
         C: Into<ChatId>,
     {
-        multipart::Request::new(
-            self,
-            EditMessageMedia::new(chat_id, message_id, media),
-        )
+        StopPoll::new(self, chat_id, message_id)
     }
 
-    /// For tg-method documentation see [`EditMessageReplyMarkupInline`]
-    ///
-    /// [`EditMessageReplyMarkupInline`]:
-    /// crate::requests::payloads::EditMessageReplyMarkupInline
-    pub fn edit_message_reply_markup_inline<I>(
-        &self,
-        inline_message_id: I,
-    ) -> json::Request<EditMessageReplyMarkupInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
-            self,
-            EditMessageReplyMarkupInline::new(inline_message_id),
-        )
-    }
-
-    /// For tg-method documentation see [`EditMessageReplyMarkup`]
-    ///
-    /// [`EditMessageReplyMarkup`]:
-    /// crate::requests::payloads::EditMessageReplyMarkup
-    pub fn edit_message_reply_markup<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> json::Request<EditMessageReplyMarkup>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(
-            self,
-            EditMessageReplyMarkup::new(chat_id, message_id),
-        )
-    }
-
-    /// For tg-method documentation see [`StopPoll`]
-    ///
-    /// [`StopPoll`]: crate::requests::payloads::StopPoll
-    pub fn stop_poll<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> json::Request<StopPoll>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(self, StopPoll::new(chat_id, message_id))
-    }
-
-    /// For tg-method documentation see [`DeleteMessage`]
-    ///
-    /// [`DeleteMessage`]: crate::requests::payloads::DeleteMessage
     pub fn delete_message<C>(
         &self,
         chat_id: C,
         message_id: i32,
-    ) -> json::Request<DeleteMessage>
+    ) -> DeleteMessage
     where
         C: Into<ChatId>,
     {
-        json::Request::new(self, DeleteMessage::new(chat_id, message_id))
+        DeleteMessage::new(self, chat_id, message_id)
     }
 
-    /// For tg-method documentation see [`SendSticker`]
-    ///
-    /// [`SendSticker`]: crate::requests::payloads::SendSticker
-    pub fn send_sticker<C, S>(
-        &self,
-        chat_id: C,
-        sticker: S,
-    ) -> multipart::Request<SendSticker>
+    pub fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> SendSticker
     where
         C: Into<ChatId>,
-        S: Into<InputFile>,
     {
-        multipart::Request::new(self, SendSticker::new(chat_id, sticker))
+        SendSticker::new(self, chat_id, sticker)
     }
 
-    /// For tg-method documentation see [`GetStickerSet`]
-    ///
-    /// [`GetStickerSet`]: crate::requests::payloads::GetStickerSet
-    pub fn get_sticker_set<N>(&self, name: N) -> json::Request<GetStickerSet>
+    pub fn get_sticker_set<N>(&self, name: N) -> GetStickerSet
     where
         N: Into<String>,
     {
-        json::Request::new(self, GetStickerSet::new(name))
+        GetStickerSet::new(self, name)
     }
 
-    /// For tg-method documentation see [`UploadStickerFile`]
-    ///
-    /// [`UploadStickerFile`]: crate::requests::payloads::UploadStickerFile
     pub fn upload_sticker_file(
         &self,
         user_id: i32,
         png_sticker: InputFile,
-    ) -> json::Request<UploadStickerFile> {
-        json::Request::new(self, UploadStickerFile::new(user_id, png_sticker))
+    ) -> UploadStickerFile {
+        UploadStickerFile::new(self, user_id, png_sticker)
     }
 
-    /// For tg-method documentation see [`CreateNewStickerSet`]
-    ///
-    /// [`CreateNewStickerSet`]: crate::requests::payloads::CreateNewStickerSet
-    pub fn create_new_sticker_set<N, T, P, E>(
+    pub fn create_new_sticker_set<N, T, E>(
         &self,
         user_id: i32,
         name: N,
         title: T,
-        png_sticker: P,
+        png_sticker: InputFile,
         emojis: E,
-    ) -> multipart::Request<CreateNewStickerSet>
+    ) -> CreateNewStickerSet
     where
         N: Into<String>,
         T: Into<String>,
-        P: Into<InputFile>,
         E: Into<String>,
     {
-        multipart::Request::new(
+        CreateNewStickerSet::new(
             self,
-            CreateNewStickerSet::new(user_id, name, title, png_sticker, emojis),
+            user_id,
+            name,
+            title,
+            png_sticker,
+            emojis,
         )
     }
 
-    /// For tg-method documentation see [`AddStickerToSet`]
-    ///
-    /// [`AddStickerToSet`]: crate::requests::payloads::AddStickerToSet
-    pub fn add_sticker_to_set<N, P, E>(
+    pub fn add_sticker_to_set<N, E>(
         &self,
         user_id: i32,
         name: N,
-        png_sticker: P,
+        png_sticker: InputFile,
         emojis: E,
-    ) -> multipart::Request<AddStickerToSet>
+    ) -> AddStickerToSet
     where
         N: Into<String>,
-        P: Into<InputFile>,
         E: Into<String>,
     {
-        multipart::Request::new(
-            self,
-            AddStickerToSet::new(user_id, name, png_sticker, emojis),
-        )
+        AddStickerToSet::new(self, user_id, name, png_sticker, emojis)
     }
 
-    /// For tg-method documentation see [`SetStickerPositionInSet`]
-    ///
-    /// [`SetStickerPositionInSet`]:
-    /// crate::requests::payloads::SetStickerPositionInSet
     pub fn set_sticker_position_in_set<S>(
         &self,
         sticker: S,
         position: i32,
-    ) -> json::Request<SetStickerPositionInSet>
+    ) -> SetStickerPositionInSet
     where
         S: Into<String>,
     {
-        json::Request::new(
-            self,
-            SetStickerPositionInSet::new(sticker, position),
-        )
+        SetStickerPositionInSet::new(self, sticker, position)
     }
 
-    /// For tg-method documentation see [`DeleteStickerFromSet`]
-    ///
-    /// [`DeleteStickerFromSet`]:
-    /// crate::requests::payloads::DeleteStickerFromSet
-    pub fn delete_sticker_from_set<S>(
-        &self,
-        sticker: S,
-    ) -> json::Request<DeleteStickerFromSet>
+    pub fn delete_sticker_from_set<S>(&self, sticker: S) -> DeleteStickerFromSet
     where
         S: Into<String>,
     {
-        json::Request::new(self, DeleteStickerFromSet::new(sticker))
+        DeleteStickerFromSet::new(self, sticker)
     }
 
-    /// For tg-method documentation see [`AnswerInlineQuery`]
-    ///
-    /// [`AnswerInlineQuery`]: crate::requests::payloads::AnswerInlineQuery
     pub fn answer_inline_query<I, R>(
         &self,
         inline_query_id: I,
         results: R,
-    ) -> json::Request<AnswerInlineQuery>
+    ) -> AnswerInlineQuery
     where
         I: Into<String>,
         R: Into<Vec<InlineQueryResult>>,
     {
-        json::Request::new(
-            self,
-            AnswerInlineQuery::new(inline_query_id, results),
-        )
+        AnswerInlineQuery::new(self, inline_query_id, results)
     }
 
-    /// For tg-method documentation see [`SendInvoice`]
-    ///
-    /// [`SendInvoice`]: crate::requests::payloads::SendInvoice
     #[allow(clippy::too_many_arguments)]
     pub fn send_invoice<T, D, Pl, Pt, S, C, Pr>(
         &self,
@@ -1005,7 +574,7 @@ impl Bot {
         start_parameter: S,
         currency: C,
         prices: Pr,
-    ) -> json::Request<SendInvoice>
+    ) -> SendInvoice
     where
         T: Into<String>,
         D: Into<String>,
@@ -1015,164 +584,80 @@ impl Bot {
         C: Into<String>,
         Pr: Into<Vec<LabeledPrice>>,
     {
-        json::Request::new(
+        SendInvoice::new(
             self,
-            SendInvoice::new(
-                chat_id,
-                title,
-                description,
-                payload,
-                provider_token,
-                start_parameter,
-                currency,
-                prices,
-            ),
+            chat_id,
+            title,
+            description,
+            payload,
+            provider_token,
+            start_parameter,
+            currency,
+            prices,
         )
     }
 
-    /// For tg-method documentation see [`AnswerShippingQuery`]
-    ///
-    /// [`AnswerShippingQuery`]: crate::requests::payloads::AnswerShippingQuery
     pub fn answer_shipping_query<S>(
         &self,
         shipping_query_id: S,
         ok: bool,
-    ) -> json::Request<AnswerShippingQuery>
+    ) -> AnswerShippingQuery
     where
         S: Into<String>,
     {
-        json::Request::new(
-            self,
-            AnswerShippingQuery::new(shipping_query_id, ok),
-        )
+        AnswerShippingQuery::new(self, shipping_query_id, ok)
     }
 
-    /// For tg-method documentation see [`AnswerPreCheckoutQuery`]
-    ///
-    /// [`AnswerPreCheckoutQuery`]:
-    /// crate::requests::payloads::AnswerPreCheckoutQuery
     pub fn answer_pre_checkout_query<P>(
         &self,
         pre_checkout_query_id: P,
         ok: bool,
-    ) -> json::Request<AnswerPreCheckoutQuery>
+    ) -> AnswerPreCheckoutQuery
     where
         P: Into<String>,
     {
-        json::Request::new(
-            self,
-            AnswerPreCheckoutQuery::new(pre_checkout_query_id, ok),
-        )
+        AnswerPreCheckoutQuery::new(self, pre_checkout_query_id, ok)
     }
 
-    /// For tg-method documentation see [`SendGame`]
-    ///
-    /// [`SendGame`]: crate::requests::payloads::SendGame
-    pub fn send_game<G>(
-        &self,
-        chat_id: i32,
-        game_short_name: G,
-    ) -> json::Request<SendGame>
+    pub fn send_game<G>(&self, chat_id: i32, game_short_name: G) -> SendGame
     where
         G: Into<String>,
     {
-        json::Request::new(self, SendGame::new(chat_id, game_short_name))
+        SendGame::new(self, chat_id, game_short_name)
     }
 
-    /// For tg-method documentation see [`SetGameScoreInline`]
-    ///
-    /// [`SetGameScoreInline`]: crate::requests::payloads::SetGameScoreInline
-    pub fn set_game_score_inline<I>(
+    pub fn set_game_score(
         &self,
-        inline_message_id: I,
+        chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
         score: i32,
-    ) -> json::Request<SetGameScoreInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
-            self,
-            SetGameScoreInline::new(inline_message_id, user_id, score),
-        )
+    ) -> SetGameScore {
+        SetGameScore::new(self, chat_or_inline_message, user_id, score)
     }
 
-    /// For tg-method documentation see [`SetGameScore`]
-    ///
-    /// [`SetGameScore`]: crate::requests::payloads::SetGameScore
-    pub fn set_game_score<C>(
+    pub fn get_game_high_scores(
         &self,
-        chat_id: C,
-        message_id: i32,
+        chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
-        score: i32,
-    ) -> json::Request<SetGameScore>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(
-            self,
-            SetGameScore::new(chat_id, message_id, user_id, score),
-        )
+    ) -> GetGameHighScores {
+        GetGameHighScores::new(self, chat_or_inline_message, user_id)
     }
 
-    /// For tg-method documentation see [`GetGameHighScoreInline`]
-    ///
-    /// [`GetGameHighScoreInline`]:
-    /// crate::requests::payloads::GetGameHighScoreInline
-    pub fn get_game_high_scores_inline<I>(
-        &self,
-        inline_message_id: I,
-        user_id: i32,
-    ) -> json::Request<GetGameHighScoreInline>
-    where
-        I: Into<String>,
-    {
-        json::Request::new(
-            self,
-            GetGameHighScoreInline::new(inline_message_id, user_id),
-        )
-    }
-
-    /// For tg-method documentation see [`GetGameHighScore`]
-    ///
-    /// [`GetGameHighScore`]: crate::requests::payloads::GetGameHighScore
-    pub fn get_game_high_scores<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-        user_id: i32,
-    ) -> json::Request<GetGameHighScore>
-    where
-        C: Into<ChatId>,
-    {
-        json::Request::new(
-            self,
-            GetGameHighScore::new(chat_id, message_id, user_id),
-        )
-    }
-
-    /// For tg-method documentation see [`SetChatAdministratorCustomTitle`]
-    ///
-    /// [`SetChatAdministratorCustomTitle`]:
-    /// crate::requests::payloads::SetChatAdministratorCustomTitle
     pub fn set_chat_administrator_custom_title<C, CT>(
         &self,
         chat_id: C,
         user_id: i32,
         custom_title: CT,
-    ) -> json::Request<SetChatAdministratorCustomTitle>
+    ) -> SetChatAdministratorCustomTitle
     where
         C: Into<ChatId>,
         CT: Into<String>,
     {
-        json::Request::new(
+        SetChatAdministratorCustomTitle::new(
             self,
-            SetChatAdministratorCustomTitle::new(
-                chat_id,
-                user_id,
-                custom_title,
-            ),
+            chat_id,
+            user_id,
+            custom_title,
         )
     }
 }

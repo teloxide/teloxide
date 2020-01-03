@@ -2,9 +2,8 @@ use reqwest::Client;
 
 mod api;
 mod download;
-mod execute;
 
-/// A Telegram bot used to build requests.
+/// A Telegram bot used to send requests.
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: String,
@@ -34,12 +33,12 @@ impl Bot {
 }
 
 impl Bot {
-    #[inline]
+    // TODO: const fn
     pub fn token(&self) -> &str {
         &self.token
     }
 
-    #[inline]
+    // TODO: const fn
     pub fn client(&self) -> &Client {
         &self.client
     }

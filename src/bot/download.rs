@@ -19,7 +19,7 @@ impl Bot {
     /// use teloxide::types::File as TgFile;
     /// use tokio::fs::File;
     /// # use teloxide::RequestError;
-    /// use teloxide::Bot;
+    /// use teloxide::{requests::Request, Bot};
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
@@ -30,8 +30,8 @@ impl Bot {
     /// # Ok(()) }
     /// ```
     ///
-    /// [`get_file`]: crate::bot::Bot::get_file
-    /// [`download_file_stream`]: crate::bot::Bot::download_file_stream
+    /// [`get_file`]: crate::Bot::get_file
+    /// [`download_file_stream`]: crate::Bot::download_file_stream
     pub async fn download_file<D>(
         &self,
         path: &str,
@@ -53,7 +53,7 @@ impl Bot {
     /// [`get_file`]: crate::bot::Bot::get_file
     /// [`AsyncWrite`]: tokio::io::AsyncWrite
     /// [`tokio::fs::File`]: tokio::fs::File
-    /// [`download_file`]: crate::bot::Bot::download_file
+    /// [`download_file`]: crate::Bot::download_file
     #[cfg(feature = "unstable-stream")]
     pub async fn download_file_stream(
         &self,

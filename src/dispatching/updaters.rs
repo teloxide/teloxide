@@ -104,6 +104,7 @@ use futures::{stream, Stream, StreamExt};
 
 use crate::{
     bot::Bot,
+    requests::Request,
     types::{AllowedUpdate, Update},
     RequestError,
 };
@@ -133,7 +134,7 @@ pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
 ///
 /// See also: [`polling_default`](polling_default).
 ///
-/// [`GetUpdates`]: crate::requests::payloads::GetUpdates
+/// [`GetUpdates`]: crate::requests::GetUpdates
 pub fn polling(
     bot: &Bot,
     timeout: Option<Duration>,
@@ -147,9 +148,9 @@ pub fn polling(
         (allowed_updates, bot, 0),
         move |(mut allowed_updates, bot, mut offset)| async move {
             let mut req = bot.get_updates().offset(offset);
-            req.payload.timeout = timeout;
-            req.payload.limit = limit;
-            req.payload.allowed_updates = allowed_updates.take();
+            req.timeout = timeout;
+            req.limit = limit;
+            req.allowed_updates = allowed_updates.take();
 
             let updates = match req.send().await {
                 Err(err) => vec![Err(err)],
