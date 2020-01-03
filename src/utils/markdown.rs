@@ -1,8 +1,11 @@
-//! Utils for working with the [MarkdownV2 message style.](https://core.telegram.org/bots/api#markdownv2-style)
+//! Utils for working with the [MarkdownV2 message style.][spec]
+//!
+//! [spec]: https://core.telegram.org/bots/api#markdownv2-style
 
 use std::string::String;
 
 /// Applies the bold font style to the string.
+/// 
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
 pub fn bold(s: &str) -> String {
@@ -10,17 +13,19 @@ pub fn bold(s: &str) -> String {
 }
 
 /// Applies the italic font style to the string.
+/// 
 /// Can be safely used with `utils::markdown::underline()`.
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
 pub fn italic(s: &str) -> String {
     if s.starts_with("__") && s.ends_with("__") {
-        return format!(r"_{}\r__", &s[..s.len() - 1])
+        return format!(r"_{}\r__", &s[..s.len() - 1]);
     }
     format!("_{}_", s)
 }
 
 /// Applies the underline font style to the string.
+/// 
 /// Can be safely used with `utils::markdown::italic()`.
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
@@ -30,7 +35,7 @@ pub fn underline(s: &str) -> String {
     // so instead of ___italic underline___ we should use ___italic underline_\r__,
     // where \r is a character with code 13, which will be ignored.
     if s.starts_with("_") && s.ends_with("_") {
-        return format!(r"__{}\r__", s)
+        return format!(r"__{}\r__", s);
     }
     format!("__{}__", s)
 }
@@ -43,6 +48,7 @@ pub fn strike(s: &str) -> String {
 }
 
 /// Builds an inline link with an anchor.
+/// 
 /// Escapes `)` and ``` characters inside the link url.
 pub fn link(url: &str, text: &str) -> String {
     format!("[{}]({})", text, escape_link_url(url))
@@ -59,12 +65,14 @@ pub fn code_block(code: &str) -> String {
 }
 
 /// Formats the code block with a specific language syntax.
+///
 /// Escapes ``` and `\` characters inside the block.
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     format!("```{}\n{}\n```", escape(lang), escape_code(code))
 }
 
 /// Formats the string as an inline code.
+/// 
 /// Escapes ``` and `\` characters inside the block.
 pub fn code_inline(s: &str) -> String {
     format!("`{}`", escape_code(s))
@@ -162,7 +170,7 @@ mod tests {
             "```\npre-'formatted'\nfixed-width \\\\code \\`block\\`\n```"
         );
     }
-    
+
     #[test]
     fn test_code_block_with_language() {
         assert_eq!(
@@ -220,9 +228,6 @@ mod tests {
             escape_code(r"` \code inside the code\ `"),
             r"\` \\code inside the code\\ \`"
         );
-        assert_eq!(
-            escape_code(r"_*[]()~`#+-=|{}.!\"),
-            r"_*[]()~\`#+-=|{}.!\\"
-        );
+        assert_eq!(escape_code(r"_*[]()~`#+-=|{}.!\"), r"_*[]()~\`#+-=|{}.!\\");
     }
 }

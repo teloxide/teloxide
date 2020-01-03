@@ -1,9 +1,14 @@
-//! Utils for working with the [HTML message style.](https://core.telegram.org/bots/api#html-style)
+//! Utils for working with the [HTML message style][spec]
+//!
+//! [spec]: https://core.telegram.org/bots/api#html-style
 use std::string::String;
 
-// Escapes the string to be shown "as is" within the Telegram HTML message style.
-// Does not escape ' and " characters (as should be for usual HTML).
-// Because they shoudn't be escaped by the spec: https://core.telegram.org/bots/api#html-style
+/// Escapes the string to be shown "as is" within the Telegram HTML message style.
+///
+/// Does not escape ' and " characters (as should be for usual HTML), because they shoudn't
+/// be escaped by the [spec].
+///
+/// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
     s.replace("&", "&amp;")
         .replace("<", "&lt;")
@@ -39,7 +44,11 @@ pub fn code_block(code: &str) -> String {
 }
 
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
-    format!("<pre><code class=\"language-{}\">\n{}\n</code></pre>", escape(lang), escape(code))
+    format!(
+        "<pre><code class=\"language-{}\">\n{}\n</code></pre>",
+        escape(lang),
+        escape(code)
+    )
 }
 
 pub fn code_inline(s: &str) -> String {
