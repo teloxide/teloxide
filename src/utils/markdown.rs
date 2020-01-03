@@ -6,7 +6,7 @@ use std::string::String;
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
 pub fn bold(s: &str) -> String {
-    wrap(s, "*", "*")
+    format!("*{}*", s)
 }
 
 /// Applies the italic font style to the string.
@@ -15,9 +15,9 @@ pub fn bold(s: &str) -> String {
 /// because it can contain nested markup.
 pub fn italic(s: &str) -> String {
     if s.starts_with("__") && s.ends_with("__") {
-        return wrap(&s[..s.len() - 1], "_", r"\r__");
+        return format!(r"_{}\r__", &s[..s.len() - 1])
     }
-    wrap(s, "_", "_")
+    format!("_{}_", s)
 }
 
 /// Applies the underline font style to the string.
@@ -30,25 +30,22 @@ pub fn underline(s: &str) -> String {
     // so instead of ___italic underline___ we should use ___italic underline_\r__,
     // where \r is a character with code 13, which will be ignored.
     if s.starts_with("_") && s.ends_with("_") {
-        return wrap(s, "__", r"\r__");
+        return format!(r"__{}\r__", s)
     }
-    wrap(s, "__", "__")
+    format!("__{}__", s)
 }
 
 /// Applies the strikethrough font style to the string.
 /// Passed string will not be automatically escaped
 /// because it can contain nested markup.
 pub fn strike(s: &str) -> String {
-    wrap(s, "~", "~")
+    format!("~{}~", s)
 }
 
 /// Builds an inline link with an anchor.
 /// Escapes `)` and ``` characters inside the link url.
 pub fn link(url: &str, text: &str) -> String {
-    let mut out = String::with_capacity(url.len() + text.len() + 4);
-    out.push_str(wrap(text, "[", "]").as_str());
-    out.push_str(wrap(escape_link_url(url).as_str(), "(", ")").as_str());
-    out
+    format!("[{}]({})", text, escape_link_url(url))
 }
 
 /// Builds an inline user mention link with an anchor.
@@ -58,23 +55,19 @@ pub fn user_mention(user_id: i32, text: &str) -> String {
 
 /// Formats the code block. Escapes ``` and `\` characters inside the block.
 pub fn code_block(code: &str) -> String {
-    code_block_with_lang(code, "")
+    format!("```\n{}\n```", escape_code(code))
 }
 
 /// Formats the code block with a specific language syntax.
 /// Escapes ``` and `\` characters inside the block.
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
-    wrap(
-        escape_code(code).as_str(),
-        format!("```{}\n", lang).as_str(),
-        "\n```",
-    )
+    format!("```{}\n{}\n```", escape(lang), escape_code(code))
 }
 
 /// Formats the string as an inline code.
 /// Escapes ``` and `\` characters inside the block.
 pub fn code_inline(s: &str) -> String {
-    wrap(escape_code(s).as_str(), "`", "`")
+    format!("`{}`", escape_code(s))
 }
 
 /// Escapes all markdown special characters in the passed string.
@@ -98,22 +91,14 @@ pub fn escape(s: &str) -> String {
         .replace("!", r"\!")
 }
 
-/// Escapes all markdown special characters specific for the inline link URL (``` and `)`)
+/// Escapes all markdown special characters specific for the inline link URL (``` and `)`).
 pub fn escape_link_url(s: &str) -> String {
     s.replace("`", r"\`").replace(")", r"\)")
 }
 
-/// Escapes all markdown special characters specific for the code block (``` and `\`)
+/// Escapes all markdown special characters specific for the code block (``` and `\`).
 pub fn escape_code(s: &str) -> String {
     s.replace(r"\", r"\\").replace("`", r"\`")
-}
-
-fn wrap(s: &str, left: &str, right: &str) -> String {
-    let mut out = String::with_capacity(left.len() + s.len() + right.len());
-    out.push_str(left);
-    out.push_str(s);
-    out.push_str(right);
-    out
 }
 
 #[cfg(test)]
@@ -183,9 +168,9 @@ mod tests {
         assert_eq!(
             code_block_with_lang(
                 "pre-'formatted'\nfixed-width \\code `block`",
-                "python"
+                "[python]"
             ),
-            "```python\npre-'formatted'\nfixed-width \\\\code \\`block\\`\n```"
+            "```\\[python\\]\npre-'formatted'\nfixed-width \\\\code \\`block\\`\n```"
         );
     }
 
