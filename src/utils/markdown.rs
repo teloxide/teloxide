@@ -35,7 +35,7 @@ pub fn underline(s: &str) -> String {
     // underline entity, so instead of ___italic underline___ we should use
     // ___italic underline_\r__, where \r is a character with code 13, which
     // will be ignored.
-    if s.starts_with("_") && s.ends_with("_") {
+    if s.starts_with('_') && s.ends_with('_') {
         format!(r"__{}\r__", s)
     } else {
         format!("__{}__", s)
@@ -168,7 +168,7 @@ mod tests {
     #[test]
     fn test_user_mention() {
         assert_eq!(
-            user_mention(123456789, "pwner666"),
+            user_mention(123_456_789, "pwner666"),
             "[pwner666](tg://user?id=123456789)"
         );
     }
