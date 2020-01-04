@@ -1,13 +1,12 @@
 //! Utils for working with the [Markdown V2 message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#markdownv2-style
-
 use std::string::String;
 
 /// Applies the bold font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn bold(s: &str) -> String {
     format!("*{}*", s)
 }
@@ -15,8 +14,8 @@ pub fn bold(s: &str) -> String {
 /// Applies the italic font style to the string.
 ///
 /// Can be safely used with `utils::markdown::underline()`.
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn italic(s: &str) -> String {
     if s.starts_with("__") && s.ends_with("__") {
         format!(r"_{}\r__", &s[..s.len() - 1])
@@ -28,13 +27,14 @@ pub fn italic(s: &str) -> String {
 /// Applies the underline font style to the string.
 ///
 /// Can be safely used with `utils::markdown::italic()`.
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn underline(s: &str) -> String {
     // In case of ambiguity between italic and underline entities
-    // ‘__’ is always greadily treated from left to right as beginning or end of underline entity,
-    // so instead of ___italic underline___ we should use ___italic underline_\r__,
-    // where \r is a character with code 13, which will be ignored.
+    // ‘__’ is always greadily treated from left to right as beginning or end of
+    // underline entity, so instead of ___italic underline___ we should use
+    // ___italic underline_\r__, where \r is a character with code 13, which
+    // will be ignored.
     if s.starts_with("_") && s.ends_with("_") {
         format!(r"__{}\r__", s)
     } else {
@@ -44,8 +44,8 @@ pub fn underline(s: &str) -> String {
 
 /// Applies the strikethrough font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn strike(s: &str) -> String {
     format!("~{}~", s)
 }
@@ -83,7 +83,8 @@ pub fn code_inline(s: &str) -> String {
     format!("`{}`", escape_code(s))
 }
 
-/// Escapes the string to be shown "as is" within the Telegram [Markdown v2][spec] message style.
+/// Escapes the string to be shown "as is" within the Telegram [Markdown
+/// v2][spec] message style.
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
@@ -106,12 +107,14 @@ pub fn escape(s: &str) -> String {
         .replace("!", r"\!")
 }
 
-/// Escapes all markdown special characters specific for the inline link URL (``` and `)`).
+/// Escapes all markdown special characters specific for the inline link URL
+/// (``` and `)`).
 pub fn escape_link_url(s: &str) -> String {
     s.replace("`", r"\`").replace(")", r"\)")
 }
 
-/// Escapes all markdown special characters specific for the code block (``` and `\`).
+/// Escapes all markdown special characters specific for the code block (``` and
+/// `\`).
 pub fn escape_code(s: &str) -> String {
     s.replace(r"\", r"\\").replace("`", r"\`")
 }
@@ -185,7 +188,8 @@ mod tests {
                 "pre-'formatted'\nfixed-width \\code `block`",
                 "[python]"
             ),
-            "```\\[python\\]\npre-'formatted'\nfixed-width \\\\code \\`block\\`\n```"
+            "```\\[python\\]\npre-'formatted'\nfixed-width \\\\code \
+             \\`block\\`\n```"
         );
     }
 

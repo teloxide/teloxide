@@ -5,32 +5,32 @@ use std::string::String;
 
 /// Applies the bold font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn bold(s: &str) -> String {
     format!("<b>{}</b>", s)
 }
 
 /// Applies the italic font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn italic(s: &str) -> String {
     format!("<i>{}</i>", s)
 }
 
 /// Applies the underline font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn underline(s: &str) -> String {
     format!("<u>{}</u>", s)
 }
 
 /// Applies the strikethrough font style to the string.
 ///
-/// Passed string will not be automatically escaped
-/// because it can contain nested markup.
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
 pub fn strike(s: &str) -> String {
     format!("<s>{}</s>", s)
 }
@@ -72,10 +72,11 @@ pub fn code_inline(s: &str) -> String {
     format!("<code>{}</code>", escape(s))
 }
 
-/// Escapes the string to be shown "as is" within the Telegram HTML message style.
+/// Escapes the string to be shown "as is" within the Telegram HTML message
+/// style.
 ///
-/// Does not escape ' and " characters (as should be for usual HTML), because they shoudn't
-/// be escaped by the [spec].
+/// Does not escape ' and " characters (as should be for usual HTML), because
+/// they shoudn't be escaped by the [spec].
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
@@ -136,17 +137,22 @@ mod tests {
     fn test_code_block() {
         assert_eq!(
             code_block("<p>pre-'formatted'\n & fixed-width \\code `block`</p>"),
-            "<pre>&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code `block`&lt;/p&gt;</pre>"
+            "<pre>&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code \
+             `block`&lt;/p&gt;</pre>"
         );
     }
 
     #[test]
     fn test_code_block_with_lang() {
         assert_eq!(
-            code_block_with_lang("<p>pre-'formatted'\n & fixed-width \\code `block`</p>", "<html>\""),
+            code_block_with_lang(
+                "<p>pre-'formatted'\n & fixed-width \\code `block`</p>",
+                "<html>\""
+            ),
             concat!(
                 "<pre><code class=\"language-&lt;html&gt;&quot;\">",
-                "&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code `block`&lt;/p&gt;",
+                "&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code \
+                 `block`&lt;/p&gt;",
                 "</code></pre>",
             )
         );
