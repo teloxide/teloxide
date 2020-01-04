@@ -146,25 +146,23 @@ pub fn polling(
 
     stream::unfold(
         (allowed_updates, bot, 0),
-        move |(mut allowed_updates, bot, mut offset)| {
-            async move {
-                let mut req = bot.get_updates().offset(offset);
-                req.timeout = timeout;
-                req.limit = limit;
-                req.allowed_updates = allowed_updates.take();
+        move |(mut allowed_updates, bot, mut offset)| async move {
+            let mut req = bot.get_updates().offset(offset);
+            req.timeout = timeout;
+            req.limit = limit;
+            req.allowed_updates = allowed_updates.take();
 
-                let updates = match req.send().await {
-                    Err(err) => vec![Err(err)],
-                    Ok(updates) => {
-                        if let Some(upd) = updates.last() {
-                            offset = upd.id + 1;
-                        }
-                        updates.into_iter().map(Ok).collect::<Vec<_>>()
+            let updates = match req.send().await {
+                Err(err) => vec![Err(err)],
+                Ok(updates) => {
+                    if let Some(upd) = updates.last() {
+                        offset = upd.id + 1;
                     }
-                };
+                    updates.into_iter().map(Ok).collect::<Vec<_>>()
+                }
+            };
 
-                Some((stream::iter(updates), (allowed_updates, bot, offset)))
-            }
+            Some((stream::iter(updates), (allowed_updates, bot, offset)))
         },
     )
     .flatten()

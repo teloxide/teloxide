@@ -49,7 +49,7 @@ use serde::{Deserialize, Serialize};
 /// pre-formatted fixed-width code block written in the Rust programming
 /// language ```
 /// ````
-///
+/// 
 /// Please note:
 /// - Any character between 1 and 126 inclusively can be escaped anywhere with a
 ///   preceding '\' character, in which case it is treated as an ordinary
@@ -110,7 +110,7 @@ use serde::{Deserialize, Serialize};
 /// pre-formatted fixed-width code block written in the Rust programming
 /// language ```
 /// ````
-///
+/// 
 /// Please note:
 /// - Entities must not be nested, use parse mode [`MarkdownV2`] instead.
 /// - There is no way to specify underline and strikethrough entities, use parse
