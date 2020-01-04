@@ -52,12 +52,19 @@ impl Request for CreateNewStickerSet<'_> {
             "createNewStickerSet",
             FormBuilder::new()
                 .add("user_id", &self.user_id)
+                .await
                 .add("name", &self.name)
+                .await
                 .add("title", &self.title)
+                .await
                 .add("png_sticker", &self.png_sticker)
+                .await
                 .add("emojis", &self.emojis)
+                .await
                 .add("contains_masks", &self.contains_masks)
+                .await
                 .add("mask_position", &self.mask_position)
+                .await
                 .build(),
         )
         .await

@@ -6,21 +6,20 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.10.0-alpha.1", features = ["json", "unstable-stream"] }
-serde_json = "1.0.41"
+serde_json = "1.0.44"
 serde = { version = "1.0.101", features = ["derive"] }
-derive_more = "0.15.0"
-tokio = "0.2.0-alpha.6"
-bytes = "0.4.12"
+
+tokio = { version = "0.2.6", features = ["full"] }
+tokio-util = { version = "0.2.0", features = ["full"] }
+
+reqwest = { version = "0.10", features = ["json", "stream"] }
 log = "0.4.8"
-pin-project = "0.4.0-alpha.7"
-futures-preview = "0.3.0-alpha.19"
-async-trait = "0.1.13"
-thiserror = "1.0.2"
+bytes = "0.5.3"
+
+derive_more = "0.99.2"
+thiserror = "1.0.9"
+async-trait = "0.1.22"
+futures = "0.3.1"
+pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
 either = "1.5.3"
-
-[features]
-default = []
-
-unstable-stream = [] # add streams to public API

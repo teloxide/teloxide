@@ -2,11 +2,11 @@ use std::path::PathBuf;
 
 use bytes::{Bytes, BytesMut};
 use reqwest::{multipart::Part, Body};
-use tokio::{codec::FramedRead, prelude::*};
+use tokio_util::codec::{Decoder, FramedRead};
 
 struct FileDecoder;
 
-impl tokio::codec::Decoder for FileDecoder {
+impl Decoder for FileDecoder {
     type Item = Bytes;
     type Error = std::io::Error;
 
@@ -17,24 +17,23 @@ impl tokio::codec::Decoder for FileDecoder {
         if src.is_empty() {
             return Ok(None);
         }
-        Ok(Some(src.take().freeze()))
+        Ok(Some(src.split().freeze()))
     }
 }
 
-pub fn file_to_part(path_to_file: PathBuf) -> Part {
+pub async fn file_to_part(path_to_file: PathBuf) -> Part {
     let file_name = path_to_file
         .file_name()
         .unwrap()
         .to_string_lossy()
         .into_owned();
 
-    let file = tokio::fs::File::open(path_to_file)
-        .map(|file| {
-            FramedRead::new(
-                file.unwrap(), /* TODO: this can cause panics */
-                FileDecoder,
-            )
-        })
-        .flatten_stream();
+    let file = FramedRead::new(
+        tokio::fs::File::open(path_to_file).await.unwrap(), /* TODO: this
+                                                             * can
+                                                             * cause panics */
+        FileDecoder,
+    );
+
     Part::stream(Body::wrap_stream(file)).file_name(file_name)
 }

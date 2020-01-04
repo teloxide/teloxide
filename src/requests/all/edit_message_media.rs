@@ -43,10 +43,13 @@ impl Request for EditMessageMedia<'_> {
             } => {
                 params = params
                     .add("chat_id", chat_id)
-                    .add("message_id", message_id);
+                    .await
+                    .add("message_id", message_id)
+                    .await;
             }
             ChatOrInlineMessage::Inline { inline_message_id } => {
-                params = params.add("inline_message_id", inline_message_id);
+                params =
+                    params.add("inline_message_id", inline_message_id).await;
             }
         }
 
@@ -56,7 +59,9 @@ impl Request for EditMessageMedia<'_> {
             "editMessageMedia",
             params
                 .add("media", &self.media)
+                .await
                 .add("reply_markup", &self.reply_markup)
+                .await
                 .build(),
         )
         .await

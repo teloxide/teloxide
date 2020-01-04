@@ -22,7 +22,7 @@ impl FormBuilder {
     }
 
     /// Add the supplied key-value pair to this `FormBuilder`.
-    pub fn add<'a, T, N>(self, name: N, value: &T) -> Self
+    pub async fn add<'a, T, N>(self, name: N, value: &T) -> Self
     where
         N: Into<Cow<'a, str>>,
         T: IntoFormValue,
@@ -32,20 +32,21 @@ impl FormBuilder {
             Some(FormValue::Str(string)) => Self {
                 form: self.form.text(name, string),
             },
-            Some(FormValue::File(path)) => self.add_file(name, path),
+            Some(FormValue::File(path)) => self.add_file(name, path).await,
             None => self,
         }
     }
 
     // used in SendMediaGroup
-    pub fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> Self
+    pub async fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> Self
     where
         N: Into<Cow<'a, str>>,
     {
         Self {
-            form: self
-                .form
-                .part(name.into().into_owned(), file_to_part(path_to_file)),
+            form: self.form.part(
+                name.into().into_owned(),
+                file_to_part(path_to_file).await,
+            ),
         }
     }
 

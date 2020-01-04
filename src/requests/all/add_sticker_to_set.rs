@@ -46,10 +46,15 @@ impl Request for AddStickerToSet<'_> {
             "addStickerToSet",
             FormBuilder::new()
                 .add("user_id", &self.user_id)
+                .await
                 .add("name", &self.name)
+                .await
                 .add("png_sticker", &self.png_sticker)
+                .await
                 .add("emojis", &self.emojis)
+                .await
                 .add("mask_position", &self.mask_position)
+                .await
                 .build(),
         )
         .await

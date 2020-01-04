@@ -50,12 +50,19 @@ impl Request for SendPhoto<'_> {
             "sendPhoto",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
+                .await
                 .add("photo", &self.photo)
+                .await
                 .add("caption", &self.caption)
+                .await
                 .add("parse_mode", &self.parse_mode)
+                .await
                 .add("disable_notification", &self.disable_notification)
+                .await
                 .add("reply_to_message_id", &self.reply_to_message_id)
+                .await
                 .add("reply_markup", &self.reply_markup)
+                .await
                 .build(),
         )
         .await
