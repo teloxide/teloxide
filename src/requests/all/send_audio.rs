@@ -68,16 +68,27 @@ impl Request for SendAudio<'_> {
             "sendAudio",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
+                .await
                 .add("audio", &self.audio)
+                .await
                 .add("caption", &self.caption)
+                .await
                 .add("parse_mode", &self.parse_mode)
+                .await
                 .add("duration", &self.duration)
+                .await
                 .add("performer", &self.performer)
+                .await
                 .add("title", &self.title)
+                .await
                 .add("thumb", &self.thumb)
+                .await
                 .add("disable_notification", &self.disable_notification)
+                .await
                 .add("reply_to_message_id", &self.reply_to_message_id)
+                .await
                 .add("reply_markup", &self.reply_markup)
+                .await
                 .build(),
         )
         .await

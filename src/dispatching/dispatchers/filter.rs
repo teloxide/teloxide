@@ -186,79 +186,81 @@ impl<'a, HandlerE, Eh> FilterDispatcher<'a, HandlerE, Eh> {
         Eh: ErrorHandler<Either<UpdaterE, HandlerE>>,
     {
         updater
-            .for_each_concurrent(None, |res| async {
-                let Update { kind, id } = match res {
-                    Ok(upd) => upd,
-                    Err(err) => {
-                        self.error_handler
-                            .handle_error(Either::Left(err))
+            .for_each_concurrent(None, |res| {
+                async {
+                    let Update { kind, id } = match res {
+                        Ok(upd) => upd,
+                        Err(err) => {
+                            self.error_handler
+                                .handle_error(Either::Left(err))
+                                .await;
+                            return;
+                        }
+                    };
+
+                    log::debug!(
+                        "Handled update#{id:?}: {kind:?}",
+                        id = id,
+                        kind = kind
+                    );
+
+                    match kind {
+                        UpdateKind::Message(mes) => {
+                            Self::handle(
+                                mes,
+                                &self.message_handlers,
+                                &self.error_handler,
+                            )
+                            .await
+                        }
+                        UpdateKind::EditedMessage(mes) => {
+                            Self::handle(
+                                mes,
+                                &self.edited_message_handlers,
+                                &self.error_handler,
+                            )
                             .await;
-                        return;
-                    }
-                };
-
-                log::debug!(
-                    "Handled update#{id:?}: {kind:?}",
-                    id = id,
-                    kind = kind
-                );
-
-                match kind {
-                    UpdateKind::Message(mes) => {
-                        Self::handle(
-                            mes,
-                            &self.message_handlers,
-                            &self.error_handler,
-                        )
-                        .await
-                    }
-                    UpdateKind::EditedMessage(mes) => {
-                        Self::handle(
-                            mes,
-                            &self.edited_message_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
-                    }
-                    UpdateKind::ChannelPost(post) => {
-                        Self::handle(
-                            post,
-                            &self.channel_post_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
-                    }
-                    UpdateKind::EditedChannelPost(post) => {
-                        Self::handle(
-                            post,
-                            &self.edited_channel_post_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
-                    }
-                    UpdateKind::InlineQuery(query) => {
-                        Self::handle(
-                            query,
-                            &self.inline_query_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
-                    }
-                    UpdateKind::ChosenInlineResult(result) => {
-                        Self::handle(
-                            result,
-                            &self.chosen_inline_result_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
-                    }
-                    UpdateKind::CallbackQuery(callback) => {
-                        Self::handle(
-                            callback,
-                            &self.callback_query_handlers,
-                            &self.error_handler,
-                        )
-                        .await;
+                        }
+                        UpdateKind::ChannelPost(post) => {
+                            Self::handle(
+                                post,
+                                &self.channel_post_handlers,
+                                &self.error_handler,
+                            )
+                            .await;
+                        }
+                        UpdateKind::EditedChannelPost(post) => {
+                            Self::handle(
+                                post,
+                                &self.edited_channel_post_handlers,
+                                &self.error_handler,
+                            )
+                            .await;
+                        }
+                        UpdateKind::InlineQuery(query) => {
+                            Self::handle(
+                                query,
+                                &self.inline_query_handlers,
+                                &self.error_handler,
+                            )
+                            .await;
+                        }
+                        UpdateKind::ChosenInlineResult(result) => {
+                            Self::handle(
+                                result,
+                                &self.chosen_inline_result_handlers,
+                                &self.error_handler,
+                            )
+                            .await;
+                        }
+                        UpdateKind::CallbackQuery(callback) => {
+                            Self::handle(
+                                callback,
+                                &self.callback_query_handlers,
+                                &self.error_handler,
+                            )
+                            .await;
+                        }
                     }
                 }
             })
@@ -308,13 +310,17 @@ mod tests {
         let counter2 = &AtomicI32::new(0);
 
         let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
-            .message_handler(true, |_mes: Message| async move {
-                counter.fetch_add(1, Ordering::SeqCst);
-                Ok::<_, Infallible>(())
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter.fetch_add(1, Ordering::SeqCst);
+                    Ok::<_, Infallible>(())
+                }
             })
-            .message_handler(true, |_mes: Message| async move {
-                counter2.fetch_add(1, Ordering::SeqCst);
-                Ok::<_, Infallible>(())
+            .message_handler(true, |_mes: Message| {
+                async move {
+                    counter2.fetch_add(1, Ordering::SeqCst);
+                    Ok::<_, Infallible>(())
+                }
             });
 
         dp.dispatch(one_message_updater()).await;

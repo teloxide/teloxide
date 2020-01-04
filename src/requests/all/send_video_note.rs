@@ -59,13 +59,21 @@ impl Request for SendVideoNote<'_> {
             "sendVideoNote",
             FormBuilder::new()
                 .add("chat_id", &self.chat_id)
+                .await
                 .add("video_note", &self.video_note)
+                .await
                 .add("duration", &self.duration)
+                .await
                 .add("length", &self.length)
+                .await
                 .add("thumb", &self.thumb)
+                .await
                 .add("disable_notification", &self.disable_notification)
+                .await
                 .add("reply_to_message_id", &self.reply_to_message_id)
+                .await
                 .add("reply_markup", &self.reply_markup)
+                .await
                 .build(),
         )
         .await
