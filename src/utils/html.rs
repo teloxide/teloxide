@@ -128,7 +128,7 @@ mod tests {
     #[test]
     fn test_user_mention() {
         assert_eq!(
-            user_mention(123456789, "<pwner666>"),
+            user_mention(123_456_789, "<pwner666>"),
             "<a href=\"tg://user?id=123456789\">&lt;pwner666&gt;</a>",
         );
     }
