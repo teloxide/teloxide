@@ -124,7 +124,7 @@ use serde::{Deserialize, Serialize};
 /// [`MarkdownV2`]: ParseMode::MarkdownV2
 /// [`HTML`]: ParseMode::HTML
 /// [`Markdown`]: ParseMode::Markdown
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum ParseMode {
     MarkdownV2,
     HTML,

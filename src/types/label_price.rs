@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// This object represents a portion of the price for goods or services.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#labeledprice).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct LabeledPrice {
     /// Portion label.
     pub label: String,

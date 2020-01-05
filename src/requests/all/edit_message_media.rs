@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -14,13 +12,10 @@ use crate::{
 /// previously uploaded file via its file_id or specify a URL. On success, if
 /// the edited message was sent by the bot, the edited Message is returned,
 /// otherwise True is returned.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct EditMessageMedia<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
-    #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
 
     /// A JSON-serialized object for a new media content of the message

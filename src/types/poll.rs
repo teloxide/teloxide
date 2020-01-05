@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// This object contains information about a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#poll).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Poll {
     /// Unique poll identifier.
     pub id: String,
@@ -21,7 +21,7 @@ pub struct Poll {
 /// This object contains information about one answer option in a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PollOption {
     /// Option text, 1-100 characters.
     pub text: String,

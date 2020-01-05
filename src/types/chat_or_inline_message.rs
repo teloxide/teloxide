@@ -3,7 +3,7 @@ use crate::types::ChatId;
 use serde::{Deserialize, Serialize};
 
 /// A chat message or inline message.
-#[derive(Serialize, Deserialize, Clone, Eq, Hash, PartialEq, Debug)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatOrInlineMessage {
     Chat { chat_id: ChatId, message_id: i32 },

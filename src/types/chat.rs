@@ -6,7 +6,7 @@ use crate::types::{ChatPermissions, ChatPhoto, Message};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chat).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chat {
     /// A unique identifier for this chat. This number may be greater than 32
     /// bits and some programming languages may have difficulty/silent defects
@@ -25,7 +25,7 @@ pub struct Chat {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
     NonPrivate {
@@ -79,7 +79,7 @@ pub enum ChatKind {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NonPrivateChatKind {

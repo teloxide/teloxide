@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// This object represents one button of an inline keyboard.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardbutton).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
@@ -12,9 +12,7 @@ pub struct InlineKeyboardButton {
     pub kind: InlineKeyboardButtonKind,
 }
 
-#[derive(
-    Debug, Clone, PartialEq, PartialOrd, Serialize, Eq, Hash, Deserialize,
-)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
     /// HTTP or tg:// url to be opened when button is pressed.

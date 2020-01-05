@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::ParseMode;
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.

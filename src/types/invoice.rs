@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// This object contains basic information about an invoice.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#invoice).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Invoice {
     /// Product name.
     pub title: String,

@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -9,10 +7,8 @@ use crate::{
 
 /// Use this method to send a group of photos or videos as an album. On success,
 /// an array of the sent Messages is returned.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct SendMediaGroup<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel

@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -9,10 +7,8 @@ use crate::{
 
 /// Use this method to send static .WEBP or animated .TGS stickers. On success,
 /// the sent Message is returned.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct SendSticker<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel

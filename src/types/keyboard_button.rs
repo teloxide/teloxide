@@ -8,7 +8,7 @@ use crate::types::True;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct KeyboardButton {
     /// Text of the button. If none of the optional fields are used, it will
     /// be sent as a message when the button is pressed.
@@ -24,7 +24,7 @@ pub struct KeyboardButton {
 }
 
 // Serialize + Deserialize are implemented by hand
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ButtonRequest {
     Location,
     Contact,

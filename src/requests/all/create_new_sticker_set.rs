@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -9,10 +7,8 @@ use crate::{
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set. Returns True on success.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct CreateNewStickerSet<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// User identifier of created sticker set owner

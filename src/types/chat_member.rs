@@ -6,7 +6,7 @@ use crate::types::User;
 /// This object contains information about one member of the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ChatMember {
     /// Information about the user.
     pub user: User,
@@ -76,7 +76,7 @@ pub struct ChatMember {
     pub can_add_web_page_previews: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ChatMemberStatus {
     Creator,

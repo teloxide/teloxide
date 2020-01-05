@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -10,10 +8,8 @@ use crate::{
 /// As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages. On success, the sent
 /// Message is returned.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct SendVideoNote<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel

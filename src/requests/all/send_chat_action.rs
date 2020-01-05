@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     network,
@@ -33,7 +33,7 @@ pub struct SendChatAction<'a> {
 /// A type of action used in [`SendChatAction`].
 ///
 /// [`SendChatAction`]: crate::requests::SendChatAction
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SendChatActionKind {
     /// For [text messages](crate::Bot::send_message).
