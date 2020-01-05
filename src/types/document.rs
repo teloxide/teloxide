@@ -11,7 +11,7 @@ use crate::types::PhotoSize;
 /// [voice messages]: https://core.telegram.org/bots/api#voice
 /// [audio files]: https://core.telegram.org/bots/api#audio
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Document {
     /// An identifier for this file.
     pub file_id: String,

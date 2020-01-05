@@ -6,7 +6,7 @@ use crate::types::{MaskPosition, PhotoSize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sticker).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Sticker {
     /// Identifier for this file.
     pub file_id: String,

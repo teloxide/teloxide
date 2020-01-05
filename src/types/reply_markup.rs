@@ -4,7 +4,7 @@ use crate::types::{
     ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
 };
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ReplyMarkup {
     Inline(InlineKeyboardMarkup),

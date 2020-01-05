@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 /// [file]: crate::types::Document
 /// [sticker]: crate::types::Sticker
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PhotoSize {
     /// Identifier for this file.
     pub file_id: String,

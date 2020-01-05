@@ -9,7 +9,7 @@ use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message};
 /// [The official docs](https://core.telegram.org/bots/api#update).
 ///
 /// [object]: https://core.telegram.org/bots/api#available-types
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Update {
     /// The update‘s unique identifier. Update identifiers start from a certain
     /// positive number and increase sequentially. This ID becomes especially
@@ -27,7 +27,7 @@ pub struct Update {
     pub kind: UpdateKind,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UpdateKind {
     /// New incoming message of any kind — text, photo, sticker, etc.

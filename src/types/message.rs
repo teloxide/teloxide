@@ -11,7 +11,7 @@ use crate::types::{
 /// This object represents a message.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#message).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Message {
     /// Unique message identifier inside this chat.
     #[serde(rename = "message_id")]
@@ -28,7 +28,7 @@ pub struct Message {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MessageKind {
     Common {
@@ -143,7 +143,7 @@ pub enum MessageKind {
     },
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum Sender {
     /// Sender of a message from chat.
     #[serde(rename = "from")]
@@ -154,7 +154,7 @@ pub enum Sender {
     Signature(String),
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum ForwardedFrom {
     #[serde(rename = "forward_from")]
     User(User),
@@ -162,7 +162,7 @@ pub enum ForwardedFrom {
     SenderName(String),
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ForwardKind {
     ChannelForward {
@@ -186,7 +186,7 @@ pub enum ForwardKind {
     },
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MediaKind {
     Animation {

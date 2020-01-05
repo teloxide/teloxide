@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// Contains information about why a request was unsuccessful.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#responseparameters).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ResponseParameters {
     /// The group has been migrated to a supergroup with the specified

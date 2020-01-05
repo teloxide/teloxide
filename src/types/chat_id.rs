@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 /// A unique identifier for the target chat or username of the target channel
 /// (in the format `@channelusername`).
 #[derive(
-    Debug, Display, PartialEq, Eq, Hash, Clone, Deserialize, Serialize, From,
+    Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Display, From,
 )]
 #[serde(untagged)]
 pub enum ChatId {

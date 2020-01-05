@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::form_builder::FormBuilder,
@@ -11,10 +9,8 @@ use crate::requests::{Request, ResponseResult};
 
 /// Use this method to add a new sticker to a set created by the bot. Returns
 /// True on success.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct AddStickerToSet<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// User identifier of sticker set owner

@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -12,10 +10,8 @@ use crate::{
 /// success, the sent Message is returned. Bots can currently send audio files
 /// of up to 50 MB in size, this limit may be changed in the future.For sending
 /// voice messages, use the sendVoice method instead.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct SendAudio<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel

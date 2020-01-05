@@ -11,7 +11,7 @@ use crate::types::InlineKeyboardButton;
 /// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardmarkup).
 ///
 /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize, Default)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
 pub struct InlineKeyboardMarkup {
     /// Array of button rows, each represented by an array of
     /// [`InlineKeyboardButton`] objects.

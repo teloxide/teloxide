@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -11,10 +9,8 @@ use crate::{
 /// (other formats may be sent as Document). On success, the sent Message is
 /// returned. Bots can currently send video files of up to 50 MB in size, this
 /// limit may be changed in the future.
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct SendVideo<'a> {
-    #[serde(skip_serializing)]
     bot: &'a Bot,
 
     /// Unique identifier for the target chat or username of the target channel

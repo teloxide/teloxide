@@ -6,7 +6,7 @@ use crate::types::User;
 /// hashtags, usernames, URLs, etc.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#messageentity).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct MessageEntity {
     #[serde(flatten)]
     pub kind: MessageEntityKind,
@@ -18,7 +18,7 @@ pub struct MessageEntity {
     pub length: usize,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageEntityKind {

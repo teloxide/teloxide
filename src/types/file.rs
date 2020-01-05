@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#file).
 ///
 /// [`Bot::get_file`]: crate::Bot::get_file
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct File {
     /// Identifier for this file.
     pub file_id: String,
