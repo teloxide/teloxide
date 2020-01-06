@@ -10,9 +10,6 @@
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg">
-  </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
   </a>
