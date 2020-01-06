@@ -5,7 +5,7 @@
   <h1>teloxide</h1>
   
   <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
+    <img src="https://img.shields.io/badge/docs.rs-v0.1.0-blue.svg">
   </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
