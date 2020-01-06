@@ -22,13 +22,41 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// [`Handler`].
 ///  2. Filters and handlers.
 ///
-/// First you register filters and handlers using the methods defined below, and
-/// then you call [`.dispatch(updater)`]. Filters and handlers are executed in
-/// order of registering. The following flowchart represents how this dispatcher
-/// acts:
+/// First you call [`FilterDispatcher::new(eh)`] to create this dispatcher. `eh`
+/// stands for **E**rror **H**andler, you can simply provide a closure that
+/// takes [`Either<UpdaterE, HandlerE>`]:
+///
+/// ```
+/// use either::Either;
+/// use std::convert::Infallible;
+/// use teloxide::{dispatching::FilterDispatcher, RequestError};
+///
+/// let _ =
+///     FilterDispatcher::new(|err: Either<RequestError, Infallible>| async {
+///         dbg!(err);
+///     });
+/// ```
+///
+/// Or you can do it even simpler by providing the built-in error handler
+/// [`Print`]:
+///
+/// ```
+/// use std::convert::Infallible;
+/// use teloxide::{
+///     dispatching::{error_handlers::Print, FilterDispatcher},
+///     RequestError,
+/// };
+///
+/// let _ = FilterDispatcher::<'_, Infallible, _>::new::<RequestError>(Print);
+/// ```
+///
+/// And then you register filters and handlers using the methods defined below,
+/// and then you call [`.dispatch(updater)`]. Filters and handlers are executed
+/// in order of registering. The following flowchart represents how this
+/// dispatcher acts:
 ///
 /// <div align="center">
-///     <img src="https://raw.githubusercontent.com/teloxide/teloxide/dev/media/FILTER_DP_FLOWCHART.png" width="700" />
+///     <img src="https://raw.githubusercontent.com/teloxide/teloxide/dev/media/FILTER_DP_FLOWCHART.png" />
 /// </div>
 ///
 /// ## Examples
@@ -73,15 +101,18 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// [`ErrorHandler`]: crate::dispatching::error_handlers::ErrorHandler
 /// [`Updater`]: crate::dispatching::updaters::Updater
 /// [`Handler`]: crate::dispatching::Handler
-pub struct FilterDispatcher<'a, E, Eh> {
-    message_handlers: FiltersWithHandlers<'a, Message, E>,
-    edited_message_handlers: FiltersWithHandlers<'a, Message, E>,
-    channel_post_handlers: FiltersWithHandlers<'a, Message, E>,
-    edited_channel_post_handlers: FiltersWithHandlers<'a, Message, E>,
-    inline_query_handlers: FiltersWithHandlers<'a, InlineQuery, E>,
+/// [`FilterDispatcher::new(eh)`]: FilterDispatcher::new
+/// [`Either<UpdaterE, HandlerE>`]: either::Either
+/// [`Print`]: crate::dispatching::error_handlers::Print
+pub struct FilterDispatcher<'a, HandlerE, Eh> {
+    message_handlers: FiltersWithHandlers<'a, Message, HandlerE>,
+    edited_message_handlers: FiltersWithHandlers<'a, Message, HandlerE>,
+    channel_post_handlers: FiltersWithHandlers<'a, Message, HandlerE>,
+    edited_channel_post_handlers: FiltersWithHandlers<'a, Message, HandlerE>,
+    inline_query_handlers: FiltersWithHandlers<'a, InlineQuery, HandlerE>,
     chosen_inline_result_handlers:
-        FiltersWithHandlers<'a, ChosenInlineResult, E>,
-    callback_query_handlers: FiltersWithHandlers<'a, CallbackQuery, E>,
+        FiltersWithHandlers<'a, ChosenInlineResult, HandlerE>,
+    callback_query_handlers: FiltersWithHandlers<'a, CallbackQuery, HandlerE>,
     error_handler: Eh,
 }
 
