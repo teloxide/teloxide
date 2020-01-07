@@ -50,6 +50,10 @@ where
         }
     }
 
+    pub async fn save_storage(&mut self) {
+        self.storage.save().await;
+    }
+
     pub async fn dispatch(&mut self, update: Update) -> DispatchResult {
         let chat_id = match &update.kind {
             UpdateKind::Message(msg) => private_chat_id!(msg),
@@ -85,6 +89,6 @@ where
 
 impl<'a, S, H> Drop for Dispatcher<'a, S, H> {
     fn drop(&mut self) {
-        // TODO: run self.storage.save()
+        // TODO: run self.save_storage()
     }
 }
