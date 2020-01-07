@@ -1,30 +1,38 @@
+use crate::types::Update;
 use std::{future::Future, pin::Pin};
 
-/// An asynchronous handler of a value.
-pub trait Handler<T, E> {
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
+pub enum SessionState<S> {
+    Continue(S),
+    Terminate,
+}
+
+pub trait Handler<S> {
     #[must_use]
     fn handle<'a>(
         &'a self,
-        value: T,
-    ) -> Pin<Box<dyn Future<Output = Result<(), E>> + 'a>>
+        session: S,
+        update: Update,
+    ) -> Pin<Box<dyn Future<Output = SessionState<S>> + 'a>>
     where
-        T: 'a;
+        S: 'a;
 }
 
-/// The implementation of `Handler` for `Fn(U) -> Future<Output = Result<(),
-/// E>>`.
-impl<T, E, F, Fut> Handler<T, E> for F
+/// The implementation of `Handler` for `Fn(S, Update) -> Future<Output =
+/// SessionState<S>>`.
+impl<S, F, Fut> Handler<S> for F
 where
-    F: Fn(T) -> Fut,
-    Fut: Future<Output = Result<(), E>>,
+    F: Fn(S, Update) -> Fut,
+    Fut: Future<Output = SessionState<S>>,
 {
     fn handle<'a>(
         &'a self,
-        value: T,
+        session: S,
+        update: Update,
     ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where
-        T: 'a,
+        S: 'a,
     {
-        Box::pin(async move { self(value).await })
+        Box::pin(async move { self(session, update).await })
     }
 }

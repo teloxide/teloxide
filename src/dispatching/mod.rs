@@ -1,13 +1,11 @@
 //! Update dispatching.
 
-mod dispatchers;
-pub mod error_handlers;
+mod dispatcher;
 pub mod filters;
 mod handler;
-pub mod updaters;
+pub mod storage;
+pub mod update_listeners;
 
-pub use dispatchers::filter::FilterDispatcher;
-pub use error_handlers::ErrorHandler;
+pub use dispatcher::*;
 pub use filters::Filter;
-pub use handler::Handler;
-pub use updaters::Updater;
+pub use handler::*;
