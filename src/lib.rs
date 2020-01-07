@@ -13,7 +13,7 @@ extern crate serde;
 extern crate thiserror;
 
 pub use bot::Bot;
-pub use errors::{DownloadError, RequestError};
+pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;
 mod network;

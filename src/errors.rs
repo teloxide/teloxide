@@ -15,10 +15,10 @@ pub enum DownloadError {
 //<editor-fold desc="request">
 #[derive(Debug, Error)]
 pub enum RequestError {
-    #[error("A Telegram's error #{status_code}: {description}")]
+    #[error("A Telegram's error #{status_code}: {kind:?}")]
     ApiError {
         status_code: StatusCode,
-        description: String,
+        kind: ApiErrorKind,
     },
 
     /// The group has been migrated to a supergroup with the specified
