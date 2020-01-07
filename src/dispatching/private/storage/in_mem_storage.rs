@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::dispatching::storage::Storage;
+use super::Storage;
 use std::collections::HashMap;
 
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
