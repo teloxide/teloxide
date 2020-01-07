@@ -20,6 +20,4 @@ impl<S> Storage for InMemStorage<S> {
     async fn update_session(&mut self, chat_id: i64, state: S) -> Option<S> {
         self.map.insert(chat_id, state)
     }
-
-    async fn save(&mut self) {}
 }

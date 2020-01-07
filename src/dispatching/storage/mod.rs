@@ -14,6 +14,4 @@ pub trait Storage {
         chat_id: i64,
         state: Self::Session,
     ) -> Option<Self::Session>;
-
-    async fn save(&mut self);
 }
