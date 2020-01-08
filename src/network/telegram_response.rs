@@ -4,7 +4,7 @@ use serde::Deserialize;
 use crate::{
     requests::ResponseResult,
     types::{False, ResponseParameters, True},
-    RequestError,
+    ApiErrorKind, RequestError,
 };
 
 #[derive(Deserialize)]
@@ -22,7 +22,8 @@ pub enum TelegramResponse<R> {
         #[allow(dead_code)]
         ok: False,
 
-        description: String,
+        #[serde(rename = "description")]
+        kind: ApiErrorKind,
         error_code: u16,
         response_parameters: Option<ResponseParameters>,
     },
@@ -33,7 +34,7 @@ impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
         match self {
             TelegramResponse::Ok { result, .. } => Ok(result),
             TelegramResponse::Err {
-                description,
+                kind,
                 error_code,
                 response_parameters,
                 ..
@@ -49,11 +50,28 @@ impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
                     }
                 } else {
                     Err(RequestError::ApiError {
-                        description,
+                        kind,
                         status_code: StatusCode::from_u16(error_code).unwrap(),
                     })
                 }
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::types::Update;
+
+    #[test]
+    fn terminated_by_other_get_updates() {
+        let expected = ApiErrorKind::TerminatedByOtherGetUpdates;
+        if let TelegramResponse::Err{ kind, .. } = serde_json::from_str::<TelegramResponse<Update>>(r#"{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}"#).unwrap() {
+            assert_eq!(expected, kind);
+        }
+        else {
+            panic!("Этой херни здесь не должно быть");
         }
     }
 }

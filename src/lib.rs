@@ -5,7 +5,7 @@
 #![allow(clippy::match_bool)]
 
 pub use bot::Bot;
-pub use errors::{DownloadError, RequestError};
+pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;
 mod network;
