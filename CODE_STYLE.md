@@ -41,3 +41,49 @@ Good:
 /// This function makes a request to Telegram.
 pub fn make_request(url: &str) -> String { ... }
 ```
+
+## Use Self where possible
+Bad:
+
+```rust
+impl ErrorKind {
+    fn print(&self) {
+        ErrorKind::Io => println!("Io"),
+        ErrorKind::Network => println!("Network"),
+        ErrorKind::Json => println!("Json"),
+    }
+}
+```
+
+Good:
+```rust
+impl ErrorKind {
+    fn print(&self) {
+        Self::Io => println!("Io"),
+        Self::Network => println!("Network"),
+        Self::Json => println!("Json"),
+    }
+}
+```
+
+<details>
+    <summary>More examples</summary>
+    
+Bad:
+    
+```rust
+impl<'a> AnswerCallbackQuery<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, callback_query_id: C) -> AnswerCallbackQuery<'a>
+    where
+C: Into<String>, { ... }
+```
+
+Good:
+    
+```rust
+impl<'a> AnswerCallbackQuery<'a> {
+    pub(crate) fn new<C>(bot: &'a Bot, callback_query_id: C) -> Self
+    where
+C: Into<String>, { ... }
+```
+</details>
