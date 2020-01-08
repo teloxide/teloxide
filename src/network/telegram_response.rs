@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn terminated_by_other_get_updates() {
         let expected = ApiErrorKind::TerminatedByOtherGetUpdates;
-        if let TelegramResponse::Err{ ok, kind, error_code, response_parameters } = serde_json::from_str::<TelegramResponse<Update>>(r#"{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}"#).unwrap() {
+        if let TelegramResponse::Err{ kind, .. } = serde_json::from_str::<TelegramResponse<Update>>(r#"{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}"#).unwrap() {
             assert_eq!(expected, kind);
         }
         else {
