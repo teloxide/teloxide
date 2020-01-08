@@ -509,5 +509,5 @@ pub enum ApiErrorKind {
     FileIdInvalid,
 
     #[serde(other)]
-    OtherKind,
+    Other,
 }
