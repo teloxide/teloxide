@@ -3,6 +3,13 @@ use async_trait::async_trait;
 use super::Storage;
 use std::collections::HashMap;
 
+/// A memory storage based on a hash map. Stores all the sessions directly in
+/// RAM.
+///
+/// ## Note
+/// All the sessions will be lost after you restart your bot. If you need to
+/// store them somewhere on a drive, you need to implement a storage
+/// communicating with a DB.
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct InMemStorage<Session> {
     map: HashMap<i64, Session>,

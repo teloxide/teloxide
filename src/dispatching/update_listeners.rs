@@ -6,8 +6,8 @@
 //!  - [`polling`], which returns a long/short polling listener with your
 //!    configuration.
 //!
-//! And then you can extract updates from it and pass them directly to
-//! [`Dispatcher::dispatch`].
+//! And then you can extract updates from it and pass them directly to a
+//! dispatcher.
 //!
 //! Telegram supports two ways of [getting updates]: [long]/[short] polling and
 //! [webhook].
@@ -94,7 +94,6 @@
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
 //! [`polling`]: polling
-//! [`Dispatcher::dispatch`]: crate::dispatching::Dispatcher::dispatch
 //! [`Box::get_updates`]: crate::Bot::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
 //! [long]: https://en.wikipedia.org/wiki/Push_technology#Long_polling

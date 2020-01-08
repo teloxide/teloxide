@@ -1,18 +1,16 @@
-use super::storage::{InMemStorage, Storage};
+use super::{
+    super::DispatchResult,
+    storage::{InMemStorage, Storage},
+};
 use crate::{
     dispatching::{Handler, SessionState},
     types::{ChatKind, Update, UpdateKind},
 };
 
+/// A dispatcher that dispatches updates from 1-to-1 chats.
 pub struct Dispatcher<'a, Session, H> {
     storage: Box<dyn Storage<Session> + 'a>,
     handler: H,
-}
-
-#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
-pub enum DispatchResult {
-    Handled,
-    Unhandled,
 }
 
 #[macro_use]
@@ -33,6 +31,10 @@ where
     Session: Default + 'a,
     H: Handler<Session>,
 {
+    /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
+    /// (a default storage).
+    ///
+    /// [`InMemStorage`]: crate::dispatching::private::InMemStorage
     pub fn new(handler: H) -> Self {
         Self {
             storage: Box::new(InMemStorage::default()),
@@ -40,6 +42,7 @@ where
         }
     }
 
+    /// Creates a dispatcher with the specified `handler` and `storage`.
     pub fn with_storage<Stg>(handler: H, storage: Stg) -> Self
     where
         Stg: Storage<Session> + 'a,
@@ -50,6 +53,16 @@ where
         }
     }
 
+    /// Dispatches a single `update`.
+    ///
+    /// ## Returns
+    /// Returns [`DispatchResult::Handled`] if `update` was supplied to a
+    /// handler, and [`DispatchResult::Unhandled`] if it was an update not
+    /// from a 1-to-1 chat.
+    ///
+    /// [`DispatchResult::Handled`]: crate::dispatching::DispatchResult::Handled
+    /// [`DispatchResult::Unhandled`]:
+    /// crate::dispatching::DispatchResult::Unhandled
     pub async fn dispatch(&mut self, update: Update) -> DispatchResult {
         let chat_id = match &update.kind {
             UpdateKind::Message(msg) => private_chat_id!(msg),

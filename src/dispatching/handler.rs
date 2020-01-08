@@ -1,37 +1,47 @@
 use crate::types::Update;
 use std::{future::Future, pin::Pin};
 
+/// Continue or terminate a user session.
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
-pub enum SessionState<S> {
-    Continue(S),
+pub enum SessionState<Session> {
+    Continue(Session),
     Terminate,
 }
 
-pub trait Handler<S> {
+/// A handler of a user session and an update.
+///
+/// ## Returns
+/// Returns [`SessionState::Continue(session)`] if it wants to be called again
+/// after a new update, or [`SessionState::Terminate`] if not.
+///
+/// [`SessionState::Continue(session)`]:
+/// crate::dispatching::SessionState::Continue
+/// [`SessionState::Terminate`]:  crate::dispatching::SessionState::Terminate
+pub trait Handler<Session> {
     #[must_use]
     fn handle<'a>(
         &'a self,
-        session: S,
+        session: Session,
         update: Update,
-    ) -> Pin<Box<dyn Future<Output = SessionState<S>> + 'a>>
+    ) -> Pin<Box<dyn Future<Output = SessionState<Session>> + 'a>>
     where
-        S: 'a;
+        Session: 'a;
 }
 
-/// The implementation of `Handler` for `Fn(S, Update) -> Future<Output =
-/// SessionState<S>>`.
-impl<S, F, Fut> Handler<S> for F
+/// The implementation of `Handler` for `Fn(Session, Update) -> Future<Output =
+/// SessionState<Session>>`.
+impl<Session, F, Fut> Handler<Session> for F
 where
-    F: Fn(S, Update) -> Fut,
-    Fut: Future<Output = SessionState<S>>,
+    F: Fn(Session, Update) -> Fut,
+    Fut: Future<Output = SessionState<Session>>,
 {
     fn handle<'a>(
         &'a self,
-        session: S,
+        session: Session,
         update: Update,
     ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where
-        S: 'a,
+        Session: 'a,
     {
         Box::pin(async move { self(session, update).await })
     }
