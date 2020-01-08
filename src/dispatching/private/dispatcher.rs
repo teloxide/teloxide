@@ -4,8 +4,8 @@ use crate::{
     types::{ChatKind, Update, UpdateKind},
 };
 
-pub struct Dispatcher<'a, S, H> {
-    storage: Box<dyn Storage<Session = S> + 'a>,
+pub struct Dispatcher<'a, Session, H> {
+    storage: Box<dyn Storage<Session> + 'a>,
     handler: H,
 }
 
@@ -28,10 +28,10 @@ mod macros {
     }
 }
 
-impl<'a, S, H> Dispatcher<'a, S, H>
+impl<'a, Session, H> Dispatcher<'a, Session, H>
 where
-    S: Default + 'a,
-    H: Handler<S>,
+    Session: Default + 'a,
+    H: Handler<Session>,
 {
     pub fn new(handler: H) -> Self {
         Self {
@@ -42,7 +42,7 @@ where
 
     pub fn with_storage<Stg>(handler: H, storage: Stg) -> Self
     where
-        Stg: Storage<Session = S> + 'a,
+        Stg: Storage<Session> + 'a,
     {
         Self {
             storage: Box::new(storage),
