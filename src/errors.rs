@@ -1,5 +1,6 @@
 use derive_more::From;
 use reqwest::StatusCode;
+use serde::Deserialize;
 use thiserror::Error;
 
 //<editor-fold desc="download">

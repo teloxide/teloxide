@@ -206,7 +206,10 @@ impl<'a, HandlerE> FilterDispatcher<'a, HandlerE> {
         self
     }
 
-    pub async fn dispatch<U>(&mut self, update: Update) -> Result<(), HandlerE> {
+    pub async fn dispatch<U>(
+        &mut self,
+        update: Update,
+    ) -> Result<(), HandlerE> {
         let Update { kind, id } = update;
 
         let res = match kind.clone() {
