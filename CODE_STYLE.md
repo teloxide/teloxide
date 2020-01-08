@@ -24,3 +24,20 @@ Good:
         P: Into<InputFile>,
         E: Into<String> { ... }
 ```
+
+## Comments
+Comments must describe what your code does and mustn't describe how your code does it and bla-bla-bla. Be sure that your comments follow the grammar, including punctiation, the first capital letter and so on.
+
+Bad:
+
+```rust
+/// this function make request to telegram
+pub fn make_request(url: &str) -> String { ... }
+```
+
+Good:
+
+```rust
+/// This function makes a request to Telegram.
+pub fn make_request(url: &str) -> String { ... }
+```
