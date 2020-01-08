@@ -26,7 +26,7 @@ Good:
 ```
 
 ## Comments
-Comments must describe what your code does and mustn't describe how your code does it and bla-bla-bla. Be sure that your comments follow the grammar, including punctiation, the first capital letter and so on.
+Comments must describe what your code does and mustn't describe how your code does it and bla-bla-bla. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on.
 
 Bad:
 
