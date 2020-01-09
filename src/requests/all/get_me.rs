@@ -26,7 +26,7 @@ impl Request for GetMe<'_> {
             self.bot.client(),
             self.bot.token(),
             "getMe",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -32,7 +32,7 @@ impl Request for SetChatPermissions<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendChatPermissions",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

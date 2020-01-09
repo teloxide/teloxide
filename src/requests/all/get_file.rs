@@ -45,7 +45,7 @@ impl Request for GetFile<'_> {
             self.bot.client(),
             self.bot.token(),
             "getFile",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -46,7 +46,7 @@ impl Request for SendContact<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendContact",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

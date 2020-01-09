@@ -28,7 +28,7 @@ impl Request for DeleteStickerFromSet<'_> {
             self.bot.client(),
             self.bot.token(),
             "deleteStickerFromSet",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

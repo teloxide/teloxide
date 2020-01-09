@@ -32,7 +32,7 @@ impl Request for UploadStickerFile<'_> {
             self.bot.client(),
             self.bot.token(),
             "uploadStickerFile",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

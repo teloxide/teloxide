@@ -39,7 +39,7 @@ impl Request for SendGame<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendGame",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -33,7 +33,7 @@ impl Request for SetChatPhoto<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatPhoto",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

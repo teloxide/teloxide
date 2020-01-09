@@ -32,7 +32,7 @@ impl Request for StopMessageLiveLocation<'_> {
             self.bot.client(),
             self.bot.token(),
             "stopMessageLiveLocation",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

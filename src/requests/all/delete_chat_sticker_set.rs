@@ -32,7 +32,7 @@ impl Request for DeleteChatStickerSet<'_> {
             self.bot.client(),
             self.bot.token(),
             "deleteChatStickerSet",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

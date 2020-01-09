@@ -37,7 +37,7 @@ impl Request for EditMessageLiveLocation<'_> {
             self.bot.client(),
             self.bot.token(),
             "editMessageLiveLocation",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

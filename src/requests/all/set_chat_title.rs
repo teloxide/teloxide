@@ -32,7 +32,7 @@ impl Request for SetChatTitle<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatTitle",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

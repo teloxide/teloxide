@@ -32,7 +32,7 @@ impl Request for GetChatAdministrators<'_> {
             self.bot.client(),
             self.bot.token(),
             "getChatAdministrators",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -42,7 +42,7 @@ impl Request for AnswerShippingQuery<'_> {
             self.bot.client(),
             self.bot.token(),
             "answerShippingQuery",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

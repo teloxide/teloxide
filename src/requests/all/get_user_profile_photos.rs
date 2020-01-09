@@ -34,7 +34,7 @@ impl Request for GetUserProfilePhotos<'_> {
             self.bot.client(),
             self.bot.token(),
             "getUserProfilePhotos",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }
