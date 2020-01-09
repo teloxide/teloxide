@@ -25,7 +25,7 @@ impl Request for DeleteWebhook<'_> {
             self.bot.client(),
             self.bot.token(),
             "deleteWebhook",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

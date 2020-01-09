@@ -30,7 +30,7 @@ impl Request for GetChat<'_> {
             self.bot.client(),
             self.bot.token(),
             "getChat",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

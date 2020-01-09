@@ -32,7 +32,7 @@ impl Request for SetChatDescription<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatDescription",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

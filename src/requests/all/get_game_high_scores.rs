@@ -35,7 +35,7 @@ impl Request for GetGameHighScores<'_> {
             self.bot.client(),
             self.bot.token(),
             "getGameHighScores",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

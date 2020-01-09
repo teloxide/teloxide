@@ -57,7 +57,7 @@ impl Request for SetWebhook<'_> {
             self.bot.client(),
             self.bot.token(),
             "setWebhook",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

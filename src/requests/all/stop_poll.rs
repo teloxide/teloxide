@@ -33,7 +33,7 @@ impl Request for StopPoll<'_> {
             self.bot.client(),
             self.bot.token(),
             "stopPoll",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

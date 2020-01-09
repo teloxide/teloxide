@@ -39,7 +39,7 @@ impl Request for EditMessageText<'_> {
             self.bot.client(),
             self.bot.token(),
             "editMessageText",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -33,7 +33,7 @@ impl Request for UnbanChatMember<'_> {
             self.bot.client(),
             self.bot.token(),
             "unbanChatMember",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

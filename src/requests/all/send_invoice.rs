@@ -83,7 +83,7 @@ impl Request for SendInvoice<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendInvoice",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

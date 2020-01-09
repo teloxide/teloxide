@@ -37,7 +37,7 @@ impl Request for EditMessageCaption<'_> {
             self.bot.client(),
             self.bot.token(),
             "editMessageCaption",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

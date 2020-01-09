@@ -25,7 +25,7 @@ impl Request for GetWebhookInfo<'_> {
             self.bot.client(),
             self.bot.token(),
             "getWebhookInfo",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

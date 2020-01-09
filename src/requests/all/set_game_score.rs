@@ -41,7 +41,7 @@ impl Request for SetGameScore<'_> {
             self.bot.client(),
             self.bot.token(),
             "setGameScore",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

@@ -76,7 +76,7 @@ impl Request for SendChatAction<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendChatAction",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

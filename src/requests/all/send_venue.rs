@@ -52,7 +52,7 @@ impl Request for SendVenue<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendVenue",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }
