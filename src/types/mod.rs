@@ -171,3 +171,6 @@ mod encrypted_credentials;
 mod encrypted_passport_element;
 mod passport_data;
 mod passport_file;
+
+pub use non_telegram_types::*;
+mod non_telegram_types;
