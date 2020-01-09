@@ -12,3 +12,27 @@ pub enum ReplyMarkup {
     ReplyKeyboardRemove(ReplyKeyboardRemove),
     ForceReply(ForceReply),
 }
+
+impl From<InlineKeyboardMarkup> for ReplyMarkup {
+    fn from(markup: InlineKeyboardMarkup) -> Self {
+        ReplyMarkup::Inline(markup)
+    }
+}
+
+impl From<ForceReply> for ReplyMarkup {
+    fn from(markup: ForceReply) -> Self {
+        ReplyMarkup::ForceReply(markup)
+    }
+}
+
+impl From<ReplyKeyboardMarkup> for ReplyMarkup {
+    fn from(markup: ReplyKeyboardMarkup) -> Self {
+        ReplyMarkup::ReplyKeyboardMarkup(markup)
+    }
+}
+
+impl From<ReplyKeyboardRemove> for ReplyMarkup {
+    fn from(markup: ReplyKeyboardRemove) -> Self {
+        ReplyMarkup::ReplyKeyboardRemove(markup)
+    }
+}
