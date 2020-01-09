@@ -15,7 +15,7 @@ pub enum ReplyMarkup {
 
 impl From<InlineKeyboardMarkup> for ReplyMarkup {
     fn from(markup: InlineKeyboardMarkup) -> Self {
-        ReplyMarkup::Inline(markup)
+        ReplyMarkup::InlineKeyboardMarkup(markup)
     }
 }
 
