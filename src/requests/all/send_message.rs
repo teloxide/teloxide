@@ -53,7 +53,7 @@ impl Request for SendMessage<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendMessage",
-            &serde_json::to_string(self).unwrap(),
+            self,
         )
         .await
     }
