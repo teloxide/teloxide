@@ -1,14 +1,28 @@
 use serde::{Deserialize, Serialize};
+use derive_more::From;
 
 use crate::types::{
     ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
 };
 
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, From)]
 #[serde(untagged)]
 pub enum ReplyMarkup {
-    Inline(InlineKeyboardMarkup),
-    Reply(ReplyKeyboardMarkup),
+    InlineKeyboardMarkup(InlineKeyboardMarkup),
+    ReplyKeyboardMarkup(ReplyKeyboardMarkup),
     ReplyKeyboardRemove(ReplyKeyboardRemove),
     ForceReply(ForceReply),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn inline_keyboard_markup() {
+        let data = InlineKeyboardMarkup::new();
+        let expected = ReplyMarkup::InlineKeyboardMarkup(data.clone());
+        let actual: ReplyMarkup = data.into();
+        assert_eq!(actual, expected)
+    }
 }
