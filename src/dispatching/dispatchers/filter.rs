@@ -31,10 +31,11 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// use std::convert::Infallible;
 /// use teloxide::{dispatching::FilterDispatcher, RequestError};
 ///
-/// let _ =
-///     FilterDispatcher::new(|err: Either<RequestError, Infallible>| async {
+/// let _ = FilterDispatcher::new(|err: Either<RequestError, Infallible>| {
+///     async {
 ///         dbg!(err);
-///     });
+///     }
+/// });
 /// ```
 ///
 /// Or you can do it even simpler by providing the built-in error handler
@@ -83,9 +84,11 @@ type FiltersWithHandlers<'a, T, E> = Vec<FilterWithHandler<'a, T, E>>;
 /// // error handler that just ignores all errors (that can't ever happen).
 /// let mut dp = FilterDispatcher::<Infallible, _>::new(|_| async {})
 ///     // Add a handler, which handles all messages sent to the bot.
-///     .message_handler(true, |mes: Message| async move {
-///         println!("New message: {:?}", mes);
-///         Ok(())
+///     .message_handler(true, |mes: Message| {
+///         async move {
+///             println!("New message: {:?}", mes);
+///             Ok(())
+///         }
 ///     })
 ///     // Add a handler, which handles all messages edited in a chat
 ///     // with the bot.
