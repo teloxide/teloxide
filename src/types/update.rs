@@ -62,10 +62,7 @@ pub enum UpdateKind {
 
 #[cfg(test)]
 mod test {
-    use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Sender,
-        Update, UpdateKind, User,
-    };
+    use crate::types::{Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Sender, Update, UpdateKind, User, LanguageCode};
 
     // TODO: more tests for deserialization
     #[test]
@@ -114,7 +111,7 @@ mod test {
                         first_name: String::from("Waffle"),
                         last_name: None,
                         username: Some(String::from("WaffleLapkin")),
-                        language_code: Some(String::from("en")),
+                        language_code: Some(LanguageCode::EN),
                     }),
                     forward_kind: ForwardKind::Origin {
                         reply_to_message: None,
