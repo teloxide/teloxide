@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::types::LanguageCode;
 
 /// This object represents a Telegram user or bot.
 ///
@@ -24,7 +25,7 @@ pub struct User {
     /// [IETF language tag] of the user's language.
     ///
     /// [IETF language tag]: https://en.wikipedia.org/wiki/IETF_language_tag
-    pub language_code: Option<String>,
+    pub language_code: Option<LanguageCode>,
 }
 
 #[cfg(test)]
