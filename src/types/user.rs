@@ -1,3 +1,4 @@
+use crate::types::LanguageCode;
 use serde::{Deserialize, Serialize};
 
 /// This object represents a Telegram user or bot.
@@ -24,7 +25,7 @@ pub struct User {
     /// [IETF language tag] of the user's language.
     ///
     /// [IETF language tag]: https://en.wikipedia.org/wiki/IETF_language_tag
-    pub language_code: Option<String>,
+    pub language_code: Option<LanguageCode>,
 }
 
 #[cfg(test)]
@@ -39,7 +40,7 @@ mod tests {
             "first_name":"firstName",
             "last_name":"lastName",
             "username":"Username",
-            "language_code":"languageCode"
+            "language_code":"ru"
         }"#;
         let expected = User {
             id: 12345,
@@ -47,7 +48,7 @@ mod tests {
             first_name: "firstName".to_string(),
             last_name: Some("lastName".to_string()),
             username: Some("Username".to_string()),
-            language_code: Some("languageCode".to_string()),
+            language_code: Some(LanguageCode::RU),
         };
         let actual = serde_json::from_str::<User>(&json).unwrap();
         assert_eq!(actual, expected)

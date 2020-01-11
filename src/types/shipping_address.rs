@@ -1,3 +1,4 @@
+use crate::types::CountryCode;
 use serde::{Deserialize, Serialize};
 
 /// This object represents a shipping address.
@@ -6,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ShippingAddress {
     /// ISO 3166-1 alpha-2 country code.
-    pub country_code: String,
+    pub country_code: CountryCode,
 
     /// State, if applicable.
     pub state: String,

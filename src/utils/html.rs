@@ -121,7 +121,8 @@ mod tests {
     fn test_link() {
         assert_eq!(
             link("https://www.google.com/?q=foo&l=ru", "<google>"),
-            "<a href=\"https://www.google.com/?q=foo&amp;l=ru\">&lt;google&gt;</a>",
+            "<a href=\"https://www.google.com/?q=foo&amp;l=ru\">&lt;google&gt;\
+             </a>",
         );
     }
 
