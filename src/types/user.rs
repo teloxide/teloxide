@@ -40,7 +40,7 @@ mod tests {
             "first_name":"firstName",
             "last_name":"lastName",
             "username":"Username",
-            "language_code":"languageCode"
+            "language_code":"ru"
         }"#;
         let expected = User {
             id: 12345,
