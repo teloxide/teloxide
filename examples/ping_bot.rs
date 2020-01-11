@@ -4,7 +4,7 @@ use teloxide::{
         private::Dispatcher, update_listeners::polling_default, SessionState,
     },
     requests::Request,
-    types::{Message, Update, UpdateKind},
+    types::{Update, UpdateKind},
     Bot,
 };
 
@@ -20,9 +20,7 @@ async fn main() {
     let handler = |s, upd: Update| async move {
         match upd.kind {
             UpdateKind::Message(m) => {
-                if m.text() == "ping" {
-                    let msg = bot.send_message(m.chat.id, "pong");
-                }
+                let msg = bot.send_message(m.chat.id, "pong");
                 msg.send().await.unwrap();
             }
             _ => {}
