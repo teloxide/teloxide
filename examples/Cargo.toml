@@ -1,0 +1,16 @@
+[package]
+name = "examples"
+version = "0.0.0"
+publish = false
+edition = "2018"
+
+[dev-dependencies]
+teloxide = { path = "../" }
+tokio = "0.2.6"
+pretty_env_logger = "0.3"
+futures = "0.3.1"
+log = "0.4.8"
+
+[[example]]
+name = "ping_bot"
+path = "ping_bot.rs"
