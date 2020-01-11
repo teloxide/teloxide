@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum CountryCode {
     AD,
