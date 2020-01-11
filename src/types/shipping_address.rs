@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::types::CountryCode;
+use serde::{Deserialize, Serialize};
 
 /// This object represents a shipping address.
 ///

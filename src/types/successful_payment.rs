@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{OrderInfo, Currency};
+use crate::types::{Currency, OrderInfo};
 
 /// This object contains basic information about a successful payment.
 ///

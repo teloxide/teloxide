@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PhotoSize, MimeWrapper};
+use crate::types::{MimeWrapper, PhotoSize};
 
 /// This object represents an animation file (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -75,7 +75,9 @@ mod tests {
                 file_size: Some(3452),
             }),
             file_name: Some("some".to_string()),
-            mime_type: Some(MimeWrapper { mime: "video/gif".parse().unwrap() }),
+            mime_type: Some(MimeWrapper {
+                mime: "video/gif".parse().unwrap(),
+            }),
             file_size: Some(6500),
         };
         let actual = serde_json::from_str::<Animation>(json).unwrap();

@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::types::LanguageCode;
+use serde::{Deserialize, Serialize};
 
 /// This object represents a Telegram user or bot.
 ///
