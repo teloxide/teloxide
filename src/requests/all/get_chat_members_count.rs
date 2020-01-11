@@ -29,7 +29,7 @@ impl Request for GetChatMembersCount<'_> {
             self.bot.client(),
             self.bot.token(),
             "getChatMembersCount",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

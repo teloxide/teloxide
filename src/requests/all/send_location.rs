@@ -45,7 +45,7 @@ impl Request for SendLocation<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendLocation",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

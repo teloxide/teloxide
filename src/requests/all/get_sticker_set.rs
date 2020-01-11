@@ -28,7 +28,7 @@ impl Request for GetStickerSet<'_> {
             self.bot.client(),
             self.bot.token(),
             "getStickerSet",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

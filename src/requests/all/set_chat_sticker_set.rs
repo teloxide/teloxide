@@ -34,7 +34,7 @@ impl Request for SetChatStickerSet<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatStickerSet",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

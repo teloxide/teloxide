@@ -36,7 +36,7 @@ impl Request for SetChatAdministratorCustomTitle<'_> {
             self.bot.client(),
             self.bot.token(),
             "setChatAdministratorCustomTitle",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

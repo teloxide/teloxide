@@ -43,7 +43,7 @@ impl Request for SendPoll<'_> {
             self.bot.client(),
             self.bot.token(),
             "sendPoll",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

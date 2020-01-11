@@ -38,7 +38,7 @@ impl Request for KickChatMember<'_> {
             self.bot.client(),
             self.bot.token(),
             "kickChatMember",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }

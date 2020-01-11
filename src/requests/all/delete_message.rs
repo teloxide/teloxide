@@ -38,7 +38,7 @@ impl Request for DeleteMessage<'_> {
             self.bot.client(),
             self.bot.token(),
             "deleteMessage",
-            &serde_json::to_string(self).unwrap(),
+            &self,
         )
         .await
     }
