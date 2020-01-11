@@ -31,8 +31,8 @@ pub struct InlineQueryResultDocument {
     /// A valid URL for the file.
     pub document_url: String,
 
-    /// Mime type of the content of the file, either `application/pdf” or
-    /// `application/zip”.
+    /// Mime type of the content of the file, either `application/pdf` or
+    /// `application/zip`.
     pub mime_type: String,
 
     /// Short description of the result.
