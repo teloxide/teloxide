@@ -59,6 +59,7 @@ pub use message_entity::*;
 pub use order_info::*;
 pub use parse_mode::*;
 pub use passport_data::*;
+pub use passport_element_error::*;
 pub use passport_file::*;
 pub use photo_size::*;
 pub use poll::*;
@@ -170,6 +171,7 @@ mod inline_query_result_voice;
 mod encrypted_credentials;
 mod encrypted_passport_element;
 mod passport_data;
+mod passport_element_error;
 mod passport_file;
 
 pub use non_telegram_types::*;
