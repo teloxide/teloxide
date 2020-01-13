@@ -40,7 +40,7 @@ pub enum MessageEntityKind {
 }
 
 impl MessageEntity {
-    fn text_from(&self, message: Message) -> Option<String> {
+    pub fn text_from(&self, message: Message) -> Option<String> {
         let text= message.text();
         match text {
             Some(text) => {
