@@ -1,4 +1,4 @@
-//! Dispatching updates from 1-to-1 chats.
+//! Dispatching updates from chats.
 //!
 //! There are four main components:
 //!
@@ -14,13 +14,13 @@
 //! Every time you call [`.dispatch(update)`] on your dispatcher, the following
 //! steps are executed:
 //!
-//!  1. If a supplied update is not from a 1-to-1 chat, return
+//!  1. If a supplied update is not from a chat, return
 //! [`DispatchResult::Unhandled`].
 //!  2. If a storage doesn't contain a session from this chat, supply
 //! `Session::default()` into you handler, otherwise, supply the previous
 //! session.
-//!  3. If a handler has returned [`SessionState::Terminate`], remove the sesion
-//! from a storage, otherwise force the storage to update the session.
+//!  3. If a handler has returned [`SessionState::Terminate`], remove the
+//! session from a storage, otherwise force the storage to update the session.
 //!
 //! [`Storage`]: crate::dispatching::private::Storage
 //! [`Dispatcher`]: crate::dispatching::private::Dispatcher
@@ -32,8 +32,10 @@
 
 // TODO: examples
 
+mod chat_update;
 mod dispatcher;
 mod storage;
 
+pub use chat_update::*;
 pub use dispatcher::*;
 pub use storage::*;

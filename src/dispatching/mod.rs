@@ -7,9 +7,9 @@ pub enum DispatchResult {
     Unhandled,
 }
 
+pub mod chat;
 pub mod filters;
 mod handler;
-pub mod private;
 pub mod update_listeners;
 
 pub use filters::Filter;

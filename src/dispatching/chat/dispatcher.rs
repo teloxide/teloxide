@@ -3,33 +3,21 @@ use super::{
     storage::{InMemStorage, Storage},
 };
 use crate::{
-    dispatching::{Handler, SessionState},
-    types::{ChatKind, Update, UpdateKind},
+    dispatching::{chat::ChatUpdate, Handler, SessionState},
+    types::{Update, UpdateKind},
 };
+use crate::dispatching::chat::ChatUpdateKind;
 
-/// A dispatcher that dispatches updates from 1-to-1 chats.
+/// A dispatcher that dispatches updates from chats.
 pub struct Dispatcher<'a, Session, H> {
     storage: Box<dyn Storage<Session> + 'a>,
     handler: H,
 }
 
-#[macro_use]
-mod macros {
-    #[macro_export]
-    macro_rules! private_chat_id {
-        ($msg:expr) => {
-            match &$msg.chat.kind {
-                ChatKind::Private { .. } => $msg.chat.id,
-                _ => return DispatchResult::Unhandled,
-            }
-        };
-    }
-}
-
 impl<'a, Session, H> Dispatcher<'a, Session, H>
 where
     Session: Default + 'a,
-    H: Handler<Session>,
+    H: Handler<Session, ChatUpdate>,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
@@ -58,16 +46,26 @@ where
     /// ## Returns
     /// Returns [`DispatchResult::Handled`] if `update` was supplied to a
     /// handler, and [`DispatchResult::Unhandled`] if it was an update not
-    /// from a 1-to-1 chat.
+    /// from a chat.
     ///
     /// [`DispatchResult::Handled`]: crate::dispatching::DispatchResult::Handled
     /// [`DispatchResult::Unhandled`]:
     /// crate::dispatching::DispatchResult::Unhandled
     pub async fn dispatch(&mut self, update: Update) -> DispatchResult {
-        let chat_id = match &update.kind {
-            UpdateKind::Message(msg) => private_chat_id!(msg),
-            UpdateKind::EditedMessage(msg) => private_chat_id!(msg),
+        let chat_update = match update.kind {
+            UpdateKind::Message(msg) => ChatUpdate { id: update.id, kind: ChatUpdateKind::Message(msg) },
+            UpdateKind::EditedMessage(msg) => ChatUpdate { id: update.id, kind: ChatUpdateKind::EditedMessage(msg) },
+            UpdateKind::CallbackQuery(query) => ChatUpdate { id: update.id, kind: ChatUpdateKind::CallbackQuery(query) },
             _ => return DispatchResult::Unhandled,
+        };
+
+        let chat_id = match &chat_update.kind {
+            ChatUpdateKind::Message(msg) => msg.chat.id,
+            ChatUpdateKind::EditedMessage(msg) => msg.chat.id,
+            ChatUpdateKind::CallbackQuery(query) => match &query.message {
+                None => return DispatchResult::Unhandled,
+                Some(msg) => msg.chat.id,
+            },
         };
 
         let session = self
@@ -77,7 +75,7 @@ where
             .unwrap_or_default();
 
         if let SessionState::Continue(session) =
-            self.handler.handle(session, update).await
+            self.handler.handle(session, chat_update).await
         {
             if self
                 .storage

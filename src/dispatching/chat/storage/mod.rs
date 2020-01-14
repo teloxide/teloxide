@@ -3,7 +3,7 @@ mod in_mem_storage;
 use async_trait::async_trait;
 pub use in_mem_storage::InMemStorage;
 
-/// A storage of user sessions.
+/// A storage of sessions.
 ///
 /// You can implement this trait for a structure that communicates with a DB and
 /// be sure that after you restart your bot, all the sessions won't be lost.

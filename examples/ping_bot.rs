@@ -1,22 +1,22 @@
 use futures::stream::StreamExt;
 use teloxide::{
     dispatching::{
-        private::Dispatcher, update_listeners::polling_default, SessionState,
+        chat::Dispatcher, update_listeners::polling_default, SessionState,
     },
     requests::Request,
-    types::{Update, UpdateKind},
     Bot,
 };
+use teloxide::dispatching::chat::{ChatUpdate, ChatUpdateKind};
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    
+
     let bot = &Bot::new("1061598315:AAErEDodTsrqD3UxA_EvFyEfXbKA6DT25G0");
     let mut updater = Box::pin(polling_default(bot));
-    let handler = |s, upd: Update| async move {
+    let handler = |s, upd: ChatUpdate| async move {
         match upd.kind {
-            UpdateKind::Message(m) => {
+            ChatUpdateKind::Message(m) => {
                 let msg = bot.send_message(m.chat.id, "pong");
                 msg.send().await.unwrap();
             }

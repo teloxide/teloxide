@@ -1,4 +1,3 @@
-use crate::types::Update;
 use std::{future::Future, pin::Pin};
 
 /// Continue or terminate a user session.
@@ -17,31 +16,33 @@ pub enum SessionState<Session> {
 /// [`SessionState::Continue(session)`]:
 /// crate::dispatching::SessionState::Continue
 /// [`SessionState::Terminate`]:  crate::dispatching::SessionState::Terminate
-pub trait Handler<Session> {
+pub trait Handler<Session, U> {
     #[must_use]
     fn handle<'a>(
         &'a self,
         session: Session,
-        update: Update,
+        update: U,
     ) -> Pin<Box<dyn Future<Output = SessionState<Session>> + 'a>>
     where
-        Session: 'a;
+        Session: 'a,
+    U: 'a;
 }
 
 /// The implementation of `Handler` for `Fn(Session, Update) -> Future<Output =
 /// SessionState<Session>>`.
-impl<Session, F, Fut> Handler<Session> for F
+impl<Session, U, F, Fut> Handler<Session, U> for F
 where
-    F: Fn(Session, Update) -> Fut,
+    F: Fn(Session, U) -> Fut,
     Fut: Future<Output = SessionState<Session>>,
 {
     fn handle<'a>(
         &'a self,
         session: Session,
-        update: Update,
+        update: U,
     ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where
         Session: 'a,
+    U: 'a,
     {
         Box::pin(async move { self(session, update).await })
     }
