@@ -46,7 +46,7 @@ impl MessageEntity {
             Some(text) => {
                 let left = self.offset;
                 let right = self.offset+self.length;
-                Some(String::from(text)[left..right].to_string())
+                Some(String::from(&text[left..right]))
             }
             None => None
         }
