@@ -40,16 +40,9 @@ pub enum MessageEntityKind {
 }
 
 impl MessageEntity {
-    pub fn text_from(&self, message: Message) -> Option<String> {
-        let text= message.text();
-        match text {
-            Some(text) => {
-                let left = self.offset;
-                let right = self.offset+self.length;
-                Some(String::from(&text[left..right]))
-            }
-            None => None
-        }
+    pub fn text_from(&self, message: &Message) -> Option<String> {
+        let text = message.text();
+        Some(String::from(&text?[self.offset..self.offset+self.length]))
     }
 }
 
@@ -82,7 +75,7 @@ mod tests {
         let message = message();
         let expected = Some("yes".to_string());
         let entity = message.entities().unwrap()[0].clone();
-        let actual = entity.text_from(message);
+        let actual = entity.text_from(&message);
         assert_eq!(actual, expected);
     }
 
