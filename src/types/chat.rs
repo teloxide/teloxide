@@ -1,6 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatPermissions, ChatPhoto, Message};
+use crate::{
+    requests::KickChatMember,
+    types::{ChatPermissions, ChatPhoto, Message},
+    Bot,
+};
 
 /// This object represents a chat.
 ///
