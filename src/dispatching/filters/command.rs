@@ -7,10 +7,7 @@ pub struct CommandFilter {
 impl Filter<Message> for CommandFilter {
     fn test(&self, value: &Message) -> bool {
         match value.text() {
-            Some(text) => match text.split_whitespace().next() {
-                Some(command) => self.command == command,
-                None => false,
-            },
+            Some(text) => text.starts_with(&self.command),
             None => false,
         }
     }
@@ -25,9 +22,10 @@ impl CommandFilter {
             command: '/'.to_string() + &command.into(),
         }
     }
-    pub fn with_prefix<T>(command: T, prefix: T) -> Self
+    pub fn with_prefix<T, U>(command: T, prefix: U) -> Self
     where
         T: Into<String>,
+        U: Into<String>
     {
         Self {
             command: prefix.into() + &command.into(),
@@ -44,14 +42,14 @@ mod tests {
 
     #[test]
     fn commands_are_equal() {
-        let filter = CommandFilter::new("command".to_string());
+        let filter = CommandFilter::new("command");
         let message = create_message_with_text("/command".to_string());
         assert!(filter.test(&message));
     }
 
     #[test]
     fn commands_are_not_equal() {
-        let filter = CommandFilter::new("command".to_string());
+        let filter = CommandFilter::new("command");
         let message =
             create_message_with_text("/not_equal_command".to_string());
         assert_eq!(filter.test(&message), false);
@@ -59,7 +57,7 @@ mod tests {
 
     #[test]
     fn command_have_args() {
-        let filter = CommandFilter::new("command".to_string());
+        let filter = CommandFilter::new("command");
         let message =
             create_message_with_text("/command arg1 arg2".to_string());
         assert!(filter.test(&message));
@@ -67,9 +65,16 @@ mod tests {
 
     #[test]
     fn message_have_only_whitespace() {
-        let filter = CommandFilter::new("command".to_string());
+        let filter = CommandFilter::new("command");
         let message = create_message_with_text(" ".to_string());
         assert_eq!(filter.test(&message), false);
+    }
+
+    #[test]
+    fn another_prefix() {
+        let filter = CommandFilter::with_prefix("command", "!");
+        let message = create_message_with_text("!command".to_string());
+        assert!(filter.test(&message));
     }
 
     fn create_message_with_text(text: String) -> Message {
