@@ -3,10 +3,12 @@ use super::{
     storage::{InMemStorage, Storage},
 };
 use crate::{
-    dispatching::{chat::ChatUpdate, Handler, SessionState},
+    dispatching::{
+        chat::{ChatUpdate, ChatUpdateKind},
+        Handler, SessionState,
+    },
     types::{Update, UpdateKind},
 };
-use crate::dispatching::chat::ChatUpdateKind;
 
 /// A dispatcher that dispatches updates from chats.
 pub struct Dispatcher<'a, Session, H> {
@@ -53,9 +55,18 @@ where
     /// crate::dispatching::DispatchResult::Unhandled
     pub async fn dispatch(&mut self, update: Update) -> DispatchResult {
         let chat_update = match update.kind {
-            UpdateKind::Message(msg) => ChatUpdate { id: update.id, kind: ChatUpdateKind::Message(msg) },
-            UpdateKind::EditedMessage(msg) => ChatUpdate { id: update.id, kind: ChatUpdateKind::EditedMessage(msg) },
-            UpdateKind::CallbackQuery(query) => ChatUpdate { id: update.id, kind: ChatUpdateKind::CallbackQuery(query) },
+            UpdateKind::Message(msg) => ChatUpdate {
+                id: update.id,
+                kind: ChatUpdateKind::Message(msg),
+            },
+            UpdateKind::EditedMessage(msg) => ChatUpdate {
+                id: update.id,
+                kind: ChatUpdateKind::EditedMessage(msg),
+            },
+            UpdateKind::CallbackQuery(query) => ChatUpdate {
+                id: update.id,
+                kind: ChatUpdateKind::CallbackQuery(query),
+            },
             _ => return DispatchResult::Unhandled,
         };
 

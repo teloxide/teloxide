@@ -25,7 +25,7 @@ pub trait Handler<Session, U> {
     ) -> Pin<Box<dyn Future<Output = SessionState<Session>> + 'a>>
     where
         Session: 'a,
-    U: 'a;
+        U: 'a;
 }
 
 /// The implementation of `Handler` for `Fn(Session, Update) -> Future<Output =
@@ -42,7 +42,7 @@ where
     ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where
         Session: 'a,
-    U: 'a,
+        U: 'a,
     {
         Box::pin(async move { self(session, update).await })
     }
