@@ -1,23 +1,23 @@
+use crate::{dispatching::Filter, types::Message};
 use regex::Regex;
-use crate::dispatching::Filter;
-use crate::types::Message;
 
 // TODO: docs
 pub struct RegexFilter {
-    regexp: Regex
+    regexp: Regex,
 }
 
 impl Filter<Message> for RegexFilter {
     fn test(&self, value: &Message) -> bool {
-        self.regexp.is_match(value.text()?)
+        match value.text() {
+            Some(text) => self.regexp.is_match(text),
+            None => false,
+        }
     }
 }
 
 impl RegexFilter {
     pub fn new(regexp: Regex) -> Self {
-        Self {
-            regexp
-        }
+        Self { regexp }
     }
 }
 
