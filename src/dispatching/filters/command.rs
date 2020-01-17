@@ -1,5 +1,15 @@
 use crate::{dispatching::Filter, types::Message};
 
+/// Filter which find command in message text
+///
+/// *NB:* filter compare only text of message, not caption of media message
+///
+/// Examples:
+/// ```
+/// use teloxide::dispatching::filters::CommandFilter;
+/// CommandFilter::new("start"); // return true if text message starts with "/start"
+/// CommandFilter::with_prefix("!", "ban"); // return true if text message starts with "!ban"
+/// ```
 pub struct CommandFilter {
     command: String,
 }
