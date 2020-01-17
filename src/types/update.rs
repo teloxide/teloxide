@@ -2,7 +2,10 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message};
+use crate::types::{
+    CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
+    PreCheckoutQuery, ShippingQuery,
+};
 
 /// This [object] represents an incoming update.
 ///
@@ -57,7 +60,17 @@ pub enum UpdateKind {
 
     /// New incoming callback query.
     CallbackQuery(CallbackQuery),
-    // TODO: Add more variants
+
+    /// New incoming shipping query. Only for invoices with flexible price.
+    ShippingQuery(ShippingQuery),
+
+    /// New incoming pre-checkout query. Contains full information about
+    /// checkout.
+    PreCheckoutQuery(PreCheckoutQuery),
+
+    /// New poll state. Bots receive only updates about stopped polls and
+    /// polls, which are sent by the bot.
+    Poll(Poll),
 }
 
 #[cfg(test)]
@@ -92,7 +105,7 @@ mod test {
             }
         }"#;
 
-        let expected: Update = Update {
+        let expected = Update {
             id: 892_252_934,
             kind: UpdateKind::Message(Message {
                 id: 6557,
