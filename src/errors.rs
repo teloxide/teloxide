@@ -57,7 +57,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`EditMessageText`]
     ///
-    /// [`EditMessageText`]: crate::requests::payloads::EditMessageText
+    /// [`EditMessageText`]: crate::requests::EditMessageText
     #[serde(rename = "Bad Request: message is not modified: specified new \
                       message content and reply markup are exactly the same \
                       as a current content and reply markup of the message")]
@@ -69,8 +69,8 @@ pub enum ApiErrorKind {
     /// 1. [`ForwardMessage`]
     /// 2. [`DeleteMessage`]
     ///
-    /// [`ForwardMessage`]: crate::requests::payloads::ForwardMessage
-    /// [`DeleteMessage`]: crate::requests::payloads::DeleteMessage
+    /// [`ForwardMessage`]: crate::requests::ForwardMessage
+    /// [`DeleteMessage`]: crate::requests::DeleteMessage
     #[serde(rename = "Bad Request: MESSAGE_ID_INVALID")]
     MessageIdInvalid,
 
@@ -79,7 +79,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`ForwardMessage`]
     ///
-    /// [`ForwardMessage`]: crate::requests::payloads::ForwardMessage
+    /// [`ForwardMessage`]: crate::requests::ForwardMessage
     #[serde(rename = "Bad Request: message to forward not found")]
     MessageToForwardNotFound,
 
@@ -88,7 +88,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`DeleteMessage`]
     ///
-    /// [`DeleteMessage`]: crate::requests::payloads::DeleteMessage
+    /// [`DeleteMessage`]: crate::requests::DeleteMessage
     #[serde(rename = "Bad Request: message to delete not found")]
     MessageToDeleteNotFound,
 
@@ -97,7 +97,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: message text is empty")]
     MessageTextIsEmpty,
 
@@ -106,7 +106,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`EditMessageText`]
     ///
-    /// [`EditMessageText`]: crate::requests::payloads::EditMessageText
+    /// [`EditMessageText`]: crate::requests::EditMessageText
     #[serde(rename = "Bad Request: message can't be edited")]
     MessageCantBeEdited,
 
@@ -116,7 +116,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`DeleteMessage`]
     ///
-    /// [`DeleteMessage`]: crate::requests::payloads::DeleteMessage
+    /// [`DeleteMessage`]: crate::requests::DeleteMessage
     #[serde(rename = "Bad Request: message can't be deleted")]
     MessageCantBeDeleted,
 
@@ -125,7 +125,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`EditMessageText`]
     ///
-    /// [`EditMessageText`]: crate::requests::payloads::EditMessageText
+    /// [`EditMessageText`]: crate::requests::EditMessageText
     #[serde(rename = "Bad Request: message to edit not found")]
     MessageToEditNotFound,
 
@@ -134,7 +134,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: reply message not found")]
     MessageToReplyNotFound,
 
@@ -148,7 +148,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: message is too long")]
     MessageIsTooLong,
 
@@ -157,7 +157,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMediaGroup`]
     ///
-    /// [`SendMediaGroup`]: crate::requests::payloads::SendMediaGroup
+    /// [`SendMediaGroup`]: crate::requests::SendMediaGroup
     #[serde(rename = "Bad Request: Too much messages to send as an album")]
     ToMuchMessages,
 
@@ -166,7 +166,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll has already been closed")]
     PollHasAlreadyClosed,
 
@@ -175,7 +175,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll must have at least 2 option")]
     PollMustHaveMoreOptions,
 
@@ -184,7 +184,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll can't have more than 10 options")]
     PollCantHaveMoreOptions,
 
@@ -193,7 +193,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll options must be non-empty")]
     PollOptionsMustBeNonEmpty,
 
@@ -202,7 +202,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll question must be non-empty")]
     PollQuestionMustBeNonEmpty,
 
@@ -212,7 +212,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll options length must not exceed 100")]
     PollOptionsLengthTooLong,
 
@@ -222,7 +222,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendPoll`]
     ///
-    /// [`SendPoll`]: crate::requests::payloads::SendPoll
+    /// [`SendPoll`]: crate::requests::SendPoll
     #[serde(rename = "Bad Request: poll question length must not exceed 255")]
     PollQuestionLengthTooLong,
 
@@ -231,7 +231,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`StopPoll`]
     ///
-    /// [`StopPoll`]: crate::requests::payloads::StopPoll
+    /// [`StopPoll`]: crate::requests::StopPoll
     #[serde(rename = "Bad Request: message with poll to stop not found")]
     MessageWithPollNotFound,
 
@@ -240,7 +240,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`StopPoll`]
     ///
-    /// [`StopPoll`]: crate::requests::payloads::StopPoll
+    /// [`StopPoll`]: crate::requests::StopPoll
     #[serde(rename = "Bad Request: message is not a poll")]
     MessageIsNotAPoll,
 
@@ -250,7 +250,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: chat not found")]
     ChatNotFound,
 
@@ -260,7 +260,7 @@ pub enum ApiErrorKind {
     /// 1. [`getUserProfilePhotos`]
     ///
     /// [`getUserProfilePhotos`]:
-    /// crate::requests::payloads::getUserProfilePhotos
+    /// crate::requests::GetUserProfilePhotos
     #[serde(rename = "Bad Request: user not found")]
     UserNotFound,
 
@@ -270,7 +270,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetChatDescription`]
     ///
-    /// [`SetChatDescription`]: crate::requests::payloads::SetChatDescription
+    /// [`SetChatDescription`]: crate::requests::SetChatDescription
     #[serde(rename = "Bad Request: chat description is not modified")]
     ChatDescriptionIsNotModified,
 
@@ -279,7 +279,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`AnswerCallbackQuery`]
     ///
-    /// [`AnswerCallbackQuery`]: crate::requests::payloads::AnswerCallbackQuery
+    /// [`AnswerCallbackQuery`]: crate::requests::AnswerCallbackQuery
     #[serde(rename = "Bad Request: query is too old and response timeout \
                       expired or query id is invalid")]
     InvalidQueryID,
@@ -290,7 +290,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
     ButtonURLInvalid,
 
@@ -299,7 +299,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: BUTTON_DATA_INVALID")]
     ButtonDataInvalid,
 
@@ -308,7 +308,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: can't parse inline keyboard button: Text \
                       buttons are unallowed in the inline keyboard")]
     TextButtonsAreUnallowed,
@@ -318,7 +318,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`GetFile`]
     ///
-    /// [`GetFile`]: crate::requests::payloads::GetFile
+    /// [`GetFile`]: crate::requests::GetFile
     #[serde(rename = "Bad Request: wrong file id")]
     WrongFileID,
 
@@ -331,7 +331,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetChatPhoto`]
     ///
-    /// [`SetChatPhoto`]: crate::requests::payloads::SetChatPhoto
+    /// [`SetChatPhoto`]: crate::requests::SetChatPhoto
     #[serde(rename = "Bad Request: Photo should be uploaded as an InputFile")]
     PhotoAsInputFileRequired,
 
@@ -340,7 +340,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`AddStickerToSet`]
     ///
-    /// [`AddStickerToSet`]: crate::requests::payloads::AddStickerToSet
+    /// [`AddStickerToSet`]: crate::requests::AddStickerToSet
     #[serde(rename = "Bad Request: STICKERSET_INVALID")]
     InvalidStickersSet,
 
@@ -350,7 +350,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`PinMessage`]
     ///
-    /// [`PinMessage`]: crate::requests::payloads::PinMessage
+    /// [`PinMessage`]: crate::requests::PinMessage
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
     NotEnoughRightsToPinMessage,
 
@@ -365,7 +365,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`PromoteChatMember`]
     ///
-    /// [`PromoteChatMember`]: crate::requests::payloads::PromoteChatMember
+    /// [`PromoteChatMember`]: crate::requests::PromoteChatMember
     #[serde(rename = "Bad Request: can't demote chat creator")]
     CantDemoteChatCreator,
 
@@ -374,7 +374,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`RestrictChatMember`]
     ///
-    /// [`RestrictChatMember`]: crate::requests::payloads::RestrictChatMember
+    /// [`RestrictChatMember`]: crate::requests::RestrictChatMember
     #[serde(rename = "Bad Request: can't restrict self")]
     CantRestrictSelf,
 
@@ -384,7 +384,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`RestrictChatMember`]
     ///
-    /// [`RestrictChatMember`]: crate::requests::payloads::RestrictChatMember
+    /// [`RestrictChatMember`]: crate::requests::RestrictChatMember
     #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict \
                       chat member")]
     NotEnoughRightsToRestrict,
@@ -394,7 +394,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetWebhook`]
     ///
-    /// [`SetWebhook`]: crate::requests::payloads::SetWebhook
+    /// [`SetWebhook`]: crate::requests::SetWebhook
     #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided \
                       for webhook")]
     WebhookRequireHTTPS,
@@ -405,7 +405,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetWebhook`]
     ///
-    /// [`SetWebhook`]: crate::requests::payloads::SetWebhook
+    /// [`SetWebhook`]: crate::requests::SetWebhook
     #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only \
                       on ports 80, 88, 443 or 8443")]
     BadWebhookPort,
@@ -415,7 +415,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetWebhook`]
     ///
-    /// [`SetWebhook`]: crate::requests::payloads::SetWebhook
+    /// [`SetWebhook`]: crate::requests::SetWebhook
     #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: \
                       Name or service not known")]
     UnknownHost,
@@ -425,7 +425,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SetWebhook`]
     ///
-    /// [`SetWebhook`]: crate::requests::payloads::SetWebhook
+    /// [`SetWebhook`]: crate::requests::SetWebhook
     #[serde(rename = "Bad Request: can't parse URL")]
     CantParseUrl,
 
@@ -434,7 +434,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: can't parse entities")]
     CantParseEntities,
 
@@ -443,7 +443,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`GetUpdates`]
     ///
-    /// [`GetUpdates`]: crate::requests::payloads::GetUpdates
+    /// [`GetUpdates`]: crate::requests::GetUpdates
     #[serde(rename = "can't use getUpdates method while webhook is active")]
     CantGetUpdates,
 
@@ -452,7 +452,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Unauthorized: bot was kicked from a chat")]
     BotKicked,
 
@@ -461,7 +461,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Unauthorized: user is deactivated")]
     UserDeactivated,
 
@@ -470,7 +470,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(
         rename = "Unauthorized: bot can't initiate conversation with a user"
     )]
@@ -481,7 +481,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Unauthorized: bot can't send messages to bots")]
     CantTalkWithBots,
 
@@ -490,7 +490,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
-    /// [`SendMessage`]: crate::requests::payloads::SendMessage
+    /// [`SendMessage`]: crate::requests::SendMessage
     #[serde(rename = "Bad Request: wrong HTTP URL")]
     WrongHTTPurl,
 
@@ -500,7 +500,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`GetUpdates`]
     ///
-    /// [`GetUpdates`]: crate::requests::payloads::GetUpdates
+    /// [`GetUpdates`]: crate::requests::GetUpdates
     #[serde(rename = "Conflict: terminated by other getUpdates request; \
                       make sure that only one bot instance is running")]
     TerminatedByOtherGetUpdates,
@@ -510,7 +510,7 @@ pub enum ApiErrorKind {
     /// May happen in methods:
     /// 1. [`GetFile`]
     ///
-    /// [`GetFile`]: crate::requests::payloads::GetFile
+    /// [`GetFile`]: crate::requests::GetFile
     #[serde(rename = "Bad Request: invalid file id")]
     FileIdInvalid,
 
