@@ -22,7 +22,7 @@ impl CommandFilter {
             command: '/'.to_string() + &command.into(),
         }
     }
-    pub fn with_prefix<T, U>(command: T, prefix: U) -> Self
+    pub fn with_prefix<T, U>(prefix: U, command: T) -> Self
     where
         T: Into<String>,
         U: Into<String>,
