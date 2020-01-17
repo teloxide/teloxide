@@ -7,8 +7,8 @@ use crate::{dispatching::Filter, types::Message};
 /// Examples:
 /// ```
 /// use teloxide::dispatching::filters::CommandFilter;
-/// CommandFilter::new("start"); // return true if text message starts with "/start"
-/// CommandFilter::with_prefix("!", "ban"); // return true if text message starts with "!ban"
+/// CommandFilter::new("start"); // filter will return true if text message starts with "/start"
+/// CommandFilter::with_prefix("!", "ban"); // filter will return true if text message starts with "!ban"
 /// ```
 pub struct CommandFilter {
     command: String,

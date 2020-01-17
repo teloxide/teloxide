@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{User, Message};
+use crate::types::{Message, User};
 
 /// This object represents one special entity in a text message. For example,
 /// hashtags, usernames, URLs, etc.
@@ -42,14 +42,16 @@ pub enum MessageEntityKind {
 impl MessageEntity {
     pub fn text_from(&self, message: &Message) -> Option<String> {
         let text = message.text();
-        Some(String::from(&text?[self.offset..self.offset+self.length]))
+        Some(String::from(&text?[self.offset..self.offset + self.length]))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Chat, ChatKind, MessageKind, Sender, ForwardKind, MediaKind};
+    use crate::types::{
+        Chat, ChatKind, ForwardKind, MediaKind, MessageKind, Sender,
+    };
 
     #[test]
     fn recursive_kind() {
@@ -111,7 +113,7 @@ mod tests {
                     entities: vec![MessageEntity {
                         kind: MessageEntityKind::Mention,
                         offset: 3,
-                        length: 3
+                        length: 3,
                     }],
                 },
                 reply_markup: None,
