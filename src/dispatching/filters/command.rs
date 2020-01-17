@@ -25,7 +25,7 @@ impl CommandFilter {
     pub fn with_prefix<T, U>(command: T, prefix: U) -> Self
     where
         T: Into<String>,
-        U: Into<String>
+        U: Into<String>,
     {
         Self {
             command: prefix.into() + &command.into(),
