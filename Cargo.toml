@@ -12,7 +12,7 @@ serde = { version = "1.0.101", features = ["derive"] }
 tokio = { version = "0.2.6", features = ["full"] }
 tokio-util = { version = "0.2.0", features = ["full"] }
 
-reqwest = { version = "0.10", features = ["json", "stream"] }
+reqwest = { version = "0.10", features = ["json", "stream", "native-tls-vendored"] }
 log = "0.4.8"
 bytes = "0.5.3"
 
