@@ -13,15 +13,12 @@ use teloxide::{
 async fn main() {
     let bot = &Bot::new("1061598315:AAErEDodTsrqD3UxA_EvFyEfXbKA6DT25G0");
     let mut updater = Box::pin(polling_default(bot));
-    let handler = |s, upd: ChatUpdate| async move {
-        match upd.kind {
-            ChatUpdateKind::Message(m) => {
-                let msg = bot.send_message(m.chat.id, "pong");
-                msg.send().await.unwrap();
-            }
-            _ => {}
+    let handler = |_, upd: ChatUpdate| async move {
+        if let ChatUpdateKind::Message(m) = upd.kind {
+            let msg = bot.send_message(m.chat.id, "pong");
+            msg.send().await.unwrap();
         }
-        SessionState::Continue(s)
+        SessionState::Continue(())
     };
     let mut dp = Dispatcher::<'_, (), _>::new(handler);
     println!("Starting the message handler.");
