@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    types::{ChatPermissions, ChatPhoto, Message},
-};
+use crate::types::{ChatPermissions, ChatPhoto, Message};
 
 /// This object represents a chat.
 ///
@@ -156,6 +154,36 @@ where
     D: serde::Deserializer<'de>,
 {
     des.deserialize_str(PrivateChatKindVisitor)
+}
+
+impl Chat {
+    pub fn is_private(&self) -> bool {
+        match self.kind {
+            ChatKind::Private {..} => true,
+            _ => false
+        }
+    }
+    pub fn is_group(&self) -> bool {
+        match self.kind {
+            ChatKind::NonPrivate { kind: NonPrivateChatKind::Group {..}, .. } => true,
+            _ => false
+        }
+    }
+    pub fn is_supergroup(&self) -> bool {
+        match self.kind {
+            ChatKind::NonPrivate { kind: NonPrivateChatKind::Supergroup {..}, .. } => true,
+            _ => false
+        }
+    }
+    pub fn is_channel(&self) -> bool {
+        match self.kind {
+            ChatKind::NonPrivate { kind: NonPrivateChatKind::Channel {..}, .. } => true,
+            _ => false
+        }
+    }
+    pub fn is_chat(&self) -> bool {
+        self.is_private() || self.is_group() || self.is_supergroup()
+    }
 }
 
 #[cfg(test)]
