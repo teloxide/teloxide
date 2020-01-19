@@ -31,7 +31,7 @@ pub struct User {
 impl User {
     pub fn full_name(&self) -> String {
         match &self.last_name {
-            Some(last_name) => (self.first_name.clone() + last_name.as_ref()),
+            Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
             None => self.first_name.clone(),
         }
     }
