@@ -4,7 +4,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{DeriveInput, parse_macro_input};
 
-#[proc_macro_derive(TelegramCommandEnum)]
+#[proc_macro_derive(TelegramBotCommand)]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as DeriveInput);
 
@@ -15,13 +15,13 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                 variant.ident.to_string().to_lowercase()
             }))
         }
-        _ => panic!("TelegramCommandEnum allowed only for enums")
+        _ => return TokenStream::from(quote! { compile_error!("TelegramBotCommand allowed only for enums") })
     };
 
     let ident = input.ident;
 
     let expanded = quote! {
-        impl TelegramCommandEnum for #ident {
+        impl TelegramBotCommand for #ident {
             fn try_from(value: &str) -> Option<Self> {
                 match value {
                     #(
