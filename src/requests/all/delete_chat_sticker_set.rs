@@ -9,17 +9,18 @@ use crate::{
 
 /// Use this method to delete a group sticker set from a supergroup. The bot
 /// must be an administrator in the chat for this to work and must have the
-/// appropriate admin rights. Use the field can_set_sticker_set optionally
-/// returned in getChat requests to check if the bot can use this method.
-/// Returns True on success.
+/// appropriate admin rights. Use the field `can_set_sticker_set` optionally
+/// returned in [`Bot::get_chat`] requests to check if the bot can use this
+/// method.
+///
+/// [The official docs](https://core.telegram.org/bots/api#deletechatstickerset).
+///
+/// [`Bot::get_chat`]: crate::Bot::get_chat
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteChatStickerSet<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
 }
 
@@ -47,6 +48,8 @@ impl<'a> DeleteChatStickerSet<'a> {
         Self { bot, chat_id }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup (in the format `@supergroupusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,

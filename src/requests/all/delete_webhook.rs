@@ -8,7 +8,11 @@ use crate::{
 };
 
 /// Use this method to remove webhook integration if you decide to switch back
-/// to getUpdates. Returns True on success. Requires no parameters.
+/// to [Bot::get_updates].
+///
+/// [The official docs](https://core.telegram.org/bots/api#deletewebhook).
+///
+/// [Bot::get_updates]: crate::Bot::get_updates
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteWebhook<'a> {

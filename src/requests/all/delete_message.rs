@@ -7,25 +7,27 @@ use crate::{
     Bot,
 };
 
-/// Use this method to delete a message, including service messages, with the
-/// following limitations:- A message can only be deleted if it was sent less
-/// than 48 hours ago.- Bots can delete outgoing messages in private chats,
-/// groups, and supergroups.- Bots can delete incoming messages in private
-/// chats.- Bots granted can_post_messages permissions can delete outgoing
-/// messages in channels.- If the bot is an administrator of a group, it can
-/// delete any message there.- If the bot has can_delete_messages permission in
-/// a supergroup or a channel, it can delete any message there.Returns True on
-/// success.
+/// Use this method to delete a message, including service messages.
+///
+/// The limitations are:
+///  - A message can only be deleted if it was sent less than 48 hours ago.
+///  - Bots can delete outgoing messages in private chats, groups, and
+///    supergroups.
+///  - Bots can delete incoming messages in private chats.
+///  - Bots granted can_post_messages permissions can delete outgoing messages
+///    in channels.
+///  - If the bot is an administrator of a group, it can delete any message
+///    there.
+///  - If the bot has can_delete_messages permission in a supergroup or a
+///    channel, it can delete any message there.
+///
+/// [The official docs](https://core.telegram.org/bots/api#deletemessage).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteMessage<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
     chat_id: ChatId,
-    /// Identifier of the message to delete
     message_id: i32,
 }
 
@@ -57,6 +59,8 @@ impl<'a> DeleteMessage<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -65,6 +69,7 @@ impl<'a> DeleteMessage<'a> {
         self
     }
 
+    /// Identifier of the message to delete.
     pub fn message_id(mut self, val: i32) -> Self {
         self.message_id = val;
         self
