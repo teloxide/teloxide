@@ -9,10 +9,10 @@ use super::PassportFile;
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElement {
     /// Base64-encoded element hash for using in
-    /// [`PassportElementErrorUnspecified`].
+    /// [`PassportElementErrorKind::Unspecified`].
     ///
-    /// [`PassportElementErrorUnspecified`]:
-    /// crate::types::PassportElementErrorUnspecified
+    /// [`PassportElementErrorKind::Unspecified`]:
+    /// crate::types::PassportElementErrorKind::Unspecified
     pub hash: String,
 
     #[serde(flatten)]

@@ -183,7 +183,7 @@ impl<'a> SendAudio<'a> {
     /// Sends the message [silently]. Users will receive a notification with no
     /// sound.
     ///
-    /// [silantly]: https://telegram.org/blog/channels-2-0#silent-messages
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
