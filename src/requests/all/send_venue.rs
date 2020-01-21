@@ -74,7 +74,7 @@ impl<'a> SendVenue<'a> {
         }
     }
 
-    ///  	Unique identifier for the target chat or username of the target channel
+    /// Unique identifier for the target chat or username of the target channel
     /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
