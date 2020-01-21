@@ -8,9 +8,7 @@ pub enum DispatchResult {
 }
 
 pub mod chat;
-pub mod filters;
 mod handler;
 pub mod update_listeners;
 
-pub use filters::Filter;
 pub use handler::*;
