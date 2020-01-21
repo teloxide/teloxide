@@ -1,11 +1,16 @@
 //! Update dispatching.
 
-mod dispatchers;
-pub mod error_handlers;
-mod handler;
-pub mod updaters;
+/// If an update was handled by a dispatcher or not.
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
+pub enum DispatchResult {
+    Handled,
+    Unhandled,
+}
 
-pub use dispatchers::filter::FilterDispatcher;
-pub use error_handlers::ErrorHandler;
-pub use handler::Handler;
-pub use updaters::Updater;
+pub mod chat;
+pub mod filters;
+mod handler;
+pub mod update_listeners;
+
+pub use filters::Filter;
+pub use handler::*;

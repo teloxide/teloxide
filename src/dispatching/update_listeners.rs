@@ -1,12 +1,13 @@
 //! Receiving updates from Telegram.
 //!
-//! The key trait here is [`Updater`]. You can get it by these functions:
+//! The key trait here is [`UpdateListener`]. You can get it by these functions:
 //!
-//!  - [`polling_default`], which returns a default long polling updater.
-//!  - [`polling`], which returns a long/short polling updater with your
+//!  - [`polling_default`], which returns a default long polling listener.
+//!  - [`polling`], which returns a long/short polling listener with your
 //!    configuration.
 //!
-//! And then you can pass it directly to a dispatcher.
+//! And then you can extract updates from it and pass them directly to a
+//! dispatcher.
 //!
 //! Telegram supports two ways of [getting updates]: [long]/[short] polling and
 //! [webhook].
@@ -90,10 +91,9 @@
 //! <a id="4" href="#4b">^4</a> `offset = N` means that we've already received
 //!   updates `0..=N`.
 //!
-//! [`Updater`]: Updater
+//! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
 //! [`polling`]: polling
-//! [`Dispatcher`]: crate::dispatching::Dispatcher::dispatch
 //! [`Box::get_updates`]: crate::Bot::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
 //! [long]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
@@ -110,22 +110,22 @@ use crate::{
 };
 use std::{convert::TryInto, time::Duration};
 
-/// A generic updater.
-pub trait Updater<E>: Stream<Item = Result<Update, E>> {
+/// A generic update listener.
+pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
     // TODO: add some methods here (.shutdown(), etc).
 }
-impl<S, E> Updater<E> for S where S: Stream<Item = Result<Update, E>> {}
+impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 
-/// Returns a long polling updater with the default configuration.
+/// Returns a long polling update listener with the default configuration.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default(bot: &Bot) -> impl Updater<RequestError> + '_ {
+pub fn polling_default(bot: &Bot) -> impl UpdateListener<RequestError> + '_ {
     polling(bot, None, None, None)
 }
 
-/// Returns a long/short polling updater with some additional options.
+/// Returns a long/short polling update listener with some additional options.
 ///
-/// - `bot`: Using this bot, the returned updater will receive updates.
+/// - `bot`: Using this bot, the returned update listener will receive updates.
 /// - `timeout`: A timeout for polling.
 /// - `limit`: Limits the number of updates to be retrieved at once. Values
 ///   between 1—100 are accepted.
@@ -140,7 +140,7 @@ pub fn polling(
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl Updater<RequestError> + '_ {
+) -> impl UpdateListener<RequestError> + '_ {
     let timeout =
         timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
 
