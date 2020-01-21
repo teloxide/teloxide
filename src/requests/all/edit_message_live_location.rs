@@ -7,24 +7,26 @@ use crate::{
     Bot,
 };
 
-/// Use this method to edit live location messages. A location can be edited
-/// until its live_period expires or editing is explicitly disabled by a call to
-/// stopMessageLiveLocation. On success, if the edited message was sent by the
-/// bot, the edited Message is returned, otherwise True is returned.
+/// Use this method to edit live location messages.
+///
+/// A location can be edited until its live_period expires or editing is
+/// explicitly disabled by a call to stopMessageLiveLocation. On success, if the
+/// edited message was sent by the bot, the edited [`Message`] is returned,
+/// otherwise [`True`] is returned.
+///
+/// [The official docs](https://core.telegram.org/bots/api#editmessagelivelocation).
+///
+/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// Latitude of new location
     latitude: f32,
-    /// Longitude of new location
     longitude: f32,
-    /// A JSON-serialized object for a new inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -64,16 +66,21 @@ impl<'a> EditMessageLiveLocation<'a> {
         self
     }
 
+    /// Latitude of new location.
     pub fn latitude(mut self, val: f32) -> Self {
         self.latitude = val;
         self
     }
 
+    /// Longitude of new location.
     pub fn longitude(mut self, val: f32) -> Self {
         self.longitude = val;
         self
     }
 
+    /// A JSON-serialized object for a new [inline keyboard].
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

@@ -7,9 +7,10 @@ use crate::{
     Bot,
 };
 
-/// Use this method to edit captions of messages. On success, if edited message
-/// is sent by the bot, the edited [`Message`] is returned, otherwise [`True`]
-/// is returned.
+/// Use this method to edit captions of messages.
+///
+/// On success, if edited message is sent by the bot, the edited [`Message`] is
+/// returned, otherwise [`True`] is returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
 ///
@@ -70,12 +71,13 @@ impl<'a> EditMessageCaption<'a> {
         self
     }
 
-    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-    /// italic, fixed-width text or inline URLs] in the media caption.
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show
+    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-    /// [HTML]: https://core.telegram.org/bots/api#html-style
-    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    /// [Markdown]: crate::types::ParseMode::Markdown
+    /// [HTML]: crate::types::ParseMode::HTML
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self

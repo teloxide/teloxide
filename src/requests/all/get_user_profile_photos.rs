@@ -7,21 +7,16 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get a list of profile pictures for a user. Returns a
-/// UserProfilePhotos object.
+/// Use this method to get a list of profile pictures for a user.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getuserprofilephotos).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUserProfilePhotos<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier of the target user
     user_id: i32,
-    /// Sequential number of the first photo to be returned. By default, all
-    /// photos are returned.
     offset: Option<i32>,
-    /// Limits the number of photos to be retrieved. Values between 1—100 are
-    /// accepted. Defaults to 100.
     limit: Option<i32>,
 }
 
@@ -50,16 +45,23 @@ impl<'a> GetUserProfilePhotos<'a> {
         }
     }
 
+    /// Unique identifier of the target user.
     pub fn user_id(mut self, val: i32) -> Self {
         self.user_id = val;
         self
     }
 
+    /// Sequential number of the first photo to be returned. By default, all
+    /// photos are returned.
     pub fn offset(mut self, val: i32) -> Self {
         self.offset = Some(val);
         self
     }
 
+    /// Limits the number of photos to be retrieved. Values between 1—100 are
+    /// accepted.
+    ///
+    /// Defaults to 100.
     pub fn limit(mut self, val: i32) -> Self {
         self.limit = Some(val);
         self

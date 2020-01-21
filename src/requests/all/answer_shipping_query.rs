@@ -85,8 +85,9 @@ impl<'a> AnswerShippingQuery<'a> {
 
     /// Required if ok is `false`. Error message in human readable form that
     /// explains why it is impossible to complete the order (e.g. "Sorry,
-    /// delivery to your desired address is unavailable'). Telegram will display
-    /// this message to the user.
+    /// delivery to your desired address is unavailable').
+    ///
+    /// Telegram will display this message to the user.
     pub fn error_message<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

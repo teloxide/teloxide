@@ -7,9 +7,10 @@ use crate::{
     Bot,
 };
 
-/// Use this method to delete a group sticker set from a supergroup. The bot
-/// must be an administrator in the chat for this to work and must have the
-/// appropriate admin rights. Use the field `can_set_sticker_set` optionally
+/// Use this method to delete a group sticker set from a supergroup.
+///
+/// The bot must be an administrator in the chat for this to work and must have
+/// the appropriate admin rights. Use the field `can_set_sticker_set` optionally
 /// returned in [`Bot::get_chat`] requests to check if the bot can use this
 /// method.
 ///

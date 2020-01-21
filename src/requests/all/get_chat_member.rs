@@ -7,18 +7,15 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get information about a member of a chat. Returns a
-/// ChatMember object on success.
+/// Use this method to get information about a member of a chat.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getchatmember).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChatMember<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup or channel (in the format @channelusername)
     chat_id: ChatId,
-    /// Unique identifier of the target user
     user_id: i32,
 }
 
@@ -50,6 +47,8 @@ impl<'a> GetChatMember<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup or channel (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -58,6 +57,7 @@ impl<'a> GetChatMember<'a> {
         self
     }
 
+    /// Unique identifier of the target user.
     pub fn user_id(mut self, val: i32) -> Self {
         self.user_id = val;
         self

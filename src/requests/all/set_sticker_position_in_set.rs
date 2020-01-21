@@ -8,16 +8,15 @@ use crate::{
 };
 
 /// Use this method to move a sticker in a set created by the bot to a specific
-/// position . Returns True on success.
+/// position.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setstickerpositioninset).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct SetStickerPositionInSet<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// File identifier of the sticker
     sticker: String,
-    /// New sticker position in the set, zero-based
     position: i32,
 }
 
@@ -49,6 +48,7 @@ impl<'a> SetStickerPositionInSet<'a> {
         }
     }
 
+    /// File identifier of the sticker.
     pub fn sticker<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -57,6 +57,7 @@ impl<'a> SetStickerPositionInSet<'a> {
         self
     }
 
+    /// New sticker position in the set, zero-based.
     pub fn position(mut self, val: i32) -> Self {
         self.position = val;
         self

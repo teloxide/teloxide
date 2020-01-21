@@ -7,15 +7,14 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get a sticker set. On success, a StickerSet object is
-/// returned.
+/// Use this method to get a sticker set.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getstickerset).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct GetStickerSet<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Name of the sticker set
     name: String,
 }
 
@@ -43,6 +42,7 @@ impl<'a> GetStickerSet<'a> {
         Self { bot, name }
     }
 
+    /// Name of the sticker set.
     pub fn name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

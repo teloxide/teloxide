@@ -6,10 +6,9 @@ use crate::{
 };
 use serde::Serialize;
 
-/// A filter method for testing your bot's auth token. Requires no parameters.
-/// Returns basic information about the bot in form of a [`User`] object.
+/// A simple method for testing your bot's auth token. Requires no parameters.
 ///
-/// [`User`]: crate::types::User
+/// [The official docs](https://core.telegram.org/bots/api#getme).
 #[derive(Debug, Clone, Copy, Serialize)]
 pub struct GetMe<'a> {
     #[serde(skip_serializing)]
@@ -20,6 +19,7 @@ pub struct GetMe<'a> {
 impl Request for GetMe<'_> {
     type Output = User;
 
+    /// Returns basic information about the bot.
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<User> {
         network::request_json(

@@ -7,9 +7,14 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get current webhook status. Requires no parameters. On
-/// success, returns a WebhookInfo object. If the bot is using getUpdates, will
-/// return an object with the url field empty.
+/// Use this method to get current webhook status.
+///
+/// If the bot is using [`Bot::get_updates`], will return an object with the url
+/// field empty.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getwebhookinfo).
+///
+/// [`Bot::get_updates`]: crate::Bot::get_updates
 #[derive(Debug, Clone, Serialize)]
 pub struct GetWebhookInfo<'a> {
     #[serde(skip_serializing)]

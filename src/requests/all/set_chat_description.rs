@@ -8,18 +8,18 @@ use crate::{
 };
 
 /// Use this method to change the description of a group, a supergroup or a
-/// channel. The bot must be an administrator in the chat for this to work and
-/// must have the appropriate admin rights. Returns True on success.
+/// channel.
+///
+/// The bot must be an administrator in the chat for this to work and must have
+/// the appropriate admin rights.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setchatdescription).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatDescription<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
     chat_id: ChatId,
-    /// New chat description, 0-255 characters
     description: Option<String>,
 }
 
@@ -51,6 +51,8 @@ impl<'a> SetChatDescription<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -59,6 +61,7 @@ impl<'a> SetChatDescription<'a> {
         self
     }
 
+    /// New chat description, 0-255 characters.
     pub fn description<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

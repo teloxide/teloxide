@@ -8,15 +8,13 @@ use crate::{
 };
 
 /// Use this method for your bot to leave a group, supergroup or channel.
-/// Returns True on success.
+///
+/// [The official docs](https://core.telegram.org/bots/api#leavechat).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct LeaveChat<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup or channel (in the format @channelusername)
     chat_id: ChatId,
 }
 
@@ -44,6 +42,8 @@ impl<'a> LeaveChat<'a> {
         Self { bot, chat_id }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup or channel (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,

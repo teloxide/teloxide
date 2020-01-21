@@ -7,26 +7,21 @@ use crate::{
     Bot,
 };
 
-/// Use this method to restrict a user in a supergroup. The bot must be an
-/// administrator in the supergroup for this to work and must have the
-/// appropriate admin rights. Pass True for all permissions to lift restrictions
-/// from a user. Returns True on success.
+/// Use this method to restrict a user in a supergroup.
+///
+/// The bot must be an administrator in the supergroup for this to work and must
+/// have the appropriate admin rights. Pass `true` for all permissions to lift
+/// restrictions from a user.
+///
+/// [The official docs](https://core.telegram.org/bots/api#restrictchatmember).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct RestrictChatMember<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
-    /// Unique identifier of the target user
     user_id: i32,
-    /// New user permissions
     permissions: ChatPermissions,
-    /// Date when restrictions will be lifted for the user, unix time. If user
-    /// is restricted for more than 366 days or less than 30 seconds from the
-    /// current time, they are considered to be restricted forever
     until_date: Option<i32>,
 }
 
@@ -65,6 +60,8 @@ impl<'a> RestrictChatMember<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup (in the format `@supergroupusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -73,16 +70,22 @@ impl<'a> RestrictChatMember<'a> {
         self
     }
 
+    /// Unique identifier of the target user.
     pub fn user_id(mut self, val: i32) -> Self {
         self.user_id = val;
         self
     }
 
+    /// New user permissions.
     pub fn permissions(mut self, val: ChatPermissions) -> Self {
         self.permissions = val;
         self
     }
 
+    /// Date when restrictions will be lifted for the user, unix time.
+    ///
+    /// If user is restricted for more than 366 days or less than 30 seconds
+    /// from the current time, they are considered to be restricted forever.
     pub fn until_date(mut self, val: i32) -> Self {
         self.until_date = Some(val);
         self

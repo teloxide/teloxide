@@ -84,10 +84,11 @@ impl<'a> CreateNewStickerSet<'a> {
     }
 
     /// Short name of sticker set, to be used in `t.me/addstickers/` URLs (e.g.,
-    /// animals). Can contain only english letters, digits and underscores. Must
-    /// begin with a letter, can't contain consecutive underscores and must end
-    /// in `_by_<bot username>`. `<bot_username>` is case insensitive. 1-64
-    /// characters.
+    /// animals). Can contain only english letters, digits and underscores.
+    ///
+    /// Must begin with a letter, can't contain consecutive underscores and must
+    /// end in `_by_<bot username>`. `<bot_username>` is case insensitive.
+    /// 1-64 characters.
     pub fn name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -107,12 +108,16 @@ impl<'a> CreateNewStickerSet<'a> {
 
     /// **Png** image with the sticker, must be up to 512 kilobytes in size,
     /// dimensions must not exceed 512px, and either width or height must be
-    /// exactly 512px. Pass a file_id as a String to send a file that already
-    /// exists on the Telegram servers, pass an HTTP URL as a String for
-    /// Telegram to get a file from the Internet, or upload a new one using
-    /// multipart/form-data. [More info on Sending Files »].
+    /// exactly 512px.
     ///
-    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+    /// Pass [`InputFile::File`] to send a file that exists on
+    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    /// Telegram to get a .webp file from the Internet, or upload a new one
+    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn png_sticker(mut self, val: InputFile) -> Self {
         self.png_sticker = val;
         self

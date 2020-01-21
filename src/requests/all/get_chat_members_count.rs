@@ -7,16 +7,14 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get the number of members in a chat. Returns Int on
-/// success.
+/// Use this method to get the number of members in a chat.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getchatmemberscount).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChatMembersCount<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup or channel (in the format @channelusername)
     chat_id: ChatId,
 }
 
@@ -44,6 +42,8 @@ impl<'a> GetChatMembersCount<'a> {
         Self { bot, chat_id }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup or channel (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,

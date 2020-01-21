@@ -7,24 +7,17 @@ use crate::{
     Bot,
 };
 
-/// Use this method to forward messages of any kind. On success, the sent
-/// Message is returned.
+/// Use this method to forward messages of any kind.
+///
+/// [`The official docs`](https://core.telegram.org/bots/api#forwardmessage).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct ForwardMessage<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
     chat_id: ChatId,
-    /// Unique identifier for the chat where the original message was sent (or
-    /// channel username in the format @channelusername)
     from_chat_id: ChatId,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// Message identifier in the chat specified in from_chat_id
     message_id: i32,
 }
 
@@ -65,6 +58,8 @@ impl<'a> ForwardMessage<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -73,6 +68,8 @@ impl<'a> ForwardMessage<'a> {
         self
     }
 
+    /// Unique identifier for the chat where the original message was sent (or
+    /// channel username in the format `@channelusername`).
     #[allow(clippy::wrong_self_convention)]
     pub fn from_chat_id<T>(mut self, val: T) -> Self
     where
@@ -82,11 +79,18 @@ impl<'a> ForwardMessage<'a> {
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// Message identifier in the chat specified in [`from_chat_id`].
+    ///
+    /// [`from_chat_id`]: ForwardMessage::from_chat_id
     pub fn message_id(mut self, val: i32) -> Self {
         self.message_id = val;
         self

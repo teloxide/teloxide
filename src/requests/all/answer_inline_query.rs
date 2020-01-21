@@ -84,15 +84,19 @@ impl<'a> AnswerInlineQuery<'a> {
     }
 
     /// The maximum amount of time in seconds that the result of the inline
-    /// query may be cached on the server. Defaults to 300.
+    /// query may be cached on the server.
+    ///
+    /// Defaults to 300.
     pub fn cache_time(mut self, val: i32) -> Self {
         self.cache_time = Some(val);
         self
     }
 
     /// Pass `true`, if results may be cached on the server side only for the
-    /// user that sent the query. By default, results may be returned to any
-    /// user who sends the same query.
+    /// user that sent the query.
+    ///
+    /// By default, results may be returned to any user who sends the same
+    /// query.
     #[allow(clippy::wrong_self_convention)]
     pub fn is_personal(mut self, val: bool) -> Self {
         self.is_personal = Some(val);
@@ -100,9 +104,10 @@ impl<'a> AnswerInlineQuery<'a> {
     }
 
     /// Pass the offset that a client should send in the next query with the
-    /// same text to receive more results. Pass an empty string if there are no
-    /// more results or if you don‘t support pagination. Offset length can’t
-    /// exceed 64 bytes.
+    /// same text to receive more results.
+    ///
+    /// Pass an empty string if there are no more results or if you don‘t
+    /// support pagination. Offset length can’t exceed 64 bytes.
     pub fn next_offset<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

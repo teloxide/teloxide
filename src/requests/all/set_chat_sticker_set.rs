@@ -7,21 +7,19 @@ use crate::{
     Bot,
 };
 
-/// Use this method to set a new group sticker set for a supergroup. The bot
-/// must be an administrator in the chat for this to work and must have the
-/// appropriate admin rights. Use the field can_set_sticker_set optionally
+/// Use this method to set a new group sticker set for a supergroup.
+///
+/// The bot must be an administrator in the chat for this to work and must have
+/// the appropriate admin rights. Use the field can_set_sticker_set optionally
 /// returned in getChat requests to check if the bot can use this method.
-/// Returns True on success.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setchatstickerset).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatStickerSet<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup (in the format @supergroupusername)
     chat_id: ChatId,
-    /// Name of the sticker set to be set as the group sticker set
     sticker_set_name: String,
 }
 
@@ -59,6 +57,8 @@ impl<'a> SetChatStickerSet<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup (in the format `@supergroupusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -67,6 +67,7 @@ impl<'a> SetChatStickerSet<'a> {
         self
     }
 
+    /// Name of the sticker set to be set as the group sticker set.
     pub fn sticker_set_name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

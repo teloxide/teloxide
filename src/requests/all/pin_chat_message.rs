@@ -7,24 +7,20 @@ use crate::{
     Bot,
 };
 
-/// Use this method to pin a message in a group, a supergroup, or a channel. The
-/// bot must be an administrator in the chat for this to work and must have the
-/// ‘can_pin_messages’ admin right in the supergroup or ‘can_edit_messages’
-/// admin right in the channel. Returns True on success.
+/// Use this method to pin a message in a group, a supergroup, or a channel.
+///
+/// The bot must be an administrator in the chat for this to work and must have
+/// the `can_pin_messages` admin right in the supergroup or `can_edit_messages`
+/// admin right in the channel.
+///
+/// [The official docs](https://core.telegram.org/bots/api#pinchatmessage).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct PinChatMessage<'a> {
     #[serde(skip_serializing)]
     bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
     chat_id: ChatId,
-    /// Identifier of a message to pin
     message_id: i32,
-    /// Pass True, if it is not necessary to send a notification to all chat
-    /// members about the new pinned message. Notifications are always disabled
-    /// in channels.
     disable_notification: Option<bool>,
 }
 
@@ -57,6 +53,8 @@ impl<'a> PinChatMessage<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -65,11 +63,16 @@ impl<'a> PinChatMessage<'a> {
         self
     }
 
+    /// Identifier of a message to pin.
     pub fn message_id(mut self, val: i32) -> Self {
         self.message_id = val;
         self
     }
 
+    /// Pass `true`, if it is not necessary to send a notification to all chat
+    /// members about the new pinned message.
+    ///
+    /// Notifications are always disabled in channels.
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
