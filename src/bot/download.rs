@@ -4,8 +4,8 @@ use tokio::io::AsyncWrite;
 use ::{bytes::Bytes, tokio::stream::Stream};
 
 #[cfg(feature = "unstable-stream")]
-use crate::network::download_file_stream;
-use crate::{bot::Bot, network::download_file, DownloadError};
+use crate::net::download_file_stream;
+use crate::{bot::Bot, net::download_file, DownloadError};
 
 impl Bot {
     /// Download a file from Telegram into `destination`.

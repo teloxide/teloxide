@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{InputFile, True},
     Bot,
@@ -53,7 +53,7 @@ impl Request for SetWebhook<'_> {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "setWebhook",

@@ -1,5 +1,5 @@
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::User,
     Bot,
@@ -22,13 +22,8 @@ impl Request for GetMe<'_> {
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<User> {
-        network::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getMe",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getMe", &self)
+            .await
     }
 }
 

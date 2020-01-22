@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, GameHighScore},
     Bot,
@@ -31,7 +31,7 @@ impl Request for GetGameHighScores<'_> {
     type Output = Vec<GameHighScore>;
 
     async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getGameHighScores",

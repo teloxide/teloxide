@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Poll},
     Bot,
@@ -29,7 +29,7 @@ impl Request for StopPoll<'_> {
     type Output = Poll;
 
     async fn send(&self) -> ResponseResult<Poll> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "stopPoll",

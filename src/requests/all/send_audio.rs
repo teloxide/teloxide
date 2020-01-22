@@ -1,5 +1,5 @@
 use crate::{
-    network,
+    net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
@@ -58,7 +58,7 @@ impl Request for SendAudio<'_> {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        network::request_multipart(
+        net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendAudio",

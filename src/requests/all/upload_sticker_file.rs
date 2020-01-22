@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{File, InputFile},
     Bot,
@@ -28,7 +28,7 @@ impl Request for UploadStickerFile<'_> {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "uploadStickerFile",
