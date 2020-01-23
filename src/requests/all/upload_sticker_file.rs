@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -16,10 +17,10 @@ use crate::{
 /// [`Bot::create_new_sticker_set`]: crate::Bot::create_new_sticker_set
 /// [`Bot::add_sticker_to_set`]: crate::Bot::add_sticker_to_set
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct UploadStickerFile<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     user_id: i32,
     png_sticker: InputFile,
 }
@@ -45,7 +46,7 @@ impl<'a> UploadStickerFile<'a> {
         png_sticker: InputFile,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             user_id,
             png_sticker,
         }

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -8,9 +9,9 @@ use crate::{
 /// Use this method to send photos.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendphoto).
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendPhoto<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     photo: InputFile,
     caption: Option<String>,
@@ -56,7 +57,7 @@ impl<'a> SendPhoto<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             photo,
             caption: None,

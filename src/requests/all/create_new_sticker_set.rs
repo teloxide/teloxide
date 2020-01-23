@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -9,9 +10,9 @@ use crate::{
 /// able to edit the created sticker set.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#createnewstickerset).
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct CreateNewStickerSet<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     user_id: i32,
     name: String,
     title: String,
@@ -66,7 +67,7 @@ impl<'a> CreateNewStickerSet<'a> {
         E: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             user_id,
             name: name.into(),
             title: title.into(),

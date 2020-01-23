@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -27,10 +28,10 @@ use crate::{
 /// [`File`]: crate::types::file
 /// [`GetFile`]: self::GetFile
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetFile<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     file_id: String,
 }
 
@@ -55,7 +56,7 @@ impl<'a> GetFile<'a> {
         F: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             file_id: file_id.into(),
         }
     }

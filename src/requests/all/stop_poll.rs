@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -11,10 +12,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#stoppoll).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct StopPoll<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     message_id: i32,
     reply_markup: Option<InlineKeyboardMarkup>,
@@ -44,7 +45,7 @@ impl<'a> StopPoll<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             message_id,
             reply_markup: None,

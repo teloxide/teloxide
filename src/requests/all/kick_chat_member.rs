@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -18,10 +19,10 @@ use crate::{
 ///
 /// [unbanned]: crate::Bot::unban_chat_member
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct KickChatMember<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     user_id: i32,
     until_date: Option<i32>,
@@ -49,7 +50,7 @@ impl<'a> KickChatMember<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             user_id,
             until_date: None,

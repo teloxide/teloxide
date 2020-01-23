@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -11,9 +12,9 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#sendvideonote).
 ///
 /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendVideoNote<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     video_note: InputFile,
     duration: Option<i32>,
@@ -66,7 +67,7 @@ impl<'a> SendVideoNote<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             video_note,
             duration: None,

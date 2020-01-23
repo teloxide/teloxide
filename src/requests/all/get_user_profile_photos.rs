@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -11,10 +12,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getuserprofilephotos).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Copy, Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetUserProfilePhotos<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     user_id: i32,
     offset: Option<i32>,
     limit: Option<i32>,
@@ -38,7 +39,7 @@ impl Request for GetUserProfilePhotos<'_> {
 impl<'a> GetUserProfilePhotos<'a> {
     pub(crate) fn new(bot: &'a Bot, user_id: i32) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             user_id,
             offset: None,
             limit: None,

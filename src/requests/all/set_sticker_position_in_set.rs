@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -12,10 +13,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setstickerpositioninset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SetStickerPositionInSet<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     sticker: String,
     position: i32,
 }
@@ -42,7 +43,7 @@ impl<'a> SetStickerPositionInSet<'a> {
     {
         let sticker = sticker.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             sticker,
             position,
         }

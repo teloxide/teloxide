@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -11,10 +12,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getstickerset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetStickerSet<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     name: String,
 }
 
@@ -39,7 +40,10 @@ impl<'a> GetStickerSet<'a> {
         N: Into<String>,
     {
         let name = name.into();
-        Self { bot, name }
+        Self {
+            bot: BotWrapper(bot),
+            name,
+        }
     }
 
     /// Name of the sticker set.

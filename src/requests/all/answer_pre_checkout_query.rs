@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -17,10 +18,10 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct AnswerPreCheckoutQuery<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     pre_checkout_query_id: String,
     ok: bool,
     error_message: Option<String>,
@@ -52,7 +53,7 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
     {
         let pre_checkout_query_id = pre_checkout_query_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             pre_checkout_query_id,
             ok,
             error_message: None,

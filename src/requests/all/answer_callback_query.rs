@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -17,10 +18,10 @@ use crate::{
 ///
 /// [inline keyboards]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct AnswerCallbackQuery<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     callback_query_id: String,
     text: Option<String>,
     show_alert: Option<bool>,
@@ -50,7 +51,7 @@ impl<'a> AnswerCallbackQuery<'a> {
     {
         let callback_query_id = callback_query_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             callback_query_id,
             text: None,
             show_alert: None,

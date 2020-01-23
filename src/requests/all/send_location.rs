@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -11,10 +12,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendlocation).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(PartialEq, Debug, Clone, Serialize)]
 pub struct SendLocation<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     latitude: f32,
     longitude: f32,
@@ -51,7 +52,7 @@ impl<'a> SendLocation<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             latitude,
             longitude,

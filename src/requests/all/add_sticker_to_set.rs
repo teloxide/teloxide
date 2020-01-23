@@ -5,14 +5,15 @@ use crate::{
     Bot,
 };
 
+use super::BotWrapper;
 use crate::requests::{Request, ResponseResult};
 
 /// Use this method to add a new sticker to a set created by the bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#addstickertoset).
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct AddStickerToSet<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     user_id: i32,
     name: String,
     png_sticker: InputFile,
@@ -59,7 +60,7 @@ impl<'a> AddStickerToSet<'a> {
         E: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             user_id,
             name: name.into(),
             png_sticker,

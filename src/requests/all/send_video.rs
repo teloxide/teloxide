@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -12,9 +13,9 @@ use crate::{
 /// limit may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendVideo<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     video: InputFile,
     duration: Option<i32>,
@@ -75,7 +76,7 @@ impl<'a> SendVideo<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             video,
             duration: None,

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -17,9 +18,9 @@ use crate::{
 ///
 /// [`Audio`]: crate::types::Audio
 /// [`Document`]: crate::types::Document
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendVoice<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     voice: InputFile,
     caption: Option<String>,
@@ -68,7 +69,7 @@ impl<'a> SendVoice<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             voice,
             caption: None,

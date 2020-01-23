@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -11,9 +12,9 @@ use crate::{
 /// may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#senddocument).
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendDocument<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     document: InputFile,
     thumb: Option<InputFile>,
@@ -62,7 +63,7 @@ impl<'a> SendDocument<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             document,
             thumb: None,

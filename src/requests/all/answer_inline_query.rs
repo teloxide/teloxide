@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -13,10 +14,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#answerinlinequery).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(PartialEq, Debug, Clone, Serialize)]
 pub struct AnswerInlineQuery<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     inline_query_id: String,
     results: Vec<InlineQueryResult>,
     cache_time: Option<i32>,
@@ -54,7 +55,7 @@ impl<'a> AnswerInlineQuery<'a> {
         let inline_query_id = inline_query_id.into();
         let results = results.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             inline_query_id,
             results,
             cache_time: None,

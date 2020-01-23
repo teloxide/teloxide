@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -12,9 +13,9 @@ use crate::{
 /// may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendanimation).
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendAnimation<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     pub chat_id: ChatId,
     pub animation: InputFile,
     pub duration: Option<u32>,
@@ -72,7 +73,7 @@ impl<'a> SendAnimation<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             animation,
             duration: None,

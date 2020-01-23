@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -17,10 +18,10 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct EditMessageCaption<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     caption: Option<String>,
@@ -49,7 +50,7 @@ impl<'a> EditMessageCaption<'a> {
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             caption: None,
             parse_mode: None,

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -10,9 +11,9 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#sendsticker).
 ///
 /// [animated]: https://telegram.org/blog/animated-stickers
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendSticker<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     sticker: InputFile,
     disable_notification: Option<bool>,
@@ -52,7 +53,7 @@ impl<'a> SendSticker<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             sticker,
             disable_notification: None,

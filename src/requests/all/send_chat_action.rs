@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -25,10 +26,10 @@ use crate::{
 /// [ImageBot]: https://t.me/imagebot
 /// [`Bot::send_chat_action`]: crate::Bot::send_chat_action
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendChatAction<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     action: SendChatActionKind,
 }
@@ -36,7 +37,7 @@ pub struct SendChatAction<'a> {
 /// A type of action used in [`SendChatAction`].
 ///
 /// [`SendChatAction`]: crate::requests::SendChatAction
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(PartialEq, Copy, Clone, Debug, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SendChatActionKind {
     /// For [text messages](crate::Bot::send_message).
@@ -95,7 +96,7 @@ impl<'a> SendChatAction<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             action,
         }

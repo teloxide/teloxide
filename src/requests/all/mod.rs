@@ -64,6 +64,7 @@ mod unban_chat_member;
 mod unpin_chat_message;
 mod upload_sticker_file;
 
+use crate::Bot;
 pub use add_sticker_to_set::*;
 pub use answer_callback_query::*;
 pub use answer_inline_query::*;
@@ -124,9 +125,41 @@ pub use set_chat_title::*;
 pub use set_game_score::*;
 pub use set_sticker_position_in_set::*;
 pub use set_webhook::*;
+use std::ops::Deref;
 pub use std::pin::Pin;
 pub use stop_message_live_location::*;
 pub use stop_poll::*;
 pub use unban_chat_member::*;
 pub use unpin_chat_message::*;
 pub use upload_sticker_file::*;
+
+/// A wrapper that implements `Clone`, Copy, `PartialEq`, `Eq`, `Debug`, but
+/// performs no copying, cloning and comparison.
+///
+/// Used in the requests bodies.
+#[derive(Debug)]
+struct BotWrapper<'a>(&'a Bot);
+
+impl PartialEq for BotWrapper<'_> {
+    fn eq(&self, _: &BotWrapper<'_>) -> bool {
+        true
+    }
+}
+
+impl Eq for BotWrapper<'_> {}
+
+impl<'a> Clone for BotWrapper<'a> {
+    fn clone(&self) -> BotWrapper<'a> {
+        Self(self.0)
+    }
+}
+
+impl Copy for BotWrapper<'_> {}
+
+impl Deref for BotWrapper<'_> {
+    type Target = Bot;
+
+    fn deref(&self) -> &Bot {
+        &self.0
+    }
+}

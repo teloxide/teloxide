@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -16,9 +17,9 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
 ///
 /// [`Bot::send_voice`]: crate::Bot::send_voice
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendAudio<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     audio: InputFile,
     caption: Option<String>,
@@ -76,7 +77,7 @@ impl<'a> SendAudio<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             audio,
             caption: None,

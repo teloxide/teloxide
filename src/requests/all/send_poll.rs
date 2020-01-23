@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -12,10 +13,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendpoll).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendPoll<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     question: String,
     options: Vec<String>,
@@ -55,7 +56,7 @@ impl<'a> SendPoll<'a> {
         let question = question.into();
         let options = options.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             question,
             options,

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -9,10 +10,10 @@ use serde::Serialize;
 /// A simple method for testing your bot's auth token. Requires no parameters.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getme).
-#[derive(Debug, Clone, Copy, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Copy, Serialize)]
 pub struct GetMe<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
 }
 
 #[async_trait::async_trait]
@@ -34,6 +35,8 @@ impl Request for GetMe<'_> {
 
 impl<'a> GetMe<'a> {
     pub(crate) fn new(bot: &'a Bot) -> Self {
-        Self { bot }
+        Self {
+            bot: BotWrapper(bot),
+        }
     }
 }

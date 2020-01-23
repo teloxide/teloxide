@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -19,10 +20,10 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(PartialEq, Debug, Clone, Serialize)]
 pub struct EditMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     latitude: f32,
@@ -53,7 +54,7 @@ impl<'a> EditMessageLiveLocation<'a> {
         longitude: f32,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             latitude,
             longitude,

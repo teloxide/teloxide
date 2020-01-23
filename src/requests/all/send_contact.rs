@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -11,10 +12,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendcontact).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendContact<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     phone_number: String,
     first_name: String,
@@ -56,7 +57,7 @@ impl<'a> SendContact<'a> {
         let phone_number = phone_number.into();
         let first_name = first_name.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             phone_number,
             first_name,

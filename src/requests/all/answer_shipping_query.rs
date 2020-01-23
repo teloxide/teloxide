@@ -1,12 +1,12 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
     types::{ShippingOption, True},
     Bot,
 };
-
 /// If you sent an invoice requesting a shipping address and the parameter
 /// `is_flexible` was specified, the Bot API will send an [`Update`] with a
 /// shipping_query field to the bot. Use this method to reply to shipping
@@ -16,10 +16,10 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct AnswerShippingQuery<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     shipping_query_id: String,
     ok: bool,
     shipping_options: Option<Vec<ShippingOption>>,
@@ -48,7 +48,7 @@ impl<'a> AnswerShippingQuery<'a> {
     {
         let shipping_query_id = shipping_query_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             shipping_query_id,
             ok,
             shipping_options: None,

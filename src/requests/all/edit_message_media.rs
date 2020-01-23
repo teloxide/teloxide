@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -19,9 +20,9 @@ use crate::{
 ///
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct EditMessageMedia<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_or_inline_message: ChatOrInlineMessage,
     media: InputMedia,
     reply_markup: Option<InlineKeyboardMarkup>,
@@ -73,7 +74,7 @@ impl<'a> EditMessageMedia<'a> {
         media: InputMedia,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             media,
             reply_markup: None,

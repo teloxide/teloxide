@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -24,10 +25,10 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SetWebhook<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     url: String,
     certificate: Option<InputFile>,
     max_connections: Option<i32>,
@@ -56,7 +57,7 @@ impl<'a> SetWebhook<'a> {
     {
         let url = url.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             url,
             certificate: None,
             max_connections: None,

@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     network,
     requests::{Request, ResponseResult},
@@ -18,10 +19,10 @@ use crate::{
 ///
 /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetUpdates<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     pub(crate) offset: Option<i32>,
     pub(crate) limit: Option<u8>,
     pub(crate) timeout: Option<u32>,
@@ -46,7 +47,7 @@ impl Request for GetUpdates<'_> {
 impl<'a> GetUpdates<'a> {
     pub(crate) fn new(bot: &'a Bot) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             offset: None,
             limit: None,
             timeout: None,

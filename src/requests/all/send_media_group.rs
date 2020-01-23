@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     network,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -8,9 +9,9 @@ use crate::{
 /// Use this method to send a group of photos or videos as an album.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendmediagroup).
-#[derive(Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendMediaGroup<'a> {
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
     media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
     disable_notification: Option<bool>,
@@ -50,7 +51,7 @@ impl<'a> SendMediaGroup<'a> {
         let chat_id = chat_id.into();
         let media = media.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             media,
             disable_notification: None,
