@@ -159,26 +159,35 @@ where
 impl Chat {
     pub fn is_private(&self) -> bool {
         match self.kind {
-            ChatKind::Private {..} => true,
-            _ => false
+            ChatKind::Private { .. } => true,
+            _ => false,
         }
     }
     pub fn is_group(&self) -> bool {
         match self.kind {
-            ChatKind::NonPrivate { kind: NonPrivateChatKind::Group {..}, .. } => true,
-            _ => false
+            ChatKind::NonPrivate {
+                kind: NonPrivateChatKind::Group { .. },
+                ..
+            } => true,
+            _ => false,
         }
     }
     pub fn is_supergroup(&self) -> bool {
         match self.kind {
-            ChatKind::NonPrivate { kind: NonPrivateChatKind::Supergroup {..}, .. } => true,
-            _ => false
+            ChatKind::NonPrivate {
+                kind: NonPrivateChatKind::Supergroup { .. },
+                ..
+            } => true,
+            _ => false,
         }
     }
     pub fn is_channel(&self) -> bool {
         match self.kind {
-            ChatKind::NonPrivate { kind: NonPrivateChatKind::Channel {..}, .. } => true,
-            _ => false
+            ChatKind::NonPrivate {
+                kind: NonPrivateChatKind::Channel { .. },
+                ..
+            } => true,
+            _ => false,
         }
     }
     pub fn is_chat(&self) -> bool {
