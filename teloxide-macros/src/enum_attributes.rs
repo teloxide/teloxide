@@ -1,12 +1,12 @@
 use crate::attr::{Attr, BotCommandAttribute};
 use std::convert::TryFrom;
 
-pub struct Command {
+pub struct CommandEnum {
     pub prefix: Option<String>,
     pub description: Option<String>,
 }
 
-impl Command {
+impl CommandEnum {
     fn from_attrs(prefix: Option<&Attr>, description: Option<&Attr>) -> Self {
         let prefix = prefix.map(|attr| attr.value());
         let description = description.map(|attr| attr.value());
@@ -18,7 +18,7 @@ impl Command {
     }
 }
 
-impl TryFrom<&[Attr]> for Command {
+impl TryFrom<&[Attr]> for CommandEnum {
     type Error = String;
 
     fn try_from(attrs: &[Attr]) -> Result<Self, Self::Error> {

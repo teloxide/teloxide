@@ -147,4 +147,19 @@ mod tests {
         assert_eq!(DefaultCommands::Start, parse_command_into_enum::<DefaultCommands>("!start").unwrap().0);
         assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help - \n");
     }
+
+    #[test]
+    fn global_attributes() {
+        #[command(prefix = "!")]
+        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            #[command(prefix = "/")]
+            Start,
+            Help,
+        }
+
+        assert_eq!(DefaultCommands::Start, parse_command_into_enum::<DefaultCommands>("/start").unwrap().0);
+        assert_eq!(DefaultCommands::Help, parse_command_into_enum::<DefaultCommands>("!help").unwrap().0);
+        assert_eq!(DefaultCommands::descriptions(), "/start - \n!help - \n");
+    }
 }
