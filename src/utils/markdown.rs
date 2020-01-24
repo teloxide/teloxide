@@ -123,7 +123,7 @@ pub fn escape_code(s: &str) -> String {
 pub fn user_mention_or_link(user: &User) -> String {
     match user.mention() {
         Some(mention) => mention,
-        None => link(&user.url(), &user.full_name()),
+        None => link(user.url().as_str(), &user.full_name()),
     }
 }
 
@@ -271,7 +271,7 @@ mod tests {
         };
         assert_eq!(
             user_mention_or_link(&user_without_username),
-            r#"[Name](tg://user?id=123456789)"#
+            r#"[Name](tg://user/?id=123456789)"#
         )
     }
 }

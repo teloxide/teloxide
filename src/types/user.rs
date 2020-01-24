@@ -40,8 +40,8 @@ impl User {
         Some(format!("@{}", self.username.as_ref()?))
     }
 
-    pub fn url(&self) -> String {
-        format!("tg://user?id={}", self.id)
+    pub fn url(&self) -> reqwest::Url {
+        reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str()).unwrap()
     }
 }
 

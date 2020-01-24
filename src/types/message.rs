@@ -796,7 +796,7 @@ mod getters {
 }
 
 impl Message {
-    pub fn url(&self) -> Option<String> {
+    pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
             ChatKind::NonPrivate {
                 kind:
@@ -812,7 +812,7 @@ impl Message {
                         ..
                     },
                 ..
-            } => Some(format!("https://t.me/{0}/{1}/", username, self.id)),
+            } => Some(reqwest::Url::parse(format!("https://t.me/{0}/{1}/", username, self.id).as_str()).unwrap()),
             _ => None,
         }
     }

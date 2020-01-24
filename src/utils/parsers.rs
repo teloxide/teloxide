@@ -54,7 +54,7 @@ where
 /// use teloxide::utils::parse_command;
 /// let text = "/ban 5 hours";
 /// let (command, args) = parse_command(text).unwrap();
-/// assert_eq!(command, "ban");
+/// assert_eq!(command, "/ban");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
