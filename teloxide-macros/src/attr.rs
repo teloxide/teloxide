@@ -1,5 +1,5 @@
 use syn::parse::{Parse, ParseStream};
-use syn::{Attribute, Lit, Token};
+use syn::{Attribute, LitStr, Token};
 
 
 pub enum BotCommandAttribute {
@@ -28,16 +28,7 @@ impl Parse for Attr
     fn parse(input: ParseStream) -> Result<Self, syn::Error> {
         let name = input.parse::<BotCommandAttribute>()?;
         input.parse::<Token![=]>()?;
-        let value = match input.parse::<Lit>()? {
-            Lit::Str(s) => s.value(),
-            Lit::ByteStr(lit) => return Err(syn::Error::new(lit.span(), "expected string literal")),
-            Lit::Byte(lit) => return Err(syn::Error::new(lit.span(), "expected string literal")),
-            Lit::Char(lit) => return Err(syn::Error::new(lit.span(), "expected string literal")),
-            Lit::Int(lit) => return Err(syn::Error::new(lit.span(), "expected string literal")),
-            Lit::Float(lit) => return Err(syn::Error::new(lit.span(), "expected string literal")),
-            Lit::Bool(lit) => return Err(syn::Error::new(lit.span, "expected string literal")),
-            Lit::Verbatim(lit)  => return Err(syn::Error::new(lit.span(), "expected string literal")),
-        };
+        let value = input.parse::<LitStr>()?.value();
 
         Ok(Self {
             name,
