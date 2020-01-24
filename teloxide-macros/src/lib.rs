@@ -13,7 +13,7 @@ use std::convert::TryFrom;
 use crate::attr::{Attr, VecAttrs};
 use crate::enum_attributes::CommandEnum;
 
-#[proc_macro_derive(TelegramBotCommand, attributes(command))]
+#[proc_macro_derive(BotCommand, attributes(command))]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as DeriveInput);
 
@@ -80,7 +80,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let ident = input.ident;
 
     let expanded = quote! {
-        impl TelegramBotCommand for #ident {
+        impl BotCommand for #ident {
             fn try_from(value: &str) -> Option<Self> {
                 match value {
                     #(

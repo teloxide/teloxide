@@ -1,10 +1,10 @@
-pub use teloxide_macros::TelegramBotCommand;
+pub use teloxide_macros::BotCommand;
 /// Enum for telegram commands
 ///
 /// Example:
 /// ```
-/// use teloxide::utils::{parse_command_into_enum, TelegramBotCommand};
-/// #[derive(TelegramBotCommand, PartialEq, Debug)]
+/// use teloxide::utils::{parse_command_into_enum, BotCommand};
+/// #[derive(BotCommand, PartialEq, Debug)]
 /// enum TelegramAdminCommand {
 ///     Ban,
 ///     Kick,
@@ -14,7 +14,7 @@ pub use teloxide_macros::TelegramBotCommand;
 /// assert_eq!(command, TelegramAdminCommand::Ban);
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
-pub trait TelegramBotCommand: Sized {
+pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
 }
@@ -24,8 +24,8 @@ pub trait TelegramBotCommand: Sized {
 ///
 /// Example:
 /// ```
-/// use teloxide::utils::{parse_command_into_enum, TelegramBotCommand};
-/// #[derive(TelegramBotCommand, PartialEq, Debug)]
+/// use teloxide::utils::{parse_command_into_enum, BotCommand};
+/// #[derive(BotCommand, PartialEq, Debug)]
 /// enum TelegramAdminCommand {
 ///     Ban,
 ///     Kick,
@@ -37,7 +37,7 @@ pub trait TelegramBotCommand: Sized {
 /// ```
 pub fn parse_command_into_enum<T>(text: &str) -> Option<(T, Vec<&str>)>
 where
-    T: TelegramBotCommand,
+    T: BotCommand,
 {
     let (command, args) = parse_command(text)?;
     match T::try_from(command) {
@@ -108,7 +108,7 @@ mod tests {
 
     #[test]
     fn parse_command_with_args() {
-        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             Start,
             Help,
@@ -122,7 +122,7 @@ mod tests {
 
     #[test]
     fn attribute_prefix() {
-        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "!")]
             Start,
@@ -137,7 +137,7 @@ mod tests {
     
     #[test]
     fn many_attributes() {
-        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "!", description = "desc")]
             Start,
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn global_attributes() {
         #[command(prefix = "!")]
-        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
             Start,
