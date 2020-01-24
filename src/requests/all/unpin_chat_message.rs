@@ -7,6 +7,7 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
+
 /// Use this method to unpin a message in a group, a supergroup, or a channel.
 ///
 /// The bot must be an administrator in the chat for this to work and must have

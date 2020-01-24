@@ -61,7 +61,7 @@ impl<'a> SetChatPhoto<'a> {
         self
     }
 
-    /// New chat photo, uploaded using multipart/form-data.
+    /// New chat photo, uploaded using `multipart/form-data`.
     pub fn photo(mut self, val: InputFile) -> Self {
         self.photo = val;
         self

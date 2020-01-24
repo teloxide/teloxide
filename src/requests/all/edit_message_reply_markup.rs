@@ -7,6 +7,7 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
+
 /// Use this method to edit only the reply markup of messages.
 ///
 /// On success, if edited message is sent by the bot, the edited [`Message`] is

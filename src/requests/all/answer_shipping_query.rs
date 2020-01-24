@@ -66,7 +66,7 @@ impl<'a> AnswerShippingQuery<'a> {
     }
 
     /// Specify `true` if delivery to the specified address is possible and
-    /// False if there are any problems (for example, if delivery to the
+    /// `false` if there are any problems (for example, if delivery to the
     /// specified address is not possible).
     pub fn ok(mut self, val: bool) -> Self {
         self.ok = val;

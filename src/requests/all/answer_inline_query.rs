@@ -66,7 +66,7 @@ impl<'a> AnswerInlineQuery<'a> {
         }
     }
 
-    /// Unique identifier for the answered query/
+    /// Unique identifier for the answered query.
     pub fn inline_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

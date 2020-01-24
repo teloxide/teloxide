@@ -99,6 +99,7 @@ impl<'a> SendVideoNote<'a> {
     /// [`InputFile::File`]: crate::types::InputFile::File
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn video_note(mut self, val: InputFile) -> Self {
         self.video_note = val;
         self
