@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::UserProfilePhotos,
     Bot,
@@ -26,7 +26,7 @@ impl Request for GetUserProfilePhotos<'_> {
     type Output = UserProfilePhotos;
 
     async fn send(&self) -> ResponseResult<UserProfilePhotos> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getUserProfilePhotos",

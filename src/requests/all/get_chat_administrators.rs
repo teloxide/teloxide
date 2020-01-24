@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
     Bot,
@@ -29,7 +29,7 @@ impl Request for GetChatAdministrators<'_> {
     /// On success, returns an array that contains information about all chat
     /// administrators except other bots.
     async fn send(&self) -> ResponseResult<Vec<ChatMember>> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getChatAdministrators",

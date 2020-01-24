@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::ChatId,
     Bot,
@@ -41,7 +41,7 @@ impl Request for ExportChatInviteLink<'_> {
 
     /// Returns the new invite link as `String` on success.
     async fn send(&self) -> ResponseResult<String> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "exportChatInviteLink",

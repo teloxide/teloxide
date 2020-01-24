@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::File,
     Bot,
@@ -40,13 +40,8 @@ impl Request for GetFile<'_> {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {
-        network::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getFile",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getFile", &self)
+            .await
     }
 }
 

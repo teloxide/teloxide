@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::StickerSet,
     Bot,
@@ -24,7 +24,7 @@ impl Request for GetStickerSet<'_> {
     type Output = StickerSet;
 
     async fn send(&self) -> ResponseResult<StickerSet> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getStickerSet",

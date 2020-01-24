@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{AllowedUpdate, Update},
     Bot,
@@ -34,7 +34,7 @@ impl Request for GetUpdates<'_> {
     type Output = Vec<Update>;
 
     async fn send(&self) -> ResponseResult<Vec<Update>> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getUpdates",

@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
     Bot,
@@ -31,7 +31,7 @@ impl Request for RestrictChatMember<'_> {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "restrictChatMember",
