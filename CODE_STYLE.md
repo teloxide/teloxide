@@ -26,7 +26,7 @@ Good:
 ```
 
 ## Comments
-Comments must describe what your code does and mustn't describe how your code does it and bla-bla-bla. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on.
+ 1. Comments must describe what your code does and mustn't describe how your code does it and bla-bla-bla. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on.
 
 Bad:
 
@@ -42,7 +42,7 @@ Good:
 pub fn make_request(url: &str) -> String { ... }
 ```
 
-Also, link resources in your comments when possible:
+ 2. Also, link resources in your comments when possible:
 
 ```rust
 /// Download a file from Telegram.
@@ -115,3 +115,10 @@ C: Into<String>, { ... }
 ## Naming
  1. Avoid unnecessary duplication (`Message::message_id` -> `Message::id` using `#[serde(rename = "message_id")]`).
  2. Use a generic parameter name `S` for streams, `Fut` for futures, `F` for functions (where possible).
+
+## Deriving
+ 1. Derive `Copy`, `Eq`, `Hash`, `PartialEq`, `Clone`, `Debug` for public types when possible (note: if the default `Debug` implementation is weird, you should manually implement it by yourself).
+ 2. Derive `Default` when there is an algorithm to get a default value for your type.
+
+## Misc
+ 1. Use `Into<...>` only where there exists at least one conversion **and** it will be logically to use.
