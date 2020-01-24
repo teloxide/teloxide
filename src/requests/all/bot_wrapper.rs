@@ -9,8 +9,8 @@ use std::ops::Deref;
 pub struct BotWrapper<'a>(pub &'a Bot);
 
 impl PartialEq for BotWrapper<'_> {
-    fn eq(&self, _: &BotWrapper<'_>) -> bool {
-        true
+    fn eq(&self, other: &BotWrapper<'_>) -> bool {
+        self.0.token() == other.0.token()
     }
 }
 
