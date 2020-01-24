@@ -16,7 +16,7 @@ pub use teloxide_macros::TelegramBotCommand;
 /// ```
 pub trait TelegramBotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
-    fn descriptions(&self) -> String;
+    fn descriptions() -> String;
 }
 
 /// Function to parse message with command into enum. Command must started with
@@ -133,5 +133,18 @@ mod tests {
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
         let actual = parse_command_into_enum::<DefaultCommands>(data);
         assert_eq!(actual, expected)
+    }
+    
+    #[test]
+    fn many_attributes() {
+        #[derive(TelegramBotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            #[command(prefix = "!", description = "desc")]
+            Start,
+            Help,
+        }
+
+        assert_eq!(DefaultCommands::Start, parse_command_into_enum::<DefaultCommands>("!start").unwrap().0);
+        assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help - \n");
     }
 }

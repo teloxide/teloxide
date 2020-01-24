@@ -55,3 +55,22 @@ impl Attr {
         self.value.clone()
     }
 }
+
+pub struct VecAttrs {
+    pub data: Vec<Attr>
+}
+
+impl Parse for VecAttrs {
+    fn parse(input: ParseStream) -> Result<Self, syn::Error> {
+        let mut data = vec![];
+        while !input.is_empty() {
+            data.push(input.parse()?);
+            if !input.is_empty() {
+                input.parse::<Token![,]>()?;
+            }
+        }
+        Ok(Self {
+            data
+        })
+    }
+}

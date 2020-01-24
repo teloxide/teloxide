@@ -9,7 +9,7 @@ use syn::{DeriveInput, parse_macro_input, Token};
 use syn::parse::{Parse, ParseStream};
 use crate::command::Command;
 use std::convert::TryFrom;
-use crate::attr::Attr;
+use crate::attr::{Attr, VecAttrs};
 
 #[proc_macro_derive(TelegramBotCommand, attributes(command))]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
@@ -24,11 +24,13 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     for variant in variants.iter() {
         let mut attrs = Vec::new();
         for attr in &variant.attrs {
-            match attr.parse_args::<Attr>() {
-                Ok(attr) => attrs.push(attr),
+            match attr.parse_args::<VecAttrs>() {
+                Ok(mut attrs_) => {
+                    attrs.append(attrs_.data.as_mut());
+                },
                 Err(e) => {
                     let e = e.to_compile_error();
-                    return TokenStream::from(quote! { compile_error!(#e) })
+                    return TokenStream::from(quote! { compile_error!(#e) });
                 },
             }
         }
@@ -57,7 +59,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                     _ => None
                 }
             }
-            fn descriptions(&self) -> String {
+            fn descriptions() -> String {
                 std::concat!(#(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
             }
         }
