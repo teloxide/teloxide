@@ -1,6 +1,6 @@
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
@@ -27,7 +27,7 @@ impl Request for CreateNewStickerSet<'_> {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        network::request_multipart(
+        net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "createNewStickerSet",

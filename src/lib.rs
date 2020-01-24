@@ -8,7 +8,7 @@ pub use bot::Bot;
 pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;
-mod network;
+mod net;
 
 mod bot;
 pub mod dispatching;

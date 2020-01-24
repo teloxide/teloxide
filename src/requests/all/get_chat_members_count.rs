@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::ChatId,
     Bot,
@@ -24,7 +24,7 @@ impl Request for GetChatMembersCount<'_> {
     type Output = i32;
 
     async fn send(&self) -> ResponseResult<i32> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getChatMembersCount",

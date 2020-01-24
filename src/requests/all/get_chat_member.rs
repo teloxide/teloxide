@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
     Bot,
@@ -25,7 +25,7 @@ impl Request for GetChatMember<'_> {
     type Output = ChatMember;
 
     async fn send(&self) -> ResponseResult<ChatMember> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getChatMember",

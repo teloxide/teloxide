@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::WebhookInfo,
     Bot,
@@ -28,7 +28,7 @@ impl Request for GetWebhookInfo<'_> {
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<WebhookInfo> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getWebhookInfo",
