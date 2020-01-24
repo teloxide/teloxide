@@ -112,6 +112,6 @@ C: Into<String>, { ... }
 ```
 </details>
 
-# Naming
+## Naming
  1. Avoid unnecessary duplication (`Message::message_id` -> `Message::id` using `#[serde(rename = "message_id")]`).
  2. Use a generic parameter name `S` for streams, `Fut` for futures, `F` for functions (where possible).
