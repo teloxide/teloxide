@@ -42,6 +42,30 @@ Good:
 pub fn make_request(url: &str) -> String { ... }
 ```
 
+Also, link resources in your comments when possible:
+
+```rust
+/// Download a file from Telegram.
+///
+/// `path` can be obtained from the [`Bot::get_file`].
+///
+/// To download into [`AsyncWrite`] (e.g. [`tokio::fs::File`]), see
+/// [`Bot::download_file`].
+///
+/// [`Bot::get_file`]: crate::bot::Bot::get_file
+/// [`AsyncWrite`]: tokio::io::AsyncWrite
+/// [`tokio::fs::File`]: tokio::fs::File
+/// [`Bot::download_file`]: crate::Bot::download_file
+#[cfg(feature = "unstable-stream")]
+pub async fn download_file_stream(
+    &self,
+    path: &str,
+) -> Result<impl Stream<Item = Result<Bytes, reqwest::Error>>, reqwest::Error>
+{
+    download_file_stream(&self.client, &self.token, path).await
+}
+```
+
 ## Use Self where possible
 Bad:
 
