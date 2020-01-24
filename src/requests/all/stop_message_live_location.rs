@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,19 +8,23 @@ use crate::{
     Bot,
 };
 
-/// Use this method to stop updating a live location message before live_period
-/// expires. On success, if the message was sent by the bot, the sent Message is
-/// returned, otherwise True is returned.
+/// Use this method to stop updating a live location message before
+/// `live_period` expires.
+///
+/// On success, if the message was sent by the bot, the sent [`Message`] is
+/// returned, otherwise [`True`] is returned.
+///
+/// [The official docs](https://core.telegram.org/bots/api#stopmessagelivelocation).
+///
+/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct StopMessageLiveLocation<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// A JSON-serialized object for a new inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -44,7 +49,7 @@ impl<'a> StopMessageLiveLocation<'a> {
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             reply_markup: None,
         }
@@ -55,6 +60,9 @@ impl<'a> StopMessageLiveLocation<'a> {
         self
     }
 
+    /// A JSON-serialized object for a new [inline keyboard].
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

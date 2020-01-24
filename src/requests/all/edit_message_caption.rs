@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,24 +8,24 @@ use crate::{
     Bot,
 };
 
-/// Use this method to edit captions of messages. On success, if edited message
-/// is sent by the bot, the edited Message is returned, otherwise True is
-/// returned.
+/// Use this method to edit captions of messages.
+///
+/// On success, if edited message is sent by the bot, the edited [`Message`] is
+/// returned, otherwise [`True`] is returned.
+///
+/// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
+///
+/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct EditMessageCaption<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// New caption of the message
     caption: Option<String>,
-    /// Send Markdown or HTML, if you want Telegram apps to show bold, italic,
-    /// fixed-width text or inline URLs in the media caption.
     parse_mode: Option<ParseMode>,
-    /// A JSON-serialized object for an inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -49,7 +50,7 @@ impl<'a> EditMessageCaption<'a> {
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             caption: None,
             parse_mode: None,
@@ -62,6 +63,7 @@ impl<'a> EditMessageCaption<'a> {
         self
     }
 
+    /// New caption of the message.
     pub fn caption<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -70,11 +72,21 @@ impl<'a> EditMessageCaption<'a> {
         self
     }
 
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show
+    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::types::ParseMode::Markdown
+    /// [HTML]: crate::types::ParseMode::HTML
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
+    /// A JSON-serialized object for an [inline keyboard].
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

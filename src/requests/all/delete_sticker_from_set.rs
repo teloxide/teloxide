@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,15 +8,14 @@ use crate::{
     Bot,
 };
 
-/// Use this method to delete a sticker from a set created by the bot. Returns
-/// True on success.
+/// Use this method to delete a sticker from a set created by the bot.
+///
+/// [The official docs](https://core.telegram.org/bots/api#deletestickerfromset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct DeleteStickerFromSet<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// File identifier of the sticker
+    bot: BotWrapper<'a>,
     sticker: String,
 }
 
@@ -40,9 +40,13 @@ impl<'a> DeleteStickerFromSet<'a> {
         S: Into<String>,
     {
         let sticker = sticker.into();
-        Self { bot, sticker }
+        Self {
+            bot: BotWrapper(bot),
+            sticker,
+        }
     }
 
+    /// File identifier of the sticker.
     pub fn sticker<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -5,22 +6,15 @@ use crate::{
     Bot,
 };
 
-/// Use this method to send a group of photos or videos as an album. On success,
-/// an array of the sent Messages is returned.
-#[derive(Debug, Clone)]
+/// Use this method to send a group of photos or videos as an album.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendmediagroup).
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendMediaGroup<'a> {
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// A JSON-serialized array describing photos and videos to be sent, must
-    /// include 2–10 items
     media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
-    /// Sends the messages silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the messages are a reply, ID of the original message
     reply_to_message_id: Option<i32>,
 }
 
@@ -57,7 +51,7 @@ impl<'a> SendMediaGroup<'a> {
         let chat_id = chat_id.into();
         let media = media.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             media,
             disable_notification: None,
@@ -65,6 +59,8 @@ impl<'a> SendMediaGroup<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -73,6 +69,8 @@ impl<'a> SendMediaGroup<'a> {
         self
     }
 
+    /// A JSON-serialized array describing photos and videos to be sent, must
+    /// include 2–10 items.
     pub fn media<T>(mut self, val: T) -> Self
     where
         T: Into<Vec<InputMedia>>,
@@ -81,11 +79,16 @@ impl<'a> SendMediaGroup<'a> {
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the messages are a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self

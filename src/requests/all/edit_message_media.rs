@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -6,21 +7,24 @@ use crate::{
 };
 
 /// Use this method to edit animation, audio, document, photo, or video
-/// messages. If a message is a part of a message album, then it can be edited
-/// only to a photo or a video. Otherwise, message type can be changed
-/// arbitrarily. When inline message is edited, new file can't be uploaded. Use
-/// previously uploaded file via its file_id or specify a URL. On success, if
-/// the edited message was sent by the bot, the edited Message is returned,
-/// otherwise True is returned.
-#[derive(Debug, Clone)]
+/// messages.
+///
+/// If a message is a part of a message album, then it can be edited only to a
+/// photo or a video. Otherwise, message type can be changed arbitrarily. When
+/// inline message is edited, new file can't be uploaded. Use previously
+/// uploaded file via its `file_id` or specify a URL. On success, if the edited
+/// message was sent by the bot, the edited [`Message`] is returned,
+/// otherwise [`True`] is returned.
+///
+/// [The official docs](https://core.telegram.org/bots/api#editmessagemedia).
+///
+/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct EditMessageMedia<'a> {
-    bot: &'a Bot,
-
+    bot: BotWrapper<'a>,
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// A JSON-serialized object for a new media content of the message
     media: InputMedia,
-    /// A JSON-serialized object for a new inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -70,7 +74,7 @@ impl<'a> EditMessageMedia<'a> {
         media: InputMedia,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             media,
             reply_markup: None,
@@ -82,11 +86,15 @@ impl<'a> EditMessageMedia<'a> {
         self
     }
 
+    /// A JSON-serialized object for a new media content of the message.
     pub fn media(mut self, val: InputMedia) -> Self {
         self.media = val;
         self
     }
 
+    /// A JSON-serialized object for a new [inline keyboard].
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

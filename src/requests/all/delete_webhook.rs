@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -8,18 +9,23 @@ use crate::{
 };
 
 /// Use this method to remove webhook integration if you decide to switch back
-/// to getUpdates. Returns True on success. Requires no parameters.
+/// to [Bot::get_updates].
+///
+/// [The official docs](https://core.telegram.org/bots/api#deletewebhook).
+///
+/// [Bot::get_updates]: crate::Bot::get_updates
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Copy, Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct DeleteWebhook<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
+    bot: BotWrapper<'a>,
 }
 
 #[async_trait::async_trait]
 impl Request for DeleteWebhook<'_> {
     type Output = True;
 
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<True> {
         net::request_json(
             self.bot.client(),
@@ -33,6 +39,8 @@ impl Request for DeleteWebhook<'_> {
 
 impl<'a> DeleteWebhook<'a> {
     pub(crate) fn new(bot: &'a Bot) -> Self {
-        Self { bot }
+        Self {
+            bot: BotWrapper(bot),
+        }
     }
 }

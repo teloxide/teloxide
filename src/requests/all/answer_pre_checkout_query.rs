@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -8,28 +9,21 @@ use crate::{
 };
 
 /// Once the user has confirmed their payment and shipping details, the Bot API
-/// sends the final confirmation in the form of an Update with the field
-/// pre_checkout_query. Use this method to respond to such pre-checkout queries.
-/// On success, True is returned. Note: The Bot API must receive an answer
-/// within 10 seconds after the pre-checkout query was sent.
+/// sends the final confirmation in the form of an [`Update`] with the field
+/// `pre_checkout_query`. Use this method to respond to such pre-checkout
+/// queries. Note: The Bot API must receive an answer within 10 seconds after
+/// the pre-checkout query was sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#answerprecheckoutquery).
+///
+/// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct AnswerPreCheckoutQuery<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the query to be answered
+    bot: BotWrapper<'a>,
     pre_checkout_query_id: String,
-    /// Specify True if everything is alright (goods are available, etc.) and
-    /// the bot is ready to proceed with the order. Use False if there are any
-    /// problems.
     ok: bool,
-    /// Required if ok is False. Error message in human readable form that
-    /// explains the reason for failure to proceed with the checkout (e.g.
-    /// "Sorry, somebody just bought the last of our amazing black T-shirts
-    /// while you were busy filling out your payment details. Please choose a
-    /// different color or garment!"). Telegram will display this message to
-    /// the user.
     error_message: Option<String>,
 }
 
@@ -59,13 +53,14 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
     {
         let pre_checkout_query_id = pre_checkout_query_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             pre_checkout_query_id,
             ok,
             error_message: None,
         }
     }
 
+    /// Unique identifier for the query to be answered.
     pub fn pre_checkout_query_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -74,11 +69,21 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
         self
     }
 
+    /// Specify `true` if everything is alright (goods are available, etc.) and
+    /// the bot is ready to proceed with the order. Use False if there are any
+    /// problems.
     pub fn ok(mut self, val: bool) -> Self {
         self.ok = val;
         self
     }
 
+    /// Required if ok is `false`. Error message in human readable form that
+    /// explains the reason for failure to proceed with the checkout (e.g.
+    /// "Sorry, somebody just bought the last of our amazing black T-shirts
+    /// while you were busy filling out your payment details. Please choose a
+    /// different color or garment!").
+    ///
+    /// Telegram will display this message to the user.
     pub fn error_message<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

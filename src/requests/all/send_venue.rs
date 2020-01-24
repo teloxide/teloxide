@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,39 +8,23 @@ use crate::{
     Bot,
 };
 
-/// Use this method to send information about a venue. On success, the sent
-/// Message is returned.
+/// Use this method to send information about a venue.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendvenue).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(PartialEq, Debug, Clone, Serialize)]
 pub struct SendVenue<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// Latitude of the venue
     latitude: f32,
-    /// Longitude of the venue
     longitude: f32,
-    /// Name of the venue
     title: String,
-    /// Address of the venue
     address: String,
-    /// Foursquare identifier of the venue
     foursquare_id: Option<String>,
-    /// Foursquare type of the venue, if known. (For example,
-    /// “arts_entertainment/default”, “arts_entertainment/aquarium” or
-    /// “food/icecream”.)
     foursquare_type: Option<String>,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
-    /// Additional interface options. A JSON-serialized object for an inline
-    /// keyboard, custom reply keyboard, instructions to remove reply keyboard
-    /// or to force a reply from the user.
     reply_markup: Option<ReplyMarkup>,
 }
 
@@ -76,7 +61,7 @@ impl<'a> SendVenue<'a> {
         let title = title.into();
         let address = address.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             latitude,
             longitude,
@@ -90,6 +75,8 @@ impl<'a> SendVenue<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -98,16 +85,19 @@ impl<'a> SendVenue<'a> {
         self
     }
 
+    /// Latitude of the venue.
     pub fn latitude(mut self, val: f32) -> Self {
         self.latitude = val;
         self
     }
 
+    /// Longitude of the venue.
     pub fn longitude(mut self, val: f32) -> Self {
         self.longitude = val;
         self
     }
 
+    /// Name of the venue.
     pub fn title<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -116,6 +106,7 @@ impl<'a> SendVenue<'a> {
         self
     }
 
+    /// Address of the venue.
     pub fn address<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -124,6 +115,7 @@ impl<'a> SendVenue<'a> {
         self
     }
 
+    /// Foursquare identifier of the venue.
     pub fn foursquare_id<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -132,6 +124,10 @@ impl<'a> SendVenue<'a> {
         self
     }
 
+    /// Foursquare type of the venue, if known.
+    ///
+    /// For example, `arts_entertainment/default`, `arts_entertainment/aquarium`
+    /// or `food/icecream`.
     pub fn foursquare_type<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -140,16 +136,29 @@ impl<'a> SendVenue<'a> {
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self
     }
 
+    /// Additional interface options.
+    ///
+    /// A JSON-serialized object for an [inline keyboard], [custom reply
+    /// keyboard], instructions to remove reply keyboard or to force a reply
+    /// from the user.
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
+    /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
         self.reply_markup = Some(val);
         self

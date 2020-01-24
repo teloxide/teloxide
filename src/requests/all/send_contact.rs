@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,33 +8,21 @@ use crate::{
     Bot,
 };
 
-/// Use this method to send phone contacts. On success, the sent Message is
-/// returned.
+/// Use this method to send phone contacts.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendcontact).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendContact<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// Contact's phone number
     phone_number: String,
-    /// Contact's first name
     first_name: String,
-    /// Contact's last name
     last_name: Option<String>,
-    /// Additional data about the contact in the form of a vCard, 0-2048 bytes
     vcard: Option<String>,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
-    /// Additional interface options. A JSON-serialized object for an inline
-    /// keyboard, custom reply keyboard, instructions to remove keyboard or to
-    /// force a reply from the user.
     reply_markup: Option<ReplyMarkup>,
 }
 
@@ -68,7 +57,7 @@ impl<'a> SendContact<'a> {
         let phone_number = phone_number.into();
         let first_name = first_name.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             phone_number,
             first_name,
@@ -80,6 +69,8 @@ impl<'a> SendContact<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -88,6 +79,7 @@ impl<'a> SendContact<'a> {
         self
     }
 
+    /// Contact's phone number.
     pub fn phone_number<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -96,6 +88,7 @@ impl<'a> SendContact<'a> {
         self
     }
 
+    /// Contact's first name.
     pub fn first_name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -104,6 +97,7 @@ impl<'a> SendContact<'a> {
         self
     }
 
+    /// Contact's last name.
     pub fn last_name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -112,6 +106,10 @@ impl<'a> SendContact<'a> {
         self
     }
 
+    /// Additional data about the contact in the form of a [vCard], 0-2048
+    /// bytes.
+    ///
+    /// [vCard]: https://en.wikipedia.org/wiki/VCard
     pub fn vcard<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -120,16 +118,22 @@ impl<'a> SendContact<'a> {
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self
     }
 
+    /// Additional interface options.
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
         self.reply_markup = Some(val);
         self

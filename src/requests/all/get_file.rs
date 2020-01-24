@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -12,8 +13,6 @@ use crate::{
 ///
 /// For the moment, bots can download files of up to `20MB` in size.
 ///
-/// On success, a [`File`] object is returned.
-///
 /// The file can then be downloaded via the link
 /// `https://api.telegram.org/file/bot<token>/<file_path>`, where `<file_path>`
 /// is taken from the response. It is guaranteed that the link will be valid
@@ -24,16 +23,16 @@ use crate::{
 /// type. You should save the file's MIME type and name (if available) when the
 /// [`File`] object is received.
 ///
+/// [The official docs](https://core.telegram.org/bots/api#getfile).
+///
 /// [`File`]: crate::types::file
 /// [`GetFile`]: self::GetFile
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetFile<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// File identifier to get info about
-    pub file_id: String,
+    bot: BotWrapper<'a>,
+    file_id: String,
 }
 
 #[async_trait::async_trait]
@@ -52,11 +51,12 @@ impl<'a> GetFile<'a> {
         F: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             file_id: file_id.into(),
         }
     }
 
+    /// File identifier to get info about.
     pub fn file_id<F>(mut self, value: F) -> Self
     where
         F: Into<String>,

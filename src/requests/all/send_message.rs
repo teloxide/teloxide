@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -9,38 +10,18 @@ use crate::{
 
 /// Use this method to send text messages.
 ///
-/// On success, the sent [`Message`] is returned.
-///
-/// [`Message`]: crate::types::Message
+/// [The official docs](https://core.telegram.org/bots/api#sendmessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendMessage<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    ///	Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
+    bot: BotWrapper<'a>,
     pub chat_id: ChatId,
-    /// Text of the message to be sent
     pub text: String,
-    /// Send [Markdown] or [HTML], if you want Telegram apps to show
-    /// [bold, italic, fixed-width text or inline URLs] in your bot's message.
-    ///
-    /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [HTML]: crate::types::ParseMode::HTML
-    /// [bold, italic, fixed-width text or inline URLs]:
-    /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
-    /// Disables link previews for links in this message
     pub disable_web_page_preview: Option<bool>,
-    /// Sends the message silently.
-    /// Users will receive a notification with no sound.
     pub disable_notification: Option<bool>,
-    /// If the message is a reply, [id] of the original message
-    ///
-    /// [id]: crate::types::Message::id
     pub reply_to_message_id: Option<i32>,
-    /// Additional interface options.
     pub reply_markup: Option<ReplyMarkup>,
 }
 
@@ -66,7 +47,7 @@ impl<'a> SendMessage<'a> {
         T: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             text: text.into(),
             parse_mode: None,
@@ -77,6 +58,8 @@ impl<'a> SendMessage<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
@@ -85,6 +68,7 @@ impl<'a> SendMessage<'a> {
         self
     }
 
+    /// Text of the message to be sent.
     pub fn text<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
@@ -93,26 +77,47 @@ impl<'a> SendMessage<'a> {
         self
     }
 
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show
+    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::types::ParseMode::Markdown
+    /// [HTML]: crate::types::ParseMode::HTML
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub fn parse_mode(mut self, value: ParseMode) -> Self {
         self.parse_mode = Some(value);
         self
     }
 
+    /// Disables link previews for links in this message.
     pub fn disable_web_page_preview(mut self, value: bool) -> Self {
         self.disable_web_page_preview = Some(value);
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, value: bool) -> Self {
         self.disable_notification = Some(value);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, value: i32) -> Self {
         self.reply_to_message_id = Some(value);
         self
     }
 
+    /// Additional interface options.
+    ///
+    /// A JSON-serialized object for an [inline keyboard], [custom reply
+    /// keyboard], instructions to remove reply keyboard or to force a reply
+    /// from the user.
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
+    /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
     pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,

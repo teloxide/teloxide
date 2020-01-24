@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,26 +8,25 @@ use crate::{
     Bot,
 };
 
-/// Use this method to edit text and game messages. On success, if edited
-/// message is sent by the bot, the edited Message is returned, otherwise True
-/// is returned.
+/// Use this method to edit text and game messages.
+///
+/// On success, if edited message is sent by the bot, the edited [`Message`] is
+/// returned, otherwise [`True`] is returned.
+///
+/// [The official docs](https://core.telegram.org/bots/api#editmessagetext).
+///
+/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct EditMessageText<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// New text of the message
     text: String,
-    /// Send Markdown or HTML, if you want Telegram apps to show bold, italic,
-    /// fixed-width text or inline URLs in your bot's message.
     parse_mode: Option<ParseMode>,
-    /// Disables link previews for links in this message
     disable_web_page_preview: Option<bool>,
-    /// A JSON-serialized object for an inline keyboard.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -55,7 +55,7 @@ impl<'a> EditMessageText<'a> {
         T: Into<String>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             text: text.into(),
             parse_mode: None,
@@ -69,6 +69,7 @@ impl<'a> EditMessageText<'a> {
         self
     }
 
+    /// New text of the message.
     pub fn text<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -77,16 +78,26 @@ impl<'a> EditMessageText<'a> {
         self
     }
 
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in your bot's message.
+    ///
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
+    /// Disables link previews for links in this message.
     pub fn disable_web_page_preview(mut self, val: bool) -> Self {
         self.disable_web_page_preview = Some(val);
         self
     }
 
+    /// A JSON-serialized object for an [inline keyboard].
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -8,52 +9,23 @@ use crate::{
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound).
 ///
-/// On success, the sent Message is returned.
-///
 /// Bots can currently send animation files of up to 50 MB in size, this limit
 /// may be changed in the future.
-#[derive(Debug, Clone)]
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendanimation).
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendAnimation<'a> {
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
+    bot: BotWrapper<'a>,
     pub chat_id: ChatId,
-    /// Animation to send.
     pub animation: InputFile,
-    /// Duration of sent animation in seconds
     pub duration: Option<u32>,
-    /// Animation width
     pub width: Option<u32>,
-    /// Animation height
     pub height: Option<u32>,
-    /// Thumbnail of the file sent; can be ignored if thumbnail generation for
-    /// the file is supported server-side. The thumbnail should be in JPEG
-    /// format and less than 200 kB in size. A thumbnail‘s width and height
-    /// should not exceed 320. Ignored if the file is not uploaded using
-    /// [`InputFile::File`]. Thumbnails can’t be reused and can be only
-    /// uploaded as a new file, with [`InputFile::File`]
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
     pub thumb: Option<InputFile>,
-    /// Animation caption, `0`-`1024` characters
     pub caption: Option<String>,
-    /// Send [Markdown] or [HTML], if you want Telegram apps to show
-    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
-    ///
-    /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [HTML]: crate::types::ParseMode::HTML
-    /// [bold, italic, fixed-width text or inline URLs]:
-    /// crate::types::ParseMode
     pub parse_mode: Option<ParseMode>,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     pub disable_notification: Option<bool>,
-    /// If the message is a reply, [id] of the original message
-    ///
-    /// [id]: crate::types::Message::id
     pub reply_to_message_id: Option<i32>,
-    /// Additional interface options
     pub reply_markup: Option<ReplyMarkup>,
 }
 
@@ -101,7 +73,7 @@ impl<'a> SendAnimation<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             animation,
             duration: None,
@@ -116,6 +88,8 @@ impl<'a> SendAnimation<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, value: T) -> Self
     where
         T: Into<ChatId>,
@@ -124,24 +98,46 @@ impl<'a> SendAnimation<'a> {
         self
     }
 
+    /// Animation to send.
+    pub fn animation(mut self, val: InputFile) -> Self {
+        self.animation = val;
+        self
+    }
+
+    /// Duration of sent animation in seconds.
     pub fn duration(mut self, value: u32) -> Self {
         self.duration = Some(value);
         self
     }
 
+    /// Animation width.
     pub fn width(mut self, value: u32) -> Self {
         self.width = Some(value);
         self
     }
+
+    /// Animation height.
     pub fn height(mut self, value: u32) -> Self {
         self.height = Some(value);
         self
     }
+
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation for
+    /// the file is supported server-side.
+    ///
+    /// The thumbnail should be in JPEG format and less than 200 kB in size. A
+    /// thumbnail‘s width and height should not exceed 320. Ignored if the
+    /// file is not uploaded using [`InputFile::File`]. Thumbnails can’t be
+    /// reused and can be only uploaded as a new file, with
+    /// [`InputFile::File`].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
     pub fn thumb(mut self, value: InputFile) -> Self {
         self.thumb = Some(value);
         self
     }
 
+    /// Animation caption, `0`-`1024` characters.
     pub fn caption<T>(mut self, value: T) -> Self
     where
         T: Into<String>,
@@ -149,18 +145,35 @@ impl<'a> SendAnimation<'a> {
         self.caption = Some(value.into());
         self
     }
+
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show
+    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::types::ParseMode::Markdown
+    /// [HTML]: crate::types::ParseMode::HTML
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub fn parse_mode(mut self, value: ParseMode) -> Self {
         self.parse_mode = Some(value);
         self
     }
+
+    /// Sends the message silently. Users will receive a notification with no
+    /// sound.
     pub fn disable_notification(mut self, value: bool) -> Self {
         self.disable_notification = Some(value);
         self
     }
+
+    /// If the message is a reply, [id] of the original message.
+    ///
+    /// [id]: crate::types::Message::id
     pub fn reply_to_message_id(mut self, value: i32) -> Self {
         self.reply_to_message_id = Some(value);
         self
     }
+
+    /// Additional interface options.
     pub fn reply_markup<T>(mut self, value: T) -> Self
     where
         T: Into<ReplyMarkup>,

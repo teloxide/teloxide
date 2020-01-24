@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -5,28 +6,18 @@ use crate::{
     Bot,
 };
 
-/// Use this method to send static .WEBP or animated .TGS stickers. On success,
-/// the sent Message is returned.
-#[derive(Debug, Clone)]
+/// Use this method to send static .WEBP or [animated] .TGS stickers.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendsticker).
+///
+/// [animated]: https://telegram.org/blog/animated-stickers
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendSticker<'a> {
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// Sticker to send. Pass a file_id as String to send a file that exists on
-    /// the Telegram servers (recommended), pass an HTTP URL as a String for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using multipart/form-data. More info on Sending Files »
     sticker: InputFile,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
-    /// Additional interface options. A JSON-serialized object for an inline
-    /// keyboard, custom reply keyboard, instructions to remove reply keyboard
-    /// or to force a reply from the user.
     reply_markup: Option<ReplyMarkup>,
 }
 
@@ -62,7 +53,7 @@ impl<'a> SendSticker<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             sticker,
             disable_notification: None,
@@ -71,6 +62,8 @@ impl<'a> SendSticker<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -79,21 +72,45 @@ impl<'a> SendSticker<'a> {
         self
     }
 
+    /// Sticker to send.
+    ///
+    /// Pass [`InputFile::File`] to send a file that exists on
+    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    /// Telegram to get a .webp file from the Internet, or upload a new one
+    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn sticker(mut self, val: InputFile) -> Self {
         self.sticker = val;
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self
     }
 
+    /// Additional interface options.
+    ///
+    /// A JSON-serialized object for an [inline keyboard], [custom reply
+    /// keyboard], instructions to remove reply keyboard or to force a reply
+    /// from the user.
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
+    /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
         self.reply_markup = Some(val);
         self

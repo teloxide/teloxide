@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,19 +8,18 @@ use crate::{
     Bot,
 };
 
-/// Use this method to change the title of a chat. Titles can't be changed for
-/// private chats. The bot must be an administrator in the chat for this to work
-/// and must have the appropriate admin rights. Returns True on success.
+/// Use this method to change the title of a chat.
+///
+/// Titles can't be changed for private chats. The bot must be an administrator
+/// in the chat for this to work and must have the appropriate admin rights.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setchattitle).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SetChatTitle<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// New chat title, 1-255 characters
     title: String,
 }
 
@@ -47,12 +47,14 @@ impl<'a> SetChatTitle<'a> {
         let chat_id = chat_id.into();
         let title = title.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             title,
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -61,6 +63,7 @@ impl<'a> SetChatTitle<'a> {
         self
     }
 
+    /// New chat title, 1-255 characters.
     pub fn title<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

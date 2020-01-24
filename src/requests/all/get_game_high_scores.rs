@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
@@ -7,22 +8,25 @@ use crate::{
     Bot,
 };
 
-/// Use this method to get data for high score tables. Will return the score of
-/// the specified user and several of his neighbors in a game. On success,
-/// returns an Array of GameHighScore objects.This method will currently return
-/// scores for the target user, plus two of his closest neighbors on each side.
-/// Will also return the top three users if the user and his neighbors are not
-/// among them. Please note that this behavior is subject to change.
+/// Use this method to get data for high score tables.
+///
+/// Will return the score of the specified user and several of his neighbors in
+/// a game.
+///
+/// ## Note
+/// This method will currently return scores for the target user, plus two of
+/// his closest neighbors on each side. Will also return the top three users if
+/// the user and his neighbors are not among them. Please note that this
+/// behavior is subject to change.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getgamehighscores).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetGameHighScores<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
+    bot: BotWrapper<'a>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
-
-    /// Target user id
     user_id: i32,
 }
 
@@ -48,7 +52,7 @@ impl<'a> GetGameHighScores<'a> {
         user_id: i32,
     ) -> Self {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_or_inline_message,
             user_id,
         }
@@ -59,6 +63,7 @@ impl<'a> GetGameHighScores<'a> {
         self
     }
 
+    /// Target user id.
     pub fn user_id(mut self, val: i32) -> Self {
         self.user_id = val;
         self

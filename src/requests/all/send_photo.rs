@@ -1,3 +1,4 @@
+use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
@@ -5,33 +6,18 @@ use crate::{
     Bot,
 };
 
-/// Use this method to send photos. On success, the sent Message is returned.
-#[derive(Debug, Clone)]
+/// Use this method to send photos.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendphoto).
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct SendPhoto<'a> {
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// Photo to send. Pass a file_id as String to send a photo that exists on
-    /// the Telegram servers (recommended), pass an HTTP URL as a String for
-    /// Telegram to get a photo from the Internet, or upload a new photo using
-    /// multipart/form-data. More info on Sending Files »
     photo: InputFile,
-    /// Photo caption (may also be used when resending photos by file_id),
-    /// 0-1024 characters
     caption: Option<String>,
-    /// Send Markdown or HTML, if you want Telegram apps to show bold, italic,
-    /// fixed-width text or inline URLs in the media caption.
     parse_mode: Option<ParseMode>,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
-    /// Additional interface options. A JSON-serialized object for an inline
-    /// keyboard, custom reply keyboard, instructions to remove reply keyboard
-    /// or to force a reply from the user.
     reply_markup: Option<ReplyMarkup>,
 }
 
@@ -71,7 +57,7 @@ impl<'a> SendPhoto<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id: chat_id.into(),
             photo,
             caption: None,
@@ -82,6 +68,8 @@ impl<'a> SendPhoto<'a> {
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -90,11 +78,25 @@ impl<'a> SendPhoto<'a> {
         self
     }
 
+    /// Photo to send.
+    ///
+    /// Pass [`InputFile::File`] to send a photo that exists on
+    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    /// Telegram to get a .webp file from the Internet, or upload a new one
+    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn photo(mut self, val: InputFile) -> Self {
         self.photo = val;
         self
     }
 
+    ///Photo caption (may also be used when resending photos by file_id),
+    /// 0-1024 characters.
     pub fn caption<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -103,21 +105,39 @@ impl<'a> SendPhoto<'a> {
         self
     }
 
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show
+    /// [bold, italic, fixed-width text or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: crate::types::ParseMode::Markdown
+    /// [HTML]: crate::types::ParseMode::HTML
+    /// [bold, italic, fixed-width text or inline URLs]:
+    /// crate::types::ParseMode
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self
     }
 
+    /// Additional interface options. A JSON-serialized object for an [inline
+    /// keyboard], [custom reply keyboard], instructions to remove reply
+    /// keyboard or to force a reply from the user.
+    ///
+    /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
+    /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
     pub fn reply_markup(mut self, val: ReplyMarkup) -> Self {
         self.reply_markup = Some(val);
         self
