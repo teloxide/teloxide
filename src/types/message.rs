@@ -812,7 +812,13 @@ impl Message {
                         ..
                     },
                 ..
-            } => Some(reqwest::Url::parse(format!("https://t.me/{0}/{1}/", username, self.id).as_str()).unwrap()),
+            } => Some(
+                reqwest::Url::parse(
+                    format!("https://t.me/{0}/{1}/", username, self.id)
+                        .as_str(),
+                )
+                .unwrap(),
+            ),
             _ => None,
         }
     }
