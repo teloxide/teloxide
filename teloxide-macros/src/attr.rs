@@ -1,5 +1,5 @@
 use syn::parse::{Parse, ParseStream};
-use syn::{Attribute, LitStr, Token};
+use syn::{LitStr, Token};
 
 
 pub enum BotCommandAttribute {

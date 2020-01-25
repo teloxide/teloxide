@@ -1,5 +1,4 @@
 use crate::attr::{Attr, BotCommandAttribute};
-use std::convert::TryFrom;
 use crate::rename_rules::rename_by_rule;
 
 pub struct Command {
@@ -47,6 +46,7 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
             BotCommandAttribute::Prefix => prefix = Some(attr.value()),
             BotCommandAttribute::Description => description = Some(attr.value()),
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
+            #[allow(unreachable_patterns)]
             _ => return Err(format!("unexpected attribute")),
         }
     }

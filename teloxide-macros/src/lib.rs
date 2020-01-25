@@ -7,17 +7,15 @@ extern crate proc_macro;
 extern crate syn;
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{DeriveInput, parse_macro_input, Token};
-use syn::parse::{Parse, ParseStream};
+use syn::{DeriveInput, parse_macro_input};
 use crate::command::Command;
-use std::convert::TryFrom;
 use crate::attr::{Attr, VecAttrs};
 use crate::enum_attributes::CommandEnum;
 use crate::rename_rules::rename_by_rule;
 
 macro_rules! get_or_return {
-    ($some:tt) => {
-        match $some {
+    ($($some:tt)*) => {
+        match $($some)* {
             Ok(elem) => elem,
             Err(e) => return e
         };
@@ -30,7 +28,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
 
     let data_enum: &syn::DataEnum = get_or_return!(get_enum_data(&input));
 
-    let mut enum_attrs: Vec<Attr> = get_or_return!(parse_attributes(&input.attrs));
+    let enum_attrs: Vec<Attr> = get_or_return!(parse_attributes(&input.attrs));
 
     let command_enum = match CommandEnum::try_from(enum_attrs.as_slice()) {
         Ok(command_enum) => command_enum,
@@ -85,7 +83,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let variant_str2 = variant_str1.clone();
     let variant_description = variant_infos.iter().map(|info| info.description.as_ref().map(String::as_str).unwrap_or(""));
 
-    let ident = input.ident;
+    let ident = &input.ident;
 
     let expanded = quote! {
         impl BotCommand for #ident {
@@ -117,7 +115,7 @@ fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
 
 fn parse_attributes(input: &Vec<syn::Attribute>) -> Result<Vec<Attr>, TokenStream> {
     let mut enum_attrs = Vec::new();
-    for attr in &input.attrs {
+    for attr in input.iter() {
         match attr.parse_args::<VecAttrs>() {
             Ok(mut attrs_) => {
                 enum_attrs.append(attrs_.data.as_mut());
