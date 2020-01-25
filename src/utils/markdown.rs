@@ -262,7 +262,7 @@ mod tests {
         };
         assert_eq!(user_mention_or_link(&user_with_username), "@abcd");
         let user_without_username = User {
-            id: 123456789,
+            id: 123_456_789,
             is_bot: false,
             first_name: "Name".to_string(),
             last_name: None,
