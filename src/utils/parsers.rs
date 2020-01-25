@@ -48,15 +48,15 @@ where
     }
 }
 
-/// Function which parse string and return command with args. It calls
-/// [`parse_command_with_prefix`] with default prefix `/`
+/// Parses a string into a command with args.
 ///
-/// Example:
+/// It calls [`parse_command_with_prefix`] with default prefix `/`.
+///
+/// ## Example
 /// ```
-/// use teloxide::utils::parse_command;
-/// let text = "/ban 5 hours";
-/// let (command, args) = parse_command(text).unwrap();
-/// assert_eq!(command, "/ban");
+/// let text = "/mute 5 hours";
+/// let (command, args) = teloxide::utils::parse_command(text).unwrap();
+/// assert_eq!(command, "/mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
@@ -65,15 +65,16 @@ pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
     Some((command, words.collect()))
 }
 
-/// Function which parse string and return command with args. Prefix - start
-/// symbols which denote start of command
+/// Parses a string into a command with args (custom prefix).
+///
+/// `prefix`: start symbols which denote start of a command.
 ///
 /// Example:
 /// ```
-/// use teloxide::utils::parse_command_with_prefix;
-/// let text = "!ban 5 hours";
-/// let (command, args) = parse_command_with_prefix("!", text).unwrap();
-/// assert_eq!(command, "ban");
+/// let text = "!mute 5 hours";
+/// let (command, args) =
+///     teloxide::utils::parse_command_with_prefix("!", text).unwrap();
+/// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 pub fn parse_command_with_prefix<'a>(
@@ -138,7 +139,7 @@ mod tests {
         let actual = parse_command_into_enum::<DefaultCommands>(data);
         assert_eq!(actual, expected)
     }
-    
+
     #[test]
     fn many_attributes() {
         #[command(rename = "lowercase")]
@@ -149,8 +150,16 @@ mod tests {
             Help,
         }
 
-        assert_eq!(DefaultCommands::Start, parse_command_into_enum::<DefaultCommands>("!start").unwrap().0);
-        assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help - \n");
+        assert_eq!(
+            DefaultCommands::Start,
+            parse_command_into_enum::<DefaultCommands>("!start")
+                .unwrap()
+                .0
+        );
+        assert_eq!(
+            DefaultCommands::descriptions(),
+            "!start - desc\n/help - \n"
+        );
     }
 
     #[test]
@@ -163,8 +172,18 @@ mod tests {
             Help,
         }
 
-        assert_eq!(DefaultCommands::Start, parse_command_into_enum::<DefaultCommands>("/start").unwrap().0);
-        assert_eq!(DefaultCommands::Help, parse_command_into_enum::<DefaultCommands>("!help").unwrap().0);
+        assert_eq!(
+            DefaultCommands::Start,
+            parse_command_into_enum::<DefaultCommands>("/start")
+                .unwrap()
+                .0
+        );
+        assert_eq!(
+            DefaultCommands::Help,
+            parse_command_into_enum::<DefaultCommands>("!help")
+                .unwrap()
+                .0
+        );
         assert_eq!(DefaultCommands::descriptions(), "/start - \n!help - \n");
     }
 }
