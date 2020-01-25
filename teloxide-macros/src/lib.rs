@@ -1,6 +1,7 @@
 mod attr;
 mod command;
 mod enum_attributes;
+mod rename_rules;
 
 extern crate proc_macro;
 extern crate syn;
@@ -12,27 +13,24 @@ use crate::command::Command;
 use std::convert::TryFrom;
 use crate::attr::{Attr, VecAttrs};
 use crate::enum_attributes::CommandEnum;
+use crate::rename_rules::rename_by_rule;
+
+macro_rules! get_or_return {
+    ($some:tt) => {
+        match $some {
+            Ok(elem) => elem,
+            Err(e) => return e
+        };
+    }
+}
 
 #[proc_macro_derive(BotCommand, attributes(command))]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as DeriveInput);
 
-    let data_enum = match &input.data {
-        syn::Data::Enum(data) => data,
-        _ => return compile_error("TelegramBotCommand allowed only for enums")
-    };
+    let data_enum: &syn::DataEnum = get_or_return!(get_enum_data(&input));
 
-    let mut enum_attrs = Vec::new();
-    for attr in &input.attrs {
-        match attr.parse_args::<VecAttrs>() {
-            Ok(mut attrs_) => {
-                enum_attrs.append(attrs_.data.as_mut());
-            },
-            Err(e) => {
-                return compile_error(e.to_compile_error());
-            },
-        }
-    }
+    let mut enum_attrs: Vec<Attr> = get_or_return!(parse_attributes(&input.attrs));
 
     let command_enum = match CommandEnum::try_from(enum_attrs.as_slice()) {
         Ok(command_enum) => command_enum,
@@ -54,14 +52,24 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                 },
             }
         }
-        match Command::try_from(attrs.as_slice()) {
+        match Command::try_from(attrs.as_slice(), &variant.ident.to_string()) {
             Ok(command) => variant_infos.push(command),
             Err(e) => return compile_error(e),
         }
     }
 
     let variant_ident = variants.iter().map(|variant| &variant.ident);
-    let variant_name = variants.iter().map(|variant| variant.ident.to_string().to_lowercase());
+    let variant_name = variant_infos.iter().map(|info| {
+        if info.renamed {
+            info.name.clone()
+        }
+        else if let Some(rename_rule) = &command_enum.rename_rule {
+            rename_by_rule(&info.name, rename_rule)
+        }
+        else {
+            info.name.clone()
+        }
+    });
     let variant_prefixes = variant_infos.iter().map(|info| {
             if let Some(prefix) = &info.prefix {
                 prefix
@@ -98,6 +106,28 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     //println!("{}", &expanded.to_string());
     let tokens = TokenStream::from(expanded);
     tokens
+}
+
+fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
+    match &input.data {
+        syn::Data::Enum(data) => Ok(data),
+        _ => Err(compile_error("TelegramBotCommand allowed only for enums"))
+    }
+}
+
+fn parse_attributes(input: &Vec<syn::Attribute>) -> Result<Vec<Attr>, TokenStream> {
+    let mut enum_attrs = Vec::new();
+    for attr in &input.attrs {
+        match attr.parse_args::<VecAttrs>() {
+            Ok(mut attrs_) => {
+                enum_attrs.append(attrs_.data.as_mut());
+            },
+            Err(e) => {
+                return Err(compile_error(e.to_compile_error()));
+            },
+        }
+    }
+    Ok(enum_attrs)
 }
 
 fn compile_error<T>(data: T) -> TokenStream

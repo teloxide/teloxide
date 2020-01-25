@@ -4,7 +4,8 @@ use syn::{Attribute, LitStr, Token};
 
 pub enum BotCommandAttribute {
     Prefix,
-    Description
+    Description,
+    RenameRule
 }
 
 impl Parse for BotCommandAttribute {
@@ -13,6 +14,7 @@ impl Parse for BotCommandAttribute {
         match name_arg.to_string().as_str() {
             "prefix" => Ok(BotCommandAttribute::Prefix),
             "description" => Ok(BotCommandAttribute::Description),
+            "rename" => Ok(BotCommandAttribute::RenameRule),
             _ => Err(syn::Error::new(name_arg.span(), "unexpected argument"))
         }
     }

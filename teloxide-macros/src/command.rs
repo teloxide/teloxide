@@ -1,38 +1,59 @@
 use crate::attr::{Attr, BotCommandAttribute};
 use std::convert::TryFrom;
+use crate::rename_rules::rename_by_rule;
 
 pub struct Command {
     pub prefix: Option<String>,
     pub description: Option<String>,
+    pub name: String,
+    pub renamed: bool,
 }
 
 impl Command {
-    fn from_attrs(prefix: Option<&Attr>, description: Option<&Attr>) -> Self {
-        let prefix = prefix.map(|attr| attr.value());
-        let description = description.map(|attr| attr.value());
+    pub fn try_from(attrs: &[Attr], name: &str) -> Result<Self, String> {
+        let attrs = parse_attrs(attrs)?;
+        let mut new_name = name.to_string();
+        let mut renamed = false;
 
-        Self {
-            prefix,
-            description
+        let prefix = attrs.prefix;
+        let description = attrs.description;
+        let rename = attrs.rename;
+        if let Some(rename_rule) = rename {
+            new_name = rename_by_rule(name, &rename_rule);
+            renamed = true;
         }
+        Ok(Self {
+            prefix,
+            description,
+            name: new_name,
+            renamed,
+        })
     }
 }
 
-impl TryFrom<&[Attr]> for Command {
-    type Error = String;
+struct CommandAttrs {
+    prefix: Option<String>,
+    description: Option<String>,
+    rename: Option<String>
+}
 
-    fn try_from(attrs: &[Attr]) -> Result<Self, Self::Error> {
-        let mut prefix = None;
-        let mut description = None;
+fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
+    let mut prefix = None;
+    let mut description = None;
+    let mut rename_rule = None;
 
-        for attr in attrs {
-            match attr.name() {
-                BotCommandAttribute::Prefix => prefix = Some(attr),
-                BotCommandAttribute::Description => description = Some(attr),
-                _ => return Err(format!("unexpected attribute")),
-            }
+    for attr in attrs {
+        match attr.name() {
+            BotCommandAttribute::Prefix => prefix = Some(attr.value()),
+            BotCommandAttribute::Description => description = Some(attr.value()),
+            BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
+            _ => return Err(format!("unexpected attribute")),
         }
-
-        Ok(Self::from_attrs(prefix, description))
     }
+
+    Ok(CommandAttrs {
+        prefix,
+        description,
+        rename: rename_rule
+    })
 }

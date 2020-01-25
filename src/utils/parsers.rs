@@ -4,6 +4,7 @@ pub use teloxide_macros::BotCommand;
 /// Example:
 /// ```
 /// use teloxide::utils::{parse_command_into_enum, BotCommand};
+/// #[command(rename = "lowercase")]
 /// #[derive(BotCommand, PartialEq, Debug)]
 /// enum TelegramAdminCommand {
 ///     Ban,
@@ -25,6 +26,7 @@ pub trait BotCommand: Sized {
 /// Example:
 /// ```
 /// use teloxide::utils::{parse_command_into_enum, BotCommand};
+/// #[command(rename = "lowercase")]
 /// #[derive(BotCommand, PartialEq, Debug)]
 /// enum TelegramAdminCommand {
 ///     Ban,
@@ -108,6 +110,7 @@ mod tests {
 
     #[test]
     fn parse_command_with_args() {
+        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             Start,
@@ -122,6 +125,7 @@ mod tests {
 
     #[test]
     fn attribute_prefix() {
+        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "!")]
@@ -137,6 +141,7 @@ mod tests {
     
     #[test]
     fn many_attributes() {
+        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "!", description = "desc")]
@@ -150,7 +155,7 @@ mod tests {
 
     #[test]
     fn global_attributes() {
-        #[command(prefix = "!")]
+        #[command(prefix = "!", rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
