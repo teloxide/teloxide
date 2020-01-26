@@ -98,6 +98,11 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             fn descriptions() -> String {
                 std::concat!(#(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
             }
+            fn parse(s: &str) -> Option<(Self, Vec<&str>)> {
+                let mut words = s.split_whitespace();
+                let command = Self::try_from(words.next()?)?;
+                Some((command, words.collect()))
+            }
         }
     };
     //for debug

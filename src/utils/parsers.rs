@@ -10,14 +10,14 @@ pub use teloxide_macros::BotCommand;
 ///     Ban,
 ///     Kick,
 /// }
-/// let (command, args) =
-///     parse_command_into_enum::<TelegramAdminCommand>("/ban 5 h").unwrap();
+/// let (command, args) = TelegramAdminCommand::parse("/ban 5 h").unwrap();
 /// assert_eq!(command, TelegramAdminCommand::Ban);
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
+    fn parse(s: &str) -> Option<(Self, Vec<&str>)>;
 }
 
 /// Function to parse message with command into enum. Command must started with
