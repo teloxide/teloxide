@@ -1,51 +1,26 @@
 pub use teloxide_macros::BotCommand;
-/// Enum for telegram commands
+
+/// An enumeration of bot's commands.
 ///
-/// Example:
+/// ## Example
 /// ```
-/// use teloxide::utils::{parse_command_into_enum, BotCommand};
-/// #[command(rename = "lowercase")]
+/// use teloxide::utils::BotCommand;
+///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// enum TelegramAdminCommand {
+/// #[command(rename = "lowercase")]
+/// enum AdminCommand {
+///     Mute,
 ///     Ban,
-///     Kick,
 /// }
-/// let (command, args) = TelegramAdminCommand::parse("/ban 5 h").unwrap();
-/// assert_eq!(command, TelegramAdminCommand::Ban);
+///
+/// let (command, args) = AdminCommand::parse("/ban 5 h").unwrap();
+/// assert_eq!(command, AdminCommand::Ban);
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
     fn parse(s: &str) -> Option<(Self, Vec<&str>)>;
-}
-
-/// Function to parse message with command into enum. Command must started with
-/// `/`
-///
-/// Example:
-/// ```
-/// use teloxide::utils::{parse_command_into_enum, BotCommand};
-/// #[command(rename = "lowercase")]
-/// #[derive(BotCommand, PartialEq, Debug)]
-/// enum TelegramAdminCommand {
-///     Ban,
-///     Kick,
-/// }
-/// let (command, args) =
-///     parse_command_into_enum::<TelegramAdminCommand>("/ban 5 h").unwrap();
-/// assert_eq!(command, TelegramAdminCommand::Ban);
-/// assert_eq!(args, vec!["5", "h"]);
-/// ```
-pub fn parse_command_into_enum<T>(text: &str) -> Option<(T, Vec<&str>)>
-where
-    T: BotCommand,
-{
-    let (command, args) = parse_command(text)?;
-    match T::try_from(command) {
-        Some(command) => Some((command, args)),
-        _ => None,
-    }
 }
 
 /// Parses a string into a command with args.
@@ -120,7 +95,7 @@ mod tests {
 
         let data = "/start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = parse_command_into_enum::<DefaultCommands>(data);
+        let actual = DefaultCommands::parse(data);
         assert_eq!(actual, expected)
     }
 
@@ -136,7 +111,7 @@ mod tests {
 
         let data = "!start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = parse_command_into_enum::<DefaultCommands>(data);
+        let actual = DefaultCommands::parse(data);
         assert_eq!(actual, expected)
     }
 
@@ -152,9 +127,7 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            parse_command_into_enum::<DefaultCommands>("!start")
-                .unwrap()
-                .0
+            DefaultCommands::parse("!start").unwrap().0
         );
         assert_eq!(
             DefaultCommands::descriptions(),
@@ -174,15 +147,11 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            parse_command_into_enum::<DefaultCommands>("/start")
-                .unwrap()
-                .0
+            DefaultCommands::parse("/start").unwrap().0
         );
         assert_eq!(
             DefaultCommands::Help,
-            parse_command_into_enum::<DefaultCommands>("!help")
-                .unwrap()
-                .0
+            DefaultCommands::parse("!help").unwrap().0
         );
         assert_eq!(DefaultCommands::descriptions(), "/start - \n!help - \n");
     }
