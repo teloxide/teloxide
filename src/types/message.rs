@@ -356,6 +356,10 @@ mod getters {
             }
         }
 
+        pub fn chat_id(&self) -> i64 {
+            self.chat.id
+        }
+
         /// NOTE: this is getter for both `forward_from` and
         /// `forward_sender_name`
         pub fn forward_from(&self) -> Option<&ForwardedFrom> {
@@ -727,21 +731,21 @@ mod getters {
             }
         }
 
-        pub fn migrate_to_chat_id(&self) -> Option<&i64> {
+        pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
                 Migrate {
                     migrate_to_chat_id, ..
-                } => Some(migrate_to_chat_id),
+                } => Some(*migrate_to_chat_id),
                 _ => None,
             }
         }
 
-        pub fn migrate_from_chat_id(&self) -> Option<&i64> {
+        pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
                 Migrate {
                     migrate_from_chat_id,
                     ..
-                } => Some(migrate_from_chat_id),
+                } => Some(*migrate_from_chat_id),
                 _ => None,
             }
         }

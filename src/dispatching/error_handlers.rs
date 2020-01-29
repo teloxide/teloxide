@@ -1,4 +1,4 @@
-//! Handlers of errors.
+//! Commonly used handlers of errors.
 
 use crate::dispatching::AsyncHandler;
 use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
@@ -9,11 +9,11 @@ use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::error_handlers::{ErrorHandler, Ignore};
+/// use teloxide::dispatching::{error_handlers::Ignore, AsyncHandler};
 ///
-/// Ignore.handle_error(()).await;
-/// Ignore.handle_error(404).await;
-/// Ignore.handle_error(String::from("error")).await;
+/// Ignore.handle(()).await;
+/// Ignore.handle(404).await;
+/// Ignore.handle(String::from("error")).await;
 /// # }
 /// ```
 pub struct Ignore;
@@ -36,15 +36,15 @@ impl<E> AsyncHandler<E, ()> for Ignore {
 /// # async fn main_() {
 /// use std::convert::{Infallible, TryInto};
 ///
-/// use teloxide::dispatching::error_handlers::{ErrorHandler, IgnoreSafe};
+/// use teloxide::dispatching::{AsyncHandler, error_handlers::IgnoreSafe};
 ///
 /// let result: Result<String, Infallible> = "str".try_into();
 /// match result {
 ///     Ok(string) => println!("{}", string),
-///     Err(inf) => IgnoreSafe.handle_error(inf).await,
+///     Err(inf) => IgnoreSafe.handle(inf).await,
 /// }
 ///
-/// IgnoreSafe.handle_error(return;).await; // return type of `return` is `!` (aka never)
+/// IgnoreSafe.handle(return).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///
@@ -79,11 +79,11 @@ impl AsyncHandler<Infallible, ()> for IgnoreSafe {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::error_handlers::{ErrorHandler, Log};
+/// use teloxide::dispatching::{error_handlers::Log, AsyncHandler};
 ///
-/// Log.handle_error(()).await;
-/// Log.handle_error(404).await;
-/// Log.handle_error(String::from("error")).await;
+/// Log.handle(()).await;
+/// Log.handle(404).await;
+/// Log.handle(String::from("error")).await;
 /// # }
 /// ```
 pub struct Log;

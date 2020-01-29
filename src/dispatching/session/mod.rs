@@ -20,11 +20,11 @@
 //!  3. If a handler has returned [`SessionState::Terminate`], remove the
 //! session from a storage, otherwise force the storage to update the session.
 //!
-//! [`Storage`]: crate::dispatching::Storage
-//! [`SessionDispatcher`]: crate::dispatching::SessionDispatcher
+//! [`Storage`]: crate::dispatching::session::Storage
+//! [`SessionDispatcher`]: crate::dispatching::session::SessionDispatcher
 //! [`dispatch(Bot, Upd)`]:
-//! crate::dispatching::SessionDispatcher::dispatch
-//! [`SessionState::Terminate`]: crate::dispatching::SessionState::Terminate
+//! crate::dispatching::session::SessionDispatcher::dispatch
+//! [`SessionState::Terminate`]: crate::dispatching::session::SessionState::Terminate
 
 // TODO: examples
 
@@ -62,7 +62,7 @@ where
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
     ///
-    /// [`InMemStorage`]: crate::dispatching::InMemStorage
+    /// [`InMemStorage`]: crate::dispatching::session::InMemStorage
     #[must_use]
     pub fn new(handler: H) -> Self {
         Self {

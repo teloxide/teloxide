@@ -4,3 +4,4 @@ Cargo.lock
 .idea/
 .vscode/
 examples/target
+examples/ping_pong_bot/target

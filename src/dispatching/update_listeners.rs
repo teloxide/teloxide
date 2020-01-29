@@ -108,7 +108,7 @@ use crate::{
     types::{AllowedUpdate, Update},
     RequestError,
 };
-use std::{convert::TryInto, time::Duration};
+use std::{convert::TryInto, sync::Arc, time::Duration};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
@@ -119,7 +119,7 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// Returns a long polling update listener with the default configuration.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default(bot: &Bot) -> impl UpdateListener<RequestError> + '_ {
+pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {
     polling(bot, None, None, None)
 }
 
@@ -136,11 +136,11 @@ pub fn polling_default(bot: &Bot) -> impl UpdateListener<RequestError> + '_ {
 ///
 /// [`GetUpdates`]: crate::requests::GetUpdates
 pub fn polling(
-    bot: &Bot,
+    bot: Arc<Bot>,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<RequestError> + '_ {
+) -> impl UpdateListener<RequestError> {
     let timeout =
         timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
 
