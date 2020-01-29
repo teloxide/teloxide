@@ -1,0 +1,15 @@
+use crate::{
+    network,
+    requests::form_builder::FormBuilder,
+    types::{InputFile, MaskPosition, True},
+    Bot,
+};
+
+use crate::requests::{Request, ResponseResult};
+
+/// Use this method to add a new sticker to a set created by the bot.
+///
+/// [The official docs](https://core.telegram.org/bots/api#addstickertoset).
+#[derive(Copy, Eq, PartialEq, Debug, Clone)]
+pub struct AddStickerToSet<'a> {
+    
