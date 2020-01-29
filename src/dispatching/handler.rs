@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin};
 
 /// An asynchronous polymorphic handler of a context.
-pub trait Handler<Ctx, Output> {
+pub trait AsyncHandler<Ctx, Output> {
     #[must_use]
     fn handle<'a>(
         &'a self,
@@ -11,8 +11,7 @@ pub trait Handler<Ctx, Output> {
         Ctx: 'a;
 }
 
-/// The implementation of `Handler` for `Fn(Ctx) -> Future<Output = Output>`.
-impl<Ctx, Output, F, Fut> Handler<Ctx, Output> for F
+impl<Ctx, Output, F, Fut> AsyncHandler<Ctx, Output> for F
 where
     F: Fn(Ctx) -> Fut,
     Fut: Future<Output = Output>,

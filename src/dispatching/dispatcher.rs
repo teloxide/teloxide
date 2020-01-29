@@ -4,7 +4,7 @@ use crate::{
         session::{SessionDispatcher, SessionHandlerCtx, SessionState},
         update_listeners,
         update_listeners::UpdateListener,
-        Handler,
+        AsyncHandler,
     },
     types::{
         CallbackQuery, ChatKind, ChosenInlineResult, InlineQuery, Message,
@@ -20,35 +20,40 @@ pub struct BasicHandlerCtx<'a, Upd> {
     pub update: Upd,
 }
 
+/// The main dispatcher that joins all the parts together.
 pub struct Dispatcher<'a, Session1, Session2, H1, H2, HandlerE> {
     bot: &'a Bot,
 
-    handlers_error_handler: Box<dyn Handler<HandlerE, ()> + 'a>,
+    handlers_error_handler: Box<dyn AsyncHandler<HandlerE, ()> + 'a>,
 
     private_message_dp: Option<SessionDispatcher<'a, Session1, H1>>,
     private_edited_message_dp: Option<SessionDispatcher<'a, Session2, H2>>,
 
     message_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
+        Option<Box<dyn AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
     edited_message_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
+        Option<Box<dyn AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
     channel_post_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
+        Option<Box<dyn AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
     edited_channel_post_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
-    inline_query_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, InlineQuery>, ()> + 'a>>,
+        Option<Box<dyn AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a>>,
+    inline_query_handler: Option<
+        Box<dyn AsyncHandler<BasicHandlerCtx<'a, InlineQuery>, ()> + 'a>,
+    >,
     chosen_inline_result_handler: Option<
-        Box<dyn Handler<BasicHandlerCtx<'a, ChosenInlineResult>, ()> + 'a>,
+        Box<dyn AsyncHandler<BasicHandlerCtx<'a, ChosenInlineResult>, ()> + 'a>,
     >,
-    callback_query_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, CallbackQuery>, ()> + 'a>>,
-    shipping_query_handler:
-        Option<Box<dyn Handler<BasicHandlerCtx<'a, ShippingQuery>, ()> + 'a>>,
+    callback_query_handler: Option<
+        Box<dyn AsyncHandler<BasicHandlerCtx<'a, CallbackQuery>, ()> + 'a>,
+    >,
+    shipping_query_handler: Option<
+        Box<dyn AsyncHandler<BasicHandlerCtx<'a, ShippingQuery>, ()> + 'a>,
+    >,
     pre_checkout_query_handler: Option<
-        Box<dyn Handler<BasicHandlerCtx<'a, PreCheckoutQuery>, ()> + 'a>,
+        Box<dyn AsyncHandler<BasicHandlerCtx<'a, PreCheckoutQuery>, ()> + 'a>,
     >,
-    poll_handler: Option<Box<dyn Handler<BasicHandlerCtx<'a, Poll>, ()> + 'a>>,
+    poll_handler:
+        Option<Box<dyn AsyncHandler<BasicHandlerCtx<'a, Poll>, ()> + 'a>>,
 }
 
 impl<'a, Session1, Session2, H1, H2, HandlerE>
@@ -56,11 +61,11 @@ impl<'a, Session1, Session2, H1, H2, HandlerE>
 where
     Session1: Default + 'a,
     Session2: Default + 'a,
-    H1: Handler<
+    H1: AsyncHandler<
             SessionHandlerCtx<'a, Message, Session1>,
             SessionState<Session1>,
         > + 'a,
-    H2: Handler<
+    H2: AsyncHandler<
             SessionHandlerCtx<'a, Message, Session2>,
             SessionState<Session2>,
         > + 'a,
@@ -87,7 +92,7 @@ where
 
     pub fn handlers_error_handler<T>(mut self, val: T) -> Self
     where
-        T: Handler<HandlerE, ()> + 'a,
+        T: AsyncHandler<HandlerE, ()> + 'a,
     {
         self.handlers_error_handler = Box::new(val);
         self
@@ -111,7 +116,7 @@ where
 
     pub fn message_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, Message>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a,
     {
         self.message_handler = Some(Box::new(h));
         self
@@ -119,7 +124,7 @@ where
 
     pub fn edited_message_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, Message>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a,
     {
         self.edited_message_handler = Some(Box::new(h));
         self
@@ -127,7 +132,7 @@ where
 
     pub fn channel_post_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, Message>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a,
     {
         self.channel_post_handler = Some(Box::new(h));
         self
@@ -135,7 +140,7 @@ where
 
     pub fn edited_channel_post_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, Message>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, Message>, ()> + 'a,
     {
         self.edited_channel_post_handler = Some(Box::new(h));
         self
@@ -143,7 +148,7 @@ where
 
     pub fn inline_query_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, InlineQuery>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, InlineQuery>, ()> + 'a,
     {
         self.inline_query_handler = Some(Box::new(h));
         self
@@ -151,7 +156,7 @@ where
 
     pub fn chosen_inline_result_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, ChosenInlineResult>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, ChosenInlineResult>, ()> + 'a,
     {
         self.chosen_inline_result_handler = Some(Box::new(h));
         self
@@ -159,7 +164,7 @@ where
 
     pub fn callback_query_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, CallbackQuery>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, CallbackQuery>, ()> + 'a,
     {
         self.callback_query_handler = Some(Box::new(h));
         self
@@ -167,7 +172,7 @@ where
 
     pub fn shipping_query_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, ShippingQuery>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, ShippingQuery>, ()> + 'a,
     {
         self.shipping_query_handler = Some(Box::new(h));
         self
@@ -175,7 +180,7 @@ where
 
     pub fn pre_checkout_query_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, PreCheckoutQuery>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, PreCheckoutQuery>, ()> + 'a,
     {
         self.pre_checkout_query_handler = Some(Box::new(h));
         self
@@ -183,7 +188,7 @@ where
 
     pub fn poll_handler<H>(mut self, h: H) -> Self
     where
-        H: Handler<BasicHandlerCtx<'a, Poll>, ()> + 'a,
+        H: AsyncHandler<BasicHandlerCtx<'a, Poll>, ()> + 'a,
     {
         self.poll_handler = Some(Box::new(h));
         self
@@ -203,7 +208,7 @@ where
         update_listener_error_handler: &'a Eh,
     ) where
         UListener: UpdateListener<ListenerE> + 'a,
-        Eh: Handler<ListenerE, ()> + 'a,
+        Eh: AsyncHandler<ListenerE, ()> + 'a,
         ListenerE: Debug,
     {
         let update_listener = Box::pin(update_listener);

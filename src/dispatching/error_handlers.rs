@@ -1,4 +1,6 @@
-use crate::dispatching::Handler;
+//! Handlers of errors.
+
+use crate::dispatching::AsyncHandler;
 use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 
 /// A handler that silently ignores all errors.
@@ -16,7 +18,7 @@ use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 /// ```
 pub struct Ignore;
 
-impl<E> Handler<E, ()> for Ignore {
+impl<E> AsyncHandler<E, ()> for Ignore {
     fn handle<'a>(&'a self, _: E) -> Pin<Box<dyn Future<Output = ()> + 'a>>
     where
         E: 'a,
@@ -59,7 +61,7 @@ impl<E> Handler<E, ()> for Ignore {
 pub struct IgnoreSafe;
 
 #[allow(unreachable_code)]
-impl Handler<Infallible, ()> for IgnoreSafe {
+impl AsyncHandler<Infallible, ()> for IgnoreSafe {
     fn handle<'a>(
         &'a self,
         _: Infallible,
@@ -86,7 +88,7 @@ impl Handler<Infallible, ()> for IgnoreSafe {
 /// ```
 pub struct Log;
 
-impl<E> Handler<E, ()> for Log
+impl<E> AsyncHandler<E, ()> for Log
 where
     E: Debug,
 {

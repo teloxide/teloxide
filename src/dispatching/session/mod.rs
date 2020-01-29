@@ -31,7 +31,7 @@
 mod get_chat_id;
 mod storage;
 
-use crate::{dispatching::Handler, Bot};
+use crate::{dispatching::AsyncHandler, Bot};
 pub use get_chat_id::*;
 pub use storage::*;
 
@@ -86,7 +86,10 @@ where
     /// Dispatches a single `message` from a private chat.
     pub async fn dispatch<Upd>(&'a self, bot: &'a Bot, update: Upd)
     where
-        H: Handler<SessionHandlerCtx<'a, Upd, Session>, SessionState<Session>>,
+        H: AsyncHandler<
+            SessionHandlerCtx<'a, Upd, Session>,
+            SessionState<Session>,
+        >,
         Upd: GetChatId,
     {
         let chat_id = update.chat_id();
