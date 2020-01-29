@@ -34,13 +34,20 @@ mod storage;
 
 use crate::{dispatching::AsyncHandler, Bot};
 pub use get_chat_id::*;
+use std::{future::Future, pin::Pin, sync::Arc};
 pub use storage::*;
 
 /// A context of a private message handler.
-pub struct SessionHandlerCtx<'a, Upd, Session> {
-    pub bot: &'a Bot,
+pub struct SessionHandlerCtx<Upd, Session> {
+    pub bot: Arc<Bot>,
     pub update: Upd,
     pub session: Session,
+}
+
+/// A context of a session dispatcher.
+pub struct SessionDispatcherCtx<Upd> {
+    pub bot: Arc<Bot>,
+    pub update: Upd,
 }
 
 /// Continue or terminate a user session.
@@ -83,44 +90,53 @@ where
             handler,
         }
     }
+}
 
+impl<'a, Session, H, Upd> AsyncHandler<SessionDispatcherCtx<Upd>, ()>
+    for SessionDispatcher<'a, Session, H>
+where
+    H: AsyncHandler<SessionHandlerCtx<Upd, Session>, SessionState<Session>>,
+    Upd: GetChatId,
+    Session: Default,
+{
     /// Dispatches a single `message` from a private chat.
-    pub async fn dispatch<Upd>(&'a self, bot: &'a Bot, update: Upd)
+    fn handle<'b>(
+        &'b self,
+        ctx: SessionDispatcherCtx<Upd>,
+    ) -> Pin<Box<dyn Future<Output = ()> + 'b>>
     where
-        H: AsyncHandler<
-            SessionHandlerCtx<'a, Upd, Session>,
-            SessionState<Session>,
-        >,
-        Upd: GetChatId,
+        Upd: 'b,
     {
-        let chat_id = update.chat_id();
+        Box::pin(async move {
+            let chat_id = ctx.update.chat_id();
 
-        let session = self
-            .storage
-            .remove_session(chat_id)
-            .await
-            .unwrap_or_default();
-
-        if let SessionState::Continue(new_session) = self
-            .handler
-            .handle(SessionHandlerCtx {
-                bot,
-                update,
-                session,
-            })
-            .await
-        {
-            if self
+            let session = self
                 .storage
-                .update_session(chat_id, new_session)
+                .remove_session(chat_id)
                 .await
-                .is_some()
+                .unwrap_or_default();
+
+            if let SessionState::Continue(new_session) = self
+                .handler
+                .handle(SessionHandlerCtx {
+                    bot: ctx.bot,
+                    update: ctx.update,
+                    session,
+                })
+                .await
             {
-                panic!(
-                    "We previously storage.remove_session() so \
-                     storage.update_session() must return None"
-                );
+                if self
+                    .storage
+                    .update_session(chat_id, new_session)
+                    .await
+                    .is_some()
+                {
+                    panic!(
+                        "We previously storage.remove_session() so \
+                         storage.update_session() must return None"
+                    );
+                }
             }
-        }
+        })
     }
 }
