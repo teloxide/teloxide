@@ -84,7 +84,7 @@ where
     }
 
     /// Dispatches a single `message` from a private chat.
-    pub async fn dispatch<Upd>(&'a mut self, bot: &'a Bot, update: Upd)
+    pub async fn dispatch<Upd>(&'a self, bot: &'a Bot, update: Upd)
     where
         H: Handler<SessionHandlerCtx<'a, Upd, Session>, SessionState<Session>>,
         Upd: GetChatId,

@@ -18,14 +18,14 @@ pub trait Storage<Session> {
     ///
     /// Returns `None` if there wasn't such a session, `Some(session)` if a
     /// `session` was deleted.
-    async fn remove_session(&mut self, chat_id: i64) -> Option<Session>;
+    async fn remove_session(&self, chat_id: i64) -> Option<Session>;
 
     /// Updates a session with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a session, `Some(session)` if a
     /// `session` was updated.
     async fn update_session(
-        &mut self,
+        &self,
         chat_id: i64,
         session: Session,
     ) -> Option<Session>;
