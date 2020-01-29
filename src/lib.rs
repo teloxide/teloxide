@@ -12,6 +12,7 @@ mod net;
 
 mod bot;
 pub mod dispatching;
+pub mod prelude;
 pub mod requests;
 pub mod types;
 pub mod utils;

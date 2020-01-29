@@ -24,7 +24,8 @@
 //! [`SessionDispatcher`]: crate::dispatching::session::SessionDispatcher
 //! [`dispatch(Bot, Upd)`]:
 //! crate::dispatching::session::SessionDispatcher::dispatch
-//! [`SessionState::Terminate`]: crate::dispatching::session::SessionState::Terminate
+//! [`SessionState::Terminate`]:
+//! crate::dispatching::session::SessionState::Terminate
 
 // TODO: examples
 

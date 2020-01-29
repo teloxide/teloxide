@@ -1,14 +1,8 @@
-use teloxide::{
-    dispatching::{Dispatcher, HandlerCtx},
-    types::Message,
-    Bot,
-};
-
-use std::env;
+use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
-    env::set_var("RUST_LOG", "ping_pong_bot=trace");
+    std::env::set_var("RUST_LOG", "ping_pong_bot=trace");
     pretty_env_logger::init();
     log::info!("Starting the ping-pong bot!");
 
