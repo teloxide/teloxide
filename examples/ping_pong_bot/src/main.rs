@@ -6,9 +6,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting the ping-pong bot!");
 
-    let bot = Bot::new("1061598315:AAErEDodTsrqD3UxA_EvFyEfXbKA6DT25G0");
-
-    Dispatcher::new(bot)
+    Dispatcher::new(Bot::new("MyAwesomeToken"))
         .message_handler(|ctx: HandlerCtx<Message>| ctx.reply("pong"))
         .dispatch()
         .await;
