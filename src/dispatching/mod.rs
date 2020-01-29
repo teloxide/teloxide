@@ -1,14 +1,10 @@
 //! Update dispatching.
 
-/// If an update was handled by a dispatcher or not.
-#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
-pub enum DispatchResult {
-    Handled,
-    Unhandled,
-}
-
-pub mod chat;
+mod dispatcher;
+pub mod error_handlers;
 mod handler;
+pub mod session;
 pub mod update_listeners;
 
+pub use dispatcher::*;
 pub use handler::*;

@@ -1397,6 +1397,7 @@ impl Bot {
     ///   - `ok`: Specify `true` if everything is alright (goods are available,
     ///     etc.) and the bot is ready to proceed with the order. Use False if
     ///     there are any problems.
+    ///
     /// [`Update`]: crate::types::Update
     pub fn answer_pre_checkout_query<P>(
         &self,
