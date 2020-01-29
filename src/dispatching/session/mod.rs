@@ -32,7 +32,12 @@
 mod get_chat_id;
 mod storage;
 
-use crate::{dispatching::AsyncHandler, Bot};
+use crate::{
+    dispatching::{AsyncHandler, HandlerCtx},
+    requests::{Request, ResponseResult},
+    types::Message,
+    Bot,
+};
 pub use get_chat_id::*;
 use std::{future::Future, pin::Pin, sync::Arc};
 pub use storage::*;
@@ -44,10 +49,21 @@ pub struct SessionHandlerCtx<Upd, Session> {
     pub session: Session,
 }
 
-/// A context of a session dispatcher.
-pub struct SessionDispatcherCtx<Upd> {
-    pub bot: Arc<Bot>,
-    pub update: Upd,
+impl<Session> SessionHandlerCtx<Message, Session> {
+    pub fn chat_id(&self) -> i64 {
+        self.update.chat_id()
+    }
+
+    pub async fn reply<T>(&self, text: T) -> ResponseResult<()>
+    where
+        T: Into<String>,
+    {
+        self.bot
+            .send_message(self.chat_id(), text)
+            .send()
+            .await
+            .map(|_| ())
+    }
 }
 
 /// Continue or terminate a user session.
@@ -92,7 +108,7 @@ where
     }
 }
 
-impl<'a, Session, H, Upd> AsyncHandler<SessionDispatcherCtx<Upd>, ()>
+impl<'a, Session, H, Upd> AsyncHandler<HandlerCtx<Upd>, Result<(), ()>>
     for SessionDispatcher<'a, Session, H>
 where
     H: AsyncHandler<SessionHandlerCtx<Upd, Session>, SessionState<Session>>,
@@ -102,8 +118,8 @@ where
     /// Dispatches a single `message` from a private chat.
     fn handle<'b>(
         &'b self,
-        ctx: SessionDispatcherCtx<Upd>,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'b>>
+        ctx: HandlerCtx<Upd>,
+    ) -> Pin<Box<dyn Future<Output = Result<(), ()>> + 'b>>
     where
         Upd: 'b,
     {
@@ -137,6 +153,8 @@ where
                     );
                 }
             }
+
+            Ok(())
         })
     }
 }

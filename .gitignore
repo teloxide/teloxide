@@ -5,3 +5,4 @@ Cargo.lock
 .vscode/
 examples/target
 examples/ping_pong_bot/target
+examples/simple_fsm/target
