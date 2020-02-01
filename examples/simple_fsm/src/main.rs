@@ -162,12 +162,9 @@ async fn main() {
 
     Dispatcher::new(Bot::new("YourAwesomeToken"))
         .message_handler(SessionDispatcher::new(|ctx| async move {
-            match handle_message(ctx).await {
-                Ok(ok) => ok,
-                Err(error) => {
-                    panic!("Something wrong with the bot: {}!", error)
-                }
-            }
+            handle_message(ctx)
+                .await
+                .expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;
