@@ -85,6 +85,13 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
 
     let ident = &input.ident;
 
+    let global_description = if let Some(s) = &command_enum.description {
+        quote! { #s, "\n", }
+    }
+    else {
+        quote! {}
+    };
+
     let expanded = quote! {
         impl BotCommand for #ident {
             fn try_from(value: &str) -> Option<Self> {
@@ -96,7 +103,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                 }
             }
             fn descriptions() -> String {
-                std::concat!(#(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
+                std::concat!(#global_description #(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
             }
             fn parse(s: &str) -> Option<(Self, Vec<&str>)> {
                 let mut words = s.split_whitespace();

@@ -137,7 +137,7 @@ mod tests {
 
     #[test]
     fn global_attributes() {
-        #[command(prefix = "!", rename = "lowercase")]
+        #[command(prefix = "!", rename = "lowercase", description = "Bot commands")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
@@ -153,6 +153,6 @@ mod tests {
             DefaultCommands::Help,
             DefaultCommands::parse("!help").unwrap().0
         );
-        assert_eq!(DefaultCommands::descriptions(), "/start - \n!help - \n");
+        assert_eq!(DefaultCommands::descriptions(), "Bot commands\n/start - \n!help - \n");
     }
 }
