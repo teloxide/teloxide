@@ -119,7 +119,7 @@ impl Update {
                 Some(&p.chat)
             }
             UpdateKind::CallbackQuery(q) => {
-                Some(&q.message?.chat)
+                Some(&q.message.as_ref()?.chat)
             }
             _ => None
         }
