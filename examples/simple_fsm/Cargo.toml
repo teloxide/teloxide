@@ -13,3 +13,6 @@ tokio = "0.2.9"
 strum = "0.17.1"
 strum_macros = "0.17.1"
 teloxide = { path = "../../" }
+
+[profile.release]
+lto = true

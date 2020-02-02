@@ -2,7 +2,9 @@
 
 pub use crate::{
     dispatching::{
-        session::{SessionDispatcher, SessionHandlerCtx, SessionState},
+        session::{
+            GetChatId, SessionDispatcher, SessionHandlerCtx, SessionState,
+        },
         Dispatcher, HandlerCtx,
     },
     requests::{Request, ResponseResult},

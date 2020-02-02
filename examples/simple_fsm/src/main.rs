@@ -99,13 +99,13 @@ type Res = Result<SessionState<User>, RequestError>;
 
 async fn start(ctx: Ctx) -> Res {
     reply!(ctx, "Let's start! First, what's your full name?");
-    Ok(SessionState::Continue(ctx.session))
+    Ok(SessionState::Next(ctx.session))
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
     reply!(ctx, "What a wonderful name! Your age?");
     ctx.session.full_name = Some(ctx.update.text().unwrap().to_owned());
-    Ok(SessionState::Continue(ctx.session))
+    Ok(SessionState::Next(ctx.session))
 }
 
 async fn age(mut ctx: Ctx) -> Res {
@@ -117,7 +117,7 @@ async fn age(mut ctx: Ctx) -> Res {
         Err(_) => reply!(ctx, "Oh, please, enter a number!"),
     }
 
-    Ok(SessionState::Continue(ctx.session))
+    Ok(SessionState::Next(ctx.session))
 }
 
 async fn favourite_music(mut ctx: Ctx) -> Res {
@@ -125,11 +125,11 @@ async fn favourite_music(mut ctx: Ctx) -> Res {
         Ok(ok) => {
             ctx.session.favourite_music = Some(ok);
             reply!(ctx, format!("Fine. {}", ctx.session));
-            Ok(SessionState::Terminate)
+            Ok(SessionState::Exit)
         }
         Err(_) => {
             reply!(ctx, "Oh, please, enter from the keyboard!");
-            Ok(SessionState::Continue(ctx.session))
+            Ok(SessionState::Next(ctx.session))
         }
     }
 }
@@ -147,7 +147,7 @@ async fn handle_message(ctx: Ctx) -> Res {
         return favourite_music(ctx).await;
     }
 
-    Ok(SessionState::Terminate)
+    Ok(SessionState::Exit)
 }
 
 // ============================================================================

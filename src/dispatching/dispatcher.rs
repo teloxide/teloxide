@@ -1,9 +1,8 @@
 use crate::{
     dispatching::{
         error_handlers, update_listeners, update_listeners::UpdateListener,
-        AsyncHandler,
+        AsyncHandler, HandlerCtx,
     },
-    requests::{Request, ResponseResult},
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
         PreCheckoutQuery, ShippingQuery, UpdateKind,
@@ -12,32 +11,6 @@ use crate::{
 };
 use futures::StreamExt;
 use std::{fmt::Debug, sync::Arc};
-
-/// A dispatcher's handler's context of a bot and an update.
-///
-/// See [the module-level documentation for the design
-/// overview](teloxide::dispatching).
-pub struct HandlerCtx<Upd> {
-    pub bot: Arc<Bot>,
-    pub update: Upd,
-}
-
-impl HandlerCtx<Message> {
-    pub fn chat_id(&self) -> i64 {
-        self.update.chat_id()
-    }
-
-    pub async fn reply<T>(self, text: T) -> ResponseResult<()>
-    where
-        T: Into<String>,
-    {
-        self.bot
-            .send_message(self.chat_id(), text)
-            .send()
-            .await
-            .map(|_| ())
-    }
-}
 
 type H<'a, Upd, HandlerE> =
     Option<Box<dyn AsyncHandler<HandlerCtx<Upd>, Result<(), HandlerE>> + 'a>>;
