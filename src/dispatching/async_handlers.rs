@@ -2,8 +2,8 @@ use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 
 /// An asynchronous polymorphic handler of a context.
 ///
-/// Note that `AsyncHandler` is implemented for asynchronous `Fn`s, that consume
-/// `Ctx` and return `Output`.
+/// See [the module-level documentation for the design
+/// overview](crate::dispatching).
 pub trait AsyncHandler<Ctx, Output> {
     #[must_use]
     fn handle<'a>(

@@ -16,6 +16,9 @@ type H<'a, Upd, HandlerE> =
     Option<Box<dyn AsyncHandler<HandlerCtx<Upd>, Result<(), HandlerE>> + 'a>>;
 
 /// One dispatcher to rule them all.
+///
+/// See [the module-level documentation for the design
+/// overview](crate::dispatching).
 pub struct Dispatcher<'a, HandlerE> {
     bot: Arc<Bot>,
 

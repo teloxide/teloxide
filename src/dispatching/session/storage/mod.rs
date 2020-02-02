@@ -10,7 +10,7 @@ pub use in_mem_storage::InMemStorage;
 ///
 /// For a storage based on a simple hash map, see [`InMemStorage`].
 ///
-/// [`InMemStorage`]: crate::dispatching::private::InMemStorage
+/// [`InMemStorage`]: crate::dispatching::session::InMemStorage
 #[async_trait(?Send)]
 #[async_trait]
 pub trait Storage<Session> {
