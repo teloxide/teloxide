@@ -195,154 +195,50 @@ where
 
                 match update.kind {
                     UpdateKind::Message(message) => {
-                        if let Some(message_handler) = &self.message_handler {
-                            if let Err(error) = message_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: message,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.message_handler, message).await
                     }
                     UpdateKind::EditedMessage(message) => {
-                        if let Some(edited_message_handler) =
-                            &self.edited_message_handler
-                        {
-                            if let Err(error) = edited_message_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: message,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.edited_message_handler, message).await
                     }
                     UpdateKind::ChannelPost(post) => {
-                        if let Some(channel_post_handler) =
-                            &self.channel_post_handler
-                        {
-                            if let Err(error) = channel_post_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: post,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.channel_post_handler, post).await
                     }
                     UpdateKind::EditedChannelPost(post) => {
-                        if let Some(edited_channel_post_handler) =
-                            &self.edited_channel_post_handler
-                        {
-                            if let Err(error) = edited_channel_post_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: post,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.edited_channel_post_handler, post)
+                            .await
                     }
                     UpdateKind::InlineQuery(query) => {
-                        if let Some(inline_query_handler) =
-                            &self.inline_query_handler
-                        {
-                            if let Err(error) = inline_query_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: query,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.inline_query_handler, query).await
                     }
                     UpdateKind::ChosenInlineResult(result) => {
-                        if let Some(chosen_inline_result_handler) =
-                            &self.chosen_inline_result_handler
-                        {
-                            if let Err(error) = chosen_inline_result_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: result,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.chosen_inline_result_handler, result)
+                            .await
                     }
                     UpdateKind::CallbackQuery(query) => {
-                        if let Some(callback_query_handler) =
-                            &self.callback_query_handler
-                        {
-                            if let Err(error) = callback_query_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: query,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.callback_query_handler, query).await
                     }
                     UpdateKind::ShippingQuery(query) => {
-                        if let Some(shipping_query_handler) =
-                            &self.shipping_query_handler
-                        {
-                            if let Err(error) = shipping_query_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: query,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.shipping_query_handler, query).await
                     }
                     UpdateKind::PreCheckoutQuery(query) => {
-                        if let Some(pre_checkout_query_handler) =
-                            &self.pre_checkout_query_handler
-                        {
-                            if let Err(error) = pre_checkout_query_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: query,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.pre_checkout_query_handler, query)
+                            .await
                     }
                     UpdateKind::Poll(poll) => {
-                        self.handle(&self.poll_handler, poll).await;
+                        self.handle(&self.poll_handler, poll).await
                     }
                 }
             })
             .await
     }
 
-    async fn handle<U>(&self, handler: &Option<Box<dyn AsyncHandler<HandlerCtx<U>, Result<(), HandlerE>> + 'a>>, update: U)
-    {
+    // Handles a single update.
+    async fn handle<Upd>(&self, handler: &H<'a, Upd, HandlerE>, update: Upd) {
         if let Some(handler) = &handler {
-            if let Err(error) =
-            handler
+            if let Err(error) = handler
                 .handle(HandlerCtx {
                     bot: Arc::clone(&self.bot),
-                    update
+                    update,
                 })
                 .await
             {
