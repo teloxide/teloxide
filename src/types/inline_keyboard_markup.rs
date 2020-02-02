@@ -30,7 +30,7 @@ pub struct InlineKeyboardMarkup {
 ///     "text".to_string(),
 ///     "http://url.com".to_string(),
 /// );
-/// let keyboard = InlineKeyboardMarkup::new().append_row(vec![url_button]);
+/// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
     pub fn append_row(mut self, buttons: Vec<InlineKeyboardButton>) -> Self {
