@@ -1,4 +1,4 @@
-//! Update dispatching.
+//! Updates dispatching.
 //!
 //! The key type here is [`Dispatcher`]. It encapsulates [`UpdateListener`], a
 //! handler of errors, and handlers for [10 update kinds]. When [`Update`] is
