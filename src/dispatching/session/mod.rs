@@ -74,6 +74,11 @@ pub enum SessionState<Session> {
 }
 
 /// A dispatcher of user sessions.
+///
+/// Note that `SessionDispatcher` implements `AsyncHandler`, so you can just put
+/// an instance of this dispatcher into the [`Dispatcher`]'s methods.
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct SessionDispatcher<'a, Session, H> {
     storage: Box<dyn Storage<Session> + 'a>,
     handler: H,

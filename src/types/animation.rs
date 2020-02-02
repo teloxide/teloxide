@@ -75,9 +75,7 @@ mod tests {
                 file_size: Some(3452),
             }),
             file_name: Some("some".to_string()),
-            mime_type: Some(MimeWrapper {
-                mime: "video/gif".parse().unwrap(),
-            }),
+            mime_type: Some(MimeWrapper("video/gif".parse().unwrap())),
             file_size: Some(6500),
         };
         let actual = serde_json::from_str::<Animation>(json).unwrap();

@@ -14,6 +14,9 @@ use futures::StreamExt;
 use std::{fmt::Debug, sync::Arc};
 
 /// A dispatcher's handler's context of a bot and an update.
+///
+/// See [the module-level documentation for the design
+/// overview](teloxide::dispatching).
 pub struct HandlerCtx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,
@@ -39,7 +42,7 @@ impl HandlerCtx<Message> {
 type H<'a, Upd, HandlerE> =
     Option<Box<dyn AsyncHandler<HandlerCtx<Upd>, Result<(), HandlerE>> + 'a>>;
 
-/// The main dispatcher to rule them all.
+/// One dispatcher to rule them all.
 pub struct Dispatcher<'a, HandlerE> {
     bot: Arc<Bot>,
 
@@ -80,6 +83,7 @@ where
         }
     }
 
+    /// Registers a handler of errors, produced by other handlers.
     #[must_use]
     pub fn handlers_error_handler<T>(mut self, val: T) -> Self
     where
@@ -181,7 +185,10 @@ where
         self
     }
 
-    /// Starts your bot.
+    /// Starts your bot with the default parameters.
+    ///
+    /// The default parameters are a long polling update listener and log all
+    /// errors produced by this listener).
     pub async fn dispatch(&'a self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),

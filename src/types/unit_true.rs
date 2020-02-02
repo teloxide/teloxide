@@ -3,6 +3,7 @@ use serde::{
     ser::{Serialize, Serializer},
 };
 
+/// A type that is always true.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
 pub struct True;
 

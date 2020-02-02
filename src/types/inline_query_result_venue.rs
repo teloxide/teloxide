@@ -2,9 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
-/// Represents a venue. By default, the venue will be sent by the user.
-/// Alternatively, you can use `input_message_content` to send a message with
-/// the specified content instead of the venue.
+/// Represents a venue.
+///
+/// By default, the venue will be sent by the user. Alternatively, you can use
+/// `input_message_content` to send a message with the specified content instead
+/// of the venue.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultvenue).
 #[serde_with_macros::skip_serializing_none]

@@ -2,9 +2,10 @@ use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::types::True;
 
-/// This object represents one button of the reply keyboard. For filter text
-/// buttons String can be used instead of this object to specify text of the
-/// button.
+/// This object represents one button of the reply keyboard.
+///
+/// For filter text buttons String can be used instead of this object to specify
+/// text of the button.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
 #[serde_with_macros::skip_serializing_none]

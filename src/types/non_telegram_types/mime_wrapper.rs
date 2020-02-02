@@ -5,10 +5,9 @@ use serde::{
     Serializer,
 };
 
+/// Serializable & deserializable `MIME` wrapper.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, From)]
-pub struct MimeWrapper {
-    pub mime: Mime,
-}
+pub struct MimeWrapper(pub Mime);
 
 impl Serialize for MimeWrapper {
     fn serialize<S>(
@@ -18,7 +17,7 @@ impl Serialize for MimeWrapper {
     where
         S: Serializer,
     {
-        serializer.serialize_str(self.mime.as_ref())
+        serializer.serialize_str(self.0.as_ref())
     }
 }
 
@@ -38,7 +37,7 @@ impl<'a> Visitor<'a> for MimeVisitor {
         E: serde::de::Error,
     {
         match v.parse::<Mime>() {
-            Ok(mime_type) => Ok(MimeWrapper { mime: mime_type }),
+            Ok(mime_type) => Ok(MimeWrapper(mime_type)),
             Err(e) => Err(E::custom(e)),
         }
     }

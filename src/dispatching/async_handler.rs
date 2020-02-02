@@ -1,6 +1,9 @@
 use std::{future::Future, pin::Pin};
 
 /// An asynchronous polymorphic handler of a context.
+///
+/// Note that `AsyncHandler` is implemented for asynchronous `Fn`s, that consume
+/// `Ctx` and return `Output`.
 pub trait AsyncHandler<Ctx, Output> {
     #[must_use]
     fn handle<'a>(
