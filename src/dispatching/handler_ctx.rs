@@ -6,10 +6,12 @@ use crate::{
 };
 use std::sync::Arc;
 
-/// A dispatcher's handler's context of a bot and an update.
+/// A [`Dispatcher`]'s handler's context of a bot and an update.
 ///
 /// See [the module-level documentation for the design
-/// overview](teloxide::dispatching).
+/// overview](crate::dispatching).
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct HandlerCtx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,

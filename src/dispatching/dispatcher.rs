@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
-        error_handlers, update_listeners, update_listeners::UpdateListener,
-        AsyncHandler, HandlerCtx,
+        update_listeners, update_listeners::UpdateListener, AsyncHandler,
+        HandlerCtx, LoggingHandler,
     },
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
@@ -42,7 +42,9 @@ where
     pub fn new(bot: Bot) -> Self {
         Self {
             bot: Arc::new(bot),
-            handlers_error_handler: Box::new(error_handlers::Log),
+            handlers_error_handler: Box::new(LoggingHandler::new(
+                "An error from a Dispatcher's handler",
+            )),
             message_handler: None,
             edited_message_handler: None,
             channel_post_handler: None,
@@ -165,7 +167,7 @@ where
     pub async fn dispatch(&'a self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),
-            &error_handlers::Log,
+            &LoggingHandler::new("An error from the update listener"),
         )
         .await;
     }
