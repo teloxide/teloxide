@@ -21,29 +21,12 @@ enum FavouriteMusic {
 
 impl FavouriteMusic {
     fn markup() -> ReplyKeyboardMarkup {
-        ReplyKeyboardMarkup {
-            keyboard: vec![vec![
-                KeyboardButton {
-                    text: "Rock".to_owned(),
-                    request: None,
-                },
-                KeyboardButton {
-                    text: "Metal".to_owned(),
-                    request: None,
-                },
-                KeyboardButton {
-                    text: "Pop".to_owned(),
-                    request: None,
-                },
-                KeyboardButton {
-                    text: "Other".to_owned(),
-                    request: None,
-                },
-            ]],
-            resize_keyboard: None,
-            one_time_keyboard: None,
-            selective: None,
-        }
+        ReplyKeyboardMarkup::default().append_row(vec![
+            KeyboardButton::new("Rock"),
+            KeyboardButton::new("Metal"),
+            KeyboardButton::new("Pop"),
+            KeyboardButton::new("Other"),
+        ])
     }
 }
 
@@ -71,19 +54,11 @@ impl Display for User {
 }
 
 // ============================================================================
-// [Some macros]
-// ============================================================================
-
-#[macro_export]
-macro_rules! reply {
-    ($ctx:ident, $text:expr) => {
-        $ctx.reply($text).await?;
-    };
-}
-
-// ============================================================================
 // [Control our FSM]
 // ============================================================================
+
+type Ctx = SessionHandlerCtx<Message, User>;
+type Res = Result<SessionState<User>, RequestError>;
 
 async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     ctx.bot
@@ -94,16 +69,14 @@ async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     Ok(())
 }
 
-type Ctx = SessionHandlerCtx<Message, User>;
-type Res = Result<SessionState<User>, RequestError>;
-
 async fn start(ctx: Ctx) -> Res {
-    reply!(ctx, "Let's start! First, what's your full name?");
+    ctx.reply("Let's start! First, what's your full name?")
+        .await?;
     Ok(SessionState::Next(ctx.session))
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
-    reply!(ctx, "What a wonderful name! Your age?");
+    ctx.reply("What a wonderful name! Your age?").await?;
     ctx.session.full_name = Some(ctx.update.text().unwrap().to_owned());
     Ok(SessionState::Next(ctx.session))
 }
@@ -114,7 +87,7 @@ async fn age(mut ctx: Ctx) -> Res {
             send_favourite_music_types(&ctx).await?;
             ctx.session.age = Some(ok);
         }
-        Err(_) => reply!(ctx, "Oh, please, enter a number!"),
+        Err(_) => ctx.reply("Oh, please, enter a number!").await?,
     }
 
     Ok(SessionState::Next(ctx.session))
@@ -124,11 +97,11 @@ async fn favourite_music(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
             ctx.session.favourite_music = Some(ok);
-            reply!(ctx, format!("Fine. {}", ctx.session));
+            ctx.reply(format!("Fine. {}", ctx.session)).await?;
             Ok(SessionState::Exit)
         }
         Err(_) => {
-            reply!(ctx, "Oh, please, enter from the keyboard!");
+            ctx.reply("Oh, please, enter from the keyboard!").await?;
             Ok(SessionState::Next(ctx.session))
         }
     }

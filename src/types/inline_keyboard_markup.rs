@@ -33,10 +33,6 @@ pub struct InlineKeyboardMarkup {
 /// let keyboard = InlineKeyboardMarkup::new().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
-    pub fn new() -> Self {
-        <_>::default()
-    }
-
     pub fn append_row(mut self, buttons: Vec<InlineKeyboardButton>) -> Self {
         self.inline_keyboard.push(buttons);
         self

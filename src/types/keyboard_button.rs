@@ -24,6 +24,28 @@ pub struct KeyboardButton {
     pub request: Option<ButtonRequest>,
 }
 
+impl KeyboardButton {
+    /// Creates `KeyboardButton` with the provided `text` and all the other
+    /// fields set to `None`.
+    pub fn new<T>(text: T) -> Self
+    where
+        T: Into<String>,
+    {
+        Self {
+            text: text.into(),
+            request: None,
+        }
+    }
+
+    pub fn request<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<ButtonRequest>>,
+    {
+        self.request = val.into();
+        self
+    }
+}
+
 // Serialize + Deserialize are implemented by hand
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ButtonRequest {

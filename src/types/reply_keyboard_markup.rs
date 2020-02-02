@@ -10,7 +10,7 @@ use crate::types::KeyboardButton;
 /// [custom keyboard]: https://core.telegram.org/bots#keyboards
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
 pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
@@ -42,4 +42,47 @@ pub struct ReplyKeyboardMarkup {
     ///
     /// [`Message`]: crate::types::Message
     pub selective: Option<bool>,
+}
+
+impl ReplyKeyboardMarkup {
+    pub fn append_row(mut self, buttons: Vec<KeyboardButton>) -> Self {
+        self.keyboard.push(buttons);
+        self
+    }
+
+    pub fn append_to_row(
+        mut self,
+        button: KeyboardButton,
+        index: usize,
+    ) -> Self {
+        match self.keyboard.get_mut(index) {
+            Some(buttons) => buttons.push(button),
+            None => self.keyboard.push(vec![button]),
+        };
+        self
+    }
+
+    pub fn resize_keyboard<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<bool>>,
+    {
+        self.resize_keyboard = val.into();
+        self
+    }
+
+    pub fn one_time_keyboard<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<bool>>,
+    {
+        self.one_time_keyboard = val.into();
+        self
+    }
+
+    pub fn selective<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<bool>>,
+    {
+        self.selective = val.into();
+        self
+    }
 }
