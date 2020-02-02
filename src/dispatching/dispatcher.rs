@@ -328,20 +328,26 @@ where
                         }
                     }
                     UpdateKind::Poll(poll) => {
-                        if let Some(poll_handler) = &self.poll_handler {
-                            if let Err(error) = poll_handler
-                                .handle(HandlerCtx {
-                                    bot: Arc::clone(&self.bot),
-                                    update: poll,
-                                })
-                                .await
-                            {
-                                self.handlers_error_handler.handle(error).await;
-                            }
-                        }
+                        self.handle(&self.poll_handler, poll).await;
                     }
                 }
             })
             .await
+    }
+
+    async fn handle<U>(&self, handler: &Option<Box<dyn AsyncHandler<HandlerCtx<U>, Result<(), HandlerE>> + 'a>>, update: U)
+    {
+        if let Some(handler) = &handler {
+            if let Err(error) =
+            handler
+                .handle(HandlerCtx {
+                    bot: Arc::clone(&self.bot),
+                    update
+                })
+                .await
+            {
+                self.handlers_error_handler.handle(error).await;
+            }
+        }
     }
 }
