@@ -7,7 +7,9 @@ async fn main() {
     log::info!("Starting the ping-pong bot!");
 
     Dispatcher::new(Bot::new("MyAwesomeToken"))
-        .message_handler(|ctx: HandlerCtx<Message>| ctx.reply("pong"))
+        .message_handler(|ctx: HandlerCtx<Message>| async move {
+            ctx.reply("pong").await
+        })
         .dispatch()
         .await;
 }

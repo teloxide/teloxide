@@ -20,7 +20,7 @@ mod tests {
 
     #[test]
     fn inline_keyboard_markup() {
-        let data = InlineKeyboardMarkup::new();
+        let data = InlineKeyboardMarkup::default();
         let expected = ReplyMarkup::InlineKeyboardMarkup(data.clone());
         let actual: ReplyMarkup = data.into();
         assert_eq!(actual, expected)
