@@ -1,21 +1,21 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::StickerSet,
     Bot,
 };
 
-/// Use this method to get a sticker set. On success, a StickerSet object is
-/// returned.
+/// Use this method to get a sticker set.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getstickerset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetStickerSet<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Name of the sticker set
+    bot: BotWrapper<'a>,
     name: String,
 }
 
@@ -24,7 +24,7 @@ impl Request for GetStickerSet<'_> {
     type Output = StickerSet;
 
     async fn send(&self) -> ResponseResult<StickerSet> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getStickerSet",
@@ -40,9 +40,13 @@ impl<'a> GetStickerSet<'a> {
         N: Into<String>,
     {
         let name = name.into();
-        Self { bot, name }
+        Self {
+            bot: BotWrapper(bot),
+            name,
+        }
     }
 
+    /// Name of the sticker set.
     pub fn name<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

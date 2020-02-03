@@ -1,26 +1,25 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, InputFile, True},
     Bot,
 };
 
-/// Use this method to set a new profile photo for the chat. Photos can't be
-/// changed for private chats. The bot must be an administrator in the chat for
-/// this to work and must have the appropriate admin rights. Returns True on
-/// success.
+/// Use this method to set a new profile photo for the chat.
+///
+/// Photos can't be changed for private chats. The bot must be an administrator
+/// in the chat for this to work and must have the appropriate admin rights.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setchatphoto).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SetChatPhoto<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// New chat photo, uploaded using multipart/form-data
     photo: InputFile,
 }
 
@@ -29,7 +28,7 @@ impl Request for SetChatPhoto<'_> {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "setChatPhoto",
@@ -46,12 +45,14 @@ impl<'a> SetChatPhoto<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             photo,
         }
     }
 
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -60,6 +61,7 @@ impl<'a> SetChatPhoto<'a> {
         self
     }
 
+    /// New chat photo, uploaded using `multipart/form-data`.
     pub fn photo(mut self, val: InputFile) -> Self {
         self.photo = val;
         self

@@ -1,76 +1,43 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
     Bot,
 };
 
-/// Use this method to send invoices. On success, the sent Message is returned.
+/// Use this method to send invoices.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sendinvoice).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SendInvoice<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target private chat
+    bot: BotWrapper<'a>,
     chat_id: i32,
-    /// Product name, 1-32 characters
     title: String,
-    /// Product description, 1-255 characters
     description: String,
-    /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to
-    /// the user, use for your internal processes.
     payload: String,
-    /// Payments provider token, obtained via Botfather
     provider_token: String,
-    /// Unique deep-linking parameter that can be used to generate this invoice
-    /// when used as a start parameter
     start_parameter: String,
-    /// Three-letter ISO 4217 currency code, see more on currencies
     currency: String,
-    /// Price breakdown, a list of components (e.g. product price, tax,
-    /// discount, delivery cost, delivery tax, bonus, etc.)
     prices: Vec<LabeledPrice>,
-    /// JSON-encoded data about the invoice, which will be shared with the
-    /// payment provider. A detailed description of required fields should be
-    /// provided by the payment provider.
     provider_data: Option<String>,
-    /// URL of the product photo for the invoice. Can be a photo of the goods
-    /// or a marketing image for a service. People like it better when they see
-    /// what they are paying for.
     photo_url: Option<String>,
-    /// Photo size
     photo_size: Option<i32>,
-    /// Photo width
     photo_width: Option<i32>,
-    /// Photo height
     photo_height: Option<i32>,
-    /// Pass True, if you require the user's full name to complete the order
     need_name: Option<bool>,
-    /// Pass True, if you require the user's phone number to complete the order
     need_phone_number: Option<bool>,
-    /// Pass True, if you require the user's email address to complete the
-    /// order
     need_email: Option<bool>,
-    /// Pass True, if you require the user's shipping address to complete the
-    /// order
     need_shipping_address: Option<bool>,
-    /// Pass True, if user's phone number should be sent to provider
     send_phone_number_to_provider: Option<bool>,
-    /// Pass True, if user's email address should be sent to provider
     send_email_to_provider: Option<bool>,
-    /// Pass True, if the final price depends on the shipping method
     is_flexible: Option<bool>,
-    /// Sends the message silently. Users will receive a notification with no
-    /// sound.
     disable_notification: Option<bool>,
-    /// If the message is a reply, ID of the original message
     reply_to_message_id: Option<i32>,
-    /// A JSON-serialized object for an inline keyboard. If empty, one 'Pay
-    /// total price' button will be shown. If not empty, the first button must
-    /// be a Pay button.
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
@@ -79,7 +46,7 @@ impl Request for SendInvoice<'_> {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "sendInvoice",
@@ -119,7 +86,7 @@ impl<'a> SendInvoice<'a> {
         let currency = currency.into();
         let prices = prices.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             title,
             description,
@@ -146,11 +113,13 @@ impl<'a> SendInvoice<'a> {
         }
     }
 
+    /// Unique identifier for the target private chat.
     pub fn chat_id(mut self, val: i32) -> Self {
         self.chat_id = val;
         self
     }
 
+    /// Product name, 1-32 characters.
     pub fn title<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -159,6 +128,7 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Product description, 1-255 characters.
     pub fn description<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -167,6 +137,8 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to
+    /// the user, use for your internal processes.
     pub fn payload<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -175,6 +147,9 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Payments provider token, obtained via [@Botfather].
+    ///
+    /// [@Botfather]: https://t.me/botfather
     pub fn provider_token<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -183,6 +158,8 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Unique deep-linking parameter that can be used to generate this invoice
+    /// when used as a start parameter.
     pub fn start_parameter<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -191,6 +168,9 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Three-letter ISO 4217 currency code, see [more on currencies].
+    ///
+    /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
     pub fn currency<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -199,6 +179,8 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Price breakdown, a list of components (e.g. product price, tax,
+    /// discount, delivery cost, delivery tax, bonus, etc.).
     pub fn prices<T>(mut self, val: T) -> Self
     where
         T: Into<Vec<LabeledPrice>>,
@@ -207,6 +189,11 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// JSON-encoded data about the invoice, which will be shared with the
+    /// payment provider.
+    ///
+    /// A detailed description of required fields should be provided by the
+    /// payment provider.
     pub fn provider_data<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -215,6 +202,10 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// URL of the product photo for the invoice.
+    ///
+    /// Can be a photo of the goods or a marketing image for a service. People
+    /// like it better when they see what they are paying for.
     pub fn photo_url<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -223,67 +214,91 @@ impl<'a> SendInvoice<'a> {
         self
     }
 
+    /// Photo size.
     pub fn photo_size(mut self, val: i32) -> Self {
         self.photo_size = Some(val);
         self
     }
 
+    /// Photo width.
     pub fn photo_width(mut self, val: i32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
+    /// Photo height.
     pub fn photo_height(mut self, val: i32) -> Self {
         self.photo_height = Some(val);
         self
     }
 
+    /// Pass `true`, if you require the user's full name to complete the order.
     pub fn need_name(mut self, val: bool) -> Self {
         self.need_name = Some(val);
         self
     }
 
+    /// Pass `true`, if you require the user's phone number to complete the
+    /// order.
     pub fn need_phone_number(mut self, val: bool) -> Self {
         self.need_phone_number = Some(val);
         self
     }
 
+    /// Pass `true`, if you require the user's email address to complete the
+    /// order.
     pub fn need_email(mut self, val: bool) -> Self {
         self.need_email = Some(val);
         self
     }
 
+    /// Pass `true`, if you require the user's shipping address to complete the
+    /// order.
     pub fn need_shipping_address(mut self, val: bool) -> Self {
         self.need_shipping_address = Some(val);
         self
     }
 
+    /// Pass `true`, if user's phone number should be sent to provider.
     pub fn send_phone_number_to_provider(mut self, val: bool) -> Self {
         self.send_phone_number_to_provider = Some(val);
         self
     }
 
+    /// Pass `true`, if user's email address should be sent to provider.
     pub fn send_email_to_provider(mut self, val: bool) -> Self {
         self.send_email_to_provider = Some(val);
         self
     }
 
+    /// Pass `true`, if the final price depends on the shipping method.
     #[allow(clippy::wrong_self_convention)]
     pub fn is_flexible(mut self, val: bool) -> Self {
         self.is_flexible = Some(val);
         self
     }
 
+    /// Sends the message [silently]. Users will receive a notification with no
+    /// sound.
+    ///
+    /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {
         self.disable_notification = Some(val);
         self
     }
 
+    /// If the message is a reply, ID of the original message.
     pub fn reply_to_message_id(mut self, val: i32) -> Self {
         self.reply_to_message_id = Some(val);
         self
     }
 
+    /// A JSON-serialized object for an [inline keyboard].
+    ///
+    /// If empty, one 'Pay `total price`' button will be shown. If not empty,
+    /// the first button must be a Pay button.
+    ///
+    /// [inlint keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self

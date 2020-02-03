@@ -1,24 +1,22 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
     Bot,
 };
 
-/// Use this method to get information about a member of a chat. Returns a
-/// ChatMember object on success.
+/// Use this method to get information about a member of a chat.
+///
+/// [The official docs](https://core.telegram.org/bots/api#getchatmember).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct GetChatMember<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup or channel (in the format @channelusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// Unique identifier of the target user
     user_id: i32,
 }
 
@@ -27,7 +25,7 @@ impl Request for GetChatMember<'_> {
     type Output = ChatMember;
 
     async fn send(&self) -> ResponseResult<ChatMember> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getChatMember",
@@ -44,12 +42,14 @@ impl<'a> GetChatMember<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             user_id,
         }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup or channel (in the format `@channelusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -58,6 +58,7 @@ impl<'a> GetChatMember<'a> {
         self
     }
 
+    /// Unique identifier of the target user.
     pub fn user_id(mut self, val: i32) -> Self {
         self.user_id = val;
         self

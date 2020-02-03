@@ -1,25 +1,25 @@
 use serde::Serialize;
 
+use super::BotWrapper;
 use crate::{
-    network,
+    net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
 
-/// Use this method to set default chat permissions for all members. The bot
-/// must be an administrator in the group or a supergroup for this to work and
-/// must have the can_restrict_members admin rights. Returns True on success.
+/// Use this method to set default chat permissions for all members.
+///
+/// The bot must be an administrator in the group or a supergroup for this to
+/// work and must have the can_restrict_members admin rights.
+///
+/// [The official docs](https://core.telegram.org/bots/api#setchatpermissions).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
 pub struct SetChatPermissions<'a> {
     #[serde(skip_serializing)]
-    bot: &'a Bot,
-
-    /// Unique identifier for the target chat or username of the target
-    /// supergroup (in the format @supergroupusername)
+    bot: BotWrapper<'a>,
     chat_id: ChatId,
-    /// New default chat permissions
     permissions: ChatPermissions,
 }
 
@@ -28,7 +28,7 @@ impl Request for SetChatPermissions<'_> {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        network::request_json(
+        net::request_json(
             self.bot.client(),
             self.bot.token(),
             "sendChatPermissions",
@@ -49,12 +49,14 @@ impl<'a> SetChatPermissions<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot,
+            bot: BotWrapper(bot),
             chat_id,
             permissions,
         }
     }
 
+    /// Unique identifier for the target chat or username of the target
+    /// supergroup (in the format `@supergroupusername`).
     pub fn chat_id<T>(mut self, val: T) -> Self
     where
         T: Into<ChatId>,
@@ -63,6 +65,7 @@ impl<'a> SetChatPermissions<'a> {
         self
     }
 
+    /// New default chat permissions.
     pub fn permissions(mut self, val: ChatPermissions) -> Self {
         self.permissions = val;
         self
