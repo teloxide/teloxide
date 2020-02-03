@@ -1,11 +1,12 @@
-//! Command parsers
+//! Command parsers.
 //!
-//! Use can create `enum` which contains commands you need to parse, or use functions
-//! which split input text into string command.
+//! You can either create an `enum`, containing commands of your bot, or use
+//! functions, which split input text into a string command with its arguments.
 //!
-//! Example of enum:
+//! ## Examples
+//! Using `enum`:
 //! ```
-//! use teloxide::utils::BotCommand;
+//! use teloxide::utils::command::BotCommand;
 //!
 //! #[derive(BotCommand, PartialEq, Debug)]
 //! #[command(rename = "lowercase")]
@@ -19,22 +20,27 @@
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
-//! Also you can use functions which split text into command and args (separator is space):
+//! Using [`parse_command`]:
 //! ```
-//! let (command, args) = teloxide::utils::parse_command("/ban 3 hours").unwrap();
+//! use teloxide::utils::command::parse_command;
+//!
+//! let (command, args) = parse_command("/ban 3 hours").unwrap();
 //! assert_eq!(command, "/ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
-//! Or similar function, which parse text with prefix removal:
+//! Using [`parse_command_with_prefix`]:
 //! ```
+//! use teloxide::utils::command::parse_command_with_prefix;
+//!
 //! let text = "!ban 3 hours";
-//! let (command, args) =
-//!     teloxide::utils::parse_command_with_prefix("!", text).unwrap();
+//! let (command, args) = parse_command_with_prefix("!", text).unwrap();
 //! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
-
+//!
+//! [`parse_command`]: crate::utils::parse_command
+//! [`parse_command_with_prefix`]: crate::utils::parse_command_with_prefix
 
 pub use teloxide_macros::BotCommand;
 
@@ -42,7 +48,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// ## Example
 /// ```
-/// use teloxide::utils::BotCommand;
+/// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
@@ -56,26 +62,29 @@ pub use teloxide_macros::BotCommand;
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
 ///
-/// Enum attributes:
-/// 1. `#[command(rename = "rule")]`
-/// Use this attribute when you need to rename all commands by rule. Allowed rules is
-/// `["lowercase"]`. If you will not use this attribute, commands will parse by them original
-/// names.
-/// 2. `#[command(prefix = "prefix")]`
-/// Use this attribute when you need to change prefix for all command. Defaule prefix is `/`.
-/// 3. `#[command(description = "description")]`
-/// Use this attribute when you need to add description of commands before all commands.
+/// ## Enum attributes
+///  1. `#[command(rename = "rule")]`
+/// Rename all commands by rule. Allowed rules are `lowercase`. If you will not
+/// use this attribute, commands will be parsed by their original names.
 ///
-/// Variant attributes:
-/// 1. `#[command(rename = "rule")]`
-/// Use this attribute when you need to renameone command by rule. Allowed rules is
-/// `["lowercase", "%some_name%"]`, where `%some_name%` is any string.
-/// 2. `#[command(prefix = "prefix")]`
-/// Use this attribute when you need to change prefix for one command. Default prefix is `/`.
-/// 3. `#[command(description = "description")]`
-/// Use this attribute when you need to add description of one command.
+///  2. `#[command(prefix = "prefix")]`
+/// Change a prefix for all commands (the default is `/`).
 ///
-/// All variant attributes overlap the enum attributes.
+///  3. `#[command(description = "description")]`
+/// Add a sumary description of commands before all commands.
+///
+/// ## Variant attributes
+///  1. `#[command(rename = "rule")]`
+/// Rename one command by a rule. Allowed rules are `lowercase`, `%some_name%`,
+/// where `%some_name%` is any string, a new name.
+///
+///  2. `#[command(prefix = "prefix")]`
+/// Change a prefix for one command (the default is `/`).
+///
+///  3. `#[command(description = "description")]`
+/// Add a description of one command.
+///
+/// All variant attributes overlap the `enum` attributes.
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
@@ -88,8 +97,10 @@ pub trait BotCommand: Sized {
 ///
 /// ## Example
 /// ```
+/// use teloxide::utils::command::parse_command;
+///
 /// let text = "/mute 5 hours";
-/// let (command, args) = teloxide::utils::parse_command(text).unwrap();
+/// let (command, args) = parse_command(text).unwrap();
 /// assert_eq!(command, "/mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
@@ -105,9 +116,10 @@ pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
 ///
 /// Example:
 /// ```
+/// use teloxide::utils::command::parse_command_with_prefix;
+///
 /// let text = "!mute 5 hours";
-/// let (command, args) =
-///     teloxide::utils::parse_command_with_prefix("!", text).unwrap();
+/// let (command, args) = parse_command_with_prefix("!", text).unwrap();
 /// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
@@ -196,7 +208,11 @@ mod tests {
 
     #[test]
     fn global_attributes() {
-        #[command(prefix = "!", rename = "lowercase", description = "Bot commands")]
+        #[command(
+            prefix = "!",
+            rename = "lowercase",
+            description = "Bot commands"
+        )]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
@@ -212,6 +228,9 @@ mod tests {
             DefaultCommands::Help,
             DefaultCommands::parse("!help").unwrap().0
         );
-        assert_eq!(DefaultCommands::descriptions(), "Bot commands\n/start - \n!help - \n");
+        assert_eq!(
+            DefaultCommands::descriptions(),
+            "Bot commands\n/start - \n!help - \n"
+        );
     }
 }
