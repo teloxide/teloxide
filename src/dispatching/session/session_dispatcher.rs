@@ -2,7 +2,7 @@ use crate::dispatching::{
     session::{
         GetChatId, InMemStorage, SessionHandlerCtx, SessionState, Storage,
     },
-    AsyncHandler, HandlerCtx,
+    CtxHandler, DispatcherHandlerCtx,
 };
 use std::{future::Future, pin::Pin};
 
@@ -46,17 +46,17 @@ where
     }
 }
 
-impl<'a, Session, H, Upd> AsyncHandler<HandlerCtx<Upd>, Result<(), ()>>
+impl<'a, Session, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
     for SessionDispatcher<'a, Session, H>
 where
-    H: AsyncHandler<SessionHandlerCtx<Upd, Session>, SessionState<Session>>,
+    H: CtxHandler<SessionHandlerCtx<Upd, Session>, SessionState<Session>>,
     Upd: GetChatId,
     Session: Default,
 {
     /// Dispatches a single `message` from a private chat.
-    fn handle<'b>(
+    fn handle_ctx<'b>(
         &'b self,
-        ctx: HandlerCtx<Upd>,
+        ctx: DispatcherHandlerCtx<Upd>,
     ) -> Pin<Box<dyn Future<Output = Result<(), ()>> + 'b>>
     where
         Upd: 'b,
@@ -72,7 +72,7 @@ where
 
             if let SessionState::Next(new_session) = self
                 .handler
-                .handle(SessionHandlerCtx {
+                .handle_ctx(SessionHandlerCtx {
                     bot: ctx.bot,
                     update: ctx.update,
                     session,

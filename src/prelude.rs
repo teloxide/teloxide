@@ -5,7 +5,7 @@ pub use crate::{
         session::{
             GetChatId, SessionDispatcher, SessionHandlerCtx, SessionState,
         },
-        Dispatcher, HandlerCtx,
+        Dispatcher, DispatcherHandlerCtx,
     },
     requests::{Request, ResponseResult},
     types::Message,

@@ -1,19 +1,21 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener, AsyncHandler,
-        HandlerCtx, LoggingHandler,
+        error_handlers::ErrorHandler, update_listeners,
+        update_listeners::UpdateListener, CtxHandler, DispatcherHandlerCtx,
+        LoggingErrorHandler, Middleware,
     },
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
-        PreCheckoutQuery, ShippingQuery, UpdateKind,
+        PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
     },
     Bot,
 };
-use futures::StreamExt;
+use futures::{stream, StreamExt};
 use std::{fmt::Debug, sync::Arc};
 
-type H<'a, Upd, HandlerE> =
-    Option<Box<dyn AsyncHandler<HandlerCtx<Upd>, Result<(), HandlerE>> + 'a>>;
+type H<'a, Upd, HandlerE> = Option<
+    Box<dyn CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), HandlerE>> + 'a>,
+>;
 
 /// One dispatcher to rule them all.
 ///
@@ -22,7 +24,9 @@ type H<'a, Upd, HandlerE> =
 pub struct Dispatcher<'a, HandlerE> {
     bot: Arc<Bot>,
 
-    handlers_error_handler: Box<dyn AsyncHandler<HandlerE, ()> + 'a>,
+    middlewares: Vec<Box<dyn Middleware<Update> + 'a>>,
+
+    handlers_error_handler: Box<dyn ErrorHandler<HandlerE> + 'a>,
 
     message_handler: H<'a, Message, HandlerE>,
     edited_message_handler: H<'a, Message, HandlerE>,
@@ -45,7 +49,8 @@ where
     pub fn new(bot: Bot) -> Self {
         Self {
             bot: Arc::new(bot),
-            handlers_error_handler: Box::new(LoggingHandler::new(
+            middlewares: Vec::new(),
+            handlers_error_handler: Box::new(LoggingErrorHandler::new(
                 "An error from a Dispatcher's handler",
             )),
             message_handler: None,
@@ -61,11 +66,21 @@ where
         }
     }
 
+    /// Appends a middleware.
+    #[must_use]
+    pub fn middleware<M>(mut self, val: M) -> Self
+    where
+        M: Middleware<Update> + 'a,
+    {
+        self.middlewares.push(Box::new(val));
+        self
+    }
+
     /// Registers a handler of errors, produced by other handlers.
     #[must_use]
     pub fn handlers_error_handler<T>(mut self, val: T) -> Self
     where
-        T: AsyncHandler<HandlerE, ()> + 'a,
+        T: ErrorHandler<HandlerE> + 'a,
     {
         self.handlers_error_handler = Box::new(val);
         self
@@ -74,7 +89,7 @@ where
     #[must_use]
     pub fn message_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<Message>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<Message>, Result<(), HandlerE>> + 'a,
     {
         self.message_handler = Some(Box::new(h));
         self
@@ -83,7 +98,7 @@ where
     #[must_use]
     pub fn edited_message_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<Message>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<Message>, Result<(), HandlerE>> + 'a,
     {
         self.edited_message_handler = Some(Box::new(h));
         self
@@ -92,7 +107,7 @@ where
     #[must_use]
     pub fn channel_post_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<Message>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<Message>, Result<(), HandlerE>> + 'a,
     {
         self.channel_post_handler = Some(Box::new(h));
         self
@@ -101,7 +116,7 @@ where
     #[must_use]
     pub fn edited_channel_post_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<Message>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<Message>, Result<(), HandlerE>> + 'a,
     {
         self.edited_channel_post_handler = Some(Box::new(h));
         self
@@ -110,7 +125,8 @@ where
     #[must_use]
     pub fn inline_query_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<InlineQuery>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<InlineQuery>, Result<(), HandlerE>>
+            + 'a,
     {
         self.inline_query_handler = Some(Box::new(h));
         self
@@ -119,8 +135,10 @@ where
     #[must_use]
     pub fn chosen_inline_result_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<ChosenInlineResult>, Result<(), HandlerE>>
-            + 'a,
+        H: CtxHandler<
+                DispatcherHandlerCtx<ChosenInlineResult>,
+                Result<(), HandlerE>,
+            > + 'a,
     {
         self.chosen_inline_result_handler = Some(Box::new(h));
         self
@@ -129,7 +147,10 @@ where
     #[must_use]
     pub fn callback_query_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<CallbackQuery>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<
+                DispatcherHandlerCtx<CallbackQuery>,
+                Result<(), HandlerE>,
+            > + 'a,
     {
         self.callback_query_handler = Some(Box::new(h));
         self
@@ -138,7 +159,10 @@ where
     #[must_use]
     pub fn shipping_query_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<ShippingQuery>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<
+                DispatcherHandlerCtx<ShippingQuery>,
+                Result<(), HandlerE>,
+            > + 'a,
     {
         self.shipping_query_handler = Some(Box::new(h));
         self
@@ -147,8 +171,10 @@ where
     #[must_use]
     pub fn pre_checkout_query_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<PreCheckoutQuery>, Result<(), HandlerE>>
-            + 'a,
+        H: CtxHandler<
+                DispatcherHandlerCtx<PreCheckoutQuery>,
+                Result<(), HandlerE>,
+            > + 'a,
     {
         self.pre_checkout_query_handler = Some(Box::new(h));
         self
@@ -157,7 +183,7 @@ where
     #[must_use]
     pub fn poll_handler<H>(mut self, h: H) -> Self
     where
-        H: AsyncHandler<HandlerCtx<Poll>, Result<(), HandlerE>> + 'a,
+        H: CtxHandler<DispatcherHandlerCtx<Poll>, Result<(), HandlerE>> + 'a,
     {
         self.poll_handler = Some(Box::new(h));
         self
@@ -170,7 +196,7 @@ where
     pub async fn dispatch(&'a self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),
-            &LoggingHandler::new("An error from the update listener"),
+            &LoggingErrorHandler::new("An error from the update listener"),
         )
         .await;
     }
@@ -183,7 +209,7 @@ where
         update_listener_error_handler: &'a Eh,
     ) where
         UListener: UpdateListener<ListenerE> + 'a,
-        Eh: AsyncHandler<ListenerE, ()> + 'a,
+        Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
     {
         let update_listener = Box::pin(update_listener);
@@ -193,10 +219,16 @@ where
                 let update = match update {
                     Ok(update) => update,
                     Err(error) => {
-                        update_listener_error_handler.handle(error).await;
+                        update_listener_error_handler.handle_error(error).await;
                         return;
                     }
                 };
+
+                let update = stream::iter(&self.middlewares)
+                    .fold(update, |acc, middleware| async move {
+                        middleware.handle(acc).await
+                    })
+                    .await;
 
                 match update.kind {
                     UpdateKind::Message(message) => {
@@ -241,13 +273,13 @@ where
     async fn handle<Upd>(&self, handler: &H<'a, Upd, HandlerE>, update: Upd) {
         if let Some(handler) = &handler {
             if let Err(error) = handler
-                .handle(HandlerCtx {
+                .handle_ctx(DispatcherHandlerCtx {
                     bot: Arc::clone(&self.bot),
                     update,
                 })
                 .await
             {
-                self.handlers_error_handler.handle(error).await;
+                self.handlers_error_handler.handle_error(error).await;
             }
         }
     }

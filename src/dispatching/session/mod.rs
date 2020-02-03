@@ -8,11 +8,11 @@
 //!  3. Your handler, which receives an update and turns your session into the
 //! next state.
 //! 4. [`SessionDispatcher`], which encapsulates your handler, [`Storage`], and
-//! implements [`AsyncHandler`].
+//! implements [`CtxHandler`].
 //!
 //! You supply [`SessionDispatcher`] into [`Dispatcher`]. Every time
-//! [`Dispatcher`] calls `SessionDispatcher::handle(...)`, the following steps
-//! are executed:
+//! [`Dispatcher`] calls `SessionDispatcher::handle_ctx(...)`, the following
+//! steps are executed:
 //!
 //!  1. If a storage doesn't contain a session from this chat, supply
 //! `Session::default()` into you handler, otherwise, supply the saved session
@@ -26,7 +26,7 @@
 //! [`SessionState::Exit`]:
 //! crate::dispatching::session::SessionState::Exit
 //! [`SessionState::Next`]: crate::dispatching::session::SessionState::Next
-//! [`AsyncHandler`]: crate::dispatching::AsyncHandler
+//! [`CtxHandler`]: crate::dispatching::CtxHandler
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
 
 // TODO: examples
