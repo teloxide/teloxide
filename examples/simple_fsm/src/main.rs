@@ -54,11 +54,38 @@ impl Display for User {
 }
 
 // ============================================================================
+// [FSM - Finite-State Machine]
+// ============================================================================
+
+enum Fsm {
+    Start,
+    FullName,
+    Age,
+    FavouriteMusic,
+}
+
+impl Default for Fsm {
+    fn default() -> Self {
+        Self::Start
+    }
+}
+
+// ============================================================================
+// [Our Session type]
+// ============================================================================
+
+#[derive(Default)]
+struct Session {
+    user: User,
+    fsm: Fsm,
+}
+
+// ============================================================================
 // [Control our FSM]
 // ============================================================================
 
-type Ctx = SessionHandlerCtx<Message, User>;
-type Res = Result<SessionState<User>, RequestError>;
+type Ctx = SessionHandlerCtx<Message, Session>;
+type Res = Result<SessionState<Session>, RequestError>;
 
 async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     ctx.bot
@@ -72,12 +99,14 @@ async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
 async fn start(ctx: Ctx) -> Res {
     ctx.reply("Let's start! First, what's your full name?")
         .await?;
+    ctx.session.state = Fsm::FullName;
     Ok(SessionState::Next(ctx.session))
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
     ctx.reply("What a wonderful name! Your age?").await?;
-    ctx.session.full_name = Some(ctx.update.text().unwrap().to_owned());
+    ctx.session.user.full_name = Some(ctx.update.text().unwrap().to_owned());
+    ctx.session.fsm = Fsm::Age;
     Ok(SessionState::Next(ctx.session))
 }
 
@@ -85,7 +114,8 @@ async fn age(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
             send_favourite_music_types(&ctx).await?;
-            ctx.session.age = Some(ok);
+            ctx.session.user.age = Some(ok);
+            ctx.session.fsm = Fsm::FavouriteMusic;
         }
         Err(_) => ctx.reply("Oh, please, enter a number!").await?,
     }
@@ -96,8 +126,8 @@ async fn age(mut ctx: Ctx) -> Res {
 async fn favourite_music(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
-            ctx.session.favourite_music = Some(ok);
-            ctx.reply(format!("Fine. {}", ctx.session)).await?;
+            ctx.session.user.favourite_music = Some(ok);
+            ctx.reply(format!("Fine. {}", ctx.session.user)).await?;
             Ok(SessionState::Exit)
         }
         Err(_) => {
@@ -108,19 +138,12 @@ async fn favourite_music(mut ctx: Ctx) -> Res {
 }
 
 async fn handle_message(ctx: Ctx) -> Res {
-    if ctx.session.full_name.is_none() {
-        return full_name(ctx).await;
+    match ctx.session.fsm {
+        Fsm::Start => start(ctx).await,
+        Fsm::FullName => full_name(ctx).await,
+        Fsm::Age => age(ctx).await,
+        Fsm::FavouriteMusic => favourite_music(ctx).await,
     }
-
-    if ctx.session.age.is_none() {
-        return age(ctx).await;
-    }
-
-    if ctx.session.favourite_music.is_none() {
-        return favourite_music(ctx).await;
-    }
-
-    Ok(SessionState::Exit)
 }
 
 // ============================================================================
