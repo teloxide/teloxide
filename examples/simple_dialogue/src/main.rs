@@ -54,38 +54,28 @@ impl Display for User {
 }
 
 // ============================================================================
-// [FSM - Finite-State Machine]
+// [States of a dialogue]
 // ============================================================================
 
-enum Fsm {
+enum State {
     Start,
     FullName,
     Age,
     FavouriteMusic,
 }
 
-impl Default for Fsm {
+impl Default for State {
     fn default() -> Self {
         Self::Start
     }
 }
 
 // ============================================================================
-// [Our Session type]
+// [Control a dialogue]
 // ============================================================================
 
-#[derive(Default)]
-struct Session {
-    user: User,
-    fsm: Fsm,
-}
-
-// ============================================================================
-// [Control our FSM]
-// ============================================================================
-
-type Ctx = SessionHandlerCtx<Message, Session>;
-type Res = Result<SessionState<Session>, RequestError>;
+type Ctx = DialogueHandlerCtx<Message, State, User>;
+type Res = Result<DialogueStage<State, User>, RequestError>;
 
 async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     ctx.bot
@@ -96,53 +86,53 @@ async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     Ok(())
 }
 
-async fn start(ctx: Ctx) -> Res {
+async fn start(mut ctx: Ctx) -> Res {
     ctx.reply("Let's start! First, what's your full name?")
         .await?;
-    ctx.session.state = Fsm::FullName;
-    Ok(SessionState::Next(ctx.session))
+    ctx.dialogue.state = State::FullName;
+    Ok(DialogueStage::Next(ctx.dialogue))
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
     ctx.reply("What a wonderful name! Your age?").await?;
-    ctx.session.user.full_name = Some(ctx.update.text().unwrap().to_owned());
-    ctx.session.fsm = Fsm::Age;
-    Ok(SessionState::Next(ctx.session))
+    ctx.dialogue.data.full_name = Some(ctx.update.text().unwrap().to_owned());
+    ctx.dialogue.state = State::Age;
+    Ok(DialogueStage::Next(ctx.dialogue))
 }
 
 async fn age(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
             send_favourite_music_types(&ctx).await?;
-            ctx.session.user.age = Some(ok);
-            ctx.session.fsm = Fsm::FavouriteMusic;
+            ctx.dialogue.data.age = Some(ok);
+            ctx.dialogue.state = State::FavouriteMusic;
         }
         Err(_) => ctx.reply("Oh, please, enter a number!").await?,
     }
 
-    Ok(SessionState::Next(ctx.session))
+    Ok(DialogueStage::Next(ctx.dialogue))
 }
 
 async fn favourite_music(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
-            ctx.session.user.favourite_music = Some(ok);
-            ctx.reply(format!("Fine. {}", ctx.session.user)).await?;
-            Ok(SessionState::Exit)
+            ctx.dialogue.data.favourite_music = Some(ok);
+            ctx.reply(format!("Fine. {}", ctx.dialogue.data)).await?;
+            Ok(DialogueStage::Exit)
         }
         Err(_) => {
             ctx.reply("Oh, please, enter from the keyboard!").await?;
-            Ok(SessionState::Next(ctx.session))
+            Ok(DialogueStage::Next(ctx.dialogue))
         }
     }
 }
 
 async fn handle_message(ctx: Ctx) -> Res {
-    match ctx.session.fsm {
-        Fsm::Start => start(ctx).await,
-        Fsm::FullName => full_name(ctx).await,
-        Fsm::Age => age(ctx).await,
-        Fsm::FavouriteMusic => favourite_music(ctx).await,
+    match ctx.dialogue.state {
+        State::Start => start(ctx).await,
+        State::FullName => full_name(ctx).await,
+        State::Age => age(ctx).await,
+        State::FavouriteMusic => favourite_music(ctx).await,
     }
 }
 
@@ -152,12 +142,12 @@ async fn handle_message(ctx: Ctx) -> Res {
 
 #[tokio::main]
 async fn main() {
-    std::env::set_var("RUST_LOG", "simple_fsm=trace");
+    std::env::set_var("RUST_LOG", "simple_dialogue=trace");
     pretty_env_logger::init();
-    log::info!("Starting the simple_fsm bot!");
+    log::info!("Starting the simple_dialogue bot!");
 
     Dispatcher::new(Bot::new("YourAwesomeToken"))
-        .message_handler(SessionDispatcher::new(|ctx| async move {
+        .message_handler(DialogueDispatcher::new(|ctx| async move {
             handle_message(ctx)
                 .await
                 .expect("Something wrong with the bot!")

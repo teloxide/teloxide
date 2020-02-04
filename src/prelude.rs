@@ -2,8 +2,8 @@
 
 pub use crate::{
     dispatching::{
-        session::{
-            GetChatId, SessionDispatcher, SessionHandlerCtx, SessionState,
+        dialogue::{
+            DialogueDispatcher, DialogueHandlerCtx, DialogueStage, GetChatId,
         },
         Dispatcher, DispatcherHandlerCtx,
     },

@@ -31,14 +31,19 @@
 
 // TODO: examples
 
+#![allow(clippy::module_inception)]
+#![allow(clippy::type_complexity)]
+
+mod dialogue;
+mod dialogue_dispatcher;
+mod dialogue_handler_ctx;
+mod dialogue_state;
 mod get_chat_id;
-mod session_dispatcher;
-mod session_handler_ctx;
-mod session_state;
 mod storage;
 
+pub use dialogue::Dialogue;
+pub use dialogue_dispatcher::DialogueDispatcher;
+pub use dialogue_handler_ctx::DialogueHandlerCtx;
+pub use dialogue_state::DialogueStage;
 pub use get_chat_id::GetChatId;
-pub use session_dispatcher::SessionDispatcher;
-pub use session_handler_ctx::SessionHandlerCtx;
-pub use session_state::SessionState;
 pub use storage::{InMemStorage, Storage};

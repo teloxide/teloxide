@@ -1,5 +1,5 @@
 [package]
-name = "simple_fsm"
+name = "simple_dialogue"
 version = "0.1.0"
 authors = ["Temirkhan Myrzamadi <hirrolot@gmail.com>"]
 edition = "2018"
