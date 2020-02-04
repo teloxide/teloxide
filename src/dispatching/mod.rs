@@ -26,8 +26,10 @@
 //! // Setup logging here...
 //!
 //! Dispatcher::new(Bot::new("MyAwesomeToken"))
-//!     .message_handler(|ctx: DispatcherHandlerCtx<Message>| async move {
-//!         ctx.reply("pong").await
+//!     .message_handler(|ctx: DispatcherHandlerCtx<Message>| {
+//!         async move {
+//!             ctx.answer("pong").send().await?;
+//!         }
 //!     })
 //!     .dispatch()
 //!     .await;
