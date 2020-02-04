@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll, PreCheckoutQuery, ShippingQuery, User, Sender, Chat};
+use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll, PreCheckoutQuery, ShippingQuery, User, Sender, Chat, PollAnswer};
 
 /// This [object] represents an incoming update.
 ///
@@ -68,6 +68,9 @@ pub enum UpdateKind {
     /// New poll state. Bots receive only updates about stopped polls and
     /// polls, which are sent by the bot.
     Poll(Poll),
+
+    /// A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
+    PollAnswer(PollAnswer)
 }
 
 impl Update {
@@ -99,6 +102,9 @@ impl Update {
             }
             UpdateKind::PreCheckoutQuery(query) => {
                 Some(&query.from)
+            }
+            UpdateKind::PollAnswer(answer) => {
+                Some(&answer.user)
             }
             _ => None
         }
