@@ -46,6 +46,22 @@ impl User {
     }
 }
 
+/// Returned only in GetMe
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Me {
+    #[serde(flatten)]
+    pub user: User,
+
+    /// True, if the bot can be invited to groups.
+    pub can_join_groups: bool,
+
+    /// True, if [privacy mode](https://core.telegram.org/bots#privacy-mode) is disabled for the bot.
+    pub can_read_all_group_messages: bool,
+
+    /// True, if the bot supports inline queries.
+    pub supports_inline_queries: bool,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
