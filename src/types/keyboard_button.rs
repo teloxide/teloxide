@@ -1,6 +1,6 @@
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::types::True;
+use crate::types::{True, KeyboardButtonPollType};
 
 /// This object represents one button of the reply keyboard. For filter text
 /// buttons String can be used instead of this object to specify text of the
@@ -24,10 +24,11 @@ pub struct KeyboardButton {
 }
 
 // Serialize + Deserialize are implemented by hand
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ButtonRequest {
     Location,
     Contact,
+    KeyboardButtonPollType(KeyboardButtonPollType)
 }
 
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
@@ -43,6 +44,10 @@ struct RawRequest {
     /// button is pressed. Available in private chats only
     #[serde(rename = "request_location")]
     location: Option<True>,
+
+    /// Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
+    #[serde(rename = "request_poll")]
+    poll: Option<KeyboardButtonPollType>,
 }
 
 impl<'de> Deserialize<'de> for ButtonRequest {
@@ -55,6 +60,7 @@ impl<'de> Deserialize<'de> for ButtonRequest {
             RawRequest {
                 contact: Some(_),
                 location: Some(_),
+                poll: Some(_),
             } => Err(D::Error::custom(
                 "`request_contact` and `request_location` fields are mutually \
                  exclusive, but both were provided",
@@ -65,6 +71,9 @@ impl<'de> Deserialize<'de> for ButtonRequest {
             RawRequest {
                 location: Some(_), ..
             } => Ok(Self::Location),
+            RawRequest {
+                poll: Some(poll_type), ..
+            } => Ok(Self::KeyboardButtonPollType(poll_type)),
             _ => Err(D::Error::custom(
                 "Either one of `request_contact` and `request_location` \
                  fields is required",
@@ -82,13 +91,21 @@ impl Serialize for ButtonRequest {
             Self::Contact => RawRequest {
                 contact: Some(True),
                 location: None,
+                poll: None,
             }
             .serialize(serializer),
             Self::Location => RawRequest {
                 contact: None,
                 location: Some(True),
+                poll: None,
             }
             .serialize(serializer),
+            Self::KeyboardButtonPollType(poll_type) => RawRequest {
+                contact: None,
+                location: None,
+                poll: Some(poll_type.clone())
+            }
+            .serialize(serializer)
         }
     }
 }
