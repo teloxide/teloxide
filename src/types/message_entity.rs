@@ -32,7 +32,7 @@ pub enum MessageEntityKind {
     Bold,
     Italic,
     Code,
-    Pre,
+    Pre { language: Option<String> },
     TextLink { url: String },
     TextMention { user: User },
     Underline,
@@ -67,6 +67,25 @@ mod tests {
             },
             from_str::<MessageEntity>(
                 r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn pre() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity {
+                kind: MessageEntityKind::Pre {
+                    language: Some("rust".to_string()),
+                },
+                offset: 1,
+                length: 2,
+            },
+            from_str::<MessageEntity>(
+                r#"{"type":"pre","url":"ya.ru","offset":1,"length":2,"language":"rust"}"#
             )
             .unwrap()
         );
