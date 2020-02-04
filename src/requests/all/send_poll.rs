@@ -7,6 +7,7 @@ use crate::{
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
+use crate::types::PollType;
 
 /// Use this method to send a native poll. A native poll can't be sent to a
 /// private chat.
@@ -20,6 +21,11 @@ pub struct SendPoll<'a> {
     chat_id: ChatId,
     question: String,
     options: Vec<String>,
+    is_anonymous: Option<bool>,
+    poll_type: Option<PollType>,
+    allows_multiple_answers: Option<bool>,
+    correct_option_id: Option<i32>,
+    is_closed: Option<bool>,
     disable_notification: Option<bool>,
     reply_to_message_id: Option<i32>,
     reply_markup: Option<ReplyMarkup>,
@@ -60,6 +66,11 @@ impl<'a> SendPoll<'a> {
             chat_id,
             question,
             options,
+            is_anonymous: None,
+            poll_type: None,
+            allows_multiple_answers: None,
+            correct_option_id: None,
+            is_closed: None,
             disable_notification: None,
             reply_to_message_id: None,
             reply_markup: None,
@@ -93,6 +104,49 @@ impl<'a> SendPoll<'a> {
         T: Into<Vec<String>>,
     {
         self.options = val.into();
+        self
+    }
+
+    /// True, if the poll needs to be anonymous, defaults to True
+    pub fn is_anonymous<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.is_anonymous = Some(val.into());
+        self
+    }
+
+    /// Poll type, “quiz” or “regular”, defaults to “regular”
+    pub fn poll_type(mut self, val: PollType) -> Self
+    {
+        self.poll_type = Some(val);
+        self
+    }
+
+    /// True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
+    pub fn allows_multiple_answers<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.allows_multiple_answers = Some(val.into());
+        self
+    }
+
+    /// 0-based identifier of the correct answer option, required for polls in quiz mode
+    pub fn correct_option_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<i32>,
+    {
+        self.correct_option_id = Some(val.into());
+        self
+    }
+
+    /// Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.
+    pub fn is_closed<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.is_closed = Some(val.into());
         self
     }
 
