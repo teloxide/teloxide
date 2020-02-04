@@ -28,6 +28,24 @@ pub struct User {
     pub language_code: Option<LanguageCode>,
 }
 
+impl User {
+    pub fn full_name(&self) -> String {
+        match &self.last_name {
+            Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
+            None => self.first_name.clone(),
+        }
+    }
+
+    pub fn mention(&self) -> Option<String> {
+        Some(format!("@{}", self.username.as_ref()?))
+    }
+
+    pub fn url(&self) -> reqwest::Url {
+        reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str())
+            .unwrap()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

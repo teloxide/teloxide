@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
+    chat::{ChatKind, NonPrivateChatKind},
     Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
     Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
     SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
@@ -794,6 +795,35 @@ mod getters {
                 Common { reply_markup, .. } => reply_markup.as_ref(),
                 _ => None,
             }
+        }
+    }
+}
+
+impl Message {
+    pub fn url(&self) -> Option<reqwest::Url> {
+        match &self.chat.kind {
+            ChatKind::NonPrivate {
+                kind:
+                    NonPrivateChatKind::Channel {
+                        username: Some(username),
+                    },
+                ..
+            }
+            | ChatKind::NonPrivate {
+                kind:
+                    NonPrivateChatKind::Supergroup {
+                        username: Some(username),
+                        ..
+                    },
+                ..
+            } => Some(
+                reqwest::Url::parse(
+                    format!("https://t.me/{0}/{1}/", username, self.id)
+                        .as_str(),
+                )
+                .unwrap(),
+            ),
+            _ => None,
         }
     }
 }
