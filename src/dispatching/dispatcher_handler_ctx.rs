@@ -1,5 +1,5 @@
 use crate::{
-    dispatching::session::GetChatId,
+    dispatching::dialogue::GetChatId,
     requests::{Request, ResponseResult},
     types::Message,
     Bot,

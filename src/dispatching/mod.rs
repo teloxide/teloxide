@@ -42,11 +42,11 @@
 //! [`SessionDispatcher`]: crate::dispatching::SessionDispatcher
 
 mod ctx_handlers;
+pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler_ctx;
 mod error_handlers;
 mod middleware;
-pub mod session;
 pub mod update_listeners;
 
 pub use ctx_handlers::CtxHandler;

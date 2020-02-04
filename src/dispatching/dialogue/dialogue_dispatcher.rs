@@ -1,30 +1,33 @@
 use crate::dispatching::{
-    session::{
-        GetChatId, InMemStorage, SessionHandlerCtx, SessionState, Storage,
+    dialogue::{
+        Dialogue, DialogueHandlerCtx, DialogueStage, GetChatId, InMemStorage,
+        Storage,
     },
     CtxHandler, DispatcherHandlerCtx,
 };
 use std::{future::Future, pin::Pin};
 
-/// A dispatcher of user sessions.
+/// A dispatcher of dialogues.
 ///
-/// Note that `SessionDispatcher` implements `AsyncHandler`, so you can just put
+/// Note that `DialogueDispatcher` implements `CtxHandler`, so you can just put
 /// an instance of this dispatcher into the [`Dispatcher`]'s methods.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub struct SessionDispatcher<'a, Session, H> {
-    storage: Box<dyn Storage<Session> + 'a>,
+pub struct DialogueDispatcher<'a, State, T, H> {
+    storage: Box<dyn Storage<State, T> + 'a>,
     handler: H,
 }
 
-impl<'a, Session, H> SessionDispatcher<'a, Session, H>
+impl<'a, State, T, H> DialogueDispatcher<'a, State, T, H>
 where
-    Session: Default + 'a,
+    Dialogue<State, T>: Default + 'a,
+    T: Default + 'a,
+    State: Default + 'a,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
     ///
-    /// [`InMemStorage`]: crate::dispatching::session::InMemStorage
+    /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
     #[must_use]
     pub fn new(handler: H) -> Self {
         Self {
@@ -37,7 +40,7 @@ where
     #[must_use]
     pub fn with_storage<Stg>(handler: H, storage: Stg) -> Self
     where
-        Stg: Storage<Session> + 'a,
+        Stg: Storage<State, T> + 'a,
     {
         Self {
             storage: Box::new(storage),
@@ -46,14 +49,13 @@ where
     }
 }
 
-impl<'a, Session, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
-    for SessionDispatcher<'a, Session, H>
+impl<'a, State, T, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
+    for DialogueDispatcher<'a, State, T, H>
 where
-    H: CtxHandler<SessionHandlerCtx<Upd, Session>, SessionState<Session>>,
+    H: CtxHandler<DialogueHandlerCtx<Upd, State, T>, DialogueStage<State, T>>,
     Upd: GetChatId,
-    Session: Default,
+    Dialogue<State, T>: Default,
 {
-    /// Dispatches a single `message` from a private chat.
     fn handle_ctx<'b>(
         &'b self,
         ctx: DispatcherHandlerCtx<Upd>,
@@ -64,30 +66,30 @@ where
         Box::pin(async move {
             let chat_id = ctx.update.chat_id();
 
-            let session = self
+            let dialogue = self
                 .storage
-                .remove_session(chat_id)
+                .remove_dialogue(chat_id)
                 .await
                 .unwrap_or_default();
 
-            if let SessionState::Next(new_session) = self
+            if let DialogueStage::Next(new_dialogue) = self
                 .handler
-                .handle_ctx(SessionHandlerCtx {
+                .handle_ctx(DialogueHandlerCtx {
                     bot: ctx.bot,
                     update: ctx.update,
-                    session,
+                    dialogue,
                 })
                 .await
             {
                 if self
                     .storage
-                    .update_session(chat_id, new_session)
+                    .update_dialogue(chat_id, new_dialogue)
                     .await
                     .is_some()
                 {
                     panic!(
-                        "We previously storage.remove_session() so \
-                         storage.update_session() must return None"
+                        "We previously storage.remove_dialogue() so \
+                         storage.update_dialogue() must return None"
                     );
                 }
             }
