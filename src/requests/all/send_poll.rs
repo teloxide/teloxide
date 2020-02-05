@@ -9,8 +9,7 @@ use crate::{
 };
 use crate::types::PollType;
 
-/// Use this method to send a native poll. A native poll can't be sent to a
-/// private chat.
+/// Use this method to send a native poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendpoll).
 #[serde_with_macros::skip_serializing_none]
