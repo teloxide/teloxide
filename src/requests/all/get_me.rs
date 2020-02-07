@@ -2,7 +2,7 @@ use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::User,
+    types::Me,
     Bot,
 };
 use serde::Serialize;
@@ -18,11 +18,11 @@ pub struct GetMe<'a> {
 
 #[async_trait::async_trait]
 impl Request for GetMe<'_> {
-    type Output = User;
+    type Output = Me;
 
     /// Returns basic information about the bot.
     #[allow(clippy::trivially_copy_pass_by_ref)]
-    async fn send(&self) -> ResponseResult<User> {
+    async fn send(&self) -> ResponseResult<Me> {
         net::request_json(self.bot.client(), self.bot.token(), "getMe", &self)
             .await
     }
