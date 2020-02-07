@@ -81,7 +81,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     });
     let variant_str1 = variant_prefixes.zip(variant_name).map(|(prefix, command)| prefix.to_string() + command.as_str());
     let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos.iter().map(|info| info.description.as_ref().map(String::as_str).unwrap_or(""));
+    let variant_description = variant_infos.iter().map(|info| info.description.as_deref().unwrap_or(""));
 
     let ident = &input.ident;
 
@@ -114,8 +114,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     };
     //for debug
     //println!("{}", &expanded.to_string());
-    let tokens = TokenStream::from(expanded);
-    tokens
+    TokenStream::from(expanded)
 }
 
 fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
@@ -125,7 +124,7 @@ fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
     }
 }
 
-fn parse_attributes(input: &Vec<syn::Attribute>) -> Result<Vec<Attr>, TokenStream> {
+fn parse_attributes(input: &[syn::Attribute]) -> Result<Vec<Attr>, TokenStream> {
     let mut enum_attrs = Vec::new();
     for attr in input.iter() {
         match attr.parse_args::<VecAttrs>() {

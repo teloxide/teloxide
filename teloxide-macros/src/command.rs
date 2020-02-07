@@ -47,7 +47,7 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
             BotCommandAttribute::Description => description = Some(attr.value()),
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
             #[allow(unreachable_patterns)]
-            _ => return Err(format!("unexpected attribute")),
+            _ => return Err("unexpected attribute".to_owned()),
         }
     }
 

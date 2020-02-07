@@ -280,6 +280,7 @@ where
                         UpdateKind::Poll(poll) => {
                             self.handle(&self.poll_handler, poll).await
                         }
+                        _ => unreachable!(),
                     }
                 }
             })

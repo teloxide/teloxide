@@ -16,7 +16,7 @@ impl CommandEnum {
         if let Some(rename_rule) = &rename {
             match rename_rule.as_str() {
                 "lowercase" => {},
-                _ => return Err(format!("unallowed value")),
+                _ => return Err("disallowed value".to_owned()),
             }
         }
         Ok(Self {
@@ -44,7 +44,7 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
             BotCommandAttribute::Description => description = Some(attr.value()),
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
             #[allow(unreachable_patterns)]
-            _ => return Err(format!("unexpected attribute")),
+            _ => return Err("unexpected attribute".to_owned()),
         }
     }
 

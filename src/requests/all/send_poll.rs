@@ -106,6 +106,7 @@ impl<'a> SendPoll<'a> {
     }
 
     /// `true`, if the poll needs to be anonymous, defaults to `true`.
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_anonymous<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
@@ -145,6 +146,7 @@ impl<'a> SendPoll<'a> {
     /// Pass `true`, if the poll needs to be immediately closed.
     ///
     /// This can be useful for poll preview.
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_closed<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
