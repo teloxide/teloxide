@@ -67,6 +67,10 @@ where
     }
 
     /// Appends a middleware.
+    ///
+    /// If a middleware has returned `None`, an update will not be handled by a
+    /// next middleware or an appropriate handler (if it's the last middleware).
+    /// Otherwise, an update in `Some(update)` is passed further.
     #[must_use]
     pub fn middleware<M>(mut self, val: M) -> Self
     where
@@ -225,44 +229,57 @@ where
                 };
 
                 let update = stream::iter(&self.middlewares)
-                    .fold(update, |acc, middleware| async move {
-                        middleware.handle(acc).await
+                    .fold(Some(update), |acc, middleware| async move {
+                        // Option::and_then is not working here, because
+                        // Middleware::handle is asynchronous.
+                        match acc {
+                            Some(update) => middleware.handle(update).await,
+                            None => None,
+                        }
                     })
                     .await;
 
-                match update.kind {
-                    UpdateKind::Message(message) => {
-                        self.handle(&self.message_handler, message).await
-                    }
-                    UpdateKind::EditedMessage(message) => {
-                        self.handle(&self.edited_message_handler, message).await
-                    }
-                    UpdateKind::ChannelPost(post) => {
-                        self.handle(&self.channel_post_handler, post).await
-                    }
-                    UpdateKind::EditedChannelPost(post) => {
-                        self.handle(&self.edited_channel_post_handler, post)
+                if let Some(update) = update {
+                    match update.kind {
+                        UpdateKind::Message(message) => {
+                            self.handle(&self.message_handler, message).await
+                        }
+                        UpdateKind::EditedMessage(message) => {
+                            self.handle(&self.edited_message_handler, message)
+                                .await
+                        }
+                        UpdateKind::ChannelPost(post) => {
+                            self.handle(&self.channel_post_handler, post).await
+                        }
+                        UpdateKind::EditedChannelPost(post) => {
+                            self.handle(&self.edited_channel_post_handler, post)
+                                .await
+                        }
+                        UpdateKind::InlineQuery(query) => {
+                            self.handle(&self.inline_query_handler, query).await
+                        }
+                        UpdateKind::ChosenInlineResult(result) => {
+                            self.handle(
+                                &self.chosen_inline_result_handler,
+                                result,
+                            )
                             .await
-                    }
-                    UpdateKind::InlineQuery(query) => {
-                        self.handle(&self.inline_query_handler, query).await
-                    }
-                    UpdateKind::ChosenInlineResult(result) => {
-                        self.handle(&self.chosen_inline_result_handler, result)
-                            .await
-                    }
-                    UpdateKind::CallbackQuery(query) => {
-                        self.handle(&self.callback_query_handler, query).await
-                    }
-                    UpdateKind::ShippingQuery(query) => {
-                        self.handle(&self.shipping_query_handler, query).await
-                    }
-                    UpdateKind::PreCheckoutQuery(query) => {
-                        self.handle(&self.pre_checkout_query_handler, query)
-                            .await
-                    }
-                    UpdateKind::Poll(poll) => {
-                        self.handle(&self.poll_handler, poll).await
+                        }
+                        UpdateKind::CallbackQuery(query) => {
+                            self.handle(&self.callback_query_handler, query)
+                                .await
+                        }
+                        UpdateKind::ShippingQuery(query) => {
+                            self.handle(&self.shipping_query_handler, query)
+                                .await
+                        }
+                        UpdateKind::PreCheckoutQuery(query) => {
+                            self.handle(&self.pre_checkout_query_handler, query)
+                                .await
+                        }
+                        UpdateKind::Poll(poll) => {
+                            self.handle(&self.poll_handler, poll).await
+                        }
                     }
                 }
             })

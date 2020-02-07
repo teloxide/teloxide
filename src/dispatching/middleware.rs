@@ -6,7 +6,10 @@ use std::{future::Future, pin::Pin};
 /// overview](crate::dispatching).
 pub trait Middleware<T> {
     #[must_use]
-    fn handle<'a>(&'a self, val: T) -> Pin<Box<dyn Future<Output = T> + 'a>>
+    fn handle<'a>(
+        &'a self,
+        val: T,
+    ) -> Pin<Box<dyn Future<Output = Option<T>> + 'a>>
     where
         T: 'a;
 }
@@ -14,9 +17,12 @@ pub trait Middleware<T> {
 impl<T, F, Fut> Middleware<T> for F
 where
     F: Fn(T) -> Fut,
-    Fut: Future<Output = T>,
+    Fut: Future<Output = Option<T>>,
 {
-    fn handle<'a>(&'a self, val: T) -> Pin<Box<dyn Future<Output = T> + 'a>>
+    fn handle<'a>(
+        &'a self,
+        val: T,
+    ) -> Pin<Box<dyn Future<Output = Fut::Output> + 'a>>
     where
         T: 'a,
     {

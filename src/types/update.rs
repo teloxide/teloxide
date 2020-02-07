@@ -2,7 +2,10 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll, PreCheckoutQuery, ShippingQuery, User, Sender, Chat};
+use crate::types::{
+    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
+    PreCheckoutQuery, Sender, ShippingQuery, User,
+};
 
 /// This [object] represents an incoming update.
 ///
@@ -73,55 +76,31 @@ pub enum UpdateKind {
 impl Update {
     pub fn user(&self) -> Option<&User> {
         match &self.kind {
-            UpdateKind::Message(m) => {
-                match m.from() {
-                    Some(Sender::User(user)) => Some(user),
-                    _ => None,
-                }
-            }
-            UpdateKind::EditedMessage(m) => {
-                match m.from() {
-                    Some(Sender::User(user)) => Some(user),
-                    _ => None,
-                }
-            }
-            UpdateKind::CallbackQuery(query) => {
-                Some(&query.from)
-            }
-            UpdateKind::ChosenInlineResult(chosen) => {
-                Some(&chosen.from)
-            }
-            UpdateKind::InlineQuery(query) => {
-                Some(&query.from)
-            }
-            UpdateKind::ShippingQuery(query) => {
-                Some(&query.from)
-            }
-            UpdateKind::PreCheckoutQuery(query) => {
-                Some(&query.from)
-            }
-            _ => None
+            UpdateKind::Message(m) => match m.from() {
+                Some(Sender::User(user)) => Some(user),
+                _ => None,
+            },
+            UpdateKind::EditedMessage(m) => match m.from() {
+                Some(Sender::User(user)) => Some(user),
+                _ => None,
+            },
+            UpdateKind::CallbackQuery(query) => Some(&query.from),
+            UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
+            UpdateKind::InlineQuery(query) => Some(&query.from),
+            UpdateKind::ShippingQuery(query) => Some(&query.from),
+            UpdateKind::PreCheckoutQuery(query) => Some(&query.from),
+            _ => None,
         }
     }
 
     pub fn chat(&self) -> Option<&Chat> {
         match &self.kind {
-            UpdateKind::Message(m) => {
-                Some(&m.chat)
-            }
-            UpdateKind::EditedMessage(m) => {
-                Some(&m.chat)
-            }
-            UpdateKind::ChannelPost(p) => {
-                Some(&p.chat)
-            }
-            UpdateKind::EditedChannelPost(p) => {
-                Some(&p.chat)
-            }
-            UpdateKind::CallbackQuery(q) => {
-                Some(&q.message.as_ref()?.chat)
-            }
-            _ => None
+            UpdateKind::Message(m) => Some(&m.chat),
+            UpdateKind::EditedMessage(m) => Some(&m.chat),
+            UpdateKind::ChannelPost(p) => Some(&p.chat),
+            UpdateKind::EditedChannelPost(p) => Some(&p.chat),
+            UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
+            _ => None,
         }
     }
 }
