@@ -45,15 +45,15 @@ mod ctx_handlers;
 pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler_ctx;
+mod dispatcher_handler_result;
 mod error_handlers;
-mod middleware;
 pub mod update_listeners;
 
 pub use ctx_handlers::CtxHandler;
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler_ctx::DispatcherHandlerCtx;
+pub use dispatcher_handler_result::DispatcherHandlerResult;
 pub use error_handlers::{
     ErrorHandler, IgnoringErrorHandler, IgnoringErrorHandlerSafe,
     LoggingErrorHandler,
 };
-pub use middleware::Middleware;
