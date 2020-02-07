@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::types::PollType;
+use serde::{Deserialize, Serialize};
 
 /// This object contains information about a poll.
 ///
@@ -30,10 +30,10 @@ pub struct Poll {
     /// True, if the poll allows multiple answers
     pub allows_multiple_answers: bool,
 
-    /// 0-based identifier of the correct answer option. Available only for polls
-    /// in the quiz mode, which are closed, or was sent (not forwarded) by the bot
-    /// or to the private chat with the bot.
-    pub correct_option_id: Option<i32>
+    /// 0-based identifier of the correct answer option. Available only for
+    /// polls in the quiz mode, which are closed, or was sent (not
+    /// forwarded) by the bot or to the private chat with the bot.
+    pub correct_option_id: Option<i32>,
 }
 
 /// This object contains information about one answer option in a poll.

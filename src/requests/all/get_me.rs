@@ -2,10 +2,10 @@ use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
+    types::Me,
     Bot,
 };
 use serde::Serialize;
-use crate::types::Me;
 
 /// A simple method for testing your bot's auth token. Requires no parameters.
 ///

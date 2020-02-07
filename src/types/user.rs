@@ -46,19 +46,23 @@ impl User {
     }
 }
 
-/// Returned only in GetMe
+/// Returned only in [`Bot::get_me`].
+///
+/// [`Bot::get_me`]: crate::Bot::get_me
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Me {
     #[serde(flatten)]
     pub user: User,
 
-    /// True, if the bot can be invited to groups.
+    /// `true`, if the bot can be invited to groups.
     pub can_join_groups: bool,
 
-    /// True, if [privacy mode](https://core.telegram.org/bots#privacy-mode) is disabled for the bot.
+    /// `true`, if [privacy mode] is disabled for the bot.
+    ///
+    /// [privacy mode]: https://core.telegram.org/bots#privacy-mode
     pub can_read_all_group_messages: bool,
 
-    /// True, if the bot supports inline queries.
+    /// `true`, if the bot supports inline queries.
     pub supports_inline_queries: bool,
 }
 

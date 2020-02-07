@@ -4,10 +4,9 @@ use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, ReplyMarkup},
+    types::{ChatId, Message, PollType, ReplyMarkup},
     Bot,
 };
-use crate::types::PollType;
 
 /// Use this method to send a native poll.
 ///
@@ -106,7 +105,7 @@ impl<'a> SendPoll<'a> {
         self
     }
 
-    /// True, if the poll needs to be anonymous, defaults to True
+    /// `true`, if the poll needs to be anonymous, defaults to `true`.
     pub fn is_anonymous<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
@@ -115,14 +114,16 @@ impl<'a> SendPoll<'a> {
         self
     }
 
-    /// Poll type, “quiz” or “regular”, defaults to “regular”
-    pub fn poll_type(mut self, val: PollType) -> Self
-    {
+    /// Poll type, `quiz` or `regular`, defaults to `regular`.
+    pub fn poll_type(mut self, val: PollType) -> Self {
         self.poll_type = Some(val);
         self
     }
 
-    /// True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
+    /// `true`, if the poll allows multiple answers, ignored for polls in quiz
+    /// mode.
+    ///
+    /// Defaults to `false`.
     pub fn allows_multiple_answers<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
@@ -131,7 +132,8 @@ impl<'a> SendPoll<'a> {
         self
     }
 
-    /// 0-based identifier of the correct answer option, required for polls in quiz mode
+    /// 0-based identifier of the correct answer option, required for polls in
+    /// quiz mode.
     pub fn correct_option_id<T>(mut self, val: T) -> Self
     where
         T: Into<i32>,
@@ -140,7 +142,9 @@ impl<'a> SendPoll<'a> {
         self
     }
 
-    /// Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.
+    /// Pass `true`, if the poll needs to be immediately closed.
+    ///
+    /// This can be useful for poll preview.
     pub fn is_closed<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
@@ -149,8 +153,9 @@ impl<'a> SendPoll<'a> {
         self
     }
 
-    /// Sends the message [silently]. Users will receive a notification with no
-    /// sound.
+    /// Sends the message [silently].
+    ///
+    /// Users will receive a notification with no sound.
     ///
     /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
     pub fn disable_notification(mut self, val: bool) -> Self {

@@ -1,6 +1,6 @@
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::types::{True, KeyboardButtonPollType};
+use crate::types::{KeyboardButtonPollType, True};
 
 /// This object represents one button of the reply keyboard. For filter text
 /// buttons String can be used instead of this object to specify text of the
@@ -28,24 +28,26 @@ pub struct KeyboardButton {
 pub enum ButtonRequest {
     Location,
     Contact,
-    KeyboardButtonPollType(KeyboardButtonPollType)
+    KeyboardButtonPollType(KeyboardButtonPollType),
 }
 
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
 #[serde_with_macros::skip_serializing_none]
 #[derive(Serialize, Deserialize)]
 struct RawRequest {
-    /// Optional. If True, the user's phone number will be sent as a contact
-    /// when the button is pressed. Available in private chats only
+    /// If `true`, the user's phone number will be sent as a contact
+    /// when the button is pressed. Available in private chats only.
     #[serde(rename = "request_contact")]
     contact: Option<True>,
 
-    /// Optional. If True, the user's current location will be sent when the
-    /// button is pressed. Available in private chats only
+    /// If `true`, the user's current location will be sent when the
+    /// button is pressed. Available in private chats only.
     #[serde(rename = "request_location")]
     location: Option<True>,
 
-    /// Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
+    /// If specified, the user will be asked to create a poll and
+    /// send it to the bot when the button is pressed. Available in private
+    /// chats only.
     #[serde(rename = "request_poll")]
     poll: Option<KeyboardButtonPollType>,
 }
@@ -72,7 +74,8 @@ impl<'de> Deserialize<'de> for ButtonRequest {
                 location: Some(_), ..
             } => Ok(Self::Location),
             RawRequest {
-                poll: Some(poll_type), ..
+                poll: Some(poll_type),
+                ..
             } => Ok(Self::KeyboardButtonPollType(poll_type)),
             _ => Err(D::Error::custom(
                 "Either one of `request_contact` and `request_location` \
@@ -103,9 +106,9 @@ impl Serialize for ButtonRequest {
             Self::KeyboardButtonPollType(poll_type) => RawRequest {
                 contact: None,
                 location: None,
-                poll: Some(poll_type.clone())
+                poll: Some(poll_type.clone()),
             }
-            .serialize(serializer)
+            .serialize(serializer),
         }
     }
 }
