@@ -5,8 +5,8 @@
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct DispatcherHandlerResult<Upd, E> {
-    next: Option<Upd>,
-    result: Result<(), E>,
+    pub next: Option<Upd>,
+    pub result: Result<(), E>,
 }
 
 impl<Upd, E> DispatcherHandlerResult<Upd, E> {

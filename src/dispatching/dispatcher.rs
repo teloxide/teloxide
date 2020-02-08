@@ -82,25 +82,13 @@ where
         self
     }
 
-    /// Registers a single handler.
-    fn register_handler<Upd, H, I>(
-        handlers: &mut Handlers<'a, Upd, HandlerE>,
-        h: H,
-    ) where
-        H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Upd, HandlerE>>,
-    {
-        handlers
-            .push(Box::new(move |ctx| map_fut(h.handle_ctx(ctx), Into::into)));
-    }
-
     #[must_use]
     pub fn message_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>>,
+        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.message_handlers, h);
+        self.message_handlers = register_handler(self.message_handlers, h);
         self
     }
 
@@ -108,9 +96,10 @@ where
     pub fn edited_message_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>>,
+        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.edited_message_handlers, h);
+        self.edited_message_handlers =
+            register_handler(self.edited_message_handlers, h);
         self
     }
 
@@ -118,9 +107,10 @@ where
     pub fn channel_post_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>>,
+        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.channel_post_handlers, h);
+        self.channel_post_handlers =
+            register_handler(self.channel_post_handlers, h);
         self
     }
 
@@ -128,9 +118,10 @@ where
     pub fn edited_channel_post_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>>,
+        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.edited_channel_post_handlers, h);
+        self.edited_channel_post_handlers =
+            register_handler(self.edited_channel_post_handlers, h);
         self
     }
 
@@ -138,9 +129,10 @@ where
     pub fn inline_query_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<InlineQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<InlineQuery, HandlerE>>,
+        I: Into<DispatcherHandlerResult<InlineQuery, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.inline_query_handlers, h);
+        self.inline_query_handlers =
+            register_handler(self.inline_query_handlers, h);
         self
     }
 
@@ -148,9 +140,10 @@ where
     pub fn chosen_inline_result_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<ChosenInlineResult>, I> + 'a,
-        I: Into<DispatcherHandlerResult<ChosenInlineResult, HandlerE>>,
+        I: Into<DispatcherHandlerResult<ChosenInlineResult, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.chosen_inline_result_handlers, h);
+        self.chosen_inline_result_handlers =
+            register_handler(self.chosen_inline_result_handlers, h);
         self
     }
 
@@ -158,9 +151,10 @@ where
     pub fn callback_query_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<CallbackQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<CallbackQuery, HandlerE>>,
+        I: Into<DispatcherHandlerResult<CallbackQuery, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.callback_query_handlers, h);
+        self.callback_query_handlers =
+            register_handler(self.callback_query_handlers, h);
         self
     }
 
@@ -168,9 +162,10 @@ where
     pub fn shipping_query_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<ShippingQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<ShippingQuery, HandlerE>>,
+        I: Into<DispatcherHandlerResult<ShippingQuery, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.shipping_query_handlers, h);
+        self.shipping_query_handlers =
+            register_handler(self.shipping_query_handlers, h);
         self
     }
 
@@ -178,9 +173,10 @@ where
     pub fn pre_checkout_query_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<PreCheckoutQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<PreCheckoutQuery, HandlerE>>,
+        I: Into<DispatcherHandlerResult<PreCheckoutQuery, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.pre_checkout_query_handlers, h);
+        self.pre_checkout_query_handlers =
+            register_handler(self.pre_checkout_query_handlers, h);
         self
     }
 
@@ -188,9 +184,9 @@ where
     pub fn poll_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Poll>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Poll, HandlerE>>,
+        I: Into<DispatcherHandlerResult<Poll, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.poll_handlers, h);
+        self.poll_handlers = register_handler(self.poll_handlers, h);
         self
     }
 
@@ -198,9 +194,10 @@ where
     pub fn poll_answer_handler<H, I>(mut self, h: H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<PollAnswer>, I> + 'a,
-        I: Into<DispatcherHandlerResult<PollAnswer, HandlerE>>,
+        I: Into<DispatcherHandlerResult<PollAnswer, HandlerE>> + 'a,
     {
-        Self::register_handler(&mut self.poll_answer_handlers, h);
+        self.poll_answer_handlers =
+            register_handler(self.poll_answer_handlers, h);
         self
     }
 
@@ -326,6 +323,34 @@ where
     }
 }
 
-async fn map_fut<T, U>(fut: impl Future<Output = T>, f: impl Fn(T) -> U) -> U {
-    f(fut.await)
+// Transforms Future<Output = T> into Future<Output = U> by applying an Into
+// conversion.
+async fn intermediate_fut0<T, U>(fut: impl Future<Output = T>) -> U
+where
+    T: Into<U>,
+{
+    fut.await.into()
+}
+
+fn intermediate_fut1<'a, Upd, HandlerE, H, I>(
+    h: H,
+) -> impl CtxHandler<DispatcherHandlerCtx<Upd>, DispatcherHandlerResult<Upd, HandlerE>>
+where
+    H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
+    I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
+{
+    move |ctx| intermediate_fut0(h.handle_ctx(ctx))
+}
+
+/// Registers a single handler.
+fn register_handler<'a, Upd, H, I, HandlerE>(
+    mut handlers: Handlers<'a, Upd, HandlerE>,
+    h: H,
+) -> Handlers<'a, Upd, HandlerE>
+where
+    H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
+    I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
+{
+    //  handlers.push(Box::new());
+    handlers
 }
