@@ -83,7 +83,7 @@ where
     }
 
     #[must_use]
-    pub fn message_handler<H, I>(mut self, h: H) -> Self
+    pub fn message_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
         I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
@@ -93,7 +93,7 @@ where
     }
 
     #[must_use]
-    pub fn edited_message_handler<H, I>(mut self, h: H) -> Self
+    pub fn edited_message_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
         I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
@@ -104,7 +104,7 @@ where
     }
 
     #[must_use]
-    pub fn channel_post_handler<H, I>(mut self, h: H) -> Self
+    pub fn channel_post_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
         I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
@@ -115,7 +115,7 @@ where
     }
 
     #[must_use]
-    pub fn edited_channel_post_handler<H, I>(mut self, h: H) -> Self
+    pub fn edited_channel_post_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
         I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
@@ -126,7 +126,7 @@ where
     }
 
     #[must_use]
-    pub fn inline_query_handler<H, I>(mut self, h: H) -> Self
+    pub fn inline_query_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<InlineQuery>, I> + 'a,
         I: Into<DispatcherHandlerResult<InlineQuery, HandlerE>> + 'a,
@@ -137,7 +137,7 @@ where
     }
 
     #[must_use]
-    pub fn chosen_inline_result_handler<H, I>(mut self, h: H) -> Self
+    pub fn chosen_inline_result_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<ChosenInlineResult>, I> + 'a,
         I: Into<DispatcherHandlerResult<ChosenInlineResult, HandlerE>> + 'a,
@@ -148,7 +148,7 @@ where
     }
 
     #[must_use]
-    pub fn callback_query_handler<H, I>(mut self, h: H) -> Self
+    pub fn callback_query_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<CallbackQuery>, I> + 'a,
         I: Into<DispatcherHandlerResult<CallbackQuery, HandlerE>> + 'a,
@@ -159,7 +159,7 @@ where
     }
 
     #[must_use]
-    pub fn shipping_query_handler<H, I>(mut self, h: H) -> Self
+    pub fn shipping_query_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<ShippingQuery>, I> + 'a,
         I: Into<DispatcherHandlerResult<ShippingQuery, HandlerE>> + 'a,
@@ -170,7 +170,7 @@ where
     }
 
     #[must_use]
-    pub fn pre_checkout_query_handler<H, I>(mut self, h: H) -> Self
+    pub fn pre_checkout_query_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<PreCheckoutQuery>, I> + 'a,
         I: Into<DispatcherHandlerResult<PreCheckoutQuery, HandlerE>> + 'a,
@@ -181,7 +181,7 @@ where
     }
 
     #[must_use]
-    pub fn poll_handler<H, I>(mut self, h: H) -> Self
+    pub fn poll_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Poll>, I> + 'a,
         I: Into<DispatcherHandlerResult<Poll, HandlerE>> + 'a,
@@ -191,7 +191,7 @@ where
     }
 
     #[must_use]
-    pub fn poll_answer_handler<H, I>(mut self, h: H) -> Self
+    pub fn poll_answer_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<PollAnswer>, I> + 'a,
         I: Into<DispatcherHandlerResult<PollAnswer, HandlerE>> + 'a,
@@ -323,8 +323,8 @@ where
     }
 }
 
-// Transforms Future<Output = T> into Future<Output = U> by applying an Into
-// conversion.
+/// Transforms Future<Output = T> into Future<Output = U> by applying an Into
+/// conversion.
 async fn intermediate_fut0<T, U>(fut: impl Future<Output = T>) -> U
 where
     T: Into<U>,
@@ -332,12 +332,18 @@ where
     fut.await.into()
 }
 
+/// Transforms CtxHandler with Into<DispatcherHandlerResult<...>> as a return
+/// value into CtxHandler with DispatcherHandlerResult return value.
 fn intermediate_fut1<'a, Upd, HandlerE, H, I>(
-    h: H,
-) -> impl CtxHandler<DispatcherHandlerCtx<Upd>, DispatcherHandlerResult<Upd, HandlerE>>
+    h: &'a H,
+) -> impl CtxHandler<
+    DispatcherHandlerCtx<Upd>,
+    DispatcherHandlerResult<Upd, HandlerE>,
+> + 'a
 where
     H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
     I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
+    Upd: 'a,
 {
     move |ctx| intermediate_fut0(h.handle_ctx(ctx))
 }
@@ -345,12 +351,14 @@ where
 /// Registers a single handler.
 fn register_handler<'a, Upd, H, I, HandlerE>(
     mut handlers: Handlers<'a, Upd, HandlerE>,
-    h: H,
+    h: &'a H,
 ) -> Handlers<'a, Upd, HandlerE>
 where
     H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
     I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
+    HandlerE: 'a,
+    Upd: 'a,
 {
-    //  handlers.push(Box::new());
+    handlers.push(Box::new(intermediate_fut1(h)));
     handlers
 }
