@@ -39,8 +39,9 @@
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
-//! [`parse_command`]: crate::utils::parse_command
-//! [`parse_command_with_prefix`]: crate::utils::parse_command_with_prefix
+//! [`parse_command`]: crate::utils::command::parse_command
+//! [`parse_command_with_prefix`]:
+//! crate::utils::command::parse_command_with_prefix
 
 pub use teloxide_macros::BotCommand;
 

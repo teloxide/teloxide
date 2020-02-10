@@ -20,6 +20,21 @@ pub struct DialogueHandlerCtx<Upd, State, T> {
     pub dialogue: Dialogue<State, T>,
 }
 
+/// Sets a new state.
+///
+/// Use it like this: `state!(ctx, State::RequestAge)`, where `ctx` is
+/// [`DialogueHandlerCtx<Upd, State, T>`] and `State::RequestAge` is of type
+/// `State`.
+///
+/// [`DialogueHandlerCtx<Upd, State, T>`]:
+/// crate::dispatching::dialogue::DialogueHandlerCtx
+#[macro_export]
+macro_rules! state {
+    ($ctx:ident, $state:expr) => {
+        $ctx.dialogue.state = $state;
+    };
+}
+
 impl<Upd, State, T> GetChatId for DialogueHandlerCtx<Upd, State, T>
 where
     Upd: GetChatId,

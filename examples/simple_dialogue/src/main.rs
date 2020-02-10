@@ -87,7 +87,7 @@ async fn start(mut ctx: Ctx) -> Res {
     ctx.answer("Let's start! First, what's your full name?")
         .send()
         .await?;
-    ctx.dialogue.state = State::FullName;
+    state!(ctx, State::FullName);
     next(ctx.dialogue)
 }
 
@@ -96,7 +96,7 @@ async fn full_name(mut ctx: Ctx) -> Res {
         .send()
         .await?;
     ctx.dialogue.data.full_name = Some(ctx.update.text().unwrap().to_owned());
-    ctx.dialogue.state = State::Age;
+    state!(ctx, State::Age);
     next(ctx.dialogue)
 }
 
@@ -105,7 +105,7 @@ async fn age(mut ctx: Ctx) -> Res {
         Ok(ok) => {
             send_favourite_music_types(&ctx).await?;
             ctx.dialogue.data.age = Some(ok);
-            ctx.dialogue.state = State::FavouriteMusic;
+            state!(ctx, State::FavouriteMusic);
         }
         Err(_) => ctx
             .answer("Oh, please, enter a number!")
