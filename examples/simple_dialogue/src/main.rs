@@ -76,8 +76,7 @@ type Ctx = DialogueHandlerCtx<Message, State, User>;
 type Res = Result<DialogueStage<State, User>, RequestError>;
 
 async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
-    ctx.bot
-        .send_message(ctx.chat_id(), "Good. Now choose your favourite music:")
+    ctx.answer("Good. Now choose your favourite music:")
         .reply_markup(FavouriteMusic::markup())
         .send()
         .await?;
@@ -85,14 +84,17 @@ async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
 }
 
 async fn start(mut ctx: Ctx) -> Res {
-    ctx.reply("Let's start! First, what's your full name?")
+    ctx.answer("Let's start! First, what's your full name?")
+        .send()
         .await?;
     ctx.dialogue.state = State::FullName;
     next(ctx.dialogue)
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
-    ctx.reply("What a wonderful name! Your age?").await?;
+    ctx.answer("What a wonderful name! Your age?")
+        .send()
+        .await?;
     ctx.dialogue.data.full_name = Some(ctx.update.text().unwrap().to_owned());
     ctx.dialogue.state = State::Age;
     next(ctx.dialogue)
@@ -105,7 +107,11 @@ async fn age(mut ctx: Ctx) -> Res {
             ctx.dialogue.data.age = Some(ok);
             ctx.dialogue.state = State::FavouriteMusic;
         }
-        Err(_) => ctx.reply("Oh, please, enter a number!").await?,
+        Err(_) => ctx
+            .answer("Oh, please, enter a number!")
+            .send()
+            .await
+            .map(|_| ())?,
     }
 
     next(ctx.dialogue)
@@ -115,11 +121,15 @@ async fn favourite_music(mut ctx: Ctx) -> Res {
     match ctx.update.text().unwrap().parse() {
         Ok(ok) => {
             ctx.dialogue.data.favourite_music = Some(ok);
-            ctx.reply(format!("Fine. {}", ctx.dialogue.data)).await?;
+            ctx.answer(format!("Fine. {}", ctx.dialogue.data))
+                .send()
+                .await?;
             exit()
         }
         Err(_) => {
-            ctx.reply("Oh, please, enter from the keyboard!").await?;
+            ctx.answer("Oh, please, enter from the keyboard!")
+                .send()
+                .await?;
             next(ctx.dialogue)
         }
     }
