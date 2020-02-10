@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{Chat, ChatId},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get up to date information about the chat (current name
 /// of the user for one-on-one conversations, current username of a user, group
@@ -14,15 +14,15 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getchat).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetChat<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetChat {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for GetChat<'_> {
+impl Request for GetChat {
     type Output = Chat;
 
     async fn send(&self) -> ResponseResult<Chat> {
@@ -31,16 +31,13 @@ impl Request for GetChat<'_> {
     }
 }
 
-impl<'a> GetChat<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl GetChat {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target

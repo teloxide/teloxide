@@ -1,10 +1,10 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// them in the music player.
@@ -17,9 +17,9 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
 ///
 /// [`Bot::send_voice`]: crate::Bot::send_voice
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendAudio<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendAudio {
+    bot: Arc<Bot>,
     chat_id: ChatId,
     audio: InputFile,
     caption: Option<String>,
@@ -34,7 +34,7 @@ pub struct SendAudio<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendAudio<'_> {
+impl Request for SendAudio {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -71,13 +71,13 @@ impl Request for SendAudio<'_> {
     }
 }
 
-impl<'a> SendAudio<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, audio: InputFile) -> Self
+impl SendAudio {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, audio: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             audio,
             caption: None,

@@ -1,28 +1,28 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Poll},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to stop a poll which was sent by the bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#stoppoll).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct StopPoll<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct StopPoll {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     message_id: i32,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for StopPoll<'_> {
+impl Request for StopPoll {
     type Output = Poll;
 
     /// On success, the stopped [`Poll`] with the final results is returned.
@@ -38,14 +38,14 @@ impl Request for StopPoll<'_> {
         .await
     }
 }
-impl<'a> StopPoll<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
+impl StopPoll {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             message_id,
             reply_markup: None,

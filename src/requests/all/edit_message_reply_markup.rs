@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to edit only the reply markup of messages.
 ///
@@ -18,17 +18,17 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct EditMessageReplyMarkup<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageReplyMarkup {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageReplyMarkup<'_> {
+impl Request for EditMessageReplyMarkup {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -42,13 +42,13 @@ impl Request for EditMessageReplyMarkup<'_> {
     }
 }
 
-impl<'a> EditMessageReplyMarkup<'a> {
+impl EditMessageReplyMarkup {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             reply_markup: None,
         }

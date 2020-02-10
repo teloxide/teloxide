@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::True,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send answers to callback queries sent from [inline
 /// keyboards].
@@ -18,10 +18,10 @@ use crate::{
 ///
 /// [inline keyboards]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct AnswerCallbackQuery<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerCallbackQuery {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     callback_query_id: String,
     text: Option<String>,
     show_alert: Option<bool>,
@@ -30,7 +30,7 @@ pub struct AnswerCallbackQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for AnswerCallbackQuery<'_> {
+impl Request for AnswerCallbackQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -44,14 +44,14 @@ impl Request for AnswerCallbackQuery<'_> {
     }
 }
 
-impl<'a> AnswerCallbackQuery<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, callback_query_id: C) -> Self
+impl AnswerCallbackQuery {
+    pub(crate) fn new<C>(bot: Arc<Bot>, callback_query_id: C) -> Self
     where
         C: Into<String>,
     {
         let callback_query_id = callback_query_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             callback_query_id,
             text: None,
             show_alert: None,

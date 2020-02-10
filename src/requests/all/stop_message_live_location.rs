@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to stop updating a live location message before
 /// `live_period` expires.
@@ -19,17 +19,17 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct StopMessageLiveLocation<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct StopMessageLiveLocation {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for StopMessageLiveLocation<'_> {
+impl Request for StopMessageLiveLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -43,13 +43,13 @@ impl Request for StopMessageLiveLocation<'_> {
     }
 }
 
-impl<'a> StopMessageLiveLocation<'a> {
+impl StopMessageLiveLocation {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             reply_markup: None,
         }

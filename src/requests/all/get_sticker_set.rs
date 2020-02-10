@@ -1,26 +1,26 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::StickerSet,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get a sticker set.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getstickerset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetStickerSet<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetStickerSet {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     name: String,
 }
 
 #[async_trait::async_trait]
-impl Request for GetStickerSet<'_> {
+impl Request for GetStickerSet {
     type Output = StickerSet;
 
     async fn send(&self) -> ResponseResult<StickerSet> {
@@ -34,16 +34,13 @@ impl Request for GetStickerSet<'_> {
     }
 }
 
-impl<'a> GetStickerSet<'a> {
-    pub(crate) fn new<N>(bot: &'a Bot, name: N) -> Self
+impl GetStickerSet {
+    pub(crate) fn new<N>(bot: Arc<Bot>, name: N) -> Self
     where
         N: Into<String>,
     {
         let name = name.into();
-        Self {
-            bot: BotWrapper(bot),
-            name,
-        }
+        Self { bot, name }
     }
 
     /// Name of the sticker set.

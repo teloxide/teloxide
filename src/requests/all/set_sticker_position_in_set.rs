@@ -1,28 +1,28 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::True,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to move a sticker in a set created by the bot to a specific
 /// position.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setstickerpositioninset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetStickerPositionInSet<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetStickerPositionInSet {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     sticker: String,
     position: i32,
 }
 
 #[async_trait::async_trait]
-impl Request for SetStickerPositionInSet<'_> {
+impl Request for SetStickerPositionInSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -36,14 +36,14 @@ impl Request for SetStickerPositionInSet<'_> {
     }
 }
 
-impl<'a> SetStickerPositionInSet<'a> {
-    pub(crate) fn new<S>(bot: &'a Bot, sticker: S, position: i32) -> Self
+impl SetStickerPositionInSet {
+    pub(crate) fn new<S>(bot: Arc<Bot>, sticker: S, position: i32) -> Self
     where
         S: Into<String>,
     {
         let sticker = sticker.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             sticker,
             position,
         }

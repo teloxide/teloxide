@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to unpin a message in a group, a supergroup, or a channel.
 ///
@@ -16,15 +16,15 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#unpinchatmessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct UnpinChatMessage<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct UnpinChatMessage {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for UnpinChatMessage<'_> {
+impl Request for UnpinChatMessage {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -38,16 +38,13 @@ impl Request for UnpinChatMessage<'_> {
     }
 }
 
-impl<'a> UnpinChatMessage<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl UnpinChatMessage {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target channel

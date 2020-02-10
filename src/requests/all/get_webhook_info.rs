@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::WebhookInfo,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get current webhook status.
 ///
@@ -16,14 +16,14 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#getwebhookinfo).
 ///
 /// [`Bot::get_updates`]: crate::Bot::get_updates
-#[derive(Copy, Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetWebhookInfo<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetWebhookInfo {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
 }
 
 #[async_trait::async_trait]
-impl Request for GetWebhookInfo<'_> {
+impl Request for GetWebhookInfo {
     type Output = WebhookInfo;
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -38,10 +38,8 @@ impl Request for GetWebhookInfo<'_> {
     }
 }
 
-impl<'a> GetWebhookInfo<'a> {
-    pub(crate) fn new(bot: &'a Bot) -> Self {
-        Self {
-            bot: BotWrapper(bot),
-        }
+impl GetWebhookInfo {
+    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+        Self { bot }
     }
 }

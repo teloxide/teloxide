@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to set default chat permissions for all members.
 ///
@@ -15,16 +15,16 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setchatpermissions).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetChatPermissions<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatPermissions {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     permissions: ChatPermissions,
 }
 
 #[async_trait::async_trait]
-impl Request for SetChatPermissions<'_> {
+impl Request for SetChatPermissions {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -38,9 +38,9 @@ impl Request for SetChatPermissions<'_> {
     }
 }
 
-impl<'a> SetChatPermissions<'a> {
+impl SetChatPermissions {
     pub(crate) fn new<C>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         permissions: ChatPermissions,
     ) -> Self
@@ -49,7 +49,7 @@ impl<'a> SetChatPermissions<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             permissions,
         }

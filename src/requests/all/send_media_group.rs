@@ -1,17 +1,17 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputMedia, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send a group of photos or videos as an album.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendmediagroup).
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendMediaGroup<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendMediaGroup {
+    bot: Arc<Bot>,
     chat_id: ChatId,
     media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
     disable_notification: Option<bool>,
@@ -19,7 +19,7 @@ pub struct SendMediaGroup<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendMediaGroup<'_> {
+impl Request for SendMediaGroup {
     type Output = Vec<Message>;
 
     async fn send(&self) -> ResponseResult<Vec<Message>> {
@@ -42,8 +42,8 @@ impl Request for SendMediaGroup<'_> {
     }
 }
 
-impl<'a> SendMediaGroup<'a> {
-    pub(crate) fn new<C, M>(bot: &'a Bot, chat_id: C, media: M) -> Self
+impl SendMediaGroup {
+    pub(crate) fn new<C, M>(bot: Arc<Bot>, chat_id: C, media: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,
@@ -51,7 +51,7 @@ impl<'a> SendMediaGroup<'a> {
         let chat_id = chat_id.into();
         let media = media.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             media,
             disable_notification: None,

@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, InputFile, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to set a new profile photo for the chat.
 ///
@@ -15,16 +15,16 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setchatphoto).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetChatPhoto<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatPhoto {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     photo: InputFile,
 }
 
 #[async_trait::async_trait]
-impl Request for SetChatPhoto<'_> {
+impl Request for SetChatPhoto {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -38,14 +38,14 @@ impl Request for SetChatPhoto<'_> {
     }
 }
 
-impl<'a> SetChatPhoto<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, photo: InputFile) -> Self
+impl SetChatPhoto {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, photo: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             photo,
         }

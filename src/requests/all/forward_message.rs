@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to forward messages of any kind.
 ///
 /// [`The official docs`](https://core.telegram.org/bots/api#forwardmessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct ForwardMessage<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct ForwardMessage {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     from_chat_id: ChatId,
     disable_notification: Option<bool>,
@@ -23,7 +23,7 @@ pub struct ForwardMessage<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for ForwardMessage<'_> {
+impl Request for ForwardMessage {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -37,9 +37,9 @@ impl Request for ForwardMessage<'_> {
     }
 }
 
-impl<'a> ForwardMessage<'a> {
+impl ForwardMessage {
     pub(crate) fn new<C, F>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         from_chat_id: F,
         message_id: i32,
@@ -51,7 +51,7 @@ impl<'a> ForwardMessage<'a> {
         let chat_id = chat_id.into();
         let from_chat_id = from_chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             from_chat_id,
             message_id,

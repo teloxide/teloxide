@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send point on the map.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendlocation).
 #[serde_with_macros::skip_serializing_none]
-#[derive(PartialEq, Debug, Clone, Serialize)]
-pub struct SendLocation<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendLocation {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     latitude: f32,
     longitude: f32,
@@ -26,7 +26,7 @@ pub struct SendLocation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendLocation<'_> {
+impl Request for SendLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -40,9 +40,9 @@ impl Request for SendLocation<'_> {
     }
 }
 
-impl<'a> SendLocation<'a> {
+impl SendLocation {
     pub(crate) fn new<C>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         latitude: f32,
         longitude: f32,
@@ -52,7 +52,7 @@ impl<'a> SendLocation<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             latitude,
             longitude,

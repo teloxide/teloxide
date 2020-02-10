@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send invoices.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendinvoice).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendInvoice<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendInvoice {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: i32,
     title: String,
     description: String,
@@ -42,7 +42,7 @@ pub struct SendInvoice<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendInvoice<'_> {
+impl Request for SendInvoice {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -56,10 +56,10 @@ impl Request for SendInvoice<'_> {
     }
 }
 
-impl<'a> SendInvoice<'a> {
+impl SendInvoice {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new<T, D, Pl, Pt, S, C, Pr>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: i32,
         title: T,
         description: D,
@@ -86,7 +86,7 @@ impl<'a> SendInvoice<'a> {
         let currency = currency.into();
         let prices = prices.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             title,
             description,
