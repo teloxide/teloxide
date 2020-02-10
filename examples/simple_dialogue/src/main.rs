@@ -33,17 +33,17 @@ impl FavouriteMusic {
 }
 
 // ============================================================================
-// [A user's data]
+// [A UserInfo's data]
 // ============================================================================
 
 #[derive(Default)]
-struct User {
+struct UserInfo {
     full_name: Option<String>,
     age: Option<u8>,
     favourite_music: Option<FavouriteMusic>,
 }
 
-impl Display for User {
+impl Display for UserInfo {
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
         write!(
             f,
@@ -72,8 +72,8 @@ enum State {
 // [Control a dialogue]
 // ============================================================================
 
-type Ctx = DialogueHandlerCtx<Message, State, User>;
-type Res = Result<DialogueStage<State, User>, RequestError>;
+type Ctx = DialogueHandlerCtx<Message, State, UserInfo>;
+type Res = Result<DialogueStage<State, UserInfo>, RequestError>;
 
 async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
     ctx.answer("Good. Now choose your favourite music:")
