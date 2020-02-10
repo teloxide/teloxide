@@ -3,7 +3,8 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            DialogueDispatcher, DialogueHandlerCtx, DialogueStage, GetChatId,
+            exit, next, DialogueDispatcher, DialogueHandlerCtx, DialogueStage,
+            GetChatId,
         },
         Dispatcher, DispatcherHandlerCtx,
     },

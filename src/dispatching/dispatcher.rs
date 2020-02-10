@@ -8,7 +8,7 @@ use crate::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
     },
-    Bot,
+    Bot, RequestError,
 };
 use futures::{stream, StreamExt};
 use std::{fmt::Debug, future::Future, sync::Arc};
@@ -26,7 +26,9 @@ type Handlers<'a, Upd, HandlerE> = Vec<
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
-pub struct Dispatcher<'a, HandlerE> {
+// HandlerE=RequestError doesn't work now, because of very poor type inference.
+// See https://github.com/rust-lang/rust/issues/27336 for more details.
+pub struct Dispatcher<'a, HandlerE = RequestError> {
     bot: Arc<Bot>,
 
     handlers_error_handler: Box<dyn ErrorHandler<HandlerE> + 'a>,

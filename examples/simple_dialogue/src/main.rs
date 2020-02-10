@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate strum_macros;
+#[macro_use]
+extern crate smart_default;
 
 use std::fmt::{self, Display, Formatter};
 use teloxide::{
@@ -57,17 +59,13 @@ impl Display for User {
 // [States of a dialogue]
 // ============================================================================
 
+#[derive(SmartDefault)]
 enum State {
+    #[default]
     Start,
     FullName,
     Age,
     FavouriteMusic,
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
 }
 
 // ============================================================================
@@ -90,14 +88,14 @@ async fn start(mut ctx: Ctx) -> Res {
     ctx.reply("Let's start! First, what's your full name?")
         .await?;
     ctx.dialogue.state = State::FullName;
-    Ok(DialogueStage::Next(ctx.dialogue))
+    next(ctx.dialogue)
 }
 
 async fn full_name(mut ctx: Ctx) -> Res {
     ctx.reply("What a wonderful name! Your age?").await?;
     ctx.dialogue.data.full_name = Some(ctx.update.text().unwrap().to_owned());
     ctx.dialogue.state = State::Age;
-    Ok(DialogueStage::Next(ctx.dialogue))
+    next(ctx.dialogue)
 }
 
 async fn age(mut ctx: Ctx) -> Res {
@@ -110,7 +108,7 @@ async fn age(mut ctx: Ctx) -> Res {
         Err(_) => ctx.reply("Oh, please, enter a number!").await?,
     }
 
-    Ok(DialogueStage::Next(ctx.dialogue))
+    next(ctx.dialogue)
 }
 
 async fn favourite_music(mut ctx: Ctx) -> Res {
@@ -118,11 +116,11 @@ async fn favourite_music(mut ctx: Ctx) -> Res {
         Ok(ok) => {
             ctx.dialogue.data.favourite_music = Some(ok);
             ctx.reply(format!("Fine. {}", ctx.dialogue.data)).await?;
-            Ok(DialogueStage::Exit)
+            exit()
         }
         Err(_) => {
             ctx.reply("Oh, please, enter from the keyboard!").await?;
-            Ok(DialogueStage::Next(ctx.dialogue))
+            next(ctx.dialogue)
         }
     }
 }
@@ -147,7 +145,7 @@ async fn main() {
     log::info!("Starting the simple_dialogue bot!");
 
     Dispatcher::new(Bot::new("YourAwesomeToken"))
-        .message_handler(DialogueDispatcher::new(|ctx| async move {
+        .message_handler(&DialogueDispatcher::new(|ctx| async move {
             handle_message(ctx)
                 .await
                 .expect("Something wrong with the bot!")

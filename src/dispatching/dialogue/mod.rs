@@ -37,13 +37,13 @@
 mod dialogue;
 mod dialogue_dispatcher;
 mod dialogue_handler_ctx;
-mod dialogue_state;
+mod dialogue_stage;
 mod get_chat_id;
 mod storage;
 
 pub use dialogue::Dialogue;
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_handler_ctx::DialogueHandlerCtx;
-pub use dialogue_state::DialogueStage;
+pub use dialogue_stage::{exit, next, DialogueStage};
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};
