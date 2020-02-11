@@ -116,6 +116,60 @@ pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
 }
 impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 
+pub struct Polling<'a> {
+    running: bool,
+    marker: std::marker::PhantomData<&'a ()>
+}
+
+impl<'a> Polling<'a> {
+    pub fn new() -> Self {
+        Self {
+            running: true,
+            marker: std::marker::PhantomData::<&'a ()>
+        }
+    }
+
+    pub fn update_listener(
+        &'a self,
+        bot: &'a Bot,
+        timeout: Option<Duration>,
+        limit: Option<u8>,
+        allowed_updates: Option<Vec<AllowedUpdate>>,
+    ) -> impl UpdateListener<RequestError> + 'a {
+        let timeout =
+            timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+
+        stream::unfold(
+            (allowed_updates, bot, 0, &self.running),
+            move |(mut allowed_updates, bot, mut offset, running)| async move {
+                if !running {
+                    return None;
+                }
+                let mut req = bot.get_updates().offset(offset);
+                req.timeout = timeout;
+                req.limit = limit;
+                req.allowed_updates = allowed_updates.take();
+
+                let updates = match req.send().await {
+                    Err(err) => vec![Err(err)],
+                    Ok(updates) => {
+                        if let Some(upd) = updates.last() {
+                            offset = upd.id + 1;
+                        }
+                        updates.into_iter().map(Ok).collect::<Vec<_>>()
+                    }
+                };
+
+                Some((stream::iter(updates), (allowed_updates, bot, offset, running)))
+            },
+        )
+        .flatten()
+    }
+
+    pub fn shutdown(&mut self) {
+        self.running = false;
+    }
+}
 /// Returns a long polling update listener with the default configuration.
 ///
 /// See also: [`polling`](polling).
