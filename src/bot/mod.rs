@@ -1,4 +1,5 @@
 use reqwest::Client;
+use std::sync::Arc;
 
 mod api;
 mod download;
@@ -11,24 +12,21 @@ pub struct Bot {
 }
 
 impl Bot {
-    pub fn new<S>(token: S) -> Self
+    pub fn new<S>(token: S) -> Arc<Self>
     where
         S: Into<String>,
     {
-        Bot {
-            token: token.into(),
-            client: Client::new(),
-        }
+        Self::with_client(token, Client::new())
     }
 
-    pub fn with_client<S>(token: S, client: Client) -> Self
+    pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
     where
         S: Into<String>,
     {
-        Bot {
+        Arc::new(Bot {
             token: token.into(),
             client,
-        }
+        })
     }
 }
 

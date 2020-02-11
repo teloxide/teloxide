@@ -53,9 +53,9 @@ where
 {
     /// Constructs a new dispatcher with this `bot`.
     #[must_use]
-    pub fn new(bot: Bot) -> Self {
+    pub fn new(bot: Arc<Bot>) -> Self {
         Self {
-            bot: Arc::new(bot),
+            bot,
             handlers_error_handler: Box::new(LoggingErrorHandler::new(
                 "An error from a Dispatcher's handler",
             )),
