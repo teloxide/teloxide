@@ -4,8 +4,9 @@ use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{AllowedUpdate, Update},
-    Bot,
+    Bot, RequestError,
 };
+use serde_json::Value;
 use std::sync::Arc;
 
 /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -31,16 +32,30 @@ pub struct GetUpdates {
 
 #[async_trait::async_trait]
 impl Request for GetUpdates {
-    type Output = Vec<Update>;
+    type Output = Vec<serde_json::Result<Update>>;
 
-    async fn send(&self) -> ResponseResult<Vec<Update>> {
-        net::request_json(
+    /// Deserialize to `Vec<serde_json::Result<Update>>` instead of
+    /// `Vec<Update>`, because we want to parse the rest of updates even if our
+    /// library hasn't parsed one.
+    async fn send(&self) -> ResponseResult<Vec<serde_json::Result<Update>>> {
+        let value: Value = net::request_json(
             self.bot.client(),
             self.bot.token(),
             "getUpdates",
             &self,
         )
-        .await
+        .await?;
+
+        match value {
+            Value::Array(array) => Ok(array
+                .into_iter()
+                .map(|value| serde_json::from_str(&value.to_string()))
+                .collect()),
+            _ => Err(RequestError::InvalidJson(
+                serde_json::from_value::<Vec<Update>>(value)
+                    .expect_err("get_update must return Value::Array"),
+            )),
+        }
     }
 }
 
