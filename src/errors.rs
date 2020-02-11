@@ -348,9 +348,9 @@ pub enum ApiErrorKind {
     /// chat.
     ///
     /// May happen in methods:
-    /// 1. [`PinMessage`]
+    /// 1. [`PinChatMessage`]
     ///
-    /// [`PinMessage`]: crate::requests::PinMessage
+    /// [`PinChatMessage`]: crate::requests::PinChatMessage
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
     NotEnoughRightsToPinMessage,
 
