@@ -145,7 +145,7 @@ where
     where
         E: 'a,
     {
-        log::debug!("{text}: {:?}", error, text = self.text);
+        log::error!("{text}: {:?}", error, text = self.text);
         Box::pin(async {})
     }
 }
