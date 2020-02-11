@@ -1,0 +1,16 @@
+[package]
+name = "admin_bot"
+version = "0.1.0"
+authors = ["p0lunin <dmytro.polunin@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pretty_env_logger = "0.3.1"
+log = "0.4.8"
+tokio = "0.2.9"
+teloxide = { path = "../../" }
+
+[profile.release]
+lto = true
