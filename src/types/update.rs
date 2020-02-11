@@ -182,4 +182,33 @@ mod test {
         let actual = serde_json::from_str::<Update>(json).unwrap();
         assert_eq!(expected, actual);
     }
+
+    #[test]
+    fn de_private_chat_text_message() {
+        let text = r#"
+  {
+    "message": {
+      "chat": {
+        "first_name": "Hirrolot",
+        "id": 408258968,
+        "type": "private",
+        "username": "hirrolot"
+      },
+      "date": 1581448857,
+      "from": {
+        "first_name": "Hirrolot",
+        "id": 408258968,
+        "is_bot": false,
+        "language_code": "en",
+        "username": "hirrolot"
+      },
+      "message_id": 154,
+      "text": "4"
+    },
+    "update_id": 306197398
+  }
+"#;
+
+        assert!(serde_json::from_str::<Update>(text).is_ok());
+    }
 }

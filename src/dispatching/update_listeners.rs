@@ -155,6 +155,22 @@ pub fn polling(
             let updates = match req.send().await {
                 Err(err) => vec![Err(err)],
                 Ok(updates) => {
+                    let updates = updates
+                        .into_iter()
+                        .filter(|update| match update {
+                            Err(error) => {
+                                log::error!("Cannot parse an update: {:?}! \
+                        This is a bug in teloxide, please open an issue here: \
+                        https://github.com/teloxide/teloxide/issues.", error);
+                                false
+                            }
+                            Ok(_) => true,
+                        })
+                        .map(|update| {
+                            update.expect("See the previous .filter() call")
+                        })
+                        .collect::<Vec<Update>>();
+
                     if let Some(upd) = updates.last() {
                         offset = upd.id + 1;
                     }
