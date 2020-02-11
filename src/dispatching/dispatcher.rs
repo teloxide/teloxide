@@ -230,6 +230,8 @@ where
 
         update_listener
             .for_each_concurrent(None, move |update| async move {
+                log::trace!("Dispatcher received an update: {:?}", update);
+
                 let update = match update {
                     Ok(update) => update,
                     Err(error) => {
