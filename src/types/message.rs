@@ -35,7 +35,7 @@ pub enum MessageKind {
     Common {
         /// Sender, empty for messages sent to channels.
         #[serde(flatten)]
-        from: Option<Sender>,
+        from: User,
 
         #[serde(flatten)]
         forward_kind: ForwardKind,
@@ -142,17 +142,6 @@ pub enum MessageKind {
         /// Telegram Passport data.
         passport_data: PassportData,
     },
-}
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub enum Sender {
-    /// Sender of a message from chat.
-    #[serde(rename = "from")]
-    User(User),
-
-    /// Signature of a sender of a message from a channel.
-    #[serde(rename = "author_signature")]
-    Signature(String),
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -340,7 +329,7 @@ mod getters {
                 Pinned, SuccessfulPayment, SupergroupChatCreated,
             },
         },
-        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, Sender, True,
+        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, True,
         User,
     };
 
@@ -350,9 +339,9 @@ mod getters {
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
         /// NOTE: this is getter for both `from` and `author_signature`
-        pub fn from(&self) -> Option<&Sender> {
+        pub fn from(&self) -> Option<&User> {
             match &self.kind {
-                Common { from, .. } => from.as_ref(),
+                Common { from, .. } => Some(&from),
                 _ => None,
             }
         }

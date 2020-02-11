@@ -51,7 +51,7 @@ impl MessageEntity {
 mod tests {
     use super::*;
     use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, MessageKind, Sender,
+        Chat, ChatKind, ForwardKind, MediaKind, MessageKind,
     };
 
     #[test]
@@ -116,14 +116,14 @@ mod tests {
                 photo: None,
             },
             kind: MessageKind::Common {
-                from: Some(Sender::User(User {
+                from: Some(User {
                     id: 0,
                     is_bot: false,
                     first_name: "".to_string(),
                     last_name: None,
                     username: None,
                     language_code: None,
-                })),
+                }),
                 forward_kind: ForwardKind::Origin {
                     reply_to_message: None,
                 },

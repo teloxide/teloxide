@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{
     CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
-    PollAnswer, PreCheckoutQuery, Sender, ShippingQuery, User,
+    PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -80,14 +80,8 @@ pub enum UpdateKind {
 impl Update {
     pub fn user(&self) -> Option<&User> {
         match &self.kind {
-            UpdateKind::Message(m) => match m.from() {
-                Some(Sender::User(user)) => Some(user),
-                _ => None,
-            },
-            UpdateKind::EditedMessage(m) => match m.from() {
-                Some(Sender::User(user)) => Some(user),
-                _ => None,
-            },
+            UpdateKind::Message(m) => m.from(),
+            UpdateKind::EditedMessage(m) => m.from(),
             UpdateKind::CallbackQuery(query) => Some(&query.from),
             UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
             UpdateKind::InlineQuery(query) => Some(&query.from),
@@ -114,7 +108,7 @@ impl Update {
 mod test {
     use crate::types::{
         Chat, ChatKind, ForwardKind, LanguageCode, MediaKind, Message,
-        MessageKind, Sender, Update, UpdateKind, User,
+        MessageKind, Update, UpdateKind, User,
     };
 
     // TODO: more tests for deserialization
@@ -158,14 +152,14 @@ mod test {
                     photo: None,
                 },
                 kind: MessageKind::Common {
-                    from: Some(Sender::User(User {
+                    from: Some(User {
                         id: 218_485_655,
                         is_bot: false,
                         first_name: String::from("Waffle"),
                         last_name: None,
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(LanguageCode::EN),
-                    })),
+                    }),
                     forward_kind: ForwardKind::Origin {
                         reply_to_message: None,
                     },
