@@ -36,6 +36,7 @@ impl FavouriteMusic {
 // [A UserInfo's data]
 // ============================================================================
 
+// TODO: implement a type-safe UserInfo without lots of .unwrap
 #[derive(Default)]
 struct UserInfo {
     full_name: Option<String>,
