@@ -158,14 +158,14 @@ mod test {
                     photo: None,
                 },
                 kind: MessageKind::Common {
-                    from: Sender::User(User {
+                    from: Some(Sender::User(User {
                         id: 218_485_655,
                         is_bot: false,
                         first_name: String::from("Waffle"),
                         last_name: None,
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(LanguageCode::EN),
-                    }),
+                    })),
                     forward_kind: ForwardKind::Origin {
                         reply_to_message: None,
                     },

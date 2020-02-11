@@ -35,7 +35,7 @@ pub enum MessageKind {
     Common {
         /// Sender, empty for messages sent to channels.
         #[serde(flatten)]
-        from: Sender,
+        from: Option<Sender>,
 
         #[serde(flatten)]
         forward_kind: ForwardKind,
@@ -352,7 +352,7 @@ mod getters {
         /// NOTE: this is getter for both `from` and `author_signature`
         pub fn from(&self) -> Option<&Sender> {
             match &self.kind {
-                Common { from, .. } => Some(from),
+                Common { from, .. } => from.as_ref(),
                 _ => None,
             }
         }
