@@ -1,11 +1,12 @@
-use syn::parse::{Parse, ParseStream};
-use syn::{LitStr, Token};
-
+use syn::{
+    parse::{Parse, ParseStream},
+    LitStr, Token,
+};
 
 pub enum BotCommandAttribute {
     Prefix,
     Description,
-    RenameRule
+    RenameRule,
 }
 
 impl Parse for BotCommandAttribute {
@@ -15,27 +16,23 @@ impl Parse for BotCommandAttribute {
             "prefix" => Ok(BotCommandAttribute::Prefix),
             "description" => Ok(BotCommandAttribute::Description),
             "rename" => Ok(BotCommandAttribute::RenameRule),
-            _ => Err(syn::Error::new(name_arg.span(), "unexpected argument"))
+            _ => Err(syn::Error::new(name_arg.span(), "unexpected argument")),
         }
     }
 }
 
 pub struct Attr {
     name: BotCommandAttribute,
-    value: String
+    value: String,
 }
 
-impl Parse for Attr
-{
+impl Parse for Attr {
     fn parse(input: ParseStream) -> Result<Self, syn::Error> {
         let name = input.parse::<BotCommandAttribute>()?;
         input.parse::<Token![=]>()?;
         let value = input.parse::<LitStr>()?.value();
 
-        Ok(Self {
-            name,
-            value
-        })
+        Ok(Self { name, value })
     }
 }
 
@@ -50,7 +47,7 @@ impl Attr {
 }
 
 pub struct VecAttrs {
-    pub data: Vec<Attr>
+    pub data: Vec<Attr>,
 }
 
 impl Parse for VecAttrs {
@@ -62,8 +59,6 @@ impl Parse for VecAttrs {
                 input.parse::<Token![,]>()?;
             }
         }
-        Ok(Self {
-            data
-        })
+        Ok(Self { data })
     }
 }

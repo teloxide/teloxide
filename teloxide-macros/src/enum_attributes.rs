@@ -15,14 +15,14 @@ impl CommandEnum {
         let rename = attrs.rename;
         if let Some(rename_rule) = &rename {
             match rename_rule.as_str() {
-                "lowercase" => {},
+                "lowercase" => {}
                 _ => return Err("disallowed value".to_owned()),
             }
         }
         Ok(Self {
             prefix,
             description,
-            rename_rule: rename
+            rename_rule: rename,
         })
     }
 }
@@ -30,7 +30,7 @@ impl CommandEnum {
 struct CommandAttrs {
     prefix: Option<String>,
     description: Option<String>,
-    rename: Option<String>
+    rename: Option<String>,
 }
 
 fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
@@ -41,7 +41,9 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
     for attr in attrs {
         match attr.name() {
             BotCommandAttribute::Prefix => prefix = Some(attr.value()),
-            BotCommandAttribute::Description => description = Some(attr.value()),
+            BotCommandAttribute::Description => {
+                description = Some(attr.value())
+            }
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
             #[allow(unreachable_patterns)]
             _ => return Err("unexpected attribute".to_owned()),
@@ -51,6 +53,6 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
     Ok(CommandAttrs {
         prefix,
         description,
-        rename: rename_rule
+        rename: rename_rule,
     })
 }
