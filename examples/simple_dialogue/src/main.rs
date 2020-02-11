@@ -152,6 +152,7 @@ async fn handle_message(ctx: Ctx) -> Res {
 #[tokio::main]
 async fn main() {
     std::env::set_var("RUST_LOG", "simple_dialogue=trace");
+    std::env::set_var("RUST_LOG", "teloxide=error");
     pretty_env_logger::init();
     log::info!("Starting the simple_dialogue bot!");
 
