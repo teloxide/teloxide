@@ -34,7 +34,6 @@ pub struct Message {
 pub enum MessageKind {
     Common {
         /// Sender, empty for messages sent to channels.
-        #[serde(flatten)]
         from: User,
 
         #[serde(flatten)]
