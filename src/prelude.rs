@@ -9,7 +9,6 @@ pub use crate::{
         Dispatcher, DispatcherHandlerCtx,
     },
     requests::{Request, ResponseResult},
-    state,
     types::Message,
     Bot, RequestError,
 };
