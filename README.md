@@ -16,18 +16,17 @@
 </div>
 
 ## Getting started
- 1. Be sure that you are up to date:
+ 1. Create a new bot using [@botfather](https://t.me/botfather) to get a token in the format `123456789:somemanyletters`.
+ 2. Be sure that you are up to date:
 ```bash
 $ rustup update stable
 ```
 
- 2. To create a new bot, execute `cargo new` and put the following lines into your `Cargo.toml`:
+ 3. To create a new bot, execute `cargo new` and put the following lines into your `Cargo.toml`:
 ```toml
 [dependencies]
 teloxide = "0.1.0"
 ```
-
- 3. Create a new bot using [@botfather](https://t.me/botfather), and after that you'll get a token in format `123456789:somemanyletters`.
 
 ## Writing your first bot
 Open `main.rs` file, because we're gonna write a ping-pong-bot!
