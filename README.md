@@ -30,6 +30,8 @@ $ rustup update stable
 ```toml
 [dependencies]
 teloxide = "0.1.0"
+pretty_env_logger = "0.3.1"
+log = "0.4.8"
 tokio = { version = "0.2.11", features = ["full"] }
 ```
 
