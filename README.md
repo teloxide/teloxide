@@ -22,7 +22,7 @@
 $ rustup update stable
 ```
 
- 3. Execute `cargo new my_bot`, enter the directory and put this into your `Cargo.toml`:
+ 3. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
 teloxide = "0.1.0"
