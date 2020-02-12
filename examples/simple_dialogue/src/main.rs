@@ -3,6 +3,8 @@
 #[macro_use]
 extern crate smart_default;
 
+use std::env::{set_var, var};
+
 use teloxide::{
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
@@ -173,12 +175,14 @@ async fn handle_message(ctx: Ctx<Dialogue>) -> Res {
 
 #[tokio::main]
 async fn main() {
-    std::env::set_var("RUST_LOG", "simple_dialogue=trace");
-    std::env::set_var("RUST_LOG", "teloxide=error");
+    set_var("RUST_LOG", "simple_dialogue=trace");
+    set_var("RUST_LOG", "teloxide=error");
     pretty_env_logger::init();
     log::info!("Starting the simple_dialogue bot!");
 
-    Dispatcher::new(Bot::new("MyAwesomeToken"))
+    let bot = Bot::new(var("TELOXIDE_TOKEN").unwrap());
+
+    Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
             handle_message(ctx)
                 .await
