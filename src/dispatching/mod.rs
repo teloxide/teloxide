@@ -42,7 +42,7 @@
 //! # }
 //! ```
 //!
-//! For a bit more complicated example, please see [examples/simple_dialogue].
+//! For a bit more complicated example, please see [examples/dialogue_bot].
 //!
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
 //! [11 update kinds]: crate::types::UpdateKind
@@ -52,7 +52,7 @@
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 //! [`DispatcherHandlerResult`]: crate::dispatching::DispatcherHandlerResult
 //! [`Bot`]: crate::Bot
-//! [examples/simple_dialogue]: https://github.com/teloxide/teloxide/tree/dev/examples/simple_dialogue
+//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/dev/examples/dialogue_bot
 
 mod ctx_handlers;
 pub mod dialogue;
