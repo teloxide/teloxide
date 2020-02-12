@@ -30,6 +30,7 @@ $ rustup update stable
 ```toml
 [dependencies]
 teloxide = "0.1.0"
+tokio = { version = "0.2.11", features = ["full"] }
 ```
 
 ## The ping-pong bot
