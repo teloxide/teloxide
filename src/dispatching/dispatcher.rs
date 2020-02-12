@@ -300,27 +300,30 @@ where
         update: Upd,
     ) -> Option<Upd> {
         stream::iter(handlers)
-            .fold(Some(update), |acc, handler| async move {
-                // Option::and_then is not working here, because
-                // Middleware::handle is asynchronous.
-                match acc {
-                    Some(update) => {
-                        let DispatcherHandlerResult { next, result } = handler
-                            .handle_ctx(DispatcherHandlerCtx {
-                                bot: Arc::clone(&self.bot),
-                                update,
-                            })
-                            .await;
+            .fold(Some(update), |acc, handler| {
+                async move {
+                    // Option::and_then is not working here, because
+                    // Middleware::handle is asynchronous.
+                    match acc {
+                        Some(update) => {
+                            let DispatcherHandlerResult { next, result } =
+                                handler
+                                    .handle_ctx(DispatcherHandlerCtx {
+                                        bot: Arc::clone(&self.bot),
+                                        update,
+                                    })
+                                    .await;
 
-                        if let Err(error) = result {
-                            self.handlers_error_handler
-                                .handle_error(error)
-                                .await
+                            if let Err(error) = result {
+                                self.handlers_error_handler
+                                    .handle_error(error)
+                                    .await
+                            }
+
+                            next
                         }
-
-                        next
+                        None => None,
                     }
-                    None => None,
                 }
             })
             .await

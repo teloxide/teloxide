@@ -50,9 +50,7 @@ impl MessageEntity {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, MessageKind,
-    };
+    use crate::types::{Chat, ChatKind, ForwardKind, MediaKind, MessageKind};
 
     #[test]
     fn recursive_kind() {
