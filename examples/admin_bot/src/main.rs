@@ -5,7 +5,7 @@ use teloxide::types::ChatPermissions;
 type Ctx = DispatcherHandlerCtx<Message>;
 
 #[derive(BotCommand)]
-#[command(rename = "lowercase", description = "use command in format /%command% %num% %unit%")]
+#[command(rename = "lowercase", description = "Use commands in format /%command% %num% %unit%")]
 enum Command {
     #[command(description = "kick user from chat.")]
     Kick,
@@ -22,7 +22,7 @@ fn calc_restrict_time(num: i32, unit: &str) -> Result<i32, &str> {
         "h"|"hours" => Ok(num * 3600),
         "m"|"minutes" => Ok(num * 60),
         "s"|"seconds" => Ok(num),
-        _ => Err("allowed units: *h*, *m*, *s*")
+        _ => Err("allowed units: h, m, s")
     }
 }
 
@@ -49,7 +49,7 @@ fn parse_time_restrict(args: Vec<&str>) -> Result<i32, &str> {
 
 async fn handle_command(ctx: Ctx) -> Result<(), ()> {
     if let Some(text) = ctx.update.text() {
-        let (command, args): (Command, Vec<&str>) = Command::parse(text).unwrap_or((Command::Help, vec![]));
+        let (command, args): (Command, Vec<&str>) = Command::parse(text).ok_or(())?;
 
         match command {
             Command::Help => {
@@ -58,10 +58,12 @@ async fn handle_command(ctx: Ctx) -> Result<(), ()> {
             Command::Kick => {
                 match ctx.update.reply_to_message() {
                     Some(mes) => {
-                        ctx.bot.unban_chat_member(
-                            mes.chat_id(),
-                            mes.from().unwrap().id
-                        ).send().await;
+                        if let Some(user) = mes.from() {
+                            ctx.bot.unban_chat_member(
+                                ctx.update.chat_id(),
+                                user.id
+                            ).send().await;
+                        }
                     },
                     None => {
                         ctx.reply_to("Use this command in reply to another message").send().await;
@@ -72,14 +74,15 @@ async fn handle_command(ctx: Ctx) -> Result<(), ()> {
                 match ctx.update.reply_to_message() {
                     Some(mes) => match parse_time_restrict(args) {
                         Ok(time) => {
-                            dbg!(&ctx.update);
-                            ctx.bot.kick_chat_member(
-                                mes.chat_id(),
-                                mes.from().unwrap().id
-                            )
-                            .until_date(time)
-                            .send()
-                            .await;
+                            if let Some(user) = mes.from() {
+                                ctx.bot.kick_chat_member(
+                                    ctx.update.chat_id(),
+                                    user.id
+                                )
+                                    .until_date(ctx.update.date + time)
+                                    .send()
+                                    .await;
+                            }
                         }
                         Err(msg) => {
                             ctx.answer(msg).send().await;
@@ -94,14 +97,16 @@ async fn handle_command(ctx: Ctx) -> Result<(), ()> {
                 match ctx.update.reply_to_message() {
                     Some(mes) => match parse_time_restrict(args) {
                         Ok(time) => {
-                            ctx.bot.restrict_chat_member(
-                                mes.chat_id(),
-                                mes.from().unwrap().id,
+                            if let Some(user) = mes.from() {
+                                ctx.bot.restrict_chat_member(
+                                ctx.update.chat_id(),
+                                user.id,
                                 ChatPermissions::default()
                             )
-                                .until_date(time)
+                                .until_date(ctx.update.date + time)
                                 .send()
                                 .await;
+                            }
                         }
                         Err(msg) => {
                             ctx.answer(msg).send().await;
@@ -122,7 +127,7 @@ async fn handle_command(ctx: Ctx) -> Result<(), ()> {
 async fn main() {
     pretty_env_logger::init();
 
-    let bot = Bot::new("865293832:AAHD-ox6hi6Ws_pxBFb8VIp1uymHoMab2MM");
+    let bot = Bot::new("YourAwesomeToken");
     Dispatcher::new(bot)
         .message_handler(&handle_command)
         .dispatch()
