@@ -16,7 +16,7 @@
 </div>
 
 ## Getting started
- 1. Create a new bot using [@botfather](https://t.me/botfather) to get a token in the format `123456789:somemanyletters`.
+ 1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:somemanyletters`.
  2. Be sure that you are up to date:
 ```bash
 $ rustup update stable
