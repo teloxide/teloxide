@@ -19,7 +19,7 @@
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
 ```bash
-export TELOXIDE_TOKEN=MyAwesomeToken
+$ export TELOXIDE_TOKEN=MyAwesomeToken
 ```
  2. Be sure that you are up to date:
 ```bash
