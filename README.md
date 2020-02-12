@@ -27,10 +27,11 @@ $ rustup update stable
 teloxide = "0.1.0"
 ```
 
-## Writing your first bot
-First, create a new bot using [@botfather](https://t.me/botfather), and after that you'll get a token in format `123456789:somemanyletters`.
+ 3. Create a new bot using [@botfather](https://t.me/botfather), and after that you'll get a token in format `123456789:somemanyletters`.
 
-Next, open `main.rs` file, because we're gonna write a ping-pong-bot!
+## Writing your first bot
+Open `main.rs` file, because we're gonna write a ping-pong-bot!
+
 ```rust
 use teloxide::prelude::*;
 
