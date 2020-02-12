@@ -175,10 +175,10 @@ async fn handle_message(ctx: Ctx<Dialogue>) -> Res {
 
 #[tokio::main]
 async fn main() {
-    set_var("RUST_LOG", "simple_dialogue=trace");
+    set_var("RUST_LOG", "dialogue_bot=trace");
     set_var("RUST_LOG", "teloxide=error");
     pretty_env_logger::init();
-    log::info!("Starting the simple_dialogue bot!");
+    log::info!("Starting the dialogue_bot bot!");
 
     let bot = Bot::new(var("TELOXIDE_TOKEN").unwrap());
 

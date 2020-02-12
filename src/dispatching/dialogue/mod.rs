@@ -21,7 +21,7 @@
 //! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
 //! update the session.
 //!
-//! Please, see [examples/simple_dialogue] as an example.
+//! Please, see [examples/dialogue_bot] as an example.
 //!
 //! [`Storage`]: crate::dispatching::dialogue::Storage
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
@@ -30,7 +30,7 @@
 //! [`DialogueStage::Next`]: crate::dispatching::dialogue::DialogueStage::Next
 //! [`CtxHandler`]: crate::dispatching::CtxHandler
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [examples/simple_dialogue]: https://github.com/teloxide/teloxide/tree/dev/examples/simple_dialogue
+//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/dev/examples/dialogue_bot
 
 #![allow(clippy::module_inception)]
 #![allow(clippy::type_complexity)]
