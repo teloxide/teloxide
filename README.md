@@ -22,7 +22,7 @@
 $ rustup update stable
 ```
 
- 3. To create a new bot, execute `cargo new` and put the following lines into your `Cargo.toml`:
+ 3. Execute `cargo new` and put the following lines into your `Cargo.toml`:
 ```toml
 [dependencies]
 teloxide = "0.1.0"
