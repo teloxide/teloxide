@@ -18,20 +18,16 @@
 </div>
 
 # Getting started
+ 1. Be sure that you are up to date:
+```bash
+$ rustup update stable
+```
 
-Library requires rustc version more than 1.40.0. You can check your rustc version with command:
-```shell script
-rustup -V
-```
-If your rustc version lower than 1.40.0, update it with:
-```shell script
-rustup update stable
-```
-Than create Cargo project and write
+ 2. To create a new bot, execute `cargo new` and put the following lines into your `Cargo.toml`:
 ```toml
+[dependencies]
 teloxide = "0.1.0"
 ```
-in your Cargo.toml file.
 
 ### Writing first bot
 First, create bot with [@botfather](https://t.me/botfather). After creating, botfather give you
