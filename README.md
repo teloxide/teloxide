@@ -28,7 +28,7 @@ $ rustup update stable
 teloxide = "0.1.0"
 ```
 
-## The ping-pong bott!
+## The ping-pong bot
 ```rust
 use teloxide::prelude::*;
 
