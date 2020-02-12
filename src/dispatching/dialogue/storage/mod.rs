@@ -1,6 +1,5 @@
 mod in_mem_storage;
 
-use crate::dispatching::dialogue::Dialogue;
 use async_trait::async_trait;
 pub use in_mem_storage::InMemStorage;
 
@@ -14,21 +13,16 @@ pub use in_mem_storage::InMemStorage;
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 #[async_trait(?Send)]
 #[async_trait]
-pub trait Storage<State, T> {
+pub trait Storage<D> {
     /// Removes a dialogue with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
     /// `dialogue` was deleted.
-    async fn remove_dialogue(&self, chat_id: i64)
-        -> Option<Dialogue<State, T>>;
+    async fn remove_dialogue(&self, chat_id: i64) -> Option<D>;
 
     /// Updates a dialogue with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
     /// `dialogue` was updated.
-    async fn update_dialogue(
-        &self,
-        chat_id: i64,
-        dialogue: Dialogue<State, T>,
-    ) -> Option<Dialogue<State, T>>;
+    async fn update_dialogue(&self, chat_id: i64, dialogue: D) -> Option<D>;
 }

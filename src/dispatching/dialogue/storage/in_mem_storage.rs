@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 
 use super::Storage;
-use crate::dispatching::dialogue::Dialogue;
 use std::collections::HashMap;
 use tokio::sync::Mutex;
 
@@ -13,25 +12,18 @@ use tokio::sync::Mutex;
 /// store them somewhere on a drive, you need to implement a storage
 /// communicating with a DB.
 #[derive(Debug, Default)]
-pub struct InMemStorage<State, T> {
-    map: Mutex<HashMap<i64, Dialogue<State, T>>>,
+pub struct InMemStorage<D> {
+    map: Mutex<HashMap<i64, D>>,
 }
 
 #[async_trait(?Send)]
 #[async_trait]
-impl<State, T> Storage<State, T> for InMemStorage<State, T> {
-    async fn remove_dialogue(
-        &self,
-        chat_id: i64,
-    ) -> Option<Dialogue<State, T>> {
+impl<D> Storage<D> for InMemStorage<D> {
+    async fn remove_dialogue(&self, chat_id: i64) -> Option<D> {
         self.map.lock().await.remove(&chat_id)
     }
 
-    async fn update_dialogue(
-        &self,
-        chat_id: i64,
-        dialogue: Dialogue<State, T>,
-    ) -> Option<Dialogue<State, T>> {
+    async fn update_dialogue(&self, chat_id: i64, dialogue: D) -> Option<D> {
         self.map.lock().await.insert(chat_id, dialogue)
     }
 }

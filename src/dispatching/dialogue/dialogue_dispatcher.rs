@@ -1,7 +1,6 @@
 use crate::dispatching::{
     dialogue::{
-        Dialogue, DialogueHandlerCtx, DialogueStage, GetChatId, InMemStorage,
-        Storage,
+        DialogueHandlerCtx, DialogueStage, GetChatId, InMemStorage, Storage,
     },
     CtxHandler, DispatcherHandlerCtx,
 };
@@ -13,16 +12,14 @@ use std::{future::Future, pin::Pin};
 /// an instance of this dispatcher into the [`Dispatcher`]'s methods.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub struct DialogueDispatcher<'a, State, T, H> {
-    storage: Box<dyn Storage<State, T> + 'a>,
+pub struct DialogueDispatcher<'a, D, H> {
+    storage: Box<dyn Storage<D> + 'a>,
     handler: H,
 }
 
-impl<'a, State, T, H> DialogueDispatcher<'a, State, T, H>
+impl<'a, D, H> DialogueDispatcher<'a, D, H>
 where
-    Dialogue<State, T>: Default + 'a,
-    T: Default + 'a,
-    State: Default + 'a,
+    D: Default + 'a,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
@@ -40,7 +37,7 @@ where
     #[must_use]
     pub fn with_storage<Stg>(handler: H, storage: Stg) -> Self
     where
-        Stg: Storage<State, T> + 'a,
+        Stg: Storage<D> + 'a,
     {
         Self {
             storage: Box::new(storage),
@@ -49,12 +46,12 @@ where
     }
 }
 
-impl<'a, State, T, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
-    for DialogueDispatcher<'a, State, T, H>
+impl<'a, D, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
+    for DialogueDispatcher<'a, D, H>
 where
-    H: CtxHandler<DialogueHandlerCtx<Upd, State, T>, DialogueStage<State, T>>,
+    H: CtxHandler<DialogueHandlerCtx<Upd, D>, DialogueStage<D>>,
     Upd: GetChatId,
-    Dialogue<State, T>: Default,
+    D: Default,
 {
     fn handle_ctx<'b>(
         &'b self,

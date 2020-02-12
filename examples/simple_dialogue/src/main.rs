@@ -1,19 +1,22 @@
-#[macro_use]
-extern crate strum_macros;
+#![allow(clippy::trivial_regex)]
+
 #[macro_use]
 extern crate smart_default;
 
-use std::fmt::{self, Display, Formatter};
+use std::env::{set_var, var};
+
 use teloxide::{
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
 };
 
+use parse_display::{Display, FromStr};
+
 // ============================================================================
 // [Favourite music kinds]
 // ============================================================================
 
-#[derive(Copy, Clone, Display, EnumString)]
+#[derive(Copy, Clone, Display, FromStr)]
 enum FavouriteMusic {
     Rock,
     Metal,
@@ -33,115 +36,136 @@ impl FavouriteMusic {
 }
 
 // ============================================================================
-// [A UserInfo's data]
+// [A type-safe finite automaton]
 // ============================================================================
 
-// TODO: implement a type-safe UserInfo without lots of .unwrap
-#[derive(Default)]
-struct UserInfo {
-    full_name: Option<String>,
-    age: Option<u8>,
-    favourite_music: Option<FavouriteMusic>,
+#[derive(Clone)]
+struct ReceiveAgeState {
+    full_name: String,
 }
 
-impl Display for UserInfo {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
-        write!(
-            f,
-            "Your full name: {}, your age: {}, your favourite music: {}",
-            self.full_name.as_ref().unwrap(),
-            self.age.unwrap(),
-            self.favourite_music.unwrap()
-        )
-    }
+#[derive(Clone)]
+struct ReceiveFavouriteMusicState {
+    data: ReceiveAgeState,
+    age: u8,
 }
 
-// ============================================================================
-// [States of a dialogue]
-// ============================================================================
+#[derive(Display)]
+#[display(
+    "Your full name: {data.data.full_name}, your age: {data.age}, your \
+     favourite music: {favourite_music}"
+)]
+struct ExitState {
+    data: ReceiveFavouriteMusicState,
+    favourite_music: FavouriteMusic,
+}
 
 #[derive(SmartDefault)]
-enum State {
+enum Dialogue {
     #[default]
     Start,
-    FullName,
-    Age,
-    FavouriteMusic,
+    ReceiveFullName,
+    ReceiveAge(ReceiveAgeState),
+    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
 }
 
 // ============================================================================
 // [Control a dialogue]
 // ============================================================================
 
-type Ctx = DialogueHandlerCtx<Message, State, UserInfo>;
-type Res = Result<DialogueStage<State, UserInfo>, RequestError>;
+type Ctx<State> = DialogueHandlerCtx<Message, State>;
+type Res = Result<DialogueStage<Dialogue>, RequestError>;
 
-async fn send_favourite_music_types(ctx: &Ctx) -> Result<(), RequestError> {
-    ctx.answer("Good. Now choose your favourite music:")
-        .reply_markup(FavouriteMusic::markup())
-        .send()
-        .await?;
-    Ok(())
-}
-
-async fn start(mut ctx: Ctx) -> Res {
+async fn start(ctx: Ctx<()>) -> Res {
     ctx.answer("Let's start! First, what's your full name?")
         .send()
         .await?;
-    state!(ctx, State::FullName);
-    next(ctx.dialogue)
+    next(Dialogue::ReceiveFullName)
 }
 
-async fn full_name(mut ctx: Ctx) -> Res {
-    ctx.answer("What a wonderful name! Your age?")
-        .send()
-        .await?;
-    ctx.dialogue.data.full_name = Some(ctx.update.text().unwrap().to_owned());
-    state!(ctx, State::Age);
-    next(ctx.dialogue)
-}
-
-async fn age(mut ctx: Ctx) -> Res {
-    match ctx.update.text().unwrap().parse() {
-        Ok(ok) => {
-            send_favourite_music_types(&ctx).await?;
-            ctx.dialogue.data.age = Some(ok);
-            state!(ctx, State::FavouriteMusic);
+async fn full_name(ctx: Ctx<()>) -> Res {
+    match ctx.update.text() {
+        None => {
+            ctx.answer("Please, send me a text message!").send().await?;
+            next(Dialogue::ReceiveFullName)
         }
-        Err(_) => ctx
-            .answer("Oh, please, enter a number!")
-            .send()
-            .await
-            .map(|_| ())?,
-    }
-
-    next(ctx.dialogue)
-}
-
-async fn favourite_music(mut ctx: Ctx) -> Res {
-    match ctx.update.text().unwrap().parse() {
-        Ok(ok) => {
-            ctx.dialogue.data.favourite_music = Some(ok);
-            ctx.answer(format!("Fine. {}", ctx.dialogue.data))
+        Some(full_name) => {
+            ctx.answer("What a wonderful name! Your age?")
                 .send()
                 .await?;
+            next(Dialogue::ReceiveAge(ReceiveAgeState {
+                full_name: full_name.to_owned(),
+            }))
+        }
+    }
+}
+
+async fn age(ctx: Ctx<ReceiveAgeState>) -> Res {
+    match ctx.update.text().unwrap().parse() {
+        Ok(age) => {
+            ctx.answer("Good. Now choose your favourite music:")
+                .reply_markup(FavouriteMusic::markup())
+                .send()
+                .await?;
+            next(Dialogue::ReceiveFavouriteMusic(
+                ReceiveFavouriteMusicState {
+                    data: ctx.dialogue,
+                    age,
+                },
+            ))
+        }
+        Err(_) => {
+            ctx.answer("Oh, please, enter a number!").send().await?;
+            next(Dialogue::ReceiveAge(ctx.dialogue))
+        }
+    }
+}
+
+async fn favourite_music(ctx: Ctx<ReceiveFavouriteMusicState>) -> Res {
+    match ctx.update.text().unwrap().parse() {
+        Ok(favourite_music) => {
+            ctx.answer(format!(
+                "Fine. {}",
+                ExitState {
+                    data: ctx.dialogue.clone(),
+                    favourite_music
+                }
+            ))
+            .send()
+            .await?;
             exit()
         }
         Err(_) => {
             ctx.answer("Oh, please, enter from the keyboard!")
                 .send()
                 .await?;
-            next(ctx.dialogue)
+            next(Dialogue::ReceiveFavouriteMusic(ctx.dialogue))
         }
     }
 }
 
-async fn handle_message(ctx: Ctx) -> Res {
-    match ctx.dialogue.state {
-        State::Start => start(ctx).await,
-        State::FullName => full_name(ctx).await,
-        State::Age => age(ctx).await,
-        State::FavouriteMusic => favourite_music(ctx).await,
+async fn handle_message(ctx: Ctx<Dialogue>) -> Res {
+    match ctx {
+        DialogueHandlerCtx {
+            bot,
+            update,
+            dialogue: Dialogue::Start,
+        } => start(DialogueHandlerCtx::new(bot, update, ())).await,
+        DialogueHandlerCtx {
+            bot,
+            update,
+            dialogue: Dialogue::ReceiveFullName,
+        } => full_name(DialogueHandlerCtx::new(bot, update, ())).await,
+        DialogueHandlerCtx {
+            bot,
+            update,
+            dialogue: Dialogue::ReceiveAge(s),
+        } => age(DialogueHandlerCtx::new(bot, update, s)).await,
+        DialogueHandlerCtx {
+            bot,
+            update,
+            dialogue: Dialogue::ReceiveFavouriteMusic(s),
+        } => favourite_music(DialogueHandlerCtx::new(bot, update, s)).await,
     }
 }
 
@@ -151,11 +175,14 @@ async fn handle_message(ctx: Ctx) -> Res {
 
 #[tokio::main]
 async fn main() {
-    std::env::set_var("RUST_LOG", "simple_dialogue=trace");
+    set_var("RUST_LOG", "simple_dialogue=trace");
+    set_var("RUST_LOG", "teloxide=error");
     pretty_env_logger::init();
     log::info!("Starting the simple_dialogue bot!");
 
-    Dispatcher::new(Bot::new("YourAwesomeToken"))
+    let bot = Bot::new(var("TELOXIDE_TOKEN").unwrap());
+
+    Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
             handle_message(ctx)
                 .await
