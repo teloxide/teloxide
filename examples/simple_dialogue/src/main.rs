@@ -178,7 +178,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting the simple_dialogue bot!");
 
-    Dispatcher::new(Bot::new("1061598315:AAErEDodTsrqD3UxA_EvFyEfXbKA6DT25G0"))
+    Dispatcher::new(Bot::new("MyAwesomeToken"))
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
             handle_message(ctx)
                 .await
