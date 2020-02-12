@@ -17,6 +17,10 @@
 
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
+ 2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
+```bash
+export TELOXIDE_TOKEN=MyAwesomeToken
+```
  2. Be sure that you are up to date:
 ```bash
 $ rustup update stable
@@ -32,20 +36,22 @@ teloxide = "0.1.0"
 ```rust
 use teloxide::prelude::*;
 
+use std::env::{set_var, var};
+
 #[tokio::main]
 async fn main() {
     // Configure a fancy logger. Let this bot print everything, but restrict
     // teloxide to only log errors.
-    std::env::set_var("RUST_LOG", "ping_pong_bot=trace");
-    std::env::set_var("RUST_LOG", "teloxide=error");
+    set_var("RUST_LOG", "ping_pong_bot=trace");
+    set_var("RUST_LOG", "teloxide=error");
     pretty_env_logger::init();
     log::info!("Starting the ping-pong bot!");
 
-    // Creates a dispatcher of updates with the specified bot. Don't forget to
-    // replace `MyAwesomeToken` with yours.
-    Dispatcher::<RequestError>::new(Bot::new("MyAwesomeToken"))
-        // Registers a message handler. Inside a body of the closure, answer
-        // `"pong"` to an incoming message.
+    let bot = Bot::new(var("TELOXIDE_TOKEN").unwrap());
+
+    // Create a dispatcher with a single message handler that answers "pong" to
+    // each incoming message.
+    Dispatcher::<RequestError>::new(bot)
         .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
             ctx.answer("pong").send().await?;
             Ok(())
