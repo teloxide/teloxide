@@ -28,9 +28,7 @@ $ rustup update stable
 teloxide = "0.1.0"
 ```
 
-## Writing your first bot
-Open `main.rs` file, because we're gonna write a ping-pong-bot!
-
+## The ping-pong bott!
 ```rust
 use teloxide::prelude::*;
 
