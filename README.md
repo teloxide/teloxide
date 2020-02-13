@@ -16,7 +16,7 @@
 </div>
 
 ## Features
- - **Type-safe.** teloxide leverages the rich Rust's type system with two implications: resistance to human mistakes and very nice integration with IDEs. Write fast, avoid debugging.
+ - **Type-safe.** teloxide leverages the rich Rust's type system with two serious implications: resistance to human mistakes and very nice integration with IDEs. Write fast, avoid debugging.
 
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
