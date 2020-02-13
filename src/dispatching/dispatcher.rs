@@ -85,6 +85,16 @@ where
     }
 
     #[must_use]
+    pub fn update_handler<H, I>(mut self, h: &'a H) -> Self
+    where
+        H: CtxHandler<DispatcherHandlerCtx<Update>, I> + 'a,
+        I: Into<DispatcherHandlerResult<Update, HandlerE>> + 'a,
+    {
+        self.update_handlers = register_handler(self.update_handlers, h);
+        self
+    }
+
+    #[must_use]
     pub fn message_handler<H, I>(mut self, h: &'a H) -> Self
     where
         H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,

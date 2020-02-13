@@ -10,14 +10,22 @@ pub struct DispatcherHandlerResult<Upd, E> {
 }
 
 impl<Upd, E> DispatcherHandlerResult<Upd, E> {
-    /// Creates new `DispatcherHandlerResult`.
-    pub fn new(next: Option<Upd>, result: Result<(), E>) -> Self {
-        Self { next, result }
+    /// Creates new `DispatcherHandlerResult` that continues the pipeline.
+    pub fn next(update: Upd, result: Result<(), E>) -> Self {
+        Self {
+            next: Some(update),
+            result,
+        }
+    }
+
+    /// Creates new `DispatcherHandlerResult` that terminates the pipeline.
+    pub fn exit(result: Result<(), E>) -> Self {
+        Self { next: None, result }
     }
 }
 
 impl<Upd, E> From<Result<(), E>> for DispatcherHandlerResult<Upd, E> {
     fn from(result: Result<(), E>) -> Self {
-        Self::new(None, result)
+        Self::exit(result)
     }
 }

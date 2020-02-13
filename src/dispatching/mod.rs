@@ -22,8 +22,8 @@
 //! explicitly, because of automatic conversions. Just return `Result<(), E>` if
 //! you want to terminate the pipeline (see the example below).
 //!
-//! ## Examples
-//! The ping-pong bot ([full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/)):
+//! # Examples
+//! ### The ping-pong bot
 //!
 //! ```
 //! # #[tokio::main]
@@ -32,6 +32,8 @@
 //!
 //! // Setup logging here...
 //!
+//! // Create a dispatcher with a single message handler that answers "pong"
+//! // to each incoming message.
 //! Dispatcher::<RequestError>::new(Bot::new("MyAwesomeToken"))
 //!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
 //!         ctx.answer("pong").send().await?;
@@ -41,6 +43,52 @@
 //!     .await;
 //! # }
 //! ```
+//!
+//! [Full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/)
+//!
+//! ### Multiple handlers
+//!
+//! ```
+//! # #[tokio::main]
+//! # async fn main_() {
+//! use teloxide::prelude::*;
+//!
+//! // Create a dispatcher with multiple handlers of different types. This will
+//! // print One! and Two! on every incoming UpdateKind::Message.
+//! Dispatcher::<RequestError>::new(Bot::new("MyAwesomeToken"))
+//!     // This is the first UpdateKind::Message handler, which will be called
+//!     // after the Update handler below.
+//!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
+//!         log::info!("Two!");
+//!         DispatcherHandlerResult::next(ctx.update, Ok(()))
+//!     })
+//!     // Remember: handler of Update are called first.
+//!     .update_handler(&|ctx: DispatcherHandlerCtx<Update>| async move {
+//!         log::info!("One!");
+//!         DispatcherHandlerResult::next(ctx.update, Ok(()))
+//!     })
+//!     // This handler will be called right after the first UpdateKind::Message
+//!     // handler, because it is registered after.
+//!     .message_handler(&|_ctx: DispatcherHandlerCtx<Message>| async move {
+//!         // The same as DispatcherHandlerResult::exit(Ok(()))
+//!         Ok(())
+//!     })
+//!     // This handler will never be called, because the UpdateKind::Message
+//!     // handler above terminates the pipeline.
+//!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
+//!         log::info!("This will never be printed!");
+//!         DispatcherHandlerResult::next(ctx.update, Ok(()))
+//!     })
+//!     .dispatch()
+//!     .await;
+//!
+//! // Note: if this bot receive, for example, UpdateKind::ChannelPost, it will
+//! // only print "One!", because the UpdateKind::Message handlers will not be
+//! // called.
+//! # }
+//! ```
+//!
+//! [Full](https://github.com/teloxide/teloxide/blob/dev/examples/miltiple_handlers_bot/)
 //!
 //! For a bit more complicated example, please see [examples/dialogue_bot].
 //!
