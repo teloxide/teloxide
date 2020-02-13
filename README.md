@@ -131,7 +131,6 @@ enum Dialogue {
     Start,
     ReceiveAttempt(u8),
 }
-
 async fn handle_message(
     ctx: DialogueHandlerCtx<Message, Dialogue>,
 ) -> Result<DialogueStage<Dialogue>, RequestError> {
@@ -172,7 +171,11 @@ async fn handle_message(
                     }
                 },
                 Err(_) => {
-                    ctx.answer("Oh, please, send me a number!").send().await?;
+                    ctx.answer(
+                        "Oh, please, send me a number in the range [1; 10]!",
+                    )
+                    .send()
+                    .await?;
                     next(ctx.dialogue)
                 }
             },
