@@ -4,7 +4,7 @@
 /// your program.
 ///
 /// # Example
-/// ```
+/// ```no_compile
 /// teloxide::enable_logging!();
 /// ```
 ///
@@ -30,7 +30,7 @@ macro_rules! enable_logging {
 /// Allow printing all logs from your program up to [`LevelFilter::Debug`] (i.e.
 /// do not print traces):
 ///
-/// ```
+/// ```no_compile
 /// teloxide::enable_logging_with_filter!(log::LevelFilter::Debug);
 /// ```
 ///
