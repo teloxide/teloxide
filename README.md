@@ -36,17 +36,13 @@ pretty_env_logger = "0.4.0"
 ```
 
 ## The ping-pong bot
-This bot has a single handler, which answers "pong" on each incoming message:
+This bot has a single handler, which answers "pong" to each incoming message:
 
 ```rust
 use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
-    run().await;
-}
-
-async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting ping_pong_bot!");
 
