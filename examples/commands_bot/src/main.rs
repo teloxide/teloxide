@@ -1,3 +1,5 @@
+// TODO: simplify this and use typed command variants (see https://github.com/teloxide/teloxide/issues/152).
+
 use teloxide::{
     prelude::*, types::ChatPermissions, utils::command::BotCommand,
 };
