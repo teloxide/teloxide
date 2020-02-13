@@ -6,4 +6,4 @@ Cargo.lock
 examples/ping_pong_bot/target
 examples/dialogue_bot/target
 examples/multiple_handlers_bot/target
-examples/commands_bot/target
+examples/admin_bot/target

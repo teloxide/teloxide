@@ -192,7 +192,7 @@ async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting commands_bot!");
+    log::info!("Starting admin_bot!");
 
     let bot = Bot::from_env();
 
