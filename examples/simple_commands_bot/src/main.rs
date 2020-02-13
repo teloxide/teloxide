@@ -18,12 +18,18 @@ async fn handle_command(
 ) -> Result<(), RequestError> {
     let text = match ctx.update.text() {
         Some(text) => text,
-        None => return Ok(()),
+        None => {
+            log::info!("Received a message, but not text.");
+            return Ok(());
+        }
     };
 
     let command = match Command::parse(text) {
         Some((command, _)) => command,
-        None => return Ok(()),
+        None => {
+            log::info!("Received a text message, but not a command.");
+            return Ok(());
+        }
     };
 
     match command {
