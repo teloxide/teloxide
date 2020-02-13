@@ -76,10 +76,8 @@ enum Command {
     Help,
     #[command(description = "be a cat.")]
     Meow,
-    #[command(description = "be a dog.")]
-    Woof,
-    #[command(description = "be a cow.")]
-    Moo,
+    #[command(description = "generate a random number within [0; 1).")]
+    Generate,
 }
 
 async fn handle_command(
@@ -89,7 +87,7 @@ async fn handle_command(
         Some(text) => text,
         None => {
             log::info!("Received a message, but not text.");
-            Ok(())
+            return Ok(());
         }
     };
 
@@ -97,15 +95,18 @@ async fn handle_command(
         Some((command, _)) => command,
         None => {
             log::info!("Received a text message, but not a command.");
-            Ok(())
+            return Ok(());
         }
     };
 
     match command {
         Command::Help => ctx.answer(Command::descriptions()).send().await?,
+        Command::Generate => {
+            ctx.answer(thread_rng().gen_range(0.0, 1.0).to_string())
+                .send()
+                .await?
+        }
         Command::Meow => ctx.answer("I am a cat! Meow!").send().await?,
-        Command::Woof => ctx.answer("I am a dog! Woof!").send().await?,
-        Command::Moo => ctx.answer("I am a cow! Moo!").send().await?,
     };
 
     Ok(())
