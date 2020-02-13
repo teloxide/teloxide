@@ -35,6 +35,8 @@ tokio = "0.2.11"
 ```
 
 ## The ping-pong bot
+This bot has a single handler, which answers "pong" on each incoming message:
+
 ```rust
 use teloxide::prelude::*;
 
@@ -44,11 +46,11 @@ async fn main() {
 }
 
 async fn run() {
-    let bot = Bot::from_env().enable_logging(crate_name!()).build();
+    teloxide::enable_logging!();
     log::info!("Starting ping_pong_bot!");
 
-    // Create a dispatcher with a single message handler that answers "pong" to
-    // each incoming message.
+    let bot = Bot::from_env();
+
     Dispatcher::<RequestError>::new(bot)
         .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
             ctx.answer("pong").send().await?;
