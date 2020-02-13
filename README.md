@@ -142,4 +142,4 @@ async fn main() {
 }
 ```
 
-This is how easy and type-safe to write dialogues using teloxide. Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
+Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
