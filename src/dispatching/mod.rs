@@ -25,7 +25,7 @@
 //! # Examples
 //! ### The ping-pong bot
 //!
-//! ```
+//! ```no_run
 //! # #[tokio::main]
 //! # async fn main_() {
 //! use teloxide::prelude::*;
@@ -34,7 +34,7 @@
 //!
 //! // Create a dispatcher with a single message handler that answers "pong"
 //! // to each incoming message.
-//! Dispatcher::<RequestError>::new(Bot::new("MyAwesomeToken"))
+//! Dispatcher::<RequestError>::new(Bot::from_env())
 //!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
 //!         ctx.answer("pong").send().await?;
 //!         Ok(())
@@ -48,14 +48,14 @@
 //!
 //! ### Multiple handlers
 //!
-//! ```
+//! ```no_run
 //! # #[tokio::main]
 //! # async fn main_() {
 //! use teloxide::prelude::*;
 //!
 //! // Create a dispatcher with multiple handlers of different types. This will
 //! // print One! and Two! on every incoming UpdateKind::Message.
-//! Dispatcher::<RequestError>::new(Bot::new("MyAwesomeToken"))
+//! Dispatcher::<RequestError>::new(Bot::from_env())
 //!     // This is the first UpdateKind::Message handler, which will be called
 //!     // after the Update handler below.
 //!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
