@@ -39,7 +39,7 @@ pretty_env_logger = "0.4.0"
 ```
 
 ## The ping-pong bot
-This bot just answers "pong" to each incoming message:
+This bot has a single message handler, which answers "pong" to each incoming message:
 
 ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/src/main.rs))
 ```rust
