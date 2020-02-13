@@ -211,6 +211,8 @@ async fn main() {
 
 Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
 
+[See more examples](https://github.com/teloxide/teloxide/tree/dev/examples).
+
 ## Recommendations
  - Use this pattern:
  
