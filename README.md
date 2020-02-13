@@ -45,12 +45,8 @@ async fn main() {
 }
 
 async fn run() {
-    // Configure the fancy logger.
-    std::env::set_var("RUST_LOG", "info");
-    pretty_env_logger::init();
+    let bot = Bot::from_env().enable_logging(crate_name!()).build();
     log::info!("Starting ping_pong_bot!");
-
-    let bot = Bot::new(std::env::var("TELOXIDE_TOKEN").unwrap());
 
     // Create a dispatcher with a single message handler that answers "pong" to
     // each incoming message.
