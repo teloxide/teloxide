@@ -6,12 +6,8 @@ async fn main() {
 }
 
 async fn run() {
-    // Configure the fancy logger.
-    std::env::set_var("RUST_LOG", "info");
-    pretty_env_logger::init();
+    let bot = Bot::from_env().enable_logging(crate_name!()).build();
     log::info!("Starting multiple_handlers_bot!");
-
-    let bot = Bot::from_env();
 
     // Create a dispatcher with multiple handlers of different types. This will
     // print One! and Two! on every incoming UpdateKind::Message.

@@ -177,11 +177,8 @@ async fn main() {
 }
 
 async fn run() {
-    std::env::set_var("RUST_LOG", "info");
-    pretty_env_logger::init();
+    let bot = Bot::from_env().enable_logging(crate_name!()).build();
     log::info!("Starting dialogue_bot!");
-
-    let bot = Bot::from_env();
 
     Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {

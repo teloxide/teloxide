@@ -4,7 +4,7 @@
 )]
 #![allow(clippy::match_bool)]
 
-pub use bot::Bot;
+pub use bot::{Bot, BotBuilder};
 pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;
@@ -18,3 +18,11 @@ pub mod types;
 pub mod utils;
 
 extern crate teloxide_macros;
+
+/// Expands to a name of your crate.
+#[macro_export]
+macro_rules! crate_name {
+    () => {
+        env!("CARGO_PKG_NAME")
+    };
+}
