@@ -143,3 +143,28 @@ async fn main() {
 ```
 
 Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
+
+## Recommendations
+ - Use this pattern:
+ 
+ ```rust
+ #[tokio::main]
+ async fn main() {
+     run().await;
+ }
+ 
+ async fn run() {
+     // Your logic here...
+ }
+ ```
+ 
+ Instead of this:
+ 
+ ```rust
+#[tokio::main]
+ async fn main() {
+     // Your logic here...
+ }
+ ```
+ 
+The second one produces very strange compiler messages because of the `#[tokio::main]` macro. The examples in this README uses the first one for brevity.
