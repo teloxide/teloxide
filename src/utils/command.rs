@@ -39,9 +39,12 @@
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
+//! See [examples/admin_bot] as a more complicated examples.
+//!
 //! [`parse_command`]: crate::utils::command::parse_command
 //! [`parse_command_with_prefix`]:
 //! crate::utils::command::parse_command_with_prefix
+//! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/dev/examples/miltiple_handlers_bot/
 
 pub use teloxide_macros::BotCommand;
 
