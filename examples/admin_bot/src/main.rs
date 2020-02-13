@@ -2,8 +2,12 @@ use teloxide::prelude::*;
 use teloxide::utils::command::BotCommand;
 use teloxide::types::ChatPermissions;
 
+// Declare type of handler context
 type Ctx = DispatcherHandlerCtx<Message>;
 
+// Derive trait which allow to parse text with command into enum
+// (rename = "lowercase") means that names of variants of enum will be lowercase before parsing
+// `description` will be add before description of command when you call Command::descriptions()
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "Use commands in format /%command% %num% %unit%")]
 enum Command {
@@ -17,15 +21,17 @@ enum Command {
     Help,
 }
 
+// Calculate time of restrict user.
 fn calc_restrict_time(num: i32, unit: &str) -> Result<i32, &str> {
     match unit {
         "h"|"hours" => Ok(num * 3600),
         "m"|"minutes" => Ok(num * 60),
         "s"|"seconds" => Ok(num),
-        _ => Err("allowed units: h, m, s")
+        _ => Err("Allowed units: h, m, s")
     }
 }
 
+// Parse args which user printed after command.
 fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
     let num = match args.get(0) {
         Some(s) => s,
@@ -42,80 +48,127 @@ fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
     }
 }
 
+// Parse input args into time to restrict
 fn parse_time_restrict(args: Vec<&str>) -> Result<i32, &str> {
     let (num, unit) = parse_args(args)?;
     calc_restrict_time(num, unit)
 }
 
-async fn handle_command(ctx: Ctx) -> Result<(), ()> {
+// Mute user by replied message
+async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
+    match ctx.update.reply_to_message() {
+        Some(mes) => match parse_time_restrict(args) {
+            // Mute user temporarily...
+            Ok(time) => {
+                ctx.bot.restrict_chat_member(
+                        ctx.update.chat_id(),
+                        // Sender of message cannot be only in messages from channels
+                        // so we can use unwrap()
+                        mes.from().unwrap().id,
+                        ChatPermissions::default()
+                    )
+                    .until_date(ctx.update.date + time)
+                    .send()
+                    .await?;
+            }
+            // ...or permanently
+            Err(msg) => {
+                ctx.bot.restrict_chat_member(
+                        ctx.update.chat_id(),
+                        mes.from().unwrap().id,
+                        ChatPermissions::default()
+                    )
+                    .send()
+                    .await?;
+            }
+        },
+        None => {
+            ctx.reply_to("Use this command in reply to another message").send().await?;
+        },
+    }
+    Ok(())
+}
+
+// Kick user by replied message
+async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
+    match ctx.update.reply_to_message() {
+        Some(mes) => {
+            // `unban_chat_member` will also kick user from group chat
+            ctx.bot.unban_chat_member(
+                ctx.update.chat_id(),
+                mes.from().unwrap().id
+            ).send().await?;
+        },
+        None => {
+            ctx.reply_to("Use this command in reply to another message").send().await?;
+        }
+    }
+    Ok(())
+}
+
+// Ban user by replied message
+async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
+    match ctx.update.reply_to_message() {
+        Some(mes) => match parse_time_restrict(args) {
+            // Mute user temporarily...
+            Ok(time) => {
+                ctx.bot.kick_chat_member(
+                    ctx.update.chat_id(),
+                    mes.from().unwrap().id
+                )
+                    .until_date(ctx.update.date + time)
+                    .send()
+                    .await?;
+            }
+            // ...or permanently
+            Err(msg) => {
+                ctx.bot.kick_chat_member(
+                    ctx.update.chat_id(),
+                    mes.from().unwrap().id
+                )
+                    .send()
+                    .await?;
+            },
+        },
+        None => {
+            ctx.reply_to("Use this command in reply to another message").send().await?;
+        },
+    }
+    Ok(())
+}
+
+// Handle all messages
+async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
+    // If message not from group stop handled.
+    // NOTE: in this case we have only one `message_handler`. If you have more, return
+    // DispatcherHandlerResult::next() so that the following handlers can receive this message!
+    if ctx.update.chat.is_group() {
+        return Ok(());
+    }
+
     if let Some(text) = ctx.update.text() {
-        let (command, args): (Command, Vec<&str>) = Command::parse(text).ok_or(())?;
+        // Parse text into command with args
+        let (command, args): (Command, Vec<&str>) = match Command::parse(text) {
+            Some(tuple) => tuple,
+            None => return Ok(())
+        };
 
         match command {
             Command::Help => {
-                ctx.answer(Command::descriptions()).send().await;
+                // Command::descriptions() return a message in format:
+                //
+                // %general_description%
+                // %prefix%%command% - %description%
+                ctx.answer(Command::descriptions()).send().await?;
             }
             Command::Kick => {
-                match ctx.update.reply_to_message() {
-                    Some(mes) => {
-                        if let Some(user) = mes.from() {
-                            ctx.bot.unban_chat_member(
-                                ctx.update.chat_id(),
-                                user.id
-                            ).send().await;
-                        }
-                    },
-                    None => {
-                        ctx.reply_to("Use this command in reply to another message").send().await;
-                    }
-                }
+                kick_user(&ctx).await?;
             }
             Command::Ban => {
-                match ctx.update.reply_to_message() {
-                    Some(mes) => match parse_time_restrict(args) {
-                        Ok(time) => {
-                            if let Some(user) = mes.from() {
-                                ctx.bot.kick_chat_member(
-                                    ctx.update.chat_id(),
-                                    user.id
-                                )
-                                    .until_date(ctx.update.date + time)
-                                    .send()
-                                    .await;
-                            }
-                        }
-                        Err(msg) => {
-                            ctx.answer(msg).send().await;
-                        },
-                    },
-                    None => {
-                        ctx.reply_to("Use this command in reply to another message").send().await;
-                    },
-                }
+                ban_user(&ctx, args).await?;
             }
             Command::Mute => {
-                match ctx.update.reply_to_message() {
-                    Some(mes) => match parse_time_restrict(args) {
-                        Ok(time) => {
-                            if let Some(user) = mes.from() {
-                                ctx.bot.restrict_chat_member(
-                                ctx.update.chat_id(),
-                                user.id,
-                                ChatPermissions::default()
-                            )
-                                .until_date(ctx.update.date + time)
-                                .send()
-                                .await;
-                            }
-                        }
-                        Err(msg) => {
-                            ctx.answer(msg).send().await;
-                        }
-                    },
-                    None => {
-                        ctx.reply_to("Use this command in reply to another message").send().await;
-                    },
-                }
+                mute_user(&ctx, args).await?;
             }
         };
     }
@@ -125,9 +178,7 @@ async fn handle_command(ctx: Ctx) -> Result<(), ()> {
 
 #[tokio::main]
 async fn main() {
-    pretty_env_logger::init();
-
-    let bot = Bot::new("YourAwesomeToken");
+    let bot = Bot::from_env().enable_logging(crate_name!()).build();
     Dispatcher::new(bot)
         .message_handler(&handle_command)
         .dispatch()
