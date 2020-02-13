@@ -20,7 +20,8 @@ macro_rules! enable_logging {
     };
 }
 
-/// Enables logging through [pretty-env-logger].
+/// Enables logging through [pretty-env-logger] with a custom filter for your
+/// program.
 ///
 /// A logger will **only** print errors from teloxide and restrict logs from
 /// your program by the specified filter.
@@ -38,6 +39,7 @@ macro_rules! enable_logging {
 /// you want.
 ///
 /// [pretty-env-logger]: https://crates.io/crates/pretty_env_logger
+/// [`LevelFilter::Debug`]: https://docs.rs/log/0.4.10/log/enum.LevelFilter.html
 #[macro_export]
 macro_rules! enable_logging_with_filter {
     ($filter:expr) => {
