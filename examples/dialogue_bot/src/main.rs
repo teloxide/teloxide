@@ -5,7 +5,7 @@
 // ```
 //  - Let's start! First, what's your full name?
 //  - Luke Skywalker
-//  - WHat a wonderful name! Your age?
+//  - What a wonderful name! Your age?
 //  - 26
 //  - Good. Now choose your favourite music
 // *A keyboard of music kinds is displayed*
