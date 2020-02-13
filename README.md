@@ -62,6 +62,62 @@ async fn main() {
 }
 ```
 
+## Commands
+teloxide has a few handy macros to define a type of your commands and their descriptions (similar to [serde_json](https://github.com/serde-rs/json)):
+
+([Full](https://github.com/teloxide/teloxide/blob/dev/examples/simple_commands_bot/src/main.rs))
+```rust
+// Imports are omitted...
+
+#[derive(BotCommand)]
+#[command(rename = "lowercase", description = "These commands are supported:")]
+enum Command {
+    #[command(description = "display this text.")]
+    Help,
+    #[command(description = "be a cat.")]
+    Meow,
+    #[command(description = "be a dog.")]
+    Woof,
+    #[command(description = "be a cow.")]
+    Moo,
+}
+
+async fn handle_command(
+    ctx: DispatcherHandlerCtx<Message>,
+) -> Result<(), RequestError> {
+    let text = match ctx.update.text() {
+        Some(text) => text,
+        None => {
+            log::info!("Received a message, but not text.");
+            Ok(())
+        }
+    };
+
+    let command = match Command::parse(text) {
+        Some((command, _)) => command,
+        None => {
+            log::info!("Received a text message, but not a command.");
+            Ok(())
+        }
+    };
+
+    match command {
+        Command::Help => ctx.answer(Command::descriptions()).send().await?,
+        Command::Meow => ctx.answer("I am a cat! Meow!").send().await?,
+        Command::Woof => ctx.answer("I am a dog! Woof!").send().await?,
+        Command::Moo => ctx.answer("I am a cow! Moo!").send().await?,
+    };
+
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() {
+    // Setup is omitted...
+}
+
+```
+
 ## Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
 
