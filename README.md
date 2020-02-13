@@ -19,6 +19,9 @@
  - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as possible.
 
  - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
+  
+ - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
+ and transition functions to drive a user dialogue with ease (see the examples below).
  
  - **Convenient API.** Automatic conversions are used to avoid boilerplate. For example, functions accept `Into<String>`, rather than `&str` or `String`, so you can call them without `.to_string()`/`.as_str()`/etc.
 
