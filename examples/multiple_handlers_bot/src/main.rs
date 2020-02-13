@@ -1,3 +1,6 @@
+// This example demonstrates the ability of Dispatcher to deal with multiple
+// handlers.
+
 use teloxide::prelude::*;
 
 #[tokio::main]
