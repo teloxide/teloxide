@@ -99,11 +99,11 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     Ok(())
 }
 
-// Kick a user with replied message.
+// Kick a user with a replied message.
 async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
     match ctx.update.reply_to_message() {
         Some(mes) => {
-            // `unban_chat_member` will also kick user from group chat
+            // bot.unban_chat_member can also kicks a user from a group chat.
             ctx.bot
                 .unban_chat_member(ctx.update.chat_id(), mes.from().unwrap().id)
                 .send()
@@ -155,10 +155,9 @@ async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
 
 // Handle all messages.
 async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
-    // If a message isn't from a group, stop handling.
     if ctx.update.chat.is_group() {
-        // Note: this is the same as DispatcherHandlerResult::exit(Ok(())). If
-        // you have more handlers, use DispatcherHandlerResult::next(...)
+        // The same as DispatcherHandlerResult::exit(Ok(())). If you have more
+        // handlers, use DispatcherHandlerResult::next(...)
         return Ok(());
     }
 
