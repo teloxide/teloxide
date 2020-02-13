@@ -44,7 +44,7 @@ use teloxide::prelude::*;
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting ping_pong_bot!");
+    log::info!("Starting the ping-pong bot!");
 
     let bot = Bot::from_env();
 
