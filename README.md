@@ -63,7 +63,7 @@ async fn main() {
 ```
 
 ## Commands
-Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/):
+Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow` and generates a random number within [0; 1) on `/generate`:
 
 ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/simple_commands_bot/src/main.rs))
 ```rust
