@@ -63,7 +63,7 @@ async fn main() {
 ```
 
 ## Commands
-teloxide has a few handy macros to define a type of your commands and their descriptions (similar to [serde_json](https://github.com/serde-rs/json)):
+Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/):
 
 ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/simple_commands_bot/src/main.rs))
 ```rust
