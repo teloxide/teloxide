@@ -39,18 +39,18 @@ tokio = "0.2.11"
 ```rust
 use teloxide::prelude::*;
 
-use std::env::{set_var, var};
-
 #[tokio::main]
 async fn main() {
-    // Configure a fancy logger. Let this bot print everything, but restrict
-    // teloxide to only log errors.
-    set_var("RUST_LOG", "ping_pong_bot=trace");
-    set_var("RUST_LOG", "teloxide=error");
-    pretty_env_logger::init();
-    log::info!("Starting the ping-pong bot!");
+    run().await;
+}
 
-    let bot = Bot::new(var("TELOXIDE_TOKEN").unwrap());
+async fn run() {
+    // Configure the fancy logger.
+    std::env::set_var("RUST_LOG", "info");
+    pretty_env_logger::init();
+    log::info!("Starting ping_pong_bot!");
+
+    let bot = Bot::new(std::env::var("TELOXIDE_TOKEN").unwrap());
 
     // Create a dispatcher with a single message handler that answers "pong" to
     // each incoming message.
