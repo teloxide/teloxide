@@ -12,6 +12,39 @@ pub struct Bot {
 }
 
 impl Bot {
+    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
+    /// bot's token) and the default [`reqwest::Client`].
+    ///
+    /// # Panics
+    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    pub fn from_env() -> Arc<Self> {
+        Self::new(
+            std::env::var("TELOXIDE_TOKEN")
+                .expect("Cannot get the TELOXIDE_TOKEN env variable"),
+        )
+    }
+
+    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
+    /// bot's token) and your [`reqwest::Client`].
+    ///
+    /// # Panics
+    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    pub fn from_env_with_client(client: Client) -> Arc<Self> {
+        Self::with_client(
+            std::env::var("TELOXIDE_TOKEN")
+                .expect("Cannot get the TELOXIDE_TOKEN env variable"),
+            client,
+        )
+    }
+
+    /// Creates a new `Bot` with the specified token and the default
+    /// [`reqwest::Client`].
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     pub fn new<S>(token: S) -> Arc<Self>
     where
         S: Into<String>,
@@ -19,6 +52,10 @@ impl Bot {
         Self::with_client(token, Client::new())
     }
 
+    /// Creates a new `Bot` with the specified token and your
+    /// [`reqwest::Client`].
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
     where
         S: Into<String>,

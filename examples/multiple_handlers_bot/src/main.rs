@@ -11,7 +11,7 @@ async fn run() {
     pretty_env_logger::init();
     log::info!("Starting multiple_handlers_bot!");
 
-    let bot = Bot::new(std::env::var("TELOXIDE_TOKEN").unwrap());
+    let bot = Bot::from_env();
 
     // Create a dispatcher with multiple handlers of different types. This will
     // print One! and Two! on every incoming UpdateKind::Message.

@@ -11,7 +11,7 @@ async fn run() {
     pretty_env_logger::init();
     log::info!("Starting ping_pong_bot!");
 
-    let bot = Bot::new(std::env::var("TELOXIDE_TOKEN").unwrap());
+    let bot = Bot::from_env();
 
     // Create a dispatcher with a single message handler that answers "pong" to
     // each incoming message.

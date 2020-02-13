@@ -181,7 +181,7 @@ async fn run() {
     pretty_env_logger::init();
     log::info!("Starting dialogue_bot!");
 
-    let bot = Bot::new(std::env::var("TELOXIDE_TOKEN").unwrap());
+    let bot = Bot::from_env();
 
     Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
