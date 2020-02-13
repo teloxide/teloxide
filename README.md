@@ -32,6 +32,7 @@ $ rustup update stable
 teloxide = "0.1.0"
 log = "0.4.8"
 tokio = "0.2.11"
+pretty_env_logger = "0.4.0"
 ```
 
 ## The ping-pong bot
