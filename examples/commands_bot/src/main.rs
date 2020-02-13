@@ -8,7 +8,9 @@ use teloxide::{
 //  2. `description = "..."` specifies a text before all the commands.
 //
 // That is, you can just call Command::descriptions() to get a description of
-// your commands.
+// your commands in this format:
+// %GENERAL-DESCRIPTION%
+// %PREFIX%%COMMAND% - %DESCRIPTION%
 #[derive(BotCommand)]
 #[command(
     rename = "lowercase",
@@ -69,10 +71,7 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
                 ctx.bot
                     .restrict_chat_member(
                         ctx.update.chat_id(),
-                        // Sender of message cannot be only in messages from
-                        // channels so we can use
-                        // unwrap()
-                        msg1.from().unwrap().id,
+                        msg1.from().expect("Must be MessageKind::Common").id,
                         ChatPermissions::default(),
                     )
                     .until_date(ctx.update.date + time)
@@ -172,10 +171,6 @@ async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
 
         match command {
             Command::Help => {
-                // Command::descriptions() returns text in this format:
-                //
-                // %GENERAL-DESCRIPTION%
-                // %PREFIX%%COMMAND% - %DESCRIPTION%
                 ctx.answer(Command::descriptions()).send().await?;
             }
             Command::Kick => {
