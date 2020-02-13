@@ -2,13 +2,13 @@ use teloxide::{
     prelude::*, types::ChatPermissions, utils::command::BotCommand,
 };
 
-// Declare type of handler context
-type Ctx = DispatcherHandlerCtx<Message>;
-
-// Derive trait which allow to parse text with command into enum
-// (rename = "lowercase") means that names of variants of enum will be lowercase
-// before parsing `description` will be add before description of command when
-// you call Command::descriptions()
+// Derive BotCommand to parse text with a command into this enumeration.
+//
+//  1. rename = "lowercase" turns all the commands into lowercase letters.
+//  2. `description = "..."` specifies a text before all the commands.
+//
+// That is, you can just call Command::descriptions() to get a description of
+// your commands.
 #[derive(BotCommand)]
 #[command(
     rename = "lowercase",
@@ -25,7 +25,7 @@ enum Command {
     Help,
 }
 
-// Calculate time of restrict user.
+// Calculates time of user restriction.
 fn calc_restrict_time(num: i32, unit: &str) -> Result<i32, &str> {
     match unit {
         "h" | "hours" => Ok(num * 3600),
@@ -35,7 +35,7 @@ fn calc_restrict_time(num: i32, unit: &str) -> Result<i32, &str> {
     }
 }
 
-// Parse args which user printed after command.
+// Parse arguments after a command.
 fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
     let num = match args.get(0) {
         Some(s) => s,
@@ -52,16 +52,18 @@ fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
     }
 }
 
-// Parse input args into time to restrict
+// Parse arguments into a user restriction duration.
 fn parse_time_restrict(args: Vec<&str>) -> Result<i32, &str> {
     let (num, unit) = parse_args(args)?;
     calc_restrict_time(num, unit)
 }
 
-// Mute user by replied message
+type Ctx = DispatcherHandlerCtx<Message>;
+
+// Mute a user with a replied message.
 async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     match ctx.update.reply_to_message() {
-        Some(mes) => match parse_time_restrict(args) {
+        Some(msg1) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
                 ctx.bot
@@ -70,7 +72,7 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
                         // Sender of message cannot be only in messages from
                         // channels so we can use
                         // unwrap()
-                        mes.from().unwrap().id,
+                        msg1.from().unwrap().id,
                         ChatPermissions::default(),
                     )
                     .until_date(ctx.update.date + time)
@@ -78,11 +80,11 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
                     .await?;
             }
             // ...or permanently
-            Err(msg) => {
+            Err(_) => {
                 ctx.bot
                     .restrict_chat_member(
                         ctx.update.chat_id(),
-                        mes.from().unwrap().id,
+                        msg1.from().unwrap().id,
                         ChatPermissions::default(),
                     )
                     .send()
@@ -98,7 +100,7 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     Ok(())
 }
 
-// Kick user by replied message
+// Kick a user with replied message.
 async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
     match ctx.update.reply_to_message() {
         Some(mes) => {
@@ -117,34 +119,34 @@ async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
     Ok(())
 }
 
-// Ban user by replied message
+// Ban a user with replied message.
 async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     match ctx.update.reply_to_message() {
-        Some(mes) => match parse_time_restrict(args) {
+        Some(message) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
                 ctx.bot
                     .kick_chat_member(
                         ctx.update.chat_id(),
-                        mes.from().unwrap().id,
+                        message.from().expect("Must be MessageKind::Common").id,
                     )
                     .until_date(ctx.update.date + time)
                     .send()
                     .await?;
             }
             // ...or permanently
-            Err(msg) => {
+            Err(_) => {
                 ctx.bot
                     .kick_chat_member(
                         ctx.update.chat_id(),
-                        mes.from().unwrap().id,
+                        message.from().unwrap().id,
                     )
                     .send()
                     .await?;
             }
         },
         None => {
-            ctx.reply_to("Use this command in reply to another message")
+            ctx.reply_to("Use this command in a reply to another message!")
                 .send()
                 .await?;
         }
@@ -152,18 +154,17 @@ async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     Ok(())
 }
 
-// Handle all messages
+// Handle all messages.
 async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
-    // If message not from group stop handled.
-    // NOTE: in this case we have only one `message_handler`. If you have more,
-    // return DispatcherHandlerResult::next() so that the following handlers
-    // can receive this message!
+    // If a message isn't from a group, stop handling.
     if ctx.update.chat.is_group() {
+        // Note: this is the same as DispatcherHandlerResult::exit(Ok(())). If
+        // you have more handlers, use DispatcherHandlerResult::next(...)
         return Ok(());
     }
 
     if let Some(text) = ctx.update.text() {
-        // Parse text into command with args
+        // Parse text into a command with args.
         let (command, args): (Command, Vec<&str>) = match Command::parse(text) {
             Some(tuple) => tuple,
             None => return Ok(()),
@@ -171,10 +172,10 @@ async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
 
         match command {
             Command::Help => {
-                // Command::descriptions() return a message in format:
+                // Command::descriptions() returns text in this format:
                 //
-                // %general_description%
-                // %prefix%%command% - %description%
+                // %GENERAL-DESCRIPTION%
+                // %PREFIX%%COMMAND% - %DESCRIPTION%
                 ctx.answer(Command::descriptions()).send().await?;
             }
             Command::Kick => {
