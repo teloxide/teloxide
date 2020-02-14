@@ -2,6 +2,15 @@
 name = "teloxide"
 version = "0.1.0"
 edition = "2018"
+description = "An elegant Telegram bots framework for Rust"
+repository = "https://github.com/teloxide/teloxide"
+documentation = "https://docs.rs/teloxide/"
+readme = "README.md"
+keywords = ["teloxide", "telegram", "telegram-bot-framework", "telegram-bot-api"]
+license = "MIT"
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
