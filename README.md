@@ -139,6 +139,7 @@ enum Dialogue {
     Start,
     ReceiveAttempt(u8),
 }
+
 async fn handle_message(
     ctx: DialogueHandlerCtx<Message, Dialogue>,
 ) -> Result<DialogueStage<Dialogue>, RequestError> {
