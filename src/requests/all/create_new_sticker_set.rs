@@ -1,18 +1,18 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#createnewstickerset).
-#[derive(PartialEq, Debug, Clone)]
-pub struct CreateNewStickerSet<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct CreateNewStickerSet {
+    bot: Arc<Bot>,
     user_id: i32,
     name: String,
     title: String,
@@ -23,7 +23,7 @@ pub struct CreateNewStickerSet<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for CreateNewStickerSet<'_> {
+impl Request for CreateNewStickerSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -52,9 +52,9 @@ impl Request for CreateNewStickerSet<'_> {
     }
 }
 
-impl<'a> CreateNewStickerSet<'a> {
+impl CreateNewStickerSet {
     pub(crate) fn new<N, T, E>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         user_id: i32,
         name: N,
         title: T,
@@ -67,7 +67,7 @@ impl<'a> CreateNewStickerSet<'a> {
         E: Into<String>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             user_id,
             name: name.into(),
             title: title.into(),

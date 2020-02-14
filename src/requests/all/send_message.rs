@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ParseMode, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send text messages.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendmessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendMessage<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendMessage {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     pub chat_id: ChatId,
     pub text: String,
     pub parse_mode: Option<ParseMode>,
@@ -26,7 +26,7 @@ pub struct SendMessage<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendMessage<'_> {
+impl Request for SendMessage {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -40,14 +40,14 @@ impl Request for SendMessage<'_> {
     }
 }
 
-impl<'a> SendMessage<'a> {
-    pub(crate) fn new<C, T>(bot: &'a Bot, chat_id: C, text: T) -> Self
+impl SendMessage {
+    pub(crate) fn new<C, T>(bot: Arc<Bot>, chat_id: C, text: T) -> Self
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             text: text.into(),
             parse_mode: None,

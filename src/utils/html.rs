@@ -1,6 +1,7 @@
 //! Utils for working with the [HTML message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#html-style
+use crate::types::User;
 use std::string::String;
 
 /// Applies the bold font style to the string.
@@ -83,6 +84,13 @@ pub fn escape(s: &str) -> String {
     s.replace("&", "&amp;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
+}
+
+pub fn user_mention_or_link(user: &User) -> String {
+    match user.mention() {
+        Some(mention) => mention,
+        None => link(user.url().as_str(), &user.full_name()),
+    }
 }
 
 #[cfg(test)]
@@ -178,5 +186,30 @@ mod tests {
             "&lt;p&gt;你好 &amp; 再見&lt;/p&gt;"
         );
         assert_eq!(escape("'foo\""), "'foo\"");
+    }
+
+    #[test]
+    fn user_mention_link() {
+        let user_with_username = User {
+            id: 0,
+            is_bot: false,
+            first_name: "".to_string(),
+            last_name: None,
+            username: Some("abcd".to_string()),
+            language_code: None,
+        };
+        assert_eq!(user_mention_or_link(&user_with_username), "@abcd");
+        let user_without_username = User {
+            id: 123_456_789,
+            is_bot: false,
+            first_name: "Name".to_string(),
+            last_name: None,
+            username: None,
+            language_code: None,
+        };
+        assert_eq!(
+            user_mention_or_link(&user_without_username),
+            r#"<a href="tg://user/?id=123456789">Name</a>"#
+        )
     }
 }

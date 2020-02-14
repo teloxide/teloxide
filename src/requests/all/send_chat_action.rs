@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method when you need to tell the user that something is happening
 /// on the bot's side.
@@ -26,10 +26,10 @@ use crate::{
 /// [ImageBot]: https://t.me/imagebot
 /// [`Bot::send_chat_action`]: crate::Bot::send_chat_action
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendChatAction<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendChatAction {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     action: SendChatActionKind,
 }
@@ -37,7 +37,7 @@ pub struct SendChatAction<'a> {
 /// A type of action used in [`SendChatAction`].
 ///
 /// [`SendChatAction`]: crate::requests::SendChatAction
-#[derive(PartialEq, Copy, Clone, Debug, Eq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SendChatActionKind {
     /// For [text messages](crate::Bot::send_message).
@@ -72,7 +72,7 @@ pub enum SendChatActionKind {
 }
 
 #[async_trait::async_trait]
-impl Request for SendChatAction<'_> {
+impl Request for SendChatAction {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -86,9 +86,9 @@ impl Request for SendChatAction<'_> {
     }
 }
 
-impl<'a> SendChatAction<'a> {
+impl SendChatAction {
     pub(crate) fn new<C>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         action: SendChatActionKind,
     ) -> Self
@@ -96,7 +96,7 @@ impl<'a> SendChatAction<'a> {
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             action,
         }

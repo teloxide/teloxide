@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Animation, MessageEntity, PhotoSize};
 
-/// This object represents a game. Use [@Botfather] to create and edit games,
-/// their short names will act as unique identifiers.
+/// This object represents a game.
+///
+/// Use [@Botfather] to create and edit games, their short names will act as
+/// unique identifiers.
 ///
 /// [@Botfather]: https://t.me/botfather
 #[serde_with_macros::skip_serializing_none]

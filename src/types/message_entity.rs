@@ -2,8 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Message, User};
 
-/// This object represents one special entity in a text message. For example,
-/// hashtags, usernames, URLs, etc.
+/// This object represents one special entity in a text message.
+///
+/// For example, hashtags, usernames, URLs, etc.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#messageentity).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -32,7 +33,7 @@ pub enum MessageEntityKind {
     Bold,
     Italic,
     Code,
-    Pre,
+    Pre { language: Option<String> },
     TextLink { url: String },
     TextMention { user: User },
     Underline,
@@ -49,9 +50,7 @@ impl MessageEntity {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, MessageKind, Sender,
-    };
+    use crate::types::{Chat, ChatKind, ForwardKind, MediaKind, MessageKind};
 
     #[test]
     fn recursive_kind() {
@@ -67,6 +66,25 @@ mod tests {
             },
             from_str::<MessageEntity>(
                 r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn pre() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity {
+                kind: MessageEntityKind::Pre {
+                    language: Some("rust".to_string()),
+                },
+                offset: 1,
+                length: 2,
+            },
+            from_str::<MessageEntity>(
+                r#"{"type":"pre","url":"ya.ru","offset":1,"length":2,"language":"rust"}"#
             )
             .unwrap()
         );
@@ -96,7 +114,7 @@ mod tests {
                 photo: None,
             },
             kind: MessageKind::Common {
-                from: Sender::User(User {
+                from: Some(User {
                     id: 0,
                     is_bot: false,
                     first_name: "".to_string(),

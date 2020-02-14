@@ -1,28 +1,28 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::UserProfilePhotos,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get a list of profile pictures for a user.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getuserprofilephotos).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Copy, Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetUserProfilePhotos<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetUserProfilePhotos {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     user_id: i32,
     offset: Option<i32>,
     limit: Option<i32>,
 }
 
 #[async_trait::async_trait]
-impl Request for GetUserProfilePhotos<'_> {
+impl Request for GetUserProfilePhotos {
     type Output = UserProfilePhotos;
 
     async fn send(&self) -> ResponseResult<UserProfilePhotos> {
@@ -36,10 +36,10 @@ impl Request for GetUserProfilePhotos<'_> {
     }
 }
 
-impl<'a> GetUserProfilePhotos<'a> {
-    pub(crate) fn new(bot: &'a Bot, user_id: i32) -> Self {
+impl GetUserProfilePhotos {
+    pub(crate) fn new(bot: Arc<Bot>, user_id: i32) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             user_id,
             offset: None,
             limit: None,

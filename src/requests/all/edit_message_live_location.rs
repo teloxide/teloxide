@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to edit live location messages.
 ///
@@ -20,10 +20,10 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(PartialEq, Debug, Clone, Serialize)]
-pub struct EditMessageLiveLocation<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageLiveLocation {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     latitude: f32,
@@ -32,7 +32,7 @@ pub struct EditMessageLiveLocation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageLiveLocation<'_> {
+impl Request for EditMessageLiveLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -46,15 +46,15 @@ impl Request for EditMessageLiveLocation<'_> {
     }
 }
 
-impl<'a> EditMessageLiveLocation<'a> {
+impl EditMessageLiveLocation {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
         latitude: f32,
         longitude: f32,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             latitude,
             longitude,

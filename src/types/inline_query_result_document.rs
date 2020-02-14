@@ -2,10 +2,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
-/// Represents a link to a file. By default, this file will be sent by the user
-/// with an optional caption. Alternatively, you can use `input_message_content`
-/// to send a message with the specified content instead of the file. Currently,
-/// only **.PDF** and **.ZIP** files can be sent using this method.
+/// Represents a link to a file.
+///
+/// By default, this file will be sent by the user with an optional caption.
+/// Alternatively, you can use `input_message_content` to send a message with
+/// the specified content instead of the file. Currently, only **.PDF** and
+/// **.ZIP** files can be sent using this method.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultdocument).
 #[serde_with_macros::skip_serializing_none]

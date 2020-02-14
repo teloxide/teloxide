@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send a game.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendgame).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendGame<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendGame {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: i32,
     game_short_name: String,
     disable_notification: Option<bool>,
@@ -24,7 +24,7 @@ pub struct SendGame<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendGame<'_> {
+impl Request for SendGame {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -38,14 +38,18 @@ impl Request for SendGame<'_> {
     }
 }
 
-impl<'a> SendGame<'a> {
-    pub(crate) fn new<G>(bot: &'a Bot, chat_id: i32, game_short_name: G) -> Self
+impl SendGame {
+    pub(crate) fn new<G>(
+        bot: Arc<Bot>,
+        chat_id: i32,
+        game_short_name: G,
+    ) -> Self
     where
         G: Into<String>,
     {
         let game_short_name = game_short_name.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             game_short_name,
             disable_notification: None,

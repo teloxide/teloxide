@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{AllowedUpdate, InputFile, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to specify a url and receive incoming updates via an
 /// outgoing webhook.
@@ -25,10 +25,10 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetWebhook<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetWebhook {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     url: String,
     certificate: Option<InputFile>,
     max_connections: Option<i32>,
@@ -36,7 +36,7 @@ pub struct SetWebhook<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SetWebhook<'_> {
+impl Request for SetWebhook {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -50,14 +50,14 @@ impl Request for SetWebhook<'_> {
     }
 }
 
-impl<'a> SetWebhook<'a> {
-    pub(crate) fn new<U>(bot: &'a Bot, url: U) -> Self
+impl SetWebhook {
+    pub(crate) fn new<U>(bot: Arc<Bot>, url: U) -> Self
     where
         U: Into<String>,
     {
         let url = url.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             url,
             certificate: None,
             max_connections: None,

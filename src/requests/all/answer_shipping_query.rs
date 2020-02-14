@@ -1,12 +1,13 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ShippingOption, True},
     Bot,
 };
+use std::sync::Arc;
+
 /// If you sent an invoice requesting a shipping address and the parameter
 /// `is_flexible` was specified, the Bot API will send an [`Update`] with a
 /// shipping_query field to the bot. Use this method to reply to shipping
@@ -16,10 +17,10 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct AnswerShippingQuery<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerShippingQuery {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     shipping_query_id: String,
     ok: bool,
     shipping_options: Option<Vec<ShippingOption>>,
@@ -27,7 +28,7 @@ pub struct AnswerShippingQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for AnswerShippingQuery<'_> {
+impl Request for AnswerShippingQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -41,14 +42,14 @@ impl Request for AnswerShippingQuery<'_> {
     }
 }
 
-impl<'a> AnswerShippingQuery<'a> {
-    pub(crate) fn new<S>(bot: &'a Bot, shipping_query_id: S, ok: bool) -> Self
+impl AnswerShippingQuery {
+    pub(crate) fn new<S>(bot: Arc<Bot>, shipping_query_id: S, ok: bool) -> Self
     where
         S: Into<String>,
     {
         let shipping_query_id = shipping_query_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             shipping_query_id,
             ok,
             shipping_options: None,

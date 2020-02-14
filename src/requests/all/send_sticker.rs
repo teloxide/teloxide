@@ -1,19 +1,19 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send static .WEBP or [animated] .TGS stickers.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendsticker).
 ///
 /// [animated]: https://telegram.org/blog/animated-stickers
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendSticker<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendSticker {
+    bot: Arc<Bot>,
     chat_id: ChatId,
     sticker: InputFile,
     disable_notification: Option<bool>,
@@ -22,7 +22,7 @@ pub struct SendSticker<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendSticker<'_> {
+impl Request for SendSticker {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -47,13 +47,13 @@ impl Request for SendSticker<'_> {
     }
 }
 
-impl<'a> SendSticker<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, sticker: InputFile) -> Self
+impl SendSticker {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, sticker: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             sticker,
             disable_notification: None,

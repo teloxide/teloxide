@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to edit captions of messages.
 ///
@@ -18,10 +18,10 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct EditMessageCaption<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct EditMessageCaption {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     caption: Option<String>,
@@ -30,7 +30,7 @@ pub struct EditMessageCaption<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageCaption<'_> {
+impl Request for EditMessageCaption {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -44,13 +44,13 @@ impl Request for EditMessageCaption<'_> {
     }
 }
 
-impl<'a> EditMessageCaption<'a> {
+impl EditMessageCaption {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             caption: None,
             parse_mode: None,

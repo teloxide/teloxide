@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::File,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading.
@@ -28,15 +28,15 @@ use crate::{
 /// [`File`]: crate::types::file
 /// [`GetFile`]: self::GetFile
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetFile<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetFile {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     file_id: String,
 }
 
 #[async_trait::async_trait]
-impl Request for GetFile<'_> {
+impl Request for GetFile {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {
@@ -45,13 +45,13 @@ impl Request for GetFile<'_> {
     }
 }
 
-impl<'a> GetFile<'a> {
-    pub(crate) fn new<F>(bot: &'a Bot, file_id: F) -> Self
+impl GetFile {
+    pub(crate) fn new<F>(bot: Arc<Bot>, file_id: F) -> Self
     where
         F: Into<String>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             file_id: file_id.into(),
         }
     }

@@ -1,5 +1,6 @@
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 
+/// A type that is always false.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
 pub struct False;
 

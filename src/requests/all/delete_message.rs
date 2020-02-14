@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to delete a message, including service messages.
 ///
@@ -24,16 +24,16 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#deletemessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct DeleteMessage<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteMessage {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     message_id: i32,
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteMessage<'_> {
+impl Request for DeleteMessage {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -47,14 +47,14 @@ impl Request for DeleteMessage<'_> {
     }
 }
 
-impl<'a> DeleteMessage<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
+impl DeleteMessage {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             message_id,
         }

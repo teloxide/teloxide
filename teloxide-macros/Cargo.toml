@@ -1,0 +1,14 @@
+[package]
+name = "teloxide-macros"
+version = "0.1.0"
+authors = ["p0lunin <dmytro.polunin@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quote = "1.0.2"
+syn = "1.0.13"
+
+[lib]
+proc-macro = true

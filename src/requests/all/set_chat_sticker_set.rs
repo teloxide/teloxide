@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to set a new group sticker set for a supergroup.
 ///
@@ -16,16 +16,16 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setchatstickerset).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetChatStickerSet<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatStickerSet {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     sticker_set_name: String,
 }
 
 #[async_trait::async_trait]
-impl Request for SetChatStickerSet<'_> {
+impl Request for SetChatStickerSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -39,9 +39,9 @@ impl Request for SetChatStickerSet<'_> {
     }
 }
 
-impl<'a> SetChatStickerSet<'a> {
+impl SetChatStickerSet {
     pub(crate) fn new<C, S>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         sticker_set_name: S,
     ) -> Self
@@ -52,7 +52,7 @@ impl<'a> SetChatStickerSet<'a> {
         let chat_id = chat_id.into();
         let sticker_set_name = sticker_set_name.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             sticker_set_name,
         }

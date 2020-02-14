@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send information about a venue.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendvenue).
 #[serde_with_macros::skip_serializing_none]
-#[derive(PartialEq, Debug, Clone, Serialize)]
-pub struct SendVenue<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendVenue {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     latitude: f32,
     longitude: f32,
@@ -29,7 +29,7 @@ pub struct SendVenue<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendVenue<'_> {
+impl Request for SendVenue {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -43,9 +43,9 @@ impl Request for SendVenue<'_> {
     }
 }
 
-impl<'a> SendVenue<'a> {
+impl SendVenue {
     pub(crate) fn new<C, T, A>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         latitude: f32,
         longitude: f32,
@@ -61,7 +61,7 @@ impl<'a> SendVenue<'a> {
         let title = title.into();
         let address = address.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             latitude,
             longitude,

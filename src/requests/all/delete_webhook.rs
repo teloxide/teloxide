@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::True,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to remove webhook integration if you decide to switch back
 /// to [Bot::get_updates].
@@ -15,14 +15,14 @@ use crate::{
 ///
 /// [Bot::get_updates]: crate::Bot::get_updates
 #[serde_with_macros::skip_serializing_none]
-#[derive(Copy, Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct DeleteWebhook<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteWebhook {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteWebhook<'_> {
+impl Request for DeleteWebhook {
     type Output = True;
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -37,10 +37,8 @@ impl Request for DeleteWebhook<'_> {
     }
 }
 
-impl<'a> DeleteWebhook<'a> {
-    pub(crate) fn new(bot: &'a Bot) -> Self {
-        Self {
-            bot: BotWrapper(bot),
-        }
+impl DeleteWebhook {
+    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+        Self { bot }
     }
 }

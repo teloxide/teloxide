@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to set the score of the specified user in a game.
 ///
@@ -20,10 +20,10 @@ use crate::{
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetGameScore<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetGameScore {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     user_id: i32,
@@ -33,7 +33,7 @@ pub struct SetGameScore<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SetGameScore<'_> {
+impl Request for SetGameScore {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -47,15 +47,15 @@ impl Request for SetGameScore<'_> {
     }
 }
 
-impl<'a> SetGameScore<'a> {
+impl SetGameScore {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
         score: i32,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             user_id,
             score,

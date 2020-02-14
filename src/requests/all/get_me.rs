@@ -1,37 +1,35 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::User,
+    types::Me,
     Bot,
 };
 use serde::Serialize;
+use std::sync::Arc;
 
 /// A simple method for testing your bot's auth token. Requires no parameters.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getme).
-#[derive(Eq, PartialEq, Debug, Clone, Copy, Serialize)]
-pub struct GetMe<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetMe {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
 }
 
 #[async_trait::async_trait]
-impl Request for GetMe<'_> {
-    type Output = User;
+impl Request for GetMe {
+    type Output = Me;
 
     /// Returns basic information about the bot.
     #[allow(clippy::trivially_copy_pass_by_ref)]
-    async fn send(&self) -> ResponseResult<User> {
+    async fn send(&self) -> ResponseResult<Me> {
         net::request_json(self.bot.client(), self.bot.token(), "getMe", &self)
             .await
     }
 }
 
-impl<'a> GetMe<'a> {
-    pub(crate) fn new(bot: &'a Bot) -> Self {
-        Self {
-            bot: BotWrapper(bot),
-        }
+impl GetMe {
+    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+        Self { bot }
     }
 }

@@ -9,7 +9,8 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-/// ## Formatting options
+/// Formatting options.
+///
 /// The Bot API supports basic formatting for messages. You can use bold,
 /// italic, underlined and strikethrough text, as well as inline links and
 /// pre-formatted code in your bots' messages. Telegram clients will render

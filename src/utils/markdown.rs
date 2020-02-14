@@ -1,6 +1,7 @@
 //! Utils for working with the [Markdown V2 message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#markdownv2-style
+use crate::types::User;
 use std::string::String;
 
 /// Applies the bold font style to the string.
@@ -117,6 +118,13 @@ pub fn escape_link_url(s: &str) -> String {
 /// `\`).
 pub fn escape_code(s: &str) -> String {
     s.replace(r"\", r"\\").replace("`", r"\`")
+}
+
+pub fn user_mention_or_link(user: &User) -> String {
+    match user.mention() {
+        Some(mention) => mention,
+        None => link(user.url().as_str(), &user.full_name()),
+    }
 }
 
 #[cfg(test)]
@@ -240,5 +248,30 @@ mod tests {
             r"\` \\code inside the code\\ \`"
         );
         assert_eq!(escape_code(r"_*[]()~`#+-=|{}.!\"), r"_*[]()~\`#+-=|{}.!\\");
+    }
+
+    #[test]
+    fn user_mention_link() {
+        let user_with_username = User {
+            id: 0,
+            is_bot: false,
+            first_name: "".to_string(),
+            last_name: None,
+            username: Some("abcd".to_string()),
+            language_code: None,
+        };
+        assert_eq!(user_mention_or_link(&user_with_username), "@abcd");
+        let user_without_username = User {
+            id: 123_456_789,
+            is_bot: false,
+            first_name: "Name".to_string(),
+            last_name: None,
+            username: None,
+            language_code: None,
+        };
+        assert_eq!(
+            user_mention_or_link(&user_without_username),
+            r#"[Name](tg://user/?id=123456789)"#
+        )
     }
 }

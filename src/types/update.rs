@@ -3,8 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
-    PreCheckoutQuery, ShippingQuery,
+    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
+    PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -71,13 +71,44 @@ pub enum UpdateKind {
     /// New poll state. Bots receive only updates about stopped polls and
     /// polls, which are sent by the bot.
     Poll(Poll),
+
+    /// A user changed their answer in a non-anonymous poll. Bots receive new
+    /// votes only in polls that were sent by the bot itself.
+    PollAnswer(PollAnswer),
+}
+
+impl Update {
+    pub fn user(&self) -> Option<&User> {
+        match &self.kind {
+            UpdateKind::Message(m) => m.from(),
+            UpdateKind::EditedMessage(m) => m.from(),
+            UpdateKind::CallbackQuery(query) => Some(&query.from),
+            UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
+            UpdateKind::InlineQuery(query) => Some(&query.from),
+            UpdateKind::ShippingQuery(query) => Some(&query.from),
+            UpdateKind::PreCheckoutQuery(query) => Some(&query.from),
+            UpdateKind::PollAnswer(answer) => Some(&answer.user),
+            _ => None,
+        }
+    }
+
+    pub fn chat(&self) -> Option<&Chat> {
+        match &self.kind {
+            UpdateKind::Message(m) => Some(&m.chat),
+            UpdateKind::EditedMessage(m) => Some(&m.chat),
+            UpdateKind::ChannelPost(p) => Some(&p.chat),
+            UpdateKind::EditedChannelPost(p) => Some(&p.chat),
+            UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::types::{
         Chat, ChatKind, ForwardKind, LanguageCode, MediaKind, Message,
-        MessageKind, Sender, Update, UpdateKind, User,
+        MessageKind, Update, UpdateKind, User,
     };
 
     // TODO: more tests for deserialization
@@ -121,7 +152,7 @@ mod test {
                     photo: None,
                 },
                 kind: MessageKind::Common {
-                    from: Sender::User(User {
+                    from: Some(User {
                         id: 218_485_655,
                         is_bot: false,
                         first_name: String::from("Waffle"),
@@ -144,5 +175,34 @@ mod test {
 
         let actual = serde_json::from_str::<Update>(json).unwrap();
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn de_private_chat_text_message() {
+        let text = r#"
+  {
+    "message": {
+      "chat": {
+        "first_name": "Hirrolot",
+        "id": 408258968,
+        "type": "private",
+        "username": "hirrolot"
+      },
+      "date": 1581448857,
+      "from": {
+        "first_name": "Hirrolot",
+        "id": 408258968,
+        "is_bot": false,
+        "language_code": "en",
+        "username": "hirrolot"
+      },
+      "message_id": 154,
+      "text": "4"
+    },
+    "update_id": 306197398
+  }
+"#;
+
+        assert!(serde_json::from_str::<Update>(text).is_ok());
     }
 }

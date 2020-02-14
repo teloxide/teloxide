@@ -1,10 +1,10 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, InputMedia, Message},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to edit animation, audio, document, photo, or video
 /// messages.
@@ -20,16 +20,16 @@ use crate::{
 ///
 /// [`Message`]: crate::types::Message
 /// [`True`]: crate::types::True
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct EditMessageMedia<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct EditMessageMedia {
+    bot: Arc<Bot>,
     chat_or_inline_message: ChatOrInlineMessage,
     media: InputMedia,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageMedia<'_> {
+impl Request for EditMessageMedia {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -67,14 +67,14 @@ impl Request for EditMessageMedia<'_> {
     }
 }
 
-impl<'a> EditMessageMedia<'a> {
+impl EditMessageMedia {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             media,
             reply_markup: None,

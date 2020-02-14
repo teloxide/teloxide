@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to kick a user from a group, a supergroup or a channel.
 ///
@@ -19,17 +19,17 @@ use crate::{
 ///
 /// [unbanned]: crate::Bot::unban_chat_member
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct KickChatMember<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct KickChatMember {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     user_id: i32,
     until_date: Option<i32>,
 }
 
 #[async_trait::async_trait]
-impl Request for KickChatMember<'_> {
+impl Request for KickChatMember {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -43,14 +43,14 @@ impl Request for KickChatMember<'_> {
     }
 }
 
-impl<'a> KickChatMember<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, user_id: i32) -> Self
+impl KickChatMember {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             user_id,
             until_date: None,
