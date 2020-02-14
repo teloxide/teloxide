@@ -52,7 +52,7 @@ pretty_env_logger = "0.4.0"
 ## The ping-pong bot
 This bot has a single message handler, which answers "pong" to each incoming message:
 
-([Full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/src/main.rs))
+([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
 ```rust
 use teloxide::prelude::*;
 
@@ -80,7 +80,7 @@ async fn main() {
 ## Commands
 Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow`, generates a random number within [0; 1) on `/generate`, and shows the usage guide on `/help`:
 
-([Full](https://github.com/teloxide/teloxide/blob/dev/examples/simple_commands_bot/src/main.rs))
+([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
 ```rust
 // Imports are omitted...
 
@@ -141,7 +141,7 @@ async fn main() {
 ## Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
 
-([Full](https://github.com/teloxide/teloxide/blob/dev/examples/guess_a_number_bot/src/main.rs))
+([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
 ```rust
 // Imports are omitted...
 
@@ -224,9 +224,9 @@ async fn main() {
   <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
 </div>
 
-Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
+Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
 
-[See more examples](https://github.com/teloxide/teloxide/tree/dev/examples).
+[See more examples](https://github.com/teloxide/teloxide/tree/master/examples).
 
 ## Recommendations
  - Use this pattern:
@@ -254,4 +254,4 @@ Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), desi
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
 ## Contributing
-See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/dev/CONTRIBUTING.md).
+See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).

@@ -44,7 +44,7 @@
 //! # }
 //! ```
 //!
-//! [Full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/)
+//! [Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/)
 //!
 //! ### Multiple handlers
 //!
@@ -88,7 +88,7 @@
 //! # }
 //! ```
 //!
-//! [Full](https://github.com/teloxide/teloxide/blob/dev/examples/miltiple_handlers_bot/)
+//! [Full](https://github.com/teloxide/teloxide/blob/master/examples/miltiple_handlers_bot/)
 //!
 //! For a bit more complicated example, please see [examples/dialogue_bot].
 //!
@@ -100,7 +100,7 @@
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 //! [`DispatcherHandlerResult`]: crate::dispatching::DispatcherHandlerResult
 //! [`Bot`]: crate::Bot
-//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/dev/examples/dialogue_bot
+//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 mod ctx_handlers;
 pub mod dialogue;

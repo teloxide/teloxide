@@ -44,7 +44,7 @@
 //! [`parse_command`]: crate::utils::command::parse_command
 //! [`parse_command_with_prefix`]:
 //! crate::utils::command::parse_command_with_prefix
-//! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/dev/examples/miltiple_handlers_bot/
+//! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/miltiple_handlers_bot/
 
 pub use teloxide_macros::BotCommand;
 

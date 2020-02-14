@@ -30,7 +30,7 @@
 //! [`DialogueStage::Next`]: crate::dispatching::dialogue::DialogueStage::Next
 //! [`CtxHandler`]: crate::dispatching::CtxHandler
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/dev/examples/dialogue_bot
+//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 #![allow(clippy::module_inception)]
 #![allow(clippy::type_complexity)]
