@@ -26,3 +26,8 @@ serde_with_macros = "1.0.1"
 either = "1.5.3"
 
 teloxide-macros = { path = "teloxide-macros" }
+
+[dev-dependencies]
+smart-default = "0.6.0"
+rand = "0.7.3"
+pretty_env_logger = "0.4.0"

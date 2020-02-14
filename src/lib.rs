@@ -24,24 +24,24 @@
 //!  message:
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/ping_pong_bot/src/main.rs))
-//! ```rust
+//! ```rust,no_run
 //! use teloxide::prelude::*;
 //!
-//! #[tokio::main]
-//! async fn main() {
-//!     teloxide::enable_logging!();
-//!     log::info!("Starting the ping-pong bot!");
+//! # #[tokio::main]
+//! # async fn main() {
+//! teloxide::enable_logging!();
+//! log::info!("Starting the ping-pong bot!");
 //!
-//!     let bot = Bot::from_env();
+//! let bot = Bot::from_env();
 //!
-//!     Dispatcher::<RequestError>::new(bot)
-//!         .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
-//!             ctx.answer("pong").send().await?;
-//!             Ok(())
-//!         })
-//!         .dispatch()
-//!         .await;
-//! }
+//! Dispatcher::<RequestError>::new(bot)
+//!     .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
+//!         ctx.answer("pong").send().await?;
+//!         Ok(())
+//!     })
+//!     .dispatch()
+//!     .await;
+//! # }
 //! ```
 //!
 //! ## Commands
@@ -50,7 +50,9 @@
 //! [0; 1) on `/generate`, and shows the usage guide on `/help`:
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/simple_commands_bot/src/main.rs))
-//! ```rust
+//! ```rust,no_run
+//! # use teloxide::{prelude::*, utils::command::BotCommand};
+//! # use rand::{thread_rng, Rng};
 //! // Imports are omitted...
 //!
 //! #[derive(BotCommand)]
@@ -103,6 +105,15 @@
 //! #[tokio::main]
 //! async fn main() {
 //!     // Setup is omitted...
+//! # teloxide::enable_logging!();
+//! # log::info!("Starting simple_commands_bot!");
+//! #
+//! # let bot = Bot::from_env();
+//! #
+//! #  Dispatcher::<RequestError>::new(bot)
+//! #      .message_handler(&handle_command)
+//! #      .dispatch()
+//! #      .await;
 //! }
 //! ```
 //!
@@ -111,7 +122,11 @@
 //!  You must guess a number from 1 to 10 (inclusively):
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/dev/examples/guess_a_number_bot/src/main.rs))
-//! ```rust
+//! ```rust,no_run
+//! # #[macro_use]
+//! # extern crate smart_default;
+//! # use teloxide::prelude::*;
+//! # use rand::{thread_rng, Rng};
 //! // Imports are omitted...
 //!
 //! #[derive(SmartDefault)]
@@ -178,6 +193,9 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
+//! # teloxide::enable_logging!();
+//! # log::info!("Starting guess_a_number_bot!");
+//! # let bot = Bot::from_env();
 //!     // Setup is omitted...
 //!
 //!     Dispatcher::new(bot)
