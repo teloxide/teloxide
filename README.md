@@ -73,6 +73,10 @@ async fn main() {
 }
 ```
 
+<div align="center">
+  <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png />
+</div>
+
 ## Commands
 Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow`, generates a random number within [0; 1) on `/generate`, and shows the usage guide on `/help`:
 
@@ -129,6 +133,10 @@ async fn main() {
 }
 
 ```
+
+<div align="center">
+  <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png />
+</div>
 
 ## Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
@@ -210,6 +218,11 @@ async fn main() {
         .await;
 }
 ```
+
+
+<div align="center">
+  <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png />
+</div>
 
 Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
 
