@@ -233,7 +233,7 @@ Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), desi
  }
  ```
  
-The second one produces very strange compiler messages because of the `#[tokio::main]` macro. The examples in this README use the first one for brevity.
+The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/dev/CONTRIBUTING.md).
