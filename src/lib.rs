@@ -19,6 +19,32 @@
 //!    For example, functions accept `Into<String>`, rather than `&str` or
 //!    `String`, so you can call them without `.to_string()`/`.as_str()`/etc.
 //!
+//! ## Getting started
+//!  1. Create a new bot using [@Botfather] to get a token in the format
+//! `123456789:blablabla`.  2. Initialise the `TELOXIDE_TOKEN` environmental
+//! variable to your token:
+//! ```bash
+//! # Unix
+//! $ export TELOXIDE_TOKEN=MyAwesomeToken
+//!
+//! # Windows
+//! $ set TELOXITE_TOKEN=MyAwesomeToken
+//! ```
+//!  3. Be sure that you are up to date:
+//! ```bash
+//! $ rustup update stable
+//! ```
+//!
+//!  4. Execute `cargo new my_bot`, enter the directory and put these lines into
+//! your `Cargo.toml`:
+//! ```toml
+//! [dependencies]
+//! teloxide = "0.1.0"
+//! log = "0.4.8"
+//! tokio = "0.2.11"
+//! pretty_env_logger = "0.4.0"
+//! ```
+//!
 //! ## The ping-pong bot
 //! This bot has a single message handler, which answers "pong" to each incoming
 //!  message:
@@ -239,7 +265,8 @@
 //!  ```
 //!
 //!  The second one produces very strange compiler messages because of the
-//! `#[tokio::main]` macro. The examples above use the first one for brevity.
+//! `#[tokio::main]` macro. However, the examples above use the second one for
+//! brevity.
 //!
 //! [Telegram bots]: https://telegram.org/blog/bot-revolution
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
@@ -247,6 +274,7 @@
 //! [finite automaton]: https://en.wikipedia.org/wiki/Finite-state_machine
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/blob/dev/examples/dialogue_bot/src/main.rs
 //! [structopt]: https://docs.rs/structopt/0.3.9/structopt/
+//! [@Botfather]: https://t.me/botfather
 
 #![doc(
     html_logo_url = "https://github.com/teloxide/teloxide/raw/dev/logo.svg",
