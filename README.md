@@ -74,7 +74,7 @@ async fn main() {
 ```
 
 <div align="center">
-  <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
+  <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="400" />
 </div>
 
 ## Commands
