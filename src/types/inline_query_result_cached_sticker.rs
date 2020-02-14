@@ -2,10 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 
-/// Represents a link to a sticker stored on the Telegram servers. By default,
-/// this sticker will be sent by the user. Alternatively, you can use
-/// `input_message_content` to send a message with the specified content instead
-/// of the sticker.
+/// Represents a link to a sticker stored on the Telegram servers.
+///
+/// By default, this sticker will be sent by the user. Alternatively, you can
+/// use `input_message_content` to send a message with the specified content
+/// instead of the sticker.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedsticker).
 #[serde_with_macros::skip_serializing_none]

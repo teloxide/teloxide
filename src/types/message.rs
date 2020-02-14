@@ -34,8 +34,7 @@ pub struct Message {
 pub enum MessageKind {
     Common {
         /// Sender, empty for messages sent to channels.
-        #[serde(flatten)]
-        from: Sender,
+        from: Option<User>,
 
         #[serde(flatten)]
         forward_kind: ForwardKind,
@@ -142,17 +141,6 @@ pub enum MessageKind {
         /// Telegram Passport data.
         passport_data: PassportData,
     },
-}
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub enum Sender {
-    /// Sender of a message from chat.
-    #[serde(rename = "from")]
-    User(User),
-
-    /// Signature of a sender of a message from a channel.
-    #[serde(rename = "author_signature")]
-    Signature(String),
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -340,8 +328,7 @@ mod getters {
                 Pinned, SuccessfulPayment, SupergroupChatCreated,
             },
         },
-        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, Sender, True,
-        User,
+        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -350,11 +337,15 @@ mod getters {
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
         /// NOTE: this is getter for both `from` and `author_signature`
-        pub fn from(&self) -> Option<&Sender> {
+        pub fn from(&self) -> Option<&User> {
             match &self.kind {
-                Common { from, .. } => Some(from),
+                Common { from, .. } => from.as_ref(),
                 _ => None,
             }
+        }
+
+        pub fn chat_id(&self) -> i64 {
+            self.chat.id
         }
 
         /// NOTE: this is getter for both `forward_from` and
@@ -728,21 +719,21 @@ mod getters {
             }
         }
 
-        pub fn migrate_to_chat_id(&self) -> Option<&i64> {
+        pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
                 Migrate {
                     migrate_to_chat_id, ..
-                } => Some(migrate_to_chat_id),
+                } => Some(*migrate_to_chat_id),
                 _ => None,
             }
         }
 
-        pub fn migrate_from_chat_id(&self) -> Option<&i64> {
+        pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
                 Migrate {
                     migrate_from_chat_id,
                     ..
-                } => Some(migrate_from_chat_id),
+                } => Some(*migrate_from_chat_id),
                 _ => None,
             }
         }

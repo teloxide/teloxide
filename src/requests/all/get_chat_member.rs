@@ -1,27 +1,27 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatMember},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get information about a member of a chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getchatmember).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetChatMember<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetChatMember {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     user_id: i32,
 }
 
 #[async_trait::async_trait]
-impl Request for GetChatMember<'_> {
+impl Request for GetChatMember {
     type Output = ChatMember;
 
     async fn send(&self) -> ResponseResult<ChatMember> {
@@ -35,14 +35,14 @@ impl Request for GetChatMember<'_> {
     }
 }
 
-impl<'a> GetChatMember<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, user_id: i32) -> Self
+impl GetChatMember {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             user_id,
         }

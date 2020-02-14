@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to pin a message in a group, a supergroup, or a channel.
 ///
@@ -16,17 +16,17 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#pinchatmessage).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct PinChatMessage<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct PinChatMessage {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     message_id: i32,
     disable_notification: Option<bool>,
 }
 
 #[async_trait::async_trait]
-impl Request for PinChatMessage<'_> {
+impl Request for PinChatMessage {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -40,14 +40,14 @@ impl Request for PinChatMessage<'_> {
     }
 }
 
-impl<'a> PinChatMessage<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, message_id: i32) -> Self
+impl PinChatMessage {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, message_id: i32) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             message_id,
             disable_notification: None,

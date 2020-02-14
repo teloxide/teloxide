@@ -20,10 +20,14 @@ mime = "0.3.16"
 derive_more = "0.99.2"
 thiserror = "1.0.9"
 async-trait = "0.1.22"
-duang = "0.1.2"
 futures = "0.3.1"
 pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
 either = "1.5.3"
 
 teloxide-macros = { path = "teloxide-macros" }
+
+[dev-dependencies]
+smart-default = "0.6.0"
+rand = "0.7.3"
+pretty_env_logger = "0.4.0"

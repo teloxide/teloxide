@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send phone contacts.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendcontact).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendContact<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendContact {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     phone_number: String,
     first_name: String,
@@ -27,7 +27,7 @@ pub struct SendContact<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendContact<'_> {
+impl Request for SendContact {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -41,9 +41,9 @@ impl Request for SendContact<'_> {
     }
 }
 
-impl<'a> SendContact<'a> {
+impl SendContact {
     pub(crate) fn new<C, P, F>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         phone_number: P,
         first_name: F,
@@ -57,7 +57,7 @@ impl<'a> SendContact<'a> {
         let phone_number = phone_number.into();
         let first_name = first_name.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             phone_number,
             first_name,

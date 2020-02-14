@@ -1,0 +1,16 @@
+[package]
+name = "ping_pong_bot"
+version = "0.1.0"
+authors = ["Temirkhan Myrzamadi <hirrolot@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4.8"
+tokio = "0.2.9"
+pretty_env_logger = "0.4.0"
+teloxide = { path = "../../" }
+
+[profile.release]
+lto = true

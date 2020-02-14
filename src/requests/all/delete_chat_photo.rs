@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to delete a chat photo. Photos can't be changed for private
 /// chats. The bot must be an administrator in the chat for this to work and
@@ -14,15 +14,15 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#deletechatphoto).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct DeleteChatPhoto<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteChatPhoto {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteChatPhoto<'_> {
+impl Request for DeleteChatPhoto {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -36,16 +36,13 @@ impl Request for DeleteChatPhoto<'_> {
     }
 }
 
-impl<'a> DeleteChatPhoto<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl DeleteChatPhoto {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target channel

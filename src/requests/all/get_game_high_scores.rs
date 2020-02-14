@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatOrInlineMessage, GameHighScore},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get data for high score tables.
 ///
@@ -21,17 +21,17 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getgamehighscores).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetGameHighScores<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetGameHighScores {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     user_id: i32,
 }
 
 #[async_trait::async_trait]
-impl Request for GetGameHighScores<'_> {
+impl Request for GetGameHighScores {
     type Output = Vec<GameHighScore>;
 
     async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
@@ -45,14 +45,14 @@ impl Request for GetGameHighScores<'_> {
     }
 }
 
-impl<'a> GetGameHighScores<'a> {
+impl GetGameHighScores {
     pub(crate) fn new(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
     ) -> Self {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_or_inline_message,
             user_id,
         }

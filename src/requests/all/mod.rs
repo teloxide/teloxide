@@ -130,6 +130,3 @@ pub use stop_poll::*;
 pub use unban_chat_member::*;
 pub use unpin_chat_message::*;
 pub use upload_sticker_file::*;
-
-mod bot_wrapper;
-use bot_wrapper::BotWrapper;

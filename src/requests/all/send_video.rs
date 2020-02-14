@@ -1,10 +1,10 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send video files, Telegram clients support mp4 videos
 /// (other formats may be sent as Document).
@@ -13,9 +13,9 @@ use crate::{
 /// limit may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendVideo<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendVideo {
+    bot: Arc<Bot>,
     chat_id: ChatId,
     video: InputFile,
     duration: Option<i32>,
@@ -31,7 +31,7 @@ pub struct SendVideo<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendVideo<'_> {
+impl Request for SendVideo {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -70,13 +70,13 @@ impl Request for SendVideo<'_> {
     }
 }
 
-impl<'a> SendVideo<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, video: InputFile) -> Self
+impl SendVideo {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, video: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             video,
             duration: None,

@@ -2,9 +2,10 @@ use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::types::{KeyboardButtonPollType, True};
 
-/// This object represents one button of the reply keyboard. For filter text
-/// buttons String can be used instead of this object to specify text of the
-/// button.
+/// This object represents one button of the reply keyboard.
+///
+/// For filter text buttons String can be used instead of this object to specify
+/// text of the button.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
 #[serde_with_macros::skip_serializing_none]
@@ -21,6 +22,28 @@ pub struct KeyboardButton {
     ///   the button is pressed. Available in private chats only
     #[serde(flatten)]
     pub request: Option<ButtonRequest>,
+}
+
+impl KeyboardButton {
+    /// Creates `KeyboardButton` with the provided `text` and all the other
+    /// fields set to `None`.
+    pub fn new<T>(text: T) -> Self
+    where
+        T: Into<String>,
+    {
+        Self {
+            text: text.into(),
+            request: None,
+        }
+    }
+
+    pub fn request<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<ButtonRequest>>,
+    {
+        self.request = val.into();
+        self
+    }
 }
 
 // Serialize + Deserialize are implemented by hand

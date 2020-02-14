@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to delete a group sticker set from a supergroup.
 ///
@@ -19,15 +19,15 @@ use crate::{
 ///
 /// [`Bot::get_chat`]: crate::Bot::get_chat
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct DeleteChatStickerSet<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct DeleteChatStickerSet {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteChatStickerSet<'_> {
+impl Request for DeleteChatStickerSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -41,16 +41,13 @@ impl Request for DeleteChatStickerSet<'_> {
     }
 }
 
-impl<'a> DeleteChatStickerSet<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl DeleteChatStickerSet {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target

@@ -1,5 +1,7 @@
-use crate::attr::{Attr, BotCommandAttribute};
-use crate::rename_rules::rename_by_rule;
+use crate::{
+    attr::{Attr, BotCommandAttribute},
+    rename_rules::rename_by_rule,
+};
 
 pub struct Command {
     pub prefix: Option<String>,
@@ -33,7 +35,7 @@ impl Command {
 struct CommandAttrs {
     prefix: Option<String>,
     description: Option<String>,
-    rename: Option<String>
+    rename: Option<String>,
 }
 
 fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
@@ -44,16 +46,18 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
     for attr in attrs {
         match attr.name() {
             BotCommandAttribute::Prefix => prefix = Some(attr.value()),
-            BotCommandAttribute::Description => description = Some(attr.value()),
+            BotCommandAttribute::Description => {
+                description = Some(attr.value())
+            }
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
             #[allow(unreachable_patterns)]
-            _ => return Err(format!("unexpected attribute")),
+            _ => return Err("unexpected attribute".to_owned()),
         }
     }
 
     Ok(CommandAttrs {
         prefix,
         description,
-        rename: rename_rule
+        rename: rename_rule,
     })
 }

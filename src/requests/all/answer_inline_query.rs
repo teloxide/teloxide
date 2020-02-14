@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{InlineQueryResult, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send answers to an inline query.
 ///
@@ -14,10 +14,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#answerinlinequery).
 #[serde_with_macros::skip_serializing_none]
-#[derive(PartialEq, Debug, Clone, Serialize)]
-pub struct AnswerInlineQuery<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerInlineQuery {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     inline_query_id: String,
     results: Vec<InlineQueryResult>,
     cache_time: Option<i32>,
@@ -28,7 +28,7 @@ pub struct AnswerInlineQuery<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for AnswerInlineQuery<'_> {
+impl Request for AnswerInlineQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -42,9 +42,9 @@ impl Request for AnswerInlineQuery<'_> {
     }
 }
 
-impl<'a> AnswerInlineQuery<'a> {
+impl AnswerInlineQuery {
     pub(crate) fn new<I, R>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         inline_query_id: I,
         results: R,
     ) -> Self
@@ -55,7 +55,7 @@ impl<'a> AnswerInlineQuery<'a> {
         let inline_query_id = inline_query_id.into();
         let results = results.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             inline_query_id,
             results,
             cache_time: None,

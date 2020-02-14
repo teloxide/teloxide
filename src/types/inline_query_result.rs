@@ -88,7 +88,7 @@ mod tests {
                 audio_file_id: String::from("audio_file_id"),
                 caption: Some(String::from("caption")),
                 parse_mode: Some(ParseMode::HTML),
-                reply_markup: Some(InlineKeyboardMarkup::new()),
+                reply_markup: Some(InlineKeyboardMarkup::default()),
                 input_message_content: Some(InputMessageContent::Text {
                     message_text: String::from("message_text"),
                     parse_mode: Some(ParseMode::MarkdownV2),

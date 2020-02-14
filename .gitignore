@@ -3,4 +3,9 @@
 Cargo.lock
 .idea/
 .vscode/
-examples/target
+examples/ping_pong_bot/target
+examples/dialogue_bot/target
+examples/multiple_handlers_bot/target
+examples/admin_bot/target
+examples/guess_a_number_bot/target
+examples/simple_commands_bot/target

@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-/// This object represents a file uploaded to Telegram Passport. Currently all
-/// Telegram Passport files are in JPEG format when decrypted and don't exceed
-/// 10MB.
+/// This object represents a file uploaded to Telegram Passport.
+///
+/// Currently all Telegram Passport files are in JPEG format when decrypted and
+/// don't exceed 10MB.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportfile).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]

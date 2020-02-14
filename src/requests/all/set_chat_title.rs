@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to change the title of a chat.
 ///
@@ -15,16 +15,16 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setchattitle).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetChatTitle<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatTitle {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     title: String,
 }
 
 #[async_trait::async_trait]
-impl Request for SetChatTitle<'_> {
+impl Request for SetChatTitle {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -38,8 +38,8 @@ impl Request for SetChatTitle<'_> {
     }
 }
 
-impl<'a> SetChatTitle<'a> {
-    pub(crate) fn new<C, T>(bot: &'a Bot, chat_id: C, title: T) -> Self
+impl SetChatTitle {
+    pub(crate) fn new<C, T>(bot: Arc<Bot>, chat_id: C, title: T) -> Self
     where
         C: Into<ChatId>,
         T: Into<String>,
@@ -47,7 +47,7 @@ impl<'a> SetChatTitle<'a> {
         let chat_id = chat_id.into();
         let title = title.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             title,
         }

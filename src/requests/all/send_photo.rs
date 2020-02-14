@@ -1,17 +1,17 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send photos.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendphoto).
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendPhoto<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendPhoto {
+    bot: Arc<Bot>,
     chat_id: ChatId,
     photo: InputFile,
     caption: Option<String>,
@@ -22,7 +22,7 @@ pub struct SendPhoto<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendPhoto<'_> {
+impl Request for SendPhoto {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -51,13 +51,13 @@ impl Request for SendPhoto<'_> {
     }
 }
 
-impl<'a> SendPhoto<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, photo: InputFile) -> Self
+impl SendPhoto {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, photo: InputFile) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             photo,
             caption: None,

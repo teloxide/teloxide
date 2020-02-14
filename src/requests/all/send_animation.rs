@@ -1,10 +1,10 @@
-use super::BotWrapper;
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -13,9 +13,9 @@ use crate::{
 /// may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendanimation).
-#[derive(Eq, PartialEq, Debug, Clone)]
-pub struct SendAnimation<'a> {
-    bot: BotWrapper<'a>,
+#[derive(Debug, Clone)]
+pub struct SendAnimation {
+    bot: Arc<Bot>,
     pub chat_id: ChatId,
     pub animation: InputFile,
     pub duration: Option<u32>,
@@ -30,7 +30,7 @@ pub struct SendAnimation<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendAnimation<'_> {
+impl Request for SendAnimation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -67,13 +67,17 @@ impl Request for SendAnimation<'_> {
     }
 }
 
-impl<'a> SendAnimation<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C, animation: InputFile) -> Self
+impl SendAnimation {
+    pub(crate) fn new<C>(
+        bot: Arc<Bot>,
+        chat_id: C,
+        animation: InputFile,
+    ) -> Self
     where
         C: Into<ChatId>,
     {
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id: chat_id.into(),
             animation,
             duration: None,

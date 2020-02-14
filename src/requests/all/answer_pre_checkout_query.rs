@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::True,
     Bot,
 };
+use std::sync::Arc;
 
 /// Once the user has confirmed their payment and shipping details, the Bot API
 /// sends the final confirmation in the form of an [`Update`] with the field
@@ -18,17 +18,17 @@ use crate::{
 ///
 /// [`Update`]: crate::types::Update
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct AnswerPreCheckoutQuery<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct AnswerPreCheckoutQuery {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     pre_checkout_query_id: String,
     ok: bool,
     error_message: Option<String>,
 }
 
 #[async_trait::async_trait]
-impl Request for AnswerPreCheckoutQuery<'_> {
+impl Request for AnswerPreCheckoutQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -42,9 +42,9 @@ impl Request for AnswerPreCheckoutQuery<'_> {
     }
 }
 
-impl<'a> AnswerPreCheckoutQuery<'a> {
+impl AnswerPreCheckoutQuery {
     pub(crate) fn new<P>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         pre_checkout_query_id: P,
         ok: bool,
     ) -> Self
@@ -53,7 +53,7 @@ impl<'a> AnswerPreCheckoutQuery<'a> {
     {
         let pre_checkout_query_id = pre_checkout_query_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             pre_checkout_query_id,
             ok,
             error_message: None,

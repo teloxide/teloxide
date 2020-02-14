@@ -30,13 +30,9 @@ pub struct InlineKeyboardMarkup {
 ///     "text".to_string(),
 ///     "http://url.com".to_string(),
 /// );
-/// let keyboard = InlineKeyboardMarkup::new().append_row(vec![url_button]);
+/// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
-    pub fn new() -> Self {
-        <_>::default()
-    }
-
     pub fn append_row(mut self, buttons: Vec<InlineKeyboardButton>) -> Self {
         self.inline_keyboard.push(buttons);
         self
@@ -70,7 +66,7 @@ mod tests {
             "url 2".to_string(),
         );
 
-        let markup = InlineKeyboardMarkup::new()
+        let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone(), button2.clone()]);
 
         let expected = InlineKeyboardMarkup {
@@ -91,7 +87,7 @@ mod tests {
             "url 2".to_string(),
         );
 
-        let markup = InlineKeyboardMarkup::new()
+        let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 0);
 
@@ -113,7 +109,7 @@ mod tests {
             "url 2".to_string(),
         );
 
-        let markup = InlineKeyboardMarkup::new()
+        let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 1);
 

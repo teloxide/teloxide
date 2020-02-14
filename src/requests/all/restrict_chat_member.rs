@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to restrict a user in a supergroup.
 ///
@@ -16,10 +16,10 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#restrictchatmember).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct RestrictChatMember<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct RestrictChatMember {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     user_id: i32,
     permissions: ChatPermissions,
@@ -27,7 +27,7 @@ pub struct RestrictChatMember<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for RestrictChatMember<'_> {
+impl Request for RestrictChatMember {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -41,9 +41,9 @@ impl Request for RestrictChatMember<'_> {
     }
 }
 
-impl<'a> RestrictChatMember<'a> {
+impl RestrictChatMember {
     pub(crate) fn new<C>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,
@@ -53,7 +53,7 @@ impl<'a> RestrictChatMember<'a> {
     {
         let chat_id = chat_id.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             user_id,
             permissions,

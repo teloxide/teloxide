@@ -1,26 +1,26 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::ChatId,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to get the number of members in a chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getchatmemberscount).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct GetChatMembersCount<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct GetChatMembersCount {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for GetChatMembersCount<'_> {
+impl Request for GetChatMembersCount {
     type Output = i32;
 
     async fn send(&self) -> ResponseResult<i32> {
@@ -34,16 +34,13 @@ impl Request for GetChatMembersCount<'_> {
     }
 }
 
-impl<'a> GetChatMembersCount<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl GetChatMembersCount {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target

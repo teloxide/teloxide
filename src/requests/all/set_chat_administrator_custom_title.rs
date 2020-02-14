@@ -1,29 +1,29 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to set a custom title for an administrator in a supergroup
 /// promoted by the bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#setchatadministratorcustomtitle).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SetChatAdministratorCustomTitle<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SetChatAdministratorCustomTitle {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     user_id: i32,
     custom_title: String,
 }
 
 #[async_trait::async_trait]
-impl Request for SetChatAdministratorCustomTitle<'_> {
+impl Request for SetChatAdministratorCustomTitle {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
@@ -37,9 +37,9 @@ impl Request for SetChatAdministratorCustomTitle<'_> {
     }
 }
 
-impl<'a> SetChatAdministratorCustomTitle<'a> {
+impl SetChatAdministratorCustomTitle {
     pub(crate) fn new<C, CT>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         user_id: i32,
         custom_title: CT,
@@ -51,7 +51,7 @@ impl<'a> SetChatAdministratorCustomTitle<'a> {
         let chat_id = chat_id.into();
         let custom_title = custom_title.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             user_id,
             custom_title,

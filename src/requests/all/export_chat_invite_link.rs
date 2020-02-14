@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::ChatId,
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to generate a new invite link for a chat; any previously
 /// generated link is revoked.
@@ -28,15 +28,15 @@ use crate::{
 /// [`Bot::export_chat_invite_link`]: crate::Bot::export_chat_invite_link
 /// [`Bot::get_chat`]: crate::Bot::get_chat
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct ExportChatInviteLink<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct ExportChatInviteLink {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
 }
 
 #[async_trait::async_trait]
-impl Request for ExportChatInviteLink<'_> {
+impl Request for ExportChatInviteLink {
     type Output = String;
 
     /// Returns the new invite link as `String` on success.
@@ -51,16 +51,13 @@ impl Request for ExportChatInviteLink<'_> {
     }
 }
 
-impl<'a> ExportChatInviteLink<'a> {
-    pub(crate) fn new<C>(bot: &'a Bot, chat_id: C) -> Self
+impl ExportChatInviteLink {
+    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot: BotWrapper(bot),
-            chat_id,
-        }
+        Self { bot, chat_id }
     }
 
     /// Unique identifier for the target chat or username of the target channel

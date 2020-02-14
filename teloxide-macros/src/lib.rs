@@ -5,13 +5,15 @@ mod rename_rules;
 
 extern crate proc_macro;
 extern crate syn;
+use crate::{
+    attr::{Attr, VecAttrs},
+    command::Command,
+    enum_attributes::CommandEnum,
+    rename_rules::rename_by_rule,
+};
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{DeriveInput, parse_macro_input};
-use crate::command::Command;
-use crate::attr::{Attr, VecAttrs};
-use crate::enum_attributes::CommandEnum;
-use crate::rename_rules::rename_by_rule;
+use syn::{parse_macro_input, DeriveInput};
 
 macro_rules! get_or_return {
     ($($some:tt)*) => {
@@ -35,7 +37,8 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         Err(e) => return compile_error(e),
     };
 
-    let variants: Vec<&syn::Variant> = data_enum.variants.iter().map(|attr| attr).collect();
+    let variants: Vec<&syn::Variant> =
+        data_enum.variants.iter().map(|attr| attr).collect();
 
     let mut variant_infos = vec![];
     for variant in variants.iter() {
@@ -44,10 +47,10 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             match attr.parse_args::<VecAttrs>() {
                 Ok(mut attrs_) => {
                     attrs.append(attrs_.data.as_mut());
-                },
+                }
                 Err(e) => {
                     return compile_error(e.to_compile_error());
-                },
+                }
             }
         }
         match Command::try_from(attrs.as_slice(), &variant.ident.to_string()) {
@@ -60,35 +63,34 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let variant_name = variant_infos.iter().map(|info| {
         if info.renamed {
             info.name.clone()
-        }
-        else if let Some(rename_rule) = &command_enum.rename_rule {
+        } else if let Some(rename_rule) = &command_enum.rename_rule {
             rename_by_rule(&info.name, rename_rule)
-        }
-        else {
+        } else {
             info.name.clone()
         }
     });
     let variant_prefixes = variant_infos.iter().map(|info| {
-            if let Some(prefix) = &info.prefix {
-                prefix
-            }
-            else if let Some(prefix) = &command_enum.prefix {
-                prefix
-            }
-            else {
-                "/"
-            }
+        if let Some(prefix) = &info.prefix {
+            prefix
+        } else if let Some(prefix) = &command_enum.prefix {
+            prefix
+        } else {
+            "/"
+        }
     });
-    let variant_str1 = variant_prefixes.zip(variant_name).map(|(prefix, command)| prefix.to_string() + command.as_str());
+    let variant_str1 = variant_prefixes
+        .zip(variant_name)
+        .map(|(prefix, command)| prefix.to_string() + command.as_str());
     let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos.iter().map(|info| info.description.as_ref().map(String::as_str).unwrap_or(""));
+    let variant_description = variant_infos
+        .iter()
+        .map(|info| info.description.as_deref().unwrap_or(""));
 
     let ident = &input.ident;
 
     let global_description = if let Some(s) = &command_enum.description {
         quote! { #s, "\n", }
-    }
-    else {
+    } else {
         quote! {}
     };
 
@@ -114,27 +116,28 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     };
     //for debug
     //println!("{}", &expanded.to_string());
-    let tokens = TokenStream::from(expanded);
-    tokens
+    TokenStream::from(expanded)
 }
 
 fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
     match &input.data {
         syn::Data::Enum(data) => Ok(data),
-        _ => Err(compile_error("TelegramBotCommand allowed only for enums"))
+        _ => Err(compile_error("TelegramBotCommand allowed only for enums")),
     }
 }
 
-fn parse_attributes(input: &Vec<syn::Attribute>) -> Result<Vec<Attr>, TokenStream> {
+fn parse_attributes(
+    input: &[syn::Attribute],
+) -> Result<Vec<Attr>, TokenStream> {
     let mut enum_attrs = Vec::new();
     for attr in input.iter() {
         match attr.parse_args::<VecAttrs>() {
             Ok(mut attrs_) => {
                 enum_attrs.append(attrs_.data.as_mut());
-            },
+            }
             Err(e) => {
                 return Err(compile_error(e.to_compile_error()));
-            },
+            }
         }
     }
     Ok(enum_attrs)
@@ -142,7 +145,7 @@ fn parse_attributes(input: &Vec<syn::Attribute>) -> Result<Vec<Attr>, TokenStrea
 
 fn compile_error<T>(data: T) -> TokenStream
 where
-    T: ToTokens
+    T: ToTokens,
 {
     TokenStream::from(quote! { compile_error!(#data) })
 }

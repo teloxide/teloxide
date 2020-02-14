@@ -1,21 +1,21 @@
 use serde::Serialize;
 
-use super::BotWrapper;
 use crate::{
     net,
     requests::{Request, ResponseResult},
     types::{ChatId, Message, PollType, ReplyMarkup},
     Bot,
 };
+use std::sync::Arc;
 
 /// Use this method to send a native poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendpoll).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Eq, PartialEq, Debug, Clone, Serialize)]
-pub struct SendPoll<'a> {
+#[derive(Debug, Clone, Serialize)]
+pub struct SendPoll {
     #[serde(skip_serializing)]
-    bot: BotWrapper<'a>,
+    bot: Arc<Bot>,
     chat_id: ChatId,
     question: String,
     options: Vec<String>,
@@ -30,7 +30,7 @@ pub struct SendPoll<'a> {
 }
 
 #[async_trait::async_trait]
-impl Request for SendPoll<'_> {
+impl Request for SendPoll {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -44,9 +44,9 @@ impl Request for SendPoll<'_> {
     }
 }
 
-impl<'a> SendPoll<'a> {
+impl SendPoll {
     pub(crate) fn new<C, Q, O>(
-        bot: &'a Bot,
+        bot: Arc<Bot>,
         chat_id: C,
         question: Q,
         options: O,
@@ -60,7 +60,7 @@ impl<'a> SendPoll<'a> {
         let question = question.into();
         let options = options.into();
         Self {
-            bot: BotWrapper(bot),
+            bot,
             chat_id,
             question,
             options,
@@ -106,6 +106,7 @@ impl<'a> SendPoll<'a> {
     }
 
     /// `true`, if the poll needs to be anonymous, defaults to `true`.
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_anonymous<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,
@@ -145,6 +146,7 @@ impl<'a> SendPoll<'a> {
     /// Pass `true`, if the poll needs to be immediately closed.
     ///
     /// This can be useful for poll preview.
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_closed<T>(mut self, val: T) -> Self
     where
         T: Into<bool>,

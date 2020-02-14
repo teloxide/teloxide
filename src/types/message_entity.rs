@@ -2,8 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Message, User};
 
-/// This object represents one special entity in a text message. For example,
-/// hashtags, usernames, URLs, etc.
+/// This object represents one special entity in a text message.
+///
+/// For example, hashtags, usernames, URLs, etc.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#messageentity).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -49,9 +50,7 @@ impl MessageEntity {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, MessageKind, Sender,
-    };
+    use crate::types::{Chat, ChatKind, ForwardKind, MediaKind, MessageKind};
 
     #[test]
     fn recursive_kind() {
@@ -115,7 +114,7 @@ mod tests {
                 photo: None,
             },
             kind: MessageKind::Common {
-                from: Sender::User(User {
+                from: Some(User {
                     id: 0,
                     is_bot: false,
                     first_name: "".to_string(),
