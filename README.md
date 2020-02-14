@@ -233,4 +233,4 @@ Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), desi
  }
  ```
  
-The second one produces very strange compiler messages because of the `#[tokio::main]` macro. The examples in this README uses the first one for brevity.
+The second one produces very strange compiler messages because of the `#[tokio::main]` macro. The examples in this README use the first one for brevity.
