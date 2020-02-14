@@ -7,4 +7,5 @@ To change the source code, fork this repository and work inside your own branch.
 cargo clippy --all --all-features --all-targets
 cargo test --all
 cargo doc --open
+cargo fmt --all -- --check
 ```
