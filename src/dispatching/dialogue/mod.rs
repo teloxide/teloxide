@@ -17,7 +17,7 @@
 //!  1. If a storage doesn't contain a dialogue from this chat, supply
 //! `D::default()` into you handler, otherwise, supply the saved session
 //! from this chat.
-//!  3. If a handler has returned [`DialogueStage::Exit`], remove the session
+//!  2. If a handler has returned [`DialogueStage::Exit`], remove the session
 //! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
 //! update the session.
 //!
