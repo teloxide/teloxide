@@ -193,10 +193,7 @@ async fn handle_message(
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
-    log::info!("Starting guess_a_number_bot!");
-
-    let bot = Bot::from_env();
+    // Setup is omitted...
 
     Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
