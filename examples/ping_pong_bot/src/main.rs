@@ -6,8 +6,10 @@ async fn main() {
 }
 
 async fn run() {
-    let bot = Bot::from_env().enable_logging(crate_name!()).build();
+    teloxide::enable_logging!();
     log::info!("Starting ping_pong_bot!");
+
+    let bot = Bot::from_env();
 
     // Create a dispatcher with a single message handler that answers "pong" to
     // each incoming message.

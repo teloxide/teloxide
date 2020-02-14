@@ -1,3 +1,19 @@
+// This is a bot that asks your full name, your age, your favourite kind of
+// music and sends all the gathered information back.
+//
+// # Example
+// ```
+//  - Let's start! First, what's your full name?
+//  - Luke Skywalker
+//  - What a wonderful name! Your age?
+//  - 26
+//  - Good. Now choose your favourite music
+// *A keyboard of music kinds is displayed*
+// *You select Metal*
+//  - Metal
+//  - Fine. Your full name: Luke Skywalker, your age: 26, your favourite music: Metal
+// ```
+
 #![allow(clippy::trivial_regex)]
 
 #[macro_use]
@@ -177,8 +193,10 @@ async fn main() {
 }
 
 async fn run() {
-    let bot = Bot::from_env().enable_logging(crate_name!()).build();
+    teloxide::enable_logging!();
     log::info!("Starting dialogue_bot!");
+
+    let bot = Bot::from_env();
 
     Dispatcher::new(bot)
         .message_handler(&DialogueDispatcher::new(|ctx| async move {
