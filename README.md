@@ -73,6 +73,17 @@ async fn main() {
 }
 ```
 
+<details>
+  <summary>Run this!</summary>
+
+```bash
+git clone https://github.com/teloxide/teloxide.git
+cd teloxide/examples/ping_pong_bot
+TELOXIDE_TOKEN=MyAwesomeToken cargo run
+```
+
+</details>
+
 <div align="center">
   <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="400" />
 </div>
@@ -133,6 +144,17 @@ async fn main() {
 }
 
 ```
+
+<details>
+  <summary>Run this!</summary>
+
+```bash
+git clone https://github.com/teloxide/teloxide.git
+cd teloxide/examples/simple_commands_bot
+TELOXIDE_TOKEN=MyAwesomeToken cargo run
+```
+
+</details>
 
 <div align="center">
   <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="400" />
@@ -219,6 +241,16 @@ async fn main() {
 }
 ```
 
+<details>
+  <summary>Run this!</summary>
+
+```bash
+git clone https://github.com/teloxide/teloxide.git
+cd teloxide/examples/guess_a_number_bot
+TELOXIDE_TOKEN=MyAwesomeToken cargo run
+```
+
+</details>
 
 <div align="center">
   <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
