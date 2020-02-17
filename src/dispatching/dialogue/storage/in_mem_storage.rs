@@ -27,9 +27,9 @@ impl<D> Storage<D> for InMemStorage<D> {
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
     where
-        D: Send + Sync + 'static,
+        D: Send + 'static,
     {
         Box::pin(async move { self.map.lock().await.remove(&chat_id) })
     }
@@ -38,9 +38,9 @@ impl<D> Storage<D> for InMemStorage<D> {
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
     where
-        D: Send + Sync + 'static,
+        D: Send + 'static,
     {
         Box::pin(async move { self.map.lock().await.insert(chat_id, dialogue) })
     }

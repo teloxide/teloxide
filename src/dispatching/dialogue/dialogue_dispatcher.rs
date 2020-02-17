@@ -39,8 +39,8 @@ pub struct DialogueDispatcher<D, H, Upd> {
 impl<D, H, Upd> DialogueDispatcher<D, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
-    Upd: GetChatId + Send + Sync + 'static,
-    D: Default + Send + Sync + 'static,
+    Upd: GetChatId + Send + 'static,
+    D: Default + Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
@@ -59,7 +59,7 @@ where
     #[must_use]
     pub fn with_storage<Stg>(handler: H, storage: Arc<Stg>) -> Arc<Self>
     where
-        Stg: Storage<D> + Sync + Send + 'static,
+        Stg: Storage<D> + Send + Sync + 'static,
     {
         Arc::new(Self {
             storage,
@@ -127,7 +127,7 @@ async fn update_dialogue<D>(
     chat_id: i64,
     new_dialogue: D,
 ) where
-    D: 'static + Send + Sync,
+    D: 'static + Send,
 {
     if storage
         .update_dialogue(chat_id, new_dialogue)
@@ -144,20 +144,23 @@ async fn update_dialogue<D>(
 impl<D, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
-    Upd: GetChatId + Send + Sync + 'static,
-    D: Default + Send + Sync + 'static,
+    Upd: GetChatId + Send + 'static,
+    D: Default + Send + 'static,
 {
-    fn handle<'a>(
-        &'a self,
+    fn handle(
+        self,
         updates: mpsc::UnboundedReceiver<DispatcherHandlerCtx<Upd>>,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'a>>
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
     where
-        DispatcherHandlerCtx<Upd>: 'a,
+        DispatcherHandlerCtx<Upd>: 'static,
     {
+        let this = Arc::new(self);
+
         Box::pin(updates.for_each(move |ctx| {
+            let this = Arc::clone(&this);
             let chat_id = ctx.update.chat_id();
 
-            match self.senders.get(&chat_id) {
+            match this.senders.get(&chat_id) {
                 // An old dialogue
                 Some(tx) => {
                     if let Err(_) = tx.1.send(ctx) {
@@ -168,18 +171,18 @@ where
                     }
                 }
                 None => {
-                    let tx = self.new_tx();
+                    let tx = this.new_tx();
                     if let Err(_) = tx.send(ctx) {
                         panic!(
                             "We are not dropping a receiver or call .close() \
                              on it",
                         );
                     }
-                    self.senders.insert(chat_id, tx);
+                    this.senders.insert(chat_id, tx);
                 }
             }
 
-            async { () }
+            async {}
         }))
     }
 }

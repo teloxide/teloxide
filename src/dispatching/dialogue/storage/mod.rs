@@ -19,9 +19,9 @@ pub trait Storage<D> {
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
     where
-        D: Send + Sync + 'static;
+        D: Send + 'static;
 
     /// Updates a dialogue with the specified `chat_id`.
     ///
@@ -31,7 +31,7 @@ pub trait Storage<D> {
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
     where
-        D: Send + Sync + 'static;
+        D: Send + 'static;
 }

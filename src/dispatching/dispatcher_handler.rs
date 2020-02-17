@@ -10,25 +10,25 @@ use crate::dispatching::{DispatcherHandlerCtx, DispatcherHandlerRx};
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub trait DispatcherHandler<Upd> {
     #[must_use]
-    fn handle<'a>(
-        &'a self,
+    fn handle(
+        self,
         updates: DispatcherHandlerRx<Upd>,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'a>>
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
     where
-        DispatcherHandlerCtx<Upd>: Send + Sync + 'a;
+        DispatcherHandlerCtx<Upd>: Send + 'static;
 }
 
 impl<Upd, F, Fut> DispatcherHandler<Upd> for F
 where
-    F: Fn(DispatcherHandlerRx<Upd>) -> Fut + Send + Sync + Sync + 'static,
-    Fut: Future<Output = ()> + Send + Sync + 'static,
+    F: FnOnce(DispatcherHandlerRx<Upd>) -> Fut + Send + 'static,
+    Fut: Future<Output = ()> + Send + 'static,
 {
-    fn handle<'a>(
-        &'a self,
+    fn handle(
+        self,
         updates: DispatcherHandlerRx<Upd>,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'a>>
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
     where
-        DispatcherHandlerCtx<Upd>: Send + Sync + 'a,
+        DispatcherHandlerCtx<Upd>: Send + 'static,
     {
         Box::pin(async move { self(updates).await })
     }

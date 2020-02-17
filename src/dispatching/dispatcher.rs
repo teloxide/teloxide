@@ -94,110 +94,111 @@ impl Dispatcher {
     #[must_use]
     fn new_tx<H, Upd>(&self, h: H) -> Tx<Upd>
     where
-        H: DispatcherHandler<Upd> + Send + Sync + 'static,
-        Upd: Send + Sync + 'static,
+        H: DispatcherHandler<Upd> + Send + 'static,
+        Upd: Send + 'static,
     {
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            h.handle(rx).await;
+            let fut = h.handle(rx);
+            fut.await;
         });
         Some(Mutex::new(tx))
     }
 
     #[must_use]
-    pub fn messages_handler<H, I>(mut self, h: H) -> Self
+    pub fn messages_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<Message> + 'static + Send + Sync,
+        H: DispatcherHandler<Message> + 'static + Send,
     {
         self.messages_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn edited_messages_handler<H, I>(mut self, h: H) -> Self
+    pub fn edited_messages_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<Message> + 'static + Send + Sync,
+        H: DispatcherHandler<Message> + 'static + Send,
     {
         self.edited_messages_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn channel_posts_handler<H, I>(mut self, h: H) -> Self
+    pub fn channel_posts_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<Message> + 'static + Send + Sync,
+        H: DispatcherHandler<Message> + 'static + Send,
     {
         self.channel_posts_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn edited_channel_posts_handler<H, I>(mut self, h: H) -> Self
+    pub fn edited_channel_posts_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<Message> + 'static + Send + Sync,
+        H: DispatcherHandler<Message> + 'static + Send,
     {
         self.edited_channel_posts_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn inline_queries_handler<H, I>(mut self, h: H) -> Self
+    pub fn inline_queries_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<InlineQuery> + 'static + Send + Sync,
+        H: DispatcherHandler<InlineQuery> + 'static + Send,
     {
         self.inline_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn chosen_inline_results_handler<H, I>(mut self, h: H) -> Self
+    pub fn chosen_inline_results_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<ChosenInlineResult> + 'static + Send + Sync,
+        H: DispatcherHandler<ChosenInlineResult> + 'static + Send,
     {
         self.chosen_inline_results_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn callback_queries_handler<H, I>(mut self, h: H) -> Self
+    pub fn callback_queries_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<CallbackQuery> + 'static + Send + Sync,
+        H: DispatcherHandler<CallbackQuery> + 'static + Send,
     {
         self.callback_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn shipping_queries_handler<H, I>(mut self, h: H) -> Self
+    pub fn shipping_queries_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<ShippingQuery> + 'static + Send + Sync,
+        H: DispatcherHandler<ShippingQuery> + 'static + Send,
     {
         self.shipping_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn pre_checkout_queries_handler<H, I>(mut self, h: H) -> Self
+    pub fn pre_checkout_queries_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<PreCheckoutQuery> + 'static + Send + Sync,
+        H: DispatcherHandler<PreCheckoutQuery> + 'static + Send,
     {
         self.pre_checkout_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn polls_handler<H, I>(mut self, h: H) -> Self
+    pub fn polls_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<Poll> + 'static + Send + Sync,
+        H: DispatcherHandler<Poll> + 'static + Send,
     {
         self.polls_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn poll_answers_handler<H, I>(mut self, h: H) -> Self
+    pub fn poll_answers_handler<H>(mut self, h: H) -> Self
     where
-        H: DispatcherHandler<PollAnswer> + 'static + Send + Sync,
+        H: DispatcherHandler<PollAnswer> + 'static + Send,
     {
         self.poll_answers_queue = self.new_tx(h);
         self

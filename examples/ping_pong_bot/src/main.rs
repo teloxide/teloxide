@@ -14,7 +14,11 @@ async fn run() {
     Dispatcher::new(bot)
         .messages_handler(|messages: DispatcherHandlerRx<Message>| {
             messages.for_each_concurrent(None, |message| async move {
-                message.answer("pong").send().await;
+                if let Err(error) = message.answer("pong").send().await {
+                    let foo = LoggingErrorHandler::new("Cannot send");
+                        foo.handle_error(error)
+                        .await;
+                }
             })
         })
         .dispatch()
