@@ -1,7 +1,7 @@
 mod in_mem_storage;
 
-use async_trait::async_trait;
 pub use in_mem_storage::InMemStorage;
+use std::{future::Future, pin::Pin, sync::Arc};
 
 /// A storage of dialogues.
 ///
@@ -11,18 +11,27 @@ pub use in_mem_storage::InMemStorage;
 /// For a storage based on a simple hash map, see [`InMemStorage`].
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
-#[async_trait(?Send)]
-#[async_trait]
 pub trait Storage<D> {
     /// Removes a dialogue with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
     /// `dialogue` was deleted.
-    async fn remove_dialogue(&self, chat_id: i64) -> Option<D>;
+    fn remove_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    where
+        D: Send + Sync + 'static;
 
     /// Updates a dialogue with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
     /// `dialogue` was updated.
-    async fn update_dialogue(&self, chat_id: i64, dialogue: D) -> Option<D>;
+    fn update_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+        dialogue: D,
+    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + Sync + 'static>>
+    where
+        D: Send + Sync + 'static;
 }

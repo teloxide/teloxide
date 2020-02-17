@@ -13,14 +13,18 @@ use std::sync::Arc;
 
 /// A context of a [`DialogueDispatcher`]'s message handler.
 ///
+/// See [the module-level documentation for the design
+/// overview](crate::dispatching::dialogue).
+///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
-pub struct DialogueHandlerCtx<Upd, D> {
+#[derive(Debug)]
+pub struct DialogueDispatcherHandlerCtx<Upd, D> {
     pub bot: Arc<Bot>,
     pub update: Upd,
     pub dialogue: D,
 }
 
-impl<Upd, D> DialogueHandlerCtx<Upd, D> {
+impl<Upd, D> DialogueDispatcherHandlerCtx<Upd, D> {
     /// Creates a new instance with the provided fields.
     pub fn new(bot: Arc<Bot>, update: Upd, dialogue: D) -> Self {
         Self {
@@ -35,8 +39,8 @@ impl<Upd, D> DialogueHandlerCtx<Upd, D> {
     pub fn with_new_dialogue<Nd>(
         self,
         new_dialogue: Nd,
-    ) -> DialogueHandlerCtx<Upd, Nd> {
-        DialogueHandlerCtx {
+    ) -> DialogueDispatcherHandlerCtx<Upd, Nd> {
+        DialogueDispatcherHandlerCtx {
             bot: self.bot,
             update: self.update,
             dialogue: new_dialogue,
@@ -44,7 +48,7 @@ impl<Upd, D> DialogueHandlerCtx<Upd, D> {
     }
 }
 
-impl<Upd, D> GetChatId for DialogueHandlerCtx<Upd, D>
+impl<Upd, D> GetChatId for DialogueDispatcherHandlerCtx<Upd, D>
 where
     Upd: GetChatId,
 {
@@ -53,7 +57,7 @@ where
     }
 }
 
-impl<D> DialogueHandlerCtx<Message, D> {
+impl<D> DialogueDispatcherHandlerCtx<Message, D> {
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,

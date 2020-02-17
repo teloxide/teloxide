@@ -1,97 +1,319 @@
 use crate::dispatching::{
     dialogue::{
-        DialogueHandlerCtx, DialogueStage, GetChatId, InMemStorage, Storage,
+        DialogueDispatcherHandler, DialogueDispatcherHandlerCtx, DialogueStage,
+        GetChatId, InMemStorage, Storage,
     },
-    CtxHandler, DispatcherHandlerCtx,
+    DispatcherHandler, DispatcherHandlerCtx,
 };
 use std::{future::Future, pin::Pin};
 
+use futures::StreamExt;
+use tokio::sync::mpsc;
+
+use lockfree::map::Map;
+use std::sync::Arc;
+
 /// A dispatcher of dialogues.
 ///
-/// Note that `DialogueDispatcher` implements `CtxHandler`, so you can just put
-/// an instance of this dispatcher into the [`Dispatcher`]'s methods.
+/// Note that `DialogueDispatcher` implements [`DispatcherHandler`], so you can
+/// just put an instance of this dispatcher into the [`Dispatcher`]'s methods.
+///
+/// See [the module-level documentation for the design
+/// overview](crate::dispatching::dialogue).
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub struct DialogueDispatcher<'a, D, H> {
-    storage: Box<dyn Storage<D> + 'a>,
-    handler: H,
+/// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
+pub struct DialogueDispatcher<D, H, Upd> {
+    storage: Arc<dyn Storage<D> + Send + Sync + 'static>,
+    handler: Arc<H>,
+
+    /// A lock-free map to handle updates from the same chat sequentially, but
+    /// concurrently from different chats.
+    ///
+    /// A value is the TX part of an unbounded asynchronous MPSC channel. A
+    /// handler that executes updates from the same chat ID sequentially
+    /// handles the RX part.
+    senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>>>>,
 }
 
-impl<'a, D, H> DialogueDispatcher<'a, D, H>
+impl<D, H, Upd> DialogueDispatcher<D, H, Upd>
 where
-    D: Default + 'a,
+    H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
+    Upd: GetChatId + Send + Sync + 'static,
+    D: Default + Send + Sync + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
     /// (a default storage).
     ///
     /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
     #[must_use]
-    pub fn new(handler: H) -> Self {
-        Self {
-            storage: Box::new(InMemStorage::default()),
-            handler,
-        }
+    pub fn new(handler: H) -> Arc<Self> {
+        Arc::new(Self {
+            storage: InMemStorage::new(),
+            handler: Arc::new(handler),
+            senders: Arc::new(Map::new()),
+        })
     }
 
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
-    pub fn with_storage<Stg>(handler: H, storage: Stg) -> Self
+    pub fn with_storage<Stg>(handler: H, storage: Arc<Stg>) -> Arc<Self>
     where
-        Stg: Storage<D> + 'a,
+        Stg: Storage<D> + Sync + Send + 'static,
     {
-        Self {
-            storage: Box::new(storage),
-            handler,
-        }
+        Arc::new(Self {
+            storage,
+            handler: Arc::new(handler),
+            senders: Arc::new(Map::new()),
+        })
+    }
+
+    #[must_use]
+    fn new_tx(&self) -> mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>> {
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        let storage = Arc::clone(&self.storage);
+        let handler = Arc::clone(&self.handler);
+        let senders = Arc::clone(&self.senders);
+
+        tokio::spawn(rx.for_each(move |ctx: DispatcherHandlerCtx<Upd>| {
+            let storage = Arc::clone(&storage);
+            let handler = Arc::clone(&handler);
+            let senders = Arc::clone(&senders);
+
+            async move {
+                let chat_id = ctx.update.chat_id();
+
+                let dialogue = Arc::clone(&storage)
+                    .remove_dialogue(chat_id)
+                    .await
+                    .unwrap_or_default();
+
+                match handler
+                    .handle(DialogueDispatcherHandlerCtx {
+                        bot: ctx.bot,
+                        update: ctx.update,
+                        dialogue,
+                    })
+                    .await
+                {
+                    DialogueStage::Next(new_dialogue) => {
+                        update_dialogue(
+                            Arc::clone(&storage),
+                            chat_id,
+                            new_dialogue,
+                        )
+                        .await;
+                    }
+                    DialogueStage::Exit => {
+                        // On the next .poll() call, the spawned future will
+                        // return Poll::Ready, because we are dropping the
+                        // sender right here:
+                        senders.remove(&chat_id);
+
+                        // We already removed a dialogue from `storage` (see
+                        // the beginning of this async block).
+                    }
+                }
+            }
+        }));
+
+        tx
     }
 }
 
-impl<'a, D, H, Upd> CtxHandler<DispatcherHandlerCtx<Upd>, Result<(), ()>>
-    for DialogueDispatcher<'a, D, H>
-where
-    H: CtxHandler<DialogueHandlerCtx<Upd, D>, DialogueStage<D>>,
-    Upd: GetChatId,
-    D: Default,
+async fn update_dialogue<D>(
+    storage: Arc<dyn Storage<D> + Send + Sync + 'static>,
+    chat_id: i64,
+    new_dialogue: D,
+) where
+    D: 'static + Send + Sync,
 {
-    fn handle_ctx<'b>(
-        &'b self,
-        ctx: DispatcherHandlerCtx<Upd>,
-    ) -> Pin<Box<dyn Future<Output = Result<(), ()>> + 'b>>
-    where
-        Upd: 'b,
+    if storage
+        .update_dialogue(chat_id, new_dialogue)
+        .await
+        .is_some()
     {
-        Box::pin(async move {
+        panic!(
+            "Oops, you have an bug in your Storage: update_dialogue returns \
+             Some after remove_dialogue"
+        );
+    }
+}
+
+impl<D, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, H, Upd>
+where
+    H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
+    Upd: GetChatId + Send + Sync + 'static,
+    D: Default + Send + Sync + 'static,
+{
+    fn handle<'a>(
+        &'a self,
+        updates: mpsc::UnboundedReceiver<DispatcherHandlerCtx<Upd>>,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'a>>
+    where
+        DispatcherHandlerCtx<Upd>: 'a,
+    {
+        Box::pin(updates.for_each(move |ctx| {
             let chat_id = ctx.update.chat_id();
 
-            let dialogue = self
-                .storage
-                .remove_dialogue(chat_id)
-                .await
-                .unwrap_or_default();
-
-            if let DialogueStage::Next(new_dialogue) = self
-                .handler
-                .handle_ctx(DialogueHandlerCtx {
-                    bot: ctx.bot,
-                    update: ctx.update,
-                    dialogue,
-                })
-                .await
-            {
-                if self
-                    .storage
-                    .update_dialogue(chat_id, new_dialogue)
-                    .await
-                    .is_some()
-                {
-                    panic!(
-                        "We previously storage.remove_dialogue() so \
-                         storage.update_dialogue() must return None"
-                    );
+            match self.senders.get(&chat_id) {
+                // An old dialogue
+                Some(tx) => {
+                    if let Err(_) = tx.1.send(ctx) {
+                        panic!(
+                            "We are not dropping a receiver or call .close() \
+                             on it",
+                        );
+                    }
+                }
+                None => {
+                    let tx = self.new_tx();
+                    if let Err(_) = tx.send(ctx) {
+                        panic!(
+                            "We are not dropping a receiver or call .close() \
+                             on it",
+                        );
+                    }
+                    self.senders.insert(chat_id, tx);
                 }
             }
 
-            Ok(())
-        })
+            async { () }
+        }))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::Bot;
+    use futures::{stream, StreamExt};
+    use lazy_static::lazy_static;
+    use tokio::{
+        sync::{mpsc, Mutex},
+        time::{delay_for, Duration},
+    };
+
+    #[tokio::test]
+    async fn updates_from_same_chat_executed_sequentially() {
+        #[derive(Debug)]
+        struct MyUpdate {
+            chat_id: i64,
+            unique_number: u32,
+        };
+
+        impl MyUpdate {
+            fn new(chat_id: i64, unique_number: u32) -> Self {
+                Self {
+                    chat_id,
+                    unique_number,
+                }
+            }
+        }
+
+        impl GetChatId for MyUpdate {
+            fn chat_id(&self) -> i64 {
+                self.chat_id
+            }
+        }
+
+        lazy_static! {
+            static ref SEQ1: Mutex<Vec<u32>> = Mutex::new(Vec::new());
+            static ref SEQ2: Mutex<Vec<u32>> = Mutex::new(Vec::new());
+            static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
+        }
+
+        let dispatcher = DialogueDispatcher::new(
+            |ctx: DialogueDispatcherHandlerCtx<MyUpdate, ()>| async move {
+                delay_for(Duration::from_millis(300)).await;
+
+                match ctx.update {
+                    MyUpdate {
+                        chat_id: 1,
+                        unique_number,
+                    } => {
+                        SEQ1.lock().await.push(unique_number);
+                    }
+                    MyUpdate {
+                        chat_id: 2,
+                        unique_number,
+                    } => {
+                        SEQ2.lock().await.push(unique_number);
+                    }
+                    MyUpdate {
+                        chat_id: 3,
+                        unique_number,
+                    } => {
+                        SEQ3.lock().await.push(unique_number);
+                    }
+                    _ => unreachable!(),
+                }
+
+                DialogueStage::Next(())
+            },
+        );
+
+        let updates = stream::iter(
+            vec![
+                MyUpdate::new(1, 174),
+                MyUpdate::new(1, 125),
+                MyUpdate::new(2, 411),
+                MyUpdate::new(1, 2),
+                MyUpdate::new(2, 515),
+                MyUpdate::new(2, 623),
+                MyUpdate::new(1, 193),
+                MyUpdate::new(1, 104),
+                MyUpdate::new(2, 2222),
+                MyUpdate::new(2, 737),
+                MyUpdate::new(3, 72782),
+                MyUpdate::new(3, 2737),
+                MyUpdate::new(1, 7),
+                MyUpdate::new(1, 7778),
+                MyUpdate::new(3, 5475),
+                MyUpdate::new(3, 1096),
+                MyUpdate::new(3, 872),
+                MyUpdate::new(2, 10),
+                MyUpdate::new(2, 55456),
+                MyUpdate::new(3, 5665),
+                MyUpdate::new(3, 1611),
+            ]
+            .into_iter()
+            .map(|update| DispatcherHandlerCtx {
+                update,
+                bot: Bot::new("Doesn't matter here"),
+            })
+            .collect::<Vec<DispatcherHandlerCtx<MyUpdate>>>(),
+        );
+
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        updates
+            .for_each(move |update| {
+                let tx = tx.clone();
+
+                async move {
+                    if let Err(_) = tx.send(update) {
+                        panic!("tx.send(update) failed");
+                    }
+                }
+            })
+            .await;
+
+        dispatcher.handle(rx).await;
+
+        // Wait until our futures to be finished.
+        delay_for(Duration::from_millis(3000)).await;
+
+        assert_eq!(*SEQ1.lock().await, vec![174, 125, 2, 193, 104, 7, 7778]);
+        assert_eq!(
+            *SEQ2.lock().await,
+            vec![411, 515, 623, 2222, 737, 10, 55456]
+        );
+        assert_eq!(
+            *SEQ3.lock().await,
+            vec![72782, 2737, 5475, 1096, 872, 5665, 1611]
+        );
     }
 }

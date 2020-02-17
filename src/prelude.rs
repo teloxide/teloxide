@@ -3,12 +3,16 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            exit, next, DialogueDispatcher, DialogueHandlerCtx, DialogueStage,
-            GetChatId,
+            exit, next, DialogueDispatcher, DialogueDispatcherHandlerCtx,
+            DialogueStage, GetChatId,
         },
-        Dispatcher, DispatcherHandlerCtx, DispatcherHandlerResult,
+        Dispatcher, DispatcherHandlerCtx, DispatcherHandlerRx,
     },
     requests::{Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,
 };
+
+pub use tokio::sync::mpsc::UnboundedReceiver;
+
+pub use futures::StreamExt;

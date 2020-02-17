@@ -17,6 +17,7 @@ use std::sync::Arc;
 /// overview](crate::dispatching).
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[derive(Debug)]
 pub struct DispatcherHandlerCtx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,

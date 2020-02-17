@@ -11,12 +11,11 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    // Create a dispatcher with a single message handler that answers "pong" to
-    // each incoming message.
-    Dispatcher::<RequestError>::new(bot)
-        .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
-            ctx.answer("pong").send().await?;
-            Ok(())
+    Dispatcher::new(bot)
+        .messages_handler(|messages: DispatcherHandlerRx<Message>| {
+            messages.for_each_concurrent(None, |message| async move {
+                message.answer("pong").send().await;
+            })
         })
         .dispatch()
         .await;

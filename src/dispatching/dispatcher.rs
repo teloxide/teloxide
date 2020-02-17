@@ -1,215 +1,205 @@
 use crate::{
     dispatching::{
         error_handlers::ErrorHandler, update_listeners,
-        update_listeners::UpdateListener, CtxHandler, DispatcherHandlerCtx,
-        DispatcherHandlerResult, LoggingErrorHandler,
+        update_listeners::UpdateListener, DispatcherHandler,
+        DispatcherHandlerCtx, LoggingErrorHandler,
     },
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
-        PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
+        PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
-    Bot, RequestError,
+    Bot,
 };
-use futures::{stream, StreamExt};
-use std::{fmt::Debug, future::Future, sync::Arc};
+use futures::StreamExt;
+use std::{fmt::Debug, sync::Arc};
+use tokio::sync::mpsc;
 
-type Handlers<'a, Upd, HandlerE> = Vec<
-    Box<
-        dyn CtxHandler<
-                DispatcherHandlerCtx<Upd>,
-                DispatcherHandlerResult<Upd, HandlerE>,
-            > + 'a,
-    >,
->;
+use tokio::sync::Mutex;
+
+type Tx<Upd> = Option<Mutex<mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>>>>;
+
+#[macro_use]
+mod macros {
+    /// Pushes an update to a queue.
+    macro_rules! send {
+        ($bot:expr, $tx:expr, $update:expr, $variant:expr) => {
+            send($bot, $tx, $update, stringify!($variant)).await;
+        };
+    }
+}
+
+async fn send<'a, Upd>(
+    bot: &'a Arc<Bot>,
+    tx: &'a Tx<Upd>,
+    update: Upd,
+    variant: &'static str,
+) where
+    Upd: Debug,
+{
+    if let Some(tx) = tx {
+        if let Err(error) = tx.lock().await.send(DispatcherHandlerCtx {
+            bot: Arc::clone(&bot),
+            update,
+        }) {
+            log::error!(
+                "The RX part of the {} channel is closed, but an update is \
+                 received.\nError:{}\n",
+                variant,
+                error
+            );
+        }
+    }
+}
 
 /// One dispatcher to rule them all.
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
-// HandlerE=RequestError doesn't work now, because of very poor type inference.
-// See https://github.com/rust-lang/rust/issues/27336 for more details.
-pub struct Dispatcher<'a, HandlerE = RequestError> {
+pub struct Dispatcher {
     bot: Arc<Bot>,
 
-    handlers_error_handler: Box<dyn ErrorHandler<HandlerE> + 'a>,
-
-    update_handlers: Handlers<'a, Update, HandlerE>,
-    message_handlers: Handlers<'a, Message, HandlerE>,
-    edited_message_handlers: Handlers<'a, Message, HandlerE>,
-    channel_post_handlers: Handlers<'a, Message, HandlerE>,
-    edited_channel_post_handlers: Handlers<'a, Message, HandlerE>,
-    inline_query_handlers: Handlers<'a, InlineQuery, HandlerE>,
-    chosen_inline_result_handlers: Handlers<'a, ChosenInlineResult, HandlerE>,
-    callback_query_handlers: Handlers<'a, CallbackQuery, HandlerE>,
-    shipping_query_handlers: Handlers<'a, ShippingQuery, HandlerE>,
-    pre_checkout_query_handlers: Handlers<'a, PreCheckoutQuery, HandlerE>,
-    poll_handlers: Handlers<'a, Poll, HandlerE>,
-    poll_answer_handlers: Handlers<'a, PollAnswer, HandlerE>,
+    messages_queue: Tx<Message>,
+    edited_messages_queue: Tx<Message>,
+    channel_posts_queue: Tx<Message>,
+    edited_channel_posts_queue: Tx<Message>,
+    inline_queries_queue: Tx<InlineQuery>,
+    chosen_inline_results_queue: Tx<ChosenInlineResult>,
+    callback_queries_queue: Tx<CallbackQuery>,
+    shipping_queries_queue: Tx<ShippingQuery>,
+    pre_checkout_queries_queue: Tx<PreCheckoutQuery>,
+    polls_queue: Tx<Poll>,
+    poll_answers_queue: Tx<PollAnswer>,
 }
 
-impl<'a, HandlerE> Dispatcher<'a, HandlerE>
-where
-    HandlerE: Debug + 'a,
-{
-    /// Constructs a new dispatcher with this `bot`.
+impl Dispatcher {
+    /// Constructs a new dispatcher with the specified `bot`.
     #[must_use]
     pub fn new(bot: Arc<Bot>) -> Self {
         Self {
             bot,
-            handlers_error_handler: Box::new(LoggingErrorHandler::new(
-                "An error from a Dispatcher's handler",
-            )),
-            update_handlers: Vec::new(),
-            message_handlers: Vec::new(),
-            edited_message_handlers: Vec::new(),
-            channel_post_handlers: Vec::new(),
-            edited_channel_post_handlers: Vec::new(),
-            inline_query_handlers: Vec::new(),
-            chosen_inline_result_handlers: Vec::new(),
-            callback_query_handlers: Vec::new(),
-            shipping_query_handlers: Vec::new(),
-            pre_checkout_query_handlers: Vec::new(),
-            poll_handlers: Vec::new(),
-            poll_answer_handlers: Vec::new(),
+            messages_queue: None,
+            edited_messages_queue: None,
+            channel_posts_queue: None,
+            edited_channel_posts_queue: None,
+            inline_queries_queue: None,
+            chosen_inline_results_queue: None,
+            callback_queries_queue: None,
+            shipping_queries_queue: None,
+            pre_checkout_queries_queue: None,
+            polls_queue: None,
+            poll_answers_queue: None,
         }
     }
 
-    /// Registers a handler of errors, produced by other handlers.
     #[must_use]
-    pub fn handlers_error_handler<T>(mut self, val: T) -> Self
+    fn new_tx<H, Upd>(&self, h: H) -> Tx<Upd>
     where
-        T: ErrorHandler<HandlerE> + 'a,
+        H: DispatcherHandler<Upd> + Send + Sync + 'static,
+        Upd: Send + Sync + 'static,
     {
-        self.handlers_error_handler = Box::new(val);
+        let (tx, rx) = mpsc::unbounded_channel();
+        tokio::spawn(async move {
+            h.handle(rx).await;
+        });
+        Some(Mutex::new(tx))
+    }
+
+    #[must_use]
+    pub fn messages_handler<H, I>(mut self, h: H) -> Self
+    where
+        H: DispatcherHandler<Message> + 'static + Send + Sync,
+    {
+        self.messages_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn update_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn edited_messages_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<Update>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Update, HandlerE>> + 'a,
+        H: DispatcherHandler<Message> + 'static + Send + Sync,
     {
-        self.update_handlers = register_handler(self.update_handlers, h);
+        self.edited_messages_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn message_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn channel_posts_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
+        H: DispatcherHandler<Message> + 'static + Send + Sync,
     {
-        self.message_handlers = register_handler(self.message_handlers, h);
+        self.channel_posts_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn edited_message_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn edited_channel_posts_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
+        H: DispatcherHandler<Message> + 'static + Send + Sync,
     {
-        self.edited_message_handlers =
-            register_handler(self.edited_message_handlers, h);
+        self.edited_channel_posts_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn channel_post_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn inline_queries_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
+        H: DispatcherHandler<InlineQuery> + 'static + Send + Sync,
     {
-        self.channel_post_handlers =
-            register_handler(self.channel_post_handlers, h);
+        self.inline_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn edited_channel_post_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn chosen_inline_results_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<Message>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Message, HandlerE>> + 'a,
+        H: DispatcherHandler<ChosenInlineResult> + 'static + Send + Sync,
     {
-        self.edited_channel_post_handlers =
-            register_handler(self.edited_channel_post_handlers, h);
+        self.chosen_inline_results_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn inline_query_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn callback_queries_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<InlineQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<InlineQuery, HandlerE>> + 'a,
+        H: DispatcherHandler<CallbackQuery> + 'static + Send + Sync,
     {
-        self.inline_query_handlers =
-            register_handler(self.inline_query_handlers, h);
+        self.callback_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn chosen_inline_result_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn shipping_queries_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<ChosenInlineResult>, I> + 'a,
-        I: Into<DispatcherHandlerResult<ChosenInlineResult, HandlerE>> + 'a,
+        H: DispatcherHandler<ShippingQuery> + 'static + Send + Sync,
     {
-        self.chosen_inline_result_handlers =
-            register_handler(self.chosen_inline_result_handlers, h);
+        self.shipping_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn callback_query_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn pre_checkout_queries_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<CallbackQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<CallbackQuery, HandlerE>> + 'a,
+        H: DispatcherHandler<PreCheckoutQuery> + 'static + Send + Sync,
     {
-        self.callback_query_handlers =
-            register_handler(self.callback_query_handlers, h);
+        self.pre_checkout_queries_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn shipping_query_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn polls_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<ShippingQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<ShippingQuery, HandlerE>> + 'a,
+        H: DispatcherHandler<Poll> + 'static + Send + Sync,
     {
-        self.shipping_query_handlers =
-            register_handler(self.shipping_query_handlers, h);
+        self.polls_queue = self.new_tx(h);
         self
     }
 
     #[must_use]
-    pub fn pre_checkout_query_handler<H, I>(mut self, h: &'a H) -> Self
+    pub fn poll_answers_handler<H, I>(mut self, h: H) -> Self
     where
-        H: CtxHandler<DispatcherHandlerCtx<PreCheckoutQuery>, I> + 'a,
-        I: Into<DispatcherHandlerResult<PreCheckoutQuery, HandlerE>> + 'a,
+        H: DispatcherHandler<PollAnswer> + 'static + Send + Sync,
     {
-        self.pre_checkout_query_handlers =
-            register_handler(self.pre_checkout_query_handlers, h);
-        self
-    }
-
-    #[must_use]
-    pub fn poll_handler<H, I>(mut self, h: &'a H) -> Self
-    where
-        H: CtxHandler<DispatcherHandlerCtx<Poll>, I> + 'a,
-        I: Into<DispatcherHandlerResult<Poll, HandlerE>> + 'a,
-    {
-        self.poll_handlers = register_handler(self.poll_handlers, h);
-        self
-    }
-
-    #[must_use]
-    pub fn poll_answer_handler<H, I>(mut self, h: &'a H) -> Self
-    where
-        H: CtxHandler<DispatcherHandlerCtx<PollAnswer>, I> + 'a,
-        I: Into<DispatcherHandlerResult<PollAnswer, HandlerE>> + 'a,
-    {
-        self.poll_answer_handlers =
-            register_handler(self.poll_answer_handlers, h);
+        self.poll_answers_queue = self.new_tx(h);
         self
     }
 
@@ -217,7 +207,7 @@ where
     ///
     /// The default parameters are a long polling update listener and log all
     /// errors produced by this listener).
-    pub async fn dispatch(&'a self) {
+    pub async fn dispatch(&self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),
             &LoggingErrorHandler::new("An error from the update listener"),
@@ -227,7 +217,7 @@ where
 
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
-    pub async fn dispatch_with_listener<UListener, ListenerE, Eh>(
+    pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a self,
         update_listener: UListener,
         update_listener_error_handler: &'a Eh,
@@ -239,7 +229,7 @@ where
         let update_listener = Box::pin(update_listener);
 
         update_listener
-            .for_each_concurrent(None, move |update| async move {
+            .for_each(move |update| async move {
                 log::trace!("Dispatcher received an update: {:?}", update);
 
                 let update = match update {
@@ -250,132 +240,97 @@ where
                     }
                 };
 
-                let update =
-                    match self.handle(&self.update_handlers, update).await {
-                        Some(update) => update,
-                        None => return,
-                    };
-
                 match update.kind {
                     UpdateKind::Message(message) => {
-                        self.handle(&self.message_handlers, message).await;
+                        send!(
+                            &self.bot,
+                            &self.messages_queue,
+                            message,
+                            UpdateKind::Message
+                        );
                     }
                     UpdateKind::EditedMessage(message) => {
-                        self.handle(&self.edited_message_handlers, message)
-                            .await;
+                        send!(
+                            &self.bot,
+                            &self.edited_messages_queue,
+                            message,
+                            UpdateKind::EditedMessage
+                        );
                     }
                     UpdateKind::ChannelPost(post) => {
-                        self.handle(&self.channel_post_handlers, post).await;
+                        send!(
+                            &self.bot,
+                            &self.channel_posts_queue,
+                            post,
+                            UpdateKind::ChannelPost
+                        );
                     }
                     UpdateKind::EditedChannelPost(post) => {
-                        self.handle(&self.edited_channel_post_handlers, post)
-                            .await;
+                        send!(
+                            &self.bot,
+                            &self.edited_channel_posts_queue,
+                            post,
+                            UpdateKind::EditedChannelPost
+                        );
                     }
                     UpdateKind::InlineQuery(query) => {
-                        self.handle(&self.inline_query_handlers, query).await;
+                        send!(
+                            &self.bot,
+                            &self.inline_queries_queue,
+                            query,
+                            UpdateKind::InlineQuery
+                        );
                     }
                     UpdateKind::ChosenInlineResult(result) => {
-                        self.handle(
-                            &self.chosen_inline_result_handlers,
+                        send!(
+                            &self.bot,
+                            &self.chosen_inline_results_queue,
                             result,
-                        )
-                        .await;
+                            UpdateKind::ChosenInlineResult
+                        );
                     }
                     UpdateKind::CallbackQuery(query) => {
-                        self.handle(&self.callback_query_handlers, query).await;
+                        send!(
+                            &self.bot,
+                            &self.callback_queries_queue,
+                            query,
+                            UpdateKind::CallbackQuer
+                        );
                     }
                     UpdateKind::ShippingQuery(query) => {
-                        self.handle(&self.shipping_query_handlers, query).await;
+                        send!(
+                            &self.bot,
+                            &self.shipping_queries_queue,
+                            query,
+                            UpdateKind::ShippingQuery
+                        );
                     }
                     UpdateKind::PreCheckoutQuery(query) => {
-                        self.handle(&self.pre_checkout_query_handlers, query)
-                            .await;
+                        send!(
+                            &self.bot,
+                            &self.pre_checkout_queries_queue,
+                            query,
+                            UpdateKind::PreCheckoutQuery
+                        );
                     }
                     UpdateKind::Poll(poll) => {
-                        self.handle(&self.poll_handlers, poll).await;
+                        send!(
+                            &self.bot,
+                            &self.polls_queue,
+                            poll,
+                            UpdateKind::Poll
+                        );
                     }
                     UpdateKind::PollAnswer(answer) => {
-                        self.handle(&self.poll_answer_handlers, answer).await;
+                        send!(
+                            &self.bot,
+                            &self.poll_answers_queue,
+                            answer,
+                            UpdateKind::PollAnswer
+                        );
                     }
                 }
             })
             .await
     }
-
-    // Handles a single update.
-    #[allow(clippy::ptr_arg)]
-    async fn handle<Upd>(
-        &self,
-        handlers: &Handlers<'a, Upd, HandlerE>,
-        update: Upd,
-    ) -> Option<Upd> {
-        stream::iter(handlers)
-            .fold(Some(update), |acc, handler| {
-                async move {
-                    // Option::and_then is not working here, because
-                    // Middleware::handle is asynchronous.
-                    match acc {
-                        Some(update) => {
-                            let DispatcherHandlerResult { next, result } =
-                                handler
-                                    .handle_ctx(DispatcherHandlerCtx {
-                                        bot: Arc::clone(&self.bot),
-                                        update,
-                                    })
-                                    .await;
-
-                            if let Err(error) = result {
-                                self.handlers_error_handler
-                                    .handle_error(error)
-                                    .await
-                            }
-
-                            next
-                        }
-                        None => None,
-                    }
-                }
-            })
-            .await
-    }
-}
-
-/// Transforms Future<Output = T> into Future<Output = U> by applying an Into
-/// conversion.
-async fn intermediate_fut0<T, U>(fut: impl Future<Output = T>) -> U
-where
-    T: Into<U>,
-{
-    fut.await.into()
-}
-
-/// Transforms CtxHandler with Into<DispatcherHandlerResult<...>> as a return
-/// value into CtxHandler with DispatcherHandlerResult return value.
-fn intermediate_fut1<'a, Upd, HandlerE, H, I>(
-    h: &'a H,
-) -> impl CtxHandler<
-    DispatcherHandlerCtx<Upd>,
-    DispatcherHandlerResult<Upd, HandlerE>,
-> + 'a
-where
-    H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
-    I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
-    Upd: 'a,
-{
-    move |ctx| intermediate_fut0(h.handle_ctx(ctx))
-}
-
-/// Registers a single handler.
-fn register_handler<'a, Upd, H, I, HandlerE>(
-    mut handlers: Handlers<'a, Upd, HandlerE>,
-    h: &'a H,
-) -> Handlers<'a, Upd, HandlerE>
-where
-    H: CtxHandler<DispatcherHandlerCtx<Upd>, I> + 'a,
-    I: Into<DispatcherHandlerResult<Upd, HandlerE>> + 'a,
-    HandlerE: 'a,
-    Upd: 'a,
-{
-    handlers.push(Box::new(intermediate_fut1(h)));
-    handlers
 }
