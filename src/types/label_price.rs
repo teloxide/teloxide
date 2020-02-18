@@ -25,10 +25,8 @@ mod tests {
 
     #[test]
     fn serialize() {
-        let labeled_price = LabeledPrice {
-            label: "Label".to_string(),
-            amount: 60,
-        };
+        let labeled_price =
+            LabeledPrice { label: "Label".to_string(), amount: 60 };
         let expected = r#"{"label":"Label","amount":60}"#;
         let actual = serde_json::to_string(&labeled_price).unwrap();
         assert_eq!(actual, expected);

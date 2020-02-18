@@ -1,5 +1,6 @@
 use super::Storage;
-use std::{collections::HashMap, future::Future, pin::Pin, sync::Arc};
+use futures::future::BoxFuture;
+use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 
 /// A memory storage based on a hash map. Stores all the dialogues directly in
@@ -17,9 +18,7 @@ pub struct InMemStorage<D> {
 impl<S> InMemStorage<S> {
     #[must_use]
     pub fn new() -> Arc<Self> {
-        Arc::new(Self {
-            map: Mutex::new(HashMap::new()),
-        })
+        Arc::new(Self { map: Mutex::new(HashMap::new()) })
     }
 }
 
@@ -27,7 +26,7 @@ impl<D> Storage<D> for InMemStorage<D> {
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
+    ) -> BoxFuture<'static, Option<D>>
     where
         D: Send + 'static,
     {
@@ -38,7 +37,7 @@ impl<D> Storage<D> for InMemStorage<D> {
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
+    ) -> BoxFuture<'static, Option<D>>
     where
         D: Send + 'static,
     {

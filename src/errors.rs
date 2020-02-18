@@ -21,10 +21,7 @@ pub enum DownloadError {
 #[derive(Debug, Error)]
 pub enum RequestError {
     #[error("A Telegram's error #{status_code}: {kind:?}")]
-    ApiError {
-        status_code: StatusCode,
-        kind: ApiErrorKind,
-    },
+    ApiError { status_code: StatusCode, kind: ApiErrorKind },
 
     /// The group has been migrated to a supergroup with the specified
     /// identifier.

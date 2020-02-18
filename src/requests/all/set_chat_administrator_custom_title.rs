@@ -50,12 +50,7 @@ impl SetChatAdministratorCustomTitle {
     {
         let chat_id = chat_id.into();
         let custom_title = custom_title.into();
-        Self {
-            bot,
-            chat_id,
-            user_id,
-            custom_title,
-        }
+        Self { bot, chat_id, user_id, custom_title }
     }
 
     /// Unique identifier for the target chat or username of the target channel

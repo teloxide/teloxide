@@ -39,51 +39,49 @@ enum Dialogue {
 // ============================================================================
 
 async fn handle_message(
-    ctx: DialogueHandlerCtx<Message, Dialogue>,
-) -> Result<DialogueStage<Dialogue>, RequestError> {
-    match ctx.dialogue {
+    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
+) -> ResponseResult<DialogueStage<Dialogue>> {
+    match cx.dialogue {
         Dialogue::Start => {
-            ctx.answer(
+            cx.answer(
                 "Let's play a game! Guess a number from 1 to 10 (inclusively).",
             )
             .send()
             .await?;
             next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
         }
-        Dialogue::ReceiveAttempt(secret) => match ctx.update.text() {
+        Dialogue::ReceiveAttempt(secret) => match cx.update.text() {
             None => {
-                ctx.answer("Oh, please, send me a text message!")
-                    .send()
-                    .await?;
-                next(ctx.dialogue)
+                cx.answer("Oh, please, send me a text message!").send().await?;
+                next(cx.dialogue)
             }
             Some(text) => match text.parse::<u8>() {
                 Ok(attempt) => match attempt {
                     x if !(1..=10).contains(&x) => {
-                        ctx.answer(
+                        cx.answer(
                             "Oh, please, send me a number in the range [1; \
                              10]!",
                         )
                         .send()
                         .await?;
-                        next(ctx.dialogue)
+                        next(cx.dialogue)
                     }
                     x if x == secret => {
-                        ctx.answer("Congratulations! You won!").send().await?;
+                        cx.answer("Congratulations! You won!").send().await?;
                         exit()
                     }
                     _ => {
-                        ctx.answer("No.").send().await?;
-                        next(ctx.dialogue)
+                        cx.answer("No.").send().await?;
+                        next(cx.dialogue)
                     }
                 },
                 Err(_) => {
-                    ctx.answer(
+                    cx.answer(
                         "Oh, please, send me a number in the range [1; 10]!",
                     )
                     .send()
                     .await?;
-                    next(ctx.dialogue)
+                    next(cx.dialogue)
                 }
             },
         },
@@ -106,10 +104,8 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .message_handler(&DialogueDispatcher::new(|ctx| async move {
-            handle_message(ctx)
-                .await
-                .expect("Something wrong with the bot!")
+        .messages_handler(DialogueDispatcher::new(|cx| async move {
+            handle_message(cx).await.expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;

@@ -64,10 +64,7 @@ pub enum InlineKeyboardButtonKind {
 /// ```
 impl InlineKeyboardButton {
     pub fn url(text: String, url: String) -> InlineKeyboardButton {
-        InlineKeyboardButton {
-            text,
-            kind: InlineKeyboardButtonKind::Url(url),
-        }
+        InlineKeyboardButton { text, kind: InlineKeyboardButtonKind::Url(url) }
     }
 
     pub fn callback(

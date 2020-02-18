@@ -3,12 +3,12 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            exit, next, DialogueDispatcher, DialogueDispatcherHandlerCtx,
+            exit, next, DialogueDispatcher, DialogueDispatcherHandlerCx,
             DialogueStage, GetChatId,
         },
-        Dispatcher, DispatcherHandlerCtx, DispatcherHandlerRx, ErrorHandler,
-        LoggingErrorHandler,
+        Dispatcher, DispatcherHandlerCx, DispatcherHandlerRx,
     },
+    error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,

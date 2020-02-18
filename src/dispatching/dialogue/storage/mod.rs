@@ -1,7 +1,8 @@
 mod in_mem_storage;
 
+use futures::future::BoxFuture;
 pub use in_mem_storage::InMemStorage;
-use std::{future::Future, pin::Pin, sync::Arc};
+use std::sync::Arc;
 
 /// A storage of dialogues.
 ///
@@ -19,7 +20,7 @@ pub trait Storage<D> {
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
+    ) -> BoxFuture<'static, Option<D>>
     where
         D: Send + 'static;
 
@@ -31,7 +32,7 @@ pub trait Storage<D> {
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> Pin<Box<dyn Future<Output = Option<D>> + Send + 'static>>
+    ) -> BoxFuture<'static, Option<D>>
     where
         D: Send + 'static;
 }

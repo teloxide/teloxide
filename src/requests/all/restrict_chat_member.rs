@@ -52,13 +52,7 @@ impl RestrictChatMember {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            user_id,
-            permissions,
-            until_date: None,
-        }
+        Self { bot, chat_id, user_id, permissions, until_date: None }
     }
 
     /// Unique identifier for the target chat or username of the target

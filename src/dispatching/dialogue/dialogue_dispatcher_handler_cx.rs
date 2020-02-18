@@ -18,20 +18,16 @@ use std::sync::Arc;
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 #[derive(Debug)]
-pub struct DialogueDispatcherHandlerCtx<Upd, D> {
+pub struct DialogueDispatcherHandlerCx<Upd, D> {
     pub bot: Arc<Bot>,
     pub update: Upd,
     pub dialogue: D,
 }
 
-impl<Upd, D> DialogueDispatcherHandlerCtx<Upd, D> {
+impl<Upd, D> DialogueDispatcherHandlerCx<Upd, D> {
     /// Creates a new instance with the provided fields.
     pub fn new(bot: Arc<Bot>, update: Upd, dialogue: D) -> Self {
-        Self {
-            bot,
-            update,
-            dialogue,
-        }
+        Self { bot, update, dialogue }
     }
 
     /// Creates a new instance by substituting a dialogue and preserving
@@ -39,8 +35,8 @@ impl<Upd, D> DialogueDispatcherHandlerCtx<Upd, D> {
     pub fn with_new_dialogue<Nd>(
         self,
         new_dialogue: Nd,
-    ) -> DialogueDispatcherHandlerCtx<Upd, Nd> {
-        DialogueDispatcherHandlerCtx {
+    ) -> DialogueDispatcherHandlerCx<Upd, Nd> {
+        DialogueDispatcherHandlerCx {
             bot: self.bot,
             update: self.update,
             dialogue: new_dialogue,
@@ -48,7 +44,7 @@ impl<Upd, D> DialogueDispatcherHandlerCtx<Upd, D> {
     }
 }
 
-impl<Upd, D> GetChatId for DialogueDispatcherHandlerCtx<Upd, D>
+impl<Upd, D> GetChatId for DialogueDispatcherHandlerCx<Upd, D>
 where
     Upd: GetChatId,
 {
@@ -57,7 +53,7 @@ where
     }
 }
 
-impl<D> DialogueDispatcherHandlerCtx<Message, D> {
+impl<D> DialogueDispatcherHandlerCx<Message, D> {
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,
@@ -110,8 +106,7 @@ impl<D> DialogueDispatcherHandlerCtx<Message, D> {
         latitude: f32,
         longitude: f32,
     ) -> SendLocation {
-        self.bot
-            .send_location(self.update.chat.id, latitude, longitude)
+        self.bot.send_location(self.update.chat.id, latitude, longitude)
     }
 
     pub fn answer_venue<T, U>(
@@ -147,8 +142,7 @@ impl<D> DialogueDispatcherHandlerCtx<Message, D> {
         T: Into<String>,
         U: Into<String>,
     {
-        self.bot
-            .send_contact(self.chat_id(), phone_number, first_name)
+        self.bot.send_contact(self.chat_id(), phone_number, first_name)
     }
 
     pub fn answer_sticker<T>(&self, sticker: InputFile) -> SendSticker {
@@ -159,8 +153,7 @@ impl<D> DialogueDispatcherHandlerCtx<Message, D> {
     where
         T: Into<ChatId>,
     {
-        self.bot
-            .forward_message(chat_id, self.update.chat.id, self.update.id)
+        self.bot.forward_message(chat_id, self.update.chat.id, self.update.id)
     }
 
     pub fn edit_message_text<T>(&self, text: T) -> EditMessageText
@@ -188,7 +181,6 @@ impl<D> DialogueDispatcherHandlerCtx<Message, D> {
     }
 
     pub fn pin_message(&self) -> PinChatMessage {
-        self.bot
-            .pin_chat_message(self.update.chat.id, self.update.id)
+        self.bot.pin_chat_message(self.update.chat.id, self.update.id)
     }
 }

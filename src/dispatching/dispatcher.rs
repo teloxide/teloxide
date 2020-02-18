@@ -1,9 +1,9 @@
 use crate::{
     dispatching::{
-        error_handlers::ErrorHandler, update_listeners,
-        update_listeners::UpdateListener, DispatcherHandler,
-        DispatcherHandlerCtx, LoggingErrorHandler,
+        update_listeners, update_listeners::UpdateListener, DispatcherHandler,
+        DispatcherHandlerCx,
     },
+    error_handlers::{ErrorHandler, LoggingErrorHandler},
     types::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
@@ -16,7 +16,7 @@ use tokio::sync::mpsc;
 
 use tokio::sync::Mutex;
 
-type Tx<Upd> = Option<Mutex<mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>>>>;
+type Tx<Upd> = Option<Mutex<mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>;
 
 #[macro_use]
 mod macros {
@@ -37,10 +37,11 @@ async fn send<'a, Upd>(
     Upd: Debug,
 {
     if let Some(tx) = tx {
-        if let Err(error) = tx.lock().await.send(DispatcherHandlerCtx {
-            bot: Arc::clone(&bot),
-            update,
-        }) {
+        if let Err(error) = tx
+            .lock()
+            .await
+            .send(DispatcherHandlerCx { bot: Arc::clone(&bot), update })
+        {
             log::error!(
                 "The RX part of the {} channel is closed, but an update is \
                  received.\nError:{}\n",
@@ -211,7 +212,9 @@ impl Dispatcher {
     pub async fn dispatch(&self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),
-            LoggingErrorHandler::new("An error from the update listener"),
+            LoggingErrorHandler::with_custom_text(
+                "An error from the update listener",
+            ),
         )
         .await;
     }

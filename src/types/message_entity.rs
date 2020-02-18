@@ -58,9 +58,7 @@ mod tests {
 
         assert_eq!(
             MessageEntity {
-                kind: MessageEntityKind::TextLink {
-                    url: "ya.ru".into()
-                },
+                kind: MessageEntityKind::TextLink { url: "ya.ru".into() },
                 offset: 1,
                 length: 2,
             },
@@ -122,9 +120,7 @@ mod tests {
                     username: None,
                     language_code: None,
                 }),
-                forward_kind: ForwardKind::Origin {
-                    reply_to_message: None,
-                },
+                forward_kind: ForwardKind::Origin { reply_to_message: None },
                 edit_date: None,
                 media_kind: MediaKind::Text {
                     text: "no yes no".to_string(),

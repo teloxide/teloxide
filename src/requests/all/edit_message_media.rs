@@ -36,10 +36,7 @@ impl Request for EditMessageMedia {
         let mut params = FormBuilder::new();
 
         match &self.chat_or_inline_message {
-            ChatOrInlineMessage::Chat {
-                chat_id,
-                message_id,
-            } => {
+            ChatOrInlineMessage::Chat { chat_id, message_id } => {
                 params = params
                     .add("chat_id", chat_id)
                     .await
@@ -73,12 +70,7 @@ impl EditMessageMedia {
         chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
     ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            media,
-            reply_markup: None,
-        }
+        Self { bot, chat_or_inline_message, media, reply_markup: None }
     }
 
     pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {

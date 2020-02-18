@@ -42,11 +42,7 @@ impl SetStickerPositionInSet {
         S: Into<String>,
     {
         let sticker = sticker.into();
-        Self {
-            bot,
-            sticker,
-            position,
-        }
+        Self { bot, sticker, position }
     }
 
     /// File identifier of the sticker.

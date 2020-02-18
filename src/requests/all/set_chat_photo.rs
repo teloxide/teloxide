@@ -44,11 +44,7 @@ impl SetChatPhoto {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            photo,
-        }
+        Self { bot, chat_id, photo }
     }
 
     /// Unique identifier for the target chat or username of the target channel

@@ -87,26 +87,22 @@ enum Dialogue {
 // [Control a dialogue]
 // ============================================================================
 
-type Ctx<State> = DialogueHandlerCtx<Message, State>;
-type Res = Result<DialogueStage<Dialogue>, RequestError>;
+type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
+type Res = ResponseResult<DialogueStage<Dialogue>>;
 
-async fn start(ctx: Ctx<()>) -> Res {
-    ctx.answer("Let's start! First, what's your full name?")
-        .send()
-        .await?;
+async fn start(cx: Cx<()>) -> Res {
+    cx.answer("Let's start! First, what's your full name?").send().await?;
     next(Dialogue::ReceiveFullName)
 }
 
-async fn full_name(ctx: Ctx<()>) -> Res {
-    match ctx.update.text() {
+async fn full_name(cx: Cx<()>) -> Res {
+    match cx.update.text() {
         None => {
-            ctx.answer("Please, send me a text message!").send().await?;
+            cx.answer("Please, send me a text message!").send().await?;
             next(Dialogue::ReceiveFullName)
         }
         Some(full_name) => {
-            ctx.answer("What a wonderful name! Your age?")
-                .send()
-                .await?;
+            cx.answer("What a wonderful name! Your age?").send().await?;
             next(Dialogue::ReceiveAge(ReceiveAgeState {
                 full_name: full_name.to_owned(),
             }))
@@ -114,72 +110,68 @@ async fn full_name(ctx: Ctx<()>) -> Res {
     }
 }
 
-async fn age(ctx: Ctx<ReceiveAgeState>) -> Res {
-    match ctx.update.text().unwrap().parse() {
+async fn age(cx: Cx<ReceiveAgeState>) -> Res {
+    match cx.update.text().unwrap().parse() {
         Ok(age) => {
-            ctx.answer("Good. Now choose your favourite music:")
+            cx.answer("Good. Now choose your favourite music:")
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
-            next(Dialogue::ReceiveFavouriteMusic(
-                ReceiveFavouriteMusicState {
-                    data: ctx.dialogue,
-                    age,
-                },
-            ))
+            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
+                data: cx.dialogue,
+                age,
+            }))
         }
         Err(_) => {
-            ctx.answer("Oh, please, enter a number!").send().await?;
-            next(Dialogue::ReceiveAge(ctx.dialogue))
+            cx.answer("Oh, please, enter a number!").send().await?;
+            next(Dialogue::ReceiveAge(cx.dialogue))
         }
     }
 }
 
-async fn favourite_music(ctx: Ctx<ReceiveFavouriteMusicState>) -> Res {
-    match ctx.update.text().unwrap().parse() {
+async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
+    match cx.update.text().unwrap().parse() {
         Ok(favourite_music) => {
-            ctx.answer(format!(
+            cx.answer(format!(
                 "Fine. {}",
-                ExitState {
-                    data: ctx.dialogue.clone(),
-                    favourite_music
-                }
+                ExitState { data: cx.dialogue.clone(), favourite_music }
             ))
             .send()
             .await?;
             exit()
         }
         Err(_) => {
-            ctx.answer("Oh, please, enter from the keyboard!")
-                .send()
-                .await?;
-            next(Dialogue::ReceiveFavouriteMusic(ctx.dialogue))
+            cx.answer("Oh, please, enter from the keyboard!").send().await?;
+            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue))
         }
     }
 }
 
-async fn handle_message(ctx: Ctx<Dialogue>) -> Res {
-    match ctx {
-        DialogueHandlerCtx {
+async fn handle_message(cx: Cx<Dialogue>) -> Res {
+    match cx {
+        DialogueDispatcherHandlerCx {
             bot,
             update,
             dialogue: Dialogue::Start,
-        } => start(DialogueHandlerCtx::new(bot, update, ())).await,
-        DialogueHandlerCtx {
+        } => start(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
+        DialogueDispatcherHandlerCx {
             bot,
             update,
             dialogue: Dialogue::ReceiveFullName,
-        } => full_name(DialogueHandlerCtx::new(bot, update, ())).await,
-        DialogueHandlerCtx {
+        } => full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
+        DialogueDispatcherHandlerCx {
             bot,
             update,
             dialogue: Dialogue::ReceiveAge(s),
-        } => age(DialogueHandlerCtx::new(bot, update, s)).await,
-        DialogueHandlerCtx {
+        } => age(DialogueDispatcherHandlerCx::new(bot, update, s)).await,
+        DialogueDispatcherHandlerCx {
             bot,
             update,
             dialogue: Dialogue::ReceiveFavouriteMusic(s),
-        } => favourite_music(DialogueHandlerCtx::new(bot, update, s)).await,
+        } => {
+            favourite_music(DialogueDispatcherHandlerCx::new(bot, update, s))
+                .await
+        }
     }
 }
 
@@ -199,10 +191,8 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .message_handler(&DialogueDispatcher::new(|ctx| async move {
-            handle_message(ctx)
-                .await
-                .expect("Something wrong with the bot!")
+        .messages_handler(DialogueDispatcher::new(|cx| async move {
+            handle_message(cx).await.expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;

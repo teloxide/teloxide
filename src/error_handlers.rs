@@ -1,3 +1,5 @@
+//! Convenient error handling.
+
 use futures::future::BoxFuture;
 use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 
@@ -21,19 +23,71 @@ where
     }
 }
 
+/// Something that can be handled by an error handler.
+///
+/// ## Examples
+/// Use an arbitrary error handler:
+/// ```
+/// use teloxide::error_handlers::{IgnoringErrorHandler, OnError};
+///
+/// # #[tokio::main]
+/// # async fn main() {
+/// let err: Result<i32, i32> = Err(404);
+/// err.on_error(IgnoringErrorHandler::new()).await;
+/// # }
+/// ```
+pub trait OnError<E> {
+    #[must_use]
+    fn on_error<'a, Eh>(self, eh: Arc<Eh>) -> BoxFuture<'a, ()>
+    where
+        Self: 'a,
+        Eh: ErrorHandler<E> + Send + Sync,
+        Arc<Eh>: 'a;
+
+    /// A shortcut for `.on_error(LoggingErrorHandler::new())`.
+    #[must_use]
+    fn log_on_error<'a>(self) -> BoxFuture<'a, ()>
+    where
+        Self: Sized + 'a,
+        E: Debug,
+    {
+        self.on_error(LoggingErrorHandler::new())
+    }
+}
+
+impl<T, E> OnError<E> for Result<T, E>
+where
+    T: Send,
+    E: Send,
+{
+    fn on_error<'a, Eh>(self, eh: Arc<Eh>) -> BoxFuture<'a, ()>
+    where
+        Self: 'a,
+        Eh: ErrorHandler<E> + Send + Sync,
+        Arc<Eh>: 'a,
+    {
+        Box::pin(async move {
+            if let Err(error) = self {
+                eh.handle_error(error).await;
+            }
+        })
+    }
+}
+
 /// A handler that silently ignores all errors.
 ///
 /// ## Example
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::{ErrorHandler, IgnoringErrorHandler};
+/// use teloxide::error_handlers::{ErrorHandler, IgnoringErrorHandler};
 ///
 /// IgnoringErrorHandler::new().handle_error(()).await;
 /// IgnoringErrorHandler::new().handle_error(404).await;
 /// IgnoringErrorHandler::new().handle_error("error").await;
 /// # }
 /// ```
+#[derive(Clone, Copy)]
 pub struct IgnoringErrorHandler;
 
 impl IgnoringErrorHandler {
@@ -58,7 +112,7 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 /// # async fn main_() {
 /// use std::convert::{Infallible, TryInto};
 ///
-/// use teloxide::dispatching::{ErrorHandler, IgnoringErrorHandlerSafe};
+/// use teloxide::error_handlers::{ErrorHandler, IgnoringErrorHandlerSafe};
 ///
 /// let result: Result<String, Infallible> = "str".try_into();
 /// match result {
@@ -78,6 +132,7 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 ///
 /// [`!`]: https://doc.rust-lang.org/std/primitive.never.html
 /// [`Infallible`]: std::convert::Infallible
+#[derive(Clone, Copy)]
 pub struct IgnoringErrorHandlerSafe;
 
 impl IgnoringErrorHandlerSafe {
@@ -100,11 +155,11 @@ impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
-/// use teloxide::dispatching::{ErrorHandler, LoggingErrorHandler};
+/// use teloxide::error_handlers::{ErrorHandler, LoggingErrorHandler};
 ///
-/// LoggingErrorHandler::empty().handle_error(()).await;
-/// LoggingErrorHandler::new("error").handle_error(404).await;
-/// LoggingErrorHandler::new("error")
+/// LoggingErrorHandler::new().handle_error(()).await;
+/// LoggingErrorHandler::with_custom_text("Omg1").handle_error(404).await;
+/// LoggingErrorHandler::with_custom_text("Omg2")
 ///     .handle_error("Invalid data type!")
 ///     .await;
 /// # }
@@ -118,17 +173,18 @@ impl LoggingErrorHandler {
     ///
     /// The logs will be printed in this format: `{text}: {:?}`.
     #[must_use]
-    pub fn new<T>(text: T) -> Arc<Self>
+    pub fn with_custom_text<T>(text: T) -> Arc<Self>
     where
         T: Into<String>,
     {
         Arc::new(Self { text: text.into() })
     }
 
-    /// A shortcut for `LoggingErrorHandler::new("Error".to_owned())`.
+    /// A shortcut for
+    /// `LoggingErrorHandler::with_custom_text("Error".to_owned())`.
     #[must_use]
-    pub fn empty() -> Arc<Self> {
-        Self::new("Error".to_owned())
+    pub fn new() -> Arc<Self> {
+        Self::with_custom_text("Error".to_owned())
     }
 }
 

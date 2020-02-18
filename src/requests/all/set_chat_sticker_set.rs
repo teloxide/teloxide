@@ -51,11 +51,7 @@ impl SetChatStickerSet {
     {
         let chat_id = chat_id.into();
         let sticker_set_name = sticker_set_name.into();
-        Self {
-            bot,
-            chat_id,
-            sticker_set_name,
-        }
+        Self { bot, chat_id, sticker_set_name }
     }
 
     /// Unique identifier for the target chat or username of the target

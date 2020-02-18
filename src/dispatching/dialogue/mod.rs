@@ -6,7 +6,7 @@
 //! moment.
 //!  2. [`Storage<D>`], which encapsulates all the dialogues.
 //!  3. Your handler, which receives an update and turns your dialogue into the
-//! next state ([`DialogueDispatcherHandlerCtx<YourUpdate, D>`] ->
+//! next state ([`DialogueDispatcherHandlerCx<YourUpdate, D>`] ->
 //! [`DialogueStage<D>`]).
 //!  4. [`DialogueDispatcher`], which encapsulates your handler, [`Storage<D>`],
 //! and implements [`DispatcherHandler`].
@@ -36,22 +36,22 @@
 //! [`Dispatcher::messages_handler`]:
 //! crate::dispatching::Dispatcher::messages_handler
 //! [`UpdateKind::Message(message)`]: crate::types::UpdateKind::Message
-//! [`DialogueDispatcherHandlerCtx<YourUpdate, D>`]:
-//! crate::dispatching::dialogue::DialogueDispatcherHandlerCtx
+//! [`DialogueDispatcherHandlerCx<YourUpdate, D>`]:
+//! crate::dispatching::dialogue::DialogueDispatcherHandlerCx
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 #![allow(clippy::type_complexity)]
 
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
-mod dialogue_dispatcher_handler_ctx;
+mod dialogue_dispatcher_handler_cx;
 mod dialogue_stage;
 mod get_chat_id;
 mod storage;
 
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
-pub use dialogue_dispatcher_handler_ctx::DialogueDispatcherHandlerCtx;
+pub use dialogue_dispatcher_handler_cx::DialogueDispatcherHandlerCx;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};

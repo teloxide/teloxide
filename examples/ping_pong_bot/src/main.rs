@@ -1,3 +1,5 @@
+// This bot just answers "pong" to each incoming UpdateKind::Message.
+
 use teloxide::prelude::*;
 
 #[tokio::main]
@@ -12,13 +14,9 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(|messages: DispatcherHandlerRx<Message>| {
-            messages.for_each_concurrent(None, |message| async move {
-                if let Err(error) = message.answer("pong").send().await {
-                    let foo = LoggingErrorHandler::new("Cannot send");
-                        foo.handle_error(error)
-                        .await;
-                }
+        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+            rx.for_each(|message| async move {
+                message.answer("pong").send().await.log_on_error().await;
             })
         })
         .dispatch()

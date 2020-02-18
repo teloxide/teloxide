@@ -4,6 +4,8 @@ use teloxide::{
     prelude::*, types::ChatPermissions, utils::command::BotCommand,
 };
 
+use futures::future;
+
 // Derive BotCommand to parse text with a command into this enumeration.
 //
 //  1. rename = "lowercase" turns all the commands into lowercase letters.
@@ -40,7 +42,7 @@ fn calc_restrict_time(num: i32, unit: &str) -> Result<i32, &str> {
 }
 
 // Parse arguments after a command.
-fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
+fn parse_args(args: &[String]) -> Result<(i32, &str), &str> {
     let num = match args.get(0) {
         Some(s) => s,
         None => return Err("Use command in format /%command% %num% %unit%"),
@@ -57,34 +59,34 @@ fn parse_args(args: Vec<&str>) -> Result<(i32, &str), &str> {
 }
 
 // Parse arguments into a user restriction duration.
-fn parse_time_restrict(args: Vec<&str>) -> Result<i32, &str> {
+fn parse_time_restrict(args: &[String]) -> Result<i32, &str> {
     let (num, unit) = parse_args(args)?;
     calc_restrict_time(num, unit)
 }
 
-type Ctx = DispatcherHandlerCtx<Message>;
+type Cx = DispatcherHandlerCx<Message>;
 
 // Mute a user with a replied message.
-async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
-    match ctx.update.reply_to_message() {
+async fn mute_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
+    match cx.update.reply_to_message() {
         Some(msg1) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
-                ctx.bot
+                cx.bot
                     .restrict_chat_member(
-                        ctx.update.chat_id(),
+                        cx.update.chat_id(),
                         msg1.from().expect("Must be MessageKind::Common").id,
                         ChatPermissions::default(),
                     )
-                    .until_date(ctx.update.date + time)
+                    .until_date(cx.update.date + time)
                     .send()
                     .await?;
             }
             // ...or permanently
             Err(_) => {
-                ctx.bot
+                cx.bot
                     .restrict_chat_member(
-                        ctx.update.chat_id(),
+                        cx.update.chat_id(),
                         msg1.from().unwrap().id,
                         ChatPermissions::default(),
                     )
@@ -93,7 +95,7 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
             }
         },
         None => {
-            ctx.reply_to("Use this command in reply to another message")
+            cx.reply_to("Use this command in reply to another message")
                 .send()
                 .await?;
         }
@@ -102,17 +104,17 @@ async fn mute_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
 }
 
 // Kick a user with a replied message.
-async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
-    match ctx.update.reply_to_message() {
+async fn kick_user(cx: &Cx) -> ResponseResult<()> {
+    match cx.update.reply_to_message() {
         Some(mes) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            ctx.bot
-                .unban_chat_member(ctx.update.chat_id(), mes.from().unwrap().id)
+            cx.bot
+                .unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id)
                 .send()
                 .await?;
         }
         None => {
-            ctx.reply_to("Use this command in reply to another message")
+            cx.reply_to("Use this command in reply to another message")
                 .send()
                 .await?;
         }
@@ -121,25 +123,25 @@ async fn kick_user(ctx: &Ctx) -> Result<(), RequestError> {
 }
 
 // Ban a user with replied message.
-async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
-    match ctx.update.reply_to_message() {
+async fn ban_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
+    match cx.update.reply_to_message() {
         Some(message) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
-                ctx.bot
+                cx.bot
                     .kick_chat_member(
-                        ctx.update.chat_id(),
+                        cx.update.chat_id(),
                         message.from().expect("Must be MessageKind::Common").id,
                     )
-                    .until_date(ctx.update.date + time)
+                    .until_date(cx.update.date + time)
                     .send()
                     .await?;
             }
             // ...or permanently
             Err(_) => {
-                ctx.bot
+                cx.bot
                     .kick_chat_member(
-                        ctx.update.chat_id(),
+                        cx.update.chat_id(),
                         message.from().unwrap().id,
                     )
                     .send()
@@ -147,7 +149,7 @@ async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
             }
         },
         None => {
-            ctx.reply_to("Use this command in a reply to another message!")
+            cx.reply_to("Use this command in a reply to another message!")
                 .send()
                 .await?;
         }
@@ -155,49 +157,56 @@ async fn ban_user(ctx: &Ctx, args: Vec<&str>) -> Result<(), RequestError> {
     Ok(())
 }
 
-// Handle all messages.
-async fn handle_command(ctx: Ctx) -> Result<(), RequestError> {
-    if ctx.update.chat.is_group() {
-        // The same as DispatcherHandlerResult::exit(Ok(())). If you have more
-        // handlers, use DispatcherHandlerResult::next(...)
-        return Ok(());
-    }
-
-    if let Some(text) = ctx.update.text() {
-        // Parse text into a command with args.
-        let (command, args): (Command, Vec<&str>) = match Command::parse(text) {
-            Some(tuple) => tuple,
-            None => return Ok(()),
-        };
-
-        match command {
-            Command::Help => {
-                ctx.answer(Command::descriptions()).send().await?;
-            }
-            Command::Kick => {
-                kick_user(&ctx).await?;
-            }
-            Command::Ban => {
-                ban_user(&ctx, args).await?;
-            }
-            Command::Mute => {
-                mute_user(&ctx, args).await?;
-            }
-        };
-    }
+async fn action(
+    cx: DispatcherHandlerCx<Message>,
+    command: Command,
+    args: &[String],
+) -> ResponseResult<()> {
+    match command {
+        Command::Help => {
+            cx.answer(Command::descriptions()).send().await.map(|_| ())?
+        }
+        Command::Kick => kick_user(&cx).await?,
+        Command::Ban => ban_user(&cx, args).await?,
+        Command::Mute => mute_user(&cx, args).await?,
+    };
 
     Ok(())
 }
 
+// Handle all messages.
+async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
+    rx.filter(|cx| future::ready(!cx.update.chat.is_group()))
+        .filter_map(|cx| {
+            future::ready(cx.update.text_owned().map(|text| (cx, text)))
+        })
+        .filter_map(|(cx, text)| {
+            future::ready(Command::parse(&text).map(|(command, args)| {
+                (
+                    cx,
+                    command,
+                    args.into_iter()
+                        .map(ToOwned::to_owned)
+                        .collect::<Vec<String>>(),
+                )
+            }))
+        })
+        .for_each_concurrent(None, |(cx, command, args)| async move {
+            action(cx, command, &args).await.log_on_error().await;
+        })
+        .await;
+}
+
 #[tokio::main]
 async fn main() {
+    run().await;
+}
+
+async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting admin_bot!");
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot)
-        .message_handler(&handle_command)
-        .dispatch()
-        .await
+    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await
 }

@@ -1,9 +1,9 @@
 use crate::dispatching::{
     dialogue::{
-        DialogueDispatcherHandler, DialogueDispatcherHandlerCtx, DialogueStage,
+        DialogueDispatcherHandler, DialogueDispatcherHandlerCx, DialogueStage,
         GetChatId, InMemStorage, Storage,
     },
-    DispatcherHandler, DispatcherHandlerCtx,
+    DispatcherHandler, DispatcherHandlerCx,
 };
 use std::{future::Future, pin::Pin};
 
@@ -33,7 +33,7 @@ pub struct DialogueDispatcher<D, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>,
 }
 
 impl<D, H, Upd> DialogueDispatcher<D, H, Upd>
@@ -69,20 +69,20 @@ where
     }
 
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<DispatcherHandlerCtx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<DispatcherHandlerCx<Upd>> {
         let (tx, rx) = mpsc::unbounded_channel();
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(rx.for_each(move |ctx: DispatcherHandlerCtx<Upd>| {
+        tokio::spawn(rx.for_each(move |cx: DispatcherHandlerCx<Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
 
             async move {
-                let chat_id = ctx.update.chat_id();
+                let chat_id = cx.update.chat_id();
 
                 let dialogue = Arc::clone(&storage)
                     .remove_dialogue(chat_id)
@@ -90,9 +90,9 @@ where
                     .unwrap_or_default();
 
                 match handler
-                    .handle(DialogueDispatcherHandlerCtx {
-                        bot: ctx.bot,
-                        update: ctx.update,
+                    .handle(DialogueDispatcherHandlerCx {
+                        bot: cx.bot,
+                        update: cx.update,
                         dialogue,
                     })
                     .await
@@ -129,11 +129,7 @@ async fn update_dialogue<D>(
 ) where
     D: 'static + Send,
 {
-    if storage
-        .update_dialogue(chat_id, new_dialogue)
-        .await
-        .is_some()
-    {
+    if storage.update_dialogue(chat_id, new_dialogue).await.is_some() {
         panic!(
             "Oops, you have an bug in your Storage: update_dialogue returns \
              Some after remove_dialogue"
@@ -149,21 +145,21 @@ where
 {
     fn handle(
         self,
-        updates: mpsc::UnboundedReceiver<DispatcherHandlerCtx<Upd>>,
+        updates: mpsc::UnboundedReceiver<DispatcherHandlerCx<Upd>>,
     ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
     where
-        DispatcherHandlerCtx<Upd>: 'static,
+        DispatcherHandlerCx<Upd>: 'static,
     {
         let this = Arc::new(self);
 
-        Box::pin(updates.for_each(move |ctx| {
+        Box::pin(updates.for_each(move |cx| {
             let this = Arc::clone(&this);
-            let chat_id = ctx.update.chat_id();
+            let chat_id = cx.update.chat_id();
 
             match this.senders.get(&chat_id) {
                 // An old dialogue
                 Some(tx) => {
-                    if let Err(_) = tx.1.send(ctx) {
+                    if let Err(_) = tx.1.send(cx) {
                         panic!(
                             "We are not dropping a receiver or call .close() \
                              on it",
@@ -172,7 +168,7 @@ where
                 }
                 None => {
                     let tx = this.new_tx();
-                    if let Err(_) = tx.send(ctx) {
+                    if let Err(_) = tx.send(cx) {
                         panic!(
                             "We are not dropping a receiver or call .close() \
                              on it",
@@ -209,10 +205,7 @@ mod tests {
 
         impl MyUpdate {
             fn new(chat_id: i64, unique_number: u32) -> Self {
-                Self {
-                    chat_id,
-                    unique_number,
-                }
+                Self { chat_id, unique_number }
             }
         }
 
@@ -229,26 +222,17 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |ctx: DialogueDispatcherHandlerCtx<MyUpdate, ()>| async move {
+            |cx: DialogueDispatcherHandlerCx<MyUpdate, ()>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
-                match ctx.update {
-                    MyUpdate {
-                        chat_id: 1,
-                        unique_number,
-                    } => {
+                match cx.update {
+                    MyUpdate { chat_id: 1, unique_number } => {
                         SEQ1.lock().await.push(unique_number);
                     }
-                    MyUpdate {
-                        chat_id: 2,
-                        unique_number,
-                    } => {
+                    MyUpdate { chat_id: 2, unique_number } => {
                         SEQ2.lock().await.push(unique_number);
                     }
-                    MyUpdate {
-                        chat_id: 3,
-                        unique_number,
-                    } => {
+                    MyUpdate { chat_id: 3, unique_number } => {
                         SEQ3.lock().await.push(unique_number);
                     }
                     _ => unreachable!(),
@@ -283,11 +267,11 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| DispatcherHandlerCtx {
+            .map(|update| DispatcherHandlerCx {
                 update,
                 bot: Bot::new("Doesn't matter here"),
             })
-            .collect::<Vec<DispatcherHandlerCtx<MyUpdate>>>(),
+            .collect::<Vec<DispatcherHandlerCx<MyUpdate>>>(),
         );
 
         let (tx, rx) = mpsc::unbounded_channel();

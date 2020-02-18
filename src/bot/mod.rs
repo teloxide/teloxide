@@ -60,10 +60,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Arc::new(Self {
-            token: token.into(),
-            client,
-        })
+        Arc::new(Self { token: token.into(), client })
     }
 }
 

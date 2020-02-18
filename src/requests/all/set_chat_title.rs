@@ -46,11 +46,7 @@ impl SetChatTitle {
     {
         let chat_id = chat_id.into();
         let title = title.into();
-        Self {
-            bot,
-            chat_id,
-            title,
-        }
+        Self { bot, chat_id, title }
     }
 
     /// Unique identifier for the target chat or username of the target channel

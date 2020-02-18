@@ -81,9 +81,7 @@ pub fn code_inline(s: &str) -> String {
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
-    s.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
+    s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 }
 
 pub fn user_mention_or_link(user: &User) -> String {

@@ -38,12 +38,7 @@ impl Request for GetUserProfilePhotos {
 
 impl GetUserProfilePhotos {
     pub(crate) fn new(bot: Arc<Bot>, user_id: i32) -> Self {
-        Self {
-            bot,
-            user_id,
-            offset: None,
-            limit: None,
-        }
+        Self { bot, user_id, offset: None, limit: None }
     }
 
     /// Unique identifier of the target user.

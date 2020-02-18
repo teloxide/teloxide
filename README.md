@@ -16,15 +16,15 @@
 </div>
 
 ## Features
- - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as possible.
+ - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as much as possible.
+
+ - **Flexible API.** teloxide gives you the power of [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can combine [all 30+ patterns](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) when working with updates from Telegram.
 
  - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
   
  - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
- and transition functions to drive a user dialogue with ease (see the examples below).
+ and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
  
- - **Convenient API.** Automatic conversions are used to avoid boilerplate. For example, functions accept `Into<String>`, rather than `&str` or `String`, so you can call them without `.to_string()`/`.as_str()`/etc.
-
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
@@ -45,6 +45,7 @@ $ rustup update stable
 [dependencies]
 teloxide = "0.1.0"
 log = "0.4.8"
+futures = "0.3.4"
 tokio = "0.2.11"
 pretty_env_logger = "0.4.0"
 ```
@@ -59,22 +60,24 @@ use teloxide::prelude::*;
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting the ping-pong bot!");
+    log::info!("Starting ping_pong_bot!");
 
     let bot = Bot::from_env();
 
-    Dispatcher::<RequestError>::new(bot)
-        .message_handler(&|ctx: DispatcherHandlerCtx<Message>| async move {
-            ctx.answer("pong").send().await?;
-            Ok(())
+    Dispatcher::new(bot)
+        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+            rx.for_each(|message| async move {
+                message.answer("pong").send().await.log_on_error().await;
+            })
         })
         .dispatch()
         .await;
 }
+
 ```
 
 <details>
-  <summary>Run this!</summary>
+  <summary>Click here to run it!</summary>
 
 ```bash
 git clone https://github.com/teloxide/teloxide.git
@@ -106,47 +109,44 @@ enum Command {
     Generate,
 }
 
-async fn handle_command(
-    ctx: DispatcherHandlerCtx<Message>,
-) -> Result<(), RequestError> {
-    let text = match ctx.update.text() {
-        Some(text) => text,
-        None => {
-            log::info!("Received a message, but not text.");
-            return Ok(());
-        }
-    };
+fn generate() -> String {
+    thread_rng().gen_range(0.0, 1.0).to_string()
+}
 
-    let command = match Command::parse(text) {
-        Some((command, _)) => command,
-        None => {
-            log::info!("Received a text message, but not a command.");
-            return Ok(());
-        }
-    };
-
+async fn answer(
+    cx: DispatcherHandlerCx<Message>,
+    command: Command,
+) -> ResponseResult<()> {
     match command {
-        Command::Help => ctx.answer(Command::descriptions()).send().await?,
-        Command::Generate => {
-            ctx.answer(thread_rng().gen_range(0.0, 1.0).to_string())
-                .send()
-                .await?
-        }
-        Command::Meow => ctx.answer("I am a cat! Meow!").send().await?,
+        Command::Help => cx.answer(Command::descriptions()).send().await?,
+        Command::Generate => cx.answer(generate()).send().await?,
+        Command::Meow => cx.answer("I am a cat! Meow!").send().await?,
     };
 
     Ok(())
+}
+
+async fn handle_command(rx: DispatcherHandlerRx<Message>) {
+    rx.filter_map(|cx| {
+        future::ready(cx.update.text_owned().map(|text| (cx, text)))
+    })
+    .filter_map(|(cx, text)| {
+        future::ready(Command::parse(&text).map(|(command, _)| (cx, command)))
+    })
+    .for_each_concurrent(None, |(cx, command)| async move {
+        answer(cx, command).await.log_on_error().await;
+    })
+    .await;
 }
 
 #[tokio::main]
 async fn main() {
     // Setup is omitted...
 }
-
 ```
 
 <details>
-  <summary>Run this!</summary>
+  <summary>Click here to run it!</summary>
 
 ```bash
 git clone https://github.com/teloxide/teloxide.git
@@ -160,12 +160,24 @@ TELOXIDE_TOKEN=MyAwesomeToken cargo run
   <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="400" />
 </div>
 
+
+See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use [`.filter_map()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter_map) and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
+ - [`.flatten()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.flatten)
+ - [`.left_stream()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.left_stream)
+ - [`.scan()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.scan)
+ - [`.skip_while()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.skip_while)
+ - [`.zip()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.zip)
+ - [`.select_next_some()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.select_next_some)
+ - [`.fold()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.fold)
+ - [`.inspect()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.inspect)
+ - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html)!
+
 ## Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
 ```rust
-// Imports are omitted...
+// Setup is omitted...
 
 #[derive(SmartDefault)]
 enum Dialogue {
@@ -175,51 +187,49 @@ enum Dialogue {
 }
 
 async fn handle_message(
-    ctx: DialogueHandlerCtx<Message, Dialogue>,
-) -> Result<DialogueStage<Dialogue>, RequestError> {
-    match ctx.dialogue {
+    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
+) -> ResponseResult<DialogueStage<Dialogue>> {
+    match cx.dialogue {
         Dialogue::Start => {
-            ctx.answer(
+            cx.answer(
                 "Let's play a game! Guess a number from 1 to 10 (inclusively).",
             )
             .send()
             .await?;
             next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
         }
-        Dialogue::ReceiveAttempt(secret) => match ctx.update.text() {
+        Dialogue::ReceiveAttempt(secret) => match cx.update.text() {
             None => {
-                ctx.answer("Oh, please, send me a text message!")
-                    .send()
-                    .await?;
-                next(ctx.dialogue)
+                cx.answer("Oh, please, send me a text message!").send().await?;
+                next(cx.dialogue)
             }
             Some(text) => match text.parse::<u8>() {
                 Ok(attempt) => match attempt {
                     x if !(1..=10).contains(&x) => {
-                        ctx.answer(
+                        cx.answer(
                             "Oh, please, send me a number in the range [1; \
                              10]!",
                         )
                         .send()
                         .await?;
-                        next(ctx.dialogue)
+                        next(cx.dialogue)
                     }
                     x if x == secret => {
-                        ctx.answer("Congratulations! You won!").send().await?;
+                        cx.answer("Congratulations! You won!").send().await?;
                         exit()
                     }
                     _ => {
-                        ctx.answer("No.").send().await?;
-                        next(ctx.dialogue)
+                        cx.answer("No.").send().await?;
+                        next(cx.dialogue)
                     }
                 },
                 Err(_) => {
-                    ctx.answer(
+                    cx.answer(
                         "Oh, please, send me a number in the range [1; 10]!",
                     )
                     .send()
                     .await?;
-                    next(ctx.dialogue)
+                    next(cx.dialogue)
                 }
             },
         },
@@ -229,20 +239,11 @@ async fn handle_message(
 #[tokio::main]
 async fn main() {
     // Setup is omitted...
-
-    Dispatcher::new(bot)
-        .message_handler(&DialogueDispatcher::new(|ctx| async move {
-            handle_message(ctx)
-                .await
-                .expect("Something wrong with the bot!")
-        }))
-        .dispatch()
-        .await;
 }
 ```
 
 <details>
-  <summary>Run this!</summary>
+  <summary>Click here to run it!</summary>
 
 ```bash
 git clone https://github.com/teloxide/teloxide.git

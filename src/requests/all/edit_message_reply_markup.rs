@@ -47,11 +47,7 @@ impl EditMessageReplyMarkup {
         bot: Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            reply_markup: None,
-        }
+        Self { bot, chat_or_inline_message, reply_markup: None }
     }
 
     pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {

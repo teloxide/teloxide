@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use crate::dispatching::{DispatcherHandlerCtx, DispatcherHandlerRx};
+use crate::dispatching::{DispatcherHandlerCx, DispatcherHandlerRx};
 use futures::future::BoxFuture;
 
 /// An asynchronous handler of a stream of updates used in [`Dispatcher`].
@@ -16,7 +16,7 @@ pub trait DispatcherHandler<Upd> {
         updates: DispatcherHandlerRx<Upd>,
     ) -> BoxFuture<'static, ()>
     where
-        DispatcherHandlerCtx<Upd>: Send + 'static;
+        DispatcherHandlerCx<Upd>: Send + 'static;
 }
 
 impl<Upd, F, Fut> DispatcherHandler<Upd> for F
@@ -26,7 +26,7 @@ where
 {
     fn handle(self, updates: DispatcherHandlerRx<Upd>) -> BoxFuture<'static, ()>
     where
-        DispatcherHandlerCtx<Upd>: Send + 'static,
+        DispatcherHandlerCx<Upd>: Send + 'static,
     {
         Box::pin(async move { self(updates).await })
     }

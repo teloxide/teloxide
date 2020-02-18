@@ -53,11 +53,7 @@ impl DeleteMessage {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            message_id,
-        }
+        Self { bot, chat_id, message_id }
     }
 
     /// Unique identifier for the target chat or username of the target channel

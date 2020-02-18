@@ -51,11 +51,7 @@ impl GetGameHighScores {
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
     ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            user_id,
-        }
+        Self { bot, chat_or_inline_message, user_id }
     }
 
     pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {

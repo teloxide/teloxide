@@ -50,10 +50,7 @@ impl GetFile {
     where
         F: Into<String>,
     {
-        Self {
-            bot,
-            file_id: file_id.into(),
-        }
+        Self { bot, file_id: file_id.into() }
     }
 
     /// File identifier to get info about.

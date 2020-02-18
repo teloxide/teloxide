@@ -353,8 +353,7 @@ mod getters {
         pub fn forward_from(&self) -> Option<&ForwardedFrom> {
             match &self.kind {
                 Common {
-                    forward_kind: NonChannelForward { from, .. },
-                    ..
+                    forward_kind: NonChannelForward { from, .. }, ..
                 } => Some(from),
                 _ => None,
             }
@@ -363,8 +362,7 @@ mod getters {
         pub fn forward_from_chat(&self) -> Option<&Chat> {
             match &self.kind {
                 Common {
-                    forward_kind: ChannelForward { chat, .. },
-                    ..
+                    forward_kind: ChannelForward { chat, .. }, ..
                 } => Some(chat),
                 _ => None,
             }
@@ -393,12 +391,10 @@ mod getters {
         pub fn forward_date(&self) -> Option<&i32> {
             match &self.kind {
                 Common {
-                    forward_kind: ChannelForward { date, .. },
-                    ..
+                    forward_kind: ChannelForward { date, .. }, ..
                 }
                 | Common {
-                    forward_kind: NonChannelForward { date, .. },
-                    ..
+                    forward_kind: NonChannelForward { date, .. }, ..
                 } => Some(date),
                 _ => None,
             }
@@ -407,10 +403,7 @@ mod getters {
         pub fn reply_to_message(&self) -> Option<&Message> {
             match &self.kind {
                 Common {
-                    forward_kind:
-                        Origin {
-                            reply_to_message, ..
-                        },
+                    forward_kind: Origin { reply_to_message, .. },
                     ..
                 } => reply_to_message.as_ref().map(Deref::deref),
                 _ => None,
@@ -426,34 +419,30 @@ mod getters {
 
         pub fn media_group_id(&self) -> Option<&str> {
             match &self.kind {
-                Common {
-                    media_kind: Video { media_group_id, .. },
-                    ..
+                Common { media_kind: Video { media_group_id, .. }, .. }
+                | Common { media_kind: Photo { media_group_id, .. }, .. } => {
+                    media_group_id.as_ref().map(Deref::deref)
                 }
-                | Common {
-                    media_kind: Photo { media_group_id, .. },
-                    ..
-                } => media_group_id.as_ref().map(Deref::deref),
                 _ => None,
             }
         }
 
         pub fn text(&self) -> Option<&str> {
             match &self.kind {
-                Common {
-                    media_kind: Text { text, .. },
-                    ..
-                } => Some(text),
+                Common { media_kind: Text { text, .. }, .. } => Some(text),
                 _ => None,
             }
         }
 
+        pub fn text_owned(&self) -> Option<String> {
+            self.text().map(ToOwned::to_owned)
+        }
+
         pub fn entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
-                Common {
-                    media_kind: Text { entities, .. },
-                    ..
-                } => Some(entities),
+                Common { media_kind: Text { entities, .. }, .. } => {
+                    Some(entities)
+                }
                 _ => None,
             }
         }
@@ -461,46 +450,24 @@ mod getters {
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common {
-                    media_kind:
-                        Animation {
-                            caption_entities, ..
-                        },
+                    media_kind: Animation { caption_entities, .. },
                     ..
                 }
                 | Common {
-                    media_kind:
-                        Audio {
-                            caption_entities, ..
-                        },
+                    media_kind: Audio { caption_entities, .. }, ..
+                }
+                | Common {
+                    media_kind: Document { caption_entities, .. },
                     ..
                 }
                 | Common {
-                    media_kind:
-                        Document {
-                            caption_entities, ..
-                        },
-                    ..
+                    media_kind: Photo { caption_entities, .. }, ..
                 }
                 | Common {
-                    media_kind:
-                        Photo {
-                            caption_entities, ..
-                        },
-                    ..
+                    media_kind: Video { caption_entities, .. }, ..
                 }
                 | Common {
-                    media_kind:
-                        Video {
-                            caption_entities, ..
-                        },
-                    ..
-                }
-                | Common {
-                    media_kind:
-                        Voice {
-                            caption_entities, ..
-                        },
-                    ..
+                    media_kind: Voice { caption_entities, .. }, ..
                 } => Some(caption_entities),
                 _ => None,
             }
@@ -508,90 +475,71 @@ mod getters {
 
         pub fn audio(&self) -> Option<&types::Audio> {
             match &self.kind {
-                Common {
-                    media_kind: Audio { audio, .. },
-                    ..
-                } => Some(audio),
+                Common { media_kind: Audio { audio, .. }, .. } => Some(audio),
                 _ => None,
             }
         }
 
         pub fn document(&self) -> Option<&types::Document> {
             match &self.kind {
-                Common {
-                    media_kind: Document { document, .. },
-                    ..
-                } => Some(document),
+                Common { media_kind: Document { document, .. }, .. } => {
+                    Some(document)
+                }
                 _ => None,
             }
         }
 
         pub fn animation(&self) -> Option<&types::Animation> {
             match &self.kind {
-                Common {
-                    media_kind: Animation { animation, .. },
-                    ..
-                } => Some(animation),
+                Common { media_kind: Animation { animation, .. }, .. } => {
+                    Some(animation)
+                }
                 _ => None,
             }
         }
 
         pub fn game(&self) -> Option<&types::Game> {
             match &self.kind {
-                Common {
-                    media_kind: Game { game, .. },
-                    ..
-                } => Some(game),
+                Common { media_kind: Game { game, .. }, .. } => Some(game),
                 _ => None,
             }
         }
 
         pub fn photo(&self) -> Option<&[PhotoSize]> {
             match &self.kind {
-                Common {
-                    media_kind: Photo { photo, .. },
-                    ..
-                } => Some(photo),
+                Common { media_kind: Photo { photo, .. }, .. } => Some(photo),
                 _ => None,
             }
         }
 
         pub fn sticker(&self) -> Option<&types::Sticker> {
             match &self.kind {
-                Common {
-                    media_kind: Sticker { sticker, .. },
-                    ..
-                } => Some(sticker),
+                Common { media_kind: Sticker { sticker, .. }, .. } => {
+                    Some(sticker)
+                }
                 _ => None,
             }
         }
 
         pub fn video(&self) -> Option<&types::Video> {
             match &self.kind {
-                Common {
-                    media_kind: Video { video, .. },
-                    ..
-                } => Some(video),
+                Common { media_kind: Video { video, .. }, .. } => Some(video),
                 _ => None,
             }
         }
 
         pub fn voice(&self) -> Option<&types::Voice> {
             match &self.kind {
-                Common {
-                    media_kind: Voice { voice, .. },
-                    ..
-                } => Some(voice),
+                Common { media_kind: Voice { voice, .. }, .. } => Some(voice),
                 _ => None,
             }
         }
 
         pub fn video_note(&self) -> Option<&types::VideoNote> {
             match &self.kind {
-                Common {
-                    media_kind: VideoNote { video_note, .. },
-                    ..
-                } => Some(video_note),
+                Common { media_kind: VideoNote { video_note, .. }, .. } => {
+                    Some(video_note)
+                }
                 _ => None,
             }
         }
@@ -615,40 +563,30 @@ mod getters {
 
         pub fn contact(&self) -> Option<&types::Contact> {
             match &self.kind {
-                Common {
-                    media_kind: Contact { contact },
-                    ..
-                } => Some(contact),
+                Common { media_kind: Contact { contact }, .. } => Some(contact),
                 _ => None,
             }
         }
 
         pub fn location(&self) -> Option<&types::Location> {
             match &self.kind {
-                Common {
-                    media_kind: Location { location, .. },
-                    ..
-                } => Some(location),
+                Common { media_kind: Location { location, .. }, .. } => {
+                    Some(location)
+                }
                 _ => None,
             }
         }
 
         pub fn venue(&self) -> Option<&types::Venue> {
             match &self.kind {
-                Common {
-                    media_kind: Venue { venue, .. },
-                    ..
-                } => Some(venue),
+                Common { media_kind: Venue { venue, .. }, .. } => Some(venue),
                 _ => None,
             }
         }
 
         pub fn poll(&self) -> Option<&types::Poll> {
             match &self.kind {
-                Common {
-                    media_kind: Poll { poll, .. },
-                    ..
-                } => Some(poll),
+                Common { media_kind: Poll { poll, .. }, .. } => Some(poll),
                 _ => None,
             }
         }
@@ -703,37 +641,34 @@ mod getters {
 
         pub fn super_group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                SupergroupChatCreated {
-                    supergroup_chat_created,
-                } => Some(*supergroup_chat_created),
+                SupergroupChatCreated { supergroup_chat_created } => {
+                    Some(*supergroup_chat_created)
+                }
                 _ => None,
             }
         }
 
         pub fn channel_chat_created(&self) -> Option<True> {
             match &self.kind {
-                ChannelChatCreated {
-                    channel_chat_created,
-                } => Some(*channel_chat_created),
+                ChannelChatCreated { channel_chat_created } => {
+                    Some(*channel_chat_created)
+                }
                 _ => None,
             }
         }
 
         pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate {
-                    migrate_to_chat_id, ..
-                } => Some(*migrate_to_chat_id),
+                Migrate { migrate_to_chat_id, .. } => Some(*migrate_to_chat_id),
                 _ => None,
             }
         }
 
         pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate {
-                    migrate_from_chat_id,
-                    ..
-                } => Some(*migrate_from_chat_id),
+                Migrate { migrate_from_chat_id, .. } => {
+                    Some(*migrate_from_chat_id)
+                }
                 _ => None,
             }
         }
@@ -790,17 +725,13 @@ impl Message {
     pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
             ChatKind::NonPrivate {
-                kind:
-                    NonPrivateChatKind::Channel {
-                        username: Some(username),
-                    },
+                kind: NonPrivateChatKind::Channel { username: Some(username) },
                 ..
             }
             | ChatKind::NonPrivate {
                 kind:
                     NonPrivateChatKind::Supergroup {
-                        username: Some(username),
-                        ..
+                        username: Some(username), ..
                     },
                 ..
             } => Some(

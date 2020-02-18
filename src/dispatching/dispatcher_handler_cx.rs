@@ -18,12 +18,12 @@ use std::sync::Arc;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
-pub struct DispatcherHandlerCtx<Upd> {
+pub struct DispatcherHandlerCx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,
 }
 
-impl<Upd> GetChatId for DispatcherHandlerCtx<Upd>
+impl<Upd> GetChatId for DispatcherHandlerCx<Upd>
 where
     Upd: GetChatId,
 {
@@ -32,7 +32,7 @@ where
     }
 }
 
-impl DispatcherHandlerCtx<Message> {
+impl DispatcherHandlerCx<Message> {
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,
@@ -85,8 +85,7 @@ impl DispatcherHandlerCtx<Message> {
         latitude: f32,
         longitude: f32,
     ) -> SendLocation {
-        self.bot
-            .send_location(self.update.chat.id, latitude, longitude)
+        self.bot.send_location(self.update.chat.id, latitude, longitude)
     }
 
     pub fn answer_venue<T, U>(
@@ -122,8 +121,7 @@ impl DispatcherHandlerCtx<Message> {
         T: Into<String>,
         U: Into<String>,
     {
-        self.bot
-            .send_contact(self.chat_id(), phone_number, first_name)
+        self.bot.send_contact(self.chat_id(), phone_number, first_name)
     }
 
     pub fn answer_sticker<T>(&self, sticker: InputFile) -> SendSticker {
@@ -134,8 +132,7 @@ impl DispatcherHandlerCtx<Message> {
     where
         T: Into<ChatId>,
     {
-        self.bot
-            .forward_message(chat_id, self.update.chat.id, self.update.id)
+        self.bot.forward_message(chat_id, self.update.chat.id, self.update.id)
     }
 
     pub fn edit_message_text<T>(&self, text: T) -> EditMessageText
@@ -163,7 +160,6 @@ impl DispatcherHandlerCtx<Message> {
     }
 
     pub fn pin_message(&self) -> PinChatMessage {
-        self.bot
-            .pin_chat_message(self.update.chat.id, self.update.id)
+        self.bot.pin_chat_message(self.update.chat.id, self.update.id)
     }
 }

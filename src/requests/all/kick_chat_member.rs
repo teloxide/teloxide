@@ -49,12 +49,7 @@ impl KickChatMember {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            user_id,
-            until_date: None,
-        }
+        Self { bot, chat_id, user_id, until_date: None }
     }
 
     /// Unique identifier for the target group or username of the target

@@ -45,11 +45,7 @@ impl SetChatDescription {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            description: None,
-        }
+        Self { bot, chat_id, description: None }
     }
 
     /// Unique identifier for the target chat or username of the target channel

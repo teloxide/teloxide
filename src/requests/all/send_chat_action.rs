@@ -95,11 +95,7 @@ impl SendChatAction {
     where
         C: Into<ChatId>,
     {
-        Self {
-            bot,
-            chat_id: chat_id.into(),
-            action,
-        }
+        Self { bot, chat_id: chat_id.into(), action }
     }
 
     /// Unique identifier for the target chat or username of the target channel

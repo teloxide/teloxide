@@ -1,5 +1,6 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
+use futures::future;
 use rand::{thread_rng, Rng};
 
 #[derive(BotCommand)]
@@ -13,36 +14,34 @@ enum Command {
     Generate,
 }
 
-async fn handle_command(
-    ctx: DispatcherHandlerCtx<Message>,
-) -> Result<(), RequestError> {
-    let text = match ctx.update.text() {
-        Some(text) => text,
-        None => {
-            log::info!("Received a message, but not text.");
-            return Ok(());
-        }
-    };
+fn generate() -> String {
+    thread_rng().gen_range(0.0, 1.0).to_string()
+}
 
-    let command = match Command::parse(text) {
-        Some((command, _)) => command,
-        None => {
-            log::info!("Received a text message, but not a command.");
-            return Ok(());
-        }
-    };
-
+async fn answer(
+    cx: DispatcherHandlerCx<Message>,
+    command: Command,
+) -> ResponseResult<()> {
     match command {
-        Command::Help => ctx.answer(Command::descriptions()).send().await?,
-        Command::Generate => {
-            ctx.answer(thread_rng().gen_range(0.0, 1.0).to_string())
-                .send()
-                .await?
-        }
-        Command::Meow => ctx.answer("I am a cat! Meow!").send().await?,
+        Command::Help => cx.answer(Command::descriptions()).send().await?,
+        Command::Generate => cx.answer(generate()).send().await?,
+        Command::Meow => cx.answer("I am a cat! Meow!").send().await?,
     };
 
     Ok(())
+}
+
+async fn handle_command(rx: DispatcherHandlerRx<Message>) {
+    rx.filter_map(|cx| {
+        future::ready(cx.update.text_owned().map(|text| (cx, text)))
+    })
+    .filter_map(|(cx, text)| {
+        future::ready(Command::parse(&text).map(|(command, _)| (cx, command)))
+    })
+    .for_each_concurrent(None, |(cx, command)| async move {
+        answer(cx, command).await.log_on_error().await;
+    })
+    .await;
 }
 
 #[tokio::main]
@@ -56,8 +55,5 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::<RequestError>::new(bot)
-        .message_handler(&handle_command)
-        .dispatch()
-        .await;
+    Dispatcher::new(bot).messages_handler(handle_command).dispatch().await;
 }

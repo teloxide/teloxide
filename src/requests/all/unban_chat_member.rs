@@ -44,11 +44,7 @@ impl UnbanChatMember {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            user_id,
-        }
+        Self { bot, chat_id, user_id }
     }
 
     /// Unique identifier for the target group or username of the target

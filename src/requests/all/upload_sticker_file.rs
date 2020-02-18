@@ -45,11 +45,7 @@ impl UploadStickerFile {
         user_id: i32,
         png_sticker: InputFile,
     ) -> Self {
-        Self {
-            bot,
-            user_id,
-            png_sticker,
-        }
+        Self { bot, user_id, png_sticker }
     }
 
     /// User identifier of sticker file owner.

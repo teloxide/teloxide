@@ -29,9 +29,9 @@ impl FormBuilder {
     {
         let name = name.into().into_owned();
         match value.into_form_value() {
-            Some(FormValue::Str(string)) => Self {
-                form: self.form.text(name, string),
-            },
+            Some(FormValue::Str(string)) => {
+                Self { form: self.form.text(name, string) }
+            }
             Some(FormValue::File(path)) => self.add_file(name, path).await,
             None => self,
         }

@@ -48,11 +48,7 @@ impl SetChatPermissions {
         C: Into<ChatId>,
     {
         let chat_id = chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            permissions,
-        }
+        Self { bot, chat_id, permissions }
     }
 
     /// Unique identifier for the target chat or username of the target

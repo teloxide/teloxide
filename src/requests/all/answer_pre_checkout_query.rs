@@ -52,12 +52,7 @@ impl AnswerPreCheckoutQuery {
         P: Into<String>,
     {
         let pre_checkout_query_id = pre_checkout_query_id.into();
-        Self {
-            bot,
-            pre_checkout_query_id,
-            ok,
-            error_message: None,
-        }
+        Self { bot, pre_checkout_query_id, ok, error_message: None }
     }
 
     /// Unique identifier for the query to be answered.
