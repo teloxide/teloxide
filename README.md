@@ -257,9 +257,23 @@ TELOXIDE_TOKEN=MyAwesomeToken cargo run
   <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
 </div>
 
-Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state. See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
+ Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it will lead is to lots of unpleasure `.unwrap()`s.
 
-[See more examples](https://github.com/teloxide/teloxide/tree/master/examples).
+ Remember that a classical [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine) is defined by its initial state, a list of its possible states and a transition function? We can think that `Dialogue` is a finite automaton with a context type at each state (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
+
+ If you're familiar with [category theory](https://en.wikipedia.org/wiki/Category_theory), `Dialogue` is almost a [coproduct](https://en.wikipedia.org/wiki/Coproduct), such that:
+  - `X1` is `()`
+  - `X2` is `u8`
+  - `i1` is `Dialogue::Start`
+  - `i2` is `Dialogue::ReceiveAttempt`
+
+ <div align="center">
+   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Coproduct-03.svg/280px-Coproduct-03.svg.png" heigh="500" />
+ </div>
+
+ But without the `f`, `f1`, `f2` morphisms and the `Y` object (which we can freely define if we wanted).
+
+ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues. [See more examples](https://github.com/teloxide/teloxide/tree/master/examples) to get into teloxide!
 
 ## Recommendations
  - Use this pattern:
