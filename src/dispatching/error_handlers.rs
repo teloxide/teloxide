@@ -1,4 +1,5 @@
-use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
+use futures::future::BoxFuture;
+use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 
 /// An asynchronous handler of an error.
 ///
@@ -6,26 +7,16 @@ use std::{convert::Infallible, fmt::Debug, future::Future, pin::Pin};
 /// overview](crate::dispatching).
 pub trait ErrorHandler<E> {
     #[must_use]
-    fn handle_error<'a>(
-        &'a self,
-        error: E,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
-    where
-        E: 'a;
+    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()>;
 }
 
 impl<E, F, Fut> ErrorHandler<E> for F
 where
-    F: Fn(E) -> Fut,
-    Fut: Future<Output = ()>,
+    F: Fn(E) -> Fut + Send + Sync + 'static,
+    E: Send + 'static,
+    Fut: Future<Output = ()> + Send,
 {
-    fn handle_error<'a>(
-        &'a self,
-        error: E,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
-    where
-        E: 'a,
-    {
+    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
         Box::pin(async move { self(error).await })
     }
 }
@@ -38,21 +29,22 @@ where
 /// # async fn main_() {
 /// use teloxide::dispatching::{ErrorHandler, IgnoringErrorHandler};
 ///
-/// IgnoringErrorHandler.handle_error(()).await;
-/// IgnoringErrorHandler.handle_error(404).await;
-/// IgnoringErrorHandler.handle_error("error").await;
+/// IgnoringErrorHandler::new().handle_error(()).await;
+/// IgnoringErrorHandler::new().handle_error(404).await;
+/// IgnoringErrorHandler::new().handle_error("error").await;
 /// # }
 /// ```
 pub struct IgnoringErrorHandler;
 
+impl IgnoringErrorHandler {
+    #[must_use]
+    pub fn new() -> Arc<Self> {
+        Arc::new(Self)
+    }
+}
+
 impl<E> ErrorHandler<E> for IgnoringErrorHandler {
-    fn handle_error<'a>(
-        &'a self,
-        _: E,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
-    where
-        E: 'a,
-    {
+    fn handle_error(self: Arc<Self>, _: E) -> BoxFuture<'static, ()> {
         Box::pin(async {})
     }
 }
@@ -71,10 +63,10 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 /// let result: Result<String, Infallible> = "str".try_into();
 /// match result {
 ///     Ok(string) => println!("{}", string),
-///     Err(inf) => IgnoringErrorHandlerSafe.handle_error(inf).await,
+///     Err(inf) => IgnoringErrorHandlerSafe::new().handle_error(inf).await,
 /// }
 ///
-/// IgnoringErrorHandlerSafe.handle_error(return).await; // return type of `return` is `!` (aka never)
+/// IgnoringErrorHandlerSafe::new().handle_error(return).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///
@@ -88,15 +80,16 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 /// [`Infallible`]: std::convert::Infallible
 pub struct IgnoringErrorHandlerSafe;
 
+impl IgnoringErrorHandlerSafe {
+    #[must_use]
+    pub fn new() -> Arc<Self> {
+        Arc::new(Self)
+    }
+}
+
 #[allow(unreachable_code)]
 impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
-    fn handle_error<'a>(
-        &'a self,
-        _: Infallible,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
-    where
-        Infallible: 'a,
-    {
+    fn handle_error(self: Arc<Self>, _: Infallible) -> BoxFuture<'static, ()> {
         Box::pin(async {})
     }
 }
@@ -109,14 +102,13 @@ impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
 /// # async fn main_() {
 /// use teloxide::dispatching::{ErrorHandler, LoggingErrorHandler};
 ///
-/// LoggingErrorHandler::default().handle_error(()).await;
+/// LoggingErrorHandler::empty().handle_error(()).await;
 /// LoggingErrorHandler::new("error").handle_error(404).await;
 /// LoggingErrorHandler::new("error")
 ///     .handle_error("Invalid data type!")
 ///     .await;
 /// # }
 /// ```
-#[derive(Default)]
 pub struct LoggingErrorHandler {
     text: String,
 }
@@ -126,11 +118,17 @@ impl LoggingErrorHandler {
     ///
     /// The logs will be printed in this format: `{text}: {:?}`.
     #[must_use]
-    pub fn new<T>(text: T) -> Self
+    pub fn new<T>(text: T) -> Arc<Self>
     where
         T: Into<String>,
     {
-        Self { text: text.into() }
+        Arc::new(Self { text: text.into() })
+    }
+
+    /// A shortcut for `LoggingErrorHandler::new("Error".to_owned())`.
+    #[must_use]
+    pub fn empty() -> Arc<Self> {
+        Self::new("Error".to_owned())
     }
 }
 
@@ -138,13 +136,7 @@ impl<E> ErrorHandler<E> for LoggingErrorHandler
 where
     E: Debug,
 {
-    fn handle_error<'a>(
-        &'a self,
-        error: E,
-    ) -> Pin<Box<dyn Future<Output = ()> + 'a>>
-    where
-        E: 'a,
-    {
+    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
         log::error!("{text}: {:?}", error, text = self.text);
         Box::pin(async {})
     }

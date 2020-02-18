@@ -211,7 +211,7 @@ impl Dispatcher {
     pub async fn dispatch(&self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(Arc::clone(&self.bot)),
-            &LoggingErrorHandler::new("An error from the update listener"),
+            LoggingErrorHandler::new("An error from the update listener"),
         )
         .await;
     }
@@ -221,7 +221,7 @@ impl Dispatcher {
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a self,
         update_listener: UListener,
-        update_listener_error_handler: &'a Eh,
+        update_listener_error_handler: Arc<Eh>,
     ) where
         UListener: UpdateListener<ListenerE> + 'a,
         Eh: ErrorHandler<ListenerE> + 'a,
@@ -230,105 +230,112 @@ impl Dispatcher {
         let update_listener = Box::pin(update_listener);
 
         update_listener
-            .for_each(move |update| async move {
-                log::trace!("Dispatcher received an update: {:?}", update);
+            .for_each(move |update| {
+                let update_listener_error_handler =
+                    Arc::clone(&update_listener_error_handler);
 
-                let update = match update {
-                    Ok(update) => update,
-                    Err(error) => {
-                        update_listener_error_handler.handle_error(error).await;
-                        return;
-                    }
-                };
+                async move {
+                    log::trace!("Dispatcher received an update: {:?}", update);
 
-                match update.kind {
-                    UpdateKind::Message(message) => {
-                        send!(
-                            &self.bot,
-                            &self.messages_queue,
-                            message,
-                            UpdateKind::Message
-                        );
-                    }
-                    UpdateKind::EditedMessage(message) => {
-                        send!(
-                            &self.bot,
-                            &self.edited_messages_queue,
-                            message,
-                            UpdateKind::EditedMessage
-                        );
-                    }
-                    UpdateKind::ChannelPost(post) => {
-                        send!(
-                            &self.bot,
-                            &self.channel_posts_queue,
-                            post,
-                            UpdateKind::ChannelPost
-                        );
-                    }
-                    UpdateKind::EditedChannelPost(post) => {
-                        send!(
-                            &self.bot,
-                            &self.edited_channel_posts_queue,
-                            post,
-                            UpdateKind::EditedChannelPost
-                        );
-                    }
-                    UpdateKind::InlineQuery(query) => {
-                        send!(
-                            &self.bot,
-                            &self.inline_queries_queue,
-                            query,
-                            UpdateKind::InlineQuery
-                        );
-                    }
-                    UpdateKind::ChosenInlineResult(result) => {
-                        send!(
-                            &self.bot,
-                            &self.chosen_inline_results_queue,
-                            result,
-                            UpdateKind::ChosenInlineResult
-                        );
-                    }
-                    UpdateKind::CallbackQuery(query) => {
-                        send!(
-                            &self.bot,
-                            &self.callback_queries_queue,
-                            query,
-                            UpdateKind::CallbackQuer
-                        );
-                    }
-                    UpdateKind::ShippingQuery(query) => {
-                        send!(
-                            &self.bot,
-                            &self.shipping_queries_queue,
-                            query,
-                            UpdateKind::ShippingQuery
-                        );
-                    }
-                    UpdateKind::PreCheckoutQuery(query) => {
-                        send!(
-                            &self.bot,
-                            &self.pre_checkout_queries_queue,
-                            query,
-                            UpdateKind::PreCheckoutQuery
-                        );
-                    }
-                    UpdateKind::Poll(poll) => {
-                        send!(
-                            &self.bot,
-                            &self.polls_queue,
-                            poll,
-                            UpdateKind::Poll
-                        );
-                    }
-                    UpdateKind::PollAnswer(answer) => {
-                        send!(
-                            &self.bot,
-                            &self.poll_answers_queue,
-                            answer,
-                            UpdateKind::PollAnswer
-                        );
+                    let update = match update {
+                        Ok(update) => update,
+                        Err(error) => {
+                            Arc::clone(&update_listener_error_handler)
+                                .handle_error(error)
+                                .await;
+                            return;
+                        }
+                    };
+
+                    match update.kind {
+                        UpdateKind::Message(message) => {
+                            send!(
+                                &self.bot,
+                                &self.messages_queue,
+                                message,
+                                UpdateKind::Message
+                            );
+                        }
+                        UpdateKind::EditedMessage(message) => {
+                            send!(
+                                &self.bot,
+                                &self.edited_messages_queue,
+                                message,
+                                UpdateKind::EditedMessage
+                            );
+                        }
+                        UpdateKind::ChannelPost(post) => {
+                            send!(
+                                &self.bot,
+                                &self.channel_posts_queue,
+                                post,
+                                UpdateKind::ChannelPost
+                            );
+                        }
+                        UpdateKind::EditedChannelPost(post) => {
+                            send!(
+                                &self.bot,
+                                &self.edited_channel_posts_queue,
+                                post,
+                                UpdateKind::EditedChannelPost
+                            );
+                        }
+                        UpdateKind::InlineQuery(query) => {
+                            send!(
+                                &self.bot,
+                                &self.inline_queries_queue,
+                                query,
+                                UpdateKind::InlineQuery
+                            );
+                        }
+                        UpdateKind::ChosenInlineResult(result) => {
+                            send!(
+                                &self.bot,
+                                &self.chosen_inline_results_queue,
+                                result,
+                                UpdateKind::ChosenInlineResult
+                            );
+                        }
+                        UpdateKind::CallbackQuery(query) => {
+                            send!(
+                                &self.bot,
+                                &self.callback_queries_queue,
+                                query,
+                                UpdateKind::CallbackQuer
+                            );
+                        }
+                        UpdateKind::ShippingQuery(query) => {
+                            send!(
+                                &self.bot,
+                                &self.shipping_queries_queue,
+                                query,
+                                UpdateKind::ShippingQuery
+                            );
+                        }
+                        UpdateKind::PreCheckoutQuery(query) => {
+                            send!(
+                                &self.bot,
+                                &self.pre_checkout_queries_queue,
+                                query,
+                                UpdateKind::PreCheckoutQuery
+                            );
+                        }
+                        UpdateKind::Poll(poll) => {
+                            send!(
+                                &self.bot,
+                                &self.polls_queue,
+                                poll,
+                                UpdateKind::Poll
+                            );
+                        }
+                        UpdateKind::PollAnswer(answer) => {
+                            send!(
+                                &self.bot,
+                                &self.poll_answers_queue,
+                                answer,
+                                UpdateKind::PollAnswer
+                            );
+                        }
                     }
                 }
             })

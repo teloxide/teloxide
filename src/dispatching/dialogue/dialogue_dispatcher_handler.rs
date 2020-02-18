@@ -1,6 +1,5 @@
-use std::pin::Pin;
-
 use crate::prelude::{DialogueDispatcherHandlerCtx, DialogueStage};
+use futures::future::BoxFuture;
 use std::{future::Future, sync::Arc};
 
 /// An asynchronous handler of an update used in [`DialogueDispatcher`].
@@ -14,7 +13,7 @@ pub trait DialogueDispatcherHandler<Upd, D> {
     fn handle(
         self: Arc<Self>,
         ctx: DialogueDispatcherHandlerCtx<Upd, D>,
-    ) -> Pin<Box<dyn Future<Output = DialogueStage<D>> + Send + 'static>>
+    ) -> BoxFuture<'static, DialogueStage<D>>
     where
         DialogueDispatcherHandlerCtx<Upd, D>: Send + 'static;
 }
@@ -27,7 +26,7 @@ where
     fn handle(
         self: Arc<Self>,
         ctx: DialogueDispatcherHandlerCtx<Upd, D>,
-    ) -> Pin<Box<dyn Future<Output = Fut::Output> + Send + 'static>>
+    ) -> BoxFuture<'static, Fut::Output>
     where
         DialogueDispatcherHandlerCtx<Upd, D>: Send + 'static,
     {

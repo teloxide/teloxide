@@ -47,25 +47,25 @@ where
     ///
     /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
     #[must_use]
-    pub fn new(handler: H) -> Arc<Self> {
-        Arc::new(Self {
+    pub fn new(handler: H) -> Self {
+        Self {
             storage: InMemStorage::new(),
             handler: Arc::new(handler),
             senders: Arc::new(Map::new()),
-        })
+        }
     }
 
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
-    pub fn with_storage<Stg>(handler: H, storage: Arc<Stg>) -> Arc<Self>
+    pub fn with_storage<Stg>(handler: H, storage: Arc<Stg>) -> Self
     where
         Stg: Storage<D> + Send + Sync + 'static,
     {
-        Arc::new(Self {
+        Self {
             storage,
             handler: Arc::new(handler),
             senders: Arc::new(Map::new()),
-        })
+        }
     }
 
     #[must_use]
