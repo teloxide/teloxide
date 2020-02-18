@@ -23,12 +23,7 @@ impl Command {
             new_name = rename_by_rule(name, &rename_rule);
             renamed = true;
         }
-        Ok(Self {
-            prefix,
-            description,
-            name: new_name,
-            renamed,
-        })
+        Ok(Self { prefix, description, name: new_name, renamed })
     }
 }
 
@@ -55,9 +50,5 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
         }
     }
 
-    Ok(CommandAttrs {
-        prefix,
-        description,
-        rename: rename_rule,
-    })
+    Ok(CommandAttrs { prefix, description, rename: rename_rule })
 }
