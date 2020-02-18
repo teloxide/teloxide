@@ -265,7 +265,7 @@ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/exa
 
 ## More examples!
 | Bot | Description |
-| --- | ----------- |
+|:---:|:-----------:|
 | [ping_pong_bot](https://github.com/teloxide/teloxide/tree/master/examples/ping_pong_bot) | Answers "pong" to each incoming message. |
 | [simple_commands_bot](https://github.com/teloxide/teloxide/tree/master/examples/simple_commands_bot) | Shows how to deal with bot's commands. |
 | [guess_a_number_bot](https://github.com/teloxide/teloxide/tree/master/examples/guess_a_number_bot) | The "guess a number" game. |
