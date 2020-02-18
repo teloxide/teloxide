@@ -281,7 +281,7 @@ mod tests {
                 let tx = tx.clone();
 
                 async move {
-                    if tx.send(update) {
+                    if tx.send(update).is_err() {
                         panic!("tx.send(update) failed");
                     }
                 }

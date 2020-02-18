@@ -26,12 +26,27 @@ where
 /// Something that can be handled by an error handler.
 ///
 /// ## Examples
+/// ```
+/// use teloxide::error_handlers::OnError;
+///
+/// # #[tokio::main]
+/// # async fn main_() {
+/// // Prints nothing
+/// let ok: Result<i32, i32> = Ok(200);
+/// ok.log_on_error().await;
+///
+/// // Prints "Error: 404"
+/// let err: Result<i32, i32> = Err(404);
+/// err.log_on_error().await;
+/// # }
+/// ```
+///
 /// Use an arbitrary error handler:
 /// ```
 /// use teloxide::error_handlers::{IgnoringErrorHandler, OnError};
 ///
 /// # #[tokio::main]
-/// # async fn main() {
+/// # async fn main_() {
 /// let err: Result<i32, i32> = Err(404);
 /// err.on_error(IgnoringErrorHandler::new()).await;
 /// # }
