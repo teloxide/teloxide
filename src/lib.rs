@@ -25,10 +25,10 @@
 //! variable to your token:
 //! ```text
 //! # Unix
-//! $ export TELOXIDE_TOKEN=MyAwesomeToken
+//! $ export TELOXIDE_TOKEN=<Your token here>
 //!
 //! # Windows
-//! $ set TELOXITE_TOKEN=MyAwesomeToken
+//! $ set TELOXITE_TOKEN=<Your token here>
 //! ```
 //!
 //!  3. Be sure that you are up to date:
@@ -79,7 +79,7 @@
 //! ```text
 //! git clone https://github.com/teloxide/teloxide.git
 //! cd teloxide/examples/ping_pong_bot
-//! TELOXIDE_TOKEN=MyAwesomeToken cargo run
+//! TELOXIDE_TOKEN=<Your token here> cargo run
 //! ```
 //!
 //! </details>
@@ -162,7 +162,7 @@
 //! ```text
 //! git clone https://github.com/teloxide/teloxide.git
 //! cd teloxide/examples/simple_commands_bot
-//! TELOXIDE_TOKEN=MyAwesomeToken cargo run
+//! TELOXIDE_TOKEN=<Your token here> cargo run
 //! ```
 //!
 //! </details>
@@ -281,7 +281,7 @@
 //! ```text
 //! git clone https://github.com/teloxide/teloxide.git
 //! cd teloxide/examples/guess_a_number_bot
-//! TELOXIDE_TOKEN=MyAwesomeToken cargo run
+//! TELOXIDE_TOKEN=<Your token here> cargo run
 //! ```
 //!
 //! </details>
