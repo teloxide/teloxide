@@ -159,7 +159,7 @@ where
             match this.senders.get(&chat_id) {
                 // An old dialogue
                 Some(tx) => {
-                    if let Err(_) = tx.1.send(cx) {
+                    if tx.1.send(cx).is_err() {
                         panic!(
                             "We are not dropping a receiver or call .close() \
                              on it",
@@ -168,7 +168,7 @@ where
                 }
                 None => {
                     let tx = this.new_tx();
-                    if let Err(_) = tx.send(cx) {
+                    if tx.send(cx).is_err() {
                         panic!(
                             "We are not dropping a receiver or call .close() \
                              on it",
@@ -281,7 +281,7 @@ mod tests {
                 let tx = tx.clone();
 
                 async move {
-                    if let Err(_) = tx.send(update) {
+                    if tx.send(update) {
                         panic!("tx.send(update) failed");
                     }
                 }

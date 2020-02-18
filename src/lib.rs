@@ -299,22 +299,17 @@
 //! that `Dialogue` is a finite automaton with a context type at each state
 //! (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
 //!
-//! If you're familiar with [category theory], `Dialogue` is almost a
-//! [coproduct], such that:
-//!  - `X1` is `()`
-//!  - `X2` is `u8`
-//!  - `i1` is `Dialogue::Start`
-//!  - `i2` is `Dialogue::ReceiveAttempt`
-//!
-//! <div align="center">
-//!   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Coproduct-03.svg/280px-Coproduct-03.svg.png" heigh="500" />
-//! </div>
-//!
-//! But without the `f`, `f1`, `f2` morphisms and the `Y` object (which we can
-//! freely define if we wanted).
-//!
 //! See [examples/dialogue_bot] to see a bit more complicated bot with
-//! dialogues. [See more examples] to get into teloxide!
+//! dialogues.
+//!
+//! ## More examples!
+//! | Bot | Description |
+//! |:---:|:-----------:|
+//! | [ping_pong_bot](https://github.com/teloxide/teloxide/tree/master/examples/ping_pong_bot) | Answers "pong" to each incoming message. |
+//! | [simple_commands_bot](https://github.com/teloxide/teloxide/tree/master/examples/simple_commands_bot) | Shows how to deal with bot's commands. |
+//! | [guess_a_number_bot](https://github.com/teloxide/teloxide/tree/master/examples/guess_a_number_bot) | The "guess a number" game. |
+//! | [dialogue_bot](https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot) | Drive a dialogue with a user using a type-safe finite automaton. |
+//! | [admin_bot](https://github.com/teloxide/teloxide/tree/master/examples/admin_bot) | A bot, which can ban, kick, and mute on a command. |
 //!
 //!
 //! # Recommendations
