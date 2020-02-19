@@ -305,5 +305,8 @@ The second one produces very strange compiler messages because of the `#[tokio::
 ### Where I can ask questions?
 [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need a quick help, feel free to ask in our official group: https://t.me/teloxide.
 
+## Why Rust?
+Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
