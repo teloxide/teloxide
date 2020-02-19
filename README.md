@@ -301,5 +301,9 @@ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/exa
  
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
+## FAQ
+### Where I can ask questions?
+[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need a quick help, feel free to ask in our official group: https://t.me/teloxide.
+
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
