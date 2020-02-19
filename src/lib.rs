@@ -42,7 +42,6 @@
 //! [dependencies]
 //! teloxide = "0.1.0"
 //! log = "0.4.8"
-//! futures = "0.3.4"
 //! tokio = "0.2.11"
 //! pretty_env_logger = "0.4.0"
 //! ```
@@ -99,7 +98,6 @@
 //! ```no_run
 //! // Imports are omitted...
 //! # use teloxide::{prelude::*, utils::command::BotCommand};
-//! # use futures::future;
 //! # use rand::{thread_rng, Rng};
 //!
 //! #[derive(BotCommand)]
@@ -134,18 +132,15 @@
 //! }
 //!
 //! async fn handle_command(rx: DispatcherHandlerRx<Message>) {
-//!     rx.filter_map(|cx| {
-//!         future::ready(cx.update.text_owned().map(|text| (cx, text)))
-//!     })
-//!     .filter_map(|(cx, text)| {
-//!         future::ready(
-//!             Command::parse(&text).map(|(command, _)| (cx, command)),
-//!         )
-//!     })
-//!     .for_each_concurrent(None, |(cx, command)| async move {
-//!         answer(cx, command).await.log_on_error().await;
-//!     })
-//!     .await;
+//!    // Only iterate through text messages:
+//!     rx.text_messages()
+//!         // Only iterate through commands in a proper format:
+//!         .commands::<Command>()
+//!         // Execute all incoming commands concurrently:
+//!         .for_each_concurrent(None, |(cx, command, _)| async move {
+//!             answer(cx, command).await.log_on_error().await;
+//!         })
+//!         .await;
 //! }
 //!
 //! #[tokio::main]
@@ -178,8 +173,8 @@
 //!
 //!
 //! See? The dispatcher gives us a stream of messages, so we can handle it as we
-//! want! Here we use [`.filter_map()`] and [`.for_each_concurrent()`], but
-//! others are also available:
+//! want! Here we use our `.text_messages()`, `.commands()`, and
+//! [`.for_each_concurrent()`], but others are also available:
 //! - [`.flatten()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.flatten)
 //! - [`.left_stream()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.left_stream)
 //! - [`.scan()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.scan)
@@ -349,7 +344,6 @@
 //! [@Botfather]: https://t.me/botfather
 //! [streams]: https://docs.rs/futures/0.3.4/futures/stream/index.html
 //! [all 30+ patterns]: https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html
-//! [`.filter_map()`]: https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter_map
 //! [`.for_each_concurrent()`]: https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent
 //! [See more examples]: https://github.com/teloxide/teloxide/tree/master/examples
 //! [category theory]: https://en.wikipedia.org/wiki/Category_theory

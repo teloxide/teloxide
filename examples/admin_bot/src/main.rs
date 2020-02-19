@@ -176,21 +176,13 @@ async fn action(
 
 // Handle all messages.
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.filter(|cx| future::ready(!cx.update.chat.is_group()))
-        .filter_map(|cx| {
-            future::ready(cx.update.text_owned().map(|text| (cx, text)))
-        })
-        .filter_map(|(cx, text)| {
-            future::ready(Command::parse(&text).map(|(command, args)| {
-                (
-                    cx,
-                    command,
-                    args.into_iter()
-                        .map(ToOwned::to_owned)
-                        .collect::<Vec<String>>(),
-                )
-            }))
-        })
+    // Only iterate through messages from groups:
+    rx.filter(|cx| future::ready(cx.update.chat.is_group()))
+        // Only iterate through text messages:
+        .text_messages()
+        // Only iterate through commands in a proper format:
+        .commands::<Command>()
+        // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, args)| async move {
             action(cx, command, &args).await.log_on_error().await;
         })

@@ -1,6 +1,5 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
-use futures::future;
 use rand::{thread_rng, Rng};
 
 #[derive(BotCommand)]
@@ -32,16 +31,15 @@ async fn answer(
 }
 
 async fn handle_command(rx: DispatcherHandlerRx<Message>) {
-    rx.filter_map(|cx| {
-        future::ready(cx.update.text_owned().map(|text| (cx, text)))
-    })
-    .filter_map(|(cx, text)| {
-        future::ready(Command::parse(&text).map(|(command, _)| (cx, command)))
-    })
-    .for_each_concurrent(None, |(cx, command)| async move {
-        answer(cx, command).await.log_on_error().await;
-    })
-    .await;
+    // Only iterate through text messages:
+    rx.text_messages()
+        // Only iterate through commands in a proper format:
+        .commands::<Command>()
+        // Execute all incoming commands concurrently:
+        .for_each_concurrent(None, |(cx, command, _)| async move {
+            answer(cx, command).await.log_on_error().await;
+        })
+        .await;
 }
 
 #[tokio::main]

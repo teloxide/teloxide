@@ -81,11 +81,13 @@ pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler;
 mod dispatcher_handler_cx;
+mod dispatcher_handler_rx_ext;
 pub mod update_listeners;
 
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_cx::DispatcherHandlerCx;
+pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
 
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
