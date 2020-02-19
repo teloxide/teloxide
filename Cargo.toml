@@ -46,7 +46,7 @@ pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
 either = "1.5.3"
 
-teloxide-macros = { path = "teloxide-macros" }
+teloxide-macros = { version = "0.1.0" }
 
 [dev-dependencies]
 smart-default = "0.6.0"
