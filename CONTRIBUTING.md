@@ -1,5 +1,5 @@
 # Contributing
-Before contributing, please read our [the code style](https://github.com/teloxide/teloxide/blob/master/CODE_STYLE.md).
+Before contributing, please read [our code style](https://github.com/teloxide/teloxide/blob/master/CODE_STYLE.md) and [the license](https://github.com/teloxide/teloxide/blob/master/LICENSE).
 
 To change the source code, fork this repository and work inside your own branch. Then send us a PR and wait for the CI to check everything. However, you'd better check changes first locally:
 
