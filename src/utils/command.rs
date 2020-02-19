@@ -237,4 +237,20 @@ mod tests {
             "Bot commands\n/start - \n!help - \n"
         );
     }
+    
+    #[test]
+    fn parse_command_with_botname() {
+        #[command(rename = "lowercase", )]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            #[command(prefix = "/")]
+            Start,
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start,
+            DefaultCommands::parse("/start@botname").unwrap().0
+        );
+    }
 }

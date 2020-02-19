@@ -109,7 +109,8 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             }
             fn parse(s: &str) -> Option<(Self, Vec<&str>)> {
                 let mut words = s.split_whitespace();
-                let command = Self::try_from(words.next()?)?;
+                let word_command = words.next()?.split('@').next()?;
+                let command = Self::try_from(word_command)?;
                 Some((command, words.collect()))
             }
         }
