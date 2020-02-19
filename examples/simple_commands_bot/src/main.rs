@@ -31,10 +31,8 @@ async fn answer(
 }
 
 async fn handle_command(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through text messages:
-    rx.text_messages()
-        // Only iterate through commands in a proper format:
-        .commands::<Command>()
+    // Only iterate through commands in a proper format:
+    rx.commands::<Command>()
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;

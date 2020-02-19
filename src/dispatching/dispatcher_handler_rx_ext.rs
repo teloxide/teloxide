@@ -7,20 +7,20 @@ use futures::{stream::BoxStream, Stream, StreamExt};
 ///
 /// [`DispatcherHandlerRx`]: crate:dispatching::DispatcherHandlerRx
 pub trait DispatcherHandlerRxExt {
-    /// Extracts only text messages from this stream.
+    /// Extracts only text messages from this stream of arbitrary messages.
     fn text_messages(
         self,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, String)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>;
 
-    /// Extracts only commands with their arguments from this stream of text
-    /// messages.
+    /// Extracts only commands with their arguments from this stream of
+    /// arbitrary messages.
     fn commands<C>(
         self,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
-        Self: Stream<Item = (DispatcherHandlerCx<Message>, String)>,
+        Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand;
 }
 
@@ -43,10 +43,10 @@ where
         self,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
-        Self: Stream<Item = (DispatcherHandlerCx<Message>, String)>,
+        Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
     {
-        Box::pin(self.filter_map(|(cx, text)| async move {
+        Box::pin(self.text_messages().filter_map(|(cx, text)| async move {
             C::parse(&text).map(|(command, args)| {
                 (
                     cx,

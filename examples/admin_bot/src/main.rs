@@ -178,8 +178,6 @@ async fn action(
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     // Only iterate through messages from groups:
     rx.filter(|cx| future::ready(cx.update.chat.is_group()))
-        // Only iterate through text messages:
-        .text_messages()
         // Only iterate through commands in a proper format:
         .commands::<Command>()
         // Execute all incoming commands concurrently:

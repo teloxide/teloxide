@@ -146,10 +146,8 @@ async fn answer(
 }
 
 async fn handle_command(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through text messages:
-    rx.text_messages()
-        // Only iterate through commands in a proper format:
-        .commands::<Command>()
+    // Only iterate through commands in a proper format:
+    rx.commands::<Command>()
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;
@@ -182,7 +180,7 @@ TELOXIDE_TOKEN=<Your token here> cargo run
 </div>
 
 
-See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use our `.text_messages()`, `.commands()`, and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
+See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use our `.commands::<Command>()` and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
  - [`.flatten()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.flatten)
  - [`.left_stream()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.left_stream)
  - [`.scan()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.scan)
