@@ -93,17 +93,6 @@ async fn main() {
 
 ```
 
-<details>
-  <summary>Click here to run it!</summary>
-
-```bash
-git clone https://github.com/teloxide/teloxide.git
-cd teloxide/examples/ping_pong_bot
-TELOXIDE_TOKEN=<Your token here> cargo run
-```
-
-</details>
-
 <div align="center">
   <kbd>
     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="600" />
@@ -161,24 +150,12 @@ async fn main() {
 }
 ```
 
-<details>
-  <summary>Click here to run it!</summary>
-
-```bash
-git clone https://github.com/teloxide/teloxide.git
-cd teloxide/examples/simple_commands_bot
-TELOXIDE_TOKEN=<Your token here> cargo run
-```
-
-</details>
-
 <div align="center">
   <kbd>
     <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="500"/>
   </kbd>
   <br/><br/>
 </div>
-
 
 See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use our `.commands::<Command>()` and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
  - [`.flatten()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.flatten)
@@ -260,17 +237,6 @@ async fn main() {
     // Setup is omitted...
 }
 ```
-
-<details>
-  <summary>Click here to run it!</summary>
-
-```bash
-git clone https://github.com/teloxide/teloxide.git
-cd teloxide/examples/guess_a_number_bot
-TELOXIDE_TOKEN=<Your token here> cargo run
-```
-
-</details>
 
 <div align="center">
   <kbd>

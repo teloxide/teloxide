@@ -2,21 +2,7 @@
 //! using the [`async`/`.await`] syntax in [Rust]. It handles all the difficult
 //! stuff so you can focus only on your business logic.
 //!
-//! # Features
-//! - **Type-safe.** teloxide leverages the Rust's type system with two serious
-//!   implications: resistance to human mistakes and tight integration with
-//!   IDEs. Write fast, avoid debugging as much as possible.
-//!
-//! - **Flexible API.** teloxide gives you the power of [streams]: you can
-//!   combine [all 30+ patterns] when working with updates from Telegram.
-//!
-//! - **Persistency.** By default, teloxide stores all user dialogues in RAM,
-//!   but you can store them somewhere else (for example, in DB) just by
-//!   implementing 2 functions.
-//!
-//! - **Convenient dialogues system.** Define a type-safe [finite automaton]
-//! and transition functions to drive a user dialogue with ease (see [the
-//! guess-a-number example](#guess-a-number) below).
+//! See also [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
 //! # Getting started
 //!  1. Create a new bot using [@Botfather] to get a token in the format
@@ -71,17 +57,6 @@
 //!         .await;
 //! }
 //! ```
-//!
-//! <details>
-//! <summary>Click here to run it!</summary>
-//!
-//! ```text
-//! git clone https://github.com/teloxide/teloxide.git
-//! cd teloxide/examples/ping_pong_bot
-//! TELOXIDE_TOKEN=<Your token here> cargo run
-//! ```
-//!
-//! </details>
 //!
 //! <div align="center">
 //!   <kbd>
@@ -150,17 +125,6 @@
 //! # Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await;
 //! }
 //! ```
-//!
-//! <details>
-//! <summary>Click here to run it!</summary>
-//!
-//! ```text
-//! git clone https://github.com/teloxide/teloxide.git
-//! cd teloxide/examples/simple_commands_bot
-//! TELOXIDE_TOKEN=<Your token here> cargo run
-//! ```
-//!
-//! </details>
 //!
 //! <div align="center">
 //!   <kbd>
@@ -273,17 +237,6 @@
 //! }
 //! ```
 //!
-//! <details>
-//! <summary>Click here to run it!</summary>
-//!
-//! ```text
-//! git clone https://github.com/teloxide/teloxide.git
-//! cd teloxide/examples/guess_a_number_bot
-//! TELOXIDE_TOKEN=<Your token here> cargo run
-//! ```
-//!
-//! </details>
-//!
 //! <div align="center">
 //!   <kbd>
 //!     <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="600" />
@@ -301,9 +254,7 @@
 //! (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
 //!
 //! See [examples/dialogue_bot] to see a bit more complicated bot with
-//! dialogues.
-//!
-//! # [More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
+//! dialogues. [See all examples](https://github.com/teloxide/teloxide/tree/master/examples).
 //!
 //! # Recommendations
 //!
@@ -347,8 +298,9 @@
 //! [category theory]: https://en.wikipedia.org/wiki/Category_theory
 //! [coproduct]: https://en.wikipedia.org/wiki/Coproduct
 
+// https://github.com/teloxide/teloxide/raw/master/logo.svg doesn't work in html_logo_url, I don't know why.
 #![doc(
-    html_logo_url = "https://github.com/teloxide/teloxide/raw/master/logo.svg",
+    html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
     html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
 )]
 #![allow(clippy::match_bool)]

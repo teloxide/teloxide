@@ -20,7 +20,7 @@
 //! ```
 //!
 //! When [`Update`] is received from Telegram, [`Dispatcher`] pushes it into an
-//! appropriate handler. That's simple!
+//! appropriate handler, depending on its kind. That's simple!
 //!
 //! **Note** that handlers must implement [`DispatcherHandler`], which means
 //! that:
