@@ -18,6 +18,20 @@
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
 
+## Table of contents
+ - [Features](https://github.com/teloxide/teloxide#features)
+ - [Getting started](https://github.com/teloxide/teloxide#getting-started)
+ - [Examples](https://github.com/teloxide/teloxide#examples)
+   - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
+   - [Commands](https://github.com/teloxide/teloxide#commands)
+   - [Guess a number](https://github.com/teloxide/teloxide#guess-a-number)
+ - [More examples!](https://github.com/teloxide/teloxide#more-examples)
+ - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
+ - [FAQ](https://github.com/teloxide/teloxide#faq)
+   - [Where I can ask questions?](https://github.com/teloxide/teloxide#where-i-can-ask-questions)
+   - [Why Rust?](https://github.com/teloxide/teloxide#why-rust)
+ - [Contributing](https://github.com/teloxide/teloxide#contributing)
+
 ## Features
  - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as much as possible.
 
@@ -53,7 +67,9 @@ tokio = "0.2.11"
 pretty_env_logger = "0.4.0"
 ```
 
-## The ping-pong bot
+## Examples
+
+### The ping-pong bot
 This bot has a single message handler, which answers "pong" to each incoming message:
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
@@ -94,7 +110,7 @@ TELOXIDE_TOKEN=<Your token here> cargo run
   <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="400" />
 </div>
 
-## Commands
+### Commands
 Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow`, generates a random number within [0; 1) on `/generate`, and shows the usage guide on `/help`:
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
@@ -175,7 +191,7 @@ See? The dispatcher gives us a stream of messages, so we can handle it as we wan
  - [`.inspect()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.inspect)
  - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html)!
 
-## Guess a number
+### Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
