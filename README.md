@@ -30,6 +30,7 @@
  - [FAQ](https://github.com/teloxide/teloxide#faq)
    - [Where I can ask questions?](https://github.com/teloxide/teloxide#where-i-can-ask-questions)
    - [Why Rust?](https://github.com/teloxide/teloxide#why-rust)
+ - [Community bots](https://github.com/teloxide/teloxide#community-bots)
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
@@ -323,6 +324,9 @@ The second one produces very strange compiler messages because of the `#[tokio::
 
 ### Why Rust?
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+
+## Community bots
+Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
