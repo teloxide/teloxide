@@ -51,7 +51,7 @@
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
-$ set TELOXITE_TOKEN=<Your token here>
+$ set TELOXIDE_TOKEN=<Your token here>
 ```
  3. Be sure that you are up to date:
 ```bash
