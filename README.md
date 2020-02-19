@@ -1,7 +1,7 @@
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
-
+  
   <a href="https://docs.rs/teloxide/">
     <img src="https://img.shields.io/badge/docs.rs-v0.1.0-blue.svg">
   </a>
@@ -11,9 +11,27 @@
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
   </a>
+  <a href="https://t.me/teloxide">
+    <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
+  </a>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
+
+## Table of contents
+ - [Features](https://github.com/teloxide/teloxide#features)
+ - [Getting started](https://github.com/teloxide/teloxide#getting-started)
+ - [Examples](https://github.com/teloxide/teloxide#examples)
+   - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
+   - [Commands](https://github.com/teloxide/teloxide#commands)
+   - [Guess a number](https://github.com/teloxide/teloxide#guess-a-number)
+ - [More examples!](https://github.com/teloxide/teloxide#more-examples)
+ - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
+ - [FAQ](https://github.com/teloxide/teloxide#faq)
+   - [Where I can ask questions?](https://github.com/teloxide/teloxide#where-i-can-ask-questions)
+   - [Why Rust?](https://github.com/teloxide/teloxide#why-rust)
+ - [Community bots](https://github.com/teloxide/teloxide#community-bots)
+ - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
  - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as much as possible.
@@ -305,6 +323,16 @@ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/exa
  ```
  
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
+
+## FAQ
+### Where I can ask questions?
+[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need a quick help, feel free to ask in our official group: https://t.me/teloxide.
+
+### Why Rust?
+Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+
+## Community bots
+Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
