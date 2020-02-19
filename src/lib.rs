@@ -131,7 +131,7 @@
 //!     Ok(())
 //! }
 //!
-//! async fn handle_command(rx: DispatcherHandlerRx<Message>) {
+//! async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
 //!    // Only iterate through commands in a proper format:
 //!     rx.commands::<Command>()
 //!         // Execute all incoming commands concurrently:
@@ -147,7 +147,7 @@
 //! # teloxide::enable_logging!();
 //! # log::info!("Starting simple_commands_bot!");
 //! # let bot = Bot::from_env();
-//! # Dispatcher::new(bot).messages_handler(handle_command).dispatch().await;
+//! # Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await;
 //! }
 //! ```
 //!

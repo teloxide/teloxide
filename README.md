@@ -145,7 +145,7 @@ async fn answer(
     Ok(())
 }
 
-async fn handle_command(rx: DispatcherHandlerRx<Message>) {
+async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     // Only iterate through commands in a proper format:
     rx.commands::<Command>()
         // Execute all incoming commands concurrently:
