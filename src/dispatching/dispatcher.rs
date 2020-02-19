@@ -14,9 +14,7 @@ use futures::StreamExt;
 use std::{fmt::Debug, sync::Arc};
 use tokio::sync::mpsc;
 
-use tokio::sync::Mutex;
-
-type Tx<Upd> = Option<Mutex<mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>;
+type Tx<Upd> = Option<mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>;
 
 #[macro_use]
 mod macros {
@@ -37,10 +35,8 @@ async fn send<'a, Upd>(
     Upd: Debug,
 {
     if let Some(tx) = tx {
-        if let Err(error) = tx
-            .lock()
-            .await
-            .send(DispatcherHandlerCx { bot: Arc::clone(&bot), update })
+        if let Err(error) =
+            tx.send(DispatcherHandlerCx { bot: Arc::clone(&bot), update })
         {
             log::error!(
                 "The RX part of the {} channel is closed, but an update is \
@@ -103,7 +99,7 @@ impl Dispatcher {
             let fut = h.handle(rx);
             fut.await;
         });
-        Some(Mutex::new(tx))
+        Some(tx)
     }
 
     #[must_use]
