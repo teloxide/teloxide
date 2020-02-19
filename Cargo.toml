@@ -8,6 +8,16 @@ documentation = "https://docs.rs/teloxide/"
 readme = "README.md"
 keywords = ["teloxide", "telegram", "telegram-bot-framework", "telegram-bot-api"]
 license = "MIT"
+authors = [
+        "Temirkhan Myrzamadi <hirrolot@gmail.com>",
+        "Waffle Lapkin <waffle.lapkin@gmail.com>",
+        "p0lunin (https://github.com/p0lunin)",
+        "Mishko torop'izhko (https://github.com/nextel)",
+        "Mr-Andersen (https://github.com/Mr-Andersen)",
+        "Sergey Levitin <selevit@gmail.com>",
+        "Rustem B. <bakirov.com@yandex.ru>",
+        "Alexey Fedechkin <aleksey-fedechkin@rambler.ru>",
+]
 
 [badges]
 maintenance = { status = "actively-developed" }
