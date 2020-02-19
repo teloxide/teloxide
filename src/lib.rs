@@ -85,7 +85,9 @@
 //! </details>
 //!
 //! <div align="center">
-//! <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="400" />
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="600" />
+//!   </kbd>
 //! </div>
 //!
 //! # Commands
@@ -168,7 +170,10 @@
 //! </details>
 //!
 //! <div align="center">
-//! <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="400" />
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="500"/>
+//!   </kbd>
+//!   <br/><br/>
 //! </div>
 //!
 //!
@@ -287,7 +292,10 @@
 //! </details>
 //!
 //! <div align="center">
-//! <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="600" />
+//!   </kbd>
+//!   <br/><br/>
 //! </div>
 //!
 //! Our [finite automaton], designating a user dialogue, cannot be in an invalid
@@ -302,15 +310,7 @@
 //! See [examples/dialogue_bot] to see a bit more complicated bot with
 //! dialogues.
 //!
-//! ## More examples!
-//! | Bot | Description |
-//! |:---:|:-----------:|
-//! | [ping_pong_bot](https://github.com/teloxide/teloxide/tree/master/examples/ping_pong_bot) | Answers "pong" to each incoming message. |
-//! | [simple_commands_bot](https://github.com/teloxide/teloxide/tree/master/examples/simple_commands_bot) | Shows how to deal with bot's commands. |
-//! | [guess_a_number_bot](https://github.com/teloxide/teloxide/tree/master/examples/guess_a_number_bot) | The "guess a number" game. |
-//! | [dialogue_bot](https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot) | Drive a dialogue with a user using a type-safe finite automaton. |
-//! | [admin_bot](https://github.com/teloxide/teloxide/tree/master/examples/admin_bot) | A bot, which can ban, kick, and mute on a command. |
-//!
+//! # [More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
 //!
 //! # Recommendations
 //!
