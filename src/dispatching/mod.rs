@@ -33,10 +33,38 @@
 //!
 //! # Examples
 //! ### The ping-pong bot
+//! This bot has a single message handler, which answers "pong" to each incoming
+//! message:
 //!
-//! [Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/)
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
+//! ```no_run
+//! use teloxide::prelude::*;
 //!
-//! For a bit more complicated example, please see [examples/dialogue_bot].
+//! #[tokio::main]
+//! async fn main() {
+//!     teloxide::enable_logging!();
+//!     log::info!("Starting ping_pong_bot!");
+//!
+//!     let bot = Bot::from_env();
+//!
+//!     Dispatcher::new(bot)
+//!         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+//!             rx.for_each(|message| async move {
+//!                 message.answer("pong").send().await.log_on_error().await;
+//!             })
+//!         })
+//!         .dispatch()
+//!         .await;
+//! }
+//! ```
+//!
+//! <div align="center">
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="600" />
+//!   </kbd>
+//! </div>
+//!
+//! [See more examples](https://github.com/teloxide/teloxide/tree/master/examples).
 //!
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
 //! [the 11 update kinds]: crate::types::UpdateKind
