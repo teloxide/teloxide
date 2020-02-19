@@ -8,6 +8,7 @@ documentation = "https://docs.rs/teloxide/"
 readme = "README.md"
 keywords = ["teloxide", "telegram", "telegram-bot-framework", "telegram-bot-api"]
 license = "MIT"
+exclude = ["media"]
 authors = [
         "Temirkhan Myrzamadi <hirrolot@gmail.com>",
         "Waffle Lapkin <waffle.lapkin@gmail.com>",
@@ -45,7 +46,7 @@ pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
 either = "1.5.3"
 
-teloxide-macros = { path = "teloxide-macros", version = "0.1.0" }
+teloxide-macros = { path = "teloxide-macros" }
 
 [dev-dependencies]
 smart-default = "0.6.0"
