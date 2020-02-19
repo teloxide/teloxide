@@ -108,7 +108,9 @@ TELOXIDE_TOKEN=<Your token here> cargo run
 </details>
 
 <div align="center">
-  <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="400" />
+  <kbd>
+    <img src=https://github.com/teloxide/teloxide/raw/beatify_screenshots/media/PING_PONG_BOT.png width="600" />
+  </kbd>
 </div>
 
 ### Commands
@@ -177,7 +179,10 @@ TELOXIDE_TOKEN=<Your token here> cargo run
 </details>
 
 <div align="center">
-  <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="400" />
+  <kbd>
+    <img src=https://github.com/teloxide/teloxide/raw/beatify_screenshots/media/SIMPLE_COMMANDS_BOT.png width="500"/>
+  </kbd>
+  <br/><br/>
 </div>
 
 
@@ -274,7 +279,10 @@ TELOXIDE_TOKEN=<Your token here> cargo run
 </details>
 
 <div align="center">
-  <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="400" />
+  <kbd>
+    <img src=https://github.com/teloxide/teloxide/raw/beatify_screenshots/media/GUESS_A_NUMBER_BOT.png width="600" />
+  </kbd>
+  <br/><br/>
 </div>
 
 Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it will lead is to lots of unpleasure `.unwrap()`s.
