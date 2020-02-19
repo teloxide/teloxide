@@ -289,15 +289,7 @@ Remember that a classical [finite automaton](https://en.wikipedia.org/wiki/Finit
 
 See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
 
-## More examples!
-| Bot | Description |
-|:---:|:-----------:|
-| [ping_pong_bot](https://github.com/teloxide/teloxide/tree/master/examples/ping_pong_bot) | Answers "pong" to each incoming message. |
-| [simple_commands_bot](https://github.com/teloxide/teloxide/tree/master/examples/simple_commands_bot) | Shows how to deal with bot's commands. |
-| [guess_a_number_bot](https://github.com/teloxide/teloxide/tree/master/examples/guess_a_number_bot) | The "guess a number" game. |
-| [dialogue_bot](https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot) | Drive a dialogue with a user using a type-safe finite automaton. |
-| [admin_bot](https://github.com/teloxide/teloxide/tree/master/examples/admin_bot) | A bot, which can ban, kick, and mute on a command. |
-
+## [More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
 
 ## Recommendations
  - Use this pattern:
