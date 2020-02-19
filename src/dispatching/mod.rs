@@ -40,22 +40,22 @@
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
-//! #[tokio::main]
-//! async fn main() {
-//!     teloxide::enable_logging!();
-//!     log::info!("Starting ping_pong_bot!");
+//! # #[tokio::main]
+//! # async fn main_() {
+//! teloxide::enable_logging!();
+//! log::info!("Starting ping_pong_bot!");
 //!
-//!     let bot = Bot::from_env();
+//! let bot = Bot::from_env();
 //!
-//!     Dispatcher::new(bot)
-//!         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-//!             rx.for_each(|message| async move {
-//!                 message.answer("pong").send().await.log_on_error().await;
-//!             })
+//! Dispatcher::new(bot)
+//!     .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+//!         rx.for_each(|message| async move {
+//!             message.answer("pong").send().await.log_on_error().await;
 //!         })
-//!         .dispatch()
-//!         .await;
-//! }
+//!     })
+//!     .dispatch()
+//!     .await;
+//! # }
 //! ```
 //!
 //! <div align="center">
