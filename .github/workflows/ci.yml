@@ -13,6 +13,8 @@ jobs:
           - nightly
       
     steps:
+      - env:
+          RUST_BACKTRACE: 1
       - uses: actions/checkout@v1
 
       - uses: actions-rs/toolchain@v1
@@ -68,5 +70,5 @@ jobs:
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'nightly'
         with:
-          command: RUST_BACKTRACE=1 clippy
+          command: clippy
           args: --all-targets --all-features -- -D warnings
