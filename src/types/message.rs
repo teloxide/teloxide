@@ -113,6 +113,7 @@ pub enum MessageKind {
         /// Specified message was pinned. Note that the Message object in this
         /// field will not contain further `reply_to_message` fields even if it
         /// is itself a reply.
+        #[serde(rename = "pinned_message")]
         pinned: Box<Message>,
     },
     Invoice {
