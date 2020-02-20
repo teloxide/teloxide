@@ -13,8 +13,6 @@ jobs:
           - nightly
       
     steps:
-      - env:
-          RUST_BACKTRACE: 1
       - uses: actions/checkout@v1
 
       - uses: actions-rs/toolchain@v1
@@ -23,6 +21,9 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
           components: rustfmt, clippy
+        
+        env:
+          RUST_BACKTRACE: 1
 
       - name: stable/beta build 
         uses: actions-rs/cargo@v1
