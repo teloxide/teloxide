@@ -92,7 +92,7 @@ pub use teloxide_macros::BotCommand;
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse(s: &str) -> Option<(Self, Vec<&str>)>;
+    fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)>;
 }
 
 /// Parses a string into a command with args.
@@ -170,7 +170,7 @@ mod tests {
 
         let data = "/start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = DefaultCommands::parse(data);
+        let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -186,7 +186,7 @@ mod tests {
 
         let data = "!start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = DefaultCommands::parse(data);
+        let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -202,7 +202,7 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("!start").unwrap().0
+            DefaultCommands::parse("!start", "").unwrap().0
         );
         assert_eq!(
             DefaultCommands::descriptions(),

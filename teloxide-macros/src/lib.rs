@@ -107,10 +107,16 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             fn descriptions() -> String {
                 std::concat!(#global_description #(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
             }
-            fn parse(s: &str) -> Option<(Self, Vec<&str>)> {
+            fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)> {
                 let mut words = s.split_whitespace();
-                let word_command = words.next()?.split('@').next()?;
-                let command = Self::try_from(word_command)?;
+                let splited = words.next()?.split('@');
+                let command_raw = splited.next()?;
+                let bot = splited.next();
+                match bot {
+                    Some(name) if name == bot_name || None => {}
+                    _ => return None,
+                }
+                let command = Self::try_from(command_raw)?;
                 Some((command, words.collect()))
             }
         }

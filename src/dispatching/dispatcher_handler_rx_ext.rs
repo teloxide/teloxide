@@ -18,6 +18,7 @@ pub trait DispatcherHandlerRxExt {
     /// arbitrary messages.
     fn commands<C>(
         self,
+        bot_name: &'static str,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
@@ -41,13 +42,14 @@ where
 
     fn commands<C>(
         self,
+        bot_name: &'static str,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
     {
         Box::pin(self.text_messages().filter_map(|(cx, text)| async move {
-            C::parse(&text).map(|(command, args)| {
+            C::parse(&text, bot_name).map(|(command, args)| {
                 (
                     cx,
                     command,
