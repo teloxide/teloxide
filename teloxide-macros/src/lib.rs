@@ -109,11 +109,12 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             }
             fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)> {
                 let mut words = s.split_whitespace();
-                let splited = words.next()?.split('@');
+                let mut splited = words.next()?.split('@');
                 let command_raw = splited.next()?;
                 let bot = splited.next();
                 match bot {
-                    Some(name) if name == bot_name || None => {}
+                    Some(name) if name == bot_name => {}
+                    None => {}
                     _ => return None,
                 }
                 let command = Self::try_from(command_raw)?;

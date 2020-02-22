@@ -32,7 +32,7 @@ async fn answer(
 
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     // Only iterate through commands in a proper format:
-    rx.commands::<Command>()
+    rx.commands::<Command>(panic!("Insert here bot username"))
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;

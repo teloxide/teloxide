@@ -15,7 +15,7 @@
 //!     Ban,
 //! }
 //!
-//! let (command, args) = AdminCommand::parse("/ban 3 hours").unwrap();
+//! let (command, args) = AdminCommand::parse("/ban 3 hours", "bot_name").unwrap();
 //! assert_eq!(command, AdminCommand::Ban);
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -61,7 +61,7 @@ pub use teloxide_macros::BotCommand;
 ///     Ban,
 /// }
 ///
-/// let (command, args) = AdminCommand::parse("/ban 5 h").unwrap();
+/// let (command, args) = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
 /// assert_eq!(command, AdminCommand::Ban);
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
@@ -209,7 +209,7 @@ mod tests {
         );
         assert_eq!(
             DefaultCommands::descriptions(),
-            "!start - desc\n/help - \n"
+            "!start - desc\n/help\n"
         );
     }
 
@@ -237,7 +237,7 @@ mod tests {
         );
         assert_eq!(
             DefaultCommands::descriptions(),
-            "Bot commands\n/start - \n!help - \n"
+            "Bot commands\n/start\n!help\n"
         );
     }
 

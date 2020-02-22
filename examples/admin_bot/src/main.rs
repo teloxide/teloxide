@@ -179,7 +179,7 @@ async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     // Only iterate through messages from groups:
     rx.filter(|cx| future::ready(cx.update.chat.is_group()))
         // Only iterate through commands in a proper format:
-        .commands::<Command>()
+        .commands::<Command>(panic!("Insert here bot username"))
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, args)| async move {
             action(cx, command, &args).await.log_on_error().await;
