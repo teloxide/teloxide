@@ -82,9 +82,12 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         .zip(variant_name)
         .map(|(prefix, command)| prefix.to_string() + command.as_str());
     let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos
-        .iter()
-        .map(|info| info.description.as_deref().map(|e| format!(" - {}", e)).unwrap_or(String::new()));
+    let variant_description = variant_infos.iter().map(|info| {
+        info.description
+            .as_deref()
+            .map(|e| format!(" - {}", e))
+            .unwrap_or(String::new())
+    });
 
     let ident = &input.ident;
 

@@ -15,7 +15,8 @@
 //!     Ban,
 //! }
 //!
-//! let (command, args) = AdminCommand::parse("/ban 3 hours", "bot_name").unwrap();
+//! let (command, args) =
+//!     AdminCommand::parse("/ban 3 hours", "bot_name").unwrap();
 //! assert_eq!(command, AdminCommand::Ban);
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -207,10 +208,7 @@ mod tests {
             DefaultCommands::Start,
             DefaultCommands::parse("!start", "").unwrap().0
         );
-        assert_eq!(
-            DefaultCommands::descriptions(),
-            "!start - desc\n/help\n"
-        );
+        assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
     }
 
     #[test]
