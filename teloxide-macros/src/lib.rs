@@ -84,7 +84,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let variant_str2 = variant_str1.clone();
     let variant_description = variant_infos
         .iter()
-        .map(|info| info.description.as_deref().unwrap_or(""));
+        .map(|info| info.description.as_deref().map(|e| format!(" - {}", e)).unwrap_or(String::new()));
 
     let ident = &input.ident;
 
@@ -105,7 +105,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                 }
             }
             fn descriptions() -> String {
-                std::concat!(#global_description #(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
+                std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
             }
             fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)> {
                 let mut words = s.split_whitespace();
