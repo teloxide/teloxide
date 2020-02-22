@@ -92,7 +92,10 @@ pub use teloxide_macros::BotCommand;
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)>;
+    fn parse<'a, 'b>(
+        s: &'a str,
+        bot_name: &'b str,
+    ) -> Option<(Self, Vec<&'a str>)>;
 }
 
 /// Parses a string into a command with args.
@@ -226,21 +229,21 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("/start").unwrap().0
+            DefaultCommands::parse("/start", "MyNameBot").unwrap().0
         );
         assert_eq!(
             DefaultCommands::Help,
-            DefaultCommands::parse("!help").unwrap().0
+            DefaultCommands::parse("!help", "MyNameBot").unwrap().0
         );
         assert_eq!(
             DefaultCommands::descriptions(),
             "Bot commands\n/start - \n!help - \n"
         );
     }
-    
+
     #[test]
-    fn parse_command_with_botname() {
-        #[command(rename = "lowercase", )]
+    fn parse_command_with_bot_name() {
+        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
@@ -250,7 +253,7 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("/start@botname").unwrap().0
+            DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap().0
         );
     }
 }

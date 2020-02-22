@@ -48,16 +48,18 @@ where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
     {
-        Box::pin(self.text_messages().filter_map(|(cx, text)| async move {
-            C::parse(&text, bot_name).map(|(command, args)| {
-                (
-                    cx,
-                    command,
-                    args.into_iter()
-                        .map(ToOwned::to_owned)
-                        .collect::<Vec<String>>(),
-                )
-            })
-        }))
+        Box::pin(self.text_messages().filter_map(
+            move |(cx, text)| async move {
+                C::parse(&text, bot_name).map(|(command, args)| {
+                    (
+                        cx,
+                        command,
+                        args.into_iter()
+                            .map(ToOwned::to_owned)
+                            .collect::<Vec<String>>(),
+                    )
+                })
+            },
+        ))
     }
 }
