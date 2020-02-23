@@ -110,11 +110,15 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             fn descriptions() -> String {
                 std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
             }
-            fn parse<'a, 'b>(s: &'a str, bot_name: &'b str) -> Option<(Self, Vec<&'a str>)> {
+            fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+             where
+                N: Into<String>
+             {
                 let mut words = s.split_whitespace();
                 let mut splited = words.next()?.split('@');
                 let command_raw = splited.next()?;
                 let bot = splited.next();
+                let bot_name = bot_name.into();
                 match bot {
                     Some(name) if name == bot_name => {}
                     None => {}
