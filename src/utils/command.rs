@@ -40,11 +40,11 @@
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
-//! If the name of bot does not match, will return None
+//! If the name of a bot does not match, it will return `None`:
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
-//! let result = parse_command("/ban@botname1 3 hours", "botname2");
+//! let result = parse_command("/ban@MyNameBot1 3 hours", "MyNameBot2");
 //! assert!(result.is_none());
 //! ```
 //!
@@ -121,14 +121,14 @@ pub trait BotCommand: Sized {
 /// ```
 pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
 where
-    N: Into<String>,
+    N: AsRef<str>,
 {
     let mut words = text.split_whitespace();
     let mut splited = words.next()?.split('@');
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name.into() => {}
+        Some(name) if name == bot_name.as_ref() => {}
         None => {}
         _ => return None,
     }
@@ -154,7 +154,7 @@ pub fn parse_command_with_prefix<'a, N>(
     bot_name: N,
 ) -> Option<(&'a str, Vec<&'a str>)>
 where
-    N: Into<String>,
+    N: AsRef<str>,
 {
     if !text.starts_with(prefix) {
         return None;
@@ -164,7 +164,7 @@ where
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name.into() => {}
+        Some(name) if name == bot_name.as_ref() => {}
         None => {}
         _ => return None,
     }
