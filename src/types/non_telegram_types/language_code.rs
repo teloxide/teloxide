@@ -187,4 +187,7 @@ pub enum LanguageCode {
     ZA,
     ZH,
     ZU,
+
+    #[serde(other)]
+    Other,
 }
