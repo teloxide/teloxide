@@ -16,7 +16,7 @@
 //! }
 //!
 //! let (command, args) =
-//!     AdminCommand::parse("/ban 3 hours", "bot_name").unwrap();
+//!     AdminCommand::parse("/ban 3 hours", "MyBotName").unwrap();
 //! assert_eq!(command, AdminCommand::Ban);
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -25,8 +25,9 @@
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
-//! let (command, args) = parse_command("/ban 3 hours", "").unwrap();
-//! assert_eq!(command, "/ban");
+//! let (command, args) =
+//!     parse_command("/ban@MyBotName 3 hours", "MyBotName").unwrap();
+//! assert_eq!(command, "/ban@MyBotName");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
