@@ -71,7 +71,7 @@ mod tests {
             assert_eq!(expected, kind);
         }
         else {
-            panic!("Этой херни здесь не должно быть");
+            panic!("Expected ApiErrorKind::TerminatedByOtherGetUpdates");
         }
     }
 }

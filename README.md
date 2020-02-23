@@ -51,7 +51,7 @@
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
-$ set TELOXITE_TOKEN=<Your token here>
+$ set TELOXIDE_TOKEN=<Your token here>
 ```
  3. Be sure that you are up to date:
 ```bash
@@ -280,13 +280,13 @@ The second one produces very strange compiler messages because of the `#[tokio::
 
 ## FAQ
 ### Where I can ask questions?
-[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need a quick help, feel free to ask in our official group: https://t.me/teloxide.
+[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in our official group: https://t.me/teloxide.
 
 ### Why Rust?
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
 ## Community bots
-Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide (coming soon...).
+Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).

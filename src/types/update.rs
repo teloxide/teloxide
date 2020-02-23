@@ -205,4 +205,46 @@ mod test {
 
         assert!(serde_json::from_str::<Update>(text).is_ok());
     }
+
+    #[test]
+    fn pinned_message_works() {
+        let json = r#"{
+    "message": {
+        "chat": {
+            "id": -1001276785818,
+            "title": "teloxide dev",
+            "type": "supergroup",
+            "username": "teloxide_dev"
+        },
+        "date": 1582134655,
+        "from": {
+            "first_name": "Hirrolot",
+            "id": 408258968,
+            "is_bot": false,
+            "username": "hirrolot"
+        },
+        "message_id": 20225,
+        "pinned_message": {
+            "chat": {
+                "id": -1001276785818,
+                "title": "teloxide dev",
+                "type": "supergroup",
+                "username": "teloxide_dev"
+            },
+            "date": 1582134643,
+            "from": {
+                "first_name": "Hirrolot",
+                "id": 408258968,
+                "is_bot": false,
+                "username": "hirrolot"
+            },
+            "message_id": 20224,
+            "text": "Faster than a bullet"
+        }
+    },
+    "update_id": 845402291
+}"#;
+
+        serde_json::from_str::<Update>(json).unwrap();
+    }
 }
