@@ -108,7 +108,7 @@
 //!
 //! async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
 //!    // Only iterate through commands in a proper format:
-//!     rx.commands::<Command>("bot_name")
+//!     rx.commands::<Command, _>("bot_name")
 //!         // Execute all incoming commands concurrently:
 //!         .for_each_concurrent(None, |(cx, command, _)| async move {
 //!             answer(cx, command).await.log_on_error().await;
