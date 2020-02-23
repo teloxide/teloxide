@@ -82,9 +82,12 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         .zip(variant_name)
         .map(|(prefix, command)| prefix.to_string() + command.as_str());
     let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos
-        .iter()
-        .map(|info| info.description.as_deref().unwrap_or(""));
+    let variant_description = variant_infos.iter().map(|info| {
+        info.description
+            .as_deref()
+            .map(|e| format!(" - {}", e))
+            .unwrap_or(String::new())
+    });
 
     let ident = &input.ident;
 
@@ -105,11 +108,23 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
                 }
             }
             fn descriptions() -> String {
-                std::concat!(#global_description #(#variant_str2, " - ", #variant_description, '\n'),*).to_string()
+                std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
             }
-            fn parse(s: &str) -> Option<(Self, Vec<&str>)> {
+            fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+             where
+                N: Into<String>
+             {
                 let mut words = s.split_whitespace();
-                let command = Self::try_from(words.next()?)?;
+                let mut splited = words.next()?.split('@');
+                let command_raw = splited.next()?;
+                let bot = splited.next();
+                let bot_name = bot_name.into();
+                match bot {
+                    Some(name) if name == bot_name => {}
+                    None => {}
+                    _ => return None,
+                }
+                let command = Self::try_from(command_raw)?;
                 Some((command, words.collect()))
             }
         }

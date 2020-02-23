@@ -72,6 +72,7 @@
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
 //! ```no_run
 //! // Imports are omitted...
+//! # #[allow(unreachable_code)]
 //! # use teloxide::{prelude::*, utils::command::BotCommand};
 //! # use rand::{thread_rng, Rng};
 //!
@@ -108,7 +109,7 @@
 //!
 //! async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
 //!    // Only iterate through commands in a proper format:
-//!     rx.commands::<Command>()
+//!     rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
 //!         // Execute all incoming commands concurrently:
 //!         .for_each_concurrent(None, |(cx, command, _)| async move {
 //!             answer(cx, command).await.log_on_error().await;
