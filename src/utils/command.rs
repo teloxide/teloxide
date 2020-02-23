@@ -101,7 +101,9 @@ pub use teloxide_macros::BotCommand;
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse<'a>(s: &'a str, bot_name: &str) -> Option<(Self, Vec<&'a str>)>;
+    fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+    where
+        N: Into<String>;
 }
 
 /// Parses a string into a command with args.
@@ -117,16 +119,16 @@ pub trait BotCommand: Sized {
 /// assert_eq!(command, "/mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
-pub fn parse_command<'a>(
-    text: &'a str,
-    bot_name: &str,
-) -> Option<(&'a str, Vec<&'a str>)> {
+pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
+where
+    N: Into<String>,
+{
     let mut words = text.split_whitespace();
     let mut splited = words.next()?.split('@');
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name => {}
+        Some(name) if name == bot_name.into() => {}
         None => {}
         _ => return None,
     }
@@ -146,11 +148,14 @@ pub fn parse_command<'a>(
 /// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
-pub fn parse_command_with_prefix<'a>(
+pub fn parse_command_with_prefix<'a, N>(
     prefix: &str,
     text: &'a str,
-    bot_name: &str,
-) -> Option<(&'a str, Vec<&'a str>)> {
+    bot_name: N,
+) -> Option<(&'a str, Vec<&'a str>)>
+where
+    N: Into<String>,
+{
     if !text.starts_with(prefix) {
         return None;
     }
@@ -159,7 +164,7 @@ pub fn parse_command_with_prefix<'a>(
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name => {}
+        Some(name) if name == bot_name.into() => {}
         None => {}
         _ => return None,
     }
