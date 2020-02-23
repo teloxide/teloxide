@@ -25,7 +25,7 @@
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
-//! let (command, args) = parse_command("/ban 3 hours").unwrap();
+//! let (command, args) = parse_command("/ban 3 hours", "").unwrap();
 //! assert_eq!(command, "/ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -35,9 +35,17 @@
 //! use teloxide::utils::command::parse_command_with_prefix;
 //!
 //! let text = "!ban 3 hours";
-//! let (command, args) = parse_command_with_prefix("!", text).unwrap();
+//! let (command, args) = parse_command_with_prefix("!", text, "").unwrap();
 //! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
+//! ```
+//!
+//! If the name of bot does not match, will return None
+//! ```
+//! use teloxide::utils::command::parse_command;
+//!
+//! let result = parse_command("/ban@botname1 3 hours", "botname2");
+//! assert!(result.is_none());
 //! ```
 //!
 //! See [examples/admin_bot] as a more complicated examples.
@@ -93,10 +101,7 @@ pub use teloxide_macros::BotCommand;
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse<'a, 'b>(
-        s: &'a str,
-        bot_name: &'b str,
-    ) -> Option<(Self, Vec<&'a str>)>;
+    fn parse<'a>(s: &'a str, bot_name: &str) -> Option<(Self, Vec<&'a str>)>;
 }
 
 /// Parses a string into a command with args.
@@ -107,14 +112,24 @@ pub trait BotCommand: Sized {
 /// ```
 /// use teloxide::utils::command::parse_command;
 ///
-/// let text = "/mute 5 hours";
-/// let (command, args) = parse_command(text).unwrap();
+/// let text = "/mute@my_admin_bot 5 hours";
+/// let (command, args) = parse_command(text, "my_admin_bot").unwrap();
 /// assert_eq!(command, "/mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
-pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
+pub fn parse_command<'a>(
+    text: &'a str,
+    bot_name: &str,
+) -> Option<(&'a str, Vec<&'a str>)> {
     let mut words = text.split_whitespace();
-    let command = words.next()?;
+    let mut splited = words.next()?.split('@');
+    let command = splited.next()?;
+    let bot = splited.next();
+    match bot {
+        Some(name) if name == bot_name => {}
+        None => {}
+        _ => return None,
+    }
     Some((command, words.collect()))
 }
 
@@ -127,19 +142,27 @@ pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
 /// use teloxide::utils::command::parse_command_with_prefix;
 ///
 /// let text = "!mute 5 hours";
-/// let (command, args) = parse_command_with_prefix("!", text).unwrap();
+/// let (command, args) = parse_command_with_prefix("!", text, "").unwrap();
 /// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 pub fn parse_command_with_prefix<'a>(
     prefix: &str,
     text: &'a str,
+    bot_name: &str,
 ) -> Option<(&'a str, Vec<&'a str>)> {
     if !text.starts_with(prefix) {
         return None;
     }
     let mut words = text.split_whitespace();
-    let command = &words.next()?[prefix.len()..];
+    let mut splited = words.next()?[prefix.len()..].split('@');
+    let command = splited.next()?;
+    let bot = splited.next();
+    match bot {
+        Some(name) if name == bot_name => {}
+        None => {}
+        _ => return None,
+    }
     Some((command, words.collect()))
 }
 
@@ -151,7 +174,7 @@ mod tests {
     fn parse_command_with_args_() {
         let data = "/command arg1 arg2";
         let expected = Some(("/command", vec!["arg1", "arg2"]));
-        let actual = parse_command(data);
+        let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -159,7 +182,7 @@ mod tests {
     fn parse_command_with_args_without_args() {
         let data = "/command";
         let expected = Some(("/command", vec![]));
-        let actual = parse_command(data);
+        let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
 
