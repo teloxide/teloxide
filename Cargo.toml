@@ -1,0 +1,16 @@
+[package]
+name = "teloxide-macros"
+version = "0.1.2"
+description = "The teloxide's macros for internal usage"
+authors = ["p0lunin <dmytro.polunin@gmail.com>"]
+license = "MIT"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quote = "1.0.2"
+syn = "1.0.13"
+
+[lib]
+proc-macro = true
