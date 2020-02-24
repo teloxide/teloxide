@@ -20,20 +20,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     pub fn from_env() -> Arc<Self> {
-        match std::env::var("TELOXIDE_PROXY").ok() {
-            Some(proxy) => Self::from_env_with_client(
-                Client::builder()
-                    .proxy(
-                        reqwest::Proxy::all(
-                            &proxy,
-                        )
-                        .expect("creating reqwest::Proxy"),
-                    )
-                    .build()
-                    .expect("creating reqwest::Client"),
-            ),
-            None => Self::from_env_with_client(Client::new()),
-        }
+        Self::from_env_with_client(Client::new())
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
