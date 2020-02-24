@@ -85,7 +85,7 @@ mod tests {
             first_name: "firstName".to_string(),
             last_name: Some("lastName".to_string()),
             username: Some("Username".to_string()),
-            language_code: Some(LanguageCode::RU),
+            language_code: Some(String::from("ru")),
         };
         let actual = serde_json::from_str::<User>(&json).unwrap();
         assert_eq!(actual, expected)
