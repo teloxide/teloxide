@@ -19,7 +19,13 @@
 //!
 //!  3. Be sure that you are up to date:
 //! ```bash
+//! # If you're using stable
 //! $ rustup update stable
+//! $ rustup override set stable
+//!
+//! # If you're using nightly
+//! $ rustup update nightly
+//! $ rustup override set nightly
 //! ```
 //!
 //!  4. Execute `cargo new my_bot`, enter the directory and put these lines into
