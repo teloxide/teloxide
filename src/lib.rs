@@ -85,7 +85,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         info.description
             .as_deref()
             .map(|e| format!(" - {}", e))
-            .unwrap_or(String::new())
+            .unwrap_or_default()
     });
 
     let ident = &input.ident;
