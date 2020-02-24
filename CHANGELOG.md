@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
  - The description in `Cargo.toml` was changed to from "The teloxide's macros for internal usage" to "The teloxide's procedural macros".
- - Added the functionality to parse commands only with a correct bot's name.
 
 ### Added
  - This `CHANGELOG.md`.
  - `.gitignore`.
+ - The functionality to parse commands only with a correct bot's name (breaks backwards compatibility).
 
 
 ## [0.1.2] - [YANKED]
