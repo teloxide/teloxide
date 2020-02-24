@@ -37,8 +37,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         Err(e) => return compile_error(e),
     };
 
-    let variants: Vec<&syn::Variant> =
-        data_enum.variants.iter().map(|attr| attr).collect();
+    let variants: Vec<&syn::Variant> = data_enum.variants.iter().map(|attr| attr).collect();
 
     let mut variant_infos = vec![];
     for variant in variants.iter() {
@@ -141,9 +140,7 @@ fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
     }
 }
 
-fn parse_attributes(
-    input: &[syn::Attribute],
-) -> Result<Vec<Attr>, TokenStream> {
+fn parse_attributes(input: &[syn::Attribute]) -> Result<Vec<Attr>, TokenStream> {
     let mut enum_attrs = Vec::new();
     for attr in input.iter() {
         match attr.parse_args::<VecAttrs>() {

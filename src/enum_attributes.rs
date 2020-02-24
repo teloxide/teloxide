@@ -19,7 +19,11 @@ impl CommandEnum {
                 _ => return Err("disallowed value".to_owned()),
             }
         }
-        Ok(Self { prefix, description, rename_rule: rename })
+        Ok(Self {
+            prefix,
+            description,
+            rename_rule: rename,
+        })
     }
 }
 
@@ -37,14 +41,16 @@ fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
     for attr in attrs {
         match attr.name() {
             BotCommandAttribute::Prefix => prefix = Some(attr.value()),
-            BotCommandAttribute::Description => {
-                description = Some(attr.value())
-            }
+            BotCommandAttribute::Description => description = Some(attr.value()),
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
             #[allow(unreachable_patterns)]
             _ => return Err("unexpected attribute".to_owned()),
         }
     }
 
-    Ok(CommandAttrs { prefix, description, rename: rename_rule })
+    Ok(CommandAttrs {
+        prefix,
+        description,
+        rename: rename_rule,
+    })
 }
