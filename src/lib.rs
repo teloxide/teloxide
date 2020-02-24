@@ -61,33 +61,17 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
 
     let fn_try_from = impl_try_parse_command(&variants, &variant_infos, &command_enum);
     let fn_descriptions = impl_descriptions(&variant_infos, &command_enum);
+    let fn_parse = impl_parse();
 
-    let expanded = quote! {
+    let trait_impl = quote! {
         impl BotCommand for #ident {
             #fn_try_from
             #fn_descriptions
-            fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
-             where
-                N: Into<String>
-             {
-                let mut words = s.split_whitespace();
-                let mut splited = words.next()?.split('@');
-                let command_raw = splited.next()?;
-                let bot = splited.next();
-                let bot_name = bot_name.into();
-                match bot {
-                    Some(name) if name == bot_name => {}
-                    None => {}
-                    _ => return None,
-                }
-                let command = Self::try_from(command_raw)?;
-                Some((command, words.collect()))
-            }
+            #fn_parse
         }
     };
-    //for debug
-    //println!("{}", &expanded.to_string());
-    TokenStream::from(expanded)
+
+    TokenStream::from(trait_impl)
 }
 
 fn impl_try_parse_command(variants: &[&Variant], infos: &[Command], global: &CommandEnum) -> impl ToTokens {
@@ -123,6 +107,28 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> impl ToTokens {
     quote! {
         fn descriptions() -> &'static str {
             std::concat!(#global_description #(#command, #description, '\n'),*)
+        }
+    }
+}
+
+fn impl_parse() -> impl ToTokens {
+    quote! {
+         fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+         where
+            N: Into<String>
+         {
+            let mut words = s.split_whitespace();
+            let mut splited = words.next()?.split('@');
+            let command_raw = splited.next()?;
+            let bot = splited.next();
+            let bot_name = bot_name.into();
+            match bot {
+                Some(name) if name == bot_name => {}
+                None => {}
+                _ => return None,
+            }
+            let command = Self::try_from(command_raw)?;
+            Some((command, words.collect()))
         }
     }
 }
