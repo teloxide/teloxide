@@ -109,7 +109,7 @@ pub trait BotCommand: Sized {
 
 /// Parses a string into a command with args.
 ///
-/// It calls [`parse_command_with_prefix`] with default prefix `/`.
+/// It calls [`parse_command_with_prefix`] with the default prefix `/`.
 ///
 /// ## Example
 /// ```
@@ -120,6 +120,8 @@ pub trait BotCommand: Sized {
 /// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
+///
+/// [`parse_command_with_prefix`]: crate::utils::command::parse_command_with_prefix
 pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
 where
     N: AsRef<str>,
@@ -129,7 +131,7 @@ where
 
 /// Parses a string into a command with args (custom prefix).
 ///
-/// `prefix`: start symbols which denote start of a command.
+/// `prefix`: symbols, which denote start of a command.
 ///
 /// Example:
 /// ```
