@@ -25,6 +25,7 @@ pub struct Poll {
     pub is_anonymous: bool,
 
     /// Poll type, currently can be “regular” or “quiz”
+    #[serde(rename = "type")]
     pub poll_type: PollType,
 
     /// True, if the poll allows multiple answers
@@ -46,4 +47,47 @@ pub struct PollOption {
 
     /// Number of users that voted for this option.
     pub voter_count: i32,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "allows_multiple_answers": false,
+            "id": "5377643193141559299",
+            "is_anonymous": true,
+            "is_closed": false,
+            "options": [
+                {
+                    "text": "1",
+                    "voter_count": 1
+                },
+                {
+                    "text": "2",
+                    "voter_count": 0
+                },
+                {
+                    "text": "3",
+                    "voter_count": 0
+                },
+                {
+                    "text": "4",
+                    "voter_count": 0
+                },
+                {
+                    "text": "5",
+                    "voter_count": 0
+                }
+            ],
+            "question": "Rate me from 1 to 5.",
+            "total_voter_count": 1,
+            "type": "regular"
+        }
+        "#;
+        serde_json::from_str::<Poll>(data).unwrap();
+    }
 }
