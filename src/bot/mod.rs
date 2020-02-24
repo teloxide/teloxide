@@ -25,7 +25,7 @@ impl Bot {
                 Client::builder()
                     .proxy(
                         reqwest::Proxy::all(
-                            &proxy.to_string_lossy().to_string(),
+                            &*proxy.to_string_lossy(),
                         )
                         .expect("creating reqwest::Proxy"),
                     )
@@ -45,10 +45,9 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     pub fn from_env_with_client(client: Client) -> Arc<Self> {
         Self::with_client(
-            &std::env::var_os("TELOXIDE_TOKEN")
+            &*std::env::var_os("TELOXIDE_TOKEN")
                 .expect("Cannot get the TELOXIDE_TOKEN env variable")
-                .to_string_lossy()
-                .to_string(),
+                .to_string_lossy(),
             client,
         )
     }
