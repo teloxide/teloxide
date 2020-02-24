@@ -9,7 +9,6 @@ use crate::{
     attr::{Attr, VecAttrs},
     command::Command,
     enum_attributes::CommandEnum,
-    rename_rules::rename_by_rule,
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
@@ -58,51 +57,15 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         }
     }
 
-    let variant_name = variant_infos.iter().map(|info| {
-        if info.renamed {
-            info.name.clone()
-        } else if let Some(rename_rule) = &command_enum.rename_rule {
-            rename_by_rule(&info.name, rename_rule)
-        } else {
-            info.name.clone()
-        }
-    });
-    let variant_prefixes = variant_infos.iter().map(|info| {
-        if let Some(prefix) = &info.prefix {
-            prefix
-        } else if let Some(prefix) = &command_enum.prefix {
-            prefix
-        } else {
-            "/"
-        }
-    });
-    let variant_str1 = variant_prefixes
-        .zip(variant_name)
-        .map(|(prefix, command)| prefix.to_string() + command.as_str());
-    let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos.iter().map(|info| {
-        info.description
-            .as_deref()
-            .map(|e| format!(" - {}", e))
-            .unwrap_or_default()
-    });
-
     let ident = &input.ident;
 
-    let global_description = if let Some(s) = &command_enum.description {
-        quote! { #s, "\n", }
-    } else {
-        quote! {}
-    };
-
     let fn_try_from = impl_try_parse_command(&variants, &variant_infos, &command_enum);
+    let fn_descriptions = impl_descriptions(&variant_infos, &command_enum);
 
     let expanded = quote! {
         impl BotCommand for #ident {
             #fn_try_from
-            fn descriptions() -> String {
-                std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
-            }
+            #fn_descriptions
             fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
              where
                 N: Into<String>
@@ -139,6 +102,27 @@ fn impl_try_parse_command(variants: &[&Variant], infos: &[Command], global: &Com
                 )*
                 _ => None
             }
+        }
+    }
+}
+
+fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> impl ToTokens {
+    let global_description = if let Some(s) = &global.description {
+        quote! { #s, "\n", }
+    } else {
+        quote! {}
+    };
+    let command = infos.iter().map(|c| c.get_matched_value(global));
+    let description = infos.iter().map(|info| {
+        info.description
+            .as_deref()
+            .map(|e| format!(" - {}", e))
+            .unwrap_or_default()
+    });
+
+    quote! {
+        fn descriptions() -> &'static str {
+            std::concat!(#global_description #(#command, #description, '\n'),*)
         }
     }
 }
