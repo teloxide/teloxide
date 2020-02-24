@@ -27,7 +27,7 @@
 //!
 //! let (command, args) =
 //!     parse_command("/ban@MyBotName 3 hours", "MyBotName").unwrap();
-//! assert_eq!(command, "/ban@MyBotName");
+//! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
@@ -117,23 +117,14 @@ pub trait BotCommand: Sized {
 ///
 /// let text = "/mute@my_admin_bot 5 hours";
 /// let (command, args) = parse_command(text, "my_admin_bot").unwrap();
-/// assert_eq!(command, "/mute");
+/// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
 where
     N: AsRef<str>,
 {
-    let mut words = text.split_whitespace();
-    let mut splited = words.next()?.split('@');
-    let command = splited.next()?;
-    let bot = splited.next();
-    match bot {
-        Some(name) if name == bot_name.as_ref() => {}
-        None => {}
-        _ => return None,
-    }
-    Some((command, words.collect()))
+    parse_command_with_prefix("/", text, bot_name)
 }
 
 /// Parses a string into a command with args (custom prefix).
@@ -179,7 +170,7 @@ mod tests {
     #[test]
     fn parse_command_with_args_() {
         let data = "/command arg1 arg2";
-        let expected = Some(("/command", vec!["arg1", "arg2"]));
+        let expected = Some(("command", vec!["arg1", "arg2"]));
         let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
@@ -187,7 +178,7 @@ mod tests {
     #[test]
     fn parse_command_with_args_without_args() {
         let data = "/command";
-        let expected = Some(("/command", vec![]));
+        let expected = Some(("command", vec![]));
         let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
