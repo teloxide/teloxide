@@ -121,7 +121,8 @@ pub trait BotCommand: Sized {
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
 ///
-/// [`parse_command_with_prefix`]: crate::utils::command::parse_command_with_prefix
+/// [`parse_command_with_prefix`]:
+/// crate::utils::command::parse_command_with_prefix
 pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
 where
     N: AsRef<str>,
