@@ -120,7 +120,7 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 ///
 /// See also: [`polling`](polling).
 pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {
-    polling(bot, Some(Duration::from_secs(1)), None, None)
+    polling(bot, Some(Duration::from_secs(60)), None, None)
 }
 
 /// Returns a long/short polling update listener with some additional options.
