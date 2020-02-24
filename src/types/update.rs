@@ -107,8 +107,8 @@ impl Update {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ForwardKind, LanguageCode, MediaKind, Message,
-        MessageKind, Update, UpdateKind, User,
+        Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Update,
+        UpdateKind, User,
     };
 
     // TODO: more tests for deserialization
@@ -158,7 +158,7 @@ mod test {
                         first_name: String::from("Waffle"),
                         last_name: None,
                         username: Some(String::from("WaffleLapkin")),
-                        language_code: Some(LanguageCode::EN),
+                        language_code: Some(String::from("en")),
                     }),
                     forward_kind: ForwardKind::Origin {
                         reply_to_message: None,

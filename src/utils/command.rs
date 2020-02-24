@@ -134,7 +134,7 @@ where
 ///
 /// `prefix`: symbols, which denote start of a command.
 ///
-/// Example:
+/// ## Example
 /// ```
 /// use teloxide::utils::command::parse_command_with_prefix;
 ///
