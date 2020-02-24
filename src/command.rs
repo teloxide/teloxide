@@ -2,6 +2,7 @@ use crate::{
     attr::{Attr, BotCommandAttribute},
     rename_rules::rename_by_rule,
 };
+use crate::enum_attributes::CommandEnum;
 
 pub struct Command {
     pub prefix: Option<String>,
@@ -29,6 +30,17 @@ impl Command {
             name: new_name,
             renamed,
         })
+    }
+
+    pub fn get_matched_value(&self, global_parameters: &CommandEnum) -> String {
+        let prefix = if let Some(prefix) = &self.prefix {
+            prefix
+        } else if let Some(prefix) = &global_parameters.prefix {
+            prefix
+        } else {
+            "/"
+        };
+        String::from(prefix) + &self.name
     }
 }
 

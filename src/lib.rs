@@ -13,7 +13,7 @@ use crate::{
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput};
+use syn::{parse_macro_input, DeriveInput, Variant};
 
 macro_rules! get_or_return {
     ($($some:tt)*) => {
@@ -58,7 +58,6 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         }
     }
 
-    let variant_ident = variants.iter().map(|variant| &variant.ident);
     let variant_name = variant_infos.iter().map(|info| {
         if info.renamed {
             info.name.clone()
@@ -96,16 +95,11 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         quote! {}
     };
 
+    let fn_try_from = impl_try_parse_command(&variants, &variant_infos, &command_enum);
+
     let expanded = quote! {
         impl BotCommand for #ident {
-            fn try_from(value: &str) -> Option<Self> {
-                match value {
-                    #(
-                        #variant_str1 => Some(Self::#variant_ident),
-                    )*
-                    _ => None
-                }
-            }
+            #fn_try_from
             fn descriptions() -> String {
                 std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
             }
@@ -131,6 +125,22 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     //for debug
     //println!("{}", &expanded.to_string());
     TokenStream::from(expanded)
+}
+
+fn impl_try_parse_command(variants: &[&Variant], infos: &[Command], global: &CommandEnum) -> impl ToTokens {
+    let matching_values = infos.iter().map(|c| c.get_matched_value(global));
+    let variant_ident = variants.iter().map(|variant| &variant.ident);
+
+    quote! {
+        fn try_from(value: &str) -> Option<Self> {
+            match value {
+                #(
+                    #matching_values => Some(Self::#variant_ident),
+                )*
+                _ => None
+            }
+        }
+    }
 }
 
 fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
