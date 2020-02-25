@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Fix parsing a pinned message (https://github.com/teloxide/teloxide/issues/167).
  - Replace `LanguageCode` with `String`, Because [the official Telegram documentation](https://core.telegram.org/bots/api#getchat) doesn't specify a concrete version of IETF language tag.
  - Problems with the `poll_type` field (https://github.com/teloxide/teloxide/issues/178).
+ - Make `polling_default` actually a long polling update listener (https://github.com/teloxide/teloxide/pull/182).
 
 ### Removed
  - [either](https://crates.io/crates/either) from the dependencies in `Cargo.toml`.
