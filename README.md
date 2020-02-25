@@ -3,13 +3,13 @@
   <h1>teloxide</h1>
   
   <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-v0.1.0-blue.svg">
+    <img src="https://img.shields.io/badge/docs.rs-v0.2.0-blue.svg">
   </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="https://crates.io/crates/teloxide">
-    <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v0.2.0-orange.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
