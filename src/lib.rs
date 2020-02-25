@@ -32,7 +32,7 @@
 //! your `Cargo.toml`:
 //! ```text
 //! [dependencies]
-//! teloxide = "0.1.0"
+//! teloxide = "0.2.0"
 //! log = "0.4.8"
 //! tokio = "0.2.11"
 //! pretty_env_logger = "0.4.0"
