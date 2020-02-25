@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2020-02-25
 ### Added
- - The functionality to parse commands only with a correct bot's name (breaks backwards compatibility).
+ - The functionality to parse commands only with a correct bot's name (breaks backwards compatibility) (https://github.com/teloxide/teloxide/issues/168).
  - This `CHANGELOG.md`.
 
 ### Fixed
