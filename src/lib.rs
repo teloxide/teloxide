@@ -138,9 +138,8 @@ fn impl_parse(
                    #(
                         #matching_values => Some(Self::#variant_ident #variants_initialization),
                    )*
-                   _ => return None,
+                   _ => None,
               }
-              Some((command, words.collect()))
          }
     }
 }
