@@ -134,7 +134,7 @@ fn impl_parse(
                   _ => return None,
               }
               let args: Vec<&str> = words.collect();
-              match command {
+              match command_raw {
                    #(
                         #matching_values => Some(Self::#variant_ident #variants_initialization),
                    )*
