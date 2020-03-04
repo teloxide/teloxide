@@ -47,6 +47,9 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             Fields::Unnamed(fields) => {
                 vec_impl_create.push(impl_parse_args_unnamed(fields));
             }
+            Fields::Unit => {
+                vec_impl_create.push( quote! {});
+            }
             _ => panic!("only unnamed fields"), // TODO: named fields
         }
     }
