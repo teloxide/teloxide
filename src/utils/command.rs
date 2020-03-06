@@ -15,7 +15,8 @@
 //!     Ban,
 //! }
 //!
-//! let (command, args) = AdminCommand::parse("/ban 3 hours").unwrap();
+//! let (command, args) =
+//!     AdminCommand::parse("/ban 3 hours", "MyBotName").unwrap();
 //! assert_eq!(command, AdminCommand::Ban);
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -24,8 +25,9 @@
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
-//! let (command, args) = parse_command("/ban 3 hours").unwrap();
-//! assert_eq!(command, "/ban");
+//! let (command, args) =
+//!     parse_command("/ban@MyBotName 3 hours", "MyBotName").unwrap();
+//! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
@@ -34,9 +36,17 @@
 //! use teloxide::utils::command::parse_command_with_prefix;
 //!
 //! let text = "!ban 3 hours";
-//! let (command, args) = parse_command_with_prefix("!", text).unwrap();
+//! let (command, args) = parse_command_with_prefix("!", text, "").unwrap();
 //! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
+//! ```
+//!
+//! If the name of a bot does not match, it will return `None`:
+//! ```
+//! use teloxide::utils::command::parse_command;
+//!
+//! let result = parse_command("/ban@MyNameBot1 3 hours", "MyNameBot2");
+//! assert!(result.is_none());
 //! ```
 //!
 //! See [examples/admin_bot] as a more complicated examples.
@@ -61,7 +71,7 @@ pub use teloxide_macros::BotCommand;
 ///     Ban,
 /// }
 ///
-/// let (command, args) = AdminCommand::parse("/ban 5 h").unwrap();
+/// let (command, args) = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
 /// assert_eq!(command, AdminCommand::Ban);
 /// assert_eq!(args, vec!["5", "h"]);
 /// ```
@@ -92,50 +102,67 @@ pub use teloxide_macros::BotCommand;
 pub trait BotCommand: Sized {
     fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse(s: &str) -> Option<(Self, Vec<&str>)>;
+    fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+    where
+        N: Into<String>;
 }
 
 /// Parses a string into a command with args.
 ///
-/// It calls [`parse_command_with_prefix`] with default prefix `/`.
+/// It calls [`parse_command_with_prefix`] with the default prefix `/`.
 ///
 /// ## Example
 /// ```
 /// use teloxide::utils::command::parse_command;
 ///
-/// let text = "/mute 5 hours";
-/// let (command, args) = parse_command(text).unwrap();
-/// assert_eq!(command, "/mute");
+/// let text = "/mute@my_admin_bot 5 hours";
+/// let (command, args) = parse_command(text, "my_admin_bot").unwrap();
+/// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
-pub fn parse_command(text: &str) -> Option<(&str, Vec<&str>)> {
-    let mut words = text.split_whitespace();
-    let command = words.next()?;
-    Some((command, words.collect()))
+///
+/// [`parse_command_with_prefix`]:
+/// crate::utils::command::parse_command_with_prefix
+pub fn parse_command<N>(text: &str, bot_name: N) -> Option<(&str, Vec<&str>)>
+where
+    N: AsRef<str>,
+{
+    parse_command_with_prefix("/", text, bot_name)
 }
 
 /// Parses a string into a command with args (custom prefix).
 ///
-/// `prefix`: start symbols which denote start of a command.
+/// `prefix`: symbols, which denote start of a command.
 ///
-/// Example:
+/// ## Example
 /// ```
 /// use teloxide::utils::command::parse_command_with_prefix;
 ///
 /// let text = "!mute 5 hours";
-/// let (command, args) = parse_command_with_prefix("!", text).unwrap();
+/// let (command, args) = parse_command_with_prefix("!", text, "").unwrap();
 /// assert_eq!(command, "mute");
 /// assert_eq!(args, vec!["5", "hours"]);
 /// ```
-pub fn parse_command_with_prefix<'a>(
+pub fn parse_command_with_prefix<'a, N>(
     prefix: &str,
     text: &'a str,
-) -> Option<(&'a str, Vec<&'a str>)> {
+    bot_name: N,
+) -> Option<(&'a str, Vec<&'a str>)>
+where
+    N: AsRef<str>,
+{
     if !text.starts_with(prefix) {
         return None;
     }
     let mut words = text.split_whitespace();
-    let command = &words.next()?[prefix.len()..];
+    let mut splited = words.next()?[prefix.len()..].split('@');
+    let command = splited.next()?;
+    let bot = splited.next();
+    match bot {
+        Some(name) if name == bot_name.as_ref() => {}
+        None => {}
+        _ => return None,
+    }
     Some((command, words.collect()))
 }
 
@@ -146,16 +173,16 @@ mod tests {
     #[test]
     fn parse_command_with_args_() {
         let data = "/command arg1 arg2";
-        let expected = Some(("/command", vec!["arg1", "arg2"]));
-        let actual = parse_command(data);
+        let expected = Some(("command", vec!["arg1", "arg2"]));
+        let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
 
     #[test]
     fn parse_command_with_args_without_args() {
         let data = "/command";
-        let expected = Some(("/command", vec![]));
-        let actual = parse_command(data);
+        let expected = Some(("command", vec![]));
+        let actual = parse_command(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -170,7 +197,7 @@ mod tests {
 
         let data = "/start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = DefaultCommands::parse(data);
+        let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -186,7 +213,7 @@ mod tests {
 
         let data = "!start arg1 arg2";
         let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
-        let actual = DefaultCommands::parse(data);
+        let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
 
@@ -202,12 +229,9 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("!start").unwrap().0
+            DefaultCommands::parse("!start", "").unwrap().0
         );
-        assert_eq!(
-            DefaultCommands::descriptions(),
-            "!start - desc\n/help - \n"
-        );
+        assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
     }
 
     #[test]
@@ -226,15 +250,31 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("/start").unwrap().0
+            DefaultCommands::parse("/start", "MyNameBot").unwrap().0
         );
         assert_eq!(
             DefaultCommands::Help,
-            DefaultCommands::parse("!help").unwrap().0
+            DefaultCommands::parse("!help", "MyNameBot").unwrap().0
         );
         assert_eq!(
             DefaultCommands::descriptions(),
-            "Bot commands\n/start - \n!help - \n"
+            "Bot commands\n/start\n!help\n"
+        );
+    }
+
+    #[test]
+    fn parse_command_with_bot_name() {
+        #[command(rename = "lowercase")]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            #[command(prefix = "/")]
+            Start,
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start,
+            DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap().0
         );
     }
 }

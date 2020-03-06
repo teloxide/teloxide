@@ -97,6 +97,7 @@ pub fn escape(s: &str) -> String {
         .replace(")", r"\)")
         .replace("~", r"\~")
         .replace("`", r"\`")
+        .replace(">", r"\>")
         .replace("#", r"\#")
         .replace("+", r"\+")
         .replace("-", r"\-")
@@ -218,8 +219,8 @@ mod tests {
     fn test_escape() {
         assert_eq!(escape("* foobar *"), r"\* foobar \*");
         assert_eq!(
-            escape(r"_ * [ ] ( ) ~ \ ` # + - = | { } . !"),
-            r"\_ \* \[ \] \( \) \~ \ \` \# \+ \- \= \| \{ \} \. \!",
+            escape(r"_ * [ ] ( ) ~ \ ` > # + - = | { } . !"),
+            r"\_ \* \[ \] \( \) \~ \ \` \> \# \+ \- \= \| \{ \} \. \!",
         );
     }
 

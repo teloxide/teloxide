@@ -14,19 +14,25 @@
 //! $ export TELOXIDE_TOKEN=<Your token here>
 //!
 //! # Windows
-//! $ set TELOXITE_TOKEN=<Your token here>
+//! $ set TELOXIDE_TOKEN=<Your token here>
 //! ```
 //!
 //!  3. Be sure that you are up to date:
 //! ```bash
+//! # If you're using stable
 //! $ rustup update stable
+//! $ rustup override set stable
+//!
+//! # If you're using nightly
+//! $ rustup update nightly
+//! $ rustup override set nightly
 //! ```
 //!
 //!  4. Execute `cargo new my_bot`, enter the directory and put these lines into
 //! your `Cargo.toml`:
 //! ```text
 //! [dependencies]
-//! teloxide = "0.1.0"
+//! teloxide = "0.2.0"
 //! log = "0.4.8"
 //! tokio = "0.2.11"
 //! pretty_env_logger = "0.4.0"
@@ -72,6 +78,7 @@
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
 //! ```no_run
 //! // Imports are omitted...
+//! # #[allow(unreachable_code)]
 //! # use teloxide::{prelude::*, utils::command::BotCommand};
 //! # use rand::{thread_rng, Rng};
 //!
@@ -108,7 +115,7 @@
 //!
 //! async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
 //!    // Only iterate through commands in a proper format:
-//!     rx.commands::<Command>()
+//!     rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
 //!         // Execute all incoming commands concurrently:
 //!         .for_each_concurrent(None, |(cx, command, _)| async move {
 //!             answer(cx, command).await.log_on_error().await;

@@ -7,4 +7,4 @@ Just enter the directory (for example, `cd dialogue_bot`) and execute `cargo run
 | [guess_a_number_bot](guess_a_number_bot) | The "guess a number" game. |
 | [dialogue_bot](dialogue_bot) | Drive a dialogue with a user using a type-safe finite automaton. |
 | [admin_bot](admin_bot) | A bot, which can ban, kick, and mute on a command. |
-
+| [shared_state_bot](shared_state_bot) | A bot that shows how to deal with shared state. |

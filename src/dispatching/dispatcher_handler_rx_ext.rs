@@ -16,12 +16,14 @@ pub trait DispatcherHandlerRxExt {
 
     /// Extracts only commands with their arguments from this stream of
     /// arbitrary messages.
-    fn commands<C>(
+    fn commands<C, N>(
         self,
+        bot_name: N,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
-        C: BotCommand;
+        C: BotCommand,
+        N: Into<String> + Send;
 }
 
 impl<T> DispatcherHandlerRxExt for T
@@ -39,23 +41,31 @@ where
         }))
     }
 
-    fn commands<C>(
+    fn commands<C, N>(
         self,
+        bot_name: N,
     ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
+        N: Into<String> + Send,
     {
-        Box::pin(self.text_messages().filter_map(|(cx, text)| async move {
-            C::parse(&text).map(|(command, args)| {
-                (
-                    cx,
-                    command,
-                    args.into_iter()
-                        .map(ToOwned::to_owned)
-                        .collect::<Vec<String>>(),
-                )
-            })
+        let bot_name = bot_name.into();
+
+        Box::pin(self.text_messages().filter_map(move |(cx, text)| {
+            let bot_name = bot_name.clone();
+
+            async move {
+                C::parse(&text, &bot_name).map(|(command, args)| {
+                    (
+                        cx,
+                        command,
+                        args.into_iter()
+                            .map(ToOwned::to_owned)
+                            .collect::<Vec<String>>(),
+                    )
+                })
+            }
         }))
     }
 }

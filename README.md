@@ -3,13 +3,13 @@
   <h1>teloxide</h1>
   
   <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-v0.1.0-blue.svg">
+    <img src="https://img.shields.io/badge/docs.rs-v0.2.0-blue.svg">
   </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="https://crates.io/crates/teloxide">
-    <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v0.2.0-orange.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -34,9 +34,11 @@
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
+ - **Declarative API.** You tell teloxide what you want instead of describing what to do.
+
  - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as much as possible.
 
- - **Flexible API.** teloxide gives you the power of [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can combine [all 30+ patterns](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) when working with updates from Telegram.
+ - **Flexible API.** teloxide gives you the power of [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can combine [all 30+ patterns](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) when working with updates from Telegram. Feel free to glue handlers both horizontally and vertically.
 
  - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
   
@@ -51,17 +53,23 @@
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
-$ set TELOXITE_TOKEN=<Your token here>
+$ set TELOXIDE_TOKEN=<Your token here>
 ```
  3. Be sure that you are up to date:
 ```bash
+# If you're using stable
 $ rustup update stable
+$ rustup override set stable
+
+# If you're using nightly
+$ rustup update nightly
+$ rustup override set nightly
 ```
 
  4. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.1.0"
+teloxide = "0.2.0"
 log = "0.4.8"
 tokio = "0.2.11"
 pretty_env_logger = "0.4.0"
@@ -136,7 +144,7 @@ async fn answer(
 
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     // Only iterate through commands in a proper format:
-    rx.commands::<Command>()
+    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;
@@ -280,13 +288,13 @@ The second one produces very strange compiler messages because of the `#[tokio::
 
 ## FAQ
 ### Where I can ask questions?
-[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need a quick help, feel free to ask in our official group: https://t.me/teloxide.
+[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in our official group: https://t.me/teloxide.
 
 ### Why Rust?
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
 ## Community bots
-Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide (coming soon...).
+Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
