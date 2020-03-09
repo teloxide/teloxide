@@ -1,3 +1,4 @@
+use crate::types::{CallbackGame, LoginUrl};
 use serde::{Deserialize, Serialize};
 
 /// This object represents one button of an inline keyboard.
@@ -17,6 +18,12 @@ pub struct InlineKeyboardButton {
 pub enum InlineKeyboardButtonKind {
     /// HTTP or tg:// url to be opened when button is pressed.
     Url(String),
+
+    /// An HTTP URL used to automatically authorize the user. Can be used as a
+    /// replacement for the [Telegram Login Widget]().
+    ///
+    /// [Telegram Login Widget]: https://core.telegram.org/widgets/login
+    LoginUrl(LoginUrl),
 
     /// Data to be sent in a [`CallbackQuery`] to the bot when button is
     /// pressed, 1-64 bytes.
@@ -47,8 +54,23 @@ pub enum InlineKeyboardButtonKind {
     ///This offers a quick way for the user to open your bot in inline mode in
     /// the same chat – good for selecting something from multiple options.
     SwitchInlineQueryCurrentChat(String),
-    /* CallbackGame(CallbackGame), TODO: разобраться, что с этим делать
-     * TODO: add LoginUrl, pay */
+
+    /// Description of the game that will be launched when the user presses the
+    /// button.
+    ///
+    /// ## Note
+    /// This type of button **must** always be the first button in the first
+    /// row.
+    CallbackGame(CallbackGame),
+
+    /// Specify True, to send a [Pay button].
+    ///
+    /// ## Note
+    /// This type of button **must** always be the first button in the first
+    /// row.
+    ///
+    /// [Pay button]: https://core.telegram.org/bots/api#payments
+    Pay(bool),
 }
 
 /// Build buttons.
