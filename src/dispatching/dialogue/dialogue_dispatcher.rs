@@ -5,8 +5,7 @@ use crate::dispatching::{
     },
     DispatcherHandler, DispatcherHandlerCx,
 };
-use std::{future::Future, pin::Pin};
-use std::{marker::PhantomData, convert::Infallible};
+use std::{convert::Infallible, future::Future, marker::PhantomData, pin::Pin};
 
 use futures::StreamExt;
 use tokio::sync::mpsc;
@@ -24,8 +23,10 @@ use std::sync::{Arc, Mutex};
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, H, Upd> 
-where S: Storage<D> + Send + Sync + 'static {
+pub struct DialogueDispatcher<D, S, H, Upd>
+where
+    S: Storage<D> + Send + Sync + 'static,
+{
     storage: Arc<S>,
     handler: Arc<H>,
     _phantom: PhantomData<Mutex<D>>,
@@ -39,7 +40,7 @@ where S: Storage<D> + Send + Sync + 'static {
     senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>,
 }
 
-impl <D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd> 
+impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
@@ -58,12 +59,14 @@ where
             _phantom: PhantomData,
         }
     }
-
 }
 
 impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error>
+        + Send
+        + Sync
+        + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
@@ -110,10 +113,13 @@ where
                     .await
                 {
                     DialogueStage::Next(new_dialogue) => {
-                        if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
+                        if let Ok(Some(_)) =
+                            storage.update_dialogue(chat_id, new_dialogue).await
+                        {
                             panic!(
-                                "Oops, you have an bug in your Storage: update_dialogue returns \
-                                 Some after remove_dialogue"
+                                "Oops, you have an bug in your Storage: \
+                                 update_dialogue returns Some after \
+                                 remove_dialogue"
                             );
                         }
                     }
@@ -136,7 +142,10 @@ where
 
 impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error>
+        + Send
+        + Sync
+        + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,

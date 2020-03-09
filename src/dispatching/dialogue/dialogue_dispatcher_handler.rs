@@ -20,7 +20,10 @@ pub trait DialogueDispatcherHandler<Upd, D, E> {
 
 impl<Upd, D, E, F, Fut> DialogueDispatcherHandler<Upd, D, E> for F
 where
-    F: Fn(DialogueDispatcherHandlerCx<Upd, D, E>) -> Fut + Send + Sync + 'static,
+    F: Fn(DialogueDispatcherHandlerCx<Upd, D, E>) -> Fut
+        + Send
+        + Sync
+        + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
 {
     fn handle(
