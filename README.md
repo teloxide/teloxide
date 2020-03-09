@@ -207,24 +207,15 @@ async fn receive_attempt(cx: Cx<u8>) -> Res {
             next(Dialogue::ReceiveAttempt(cx.dialogue))
         }
         Some(text) => match text.parse::<u8>() {
-            Ok(attempt) => match attempt {
-                x if !(1..=10).contains(&x) => {
-                    cx.answer(
-                        "Oh, please, send me a number in the range [1; 10]!",
-                    )
-                    .send()
-                    .await?;
-                    next(Dialogue::ReceiveAttempt(cx.dialogue))
-                }
-                x if x == cx.dialogue => {
+            Ok(attempt) => {
+                if attempt == cx.dialogue {
                     cx.answer("Congratulations! You won!").send().await?;
                     exit()
-                }
-                _ => {
+                } else {
                     cx.answer("No.").send().await?;
                     next(Dialogue::ReceiveAttempt(cx.dialogue))
                 }
-            },
+            }
             Err(_) => {
                 cx.answer("Oh, please, send me a number in the range [1; 10]!")
                     .send()
