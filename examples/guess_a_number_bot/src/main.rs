@@ -49,26 +49,28 @@ async fn start(cx: Cx<()>) -> Res {
 }
 
 async fn receive_attempt(cx: Cx<u8>) -> Res {
+    let secret = cx.dialogue;
+
     match cx.update.text() {
         None => {
             cx.answer("Oh, please, send me a text message!").send().await?;
-            next(Dialogue::ReceiveAttempt(cx.dialogue))
+            next(Dialogue::ReceiveAttempt(secret))
         }
         Some(text) => match text.parse::<u8>() {
             Ok(attempt) => {
-                if attempt == cx.dialogue {
+                if attempt == secret {
                     cx.answer("Congratulations! You won!").send().await?;
                     exit()
                 } else {
                     cx.answer("No.").send().await?;
-                    next(Dialogue::ReceiveAttempt(cx.dialogue))
+                    next(Dialogue::ReceiveAttempt(secret))
                 }
             }
             Err(_) => {
                 cx.answer("Oh, please, send me a number in the range [1; 10]!")
                     .send()
                     .await?;
-                next(Dialogue::ReceiveAttempt(cx.dialogue))
+                next(Dialogue::ReceiveAttempt(secret))
             }
         },
     }
