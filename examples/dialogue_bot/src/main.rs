@@ -19,6 +19,7 @@
 #[macro_use]
 extern crate smart_default;
 
+use std::convert::Infallible;
 use teloxide::{
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
@@ -87,7 +88,7 @@ enum Dialogue {
 // [Control a dialogue]
 // ============================================================================
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
+type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
@@ -118,13 +119,13 @@ async fn age(cx: Cx<ReceiveAgeState>) -> Res {
                 .send()
                 .await?;
             next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
-                data: cx.dialogue,
+                data: cx.dialogue.unwrap(),
                 age,
             }))
         }
         Err(_) => {
             cx.answer("Oh, please, enter a number!").send().await?;
-            next(Dialogue::ReceiveAge(cx.dialogue))
+            next(Dialogue::ReceiveAge(cx.dialogue.unwrap()))
         }
     }
 }
@@ -134,7 +135,7 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         Ok(favourite_music) => {
             cx.answer(format!(
                 "Fine. {}",
-                ExitState { data: cx.dialogue.clone(), favourite_music }
+                ExitState { data: cx.dialogue.clone().unwrap(), favourite_music }
             ))
             .send()
             .await?;
@@ -142,7 +143,7 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         }
         Err(_) => {
             cx.answer("Oh, please, enter from the keyboard!").send().await?;
-            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue))
+            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap()))
         }
     }
 }
@@ -152,26 +153,27 @@ async fn handle_message(cx: Cx<Dialogue>) -> Res {
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::Start,
+            dialogue: Ok(Dialogue::Start),
         } => start(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::ReceiveFullName,
+            dialogue: Ok(Dialogue::ReceiveFullName),
         } => full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::ReceiveAge(s),
+            dialogue: Ok(Dialogue::ReceiveAge(s)),
         } => age(DialogueDispatcherHandlerCx::new(bot, update, s)).await,
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::ReceiveFavouriteMusic(s),
+            dialogue: Ok(Dialogue::ReceiveFavouriteMusic(s)),
         } => {
             favourite_music(DialogueDispatcherHandlerCx::new(bot, update, s))
                 .await
-        }
+        },
+        _ => panic!("Error while interacting with storage!"),
     }
 }
 
