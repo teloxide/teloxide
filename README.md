@@ -181,7 +181,7 @@ Wanna see more? This is a bot, which starts a game on each incoming message. You
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
 ```rust
-// Setup is omitted...
+// Imports are omitted...
 
 #[derive(SmartDefault)]
 enum Dialogue {
@@ -190,54 +190,55 @@ enum Dialogue {
     ReceiveAttempt(u8),
 }
 
-async fn handle_message(
-    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
-) -> ResponseResult<DialogueStage<Dialogue>> {
-    match cx.dialogue {
-        Dialogue::Start => {
-            cx.answer(
-                "Let's play a game! Guess a number from 1 to 10 (inclusively).",
-            )
-            .send()
-            .await?;
-            next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
+type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
+type Res = ResponseResult<DialogueStage<Dialogue>>;
+
+async fn start(cx: Cx<()>) -> Res {
+    cx.answer("Let's play a game! Guess a number from 1 to 10 (inclusively).")
+        .send()
+        .await?;
+    next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
+}
+
+async fn receive_attempt(cx: Cx<u8>) -> Res {
+    match cx.update.text() {
+        None => {
+            cx.answer("Oh, please, send me a text message!").send().await?;
+            next(Dialogue::ReceiveAttempt(cx.dialogue))
         }
-        Dialogue::ReceiveAttempt(secret) => match cx.update.text() {
-            None => {
-                cx.answer("Oh, please, send me a text message!").send().await?;
-                next(cx.dialogue)
-            }
-            Some(text) => match text.parse::<u8>() {
-                Ok(attempt) => match attempt {
-                    x if !(1..=10).contains(&x) => {
-                        cx.answer(
-                            "Oh, please, send me a number in the range [1; \
-                             10]!",
-                        )
-                        .send()
-                        .await?;
-                        next(cx.dialogue)
-                    }
-                    x if x == secret => {
-                        cx.answer("Congratulations! You won!").send().await?;
-                        exit()
-                    }
-                    _ => {
-                        cx.answer("No.").send().await?;
-                        next(cx.dialogue)
-                    }
-                },
-                Err(_) => {
+        Some(text) => match text.parse::<u8>() {
+            Ok(attempt) => match attempt {
+                x if !(1..=10).contains(&x) => {
                     cx.answer(
                         "Oh, please, send me a number in the range [1; 10]!",
                     )
                     .send()
                     .await?;
-                    next(cx.dialogue)
+                    next(Dialogue::ReceiveAttempt(cx.dialogue))
+                }
+                x if x == cx.dialogue => {
+                    cx.answer("Congratulations! You won!").send().await?;
+                    exit()
+                }
+                _ => {
+                    cx.answer("No.").send().await?;
+                    next(Dialogue::ReceiveAttempt(cx.dialogue))
                 }
             },
+            Err(_) => {
+                cx.answer("Oh, please, send me a number in the range [1; 10]!")
+                    .send()
+                    .await?;
+                next(Dialogue::ReceiveAttempt(cx.dialogue))
+            }
         },
     }
+}
+
+async fn handle_message(
+    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
+) -> Res {
+    // Match is Omitted...
 }
 
 #[tokio::main]
