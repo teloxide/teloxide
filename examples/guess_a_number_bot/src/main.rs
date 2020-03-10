@@ -21,6 +21,7 @@ extern crate smart_default;
 
 use teloxide::prelude::*;
 
+use std::convert::Infallible;
 use rand::{thread_rng, Rng};
 
 // ============================================================================
@@ -38,7 +39,7 @@ enum Dialogue {
 // [Control a dialogue]
 // ============================================================================
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
+type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
@@ -49,7 +50,7 @@ async fn start(cx: Cx<()>) -> Res {
 }
 
 async fn receive_attempt(cx: Cx<u8>) -> Res {
-    let secret = cx.dialogue;
+    let secret = cx.dialogue.unwrap();
 
     match cx.update.text() {
         None => {
@@ -77,24 +78,25 @@ async fn receive_attempt(cx: Cx<u8>) -> Res {
 }
 
 async fn handle_message(
-    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
+    cx: DialogueDispatcherHandlerCx<Message, Dialogue, Infallible>,
 ) -> Res {
     match cx {
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::Start,
+            dialogue: Ok(Dialogue::Start),
         } => start(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
         DialogueDispatcherHandlerCx {
             bot,
             update,
-            dialogue: Dialogue::ReceiveAttempt(secret),
+            dialogue: Ok(Dialogue::ReceiveAttempt(secret)),
         } => {
             receive_attempt(DialogueDispatcherHandlerCx::new(
                 bot, update, secret,
             ))
             .await
         }
+        _ => panic!("Failed to get dialogue info from storage")
     }
 }
 

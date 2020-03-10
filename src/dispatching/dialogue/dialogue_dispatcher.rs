@@ -5,13 +5,13 @@ use crate::dispatching::{
     },
     DispatcherHandler, DispatcherHandlerCx,
 };
-use std::{future::Future, pin::Pin};
+use std::{convert::Infallible, marker::PhantomData};
 
-use futures::StreamExt;
+use futures::{future::BoxFuture, StreamExt};
 use tokio::sync::mpsc;
 
 use lockfree::map::Map;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 /// A dispatcher of dialogues.
 ///
@@ -23,9 +23,10 @@ use std::sync::Arc;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, H, Upd> {
-    storage: Arc<dyn Storage<D> + Send + Sync + 'static>,
+pub struct DialogueDispatcher<D, S, H, Upd> {
+    storage: Arc<S>,
     handler: Arc<H>,
+    _phantom: PhantomData<Mutex<D>>,
 
     /// A lock-free map to handle updates from the same chat sequentially, but
     /// concurrently from different chats.
@@ -36,9 +37,9 @@ pub struct DialogueDispatcher<D, H, Upd> {
     senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>,
 }
 
-impl<D, H, Upd> DialogueDispatcher<D, H, Upd>
+impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
 {
@@ -52,19 +53,27 @@ where
             storage: InMemStorage::new(),
             handler: Arc::new(handler),
             senders: Arc::new(Map::new()),
+            _phantom: PhantomData,
         }
     }
+}
 
+impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
+where
+    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
+    Upd: GetChatId + Send + 'static,
+    D: Default + Send + 'static,
+    S: Storage<D> + Send + Sync + 'static,
+    S::Error: Send + 'static,
+{
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
-    pub fn with_storage<Stg>(handler: H, storage: Arc<Stg>) -> Self
-    where
-        Stg: Storage<D> + Send + Sync + 'static,
-    {
+    pub fn with_storage(handler: H, storage: Arc<S>) -> Self {
         Self {
             storage,
             handler: Arc::new(handler),
             senders: Arc::new(Map::new()),
+            _phantom: PhantomData,
         }
     }
 
@@ -87,7 +96,7 @@ where
                 let dialogue = Arc::clone(&storage)
                     .remove_dialogue(chat_id)
                     .await
-                    .unwrap_or_default();
+                    .map(Option::unwrap_or_default);
 
                 match handler
                     .handle(DialogueDispatcherHandlerCx {
@@ -98,12 +107,15 @@ where
                     .await
                 {
                     DialogueStage::Next(new_dialogue) => {
-                        update_dialogue(
-                            Arc::clone(&storage),
-                            chat_id,
-                            new_dialogue,
-                        )
-                        .await;
+                        if let Ok(Some(_)) =
+                            storage.update_dialogue(chat_id, new_dialogue).await
+                        {
+                            panic!(
+                                "Oops, you have an bug in your Storage: \
+                                 update_dialogue returns Some after \
+                                 remove_dialogue"
+                            );
+                        }
                     }
                     DialogueStage::Exit => {
                         // On the next .poll() call, the spawned future will
@@ -122,31 +134,18 @@ where
     }
 }
 
-async fn update_dialogue<D>(
-    storage: Arc<dyn Storage<D> + Send + Sync + 'static>,
-    chat_id: i64,
-    new_dialogue: D,
-) where
-    D: 'static + Send,
-{
-    if storage.update_dialogue(chat_id, new_dialogue).await.is_some() {
-        panic!(
-            "Oops, you have an bug in your Storage: update_dialogue returns \
-             Some after remove_dialogue"
-        );
-    }
-}
-
-impl<D, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, H, Upd>
+impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
+    S: Storage<D> + Send + Sync + 'static,
+    S::Error: Send + 'static,
 {
     fn handle(
         self,
         updates: mpsc::UnboundedReceiver<DispatcherHandlerCx<Upd>>,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
+    ) -> BoxFuture<'static, ()>
     where
         DispatcherHandlerCx<Upd>: 'static,
     {
@@ -222,7 +221,7 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueDispatcherHandlerCx<MyUpdate, ()>| async move {
+            |cx: DialogueDispatcherHandlerCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
                 match cx.update {
