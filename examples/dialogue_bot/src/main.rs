@@ -135,7 +135,10 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         Ok(favourite_music) => {
             cx.answer(format!(
                 "Fine. {}",
-                ExitState { data: cx.dialogue.clone().unwrap(), favourite_music }
+                ExitState {
+                    data: cx.dialogue.clone().unwrap(),
+                    favourite_music
+                }
             ))
             .send()
             .await?;
@@ -149,31 +152,21 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
 }
 
 async fn handle_message(cx: Cx<Dialogue>) -> Res {
-    match cx {
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::Start),
-        } => start(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::ReceiveFullName),
-        } => full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::ReceiveAge(s)),
-        } => age(DialogueDispatcherHandlerCx::new(bot, update, s)).await,
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::ReceiveFavouriteMusic(s)),
-        } => {
+    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
+    match dialogue.unwrap() {
+        Dialogue::Start => {
+            start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
+        }
+        Dialogue::ReceiveFullName => {
+            full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await
+        }
+        Dialogue::ReceiveAge(s) => {
+            age(DialogueDispatcherHandlerCx::new(bot, update, s)).await
+        }
+        Dialogue::ReceiveFavouriteMusic(s) => {
             favourite_music(DialogueDispatcherHandlerCx::new(bot, update, s))
                 .await
-        },
-        _ => panic!("Error while interacting with storage!"),
+        }
     }
 }
 
@@ -193,8 +186,10 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| async move {
-            handle_message(cx).await.expect("Something wrong with the bot!")
+        .messages_handler(DialogueDispatcher::new(|cx| {
+            async move {
+                handle_message(cx).await.expect("Something wrong with the bot!")
+            }
         }))
         .dispatch()
         .await;
