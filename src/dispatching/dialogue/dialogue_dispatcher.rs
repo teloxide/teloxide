@@ -5,9 +5,9 @@ use crate::dispatching::{
     },
     DispatcherHandler, DispatcherHandlerCx,
 };
-use std::{convert::Infallible, future::Future, marker::PhantomData, pin::Pin};
+use std::{convert::Infallible, marker::PhantomData};
 
-use futures::StreamExt;
+use futures::{future::BoxFuture, StreamExt};
 use tokio::sync::mpsc;
 
 use lockfree::map::Map;
@@ -23,10 +23,7 @@ use std::sync::{Arc, Mutex};
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, H, Upd>
-where
-    S: Storage<D> + Send + Sync + 'static,
-{
+pub struct DialogueDispatcher<D, S, H, Upd> {
     storage: Arc<S>,
     handler: Arc<H>,
     _phantom: PhantomData<Mutex<D>>,
@@ -63,14 +60,11 @@ where
 
 impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error>
-        + Send
-        + Sync
-        + 'static,
+    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    <S as Storage<D>>::Error: Send + 'static,
+    S::Error: Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
@@ -142,19 +136,16 @@ where
 
 impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, <S as Storage<D>>::Error>
-        + Send
-        + Sync
-        + 'static,
+    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    <S as Storage<D>>::Error: Send + 'static,
+    S::Error: Send + 'static,
 {
     fn handle(
         self,
         updates: mpsc::UnboundedReceiver<DispatcherHandlerCx<Upd>>,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>
+    ) -> BoxFuture<'static, ()>
     where
         DispatcherHandlerCx<Upd>: 'static,
     {
