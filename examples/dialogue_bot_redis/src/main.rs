@@ -19,8 +19,11 @@
 #[macro_use]
 extern crate smart_default;
 
-use std::convert::Infallible;
+use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+
 use teloxide::{
+    dispatching::dialogue::{RedisStorage, Serializer, Storage},
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
 };
@@ -54,12 +57,12 @@ impl FavouriteMusic {
 // [A type-safe finite automaton]
 // ============================================================================
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 struct ReceiveAgeState {
     full_name: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 struct ReceiveFavouriteMusicState {
     data: ReceiveAgeState,
     age: u8,
@@ -75,7 +78,7 @@ struct ExitState {
     favourite_music: FavouriteMusic,
 }
 
-#[derive(SmartDefault)]
+#[derive(SmartDefault, Serialize, Deserialize)]
 enum Dialogue {
     #[default]
     Start,
@@ -88,7 +91,11 @@ enum Dialogue {
 // [Control a dialogue]
 // ============================================================================
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
+type Cx<State> = DialogueDispatcherHandlerCx<
+    Message,
+    State,
+    <RedisStorage as Storage<Dialogue>>::Error,
+>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
@@ -136,7 +143,7 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
             cx.answer(format!(
                 "Fine. {}",
                 ExitState {
-                    data: cx.dialogue.clone().unwrap(),
+                    data: cx.dialogue.as_ref().unwrap().clone(),
                     favourite_music
                 }
             ))
@@ -186,11 +193,18 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| {
-            async move {
+        .messages_handler(DialogueDispatcher::with_storage(
+            |cx| async move {
                 handle_message(cx).await.expect("Something wrong with the bot!")
-            }
-        }))
+            },
+            Arc::new(
+                // You can also choose Serializer::JSON or Serializer::Bincode
+                // All serializer but JSON require enabling feature "serializer-<name>",
+                // e. g. "serializer-cbor" or "serializer-bincode"
+                RedisStorage::open("redis://127.0.0.1:6379", Serializer::CBOR)
+                    .unwrap(),
+            ),
+        ))
         .dispatch()
         .await;
 }
