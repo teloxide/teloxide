@@ -21,8 +21,8 @@ extern crate smart_default;
 
 use teloxide::prelude::*;
 
-use std::convert::Infallible;
 use rand::{thread_rng, Rng};
+use std::convert::Infallible;
 
 // ============================================================================
 // [A type-safe finite automaton]
@@ -80,23 +80,20 @@ async fn receive_attempt(cx: Cx<u8>) -> Res {
 async fn handle_message(
     cx: DialogueDispatcherHandlerCx<Message, Dialogue, Infallible>,
 ) -> Res {
-    match cx {
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::Start),
-        } => start(DialogueDispatcherHandlerCx::new(bot, update, ())).await,
-        DialogueDispatcherHandlerCx {
-            bot,
-            update,
-            dialogue: Ok(Dialogue::ReceiveAttempt(secret)),
-        } => {
+    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
+
+    // You need handle the error instead of panicking in real-world code, maybe
+    // send diagnostics to a development chat.
+    match dialogue.expect("Failed to get dialogue info from storage") {
+        Dialogue::Start => {
+            start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
+        }
+        Dialogue::ReceiveAttempt(secret) => {
             receive_attempt(DialogueDispatcherHandlerCx::new(
                 bot, update, secret,
             ))
             .await
         }
-        _ => panic!("Failed to get dialogue info from storage")
     }
 }
 
