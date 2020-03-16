@@ -21,12 +21,12 @@ mod macros {
     /// Pushes an update to a queue.
     macro_rules! send {
         ($bot:expr, $tx:expr, $update:expr, $variant:expr) => {
-            send($bot, $tx, $update, stringify!($variant)).await;
+            send($bot, $tx, $update, stringify!($variant));
         };
     }
 }
 
-async fn send<'a, Upd>(
+fn send<'a, Upd>(
     bot: &'a Arc<Bot>,
     tx: &'a Tx<Upd>,
     update: Upd,
