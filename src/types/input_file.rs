@@ -8,7 +8,7 @@ use std::path::PathBuf;
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Deserialize)]
 pub enum InputFile {
     File(PathBuf),
-    Memory(Vec<u8>),
+    Memory { file_name: String, data: Vec<u8> },
     Url(String),
     FileId(String),
 }
@@ -21,11 +21,12 @@ impl InputFile {
         Self::File(path.into())
     }
 
-    pub fn memory<D>(data: D) -> Self
+    pub fn memory<S, D>(file_name: S, data: D) -> Self
     where
+        S: Into<String>,
         D: Into<Vec<u8>>,
     {
-        Self::Memory(data.into())
+        Self::Memory { file_name: file_name.into(), data: data.into() }
     }
 
     pub fn url<T>(url: T) -> Self
@@ -90,7 +91,7 @@ impl Serialize for InputFile {
                     ),
                 )
             }
-            InputFile::Memory(data) => {
+            InputFile::Memory { data, .. } => {
                 // NOTE: file should be actually attached with
                 // multipart/form-data
                 serializer.serialize_str(&format!(
