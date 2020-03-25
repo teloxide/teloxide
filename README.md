@@ -40,7 +40,7 @@
 
  - **Flexible API.** Updates are represented as [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can express your business logic using [all 30+ adaptors](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html), each having distinct semantics (see [simple-commands-bot](#commands) below).
 
- - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
+ - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
   
  - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
  and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
