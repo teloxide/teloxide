@@ -57,7 +57,7 @@ impl FormBuilder {
         self,
         name: N,
         file_name: String,
-        data: Vec<u8>,
+        data: Cow<'static, [u8]>,
     ) -> Self
     where
         N: Into<Cow<'a, str>>,
@@ -77,7 +77,7 @@ impl FormBuilder {
 
 pub(crate) enum FormValue {
     File(PathBuf),
-    Memory { file_name: String, data: Vec<u8> },
+    Memory { file_name: String, data: Cow<'static, [u8]> },
     Str(String),
 }
 
@@ -176,7 +176,7 @@ impl IntoFormValue for InputFile {
             InputFile::File(path) => Some(FormValue::File(path.clone())),
             InputFile::Memory { file_name, data } => Some(FormValue::Memory {
                 file_name: file_name.clone(),
-                data: data.clone(),
+                data: data.clone().into(),
             }),
             InputFile::Url(url) => Some(FormValue::Str(url.clone())),
             InputFile::FileId(file_id) => Some(FormValue::Str(file_id.clone())),
