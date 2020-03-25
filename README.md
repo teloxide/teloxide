@@ -36,7 +36,7 @@
 ## Features
  - **Declarative API.** You tell teloxide what you want instead of describing what to do.
 
- - **Type-safe.** All the [API types and methods](https://core.telegram.org/bots/api) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
+ - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
 
  - **Flexible API.** Updates are represented as [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can express your business logic using [all 30+ adaptors](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html), each having distinct semantics (see [simple-commands-bot](#commands) below).
 
