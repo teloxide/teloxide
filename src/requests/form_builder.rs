@@ -176,7 +176,7 @@ impl IntoFormValue for InputFile {
             InputFile::File(path) => Some(FormValue::File(path.clone())),
             InputFile::Memory { file_name, data } => Some(FormValue::Memory {
                 file_name: file_name.clone(),
-                data: data.clone().into(),
+                data: data.clone(),
             }),
             InputFile::Url(url) => Some(FormValue::Str(url.clone())),
             InputFile::FileId(file_id) => Some(FormValue::Str(file_id.clone())),
