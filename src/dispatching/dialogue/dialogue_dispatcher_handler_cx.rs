@@ -18,24 +18,24 @@ use std::sync::Arc;
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 #[derive(Debug)]
-pub struct DialogueDispatcherHandlerCx<Upd, D> {
+pub struct DialogueDispatcherHandlerCx<Upd, D, E> {
     pub bot: Arc<Bot>,
     pub update: Upd,
-    pub dialogue: D,
+    pub dialogue: Result<D, E>,
 }
 
-impl<Upd, D> DialogueDispatcherHandlerCx<Upd, D> {
+impl<Upd, D, E> DialogueDispatcherHandlerCx<Upd, D, E> {
     /// Creates a new instance with the provided fields.
     pub fn new(bot: Arc<Bot>, update: Upd, dialogue: D) -> Self {
-        Self { bot, update, dialogue }
+        Self { bot, update, dialogue: Ok(dialogue) }
     }
 
     /// Creates a new instance by substituting a dialogue and preserving
     /// `self.bot` and `self.update`.
-    pub fn with_new_dialogue<Nd>(
+    pub fn with_new_dialogue<Nd, Ne>(
         self,
-        new_dialogue: Nd,
-    ) -> DialogueDispatcherHandlerCx<Upd, Nd> {
+        new_dialogue: Result<Nd, Ne>,
+    ) -> DialogueDispatcherHandlerCx<Upd, Nd, Ne> {
         DialogueDispatcherHandlerCx {
             bot: self.bot,
             update: self.update,
@@ -44,7 +44,7 @@ impl<Upd, D> DialogueDispatcherHandlerCx<Upd, D> {
     }
 }
 
-impl<Upd, D> GetChatId for DialogueDispatcherHandlerCx<Upd, D>
+impl<Upd, D, E> GetChatId for DialogueDispatcherHandlerCx<Upd, D, E>
 where
     Upd: GetChatId,
 {
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<D> DialogueDispatcherHandlerCx<Message, D> {
+impl<D, E> DialogueDispatcherHandlerCx<Message, D, E> {
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,

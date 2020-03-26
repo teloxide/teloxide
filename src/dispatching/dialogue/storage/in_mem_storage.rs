@@ -23,24 +23,28 @@ impl<S> InMemStorage<S> {
 }
 
 impl<D> Storage<D> for InMemStorage<D> {
+    type Error = std::convert::Infallible;
+
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> BoxFuture<'static, Option<D>>
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
     where
         D: Send + 'static,
     {
-        Box::pin(async move { self.map.lock().await.remove(&chat_id) })
+        Box::pin(async move { Ok(self.map.lock().await.remove(&chat_id)) })
     }
 
     fn update_dialogue(
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Option<D>>
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
     where
         D: Send + 'static,
     {
-        Box::pin(async move { self.map.lock().await.insert(chat_id, dialogue) })
+        Box::pin(
+            async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) },
+        )
     }
 }

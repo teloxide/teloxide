@@ -36,11 +36,11 @@
 ## Features
  - **Declarative API.** You tell teloxide what you want instead of describing what to do.
 
- - **Type-safe.** teloxide leverages the Rust's type system with two serious implications: resistance to human mistakes and tight integration with IDEs. Write fast, avoid debugging as much as possible.
+ - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
 
- - **Flexible API.** teloxide gives you the power of [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can combine [all 30+ patterns](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) when working with updates from Telegram. Feel free to glue handlers both horizontally and vertically.
+ - **Flexible API.** Updates are represented as [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can express your business logic using [all 30+ adaptors](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html), each having distinct semantics (see [simple-commands-bot](#commands) below).
 
- - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
+ - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
   
  - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
  and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
@@ -166,22 +166,19 @@ async fn main() {
 </div>
 
 See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use our `.commands::<Command>()` and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
- - [`.flatten()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.flatten)
- - [`.left_stream()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.left_stream)
- - [`.scan()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.scan)
- - [`.skip_while()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.skip_while)
- - [`.zip()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.zip)
- - [`.select_next_some()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.select_next_some)
- - [`.fold()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.fold)
- - [`.inspect()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.inspect)
- - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html)!
+ - [`.filter()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter) / [`.filter_map()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter_map) to filter certain kinds of updates;
+ - [`.inspect()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.inspect) for debugging purposes;
+ - [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent) + [`tokio::sync::watch`](https://docs.rs/tokio/0.2.13/tokio/sync/watch/index.html) to register multiple handlers;
+ - [`.text_messages()`](https://docs.rs/teloxide/0.2.0/teloxide/dispatching/trait.DispatcherHandlerRxExt.html#tymethod.text_messages) to receive only text messages;
+ 
+ - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) and [others](https://docs.rs/teloxide/latest/teloxide/dispatching/trait.DispatcherHandlerRxExt.html) and [others](https://docs.rs/tokio/0.2.13/tokio/sync/index.html)!
 
 ## Guess a number
 Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
 ```rust
-// Setup is omitted...
+// Imports are omitted...
 
 #[derive(SmartDefault)]
 enum Dialogue {
@@ -190,54 +187,48 @@ enum Dialogue {
     ReceiveAttempt(u8),
 }
 
-async fn handle_message(
-    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
-) -> ResponseResult<DialogueStage<Dialogue>> {
-    match cx.dialogue {
-        Dialogue::Start => {
-            cx.answer(
-                "Let's play a game! Guess a number from 1 to 10 (inclusively).",
-            )
-            .send()
-            .await?;
-            next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
+type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
+type Res = ResponseResult<DialogueStage<Dialogue>>;
+
+async fn start(cx: Cx<()>) -> Res {
+    cx.answer("Let's play a game! Guess a number from 1 to 10 (inclusively).")
+        .send()
+        .await?;
+    next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
+}
+
+async fn receive_attempt(cx: Cx<u8>) -> Res {
+    let secret = cx.dialogue;
+
+    match cx.update.text() {
+        None => {
+            cx.answer("Oh, please, send me a text message!").send().await?;
+            next(Dialogue::ReceiveAttempt(secret))
         }
-        Dialogue::ReceiveAttempt(secret) => match cx.update.text() {
-            None => {
-                cx.answer("Oh, please, send me a text message!").send().await?;
-                next(cx.dialogue)
+        Some(text) => match text.parse::<u8>() {
+            Ok(attempt) => {
+                if attempt == secret {
+                    cx.answer("Congratulations! You won!").send().await?;
+                    exit()
+                } else {
+                    cx.answer("No.").send().await?;
+                    next(Dialogue::ReceiveAttempt(secret))
+                }
             }
-            Some(text) => match text.parse::<u8>() {
-                Ok(attempt) => match attempt {
-                    x if !(1..=10).contains(&x) => {
-                        cx.answer(
-                            "Oh, please, send me a number in the range [1; \
-                             10]!",
-                        )
-                        .send()
-                        .await?;
-                        next(cx.dialogue)
-                    }
-                    x if x == secret => {
-                        cx.answer("Congratulations! You won!").send().await?;
-                        exit()
-                    }
-                    _ => {
-                        cx.answer("No.").send().await?;
-                        next(cx.dialogue)
-                    }
-                },
-                Err(_) => {
-                    cx.answer(
-                        "Oh, please, send me a number in the range [1; 10]!",
-                    )
+            Err(_) => {
+                cx.answer("Oh, please, send me a number in the range [1; 10]!")
                     .send()
                     .await?;
-                    next(cx.dialogue)
-                }
-            },
+                next(Dialogue::ReceiveAttempt(secret))
+            }
         },
     }
+}
+
+async fn handle_message(
+    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
+) -> Res {
+    // Match is omitted...
 }
 
 #[tokio::main]
@@ -253,7 +244,7 @@ async fn main() {
   <br/><br/>
 </div>
 
-Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it will lead is to lots of unpleasure `.unwrap()`s.
+Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it would lead us to lots of unpleasant `.unwrap()`s.
 
 Remember that a classical [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine) is defined by its initial state, a list of its possible states and a transition function? We can think that `Dialogue` is a finite automaton with a context type at each state (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
 

@@ -13,6 +13,8 @@ use std::sync::Arc;
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 pub trait Storage<D> {
+    type Error;
+
     /// Removes a dialogue with the specified `chat_id`.
     ///
     /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
@@ -20,7 +22,7 @@ pub trait Storage<D> {
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> BoxFuture<'static, Option<D>>
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
     where
         D: Send + 'static;
 
@@ -32,7 +34,7 @@ pub trait Storage<D> {
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Option<D>>
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
     where
         D: Send + 'static;
 }
