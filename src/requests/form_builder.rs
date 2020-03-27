@@ -3,7 +3,7 @@ use std::{borrow::Cow, path::PathBuf};
 use reqwest::multipart::Form;
 
 use crate::{
-    requests::utils::file_to_part,
+    requests::utils::{file_from_memory_to_part, file_to_part},
     types::{
         ChatId, InlineKeyboardMarkup, InputFile, InputMedia, MaskPosition,
         ParseMode, ReplyMarkup,
@@ -33,6 +33,9 @@ impl FormBuilder {
                 Self { form: self.form.text(name, string) }
             }
             Some(FormValue::File(path)) => self.add_file(name, path).await,
+            Some(FormValue::Memory { file_name, data }) => {
+                self.add_file_from_memory(name, file_name, data)
+            }
             None => self,
         }
     }
@@ -50,6 +53,23 @@ impl FormBuilder {
         }
     }
 
+    fn add_file_from_memory<'a, N>(
+        self,
+        name: N,
+        file_name: String,
+        data: Cow<'static, [u8]>,
+    ) -> Self
+    where
+        N: Into<Cow<'a, str>>,
+    {
+        Self {
+            form: self.form.part(
+                name.into().into_owned(),
+                file_from_memory_to_part(data, file_name),
+            ),
+        }
+    }
+
     pub fn build(self) -> Form {
         self.form
     }
@@ -57,6 +77,7 @@ impl FormBuilder {
 
 pub(crate) enum FormValue {
     File(PathBuf),
+    Memory { file_name: String, data: Cow<'static, [u8]> },
     Str(String),
 }
 
@@ -153,6 +174,10 @@ impl IntoFormValue for InputFile {
     fn into_form_value(&self) -> Option<FormValue> {
         match self {
             InputFile::File(path) => Some(FormValue::File(path.clone())),
+            InputFile::Memory { file_name, data } => Some(FormValue::Memory {
+                file_name: file_name.clone(),
+                data: data.clone(),
+            }),
             InputFile::Url(url) => Some(FormValue::Str(url.clone())),
             InputFile::FileId(file_id) => Some(FormValue::Str(file_id.clone())),
         }
