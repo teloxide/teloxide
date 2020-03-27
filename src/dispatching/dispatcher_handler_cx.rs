@@ -124,7 +124,7 @@ impl DispatcherHandlerCx<Message> {
         self.bot.send_contact(self.chat_id(), phone_number, first_name)
     }
 
-    pub fn answer_sticker<T>(&self, sticker: InputFile) -> SendSticker {
+    pub fn answer_sticker(&self, sticker: InputFile) -> SendSticker {
         self.bot.send_sticker(self.update.chat.id, sticker)
     }
 
