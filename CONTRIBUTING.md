@@ -1,7 +1,7 @@
 # Contributing
 Before contributing, please read [our code style](https://github.com/teloxide/teloxide/blob/master/CODE_STYLE.md) and [the license](https://github.com/teloxide/teloxide/blob/master/LICENSE).
 
-To change the source code, fork this repository and work inside your own branch. Then send us a PR into the [dev](https://github.com/teloxide/teloxide/tree/dev) branch and wait for the CI to check everything. However, you'd better check changes first locally:
+To change the source code, fork the `master` branch of this repository and work inside your own branch. Then send us a PR into `master` branch and wait for the CI to check everything. However, you'd better check changes first locally:
 
 ```
 cargo clippy --all --all-features --all-targets
