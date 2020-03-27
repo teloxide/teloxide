@@ -50,13 +50,6 @@ jobs:
           command: test
           args: --verbose --all-features
 
-      - name: fmt
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: fmt
-          args: --all -- --check
-
       - name: stable/beta clippy
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
@@ -70,3 +63,10 @@ jobs:
         with:
           command: clippy
           args: --all-targets --all-features -- -D warnings
+
+      - name: fmt
+        uses: actions-rs/cargo@v1
+        if: matrix.rust == 'nightly'
+        with:
+          command: fmt
+          args: --all -- --check
