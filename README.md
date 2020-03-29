@@ -34,11 +34,9 @@
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
- - **Declarative API.** You tell teloxide what you want instead of describing what to do.
+ - **Functional design.** Instead of writing separate handlers for every possible user action, all having access to some shared mutable state, you treat external events as a [stream](https://docs.rs/futures/latest/futures/prelude/trait.Stream.html) and apply a series of transformations to it.
 
  - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
-
- - **Flexible API.** Updates are represented as [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can express your business logic using [all 30+ adaptors](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html), each having distinct semantics (see [simple-commands-bot](#commands) below).
 
  - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
   
