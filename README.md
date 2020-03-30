@@ -283,7 +283,7 @@ The second one produces very strange compiler messages because of the `#[tokio::
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
 ### Can I use webhooks?
-teloxide itself doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs). Also, see [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks).
+teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs). Also, see [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks).
 
 ## Community bots
 Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
