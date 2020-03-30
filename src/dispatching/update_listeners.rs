@@ -109,13 +109,15 @@ use crate::{
     bot::Bot,
     prelude::ResponseResult,
     requests::Request,
-    types::{AllowedUpdate, InputFile, Update},
+    types::{AllowedUpdate, Update},
     RequestError,
 };
+use either::Either;
 use reqwest::Url;
 use std::{
     convert::{Infallible, TryInto},
     net::SocketAddr,
+    path::Path,
     sync::Arc,
     time::Duration,
 };
@@ -208,22 +210,18 @@ pub fn polling(
     .flatten()
 }
 
-pub async fn webhook(
-    bot: Arc<Bot>,
-    addr: SocketAddr,
-    cert_path: &'static str,
-    key_path: &'static str,
+pub async fn webhook<KP, KB, CP, CB>(
     url: Url,
-    certificate: Option<InputFile>,
-    max_connections: Option<i32>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> ResponseResult<impl UpdateListener<Infallible>> {
-    let mut webhook = bot.set_webhook(url.to_string());
-    webhook.certificate = certificate;
-    webhook.max_connections = max_connections;
-    webhook.allowed_updates = allowed_updates;
-    webhook.send().await?;
-
+    addr: SocketAddr,
+    key: Either<KP, KB>,
+    cert: Either<CP, CB>,
+) -> ResponseResult<impl UpdateListener<Infallible>>
+where
+    KP: AsRef<Path>,
+    KB: AsRef<[u8]>,
+    CP: AsRef<Path>,
+    CB: AsRef<[u8]>,
+{
     let (tx, rx) = mpsc::unbounded_channel();
 
     let server = warp::post().and(warp::path(url)).and(warp::body::json()).map(
@@ -233,14 +231,19 @@ pub async fn webhook(
         },
     );
 
-    tokio::spawn(async move {
-        warp::serve(server)
-            .tls()
-            .cert_path(cert_path)
-            .key_path(key_path)
-            .run(addr)
-            .await;
-    });
+    let serve = warp::serve(server).tls();
+
+    let serve = match key {
+        Either::Left(path) => serve.key_path(path),
+        Either::Right(bytes) => serve.key(bytes),
+    };
+
+    let serve = match cert {
+        Either::Left(path) => serve.cert_path(path),
+        Either::Right(bytes) => serve.cert(bytes),
+    };
+
+    tokio::spawn(serve.run(addr));
 
     Ok(rx)
 }
