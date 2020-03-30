@@ -25,9 +25,6 @@ maintenance = { status = "actively-developed" }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[features]
-webhooks = ["warp"]
-
 [dependencies]
 serde_json = "1.0.44"
 serde = { version = "1.0.101", features = ["derive"] }
@@ -47,11 +44,8 @@ async-trait = "0.1.22"
 futures = "0.3.1"
 pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
-either = "1.5.3"
 
 teloxide-macros = "0.2.1"
-
-warp = { version = "0.2.2", features = ["tls"], optional = true }
 
 [dev-dependencies]
 smart-default = "0.6.0"
