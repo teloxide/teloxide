@@ -91,6 +91,9 @@
 //! <a id="4" href="#4b">^4</a> `offset = N` means that we've already received
 //!   updates `0..=N`.
 //!
+//! # Webhooks
+//! See the [README FAQ about webhooks](https://github.com/teloxide/teloxide/blob/master/README.md#can-i-use-webhooks).
+//!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
 //! [`polling`]: polling
