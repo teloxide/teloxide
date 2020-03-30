@@ -211,6 +211,8 @@ pub fn polling(
 pub async fn webhook(
     bot: Arc<Bot>,
     addr: SocketAddr,
+    cert_path: &'static str,
+    key_path: &'static str,
     url: Url,
     certificate: Option<InputFile>,
     max_connections: Option<i32>,
@@ -226,15 +228,18 @@ pub async fn webhook(
 
     let server = warp::post().and(warp::path(url)).and(warp::body::json()).map(
         move |update: Update| {
-            tx.send(Ok(update.clone()))
-                .expect("Cannot send an update from webhook");
+            tx.send(Ok(update)).expect("Cannot send an update from webhook");
             ""
         },
     );
 
     tokio::spawn(async move {
-        // TODO: Tls
-        warp::serve(server).run(addr).await;
+        warp::serve(server)
+            .tls()
+            .cert_path(cert_path)
+            .key_path(key_path)
+            .run(addr)
+            .await;
     });
 
     Ok(rx)
