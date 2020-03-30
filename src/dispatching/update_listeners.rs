@@ -210,6 +210,7 @@ pub fn polling(
     .flatten()
 }
 
+#[cfg(feature = "webhooks")]
 pub async fn webhook<KP, KB, CP, CB>(
     url: Url,
     addr: SocketAddr,
