@@ -29,10 +29,10 @@ use std::sync::Arc;
 pub struct SetWebhook {
     #[serde(skip_serializing)]
     bot: Arc<Bot>,
-    url: String,
-    certificate: Option<InputFile>,
-    max_connections: Option<i32>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
+    pub(crate) url: String,
+    pub(crate) certificate: Option<InputFile>,
+    pub(crate) max_connections: Option<i32>,
+    pub(crate) allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
 #[async_trait::async_trait]

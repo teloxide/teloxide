@@ -101,14 +101,24 @@
 //! [webhook]: https://en.wikipedia.org/wiki/Webhook
 
 use futures::{stream, Stream, StreamExt};
+use tokio::sync::mpsc;
+
+use warp::Filter;
 
 use crate::{
     bot::Bot,
+    prelude::ResponseResult,
     requests::Request,
-    types::{AllowedUpdate, Update},
+    types::{AllowedUpdate, InputFile, Update},
     RequestError,
 };
-use std::{convert::TryInto, sync::Arc, time::Duration};
+use reqwest::Url;
+use std::{
+    convert::{Infallible, TryInto},
+    net::SocketAddr,
+    sync::Arc,
+    time::Duration,
+};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
@@ -198,7 +208,34 @@ pub fn polling(
     .flatten()
 }
 
-// TODO implement webhook (this actually require webserver and probably we
-//   should add cargo feature that adds webhook)
-//pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl
-// Stream<Item=Result<Update, ???>> + 'a> {}
+pub async fn webhook(
+    bot: Arc<Bot>,
+    addr: SocketAddr,
+    url: Url,
+    certificate: Option<InputFile>,
+    max_connections: Option<i32>,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+) -> ResponseResult<impl UpdateListener<Infallible>> {
+    let mut webhook = bot.set_webhook(url.to_string());
+    webhook.certificate = certificate;
+    webhook.max_connections = max_connections;
+    webhook.allowed_updates = allowed_updates;
+    webhook.send().await?;
+
+    let (tx, rx) = mpsc::unbounded_channel();
+
+    let server = warp::post().and(warp::path(url)).and(warp::body::json()).map(
+        move |update: Update| {
+            tx.send(Ok(update.clone()))
+                .expect("Cannot send an update from webhook");
+            ""
+        },
+    );
+
+    tokio::spawn(async move {
+        // TODO: Tls
+        warp::serve(server).run(addr).await;
+    });
+
+    Ok(rx)
+}
