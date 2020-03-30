@@ -101,26 +101,15 @@
 //! [webhook]: https://en.wikipedia.org/wiki/Webhook
 
 use futures::{stream, Stream, StreamExt};
-use tokio::sync::mpsc;
-
-use warp::Filter;
 
 use crate::{
     bot::Bot,
-    prelude::ResponseResult,
     requests::Request,
     types::{AllowedUpdate, Update},
     RequestError,
 };
-use either::Either;
-use reqwest::Url;
-use std::{
-    convert::{Infallible, TryInto},
-    net::SocketAddr,
-    path::Path,
-    sync::Arc,
-    time::Duration,
-};
+
+use std::{convert::TryInto, sync::Arc, time::Duration};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
@@ -212,17 +201,21 @@ pub fn polling(
 
 #[cfg(feature = "webhooks")]
 pub async fn webhook<KP, KB, CP, CB>(
-    url: Url,
-    addr: SocketAddr,
-    key: Either<KP, KB>,
-    cert: Either<CP, CB>,
-) -> ResponseResult<impl UpdateListener<Infallible>>
+    url: reqwest::Url,
+    addr: std::net::SocketAddr,
+    key: either::Either<KP, KB>,
+    cert: either::Either<CP, CB>,
+) -> crate::prelude::ResponseResult<impl UpdateListener<std::convert::Infallible>>
 where
-    KP: AsRef<Path>,
+    KP: AsRef<std::path::Path>,
     KB: AsRef<[u8]>,
-    CP: AsRef<Path>,
+    CP: AsRef<std::path::Path>,
     CB: AsRef<[u8]>,
 {
+    use either::Either;
+    use tokio::sync::mpsc;
+    use warp::Filter;
+
     let (tx, rx) = mpsc::unbounded_channel();
 
     let server = warp::post().and(warp::path(url)).and(warp::body::json()).map(
