@@ -64,6 +64,9 @@ jobs:
           command: clippy
           args: --all-targets --all-features -- -D warnings
 
+      - name: Test the examples
+        run: cd examples && bash test_examples.sh
+
       - name: fmt
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'nightly'
