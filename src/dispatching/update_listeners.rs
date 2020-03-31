@@ -91,6 +91,9 @@
 //! <a id="4" href="#4b">^4</a> `offset = N` means that we've already received
 //!   updates `0..=N`.
 //!
+//! # Webhooks
+//! See the [README FAQ about webhooks](https://github.com/teloxide/teloxide/blob/master/README.md#can-i-use-webhooks).
+//!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
 //! [`polling`]: polling
@@ -108,6 +111,7 @@ use crate::{
     types::{AllowedUpdate, Update},
     RequestError,
 };
+
 use std::{convert::TryInto, sync::Arc, time::Duration};
 
 /// A generic update listener.
@@ -162,8 +166,8 @@ pub fn polling(
                             Err((value, _)) => value["update_id"]
                                 .as_i64()
                                 .expect(
-                                    "The 'update_id' field must always exist in \
-                                     Update",
+                                    "The 'update_id' field must always exist \
+                                     in Update",
                                 )
                                 .try_into()
                                 .expect("update_id must be i32"),
@@ -174,18 +178,7 @@ pub fn polling(
 
                     let updates = updates
                         .into_iter()
-                        .filter(|update| match update {
-                            Err((value, error)) => {
-                                log::error!("Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                        This is a bug in teloxide, please open an issue here: \
-                        https://github.com/teloxide/teloxide/issues.", error, value);
-                                false
-                            }
-                            Ok(_) => true,
-                        })
-                        .map(|update| {
-                            update.expect("See the previous .filter() call")
-                        })
+                        .filter_map(Result::ok)
                         .collect::<Vec<Update>>();
 
                     updates.into_iter().map(Ok).collect::<Vec<_>>()
@@ -197,8 +190,3 @@ pub fn polling(
     )
     .flatten()
 }
-
-// TODO implement webhook (this actually require webserver and probably we
-//   should add cargo feature that adds webhook)
-//pub fn webhook<'a>(bot: &'a  cfg: WebhookConfig) -> Updater<impl
-// Stream<Item=Result<Update, ???>> + 'a> {}
