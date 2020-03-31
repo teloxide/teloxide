@@ -70,3 +70,6 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+
+      - name: Test the examples
+        command: ./test_examples.sh
