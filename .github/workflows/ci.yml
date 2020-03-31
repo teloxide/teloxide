@@ -65,7 +65,7 @@ jobs:
           args: --all-targets --all-features -- -D warnings
 
       - name: Test the examples
-        run: ./.github/workflows/test_examples.sh
+        run: ./examples/test_examples.sh
 
       - name: fmt
         uses: actions-rs/cargo@v1
