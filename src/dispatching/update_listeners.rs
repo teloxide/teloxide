@@ -166,8 +166,8 @@ pub fn polling(
                             Err((value, _)) => value["update_id"]
                                 .as_i64()
                                 .expect(
-                                    "The 'update_id' field must always exist in \
-                                     Update",
+                                    "The 'update_id' field must always exist \
+                                     in Update",
                                 )
                                 .try_into()
                                 .expect("update_id must be i32"),
@@ -178,18 +178,7 @@ pub fn polling(
 
                     let updates = updates
                         .into_iter()
-                        .filter(|update| match update {
-                            Err((value, error)) => {
-                                log::error!("Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                        This is a bug in teloxide, please open an issue here: \
-                        https://github.com/teloxide/teloxide/issues.", error, value);
-                                false
-                            }
-                            Ok(_) => true,
-                        })
-                        .map(|update| {
-                            update.expect("See the previous .filter() call")
-                        })
+                        .filter_map(Result::ok)
                         .collect::<Vec<Update>>();
 
                     updates.into_iter().map(Ok).collect::<Vec<_>>()

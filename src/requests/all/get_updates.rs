@@ -52,8 +52,7 @@ impl Request for GetUpdates {
             Value::Array(array) => Ok(array
                 .into_iter()
                 .map(|value| {
-                    serde_json::from_str(&value.to_string())
-                        .map_err(|error| (value, error))
+                    Update::try_parse(&value).map_err(|error| (value, error))
                 })
                 .collect()),
             _ => Err(RequestError::InvalidJson(

@@ -36,18 +36,9 @@ pub async fn webhook<'a>(
     let server = warp::post()
         .and(warp::body::json())
         .map(move |json: serde_json::Value| {
-            match serde_json::from_str::<Update>(&json.to_string()) {
-                Ok(update) => tx
-                    .send(Ok(update))
-                    .expect("Cannot send an incoming update from the webhook"),
-                Err(error) => {
-                    // In this case, please report a bug at https://github.com/teloxide/teloxide/issues !!!
-                    log::error!(
-                        "Cannot parse Update: {}\nError: {}",
-                        json,
-                        error
-                    );
-                }
+            if let Ok(update) = Update::try_parse(&json) {
+                tx.send(Ok(update))
+                    .expect("Cannot send an incoming update from the webhook")
             }
 
             StatusCode::OK
