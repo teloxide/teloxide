@@ -65,7 +65,7 @@ jobs:
           args: --all-targets --all-features -- -D warnings
 
       - name: Test the examples
-        run: bash examples/test_examples.sh
+        run: cd examples && bash test_examples.sh
 
       - name: fmt
         uses: actions-rs/cargo@v1
