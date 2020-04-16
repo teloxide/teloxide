@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::Sticker;
+use crate::types::{Sticker, PhotoSize};
 
 /// This object represents a sticker set.
 ///
@@ -23,4 +23,7 @@ pub struct StickerSet {
 
     /// List of all set stickers.
     pub stickers: Vec<Sticker>,
+
+    /// Optional. Sticker set thumbnail in the .WEBP or .TGS format
+    pub thumb: Option<PhotoSize>,
 }
