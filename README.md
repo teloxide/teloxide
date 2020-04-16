@@ -38,7 +38,7 @@
 
  - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs. Bot's commands [have precise types too](https://github.com/teloxide/teloxide#commands), thereby serving as a self-documenting code and respecting the [parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) programming idiom.
 
- - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
+ - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
   
  - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
  and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
