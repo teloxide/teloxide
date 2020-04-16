@@ -36,7 +36,7 @@
 ## Features
  - **Functional design.** Instead of writing separate handlers for every possible user action, all having access to some shared mutable state, you treat external events as a [stream](https://docs.rs/futures/latest/futures/prelude/trait.Stream.html) and apply a series of transformations to it.
 
- - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
+ - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs. Bot's commands [have precise types too](https://github.com/teloxide/teloxide#commands), thereby serving as a self-documenting code and respecting the [parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) programming idiom.
 
  - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
   
