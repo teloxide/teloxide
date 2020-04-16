@@ -17,6 +17,7 @@ pub struct AddStickerToSet {
     user_id: i32,
     name: String,
     png_sticker: InputFile,
+    tgs_sticker: Option<InputFile>,
     emojis: String,
     mask_position: Option<MaskPosition>,
 }
@@ -36,6 +37,8 @@ impl Request for AddStickerToSet {
                 .add("name", &self.name)
                 .await
                 .add("png_sticker", &self.png_sticker)
+                .await
+                .add("tgs_sticker", &self.tgs_sticker)
                 .await
                 .add("emojis", &self.emojis)
                 .await
@@ -65,6 +68,7 @@ impl AddStickerToSet {
             name: name.into(),
             png_sticker,
             emojis: emojis.into(),
+            tgs_sticker: None,
             mask_position: None,
         }
     }
@@ -98,6 +102,13 @@ impl AddStickerToSet {
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn png_sticker(mut self, val: InputFile) -> Self {
         self.png_sticker = val;
+        self
+    }
+    /// **TGS** animation with the sticker, uploaded using multipart/form-data.
+    /// See https://core.telegram.org/animated_stickers#technical-requirements
+    /// for technical requirements
+    pub fn tgs_sticker(mut self, val: InputFile) -> Self {
+        self.tgs_sticker = Some(val);
         self
     }
 
