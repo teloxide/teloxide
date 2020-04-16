@@ -10,7 +10,7 @@ use crate::{
         GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
-        SendAudio, SendChatAction, SendChatActionKind, SendContact,
+        SendAudio, SendChatAction, SendChatActionKind, SendContact, SendDice,
         SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
         SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
         SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
@@ -1585,6 +1585,19 @@ impl Bot {
             chat_id,
             user_id,
             custom_title,
+        )
+    }
+
+    pub fn send_dice<C>(
+        self: &Arc<Bot>,
+        chat_id: C,
+    ) -> SendDice
+    where
+        C: Into<ChatId>,
+    {
+        SendDice::new(
+            Arc::clone(self),
+            chat_id,
         )
     }
 }

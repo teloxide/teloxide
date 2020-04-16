@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{
     chat::{ChatKind, NonPrivateChatKind},
-    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
+    Animation, Audio, Chat, Contact, Dice, Document, Game, InlineKeyboardMarkup,
     Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
     SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
 };
@@ -214,6 +214,9 @@ pub enum MediaKind {
         /// Message is a shared contact, information about the contact.
         contact: Contact,
     },
+    Dice {
+        dice: Dice,
+    },
     Document {
         /// Message is a general file, information about the file.
         document: Document,
@@ -319,8 +322,8 @@ mod getters {
         message::{
             ForwardKind::{ChannelForward, NonChannelForward, Origin},
             MediaKind::{
-                Animation, Audio, Contact, Document, Game, Location, Photo,
-                Poll, Sticker, Text, Venue, Video, VideoNote, Voice,
+                Animation, Audio, Contact, Dice, Document, Game, Location,
+                Photo, Poll, Sticker, Text, Venue, Video, VideoNote, Voice,
             },
             MessageKind::{
                 ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto,
@@ -477,6 +480,13 @@ mod getters {
         pub fn audio(&self) -> Option<&types::Audio> {
             match &self.kind {
                 Common { media_kind: Audio { audio, .. }, .. } => Some(audio),
+                _ => None,
+            }
+        }
+        
+        pub fn dice(&self) -> Option<&types::Dice> {
+            match &self.kind {
+                Common { media_kind: Dice { dice, .. }, .. } => Some(dice),
                 _ => None,
             }
         }

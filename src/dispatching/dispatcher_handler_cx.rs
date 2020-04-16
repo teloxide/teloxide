@@ -2,9 +2,9 @@ use crate::{
     dispatching::dialogue::GetChatId,
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
-        PinChatMessage, SendAnimation, SendAudio, SendContact, SendDocument,
-        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendSticker,
-        SendVenue, SendVideo, SendVideoNote, SendVoice,
+        PinChatMessage, SendAnimation, SendAudio, SendContact, SendDice,
+        SendDocument, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
+        SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -60,7 +60,11 @@ impl DispatcherHandlerCx<Message> {
     pub fn answer_animation(&self, animation: InputFile) -> SendAnimation {
         self.bot.send_animation(self.update.chat.id, animation)
     }
-
+    
+    pub fn answer_dice(&self) -> SendDice {
+        self.bot.send_dice(self.update.chat.id)
+    }
+    
     pub fn answer_document(&self, document: InputFile) -> SendDocument {
         self.bot.send_document(self.update.chat.id, document)
     }
