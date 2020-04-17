@@ -3,6 +3,7 @@
 pub use allowed_update::*;
 pub use animation::*;
 pub use audio::*;
+pub use bot_commands::*;
 pub use callback_game::*;
 pub use callback_query::*;
 pub use chat::*;
@@ -93,6 +94,7 @@ pub use webhook_info::*;
 mod allowed_update;
 mod animation;
 mod audio;
+mod bot_commands;
 mod callback_game;
 mod callback_query;
 mod chat;

@@ -7,7 +7,7 @@ use crate::{
         EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup,
         EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
         GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile,
-        GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
+        GetGameHighScores, GetMe, GetMyCommands, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
         SendAudio, SendChatAction, SendChatActionKind, SendContact, SendDice,
@@ -1599,5 +1599,9 @@ impl Bot {
             Arc::clone(self),
             chat_id,
         )
+    }
+
+    pub fn get_my_commands(self: &Arc<Bot>) -> GetMyCommands {
+        GetMyCommands::new(Arc::clone(self))
     }
 }
