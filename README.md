@@ -34,14 +34,31 @@
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
- - **Higher-order design.** teloxide supports [higher-order programming](https://en.wikipedia.org/wiki/Higher-order_programming) by making [streams](https://docs.rs/futures/latest/futures/prelude/trait.Stream.html) a [first-class citizen](https://en.wikipedia.org/wiki/First-class_citizen): feel free to demultiplex them, apply arbitrary transformations, pass to/return from other functions, [lazily evaluate them](https://en.wikipedia.org/wiki/Lazy_evaluation), concurrently process their items, and much more, thereby achieving extremely flexible design.
+<h3 align="center">Higher-order design</h3>
+<p align="center">
+teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to demultiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
+</p>
 
- - **Type-safe.** All the API [types](https://docs.rs/teloxide/latest/teloxide/types/index.html) and [methods](https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs. Bot's commands [have precise types too](https://github.com/teloxide/teloxide#commands), thereby serving as a self-documenting code and respecting the [parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) programming idiom.
+<hr>
 
- - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing [2 functions](https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html).
-  
- - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
- and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
+<h3 align="center">Type safety</h3>
+<p align="center">
+All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html">methods</a> are implemented with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> to enforce type-safety and tight integration with IDEs. Bot&#39;s commands <a href="https://github.com/teloxide/teloxide#commands">have precise types too</a>, thereby serving as a self-documenting code and respecting the <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">parse, don&#39;t validate</a> programming idiom.
+</p>
+
+<hr>
+
+<h3 align="center">Persistency</h3>
+<p align="center">
+By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing <a href="https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html">2 functions</a>.
+</p>
+
+<hr>
+
+<h3 align="center">Convenient dialogues management</h3>
+<p align="center">
+Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
+</p>
  
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
