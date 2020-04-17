@@ -36,7 +36,7 @@
 ## Features
 <h3 align="center">Higher-order design</h3>
 <p align="center">
-teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to demultiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
+teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to (de)multiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
 </p>
 
 <hr>
@@ -59,7 +59,7 @@ By default, teloxide stores all user dialogues in RAM, but you can store them so
 <p align="center">
 Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
 </p>
- 
+
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
