@@ -34,17 +34,32 @@
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
- - **Declarative API.** You tell teloxide what you want instead of describing what to do.
+<h3 align="center">Higher-order design</h3>
+<p align="center">
+teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to (de)multiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
+</p>
 
- - **Type-safe.** All the [API types and methods](https://core.telegram.org/bots/api) are implemented with heavy use of [**ADT**s](https://en.wikipedia.org/wiki/Algebraic_data_type) to enforce type-safety and tight integration with IDEs.
+<hr>
 
- - **Flexible API.** Updates are represented as [streams](https://docs.rs/futures/0.3.4/futures/stream/index.html): you can express your business logic using [all 30+ adaptors](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html), each having distinct semantics (see [simple-commands-bot](#commands) below).
+<h3 align="center">Type safety</h3>
+<p align="center">
+All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html">methods</a> are implemented with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> to enforce type safety and tight integration with IDEs. Bot&#39;s commands <a href="https://github.com/teloxide/teloxide#commands">have precise types too</a>, thereby serving as a self-documenting code and respecting the <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">parse, don&#39;t validate</a> programming idiom.
+</p>
 
- - **Persistency.** By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in DB) just by implementing 2 functions.
-  
- - **Convenient dialogues system.** Define a type-safe [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine)
- and transition functions to drive a user dialogue with ease (see [the guess-a-number example](#guess-a-number) below).
- 
+<hr>
+
+<h3 align="center">Persistency</h3>
+<p align="center">
+By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing <a href="https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html">2 functions</a>.
+</p>
+
+<hr>
+
+<h3 align="center">Convenient dialogues management</h3>
+<p align="center">
+Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
+</p>
+
 ## Getting started
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
@@ -244,7 +259,7 @@ async fn main() {
   <br/><br/>
 </div>
 
-Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it will lead is to lots of unpleasure `.unwrap()`s.
+Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it would lead us to lots of unpleasant `.unwrap()`s.
 
 Remember that a classical [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine) is defined by its initial state, a list of its possible states and a transition function? We can think that `Dialogue` is a finite automaton with a context type at each state (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
 
@@ -279,10 +294,17 @@ The second one produces very strange compiler messages because of the `#[tokio::
 
 ## FAQ
 ### Where I can ask questions?
-[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in our official group: https://t.me/teloxide.
+[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
 
 ### Why Rust?
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+
+### Can I use webhooks?
+teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs).
+
+Associated links:
+ - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
+ - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
 
 ## Community bots
 Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.

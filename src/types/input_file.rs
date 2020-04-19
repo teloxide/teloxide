@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use std::path::PathBuf;
+use std::{borrow::Cow, path::PathBuf};
 
 /// This object represents the contents of a file to be uploaded.
 ///
@@ -8,6 +8,7 @@ use std::path::PathBuf;
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Deserialize)]
 pub enum InputFile {
     File(PathBuf),
+    Memory { file_name: String, data: Cow<'static, [u8]> },
     Url(String),
     FileId(String),
 }
@@ -18,6 +19,14 @@ impl InputFile {
         P: Into<PathBuf>,
     {
         Self::File(path.into())
+    }
+
+    pub fn memory<S, D>(file_name: S, data: D) -> Self
+    where
+        S: Into<String>,
+        D: Into<Cow<'static, [u8]>>,
+    {
+        Self::Memory { file_name: file_name.into(), data: data.into() }
     }
 
     pub fn url<T>(url: T) -> Self
@@ -81,6 +90,14 @@ impl Serialize for InputFile {
                         path.file_name().unwrap().to_string_lossy()
                     ),
                 )
+            }
+            InputFile::Memory { data, .. } => {
+                // NOTE: file should be actually attached with
+                // multipart/form-data
+                serializer.serialize_str(&format!(
+                    "attach://{}",
+                    String::from_utf8_lossy(data)
+                ))
             }
             InputFile::Url(url) => serializer.serialize_str(url),
             InputFile::FileId(id) => serializer.serialize_str(id),

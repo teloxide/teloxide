@@ -153,7 +153,10 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
 
 async fn handle_message(cx: Cx<Dialogue>) -> Res {
     let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
-    match dialogue.unwrap() {
+
+    // You need handle the error instead of panicking in real-world code, maybe
+    // send diagnostics to a development chat.
+    match dialogue.expect("Failed to get dialogue info from storage") {
         Dialogue::Start => {
             start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
         }
@@ -186,10 +189,8 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| {
-            async move {
-                handle_message(cx).await.expect("Something wrong with the bot!")
-            }
+        .messages_handler(DialogueDispatcher::new(|cx| async move {
+            handle_message(cx).await.expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;

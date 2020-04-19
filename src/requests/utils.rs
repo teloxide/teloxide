@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{borrow::Cow, path::PathBuf};
 
 use bytes::{Bytes, BytesMut};
 use reqwest::{multipart::Part, Body};
@@ -33,4 +33,11 @@ pub async fn file_to_part(path_to_file: PathBuf) -> Part {
     );
 
     Part::stream(Body::wrap_stream(file)).file_name(file_name)
+}
+
+pub fn file_from_memory_to_part(
+    data: Cow<'static, [u8]>,
+    name: String,
+) -> Part {
+    Part::bytes(data).file_name(name)
 }

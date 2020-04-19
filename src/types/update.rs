@@ -6,6 +6,7 @@ use crate::types::{
     CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
     PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
+use serde_json::Value;
 
 /// This [object] represents an incoming update.
 ///
@@ -28,6 +29,23 @@ pub struct Update {
 
     #[serde(flatten)]
     pub kind: UpdateKind,
+}
+
+impl Update {
+    /// Tries to parse `value` into `Update`, logging an error if failed.
+    ///
+    /// It is used to implement update listeners.
+    pub fn try_parse(value: &Value) -> Result<Self, serde_json::Error> {
+        match serde_json::from_str(&value.to_string()) {
+            Ok(update) => Ok(update),
+            Err(error) => {
+                log::error!("Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                        This is a bug in teloxide, please open an issue here: \
+                        https://github.com/teloxide/teloxide/issues.", error, value);
+                Err(error)
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
