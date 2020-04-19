@@ -198,10 +198,12 @@ async fn run() {
                 handle_message(cx).await.expect("Something wrong with the bot!")
             },
             Arc::new(
-                // You can also choose Serializer::JSON or Serializer::Bincode
-                // All serializer but JSON require enabling feature "serializer-<name>",
-                // e. g. "serializer-cbor" or "serializer-bincode"
-                RedisStorage::open("redis://127.0.0.1:6379", Serializer::CBOR)
+                // You can also choose Serializer::JSON or Serializer::CBOR
+                // All serializer but JSON require enabling feature
+                // "serializer-<name>", e. g. "serializer-cbor"
+                // or "serializer-bincode"
+                RedisStorage::open("redis://127.0.0.1:6379", Serializer::Bincode)
+                    .await
                     .unwrap(),
             ),
         ))
