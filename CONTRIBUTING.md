@@ -7,14 +7,8 @@ To change the source code, fork the `master` branch of this repository and work 
 cargo clippy --all --all-features --all-targets
 cargo test --all
 cargo doc --open
-cargo fmt --all -- --check
+# Using nightly rustfmt
+cargo +nightly fmt --all -- --check
 ```
 
 To report a bug, suggest new functionality, or ask a question, go to [Issues](https://github.com/teloxide/teloxide/issues). Try to make MRE (**M**inimal **R**eproducible **E**xample) and specify your teloxide version to let others help you.
-
-
-And don't forget to switch to the nightly channel in order to be able to run `cargo fmt` (because our [rustfmt.toml](https://github.com/teloxide/teloxide/blob/master/rustfmt.toml) requires some nightly-only functionality):
-
-```bash
-$ rustup override set nightly
-```
