@@ -56,4 +56,4 @@ pub use dialogue_stage::{exit, next, DialogueStage};
 pub use get_chat_id::GetChatId;
 #[cfg(feature = "redis-storage")]
 pub use storage::RedisStorage;
-pub use storage::{InMemStorage, Serializer, Storage};
+pub use storage::{serializer, InMemStorage, Serializer, Storage};

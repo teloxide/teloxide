@@ -1,53 +1,63 @@
 use serde::{de::DeserializeOwned, ser::Serialize};
-use thiserror::Error;
-use Serializer::*;
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("failed parsing/serializing JSON: {0}")]
-    JSONError(#[from] serde_json::Error),
-    #[cfg(feature = "cbor-serializer")]
-    #[error("failed parsing/serializing CBOR: {0}")]
-    CBORError(#[from] serde_cbor::Error),
-    #[cfg(feature = "bincode-serializer")]
-    #[error("failed parsing/serializing Bincode: {0}")]
-    BincodeError(#[from] bincode::Error),
+pub trait Serializer<D> {
+    type Error;
+
+    fn serialize(&self, val: &D) -> Result<Vec<u8>, Self::Error>;
+    fn deserialize(&self, data: &[u8]) -> Result<D, Self::Error>;
 }
 
-type Result<T, E = Error> = std::result::Result<T, E>;
+pub struct JSON;
 
-pub enum Serializer {
-    JSON,
-    #[cfg(feature = "cbor-serializer")]
-    CBOR,
-    #[cfg(feature = "bincode-serializer")]
-    Bincode,
-}
+impl<D> Serializer<D> for JSON
+where
+    D: Serialize + DeserializeOwned,
+{
+    type Error = serde_json::Error;
 
-impl Serializer {
-    pub fn serialize<D>(&self, val: &D) -> Result<Vec<u8>>
-    where
-        D: Serialize,
-    {
-        Ok(match self {
-            JSON => serde_json::to_vec(val)?,
-            #[cfg(feature = "cbor-serializer")]
-            CBOR => serde_cbor::to_vec(val)?,
-            #[cfg(feature = "bincode-serializer")]
-            Bincode => bincode::serialize(val)?,
-        })
+    fn serialize(&self, val: &D) -> Result<Vec<u8>, Self::Error> {
+        serde_json::to_vec(val)
     }
 
-    pub fn deserialize<'de, D>(&self, data: &'de [u8]) -> Result<D>
-    where
-        D: DeserializeOwned,
-    {
-        Ok(match self {
-            JSON => serde_json::from_slice(data)?,
-            #[cfg(feature = "cbor-serializer")]
-            CBOR => serde_cbor::from_slice(data)?,
-            #[cfg(feature = "bincode-serializer")]
-            Bincode => bincode::deserialize(data)?,
-        })
+    fn deserialize(&self, data: &[u8]) -> Result<D, Self::Error> {
+        serde_json::from_slice(data)
+    }
+}
+
+#[cfg(feature = "cbor-serializer")]
+pub struct CBOR;
+
+#[cfg(feature = "cbor-serializer")]
+impl<D> Serializer<D> for CBOR
+where
+    D: Serialize + DeserializeOwned,
+{
+    type Error = serde_cbor::Error;
+
+    fn serialize(&self, val: &D) -> Result<Vec<u8>, Self::Error> {
+        serde_cbor::to_vec(val)
+    }
+
+    fn deserialize(&self, data: &[u8]) -> Result<D, Self::Error> {
+        serde_cbor::from_slice(data)
+    }
+}
+
+#[cfg(feature = "bincode-serializer")]
+pub struct Bincode;
+
+#[cfg(feature = "bincode-serializer")]
+impl<D> Serializer<D> for Bincode
+where
+    D: Serialize + DeserializeOwned,
+{
+    type Error = bincode::Error;
+
+    fn serialize(&self, val: &D) -> Result<Vec<u8>, Self::Error> {
+        bincode::serialize(val)
+    }
+
+    fn deserialize(&self, data: &[u8]) -> Result<D, Self::Error> {
+        bincode::deserialize(data)
     }
 }

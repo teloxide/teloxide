@@ -23,7 +23,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 use teloxide::{
-    dispatching::dialogue::{RedisStorage, Serializer, Storage},
+    dispatching::dialogue::{serializer::Bincode, RedisStorage, Storage},
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
 };
@@ -94,7 +94,7 @@ enum Dialogue {
 type Cx<State> = DialogueDispatcherHandlerCx<
     Message,
     State,
-    <RedisStorage as Storage<Dialogue>>::Error,
+    <RedisStorage<Bincode> as Storage<Dialogue>>::Error,
 >;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
@@ -202,7 +202,7 @@ async fn run() {
                 // All serializer but JSON require enabling feature
                 // "serializer-<name>", e. g. "serializer-cbor"
                 // or "serializer-bincode"
-                RedisStorage::open("redis://127.0.0.1:6379", Serializer::Bincode)
+                RedisStorage::open("redis://127.0.0.1:6379", Bincode)
                     .await
                     .unwrap(),
             ),
