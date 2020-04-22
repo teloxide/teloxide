@@ -9,6 +9,7 @@ use crate::{
 use futures::{stream::BoxStream, Stream, StreamExt as _};
 use std::{fmt::Debug, sync::Arc};
 
+/// Common methods for working with streams.
 pub trait StreamExt {
     fn with_bot<Upd, E>(
         self,
@@ -27,6 +28,7 @@ pub trait StreamExt {
         E: Send + 'static,
         Upd: Send + 'static;
 
+    /// Sets a default logging handler and returns only messages.
     fn basic_config<E>(self) -> BoxStream<'static, UpdateWithCx<Message>>
     where
         Self: Stream<Item = Result<UpdateWithCx<Update>, E>>,
@@ -114,7 +116,6 @@ where
         .boxed()
     }
 
-    /// Extracts only text messages from this stream of arbitrary messages.
     fn text_messages(
         self,
     ) -> BoxStream<'static, (UpdateWithCx<Message>, String)>
@@ -127,8 +128,6 @@ where
         .boxed()
     }
 
-    /// Extracts only commands with their arguments from this stream of
-    /// arbitrary messages.
     fn commands<C, N>(
         self,
         bot_name: N,

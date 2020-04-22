@@ -1,7 +1,8 @@
 use crate::dispatching::{
     dialogue::{
+        storage::{InMemStorage, Storage},
         DialogueDispatcherHandler, DialogueDispatcherHandlerCx, DialogueStage,
-        GetChatId, InMemStorage, Storage,
+        GetChatId,
     },
     UpdateWithCx,
 };

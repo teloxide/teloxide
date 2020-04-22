@@ -47,11 +47,10 @@ mod dialogue_dispatcher_handler;
 mod dialogue_dispatcher_handler_cx;
 mod dialogue_stage;
 mod get_chat_id;
-mod storage;
+pub mod storage;
 
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_dispatcher_handler_cx::DialogueDispatcherHandlerCx;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use get_chat_id::GetChatId;
-pub use storage::{InMemStorage, Storage};
