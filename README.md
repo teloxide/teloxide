@@ -142,7 +142,7 @@ fn generate() -> String {
 }
 
 async fn answer(
-    cx: DispatcherHandlerCx<Message>,
+    cx: UpdateWithCx<Message>,
     command: Command,
 ) -> ResponseResult<()> {
     match command {
@@ -154,19 +154,18 @@ async fn answer(
     Ok(())
 }
 
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through commands in a proper format:
-    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        // Execute all incoming commands concurrently:
+#[tokio::main]
+async fn main() {
+    // Setup is omitted...
+
+    polling_default(bot)
+        .basic_config()
+        // Only iterate through commands in a proper format:
+        .commands::<Command, &str>(panic!("Insert here your bot's name"))
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;
         })
         .await;
-}
-
-#[tokio::main]
-async fn main() {
-    // Setup is omitted...
 }
 ```
 

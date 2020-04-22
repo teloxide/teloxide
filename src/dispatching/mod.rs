@@ -79,8 +79,8 @@
 
 pub mod dialogue;
 mod stream_ext;
-mod update_with_cx;
 pub mod update_listeners;
+mod update_with_cx;
 
-pub use update_with_cx::UpdateWithCx;
 pub use stream_ext::StreamExt;
+pub use update_with_cx::UpdateWithCx;
