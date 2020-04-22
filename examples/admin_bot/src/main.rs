@@ -64,7 +64,7 @@ fn parse_time_restrict(args: &[String]) -> Result<i32, &str> {
     calc_restrict_time(num, unit)
 }
 
-type Cx = DispatcherHandlerCx<Message>;
+type Cx = UpdateWithCx<Message>;
 
 // Mute a user with a replied message.
 async fn mute_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
@@ -158,7 +158,7 @@ async fn ban_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
 }
 
 async fn action(
-    cx: DispatcherHandlerCx<Message>,
+    cx: Cx,
     command: Command,
     args: &[String],
 ) -> ResponseResult<()> {
@@ -174,19 +174,6 @@ async fn action(
     Ok(())
 }
 
-// Handle all messages.
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through messages from groups:
-    rx.filter(|cx| future::ready(cx.update.chat.is_group()))
-        // Only iterate through commands in a proper format:
-        .commands::<Command, &str>(panic!("Insert here your bot's name"))
-        // Execute all incoming commands concurrently:
-        .for_each_concurrent(None, |(cx, command, args)| async move {
-            action(cx, command, &args).await.log_on_error().await;
-        })
-        .await;
-}
-
 #[tokio::main]
 async fn main() {
     run().await;
@@ -198,5 +185,14 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await
+    polling_default(bot)
+        .basic_config()
+        // Only iterate through messages from groups:
+        .filter(|cx| future::ready(cx.update.chat.is_group()))
+        // Only iterate through commands in a proper format:
+        .commands::<Command, &str>(panic!("Insert here your bot's name"))
+        .for_each_concurrent(None, |(cx, command, args)| async move {
+            action(cx, command, &args).await.log_on_error().await;
+        })
+        .await;
 }
