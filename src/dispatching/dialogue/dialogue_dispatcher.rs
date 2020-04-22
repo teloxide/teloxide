@@ -222,7 +222,7 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueUpdateWithCx<MyUpdate, (), Infallible>| async move {
+            |cx: DialogueDispatcherHandlerCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
                 match cx.update {

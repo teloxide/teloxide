@@ -1,13 +1,14 @@
 //! Receiving updates from Telegram.
 //!
-//! The key trait here is [`UpdateListener`]. You can get it by these functions:
+//! The key trait here is [`UpdateListener`]. You can get an instance of it by
+//! these functions:
 //!
 //!  - [`polling_default`], which returns a default long polling listener.
 //!  - [`polling`], which returns a long/short polling listener with your
 //!    configuration.
 //!
-//! And then you can extract updates from it and pass them directly to a
-//! dispatcher.
+//! And then apply a series of transformations to it, as discussed
+//! [here](crate::dispatching).
 //!
 //! Telegram supports two ways of [getting updates]: [long]/[short] polling and
 //! [webhook].
@@ -126,7 +127,7 @@ impl<S, E> UpdateListener<E> for S where
 {
 }
 
-/// Returns a long polling update listener with `timeout` of 1 minute.
+/// Returns a long polling update listener with a timeout of 1 minute.
 ///
 /// See also: [`polling`](polling).
 pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {

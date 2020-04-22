@@ -1,4 +1,4 @@
-// This bot just answers "pong" to each incoming UpdateKind::Message.
+// This bot just answers "pong" to each incoming message.
 
 use teloxide::prelude::*;
 

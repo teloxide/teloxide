@@ -11,25 +11,14 @@ use crate::{
 };
 use std::sync::Arc;
 
-/// A [`Dispatcher`]'s handler's context of a bot and an update.
+/// A bot and an update with convenient methods.
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
-///
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
 pub struct UpdateWithCx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,
-}
-
-impl<Upd> UpdateWithCx<Upd> {
-    pub fn with_new_update<NewUpd>(
-        self,
-        new_update: NewUpd,
-    ) -> UpdateWithCx<NewUpd> {
-        UpdateWithCx { bot: self.bot, update: new_update }
-    }
 }
 
 impl<Upd> GetChatId for UpdateWithCx<Upd>

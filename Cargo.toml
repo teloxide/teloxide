@@ -45,8 +45,6 @@ futures = "0.3.1"
 pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
 demux-stream = "0.3.0"
-enum_extract = "0.1.1"
-frunk = "0.3.1"
 
 teloxide-macros = "0.2.1"
 

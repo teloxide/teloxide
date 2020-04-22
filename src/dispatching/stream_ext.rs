@@ -10,7 +10,11 @@ use futures::{stream::BoxStream, Stream, StreamExt as _};
 use std::{fmt::Debug, sync::Arc};
 
 /// Common methods for working with streams.
+///
+/// See [the module-level documentation for the design
+/// overview](crate::dispatching).
 pub trait StreamExt {
+    /// Typically used inside update listeners.
     fn with_bot<Upd, E>(
         self,
         bot: Arc<Bot>,

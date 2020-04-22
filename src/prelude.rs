@@ -15,9 +15,5 @@ pub use crate::{
     Bot, RequestError,
 };
 
-pub use tokio::sync::mpsc::UnboundedReceiver;
-
 pub use demux_stream::*;
-pub use enum_extract::extract;
-pub use frunk::{Coprod, Hlist};
 pub use futures::StreamExt as _;

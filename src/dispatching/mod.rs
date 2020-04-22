@@ -1,61 +1,34 @@
 //! Updates dispatching.
 //!
-//! The key type here is [`Dispatcher`]. It encapsulates [`Bot`] and handlers
-//! for [the 11 update kinds].
+//! teloxide has no dispatcher like in other Telegram libraries, instead you
+//! apply a series of transformations to updates to dispatch them. To get these
+//! updates, you need an [update listener].
 //!
-//! You can register a maximum of 11 handlers for [the 11 update kinds]. Every
-//! handler accept [`tokio::sync::mpsc::UnboundedReceiver`] (the RX halve of an
-//! asynchronous unbounded MPSC channel). Inside a body of your handler, you
-//! typically asynchronously concurrently iterate through updates like this:
-//!
-//! ```
-//! use teloxide::prelude::*;
-//!
-//! async fn handle_messages(rx: DispatcherHandlerRx<Message>) {
-//!     rx.for_each_concurrent(None, |message| async move {
-//!         dbg!(message);
-//!     })
-//!     .await;
-//! }
-//! ```
-//!
-//! When [`Update`] is received from Telegram, [`Dispatcher`] pushes it into an
-//! appropriate handler, depending on its kind. That's simple!
-//!
-//! **Note** that handlers must implement [`DispatcherHandler`], which means
-//! that:
-//!  - You are able to supply [`DialogueDispatcher`] as a handler.
-//!  - You are able to supply functions that accept
-//!    [`tokio::sync::mpsc::UnboundedReceiver`] and return `Future<Output = ()`
-//!    as a handler.
-//!
-//! Since they implement [`DispatcherHandler`] too!
+//! [`StreamExt`] is a very useful trait here: it provides common methods for
+//! working with streams.
 //!
 //! # Examples
-//! ### The ping-pong bot
-//! This bot has a single message handler, which answers "pong" to each incoming
-//! message:
+//! ## The ping-pong bot
+//! This bot just answers "pong" to each incoming message:
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
-//! # #[tokio::main]
-//! # async fn main_() {
-//! teloxide::enable_logging!();
-//! log::info!("Starting ping_pong_bot!");
+//! #[tokio::main]
+//! async fn main_() {
+//!     teloxide::enable_logging!();
+//!     log::info!("Starting ping_pong_bot!");
 //!
-//! let bot = Bot::from_env();
+//!     let bot = Bot::from_env();
 //!
-//! Dispatcher::new(bot)
-//!     .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-//!         rx.for_each(|message| async move {
+//!     polling_default(bot)
+//!         .basic_config()
+//!         .for_each_concurrent(None, |message| async move {
 //!             message.answer("pong").send().await.log_on_error().await;
 //!         })
-//!     })
-//!     .dispatch()
-//!     .await;
-//! # }
+//!         .await;
+//! }
 //! ```
 //!
 //! <div align="center">
@@ -66,16 +39,8 @@
 //!
 //! [See more examples](https://github.com/teloxide/teloxide/tree/master/examples).
 //!
-//! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [the 11 update kinds]: crate::types::UpdateKind
-//! [`Update`]: crate::types::Update
-//! [`ErrorHandler`]: crate::dispatching::ErrorHandler
-//! [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-//! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
-//! [`DispatcherHandlerResult`]: crate::dispatching::DispatcherHandlerResult
-//! [`Bot`]: crate::Bot
-//! [`tokio::sync::mpsc::UnboundedReceiver`]: https://docs.rs/tokio/0.2.11/tokio/sync/mpsc/struct.UnboundedReceiver.html
-//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
+//! [update listener]: crate::dispatching::update_listeners::UpdateListener
+//! [`StreamExt`]: crate::dispatching::StreamExt
 
 pub mod dialogue;
 mod stream_ext;
