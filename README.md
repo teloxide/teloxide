@@ -30,6 +30,7 @@
  - [FAQ](https://github.com/teloxide/teloxide#faq)
    - [Where I can ask questions?](https://github.com/teloxide/teloxide#where-i-can-ask-questions)
    - [Why Rust?](https://github.com/teloxide/teloxide#why-rust)
+   - [Can I use different loggers?](https://github.com/teloxide/teloxide#can-i-use-different-loggers)
  - [Community bots](https://github.com/teloxide/teloxide#community-bots)
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
@@ -305,6 +306,9 @@ teloxide doesn't provide special API for working with webhooks due to their natu
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
+
+### Can I use different loggers?
+Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
 
 ## Community bots
 Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
