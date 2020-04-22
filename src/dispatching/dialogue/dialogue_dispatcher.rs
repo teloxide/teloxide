@@ -3,11 +3,11 @@ use crate::dispatching::{
         DialogueDispatcherHandler, DialogueDispatcherHandlerCx, DialogueStage,
         GetChatId, InMemStorage, Storage,
     },
-    DispatcherHandler, DispatcherHandlerCx,
+    UpdateWithCx,
 };
 use std::{convert::Infallible, marker::PhantomData};
 
-use futures::{future::BoxFuture, StreamExt};
+use futures::{future::BoxFuture, FutureExt, Stream, StreamExt};
 use tokio::sync::mpsc;
 
 use lockfree::map::Map;
@@ -34,7 +34,7 @@ pub struct DialogueDispatcher<D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<Upd>>>>,
 }
 
 impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
@@ -78,14 +78,14 @@ where
     }
 
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<DispatcherHandlerCx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<Upd>> {
         let (tx, rx) = mpsc::unbounded_channel();
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(rx.for_each(move |cx: DispatcherHandlerCx<Upd>| {
+        tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
@@ -134,7 +134,7 @@ where
     }
 }
 
-impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
+impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
@@ -142,43 +142,43 @@ where
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
 {
-    fn handle(
-        self,
-        updates: mpsc::UnboundedReceiver<DispatcherHandlerCx<Upd>>,
-    ) -> BoxFuture<'static, ()>
+    pub fn handle<_Stream>(self, updates: _Stream) -> BoxFuture<'static, ()>
     where
-        DispatcherHandlerCx<Upd>: 'static,
+        Upd: 'static,
+        _Stream: Stream<Item = UpdateWithCx<Upd>> + Send + 'static,
     {
         let this = Arc::new(self);
 
-        Box::pin(updates.for_each(move |cx| {
-            let this = Arc::clone(&this);
-            let chat_id = cx.update.chat_id();
+        updates
+            .for_each(move |cx| {
+                let this = Arc::clone(&this);
+                let chat_id = cx.update.chat_id();
 
-            match this.senders.get(&chat_id) {
-                // An old dialogue
-                Some(tx) => {
-                    if tx.1.send(cx).is_err() {
-                        panic!(
-                            "We are not dropping a receiver or call .close() \
-                             on it",
-                        );
+                match this.senders.get(&chat_id) {
+                    // An old dialogue
+                    Some(tx) => {
+                        if tx.1.send(cx).is_err() {
+                            panic!(
+                                "We are not dropping a receiver or call \
+                                 .close() on it",
+                            );
+                        }
+                    }
+                    None => {
+                        let tx = this.new_tx();
+                        if tx.send(cx).is_err() {
+                            panic!(
+                                "We are not dropping a receiver or call \
+                                 .close() on it",
+                            );
+                        }
+                        this.senders.insert(chat_id, tx);
                     }
                 }
-                None => {
-                    let tx = this.new_tx();
-                    if tx.send(cx).is_err() {
-                        panic!(
-                            "We are not dropping a receiver or call .close() \
-                             on it",
-                        );
-                    }
-                    this.senders.insert(chat_id, tx);
-                }
-            }
 
-            async {}
-        }))
+                async {}
+            })
+            .boxed()
     }
 }
 
@@ -221,7 +221,7 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueDispatcherHandlerCx<MyUpdate, (), Infallible>| async move {
+            |cx: DialogueUpdateWithCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
                 match cx.update {
@@ -266,11 +266,11 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| DispatcherHandlerCx {
+            .map(|update| UpdateWithCx {
                 update,
                 bot: Bot::new("Doesn't matter here"),
             })
-            .collect::<Vec<DispatcherHandlerCx<MyUpdate>>>(),
+            .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
         );
 
         let (tx, rx) = mpsc::unbounded_channel();

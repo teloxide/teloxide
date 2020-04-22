@@ -1,0 +1,97 @@
+use super::UpdateWithCx;
+use crate::{
+    error_handlers::{ErrorHandler, LoggingErrorHandler},
+    prelude::{Message, Update},
+    types::UpdateKind,
+    Bot,
+};
+use futures::{stream::BoxStream, Stream, StreamExt as _};
+use std::{fmt::Debug, sync::Arc};
+
+pub trait StreamExt {
+    fn with_bot<Upd, E>(
+        self,
+        bot: Arc<Bot>,
+    ) -> BoxStream<'static, Result<UpdateWithCx<Upd>, E>>
+    where
+        Self: Stream<Item = Result<Upd, E>>;
+
+    fn error_handler<Upd, Eh, E>(
+        self,
+        error_handler: Arc<Eh>,
+    ) -> BoxStream<'static, Upd>
+    where
+        Self: Stream<Item = Result<Upd, E>>,
+        Eh: ErrorHandler<E> + Send + Sync + 'static,
+        E: Send + 'static,
+        Upd: Send + 'static;
+
+    fn basic_config<E>(self) -> BoxStream<'static, UpdateWithCx<Message>>
+    where
+        Self: Stream<Item = Result<UpdateWithCx<Update>, E>>,
+        E: Debug + Send + 'static;
+}
+
+impl<S> StreamExt for S
+where
+    S: Send + 'static,
+{
+    fn with_bot<Upd, E>(
+        self,
+        bot: Arc<Bot>,
+    ) -> BoxStream<'static, Result<UpdateWithCx<Upd>, E>>
+    where
+        Self: Stream<Item = Result<Upd, E>>,
+    {
+        self.map(move |result| {
+            result.map(|update| UpdateWithCx::new(Arc::clone(&bot), update))
+        })
+        .boxed()
+    }
+
+    fn error_handler<Upd, Eh, E>(
+        self,
+        error_handler: Arc<Eh>,
+    ) -> BoxStream<'static, Upd>
+    where
+        Self: Stream<Item = Result<Upd, E>>,
+        Eh: ErrorHandler<E> + Send + Sync + 'static,
+        E: Send + 'static,
+        Upd: Send + 'static,
+    {
+        self.filter_map(move |result| {
+            let error_handler = Arc::clone(&error_handler);
+
+            async {
+                match result {
+                    Err(error) => {
+                        error_handler.handle_error(error).await;
+                        None
+                    }
+                    Ok(ok) => Some(ok),
+                }
+            }
+        })
+        .boxed()
+    }
+    fn basic_config<E>(self) -> BoxStream<'static, UpdateWithCx<Message>>
+    where
+        Self: Stream<Item = Result<UpdateWithCx<Update>, E>>,
+        E: Debug + Send + 'static,
+    {
+        self.error_handler(LoggingErrorHandler::with_custom_text(
+            "An error from UpdateListener",
+        ))
+        .filter_map(|update_with_cx| async {
+            let UpdateWithCx { bot, update } = update_with_cx;
+
+            match update.kind {
+                UpdateKind::Message(message) => {
+                    Some(UpdateWithCx::new(bot, message))
+                }
+                _ => None,
+            }
+        })
+        .boxed()
+    }
+}

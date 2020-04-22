@@ -112,13 +112,19 @@ use crate::{
     RequestError,
 };
 
+use super::{StreamExt as _, UpdateWithCx};
 use std::{convert::TryInto, sync::Arc, time::Duration};
 
 /// A generic update listener.
-pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
+pub trait UpdateListener<E>:
+    Stream<Item = Result<UpdateWithCx<Update>, E>>
+{
     // TODO: add some methods here (.shutdown(), etc).
 }
-impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
+impl<S, E> UpdateListener<E> for S where
+    S: Stream<Item = Result<UpdateWithCx<Update>, E>>
+{
+}
 
 /// Returns a long polling update listener with `timeout` of 1 minute.
 ///
@@ -147,6 +153,8 @@ pub fn polling(
 ) -> impl UpdateListener<RequestError> {
     let timeout =
         timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+
+    let bot_cloned = Arc::clone(&bot);
 
     stream::unfold(
         (allowed_updates, bot, 0),
@@ -189,4 +197,5 @@ pub fn polling(
         },
     )
     .flatten()
+    .with_bot(bot_cloned)
 }

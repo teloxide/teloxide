@@ -6,8 +6,8 @@ pub use crate::{
             exit, next, DialogueDispatcher, DialogueDispatcherHandlerCx,
             DialogueStage, GetChatId,
         },
-        Dispatcher, DispatcherHandlerCx, DispatcherHandlerRx,
-        DispatcherHandlerRxExt,
+        update_listeners::polling_default,
+        StreamExt as _, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
@@ -17,4 +17,7 @@ pub use crate::{
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
 
-pub use futures::StreamExt;
+pub use demux_stream::*;
+pub use enum_extract::extract;
+pub use frunk::{Coprod, Hlist};
+pub use futures::StreamExt as _;

@@ -13,12 +13,10 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each(|message| async move {
-                message.answer("pong").send().await.log_on_error().await;
-            })
+    polling_default(bot)
+        .basic_config()
+        .for_each_concurrent(None, |message| async move {
+            message.answer("pong").send().await.log_on_error().await;
         })
-        .dispatch()
         .await;
 }
