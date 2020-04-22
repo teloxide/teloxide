@@ -20,22 +20,17 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each_concurrent(None, |message| async move {
-                let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
+    polling_default(bot)
+        .basic_config()
+        .for_each_concurrent(None, |message| async move {
+            let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
 
-                message
-                    .answer(format!(
-                        "I received {} messages in total.",
-                        previous
-                    ))
-                    .send()
-                    .await
-                    .log_on_error()
-                    .await;
-            })
+            message
+                .answer(format!("I received {} messages in total.", previous))
+                .send()
+                .await
+                .log_on_error()
+                .await;
         })
-        .dispatch()
         .await;
 }
