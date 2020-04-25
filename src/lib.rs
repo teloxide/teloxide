@@ -88,7 +88,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     TokenStream::from(trait_impl)
 }
 
-fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__rt::TokenStream {
+fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__private::TokenStream {
     let global_description = if let Some(s) = &global.description {
         quote! { #s, "\n", }
     } else {
@@ -113,8 +113,8 @@ fn impl_parse(
     variants: &[&Variant],
     infos: &[Command],
     global: &CommandEnum,
-    variants_initialization: &[quote::__rt::TokenStream],
-) -> quote::__rt::TokenStream {
+    variants_initialization: &[quote::__private::TokenStream],
+) -> quote::__private::TokenStream {
     let matching_values = infos.iter().map(|c| c.get_matched_value(global));
     let variant_ident = variants.iter().map(|variant| &variant.ident);
 

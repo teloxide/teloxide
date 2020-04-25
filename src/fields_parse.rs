@@ -3,7 +3,7 @@ extern crate quote;
 use quote::{quote};
 use syn::FieldsUnnamed;
 
-pub fn impl_parse_args_unnamed(data: &FieldsUnnamed) -> quote::__rt::TokenStream {
+pub fn impl_parse_args_unnamed(data: &FieldsUnnamed) -> quote::__private::TokenStream {
     let iter = 0..data.unnamed.len();
     let mut tokens = quote! {};
     for _ in iter {
