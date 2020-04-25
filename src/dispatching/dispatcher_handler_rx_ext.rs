@@ -19,7 +19,7 @@ pub trait DispatcherHandlerRxExt {
     fn commands<C, N>(
         self,
         bot_name: N,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
+    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
@@ -44,7 +44,7 @@ where
     fn commands<C, N>(
         self,
         bot_name: N,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
+    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C)>
     where
         Self: Stream<Item = DispatcherHandlerCx<Message>>,
         C: BotCommand,
@@ -56,13 +56,10 @@ where
             let bot_name = bot_name.clone();
 
             async move {
-                C::parse(&text, &bot_name).map(|(command, args)| {
+                C::parse(&text, &bot_name).map(|command| {
                     (
                         cx,
                         command,
-                        args.into_iter()
-                            .map(ToOwned::to_owned)
-                            .collect::<Vec<String>>(),
                     )
                 })
             }

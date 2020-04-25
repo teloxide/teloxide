@@ -57,6 +57,7 @@
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/miltiple_handlers_bot/
 
 pub use teloxide_macros::BotCommand;
+use std::str::FromStr;
 
 /// An enumeration of bot's commands.
 ///
@@ -100,11 +101,26 @@ pub use teloxide_macros::BotCommand;
 ///
 /// All variant attributes overlap the `enum` attributes.
 pub trait BotCommand: Sized {
-    fn try_from(s: &str) -> Option<Self>;
     fn descriptions() -> String;
-    fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
+    fn parse<N>(s: &str, bot_name: N) -> Option<Self>
     where
         N: Into<String>;
+}
+
+pub trait CommandArgument {
+    fn parse(args: &mut String) -> Option<Self> where Self: Sized;
+}
+
+impl<T: FromStr> CommandArgument for T {
+    fn parse(args: &mut String) -> Option<Self> {
+        match T::from_str(&args) {
+            Ok(res) => {
+                args.clear();
+                Some(res)
+            }
+            Err(_) => None
+        }
+    }
 }
 
 /// Parses a string into a command with args.
@@ -191,12 +207,12 @@ mod tests {
         #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
-            Start,
+            Start(String),
             Help,
         }
 
         let data = "/start arg1 arg2";
-        let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
+        let expected = Some(DefaultCommands::Start("arg1 arg2".to_string()));
         let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
@@ -207,12 +223,12 @@ mod tests {
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "!")]
-            Start,
+            Start(String),
             Help,
         }
 
         let data = "!start arg1 arg2";
-        let expected = Some((DefaultCommands::Start, vec!["arg1", "arg2"]));
+        let expected = Some(DefaultCommands::Start("arg1 arg2".to_string()));
         let actual = DefaultCommands::parse(data, "");
         assert_eq!(actual, expected)
     }
@@ -229,7 +245,7 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("!start", "").unwrap().0
+            DefaultCommands::parse("!start", "").unwrap()
         );
         assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
     }
@@ -250,11 +266,11 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("/start", "MyNameBot").unwrap().0
+            DefaultCommands::parse("/start", "MyNameBot").unwrap()
         );
         assert_eq!(
             DefaultCommands::Help,
-            DefaultCommands::parse("!help", "MyNameBot").unwrap().0
+            DefaultCommands::parse("!help", "MyNameBot").unwrap()
         );
         assert_eq!(
             DefaultCommands::descriptions(),
@@ -274,7 +290,7 @@ mod tests {
 
         assert_eq!(
             DefaultCommands::Start,
-            DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap().0
+            DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap()
         );
     }
 }
