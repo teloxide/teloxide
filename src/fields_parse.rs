@@ -1,6 +1,6 @@
 extern crate quote;
 
-use quote::{quote};
+use quote::quote;
 use syn::FieldsUnnamed;
 
 pub fn impl_parse_args_unnamed(data: &FieldsUnnamed) -> quote::__private::TokenStream {
