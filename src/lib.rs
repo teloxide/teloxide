@@ -103,8 +103,8 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__rt::To
     });
 
     quote! {
-        fn descriptions() -> &'static str {
-            std::concat!(#global_description #(#command, #description, '\n'),*)
+        fn descriptions() -> String {
+            std::concat!(#global_description #(#command, #description, '\n'),*).to_string()
         }
     }
 }
@@ -123,7 +123,7 @@ fn impl_parse(
          where
               N: Into<String>
          {
-              let mut words = s.split_whitespace();
+              let mut words = s.splitn(2, ' ');
               let mut splited = words.next()?.split('@');
               let command_raw = splited.next()?;
               let bot = splited.next();
@@ -133,7 +133,7 @@ fn impl_parse(
                   None => {}
                   _ => return None,
               }
-              let args: Vec<&str> = words.collect();
+              let mut args = words.next().unwrap_or("").to_string();
               match command_raw {
                    #(
                         #matching_values => Some(Self::#variant_ident #variants_initialization),

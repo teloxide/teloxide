@@ -40,7 +40,12 @@ impl Command {
         } else {
             "/"
         };
-        String::from(prefix) + &self.name
+        if let Some(rule) = &global_parameters.rename_rule {
+            String::from(prefix) + &rename_by_rule(&self.name, rule.as_str())
+        }
+        else {
+            String::from(prefix) + &self.name
+        }
     }
 }
 

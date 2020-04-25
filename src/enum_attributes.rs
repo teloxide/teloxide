@@ -1,5 +1,6 @@
 use crate::attr::{Attr, BotCommandAttribute};
 
+#[derive(Debug)]
 pub struct CommandEnum {
     pub prefix: Option<String>,
     pub description: Option<String>,
