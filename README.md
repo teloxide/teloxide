@@ -44,7 +44,7 @@ teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programmin
 
 <h3 align="center">Type safety</h3>
 <p align="center">
-All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html">methods</a> are implemented with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> to enforce type safety and tight integration with IDEs. Bot&#39;s commands <a href="https://github.com/teloxide/teloxide#commands">have precise types too</a>, thereby serving as a self-documenting code and respecting the <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">parse, don&#39;t validate</a> programming idiom.
+teloxide makes it possible to describe the program's behaviour in terms of types much more precisely than other frameworks to achieve type safety and tight integration with IDEs. For instance, all the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html">methods</a> are implemented with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a>, Bot's commands <a href="https://github.com/teloxide/teloxide#commands">have precise types too</a>, thereby serving as a self-documenting code and respecting the <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">parse, don&#39;t validate</a> programming idiom.
 </p>
 
 <hr>
