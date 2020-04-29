@@ -58,7 +58,7 @@ By default, teloxide stores all user dialogues in RAM, but you can store them so
 
 <h3 align="center">Convenient dialogues management</h3>
 <p align="center">
-Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
+Define a <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> to <a href="#guess-a-number">drive a user dialogue</a> with zero boilerplate.
 </p>
 
 ## Getting started
