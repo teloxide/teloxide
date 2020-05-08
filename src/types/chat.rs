@@ -28,54 +28,62 @@ pub struct Chat {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
-    NonPrivate {
-        /// A title, for supergroups, channels and group chats.
-        title: Option<String>,
+    NonPrivate(ChatNonPrivate),
+    Private(ChatPrivate),
+}
 
-        #[serde(flatten)]
-        kind: NonPrivateChatKind,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ChatNonPrivate {
+    /// A title, for supergroups, channels and group chats.
+    pub title: Option<String>,
 
-        /// A description, for groups, supergroups and channel chats. Returned
-        /// only in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        description: Option<String>,
+    #[serde(flatten)]
+    pub kind: NonPrivateChatKind,
 
-        /// A chat invite link, for groups, supergroups and channel chats. Each
-        /// administrator in a chat generates their own invite links, so the
-        /// bot must first generate the link using
-        /// [`Bot::export_chat_invite_link`]. Returned only in
-        /// [`Bot::get_chat`].
-        ///
-        /// [`Bot::export_chat_invite_link`]:
-        /// crate::Bot::export_chat_invite_link
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        invite_link: Option<String>,
+    /// A description, for groups, supergroups and channel chats. Returned
+    /// only in [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub description: Option<String>,
 
-        /// Pinned message, for groups, supergroups and channels. Returned only
-        /// in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        pinned_message: Option<Box<Message>>,
-    },
-    Private {
-        /// A dummy field. Used to ensure that the `type` field is equal to
-        /// `private`.
-        #[serde(rename = "type")]
-        #[serde(deserialize_with = "assert_private_field")]
-        type_: (),
+    /// A chat invite link, for groups, supergroups and channel chats. Each
+    /// administrator in a chat generates their own invite links, so the
+    /// bot must first generate the link using
+    /// [`Bot::export_chat_invite_link`]. Returned only in
+    /// [`Bot::get_chat`].
+    ///
+    /// [`Bot::export_chat_invite_link`]:
+    /// crate::Bot::export_chat_invite_link
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub invite_link: Option<String>,
 
-        /// A username, for private chats, supergroups and channels if
-        /// available.
-        username: Option<String>,
+    /// Pinned message, for groups, supergroups and channels. Returned only
+    /// in [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub pinned_message: Option<Box<Message>>,
+}
 
-        /// A first name of the other party in a private chat.
-        first_name: Option<String>,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ChatPrivate {
+    /// A dummy field. Used to ensure that the `type` field is equal to
+    /// `private`.
+    #[serde(rename = "type")]
+    #[serde(deserialize_with = "assert_private_field")]
+    pub type_: (),
 
-        /// A last name of the other party in a private chat.
-        last_name: Option<String>,
-    },
+    /// A username, for private chats, supergroups and channels if
+    /// available.
+    pub username: Option<String>,
+
+    /// A first name of the other party in a private chat.
+    pub first_name: Option<String>,
+
+    /// A last name of the other party in a private chat.
+    pub last_name: Option<String>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -83,47 +91,58 @@ pub enum ChatKind {
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum NonPrivateChatKind {
-    Channel {
-        /// A username, for private chats, supergroups and channels if
-        /// available.
-        username: Option<String>,
-    },
-    Group {
-        /// A default chat member permissions, for groups and supergroups.
-        /// Returned only in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        permissions: Option<ChatPermissions>,
-    },
-    Supergroup {
-        /// A username, for private chats, supergroups and channels if
-        /// available.
-        username: Option<String>,
+    Channel(NonPrivateChatChannel),
+    Group(NonPrivateChatGroup),
+    Supergroup(NonPrivateChatSupergroup),
+}
 
-        /// For supergroups, name of group sticker set. Returned only in
-        /// [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        sticker_set_name: Option<String>,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct NonPrivateChatChannel {
+    /// A username, for private chats, supergroups and channels if available.
+    pub username: Option<String>,
+}
 
-        /// `true`, if the bot can change the group sticker set. Returned only
-        /// in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        can_set_sticker_set: Option<bool>,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct NonPrivateChatGroup {
+    /// A default chat member permissions, for groups and supergroups. Returned
+    /// only from [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub permissions: Option<ChatPermissions>,
+}
 
-        /// A default chat member permissions, for groups and supergroups.
-        /// Returned only in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        permissions: Option<ChatPermissions>,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct NonPrivateChatSupergroup {
+    /// A username, for private chats, supergroups and channels if
+    /// available.
+    pub username: Option<String>,
 
-        /// The minimum allowed delay between consecutive messages sent by each
-        /// unpriviledged user. Returned only in [`Bot::get_chat`].
-        ///
-        /// [`Bot::get_chat`]: crate::Bot::get_chat
-        slow_mode_delay: Option<i32>,
-    },
+    /// For supergroups, name of group sticker set. Returned only from
+    /// [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub sticker_set_name: Option<String>,
+
+    /// `true`, if the bot can change the group sticker set. Returned only
+    /// from [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub can_set_sticker_set: Option<bool>,
+
+    /// A default chat member permissions, for groups and supergroups.
+    /// Returned only from [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub permissions: Option<ChatPermissions>,
+
+    /// The minimum allowed delay between consecutive messages sent by each
+    /// unpriviledged user. Returned only from [`Bot::get_chat`].
+    ///
+    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    pub slow_mode_delay: Option<i32>,
 }
 
 struct PrivateChatKindVisitor;
@@ -158,38 +177,36 @@ where
 
 impl Chat {
     pub fn is_private(&self) -> bool {
-        match self.kind {
-            ChatKind::Private { .. } => true,
-            _ => false,
-        }
+        matches!(self.kind, ChatKind::Private(_))
     }
     pub fn is_group(&self) -> bool {
-        match self.kind {
-            ChatKind::NonPrivate {
-                kind: NonPrivateChatKind::Group { .. },
+        matches!(
+            self.kind,
+            ChatKind::NonPrivate(ChatNonPrivate {
+                kind: NonPrivateChatKind::Group(_),
                 ..
-            } => true,
-            _ => false,
-        }
+            })
+        )
     }
     pub fn is_supergroup(&self) -> bool {
-        match self.kind {
-            ChatKind::NonPrivate {
-                kind: NonPrivateChatKind::Supergroup { .. },
+        matches!(
+            self.kind,
+            ChatKind::NonPrivate(ChatNonPrivate {
+                kind: NonPrivateChatKind::Supergroup(_),
                 ..
-            } => true,
-            _ => false,
-        }
+            })
+        )
     }
     pub fn is_channel(&self) -> bool {
-        match self.kind {
-            ChatKind::NonPrivate {
-                kind: NonPrivateChatKind::Channel { .. },
+        matches!(
+            self.kind,
+            ChatKind::NonPrivate(ChatNonPrivate {
+                kind: NonPrivateChatKind::Channel(_),
                 ..
-            } => true,
-            _ => false,
-        }
+            })
+        )
     }
+
     pub fn is_chat(&self) -> bool {
         self.is_private() || self.is_group() || self.is_supergroup()
     }
@@ -205,15 +222,15 @@ mod tests {
     fn channel_de() {
         let expected = Chat {
             id: -1,
-            kind: ChatKind::NonPrivate {
+            kind: ChatKind::NonPrivate(ChatNonPrivate {
                 title: None,
-                kind: NonPrivateChatKind::Channel {
+                kind: NonPrivateChatKind::Channel(NonPrivateChatChannel {
                     username: Some("channelname".into()),
-                },
+                }),
                 description: None,
                 invite_link: None,
                 pinned_message: None,
-            },
+            }),
             photo: None,
         };
         let actual =
@@ -227,12 +244,12 @@ mod tests {
         assert_eq!(
             Chat {
                 id: 0,
-                kind: ChatKind::Private {
+                kind: ChatKind::Private(ChatPrivate {
                     type_: (),
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
                     last_name: None,
-                },
+                }),
                 photo: None,
             },
             from_str(
