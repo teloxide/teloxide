@@ -21,6 +21,7 @@ pub struct EncryptedPassportElement {
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[allow(clippy::large_enum_variant)]
 pub enum EncryptedPassportElementKind {
     PersonalDetails(EncryptedPassportElementPersonalDetails),
     Passport(EncryptedPassportElementPassport),
