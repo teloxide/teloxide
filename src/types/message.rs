@@ -3,12 +3,11 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    chat::{ChatKind, NonPrivateChatKind},
-    Animation, Audio, Chat, ChatNonPrivate, Contact, Document, Game,
-    InlineKeyboardMarkup, Invoice, Location, MessageEntity,
-    NonPrivateChatChannel, NonPrivateChatSupergroup, PassportData, PhotoSize,
-    Poll, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote,
-    Voice,
+    chat::{ChatKind, PublicChatKind},
+    Animation, Audio, Chat, ChatPublic, Contact, Document, Game,
+    InlineKeyboardMarkup, Invoice, Location, MessageEntity, PassportData,
+    PhotoSize, Poll, PublicChatChannel, PublicChatSupergroup, Sticker,
+    SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
 };
 
 /// This object represents a message.
@@ -924,16 +923,16 @@ mod getters {
 impl Message {
     pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
-            ChatKind::NonPrivate(ChatNonPrivate {
+            ChatKind::Public(ChatPublic {
                 kind:
-                    NonPrivateChatKind::Channel(NonPrivateChatChannel {
+                    PublicChatKind::Channel(PublicChatChannel {
                         username: Some(username),
                     }),
                 ..
             })
-            | ChatKind::NonPrivate(ChatNonPrivate {
+            | ChatKind::Public(ChatPublic {
                 kind:
-                    NonPrivateChatKind::Supergroup(NonPrivateChatSupergroup {
+                    PublicChatKind::Supergroup(PublicChatSupergroup {
                         username: Some(username),
                         ..
                     }),

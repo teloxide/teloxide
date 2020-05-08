@@ -28,18 +28,18 @@ pub struct Chat {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
-    NonPrivate(ChatNonPrivate),
+    Public(ChatPublic),
     Private(ChatPrivate),
 }
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChatNonPrivate {
+pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
 
     #[serde(flatten)]
-    pub kind: NonPrivateChatKind,
+    pub kind: PublicChatKind,
 
     /// A description, for groups, supergroups and channel chats. Returned
     /// only in [`Bot::get_chat`].
@@ -90,22 +90,22 @@ pub struct ChatPrivate {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-pub enum NonPrivateChatKind {
-    Channel(NonPrivateChatChannel),
-    Group(NonPrivateChatGroup),
-    Supergroup(NonPrivateChatSupergroup),
+pub enum PublicChatKind {
+    Channel(PublicChatChannel),
+    Group(PublicChatGroup),
+    Supergroup(PublicChatSupergroup),
 }
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub struct NonPrivateChatChannel {
+pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
 }
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub struct NonPrivateChatGroup {
+pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
     /// only from [`Bot::get_chat`].
     ///
@@ -115,7 +115,7 @@ pub struct NonPrivateChatGroup {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub struct NonPrivateChatSupergroup {
+pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
     pub username: Option<String>,
@@ -182,17 +182,16 @@ impl Chat {
     pub fn is_group(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::NonPrivate(ChatNonPrivate {
-                kind: NonPrivateChatKind::Group(_),
-                ..
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Group(_), ..
             })
         )
     }
     pub fn is_supergroup(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::NonPrivate(ChatNonPrivate {
-                kind: NonPrivateChatKind::Supergroup(_),
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Supergroup(_),
                 ..
             })
         )
@@ -200,8 +199,8 @@ impl Chat {
     pub fn is_channel(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::NonPrivate(ChatNonPrivate {
-                kind: NonPrivateChatKind::Channel(_),
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Channel(_),
                 ..
             })
         )
@@ -222,9 +221,9 @@ mod tests {
     fn channel_de() {
         let expected = Chat {
             id: -1,
-            kind: ChatKind::NonPrivate(ChatNonPrivate {
+            kind: ChatKind::Public(ChatPublic {
                 title: None,
-                kind: NonPrivateChatKind::Channel(NonPrivateChatChannel {
+                kind: PublicChatKind::Channel(PublicChatChannel {
                     username: Some("channelname".into()),
                 }),
                 description: None,
