@@ -309,9 +309,7 @@ Most programming languages have their own implementations of Telegram bots frame
  
 teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs).
 
-Associated links:
- - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
- - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
+Also see [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks) and [Using self-signed certificates](https://core.telegram.org/bots/self-signed).
 
  - **Can I use different loggers?**
  
