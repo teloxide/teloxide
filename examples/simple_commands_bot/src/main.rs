@@ -22,9 +22,9 @@ async fn answer(
     command: Command,
 ) -> ResponseResult<()> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).send().await?,
-        Command::Generate => cx.answer(generate()).send().await?,
-        Command::Meow => cx.answer("I am a cat! Meow!").send().await?,
+        Command::Help => req!(cx.answer(Command::descriptions()))?,
+        Command::Generate => req!(cx.answer(generate()))?,
+        Command::Meow => req!(cx.answer("I am a cat! Meow!"))?,
     };
 
     Ok(())

@@ -51,29 +51,23 @@ impl FavouriteMusic {
 }
 
 // ============================================================================
-// [A type-safe finite automaton]
+// [Our finite automaton]
 // ============================================================================
 
-#[derive(Clone)]
-struct ReceiveAgeState {
-    full_name: String,
-}
+type FullName = String;
+type Age = u8;
 
 #[derive(Clone)]
-struct ReceiveFavouriteMusicState {
-    data: ReceiveAgeState,
-    age: u8,
-}
+struct ReceiveAgeState(FullName);
+
+#[derive(Clone)]
+struct ReceiveFavouriteMusicState(ReceiveAgeState, Age);
 
 #[derive(Display)]
 #[display(
-    "Your full name: {data.data.full_name}, your age: {data.age}, your \
-     favourite music: {favourite_music}"
+    "Your full name: {0.0.0}, your age: {0.1}, your favourite music: {1}"
 )]
-struct ExitState {
-    data: ReceiveFavouriteMusicState,
-    favourite_music: FavouriteMusic,
-}
+struct ExitState(ReceiveFavouriteMusicState, FavouriteMusic);
 
 #[derive(SmartDefault)]
 enum Dialogue {
@@ -92,21 +86,19 @@ type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
-    cx.answer("Let's start! First, what's your full name?").send().await?;
+    req!(cx.answer("Let's start! First, what's your full name?"));
     next(Dialogue::ReceiveFullName)
 }
 
 async fn full_name(cx: Cx<()>) -> Res {
     match cx.update.text() {
         None => {
-            cx.answer("Please, send me a text message!").send().await?;
+            req!(cx.answer("Please, send me a text message!"));
             next(Dialogue::ReceiveFullName)
         }
         Some(full_name) => {
-            cx.answer("What a wonderful name! Your age?").send().await?;
-            next(Dialogue::ReceiveAge(ReceiveAgeState {
-                full_name: full_name.to_owned(),
-            }))
+            req!(cx.answer("What a wonderful name! Your age?"));
+            next(Dialogue::ReceiveAge(ReceiveAgeState(full_name.to_owned())))
         }
     }
 }
@@ -114,17 +106,16 @@ async fn full_name(cx: Cx<()>) -> Res {
 async fn age(cx: Cx<ReceiveAgeState>) -> Res {
     match cx.update.text().unwrap().parse() {
         Ok(age) => {
-            cx.answer("Good. Now choose your favourite music:")
-                .reply_markup(FavouriteMusic::markup())
-                .send()
-                .await?;
-            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
-                data: cx.dialogue.unwrap(),
+            req!(cx
+                .answer("Good. Now choose your favourite music:")
+                .reply_markup(FavouriteMusic::markup()));
+            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState(
+                cx.dialogue.unwrap(),
                 age,
-            }))
+            )))
         }
         Err(_) => {
-            cx.answer("Oh, please, enter a number!").send().await?;
+            req!(cx.answer("Oh, please, enter a number!"));
             next(Dialogue::ReceiveAge(cx.dialogue.unwrap()))
         }
     }
@@ -133,19 +124,14 @@ async fn age(cx: Cx<ReceiveAgeState>) -> Res {
 async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
     match cx.update.text().unwrap().parse() {
         Ok(favourite_music) => {
-            cx.answer(format!(
+            req!(cx.answer(format!(
                 "Fine. {}",
-                ExitState {
-                    data: cx.dialogue.clone().unwrap(),
-                    favourite_music
-                }
-            ))
-            .send()
-            .await?;
+                ExitState(cx.dialogue.clone().unwrap(), favourite_music)
+            )));
             exit()
         }
         Err(_) => {
-            cx.answer("Oh, please, enter from the keyboard!").send().await?;
+            req!(cx.answer("Oh, please, enter from the keyboard!"));
             next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap()))
         }
     }

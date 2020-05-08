@@ -72,32 +72,26 @@ async fn mute_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
         Some(msg1) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
-                cx.bot
+                req!(cx
+                    .bot
                     .restrict_chat_member(
                         cx.update.chat_id(),
                         msg1.from().expect("Must be MessageKind::Common").id,
                         ChatPermissions::default(),
                     )
-                    .until_date(cx.update.date + time)
-                    .send()
-                    .await?;
+                    .until_date(cx.update.date + time))?;
             }
             // ...or permanently
             Err(_) => {
-                cx.bot
-                    .restrict_chat_member(
-                        cx.update.chat_id(),
-                        msg1.from().unwrap().id,
-                        ChatPermissions::default(),
-                    )
-                    .send()
-                    .await?;
+                req!(cx.bot.restrict_chat_member(
+                    cx.update.chat_id(),
+                    msg1.from().unwrap().id,
+                    ChatPermissions::default(),
+                ))?;
             }
         },
         None => {
-            cx.reply_to("Use this command in reply to another message")
-                .send()
-                .await?;
+            req!(cx.reply_to("Use this command in reply to another message"))?;
         }
     }
     Ok(())
@@ -108,15 +102,13 @@ async fn kick_user(cx: &Cx) -> ResponseResult<()> {
     match cx.update.reply_to_message() {
         Some(mes) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            cx.bot
-                .unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id)
-                .send()
-                .await?;
+            req!(cx.bot.unban_chat_member(
+                cx.update.chat_id(),
+                mes.from().unwrap().id
+            ))?;
         }
         None => {
-            cx.reply_to("Use this command in reply to another message")
-                .send()
-                .await?;
+            req!(cx.reply_to("Use this command in reply to another message"))?;
         }
     }
     Ok(())
@@ -128,30 +120,26 @@ async fn ban_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
         Some(message) => match parse_time_restrict(args) {
             // Mute user temporarily...
             Ok(time) => {
-                cx.bot
+                req!(cx
+                    .bot
                     .kick_chat_member(
                         cx.update.chat_id(),
                         message.from().expect("Must be MessageKind::Common").id,
                     )
-                    .until_date(cx.update.date + time)
-                    .send()
-                    .await?;
+                    .until_date(cx.update.date + time))?;
             }
             // ...or permanently
             Err(_) => {
-                cx.bot
-                    .kick_chat_member(
-                        cx.update.chat_id(),
-                        message.from().unwrap().id,
-                    )
-                    .send()
-                    .await?;
+                req!(cx.bot.kick_chat_member(
+                    cx.update.chat_id(),
+                    message.from().unwrap().id,
+                ))?;
             }
         },
         None => {
-            cx.reply_to("Use this command in a reply to another message!")
-                .send()
-                .await?;
+            req!(
+                cx.reply_to("Use this command in a reply to another message!")
+            )?;
         }
     }
     Ok(())
@@ -164,7 +152,7 @@ async fn action(
 ) -> ResponseResult<()> {
     match command {
         Command::Help => {
-            cx.answer(Command::descriptions()).send().await.map(|_| ())?
+            req!(cx.answer(Command::descriptions())).map(|_| ())?
         }
         Command::Kick => kick_user(&cx).await?,
         Command::Ban => ban_user(&cx, args).await?,

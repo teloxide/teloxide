@@ -25,15 +25,12 @@ async fn run() {
             rx.for_each_concurrent(None, |message| async move {
                 let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
 
-                message
-                    .answer(format!(
-                        "I received {} messages in total.",
-                        previous
-                    ))
-                    .send()
-                    .await
-                    .log_on_error()
-                    .await;
+                req!(message.answer(format!(
+                    "I received {} messages in total.",
+                    previous
+                )))
+                .log_on_error()
+                .await;
             })
         })
         .dispatch()

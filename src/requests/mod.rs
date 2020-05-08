@@ -18,3 +18,11 @@ pub trait Request {
     /// Asynchronously sends this request to Telegram and returns the result.
     async fn send(&self) -> ResponseResult<Self::Output>;
 }
+
+/// A shortcut for `request.send().await`.
+#[macro_export]
+macro_rules! req {
+    ($request:expr) => {
+        $request.send().await
+    };
+}

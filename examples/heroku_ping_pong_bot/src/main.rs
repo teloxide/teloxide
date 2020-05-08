@@ -14,14 +14,19 @@ async fn main() {
     run().await;
 }
 
-async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, Infallible> {
+async fn handle_rejection(
+    error: warp::Rejection,
+) -> Result<impl warp::Reply, Infallible> {
     log::error!("Cannot process the request due to: {:?}", error);
     Ok(StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn webhook<'a>(bot: Arc<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
+pub async fn webhook<'a>(
+    bot: Arc<Bot>,
+) -> impl update_listeners::UpdateListener<Infallible> {
     // Heroku defines auto defines a port value
-    let teloxide_token = env::var("TELOXIDE_TOKEN").expect("TELOXIDE_TOKEN env variable missing");
+    let teloxide_token = env::var("TELOXIDE_TOKEN")
+        .expect("TELOXIDE_TOKEN env variable missing");
     let port: u16 = env::var("PORT")
         .expect("PORT env variable missing")
         .parse()
@@ -31,10 +36,7 @@ pub async fn webhook<'a>(bot: Arc<Bot>) -> impl update_listeners::UpdateListener
     let path = format!("bot{}", teloxide_token);
     let url = format!("https://{}/{}", host, path);
 
-    bot.set_webhook(url)
-        .send()
-        .await
-        .expect("Cannot setup a webhook");
+    bot.set_webhook(url).send().await.expect("Cannot setup a webhook");
 
     let (tx, rx) = mpsc::unbounded_channel();
 
@@ -80,12 +82,14 @@ async fn run() {
     Dispatcher::new(Arc::clone(&bot))
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
-                message.answer("pong").send().await.log_on_error().await;
+                req!(message.answer("pong")).log_on_error().await;
             })
         })
         .dispatch_with_listener(
             webhook(bot).await,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
+            LoggingErrorHandler::with_custom_text(
+                "An error from the update listener",
+            ),
         )
         .await;
 }

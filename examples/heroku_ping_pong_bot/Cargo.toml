@@ -11,7 +11,7 @@ log = "0.4.8"
 futures = "0.3.4"
 tokio = "0.2.9"
 pretty_env_logger = "0.4.0"
-teloxide = "0.2.0"
+teloxide = { path = "../../" }
 
 # Used to setup a webhook
 warp = "0.2.2"

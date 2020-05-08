@@ -10,6 +10,7 @@ pub use crate::{
         DispatcherHandlerRxExt,
     },
     error_handlers::{LoggingErrorHandler, OnError},
+    req,
     requests::{Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,

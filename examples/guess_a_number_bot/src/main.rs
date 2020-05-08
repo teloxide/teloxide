@@ -25,14 +25,16 @@ use rand::{thread_rng, Rng};
 use std::convert::Infallible;
 
 // ============================================================================
-// [A type-safe finite automaton]
+// [Our finite automaton]
 // ============================================================================
+
+type Secret = u8;
 
 #[derive(SmartDefault)]
 enum Dialogue {
     #[default]
     Start,
-    ReceiveAttempt(u8),
+    ReceiveAttempt(Secret),
 }
 
 // ============================================================================
@@ -43,34 +45,34 @@ type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
-    cx.answer("Let's play a game! Guess a number from 1 to 10 (inclusively).")
-        .send()
-        .await?;
+    req!(cx.answer(
+        "Let's play a game! Guess a number from 1 to 10 (inclusively)."
+    ))?;
     next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
 }
 
-async fn receive_attempt(cx: Cx<u8>) -> Res {
+async fn receive_attempt(cx: Cx<Secret>) -> Res {
     let secret = cx.dialogue.unwrap();
 
     match cx.update.text() {
         None => {
-            cx.answer("Oh, please, send me a text message!").send().await?;
+            req!(cx.answer("Oh, please, send me a text message!"))?;
             next(Dialogue::ReceiveAttempt(secret))
         }
-        Some(text) => match text.parse::<u8>() {
+        Some(text) => match text.parse::<Secret>() {
             Ok(attempt) => {
                 if attempt == secret {
-                    cx.answer("Congratulations! You won!").send().await?;
+                    req!(cx.answer("Congratulations! You won!"))?;
                     exit()
                 } else {
-                    cx.answer("No.").send().await?;
+                    req!(cx.answer("No."))?;
                     next(Dialogue::ReceiveAttempt(secret))
                 }
             }
             Err(_) => {
-                cx.answer("Oh, please, send me a number in the range [1; 10]!")
-                    .send()
-                    .await?;
+                req!(cx.answer(
+                    "Oh, please, send me a number in the range [1; 10]!"
+                ))?;
                 next(Dialogue::ReceiveAttempt(secret))
             }
         },
