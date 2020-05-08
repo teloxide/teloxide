@@ -297,20 +297,24 @@ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/exa
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
 ## FAQ
-### Where I can ask questions?
+ - **Where I can ask questions?**
+ 
 [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
 
-### Why Rust?
+ - **Why Rust?**
+ 
 Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
-### Can I use webhooks?
+ - **Can I use webhooks?**
+ 
 teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
 
-### Can I use different loggers?
+ - **Can I use different loggers?**
+ 
 Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
 
 ## Community bots
