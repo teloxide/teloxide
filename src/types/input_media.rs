@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use crate::types::{InputFile, ParseMode};
 
 // TODO: should variants use new-type?
-#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
@@ -11,169 +10,185 @@ use crate::types::{InputFile, ParseMode};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmedia).
 pub enum InputMedia {
-    /// Represents a photo to be sent.
+    Photo(InputMediaPhoto),
+    Video(InputMediaVideo),
+    Animation(InputMediaAnimation),
+    Audio(InputMediaAudio),
+    Document(InputMediaDocument),
+}
+
+/// Represents a photo to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct InputMediaPhoto {
+    /// File to send.
+    pub media: InputFile,
+
+    /// Caption of the photo to be sent, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
-    Photo {
-        /// File to send.
-        media: InputFile,
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<ParseMode>,
+}
 
-        /// Caption of the photo to be sent, 0-1024 characters.
-        caption: Option<String>,
+/// Represents a video to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct InputMediaVideo {
+    // File to send.
+    pub media: InputFile,
 
-        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-        /// italic, fixed-width text or inline URLs] in the media caption.
-        ///
-        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-        /// [HTML]: https://core.telegram.org/bots/api#html-style
-        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        parse_mode: Option<ParseMode>,
-    },
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation
+    /// for the file is supported server-side. The thumbnail should be in
+    /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+    /// height should not exceed 320. Ignored if the file is not uploaded
+    /// using multipart/form-data.
+    pub thumb: Option<InputFile>,
 
-    /// Represents a video to be sent.
+    /// Caption of the video to be sent, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
-    Video {
-        // File to send.
-        media: InputFile,
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<ParseMode>,
 
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side. The thumbnail should be in
-        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
-        /// height should not exceed 320. Ignored if the file is not uploaded
-        /// using multipart/form-data.
-        thumb: Option<InputFile>,
+    /// Video width.
+    pub width: Option<u16>,
 
-        /// Caption of the video to be sent, 0-1024 characters.
-        caption: Option<String>,
+    /// Video height.
+    pub height: Option<u16>,
 
-        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-        /// italic, fixed-width text or inline URLs] in the media caption.
-        ///
-        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-        /// [HTML]: https://core.telegram.org/bots/api#html-style
-        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        parse_mode: Option<ParseMode>,
+    /// Video duration.
+    pub duration: Option<u16>,
 
-        /// Video width.
-        width: Option<u16>,
+    /// Pass `true`, if the uploaded video is suitable for streaming.
+    pub supports_streaming: Option<bool>,
+}
 
-        /// Video height.
-        height: Option<u16>,
+/// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
+/// sound) to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct InputMediaAnimation {
+    /// File to send.
+    pub media: InputFile,
 
-        /// Video duration.
-        duration: Option<u16>,
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation
+    /// for the file is supported server-side. The thumbnail should be in
+    /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+    /// height should not exceed 320. Ignored if the file is not uploaded
+    /// using multipart/form-data.
+    pub thumb: Option<InputFile>,
 
-        /// Pass `true`, if the uploaded video is suitable for streaming.
-        supports_streaming: Option<bool>,
-    },
+    /// Caption of the animation to be sent, 0-1024 characters.
+    pub caption: Option<String>,
 
-    /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
-    /// sound) to be sent.
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
-    Animation {
-        /// File to send.
-        media: InputFile,
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<ParseMode>,
 
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side. The thumbnail should be in
-        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
-        /// height should not exceed 320. Ignored if the file is not uploaded
-        /// using multipart/form-data.
-        thumb: Option<InputFile>,
+    /// Animation width.
+    pub width: Option<u16>,
 
-        /// Caption of the animation to be sent, 0-1024 characters.
-        caption: Option<String>,
+    /// Animation height.
+    pub height: Option<u16>,
 
-        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-        /// italic, fixed-width text or inline URLs] in the media caption.
-        ///
-        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-        /// [HTML]: https://core.telegram.org/bots/api#html-style
-        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        parse_mode: Option<ParseMode>,
+    /// Animation duration.
+    pub duration: Option<u16>,
+}
 
-        /// Animation width.
-        width: Option<u16>,
+/// Represents an audio file to be treated as music to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct InputMediaAudio {
+    /// File to send.
+    pub media: InputFile,
 
-        /// Animation height.
-        height: Option<u16>,
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation
+    /// for the file is supported server-side. The thumbnail should be in
+    /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+    /// height should not exceed 320. Ignored if the file is not uploaded
+    /// using multipart/form-data.
+    pub thumb: Option<InputFile>,
 
-        /// Animation duration.
-        duration: Option<u16>,
-    },
+    /// Caption of the audio to be sent, 0-1024 characters.
+    pub caption: Option<String>,
 
-    /// Represents an audio file to be treated as music to be sent.
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
-    Audio {
-        /// File to send.
-        media: InputFile,
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<String>,
 
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side. The thumbnail should be in
-        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
-        /// height should not exceed 320. Ignored if the file is not uploaded
-        /// using multipart/form-data.
-        thumb: Option<InputFile>,
+    /// Duration of the audio in seconds.
+    pub duration: Option<u16>,
 
-        /// Caption of the audio to be sent, 0-1024 characters.
-        caption: Option<String>,
+    /// Performer of the audio.
+    pub performer: Option<String>,
 
-        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-        /// italic, fixed-width text or inline URLs] in the media caption.
-        ///
-        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-        /// [HTML]: https://core.telegram.org/bots/api#html-style
-        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        parse_mode: Option<String>,
+    /// Title of the audio.
+    pub title: Option<String>,
+}
 
-        /// Duration of the audio in seconds.
-        duration: Option<u16>,
+/// Represents a general file to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct InputMediaDocument {
+    /// File to send.
+    pub media: InputFile,
 
-        /// Performer of the audio.
-        performer: Option<String>,
+    /// Thumbnail of the file sent; can be ignored if thumbnail generation
+    /// for the file is supported server-side. The thumbnail should be in
+    /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
+    /// height should not exceed 320. Ignored if the file is not uploaded
+    /// using multipart/form-data.
+    pub thumb: Option<InputFile>,
 
-        /// Title of the audio.
-        title: Option<String>,
-    },
+    /// Caption of the document to be sent, 0-1024 charactersю
+    pub caption: Option<String>,
 
-    /// Represents a general file to be sent.
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
     ///
-    /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
-    Document {
-        /// File to send.
-        media: InputFile,
-
-        /// Thumbnail of the file sent; can be ignored if thumbnail generation
-        /// for the file is supported server-side. The thumbnail should be in
-        /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
-        /// height should not exceed 320. Ignored if the file is not uploaded
-        /// using multipart/form-data.
-        thumb: Option<InputFile>,
-
-        /// Caption of the document to be sent, 0-1024 charactersю
-        caption: Option<String>,
-
-        /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
-        /// italic, fixed-width text or inline URLs] in the media caption.
-        ///
-        /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
-        /// [HTML]: https://core.telegram.org/bots/api#html-style
-        /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-        parse_mode: Option<ParseMode>,
-    },
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<ParseMode>,
 }
 
 impl InputMedia {
     pub fn media(&self) -> &InputFile {
         match self {
-            InputMedia::Photo { media, .. }
-            | InputMedia::Document { media, .. }
-            | InputMedia::Audio { media, .. }
-            | InputMedia::Animation { media, .. }
-            | InputMedia::Video { media, .. } => media,
+            InputMedia::Photo(InputMediaPhoto { media, .. })
+            | InputMedia::Document(InputMediaDocument { media, .. })
+            | InputMedia::Audio(InputMediaAudio { media, .. })
+            | InputMedia::Animation(InputMediaAnimation { media, .. })
+            | InputMedia::Video(InputMediaVideo { media, .. }) => media,
         }
     }
 }
@@ -181,11 +196,11 @@ impl InputMedia {
 impl From<InputMedia> for InputFile {
     fn from(media: InputMedia) -> InputFile {
         match media {
-            InputMedia::Photo { media, .. }
-            | InputMedia::Document { media, .. }
-            | InputMedia::Audio { media, .. }
-            | InputMedia::Animation { media, .. }
-            | InputMedia::Video { media, .. } => media,
+            InputMedia::Photo(InputMediaPhoto { media, .. })
+            | InputMedia::Document(InputMediaDocument { media, .. })
+            | InputMedia::Audio(InputMediaAudio { media, .. })
+            | InputMedia::Animation(InputMediaAnimation { media, .. })
+            | InputMedia::Video(InputMediaVideo { media, .. }) => media,
         }
     }
 }
@@ -197,11 +212,11 @@ mod tests {
     #[test]
     fn photo_serialize() {
         let expected_json = r#"{"type":"photo","media":"123456"}"#;
-        let photo = InputMedia::Photo {
+        let photo = InputMedia::Photo(InputMediaPhoto {
             media: InputFile::FileId(String::from("123456")),
             caption: None,
             parse_mode: None,
-        };
+        });
 
         let actual_json = serde_json::to_string(&photo).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -210,7 +225,7 @@ mod tests {
     #[test]
     fn video_serialize() {
         let expected_json = r#"{"type":"video","media":"123456"}"#;
-        let video = InputMedia::Video {
+        let video = InputMedia::Video(InputMediaVideo {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
             caption: None,
@@ -219,7 +234,7 @@ mod tests {
             height: None,
             duration: None,
             supports_streaming: None,
-        };
+        });
 
         let actual_json = serde_json::to_string(&video).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -228,7 +243,7 @@ mod tests {
     #[test]
     fn animation_serialize() {
         let expected_json = r#"{"type":"animation","media":"123456"}"#;
-        let video = InputMedia::Animation {
+        let video = InputMedia::Animation(InputMediaAnimation {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
             caption: None,
@@ -236,7 +251,7 @@ mod tests {
             width: None,
             height: None,
             duration: None,
-        };
+        });
 
         let actual_json = serde_json::to_string(&video).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -245,7 +260,7 @@ mod tests {
     #[test]
     fn audio_serialize() {
         let expected_json = r#"{"type":"audio","media":"123456"}"#;
-        let video = InputMedia::Audio {
+        let video = InputMedia::Audio(InputMediaAudio {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
             caption: None,
@@ -253,7 +268,7 @@ mod tests {
             duration: None,
             performer: None,
             title: None,
-        };
+        });
 
         let actual_json = serde_json::to_string(&video).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -262,12 +277,12 @@ mod tests {
     #[test]
     fn document_serialize() {
         let expected_json = r#"{"type":"document","media":"123456"}"#;
-        let video = InputMedia::Document {
+        let video = InputMedia::Document(InputMediaDocument {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
             caption: None,
             parse_mode: None,
-        };
+        });
 
         let actual_json = serde_json::to_string(&video).unwrap();
         assert_eq!(expected_json, actual_json);
