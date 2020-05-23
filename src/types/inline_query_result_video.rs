@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
+use crate::types::{
+    InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode,
+};
 
 /// Represents a link to a page containing an embedded video player or a video
 /// file.
@@ -20,7 +22,7 @@ pub struct InlineQueryResultVideo {
     pub video_url: String,
 
     /// Mime type of the content of video url, `text/html` or `video/mp4`.
-    pub mime_type: String,
+    pub mime_type: MimeWrapper,
 
     /// URL of the thumbnail (jpeg only) for the video.
     pub thumb_url: String,

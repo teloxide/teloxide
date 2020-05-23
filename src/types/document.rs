@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::PhotoSize;
+use crate::types::{MimeWrapper, PhotoSize};
 
 /// This object represents a general file (as opposed to [photos], [voice
 /// messages] and [audio files]).
@@ -28,7 +28,7 @@ pub struct Document {
     pub file_name: Option<String>,
 
     /// A MIME type of the file as defined by a sender.
-    pub mime_type: Option<String>,
+    pub mime_type: Option<MimeWrapper>,
 
     /// A size of a file.
     pub file_size: Option<u32>,
