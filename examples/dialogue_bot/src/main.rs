@@ -26,7 +26,6 @@ use teloxide::{
 };
 
 use parse_display::{Display, FromStr};
-use std::fmt::{Display, Error, Formatter};
 
 // ============================================================================
 // [Favourite music kinds]
@@ -55,16 +54,27 @@ impl FavouriteMusic {
 // [Our finite automaton]
 // ============================================================================
 
-type FullName = String;
-type Age = u8;
+#[derive(Clone)]
+struct ReceiveAgeState {
+    full_name: String,
+}
 
 #[derive(Clone)]
-struct ReceiveAgeState(FullName);
+struct ReceiveFavouriteMusicState {
+    full_name: String,
+    age: u8,
+}
 
-#[derive(Clone)]
-struct ReceiveFavouriteMusicState(ReceiveAgeState, Age);
-
-struct ExitState(ReceiveFavouriteMusicState, FavouriteMusic);
+#[derive(Display)]
+#[display(
+    "Your full name: {full_name}, your age: {age}, your favourite music: \
+     {favourite_music}"
+)]
+struct ExitState {
+    full_name: String,
+    age: u8,
+    favourite_music: FavouriteMusic,
+}
 
 #[derive(SmartDefault)]
 enum Dialogue {
@@ -73,21 +83,6 @@ enum Dialogue {
     ReceiveFullName,
     ReceiveAge(ReceiveAgeState),
     ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
-}
-
-impl Display for ExitState {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        let ExitState(
-            ReceiveFavouriteMusicState(ReceiveAgeState(full_name), age),
-            favourite_music,
-        ) = self;
-
-        write!(
-            f,
-            "Your full name: {}, your age: {}, favourite music: {}",
-            full_name, age, favourite_music
-        )
-    }
 }
 
 // ============================================================================
@@ -110,42 +105,57 @@ async fn full_name(cx: Cx<()>) -> Res {
         }
         Some(full_name) => {
             req!(cx.answer("What a wonderful name! Your age?"))?;
-            next(Dialogue::ReceiveAge(ReceiveAgeState(full_name.to_owned())))
+            next(Dialogue::ReceiveAge(ReceiveAgeState {
+                full_name: full_name.to_owned(),
+            }))
         }
     }
 }
 
 async fn age(cx: Cx<ReceiveAgeState>) -> Res {
+    let state = cx.dialogue.clone().unwrap();
+
     match cx.update.text().unwrap().parse() {
         Ok(age) => {
             req!(cx
                 .answer("Good. Now choose your favourite music:")
                 .reply_markup(FavouriteMusic::markup()))?;
 
-            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState(
-                cx.dialogue.unwrap(),
+            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
+                full_name: state.full_name,
                 age,
-            )))
+            }))
         }
         Err(_) => {
             req!(cx.answer("Oh, please, enter a number!"))?;
-            next(Dialogue::ReceiveAge(cx.dialogue.unwrap()))
+            next(Dialogue::ReceiveAge(ReceiveAgeState {
+                full_name: state.full_name,
+            }))
         }
     }
 }
 
 async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
+    let state = cx.dialogue.clone().unwrap();
+
     match cx.update.text().unwrap().parse() {
         Ok(favourite_music) => {
             req!(cx.answer(format!(
                 "Fine. {}",
-                ExitState(cx.dialogue.clone().unwrap(), favourite_music)
+                ExitState {
+                    full_name: state.full_name,
+                    age: state.age,
+                    favourite_music
+                }
             )))?;
             exit()
         }
         Err(_) => {
             req!(cx.answer("Oh, please, enter from the keyboard!"))?;
-            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap()))
+            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
+                full_name: state.full_name,
+                age: state.age,
+            }))
         }
     }
 }
