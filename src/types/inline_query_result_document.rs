@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
+use crate::types::{
+    InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode,
+};
 
 /// Represents a link to a file.
 ///
@@ -35,7 +37,7 @@ pub struct InlineQueryResultDocument {
 
     /// Mime type of the content of the file, either `application/pdf` or
     /// `application/zip`.
-    pub mime_type: String,
+    pub mime_type: MimeWrapper,
 
     /// Short description of the result.
     pub description: Option<String>,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::PhotoSize;
+use crate::types::{MimeWrapper, PhotoSize};
 
 /// This object represents a video file.
 ///
@@ -29,7 +29,7 @@ pub struct Video {
     pub thumb: Option<PhotoSize>,
 
     /// Mime type of a file as defined by sender.
-    pub mime_type: Option<String>,
+    pub mime_type: Option<MimeWrapper>,
 
     /// File size.
     pub file_size: Option<u32>,
