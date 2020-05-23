@@ -99,11 +99,7 @@ where
                     .map(Option::unwrap_or_default);
 
                 match handler
-                    .handle(DialogueDispatcherHandlerCx {
-                        bot: cx.bot,
-                        update: cx.update,
-                        dialogue,
-                    })
+                    .handle(DialogueDispatcherHandlerCx { cx, dialogue })
                     .await
                 {
                     DialogueStage::Next(new_dialogue) => {
@@ -224,7 +220,7 @@ mod tests {
             |cx: DialogueDispatcherHandlerCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
-                match cx.update {
+                match cx.cx.update {
                     MyUpdate { chat_id: 1, unique_number } => {
                         SEQ1.lock().await.push(unique_number);
                     }
