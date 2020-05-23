@@ -59,19 +59,32 @@ struct ReceiveAgeState {
     full_name: String,
 }
 
+impl ReceiveAgeState {
+    fn up(self, age: u8) -> ReceiveFavouriteMusicState {
+        ReceiveFavouriteMusicState { full_name: self.full_name, age }
+    }
+}
+
 #[derive(Clone)]
 struct ReceiveFavouriteMusicState {
-    data: ReceiveAgeState,
+    full_name: String,
     age: u8,
+}
+
+impl ReceiveFavouriteMusicState {
+    fn up(self, favourite_music: FavouriteMusic) -> ExitState {
+        ExitState { full_name: self.full_name, age: self.age, favourite_music }
+    }
 }
 
 #[derive(Display)]
 #[display(
-    "Your full name: {data.data.full_name}, your age: {data.age}, your \
-     favourite music: {favourite_music}"
+"Your full name: {full_name}, your age: {age}, your favourite music: \
+     {favourite_music}"
 )]
 struct ExitState {
-    data: ReceiveFavouriteMusicState,
+    full_name: String,
+    age: u8,
     favourite_music: FavouriteMusic,
 }
 
@@ -118,10 +131,7 @@ async fn age(cx: Cx<ReceiveAgeState>) -> Res {
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
-            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
-                data: cx.dialogue.unwrap(),
-                age,
-            }))
+            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap().up(age)))
         }
         Err(_) => {
             cx.answer("Oh, please, enter a number!").send().await?;
@@ -135,13 +145,10 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         Ok(favourite_music) => {
             cx.answer(format!(
                 "Fine. {}",
-                ExitState {
-                    data: cx.dialogue.clone().unwrap(),
-                    favourite_music
-                }
+                cx.dialogue.clone().unwrap().up(favourite_music)
             ))
-            .send()
-            .await?;
+                .send()
+                .await?;
             exit()
         }
         Err(_) => {
