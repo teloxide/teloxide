@@ -79,7 +79,7 @@ impl ReceiveFavouriteMusicState {
 
 #[derive(Display)]
 #[display(
-"Your full name: {full_name}, your age: {age}, your favourite music: \
+    "Your full name: {full_name}, your age: {age}, your favourite music: \
      {favourite_music}"
 )]
 struct ExitState {
@@ -105,11 +105,15 @@ type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Dialogue>>;
 
 async fn start(cx: Cx<()>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, .. } = cx;
+
     cx.answer("Let's start! First, what's your full name?").send().await?;
     next(Dialogue::ReceiveFullName)
 }
 
 async fn full_name(cx: Cx<()>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, .. } = cx;
+
     match cx.update.text() {
         None => {
             cx.answer("Please, send me a text message!").send().await?;
@@ -125,57 +129,59 @@ async fn full_name(cx: Cx<()>) -> Res {
 }
 
 async fn age(cx: Cx<ReceiveAgeState>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+    let dialogue = dialogue.unwrap();
+
     match cx.update.text().unwrap().parse() {
         Ok(age) => {
             cx.answer("Good. Now choose your favourite music:")
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
-            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap().up(age)))
+            next(Dialogue::ReceiveFavouriteMusic(dialogue.up(age)))
         }
         Err(_) => {
             cx.answer("Oh, please, enter a number!").send().await?;
-            next(Dialogue::ReceiveAge(cx.dialogue.unwrap()))
+            next(Dialogue::ReceiveAge(dialogue))
         }
     }
 }
 
 async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+    let dialogue = dialogue.unwrap();
+
     match cx.update.text().unwrap().parse() {
         Ok(favourite_music) => {
-            cx.answer(format!(
-                "Fine. {}",
-                cx.dialogue.clone().unwrap().up(favourite_music)
-            ))
+            cx.answer(format!("Fine. {}", dialogue.up(favourite_music)))
                 .send()
                 .await?;
             exit()
         }
         Err(_) => {
             cx.answer("Oh, please, enter from the keyboard!").send().await?;
-            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap()))
+            next(Dialogue::ReceiveFavouriteMusic(dialogue))
         }
     }
 }
 
 async fn handle_message(cx: Cx<Dialogue>) -> Res {
-    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
+    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
 
     // You need handle the error instead of panicking in real-world code, maybe
     // send diagnostics to a development chat.
     match dialogue.expect("Failed to get dialogue info from storage") {
         Dialogue::Start => {
-            start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
+            start(DialogueDispatcherHandlerCx::new(cx, ())).await
         }
         Dialogue::ReceiveFullName => {
-            full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await
+            full_name(DialogueDispatcherHandlerCx::new(cx, ())).await
         }
         Dialogue::ReceiveAge(s) => {
-            age(DialogueDispatcherHandlerCx::new(bot, update, s)).await
+            age(DialogueDispatcherHandlerCx::new(cx, s)).await
         }
         Dialogue::ReceiveFavouriteMusic(s) => {
-            favourite_music(DialogueDispatcherHandlerCx::new(bot, update, s))
-                .await
+            favourite_music(DialogueDispatcherHandlerCx::new(cx, s)).await
         }
     }
 }
