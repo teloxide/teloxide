@@ -1,3 +1,4 @@
+use crate::types::MimeWrapper;
 use serde::{Deserialize, Serialize};
 
 /// This object represents a voice note.
@@ -18,7 +19,7 @@ pub struct Voice {
     pub duration: u32,
 
     /// MIME type of the file as defined by sender.
-    pub mime_type: Option<String>,
+    pub mime_type: Option<MimeWrapper>,
 
     /// File size.
     pub file_size: Option<u64>,
