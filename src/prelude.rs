@@ -17,5 +17,6 @@ pub use crate::{
 };
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
+pub use frunk::Coproduct;
 
 pub use futures::StreamExt;

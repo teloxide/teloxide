@@ -20,20 +20,14 @@
 #[macro_use]
 extern crate frunk;
 
-use frunk::Coproduct;
-
 use std::convert::Infallible;
+
+use parse_display::{Display, FromStr};
+
 use teloxide::{
     prelude::*,
     types::{KeyboardButton, ReplyKeyboardMarkup},
 };
-
-use parse_display::{Display, FromStr};
-use teloxide::dispatching::dialogue::next;
-
-// ============================================================================
-// [Favourite music kinds]
-// ============================================================================
 
 #[derive(Copy, Clone, Display, FromStr)]
 enum FavouriteMusic {
@@ -54,9 +48,7 @@ impl FavouriteMusic {
     }
 }
 
-// ============================================================================
-// [A type-safe finite automaton]
-// ============================================================================
+// Dialogue states.
 
 struct StartState;
 
@@ -103,9 +95,7 @@ wrap_dialogue!(
     default { Self(Dialogue::inject(StartState)) }
 );
 
-// ============================================================================
-// [Control a dialogue]
-// ============================================================================
+// Transition functions.
 
 type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
 type Res = ResponseResult<DialogueStage<Wrapper>>;
@@ -170,10 +160,6 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         }
     }
 }
-
-// ============================================================================
-// [Run!]
-// ============================================================================
 
 #[tokio::main]
 async fn main() {
