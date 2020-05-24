@@ -20,33 +20,12 @@
 #[macro_use]
 extern crate frunk;
 
-use std::convert::Infallible;
+use parse_display::Display;
 
-use parse_display::{Display, FromStr};
+use favourite_music::FavouriteMusic;
+use teloxide::prelude::*;
 
-use teloxide::{
-    prelude::*,
-    types::{KeyboardButton, ReplyKeyboardMarkup},
-};
-
-#[derive(Copy, Clone, Display, FromStr)]
-enum FavouriteMusic {
-    Rock,
-    Metal,
-    Pop,
-    Other,
-}
-
-impl FavouriteMusic {
-    fn markup() -> ReplyKeyboardMarkup {
-        ReplyKeyboardMarkup::default().append_row(vec![
-            KeyboardButton::new("Rock"),
-            KeyboardButton::new("Metal"),
-            KeyboardButton::new("Pop"),
-            KeyboardButton::new("Other"),
-        ])
-    }
-}
+mod favourite_music;
 
 // Dialogue states.
 
@@ -92,12 +71,13 @@ type Dialogue = Coprod!(
 
 wrap_dialogue!(
     Wrapper(Dialogue),
-    default { Self(Dialogue::inject(StartState)) }
+    default Self(Dialogue::inject(StartState))
 );
 
 // Transition functions.
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
+type Cx<State> =
+    DialogueDispatcherHandlerCx<Message, State, std::convert::Infallible>;
 type Res = ResponseResult<DialogueStage<Wrapper>>;
 
 async fn start(cx: Cx<StartState>) -> Res {

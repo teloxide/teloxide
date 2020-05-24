@@ -79,7 +79,7 @@ macro_rules! dispatch {
 
 #[macro_export]
 macro_rules! wrap_dialogue {
-    ($name:ident($dialogue:ident), default {$default_block:expr}) => {
+    ($name:ident($dialogue:ident), default $default_block:expr) => {
         struct $name($dialogue);
 
         impl teloxide::dispatching::dialogue::DialogueWrapper<$dialogue>

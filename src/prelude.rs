@@ -16,7 +16,7 @@ pub use crate::{
     up, wrap_dialogue, Bot, RequestError,
 };
 
-pub use tokio::sync::mpsc::UnboundedReceiver;
 pub use frunk::Coproduct;
+pub use tokio::sync::mpsc::UnboundedReceiver;
 
 pub use futures::StreamExt;
