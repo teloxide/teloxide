@@ -75,11 +75,11 @@ pub use storage::{InMemStorage, Storage};
 ///
 /// type Cx<State> =
 ///     DialogueDispatcherHandlerCx<Message, State, std::convert::Infallible>;
-/// type Res = ResponseResult<DialogueStage<Dialogue>>;
+/// type Stage = DialogueStage<Dialogue>;
 ///
-/// async fn start(cx: Cx<StartState>) -> Res { todo!() }
-/// async fn receive_word(cx: Cx<ReceiveWordState>) -> Res { todo!() }
-/// async fn receive_number(cx: Cx<ReceiveNumberState>) -> Res { todo!() }
+/// async fn start(cx: Cx<StartState>) -> Stage { todo!() }
+/// async fn receive_word(cx: Cx<ReceiveWordState>) -> Stage { todo!() }
+/// async fn receive_number(cx: Cx<ReceiveNumberState>) -> Stage { todo!() }
 ///
 /// # #[tokio::main]
 /// # async fn main() {
@@ -87,12 +87,13 @@ pub use storage::{InMemStorage, Storage};
 /// let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
 /// let dialogue = dialogue.unwrap();
 ///
-/// // Matches all the variants of Dialogue and calls appropriate transition functions.
-/// let res = dispatch!(
+/// // StartState -> start
+/// // ReceiveWordState -> receive_word
+/// // ReceiveNumberState -> receive_number
+/// let stage = dispatch!(
 ///     [cx, dialogue] ->
 ///     [start, receive_word, receive_number]
-/// )
-/// .expect("Something wrong with the bot!");
+/// );
 /// # }
 /// ```
 #[macro_export]
