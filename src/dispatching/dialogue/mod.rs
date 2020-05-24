@@ -52,6 +52,27 @@ mod storage;
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_dispatcher_handler_cx::DialogueDispatcherHandlerCx;
-pub use dialogue_stage::{exit, next, DialogueStage};
+pub use dialogue_stage::{exit, next, DialogueStage, DialogueWrapper};
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};
+
+#[macro_export]
+macro_rules! dispatch {
+    ([$cx:ident, $dialogue:ident] -> [$transition:ident, $($transitions:ident),+]) => {
+        match $dialogue {
+            Coproduct::Inl(state) => {
+                return $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await;
+            }
+            Coproduct::Inr(another) => { dispatch!([$cx, another] -> [$($transitions),+]) }
+        }
+    };
+
+    ([$cx:ident, $dialogue:ident] -> [$transition:ident]) => {
+        match $dialogue {
+            Coproduct::Inl(state) => {
+                return $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await;
+            }
+            Coproduct::Inr(_absurd) => unreachable!(),
+        }
+    };
+}

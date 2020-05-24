@@ -1,10 +1,11 @@
 //! Commonly used items.
 
 pub use crate::{
+    dispatch,
     dispatching::{
         dialogue::{
             exit, next, DialogueDispatcher, DialogueDispatcherHandlerCx,
-            DialogueStage, GetChatId,
+            DialogueStage, DialogueWrapper, GetChatId,
         },
         Dispatcher, DispatcherHandlerCx, DispatcherHandlerRx,
         DispatcherHandlerRxExt,

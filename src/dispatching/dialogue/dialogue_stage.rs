@@ -1,3 +1,5 @@
+use frunk::coproduct::CoprodInjector;
+
 /// Continue or terminate a dialogue.
 ///
 /// See [the module-level documentation for the design
@@ -8,15 +10,26 @@ pub enum DialogueStage<D> {
     Exit,
 }
 
-/// A shortcut for `Ok(DialogueStage::Next(dialogue))`.
+/// A dialogue wrapper to bypass orphan rules.
+pub trait DialogueWrapper<D> {
+    fn new(dialogue: D) -> Self;
+}
+
+/// Returns a new dialogue state.
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching::dialogue).
-pub fn next<E, D>(dialogue: D) -> Result<DialogueStage<D>, E> {
-    Ok(DialogueStage::Next(dialogue))
+pub fn next<StateInjector, State, Index, E, Wrapper>(
+    new_state: State,
+) -> Result<DialogueStage<Wrapper>, E>
+where
+    StateInjector: CoprodInjector<State, Index>,
+    Wrapper: DialogueWrapper<StateInjector>,
+{
+    Ok(DialogueStage::Next(Wrapper::new(StateInjector::inject(new_state))))
 }
 
-/// A shortcut for `Ok(DialogueStage::Exit)`.
+/// Exits a dialogue.
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching::dialogue).

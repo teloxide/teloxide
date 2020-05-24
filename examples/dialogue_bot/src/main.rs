@@ -17,7 +17,9 @@
 #![allow(clippy::trivial_regex)]
 
 #[macro_use]
-extern crate smart_default;
+extern crate frunk;
+
+use frunk::Coproduct;
 
 use std::convert::Infallible;
 use teloxide::{
@@ -26,6 +28,7 @@ use teloxide::{
 };
 
 use parse_display::{Display, FromStr};
+use teloxide::dispatching::dialogue::next;
 
 // ============================================================================
 // [Favourite music kinds]
@@ -53,6 +56,22 @@ impl FavouriteMusic {
 // ============================================================================
 // [A type-safe finite automaton]
 // ============================================================================
+
+struct StartState;
+
+impl StartState {
+    fn up(self) -> ReceiveFullNameState {
+        ReceiveFullNameState
+    }
+}
+
+struct ReceiveFullNameState;
+
+impl ReceiveFullNameState {
+    fn up(self, full_name: String) -> ReceiveAgeState {
+        ReceiveAgeState { full_name }
+    }
+}
 
 #[derive(Clone)]
 struct ReceiveAgeState {
@@ -88,13 +107,25 @@ struct ExitState {
     favourite_music: FavouriteMusic,
 }
 
-#[derive(SmartDefault)]
-enum Dialogue {
-    #[default]
-    Start,
-    ReceiveFullName,
-    ReceiveAge(ReceiveAgeState),
-    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
+type Dialogue = Coprod!(
+    StartState,
+    ReceiveFullNameState,
+    ReceiveAgeState,
+    ReceiveFavouriteMusicState
+);
+
+struct Wrapper(Dialogue);
+
+impl Default for Wrapper {
+    fn default() -> Self {
+        Self(Dialogue::inject(StartState))
+    }
+}
+
+impl DialogueWrapper<Dialogue> for Wrapper {
+    fn new(dialogue: Dialogue) -> Wrapper {
+        Wrapper(dialogue)
+    }
 }
 
 // ============================================================================
@@ -102,28 +133,28 @@ enum Dialogue {
 // ============================================================================
 
 type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
-type Res = ResponseResult<DialogueStage<Dialogue>>;
+type Res = ResponseResult<DialogueStage<Wrapper>>;
 
-async fn start(cx: Cx<()>) -> Res {
-    let DialogueDispatcherHandlerCx { cx, .. } = cx;
+async fn start(cx: Cx<StartState>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+    let dialogue = dialogue.unwrap();
 
     cx.answer("Let's start! First, what's your full name?").send().await?;
-    next(Dialogue::ReceiveFullName)
+    next(dialogue.up())
 }
 
-async fn full_name(cx: Cx<()>) -> Res {
-    let DialogueDispatcherHandlerCx { cx, .. } = cx;
+async fn full_name(cx: Cx<ReceiveFullNameState>) -> Res {
+    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+    let dialogue = dialogue.unwrap();
 
-    match cx.update.text() {
-        None => {
-            cx.answer("Please, send me a text message!").send().await?;
-            next(Dialogue::ReceiveFullName)
-        }
+    match cx.update.text_owned() {
         Some(full_name) => {
             cx.answer("What a wonderful name! Your age?").send().await?;
-            next(Dialogue::ReceiveAge(ReceiveAgeState {
-                full_name: full_name.to_owned(),
-            }))
+            next(dialogue.up(full_name))
+        }
+        None => {
+            cx.answer("Please, send me a text message!").send().await?;
+            next(dialogue)
         }
     }
 }
@@ -138,11 +169,11 @@ async fn age(cx: Cx<ReceiveAgeState>) -> Res {
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
-            next(Dialogue::ReceiveFavouriteMusic(dialogue.up(age)))
+            next(dialogue.up(age))
         }
         Err(_) => {
             cx.answer("Oh, please, enter a number!").send().await?;
-            next(Dialogue::ReceiveAge(dialogue))
+            next(dialogue)
         }
     }
 }
@@ -160,30 +191,19 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
         }
         Err(_) => {
             cx.answer("Oh, please, enter from the keyboard!").send().await?;
-            next(Dialogue::ReceiveFavouriteMusic(dialogue))
+            next(dialogue)
         }
     }
 }
 
-async fn handle_message(cx: Cx<Dialogue>) -> Res {
+async fn handle_message(cx: Cx<Wrapper>) -> Res {
     let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
 
     // You need handle the error instead of panicking in real-world code, maybe
     // send diagnostics to a development chat.
-    match dialogue.expect("Failed to get dialogue info from storage") {
-        Dialogue::Start => {
-            start(DialogueDispatcherHandlerCx::new(cx, ())).await
-        }
-        Dialogue::ReceiveFullName => {
-            full_name(DialogueDispatcherHandlerCx::new(cx, ())).await
-        }
-        Dialogue::ReceiveAge(s) => {
-            age(DialogueDispatcherHandlerCx::new(cx, s)).await
-        }
-        Dialogue::ReceiveFavouriteMusic(s) => {
-            favourite_music(DialogueDispatcherHandlerCx::new(cx, s)).await
-        }
-    }
+    let Wrapper(dialogue) = dialogue.expect("Failed to get dialogue info from storage");
+
+    dispatch!([cx, dialogue] -> [start, full_name, age, favourite_music]);
 }
 
 // ============================================================================
