@@ -80,7 +80,7 @@ macro_rules! dispatch {
 #[macro_export]
 macro_rules! wrap_dialogue {
     ($name:ident($dialogue:ident), default $default_block:expr) => {
-        struct $name($dialogue);
+        pub struct $name(pub $dialogue);
 
         impl teloxide::dispatching::dialogue::DialogueWrapper<$dialogue>
             for $name
@@ -103,7 +103,7 @@ macro_rules! up {
     ( $( $from:ident $(+ [$field_name:ident : $field_type:ty])? -> $to:ident ),+ ) => {
         $(
             impl $from {
-                fn up(self, $( $field_name: $field_type )?) -> $to {
+                pub fn up(self, $( $field_name: $field_type )?) -> $to {
                     $to { rest: self, $($field_name)? }
                 }
             }
