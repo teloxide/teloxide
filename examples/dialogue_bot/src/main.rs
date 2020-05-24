@@ -17,9 +17,6 @@
 #![allow(clippy::trivial_regex)]
 #![allow(dead_code)]
 
-#[macro_use]
-extern crate frunk;
-
 mod favourite_music;
 mod states;
 mod transitions;

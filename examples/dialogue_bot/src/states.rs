@@ -33,17 +33,17 @@ up!(
     StartState -> ReceiveFullNameState,
     ReceiveFullNameState + [full_name: String] -> ReceiveAgeState,
     ReceiveAgeState + [age: u8] -> ReceiveFavouriteMusicState,
-    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState
+    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
 );
 
 pub type Dialogue = Coprod!(
     StartState,
     ReceiveFullNameState,
     ReceiveAgeState,
-    ReceiveFavouriteMusicState
+    ReceiveFavouriteMusicState,
 );
 
 wrap_dialogue!(
     Wrapper(Dialogue),
-    default Self(Dialogue::inject(StartState))
+    default Self(Dialogue::inject(StartState)),
 );
