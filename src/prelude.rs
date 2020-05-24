@@ -13,7 +13,7 @@ pub use crate::{
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
-    Bot, RequestError,
+    up, wrap_dialogue, Bot, RequestError,
 };
 
 pub use tokio::sync::mpsc::UnboundedReceiver;

@@ -61,7 +61,7 @@ macro_rules! dispatch {
     ([$cx:ident, $dialogue:ident] -> [$transition:ident, $($transitions:ident),+]) => {
         match $dialogue {
             Coproduct::Inl(state) => {
-                return $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await;
+                $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await
             }
             Coproduct::Inr(another) => { dispatch!([$cx, another] -> [$($transitions),+]) }
         }
@@ -70,9 +70,37 @@ macro_rules! dispatch {
     ([$cx:ident, $dialogue:ident] -> [$transition:ident]) => {
         match $dialogue {
             Coproduct::Inl(state) => {
-                return $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await;
+                $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await
             }
             Coproduct::Inr(_absurd) => unreachable!(),
         }
+    };
+}
+
+#[macro_export]
+macro_rules! wrap_dialogue {
+    ($name:ident, $dialogue:ident) => {
+        struct $name($dialogue);
+
+        impl teloxide::dispatching::dialogue::DialogueWrapper<$dialogue>
+            for $name
+        {
+            fn new(d: $dialogue) -> Wrapper {
+                $name(d)
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! up {
+    ( $( $from:ident $(+ [$field_name:ident : $field_type:ty])? -> $to:ident ),+ ) => {
+        $(
+            impl $from {
+                fn up(self, $( $field_name: $field_type )?) -> $to {
+                    $to { rest: self, $($field_name)? }
+                }
+            }
+        )+
     };
 }

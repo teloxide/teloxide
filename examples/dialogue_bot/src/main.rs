@@ -15,6 +15,7 @@
 // ```
 
 #![allow(clippy::trivial_regex)]
+#![allow(dead_code)]
 
 #[macro_use]
 extern crate frunk;
@@ -59,53 +60,36 @@ impl FavouriteMusic {
 
 struct StartState;
 
-impl StartState {
-    fn up(self) -> ReceiveFullNameState {
-        ReceiveFullNameState
-    }
+struct ReceiveFullNameState {
+    rest: StartState,
 }
 
-struct ReceiveFullNameState;
-
-impl ReceiveFullNameState {
-    fn up(self, full_name: String) -> ReceiveAgeState {
-        ReceiveAgeState { full_name }
-    }
-}
-
-#[derive(Clone)]
 struct ReceiveAgeState {
+    rest: ReceiveFullNameState,
     full_name: String,
 }
 
-impl ReceiveAgeState {
-    fn up(self, age: u8) -> ReceiveFavouriteMusicState {
-        ReceiveFavouriteMusicState { full_name: self.full_name, age }
-    }
-}
-
-#[derive(Clone)]
 struct ReceiveFavouriteMusicState {
-    full_name: String,
+    rest: ReceiveAgeState,
     age: u8,
-}
-
-impl ReceiveFavouriteMusicState {
-    fn up(self, favourite_music: FavouriteMusic) -> ExitState {
-        ExitState { full_name: self.full_name, age: self.age, favourite_music }
-    }
 }
 
 #[derive(Display)]
 #[display(
-    "Your full name: {full_name}, your age: {age}, your favourite music: \
-     {favourite_music}"
+    "Your full name: {rest.rest.full_name}, your age: {rest.age}, your \
+     favourite music: {favourite_music}"
 )]
 struct ExitState {
-    full_name: String,
-    age: u8,
+    rest: ReceiveFavouriteMusicState,
     favourite_music: FavouriteMusic,
 }
+
+up!(
+    StartState -> ReceiveFullNameState,
+    ReceiveFullNameState + [full_name: String] -> ReceiveAgeState,
+    ReceiveAgeState + [age: u8] -> ReceiveFavouriteMusicState,
+    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState
+);
 
 type Dialogue = Coprod!(
     StartState,
@@ -114,17 +98,11 @@ type Dialogue = Coprod!(
     ReceiveFavouriteMusicState
 );
 
-struct Wrapper(Dialogue);
+wrap_dialogue!(Wrapper, Dialogue);
 
 impl Default for Wrapper {
     fn default() -> Self {
         Self(Dialogue::inject(StartState))
-    }
-}
-
-impl DialogueWrapper<Dialogue> for Wrapper {
-    fn new(dialogue: Dialogue) -> Wrapper {
-        Wrapper(dialogue)
     }
 }
 
@@ -196,16 +174,6 @@ async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
     }
 }
 
-async fn handle_message(cx: Cx<Wrapper>) -> Res {
-    let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
-
-    // You need handle the error instead of panicking in real-world code, maybe
-    // send diagnostics to a development chat.
-    let Wrapper(dialogue) = dialogue.expect("Failed to get dialogue info from storage");
-
-    dispatch!([cx, dialogue] -> [start, full_name, age, favourite_music]);
-}
-
 // ============================================================================
 // [Run!]
 // ============================================================================
@@ -223,7 +191,14 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(|cx| async move {
-            handle_message(cx).await.expect("Something wrong with the bot!")
+            let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+
+            // You need handle the error instead of panicking in real-world code, maybe
+            // send diagnostics to a development chat.
+            let Wrapper(dialogue) = dialogue.expect("Failed to get dialogue info from storage");
+
+            dispatch!([cx, dialogue] -> [start, full_name, age, favourite_music])
+                .expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;
