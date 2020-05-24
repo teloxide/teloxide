@@ -156,9 +156,8 @@ async fn run() {
         .messages_handler(DialogueDispatcher::new(|cx| async move {
             let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
 
-            // You need handle the error instead of panicking in real-world code, maybe
-            // send diagnostics to a development chat.
-            let Wrapper(dialogue) = dialogue.expect("Failed to get dialogue info from storage");
+            // Unwrap without panic because of std::convert::Infallible.
+            let Wrapper(dialogue) = dialogue.unwrap();
 
             dispatch!([cx, dialogue] -> [start, full_name, age, favourite_music])
                 .expect("Something wrong with the bot!")
