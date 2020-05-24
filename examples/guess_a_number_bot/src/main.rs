@@ -16,90 +16,15 @@
 //  - Congratulations! You won!
 // ```
 
-#[macro_use]
-extern crate smart_default;
+#![allow(dead_code)]
+
+mod states;
+mod transitions;
+
+use states::*;
+use transitions::*;
 
 use teloxide::prelude::*;
-
-use rand::{thread_rng, Rng};
-use std::convert::Infallible;
-
-// ============================================================================
-// [A type-safe finite automaton]
-// ============================================================================
-
-#[derive(SmartDefault)]
-enum Dialogue {
-    #[default]
-    Start,
-    ReceiveAttempt(u8),
-}
-
-// ============================================================================
-// [Control a dialogue]
-// ============================================================================
-
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
-type Res = ResponseResult<DialogueStage<Dialogue>>;
-
-async fn start(cx: Cx<()>) -> Res {
-    cx.answer("Let's play a game! Guess a number from 1 to 10 (inclusively).")
-        .send()
-        .await?;
-    next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
-}
-
-async fn receive_attempt(cx: Cx<u8>) -> Res {
-    let secret = cx.dialogue.unwrap();
-
-    match cx.update.text() {
-        None => {
-            cx.answer("Oh, please, send me a text message!").send().await?;
-            next(Dialogue::ReceiveAttempt(secret))
-        }
-        Some(text) => match text.parse::<u8>() {
-            Ok(attempt) => {
-                if attempt == secret {
-                    cx.answer("Congratulations! You won!").send().await?;
-                    exit()
-                } else {
-                    cx.answer("No.").send().await?;
-                    next(Dialogue::ReceiveAttempt(secret))
-                }
-            }
-            Err(_) => {
-                cx.answer("Oh, please, send me a number in the range [1; 10]!")
-                    .send()
-                    .await?;
-                next(Dialogue::ReceiveAttempt(secret))
-            }
-        },
-    }
-}
-
-async fn handle_message(
-    cx: DialogueDispatcherHandlerCx<Message, Dialogue, Infallible>,
-) -> Res {
-    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
-
-    // You need handle the error instead of panicking in real-world code, maybe
-    // send diagnostics to a development chat.
-    match dialogue.expect("Failed to get dialogue info from storage") {
-        Dialogue::Start => {
-            start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
-        }
-        Dialogue::ReceiveAttempt(secret) => {
-            receive_attempt(DialogueDispatcherHandlerCx::new(
-                bot, update, secret,
-            ))
-            .await
-        }
-    }
-}
-
-// ============================================================================
-// [Run!]
-// ============================================================================
 
 #[tokio::main]
 async fn main() {
@@ -114,7 +39,16 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(|cx| async move {
-            handle_message(cx).await.expect("Something wrong with the bot!")
+            let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+
+            // Unwrap without panic because of std::convert::Infallible.
+            let Wrapper(dialogue) = dialogue.unwrap();
+
+            dispatch!(
+                [cx, dialogue] ->
+                [start, receive_attempt]
+            )
+            .expect("Something wrong with the bot!")
         }))
         .dispatch()
         .await;
