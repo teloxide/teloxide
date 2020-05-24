@@ -54,7 +54,7 @@ All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">
 
 <h3 align="center">Persistency</h3>
 <p align="center">
-By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing <a href="https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html">2 functions</a>. Default database implementations <a href="https://github.com/teloxide/teloxide/issues/183">are coming</a>!.
+Just replace one line and make user dialogues <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a> (for example, store on a disk, transmit through a network), without affecting the actual <a href="https://en.wikipedia.org/wiki/Finite-state_machine">FSM</a> algorithm. By default, teloxide stores all user dialogues in RAM. Default database implementations <a href="https://github.com/teloxide/teloxide/issues/183">are coming</a>!
 </p>
 
 <hr>
