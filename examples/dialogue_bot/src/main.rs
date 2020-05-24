@@ -98,13 +98,10 @@ type Dialogue = Coprod!(
     ReceiveFavouriteMusicState
 );
 
-wrap_dialogue!(Wrapper, Dialogue);
-
-impl Default for Wrapper {
-    fn default() -> Self {
-        Self(Dialogue::inject(StartState))
-    }
-}
+wrap_dialogue!(
+    Wrapper(Dialogue),
+    default { Self(Dialogue::inject(StartState)) }
+);
 
 // ============================================================================
 // [Control a dialogue]
