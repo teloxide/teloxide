@@ -68,7 +68,7 @@ Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">
  1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
 ```bash
-# Unix
+# Unix-like
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
