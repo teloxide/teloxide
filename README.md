@@ -251,7 +251,7 @@ wrap_dialogue!(
 ```rust
 // Imports are omitted...
 
-pub type In<State> = TransitionIn<State>;
+pub type In<State> = TransitionIn<State, std::convert::Infallible>;
 pub type Out = TransitionOut<Wrapper>;
 
 pub async fn start(cx: In<StartState>) -> Out {

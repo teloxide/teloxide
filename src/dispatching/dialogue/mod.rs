@@ -79,7 +79,7 @@ pub use storage::{InMemStorage, Storage};
 ///     default Self(Dialogue::inject(StartState)),
 /// );
 ///
-/// pub type In<State> = TransitionIn<State>;
+/// pub type In<State> = TransitionIn<State, std::convert::Infallible>;
 /// pub type Out = TransitionOut<Wrapper>;
 ///
 /// pub async fn start(cx: In<StartState>) -> Out { todo!() }
@@ -224,8 +224,7 @@ macro_rules! up {
 }
 
 /// A type passed into a FSM transition function.
-pub type TransitionIn<State> =
-    DialogueWithCx<Message, State, std::convert::Infallible>;
+pub type TransitionIn<State, E> = DialogueWithCx<Message, State, E>;
 
 // A type returned from a FSM transition function.
 pub type TransitionOut<DWrapper> = ResponseResult<DialogueStage<DWrapper>>;
