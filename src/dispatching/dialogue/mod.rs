@@ -36,8 +36,8 @@
 //! [`Dispatcher::messages_handler`]:
 //! crate::dispatching::Dispatcher::messages_handler
 //! [`UpdateKind::Message(message)`]: crate::types::UpdateKind::Message
-//! [`DialogueDispatcherHandlerCx<YourUpdate, D>`]:
-//! crate::dispatching::dialogue::DialogueDispatcherHandlerCx
+//! [`DialogueWithCx<YourUpdate, D>`]:
+//! crate::dispatching::dialogue::DialogueWithCx
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 #![allow(clippy::type_complexity)]
@@ -63,30 +63,33 @@ pub use storage::{InMemStorage, Storage};
 /// ```no_run
 /// use teloxide::prelude::*;
 ///
-/// struct StartState;
-/// struct ReceiveWordState;
-/// struct ReceiveNumberState;
-/// struct ExitState;
+/// pub struct StartState;
+/// pub struct ReceiveWordState;
+/// pub struct ReceiveNumberState;
+/// pub struct ExitState;
 ///
-/// type Dialogue = Coprod!(
+/// pub type Dialogue = Coprod!(
 ///     StartState,
 ///     ReceiveWordState,
 ///     ReceiveNumberState,
 /// );
 ///
-/// type Cx<State> =
-///     DialogueWithCx<Message, State, std::convert::Infallible>;
-/// type Stage = DialogueStage<Dialogue>;
+/// wrap_dialogue!(
+///     Wrapper(Dialogue),
+///     default Self(Dialogue::inject(StartState)),
+/// );
 ///
-/// async fn start(cx: Cx<StartState>) -> Stage { todo!() }
-/// async fn receive_word(cx: Cx<ReceiveWordState>) -> Stage { todo!() }
-/// async fn receive_number(cx: Cx<ReceiveNumberState>) -> Stage { todo!() }
+/// pub type In<State> = TransitionIn<State>;
+/// pub type Out = TransitionOut<Wrapper>;
+///
+/// pub async fn start(cx: In<StartState>) -> Out { todo!() }
+/// pub async fn receive_word(cx: In<ReceiveWordState>) -> Out { todo!() }
+/// pub async fn receive_number(cx: In<ReceiveNumberState>) -> Out { todo!() }
 ///
 /// # #[tokio::main]
 /// # async fn main() {
-/// let cx: Cx<Dialogue> = todo!();
-/// let DialogueWithCx { cx, dialogue } = cx;
-/// let dialogue = dialogue.unwrap();
+/// let cx: In<Dialogue> = todo!();
+/// let (cx, dialogue) = cx.unpack();
 ///
 /// // StartState -> start
 /// // ReceiveWordState -> receive_word
@@ -220,6 +223,9 @@ macro_rules! up {
     };
 }
 
+/// A type passed into a FSM transition function.
 pub type TransitionIn<State> =
     DialogueWithCx<Message, State, std::convert::Infallible>;
+
+// A type returned from a FSM transition function.
 pub type TransitionOut<DWrapper> = ResponseResult<DialogueStage<DWrapper>>;
