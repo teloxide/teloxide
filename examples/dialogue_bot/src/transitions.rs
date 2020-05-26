@@ -21,7 +21,7 @@ pub async fn receive_full_name(cx: Cx<ReceiveFullNameState>) -> Res {
             next(dialogue.up(full_name))
         }
         None => {
-            cx.answer("Please, send me a text message!").send().await?;
+            cx.answer("Please, enter a text message!").send().await?;
             next(dialogue)
         }
     }
@@ -30,16 +30,16 @@ pub async fn receive_full_name(cx: Cx<ReceiveFullNameState>) -> Res {
 pub async fn receive_age(cx: Cx<ReceiveAgeState>) -> Res {
     let (cx, dialogue) = cx.unpack();
 
-    match cx.update.text().unwrap().parse() {
-        Ok(age) => {
+    match cx.update.text().map(str::parse) {
+        Some(Ok(age)) => {
             cx.answer("Good. Now choose your favourite music:")
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
             next(dialogue.up(age))
         }
-        Err(_) => {
-            cx.answer("Oh, please, enter a number!").send().await?;
+        _ => {
+            cx.answer("Please, enter a number!").send().await?;
             next(dialogue)
         }
     }
@@ -50,15 +50,15 @@ pub async fn receive_favourite_music(
 ) -> Res {
     let (cx, dialogue) = cx.unpack();
 
-    match cx.update.text().unwrap().parse() {
-        Ok(favourite_music) => {
+    match cx.update.text().map(str::parse) {
+        Some(Ok(favourite_music)) => {
             cx.answer(format!("Fine. {}", dialogue.up(favourite_music)))
                 .send()
                 .await?;
             exit()
         }
-        Err(_) => {
-            cx.answer("Oh, please, enter from the keyboard!").send().await?;
+        _ => {
+            cx.answer("Please, enter from the keyboard!").send().await?;
             next(dialogue)
         }
     }
