@@ -1,4 +1,5 @@
 use crate::dispatching::{dialogue::GetChatId, UpdateWithCx};
+use std::fmt::Debug;
 
 /// A context of a [`DialogueDispatcher`]'s message handler.
 ///
@@ -10,6 +11,16 @@ use crate::dispatching::{dialogue::GetChatId, UpdateWithCx};
 pub struct DialogueWithCx<Upd, D, E> {
     pub cx: UpdateWithCx<Upd>,
     pub dialogue: Result<D, E>,
+}
+
+impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
+    /// Returns the inner `UpdateWithCx<Upd>` and an unwrapped dialogue.
+    pub fn unpack(self) -> (UpdateWithCx<Upd>, D)
+    where
+        E: Debug,
+    {
+        (self.cx, self.dialogue.unwrap())
+    }
 }
 
 impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
