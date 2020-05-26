@@ -2,9 +2,9 @@ use crate::{
     dispatching::dialogue::GetChatId,
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
-        PinChatMessage, SendAnimation, SendAudio, SendContact, SendDocument,
-        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendSticker,
-        SendVenue, SendVideo, SendVideoNote, SendVoice,
+        PinChatMessage, Request, ResponseResult, SendAnimation, SendAudio,
+        SendContact, SendDocument, SendLocation, SendMediaGroup, SendMessage,
+        SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -33,6 +33,13 @@ where
 }
 
 impl UpdateWithCx<Message> {
+    pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
+    where
+        T: Into<String>,
+    {
+        self.answer(text).send().await
+    }
+
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,
