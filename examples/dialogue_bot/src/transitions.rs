@@ -20,7 +20,7 @@ pub async fn receive_full_name(cx: In<ReceiveFullNameState>) -> Out {
             cx.answer_str("What a wonderful name! Your age?").await?;
             next(dialogue.up(full_name))
         }
-        None => {
+        _ => {
             cx.answer_str("Please, enter a text message!").await?;
             next(dialogue)
         }
