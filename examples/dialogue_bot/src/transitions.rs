@@ -2,17 +2,17 @@ use teloxide::prelude::*;
 
 use super::{favourite_music::FavouriteMusic, states::*};
 
-pub type Cx<State> = DialogueWithCx<Message, State, std::convert::Infallible>;
-pub type Res = ResponseResult<DialogueStage<Wrapper>>;
+pub type In<State> = TransitionIn<State>;
+pub type Out = TransitionOut<Wrapper>;
 
-pub async fn start(cx: Cx<StartState>) -> Res {
+pub async fn start(cx: In<StartState>) -> Out {
     let (cx, dialogue) = cx.unpack();
 
     cx.answer("Let's start! First, what's your full name?").send().await?;
     next(dialogue.up())
 }
 
-pub async fn receive_full_name(cx: Cx<ReceiveFullNameState>) -> Res {
+pub async fn receive_full_name(cx: In<ReceiveFullNameState>) -> Out {
     let (cx, dialogue) = cx.unpack();
 
     match cx.update.text_owned() {
@@ -27,7 +27,7 @@ pub async fn receive_full_name(cx: Cx<ReceiveFullNameState>) -> Res {
     }
 }
 
-pub async fn receive_age(cx: Cx<ReceiveAgeState>) -> Res {
+pub async fn receive_age(cx: In<ReceiveAgeState>) -> Out {
     let (cx, dialogue) = cx.unpack();
 
     match cx.update.text().map(str::parse) {
@@ -46,8 +46,8 @@ pub async fn receive_age(cx: Cx<ReceiveAgeState>) -> Res {
 }
 
 pub async fn receive_favourite_music(
-    cx: Cx<ReceiveFavouriteMusicState>,
-) -> Res {
+    cx: In<ReceiveFavouriteMusicState>,
+) -> Out {
     let (cx, dialogue) = cx.unpack();
 
     match cx.update.text().map(str::parse) {

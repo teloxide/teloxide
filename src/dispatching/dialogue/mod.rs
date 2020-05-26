@@ -49,6 +49,7 @@ mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 
+use crate::{requests::ResponseResult, types::Message};
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage, DialogueWrapper};
@@ -218,3 +219,7 @@ macro_rules! up {
         )+
     };
 }
+
+pub type TransitionIn<State> =
+    DialogueWithCx<Message, State, std::convert::Infallible>;
+pub type TransitionOut<DWrapper> = ResponseResult<DialogueStage<DWrapper>>;

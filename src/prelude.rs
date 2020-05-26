@@ -5,7 +5,7 @@ pub use crate::{
     dispatching::{
         dialogue::{
             exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
-            DialogueWrapper, GetChatId,
+            DialogueWrapper, GetChatId, TransitionIn, TransitionOut,
         },
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
