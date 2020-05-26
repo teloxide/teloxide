@@ -4,11 +4,10 @@ pub use crate::{
     dispatch,
     dispatching::{
         dialogue::{
-            exit, next, DialogueDispatcher, DialogueDispatcherHandlerCx,
-            DialogueStage, DialogueWrapper, GetChatId,
+            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
+            DialogueWrapper, GetChatId,
         },
-        Dispatcher, DispatcherHandlerCx, DispatcherHandlerRx,
-        DispatcherHandlerRxExt,
+        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},

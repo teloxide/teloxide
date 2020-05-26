@@ -44,15 +44,15 @@
 
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
-mod dialogue_dispatcher_handler_cx;
 mod dialogue_stage;
+mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
-pub use dialogue_dispatcher_handler_cx::DialogueDispatcherHandlerCx;
 pub use dialogue_stage::{exit, next, DialogueStage, DialogueWrapper};
+pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};
 
@@ -74,7 +74,7 @@ pub use storage::{InMemStorage, Storage};
 /// );
 ///
 /// type Cx<State> =
-///     DialogueDispatcherHandlerCx<Message, State, std::convert::Infallible>;
+///     DialogueWithCx<Message, State, std::convert::Infallible>;
 /// type Stage = DialogueStage<Dialogue>;
 ///
 /// async fn start(cx: Cx<StartState>) -> Stage { todo!() }
@@ -84,7 +84,7 @@ pub use storage::{InMemStorage, Storage};
 /// # #[tokio::main]
 /// # async fn main() {
 /// let cx: Cx<Dialogue> = todo!();
-/// let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+/// let DialogueWithCx { cx, dialogue } = cx;
 /// let dialogue = dialogue.unwrap();
 ///
 /// // StartState -> start
@@ -101,7 +101,7 @@ macro_rules! dispatch {
     ([$cx:ident, $dialogue:ident] -> [$transition:ident, $($transitions:ident),+]) => {
         match $dialogue {
             Coproduct::Inl(state) => {
-                $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await
+                $transition(teloxide::dispatching::dialogue::DialogueWithCx::new($cx, state)).await
             }
             Coproduct::Inr(another) => { dispatch!([$cx, another] -> [$($transitions),+]) }
         }
@@ -110,7 +110,7 @@ macro_rules! dispatch {
     ([$cx:ident, $dialogue:ident] -> [$transition:ident]) => {
         match $dialogue {
             Coproduct::Inl(state) => {
-                $transition(teloxide::dispatching::dialogue::DialogueDispatcherHandlerCx::new($cx, state)).await
+                $transition(teloxide::dispatching::dialogue::DialogueWithCx::new($cx, state)).await
             }
             Coproduct::Inr(_absurd) => unreachable!(),
         }

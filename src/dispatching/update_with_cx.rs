@@ -18,12 +18,12 @@ use std::sync::Arc;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
-pub struct DispatcherHandlerCx<Upd> {
+pub struct UpdateWithCx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,
 }
 
-impl<Upd> GetChatId for DispatcherHandlerCx<Upd>
+impl<Upd> GetChatId for UpdateWithCx<Upd>
 where
     Upd: GetChatId,
 {
@@ -32,7 +32,7 @@ where
     }
 }
 
-impl DispatcherHandlerCx<Message> {
+impl UpdateWithCx<Message> {
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,

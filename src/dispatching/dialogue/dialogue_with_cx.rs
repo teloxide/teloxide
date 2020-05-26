@@ -1,4 +1,4 @@
-use crate::dispatching::{dialogue::GetChatId, DispatcherHandlerCx};
+use crate::dispatching::{dialogue::GetChatId, UpdateWithCx};
 
 /// A context of a [`DialogueDispatcher`]'s message handler.
 ///
@@ -7,14 +7,14 @@ use crate::dispatching::{dialogue::GetChatId, DispatcherHandlerCx};
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 #[derive(Debug)]
-pub struct DialogueDispatcherHandlerCx<Upd, D, E> {
-    pub cx: DispatcherHandlerCx<Upd>,
+pub struct DialogueWithCx<Upd, D, E> {
+    pub cx: UpdateWithCx<Upd>,
     pub dialogue: Result<D, E>,
 }
 
-impl<Upd, D, E> DialogueDispatcherHandlerCx<Upd, D, E> {
+impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
     /// Creates a new instance with the provided fields.
-    pub fn new(cx: DispatcherHandlerCx<Upd>, dialogue: D) -> Self {
+    pub fn new(cx: UpdateWithCx<Upd>, dialogue: D) -> Self {
         Self { cx, dialogue: Ok(dialogue) }
     }
 
@@ -23,12 +23,12 @@ impl<Upd, D, E> DialogueDispatcherHandlerCx<Upd, D, E> {
     pub fn with_new_dialogue<Nd, Ne>(
         self,
         new_dialogue: Result<Nd, Ne>,
-    ) -> DialogueDispatcherHandlerCx<Upd, Nd, Ne> {
-        DialogueDispatcherHandlerCx { cx: self.cx, dialogue: new_dialogue }
+    ) -> DialogueWithCx<Upd, Nd, Ne> {
+        DialogueWithCx { cx: self.cx, dialogue: new_dialogue }
     }
 }
 
-impl<Upd, D, E> GetChatId for DialogueDispatcherHandlerCx<Upd, D, E>
+impl<Upd, D, E> GetChatId for DialogueWithCx<Upd, D, E>
 where
     Upd: GetChatId,
 {

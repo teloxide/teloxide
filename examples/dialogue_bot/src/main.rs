@@ -39,7 +39,7 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(|cx| async move {
-            let DialogueDispatcherHandlerCx { cx, dialogue } = cx;
+            let DialogueWithCx { cx, dialogue } = cx;
 
             // Unwrap without panic because of std::convert::Infallible.
             let Wrapper(dialogue) = dialogue.unwrap();

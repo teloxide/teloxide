@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         update_listeners, update_listeners::UpdateListener, DispatcherHandler,
-        DispatcherHandlerCx,
+        UpdateWithCx,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     types::{
@@ -14,7 +14,7 @@ use futures::StreamExt;
 use std::{fmt::Debug, sync::Arc};
 use tokio::sync::mpsc;
 
-type Tx<Upd> = Option<mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>;
+type Tx<Upd> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd>>>;
 
 #[macro_use]
 mod macros {
@@ -36,7 +36,7 @@ fn send<'a, Upd>(
 {
     if let Some(tx) = tx {
         if let Err(error) =
-            tx.send(DispatcherHandlerCx { bot: Arc::clone(&bot), update })
+            tx.send(UpdateWithCx { bot: Arc::clone(&bot), update })
         {
             log::error!(
                 "The RX part of the {} channel is closed, but an update is \
