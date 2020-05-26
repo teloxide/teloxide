@@ -51,16 +51,9 @@ All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">
 
 <hr>
 
-<h3 align="center">Persistency</h3>
+<h3 align="center">Persistence</h3>
 <p align="center">
 Dialogues management is independent of how/where they are stored: just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a> (for example, store on a disk, transmit through a network), without affecting the actual <a href="https://en.wikipedia.org/wiki/Finite-state_machine">FSM</a> algorithm. By default, teloxide stores all user dialogues in RAM. Default database implementations <a href="https://github.com/teloxide/teloxide/issues/183">are coming</a>!
-</p>
-
-<hr>
-
-<h3 align="center">Convenient dialogues management</h3>
-<p align="center">
-Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
 </p>
 
 ## Setting up your environment
@@ -68,7 +61,7 @@ Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">
  2. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  3. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
 ```bash
-# Unix
+# Unix-like
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
