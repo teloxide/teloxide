@@ -240,6 +240,8 @@ wrap_dialogue!(
 );
 ```
 
+The [`wrap_dialogue!`](https://docs.rs/teloxide/latest/teloxide/macro.wrap_dialogue.html) macro generates a new-type of `Dialogue` with a default implementation.
+
 ([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
 ```rust
 // Imports are omitted...
