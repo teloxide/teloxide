@@ -18,7 +18,7 @@ fn generate() -> String {
 }
 
 async fn answer(
-    cx: DispatcherHandlerCx<Message>,
+    cx: UpdateWithCx<Message>,
     command: Command,
 ) -> ResponseResult<()> {
     match command {

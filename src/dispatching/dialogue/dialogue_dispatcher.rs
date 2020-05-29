@@ -1,9 +1,9 @@
 use crate::dispatching::{
     dialogue::{
-        DialogueDispatcherHandler, DialogueDispatcherHandlerCx, DialogueStage,
-        GetChatId, InMemStorage, Storage,
+        DialogueDispatcherHandler, DialogueStage, DialogueWithCx, GetChatId,
+        InMemStorage, Storage,
     },
-    DispatcherHandler, DispatcherHandlerCx,
+    DispatcherHandler, UpdateWithCx,
 };
 use std::{convert::Infallible, marker::PhantomData};
 
@@ -34,7 +34,7 @@ pub struct DialogueDispatcher<D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<DispatcherHandlerCx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<Upd>>>>,
 }
 
 impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
@@ -78,14 +78,14 @@ where
     }
 
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<DispatcherHandlerCx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<Upd>> {
         let (tx, rx) = mpsc::unbounded_channel();
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(rx.for_each(move |cx: DispatcherHandlerCx<Upd>| {
+        tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
@@ -98,14 +98,7 @@ where
                     .await
                     .map(Option::unwrap_or_default);
 
-                match handler
-                    .handle(DialogueDispatcherHandlerCx {
-                        bot: cx.bot,
-                        update: cx.update,
-                        dialogue,
-                    })
-                    .await
-                {
+                match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
                         if let Ok(Some(_)) =
                             storage.update_dialogue(chat_id, new_dialogue).await
@@ -144,10 +137,10 @@ where
 {
     fn handle(
         self,
-        updates: mpsc::UnboundedReceiver<DispatcherHandlerCx<Upd>>,
+        updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>,
     ) -> BoxFuture<'static, ()>
     where
-        DispatcherHandlerCx<Upd>: 'static,
+        UpdateWithCx<Upd>: 'static,
     {
         let this = Arc::new(self);
 
@@ -221,10 +214,10 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueDispatcherHandlerCx<MyUpdate, (), Infallible>| async move {
+            |cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
-                match cx.update {
+                match cx.cx.update {
                     MyUpdate { chat_id: 1, unique_number } => {
                         SEQ1.lock().await.push(unique_number);
                     }
@@ -266,11 +259,11 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| DispatcherHandlerCx {
+            .map(|update| UpdateWithCx {
                 update,
                 bot: Bot::new("Doesn't matter here"),
             })
-            .collect::<Vec<DispatcherHandlerCx<MyUpdate>>>(),
+            .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
         );
 
         let (tx, rx) = mpsc::unbounded_channel();

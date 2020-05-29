@@ -2,9 +2,9 @@ use crate::{
     dispatching::dialogue::GetChatId,
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
-        PinChatMessage, SendAnimation, SendAudio, SendContact, SendDocument,
-        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendSticker,
-        SendVenue, SendVideo, SendVideoNote, SendVoice,
+        PinChatMessage, Request, ResponseResult, SendAnimation, SendAudio,
+        SendContact, SendDocument, SendLocation, SendMediaGroup, SendMessage,
+        SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -18,12 +18,12 @@ use std::sync::Arc;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
-pub struct DispatcherHandlerCx<Upd> {
+pub struct UpdateWithCx<Upd> {
     pub bot: Arc<Bot>,
     pub update: Upd,
 }
 
-impl<Upd> GetChatId for DispatcherHandlerCx<Upd>
+impl<Upd> GetChatId for UpdateWithCx<Upd>
 where
     Upd: GetChatId,
 {
@@ -32,7 +32,14 @@ where
     }
 }
 
-impl DispatcherHandlerCx<Message> {
+impl UpdateWithCx<Message> {
+    pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
+    where
+        T: Into<String>,
+    {
+        self.answer(text).send().await
+    }
+
     pub fn answer<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,
