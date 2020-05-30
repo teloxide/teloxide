@@ -37,12 +37,6 @@
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
-<h3 align="center">Higher-order design</h3>
-<p align="center">
-teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to (de)multiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
-</p>
-
-<hr>
 
 <h3 align="center">Type safety</h3>
 <p align="center">
