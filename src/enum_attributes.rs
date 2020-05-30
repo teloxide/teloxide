@@ -2,6 +2,7 @@ use crate::attr::Attr;
 use crate::command::parse_attrs;
 use crate::fields_parse::ParserType;
 
+#[derive(Debug)]
 pub struct CommandEnum {
     pub prefix: Option<String>,
     pub description: Option<String>,

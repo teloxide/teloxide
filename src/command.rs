@@ -4,6 +4,7 @@ use crate::{
     attr::{Attr, BotCommandAttribute},
     rename_rules::rename_by_rule,
 };
+use crate::enum_attributes::CommandEnum;
 
 pub struct Command {
     pub prefix: Option<String>,
