@@ -57,7 +57,6 @@
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/miltiple_handlers_bot/
 
 pub use teloxide_macros::BotCommand;
-use std::str::FromStr;
 
 /// An enumeration of bot's commands.
 ///
@@ -102,25 +101,27 @@ use std::str::FromStr;
 /// All variant attributes overlap the `enum` attributes.
 pub trait BotCommand: Sized {
     fn descriptions() -> String;
-    fn parse<N>(s: &str, bot_name: N) -> Option<Self>
+    fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
     where
         N: Into<String>;
 }
 
-pub trait CommandArgument {
-    fn parse(args: &mut String) -> Option<Self> where Self: Sized;
-}
-
-impl<T: FromStr> CommandArgument for T {
-    fn parse(args: &mut String) -> Option<Self> {
-        match T::from_str(&args) {
-            Ok(res) => {
-                args.clear();
-                Some(res)
-            }
-            Err(_) => None
-        }
-    }
+#[derive(Debug)]
+pub enum ParseError {
+    LessArguments {
+        expected: u8,
+        found: u8,
+        message: String,
+    },
+    ManyArguments {
+        expected: u8,
+        found: u8,
+        message: String,
+    },
+    UncorrectFormat,
+    UncorrectCommand(String),
+    WrongBotName(String),
+    Custom(String)
 }
 
 /// Parses a string into a command with args.
@@ -212,8 +213,8 @@ mod tests {
         }
 
         let data = "/start arg1 arg2";
-        let expected = Some(DefaultCommands::Start("arg1 arg2".to_string()));
-        let actual = DefaultCommands::parse(data, "");
+        let expected = DefaultCommands::Start("arg1 arg2".to_string());
+        let actual = DefaultCommands::parse(data, "").unwrap();
         assert_eq!(actual, expected)
     }
 
@@ -228,8 +229,8 @@ mod tests {
         }
 
         let data = "!start arg1 arg2";
-        let expected = Some(DefaultCommands::Start("arg1 arg2".to_string()));
-        let actual = DefaultCommands::parse(data, "");
+        let expected = DefaultCommands::Start("arg1 arg2".to_string());
+        let actual = DefaultCommands::parse(data, "").unwrap();
         assert_eq!(actual, expected)
     }
 
@@ -291,6 +292,65 @@ mod tests {
         assert_eq!(
             DefaultCommands::Start,
             DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap()
+        );
+    }
+
+    #[test]
+    fn parse_with_split() {
+        #[command(rename = "lowercase")]
+        #[command(parse_with = "split")]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            Start(u8, String),
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start(10, "hello".to_string()),
+            DefaultCommands::parse("/start 10 hello", "").unwrap()
+        );
+    }
+
+    #[test]
+    fn parse_with_split2() {
+        #[command(rename = "lowercase")]
+        #[command(parse_with = "split", separator = "|")]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            Start(u8, String),
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start(10, "hello".to_string()),
+            DefaultCommands::parse("/start 10|hello", "").unwrap()
+        );
+    }
+
+    #[test]
+    fn parse_custom_parser() {
+        fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
+            let vec = s.split_whitespace().collect::<Vec<_>>();
+            let (left, right) = match vec.as_slice() {
+                [l, r] => (l, r),
+                _ => return Err(ParseError::UncorrectFormat)
+            };
+            left.parse::<u8>()
+                .map(|res| (res, right.to_string()))
+                .map_err(|_| ParseError::Custom("First argument must be a integer!".to_owned()))
+        }
+
+        #[command(rename = "lowercase")]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            #[command(parse_with="custom_parse_function")]
+            Start(u8, String),
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start(10, "hello".to_string()),
+            DefaultCommands::parse("/start 10 hello", "").unwrap()
         );
     }
 }

@@ -61,7 +61,7 @@ where
                         cx,
                         command,
                     )
-                })
+                }).ok()
             }
         }))
     }
