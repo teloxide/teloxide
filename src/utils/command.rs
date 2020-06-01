@@ -108,20 +108,12 @@ pub trait BotCommand: Sized {
 
 #[derive(Debug)]
 pub enum ParseError {
-    LessArguments {
-        expected: u8,
-        found: u8,
-        message: String,
-    },
-    ManyArguments {
-        expected: u8,
-        found: u8,
-        message: String,
-    },
-    UncorrectFormat,
-    UncorrectCommand(String),
+    TooFewArguments { expected: usize, found: usize, message: String },
+    TooManyArguments { expected: usize, found: usize, message: String },
+    IncorrectFormat,
+    UnknownCommand(String),
     WrongBotName(String),
-    Custom(String)
+    Custom(String),
 }
 
 /// Parses a string into a command with args.
@@ -329,27 +321,49 @@ mod tests {
 
     #[test]
     fn parse_custom_parser() {
-        fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
+        fn custom_parse_function(
+            s: String,
+        ) -> Result<(u8, String), ParseError> {
             let vec = s.split_whitespace().collect::<Vec<_>>();
             let (left, right) = match vec.as_slice() {
                 [l, r] => (l, r),
-                _ => return Err(ParseError::UncorrectFormat)
+                _ => return Err(ParseError::IncorrectFormat),
             };
-            left.parse::<u8>()
-                .map(|res| (res, right.to_string()))
-                .map_err(|_| ParseError::Custom("First argument must be a integer!".to_owned()))
+            left.parse::<u8>().map(|res| (res, right.to_string())).map_err(
+                |_| {
+                    ParseError::Custom(
+                        "First argument must be a integer!".to_owned(),
+                    )
+                },
+            )
         }
 
         #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
-            #[command(parse_with="custom_parse_function")]
+            #[command(parse_with = "custom_parse_function")]
             Start(u8, String),
             Help,
         }
 
         assert_eq!(
             DefaultCommands::Start(10, "hello".to_string()),
+            DefaultCommands::parse("/start 10 hello", "").unwrap()
+        );
+    }
+
+    #[test]
+    fn parse_named_fields() {
+        #[command(rename = "lowercase")]
+        #[command(parse_with = "split")]
+        #[derive(BotCommand, Debug, PartialEq)]
+        enum DefaultCommands {
+            Start { num: u8, data: String },
+            Help,
+        }
+
+        assert_eq!(
+            DefaultCommands::Start { num: 10, data: "hello".to_string() },
             DefaultCommands::parse("/start 10 hello", "").unwrap()
         );
     }

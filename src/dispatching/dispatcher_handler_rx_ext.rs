@@ -56,12 +56,7 @@ where
             let bot_name = bot_name.clone();
 
             async move {
-                C::parse(&text, &bot_name).map(|command| {
-                    (
-                        cx,
-                        command,
-                    )
-                }).ok()
+                C::parse(&text, &bot_name).map(|command| (cx, command)).ok()
             }
         }))
     }
