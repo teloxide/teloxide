@@ -1,4 +1,4 @@
-use crate::enum_attributes::CommandEnum;
+use crate::command_enum::CommandEnum;
 use crate::fields_parse::ParserType;
 use crate::{
     attr::{Attr, BotCommandAttribute},

@@ -2,7 +2,7 @@ extern crate quote;
 
 use quote::__private::Span;
 use quote::{quote, ToTokens};
-use syn::{FieldsUnnamed, FieldsNamed};
+use syn::{FieldsNamed, FieldsUnnamed};
 
 #[derive(Debug)]
 pub enum ParserType {
@@ -58,41 +58,51 @@ pub fn impl_parse_args_named(
     res
 }
 
-
 fn create_parser(parser_type: &ParserType, count_args: usize) -> quote::__private::TokenStream {
     let function_to_parse = match parser_type {
-        ParserType::Default => {
-            match count_args {
-                1 => {
-                    quote! { (|s: String| Ok((FromStr::from_str(&s).map_err(|_|ParseError::UncorrectFormat)?,)) ) }
-                }
-                _ => quote! { compile_error!("Expected 1 argument") },
+        ParserType::Default => match count_args {
+            1 => {
+                quote! { (|s: String| Ok((FromStr::from_str(&s).map_err(|_|ParseError::IncorrectFormat)?,)) ) }
             }
+            _ => quote! { compile_error!("Expected 1 argument") },
+        },
+        ParserType::Split { separator } => {
+            parser_with_separator(&separator.clone().unwrap_or(" ".to_owned()), count_args)
         }
-        ParserType::Split { separator } => parser_with_separator(
-            &separator.clone().unwrap_or(" ".to_owned()),
-            count_args,
-        ),
         ParserType::Custom(s) => {
             let ident = syn::Ident::new(&s, Span::call_site());
             quote! { #ident }
         }
     };
-    quote! { let arguments = #function_to_parse(args)?; }
+    quote! {
+        let arguments = #function_to_parse(args)?;
+    }
 }
 
 fn parser_with_separator(separator: &str, count_args: usize) -> quote::__private::TokenStream {
-    let inner = quote! { let splited = s.split(#separator).collect::<Vec<_>>(); };
+    let inner = quote! { let mut splited = s.split(#separator); };
     let mut inner2 = quote! {};
     for i in 0..count_args {
         inner2.extend(
-            quote! { FromStr::from_str(splited[#i]).map_err(|_|ParseError::UncorrectFormat)?, },
+            quote! { FromStr::from_str(splited.next().ok_or(ParseError::TooFewArguments {
+                expected: #count_args,
+                found: #i,
+                message: format!("Expected but not found arg number {}", #i + 1),
+            })?).map_err(|_|ParseError::IncorrectFormat)?, },
         )
     }
     let res = quote! {
         (|s: String| {
             #inner
-            Ok((#inner2))
+            let res = (#inner2);
+            match splited.next() {
+                Some(d) => Err(ParseError::TooManyArguments {
+                    expected: #count_args,
+                    found: #count_args + 1,
+                    message: format!("Excess argument: {}", d),
+                }),
+                None => Ok(res)
+            }
         })
     };
     res

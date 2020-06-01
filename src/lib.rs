@@ -1,17 +1,17 @@
 mod attr;
 mod command;
-mod enum_attributes;
+mod command_enum;
 mod fields_parse;
 mod rename_rules;
 
 extern crate proc_macro;
 extern crate quote;
 extern crate syn;
-use crate::fields_parse::{impl_parse_args_unnamed, impl_parse_args_named};
+use crate::fields_parse::{impl_parse_args_named, impl_parse_args_unnamed};
 use crate::{
     attr::{Attr, VecAttrs},
     command::Command,
-    enum_attributes::CommandEnum,
+    command_enum::CommandEnum,
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
@@ -129,8 +129,8 @@ fn impl_parse(
          {
               use std::str::FromStr;
               let mut words = s.splitn(2, ' ');
-              let mut splited = words.next().ok_or(ParseError::UncorrectFormat)?.split('@');
-              let command_raw = splited.next().ok_or(ParseError::UncorrectFormat)?;
+              let mut splited = words.next().expect("First item will be always.").split('@');
+              let command_raw = splited.next().expect("First item will be always.");
               let bot = splited.next();
               let bot_name = bot_name.into();
               match bot {
@@ -143,7 +143,7 @@ fn impl_parse(
                    #(
                         #matching_values => Ok(#variants_initialization),
                    )*
-                   _ => Err(ParseError::UncorrectCommand(command_raw.to_string())),
+                   _ => Err(ParseError::UnknownCommand(command_raw.to_string())),
               }
          }
     }
