@@ -7,7 +7,7 @@ mod rename_rules;
 extern crate proc_macro;
 extern crate quote;
 extern crate syn;
-use crate::fields_parse::impl_parse_args_unnamed;
+use crate::fields_parse::{impl_parse_args_unnamed, impl_parse_args_named};
 use crate::{
     attr::{Attr, VecAttrs},
     command::Command,
@@ -72,7 +72,10 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
             Fields::Unit => {
                 vec_impl_create.push(variantt);
             }
-            _ => panic!("only unnamed fields"), // TODO: named fields
+            Fields::Named(named) => {
+                let parser = info.parser.as_ref().unwrap_or(&command_enum.parser_type);
+                vec_impl_create.push(impl_parse_args_named(named, variantt, parser));
+            }
         }
     }
 
@@ -124,6 +127,7 @@ fn impl_parse(
          where
               N: Into<String>
          {
+              use std::str::FromStr;
               let mut words = s.splitn(2, ' ');
               let mut splited = words.next().ok_or(ParseError::UncorrectFormat)?.split('@');
               let command_raw = splited.next().ok_or(ParseError::UncorrectFormat)?;

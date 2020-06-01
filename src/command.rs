@@ -4,7 +4,6 @@ use crate::{
     attr::{Attr, BotCommandAttribute},
     rename_rules::rename_by_rule,
 };
-use crate::enum_attributes::CommandEnum;
 
 pub struct Command {
     pub prefix: Option<String>,
@@ -45,7 +44,11 @@ impl Command {
         } else {
             "/"
         };
-        String::from(prefix) + &self.name
+        if let Some(rule) = &global_parameters.rename_rule {
+            String::from(prefix) + &rename_by_rule(&self.name, rule.as_str())
+        } else {
+            String::from(prefix) + &self.name
+        }
     }
 }
 
