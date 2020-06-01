@@ -1,5 +1,5 @@
-// The version of ping-pong-bot, which uses a webhook to receive updates from
-// Telegram, instead of long polling.
+// The version of Heroku ping-pong-bot, which uses a webhook to receive updates
+// from Telegram, instead of long polling.
 
 use teloxide::{dispatching::update_listeners, prelude::*};
 
@@ -75,7 +75,7 @@ pub async fn webhook<'a>(
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting ping_pong_bot!");
+    log::info!("Starting heroku_ping_pong_bot!");
 
     let bot = Bot::from_env();
 
