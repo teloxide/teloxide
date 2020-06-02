@@ -9,16 +9,14 @@
 //! use teloxide::utils::command::BotCommand;
 //!
 //! #[derive(BotCommand, PartialEq, Debug)]
-//! #[command(rename = "lowercase")]
+//! #[command(rename = "lowercase", parser = "split")]
 //! enum AdminCommand {
-//!     Kick,
-//!     Ban,
+//!     Mute(u8, char),
+//!     Ban(u8, char),
 //! }
 //!
-//! let (command, args) =
-//!     AdminCommand::parse("/ban 3 hours", "MyBotName").unwrap();
-//! assert_eq!(command, AdminCommand::Ban);
-//! assert_eq!(args, vec!["3", "hours"]);
+//! let command = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
+//! assert_eq!(command, AdminCommand::Ban(5, 'h'));
 //! ```
 //!
 //! Using [`parse_command`]:
@@ -65,15 +63,14 @@ pub use teloxide_macros::BotCommand;
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// #[command(rename = "lowercase")]
+/// #[command(rename = "lowercase", parser = "split")]
 /// enum AdminCommand {
-///     Mute,
-///     Ban,
+///     Mute(u8, char),
+///     Ban(u8, char),
 /// }
 ///
-/// let (command, args) = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
-/// assert_eq!(command, AdminCommand::Ban);
-/// assert_eq!(args, vec!["5", "h"]);
+/// let command = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
+/// assert_eq!(command, AdminCommand::Ban(5, 'h'));
 /// ```
 ///
 /// ## Enum attributes
@@ -87,6 +84,84 @@ pub use teloxide_macros::BotCommand;
 ///  3. `#[command(description = "description")]`
 /// Add a sumary description of commands before all commands.
 ///
+///  4. `#[command(parser = "parser")]`
+/// Change the parser of arguments. Possible values:
+///  - `default` - it also will be used if `parser` attribute will not be specified.
+/// It can only put all text after first space into first argument, which implement
+/// FromStr trait.
+/// Example:
+/// ```
+/// use teloxide::utils::command::BotCommand;
+///
+/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[command(rename = "lowercase")]
+/// enum Command {
+///     Text(String),
+/// }
+///
+/// let command = AdminCommand::parse("/text hello my dear friend!", "").unwrap();
+/// assert_eq!(command, Command::Text("hello my dear friend!".to_string()));
+/// ```
+///  - `split` - parse args by split incoming text by value specified in `separator`
+///   attribute. By default use space seperator. All args must implement FromStr trait.
+/// Example:
+/// ```
+/// use teloxide::utils::command::BotCommand;
+///
+/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[command(rename = "lowercase", parser = "split")]
+/// enum Command {
+///     Nums(u8, u16, i32),
+/// }
+///
+/// let command = AdminCommand::parse("/nums 1 32 -5", "").unwrap();
+/// assert_eq!(command, Command::Nums(1, 32, -5));
+/// ```
+///  - `custom_parser` - you can use your own parser, which must used signature `Fn(String) -> Result<Tuple, ParseError>`
+/// where `Tuple` - tuple with all fields in type. Allowed only on variant.
+/// Example:
+/// ```
+/// use teloxide::utils::command::{BotCommand, ParseError};
+///
+/// fn accept_two_digits(input: String) -> Result<(u8), ParseError> {
+///     match input.len() {
+///         2 => {
+///             let num = input.parse().map_err(|_|ParseError::IncorrectFormat)?;
+///             Ok((num))
+///         }
+///         len => Err(ParseError::Custom(format!("Only 2 digits allowed, not {}", len)))
+///     }
+/// }
+///
+/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[command(rename = "lowercase", parser = "split")]
+/// enum Command {
+///     Num(u8),
+/// }
+///
+/// let command = Command::parse("/num 12", "").unwrap();
+/// assert_eq!(command, Command::Num(12));
+/// let command = Command::parse("/num 333", "");
+/// assert!(command.is_err());
+/// ```
+///
+/// 5. `#[command(separator = "sep")]`
+/// Specify separator used by `split` parser. Will be ignored when used another
+/// types of parser.
+/// Example:
+/// ```
+/// use teloxide::utils::command::BotCommand;
+///
+/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[command(rename = "lowercase", parser = "split", separator = "|")]
+/// enum Command {
+///     Nums(u8, u16, i32),
+/// }
+///
+/// let command = AdminCommand::parse("/nums 1|32|5", "").unwrap();
+/// assert_eq!(command, Command::Nums(1, 32, 5));
+/// ```
+///
 /// ## Variant attributes
 ///  1. `#[command(rename = "rule")]`
 /// Rename one command by a rule. Allowed rules are `lowercase`, `%some_name%`,
@@ -98,6 +173,12 @@ pub use teloxide_macros::BotCommand;
 ///  3. `#[command(description = "description")]`
 /// Add a description of one command.
 ///
+///  4. `#[command(parser = "parser")]`
+/// See description above.
+///
+/// 5. `#[command(separator = "sep")]`
+/// See description above.
+///
 /// All variant attributes overlap the `enum` attributes.
 pub trait BotCommand: Sized {
     fn descriptions() -> String;
@@ -106,13 +187,20 @@ pub trait BotCommand: Sized {
         N: Into<String>;
 }
 
+/// Error returned from `BotCommand::parse` method.
 #[derive(Debug)]
 pub enum ParseError {
+    /// This error was returned when count of arguments will be less than expected count.
     TooFewArguments { expected: usize, found: usize, message: String },
+    /// This error was returned when count of arguments will be greater than expected count.
     TooManyArguments { expected: usize, found: usize, message: String },
+    /// This error was returned when error from `FromStr::from_str` was occured.
     IncorrectFormat,
+    /// This error was returned when input command does not represent in list of commands.
     UnknownCommand(String),
+    /// This error was returned when command bot name is different from expected bot name.
     WrongBotName(String),
+    /// Custom error which you can return from custom parser.
     Custom(String),
 }
 
