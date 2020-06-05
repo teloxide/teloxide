@@ -319,8 +319,8 @@ mod tests {
 
     #[test]
     fn parse_command_with_args() {
-        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
+        #[command(rename = "lowercase")]
         enum DefaultCommands {
             Start(String),
             Help,
@@ -334,8 +334,8 @@ mod tests {
 
     #[test]
     fn attribute_prefix() {
-        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
+        #[command(rename = "lowercase")]
         enum DefaultCommands {
             #[command(prefix = "!")]
             Start(String),
@@ -350,8 +350,8 @@ mod tests {
 
     #[test]
     fn many_attributes() {
-        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
+        #[command(rename = "lowercase")]
         enum DefaultCommands {
             #[command(prefix = "!", description = "desc")]
             Start,
@@ -367,12 +367,12 @@ mod tests {
 
     #[test]
     fn global_attributes() {
+        #[derive(BotCommand, Debug, PartialEq)]
         #[command(
             prefix = "!",
             rename = "lowercase",
             description = "Bot commands"
         )]
-        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             #[command(prefix = "/")]
             Start,
@@ -395,8 +395,8 @@ mod tests {
 
     #[test]
     fn parse_command_with_bot_name() {
-        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
+        #[command(rename = "lowercase")]
         enum DefaultCommands {
             #[command(prefix = "/")]
             Start,
@@ -411,9 +411,9 @@ mod tests {
 
     #[test]
     fn parse_with_split() {
+        #[derive(BotCommand, Debug, PartialEq)]
         #[command(rename = "lowercase")]
         #[command(parse_with = "split")]
-        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             Start(u8, String),
             Help,
@@ -427,9 +427,9 @@ mod tests {
 
     #[test]
     fn parse_with_split2() {
+        #[derive(BotCommand, Debug, PartialEq)]
         #[command(rename = "lowercase")]
         #[command(parse_with = "split", separator = "|")]
-        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             Start(u8, String),
             Help,
@@ -460,8 +460,8 @@ mod tests {
             )
         }
 
-        #[command(rename = "lowercase")]
         #[derive(BotCommand, Debug, PartialEq)]
+        #[command(rename = "lowercase")]
         enum DefaultCommands {
             #[command(parse_with = "custom_parse_function")]
             Start(u8, String),
@@ -476,9 +476,9 @@ mod tests {
 
     #[test]
     fn parse_named_fields() {
+        #[derive(BotCommand, Debug, PartialEq)]
         #[command(rename = "lowercase")]
         #[command(parse_with = "split")]
-        #[derive(BotCommand, Debug, PartialEq)]
         enum DefaultCommands {
             Start { num: u8, data: String },
             Help,
