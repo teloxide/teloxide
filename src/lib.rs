@@ -123,12 +123,12 @@ fn impl_parse(
     let matching_values = infos.iter().map(|c| c.get_matched_value(global));
 
     quote! {
-         fn parse<N>(s: &str, bot_name: N) -> Result<Self, teloxide::utils::ParseError>
+         fn parse<N>(s: &str, bot_name: N) -> Result<Self, teloxide::utils::command::ParseError>
          where
               N: Into<String>
          {
               use std::str::FromStr;
-              use teloxide::utils::ParseError;
+              use teloxide::utils::command::ParseError;
 
               let mut words = s.splitn(2, ' ');
               let mut splited = words.next().expect("First item will be always.").split('@');
