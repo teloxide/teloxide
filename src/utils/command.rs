@@ -194,6 +194,9 @@ pub trait BotCommand: Sized {
         N: Into<String>;
 }
 
+pub type PrefixedBotCommand = String;
+pub type BotName = String;
+
 /// Errors returned from [`BotCommand::parse`].
 ///
 /// [`BotCommand::parse`]: crate::utils::command::BotCommand::parse
@@ -215,8 +218,8 @@ pub enum ParseError {
     /// [`FromStr::from_str`]: https://doc.rust-lang.org/std/str/trait.FromStr.html#tymethod.from_str
     IncorrectFormat,
 
-    UnknownCommand(String),
-    WrongBotName(String),
+    UnknownCommand(PrefixedBotCommand),
+    WrongBotName(BotName),
 
     /// A custom error which you can return from your custom parser.
     Custom(Box<dyn Error>),
