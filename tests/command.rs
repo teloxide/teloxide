@@ -1,7 +1,7 @@
 use teloxide::utils::command::{BotCommand, ParseError};
 
-// We put tests here because macro expand in unit tests in module teloxide::utils::command
-// was a failure
+// We put tests here because macro expand in unit tests in module
+// teloxide::utils::command was a failure
 
 #[test]
 fn parse_command_with_args() {
@@ -132,7 +132,9 @@ fn parse_custom_parser() {
             _ => return Err(ParseError::IncorrectFormat),
         };
         left.parse::<u8>().map(|res| (res, right.to_string())).map_err(|_| {
-            ParseError::Custom("First argument must be a integer!".to_owned().into())
+            ParseError::Custom(
+                "First argument must be a integer!".to_owned().into(),
+            )
         })
     }
 

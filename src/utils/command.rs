@@ -45,8 +45,8 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
-pub use teloxide_macros::BotCommand;
 use std::error::Error;
+pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.
 ///
@@ -94,8 +94,7 @@ use std::error::Error;
 ///     Text(String),
 /// }
 ///
-/// let command =
-///     Command::parse("/text hello my dear friend!", "").unwrap();
+/// let command = Command::parse("/text hello my dear friend!", "").unwrap();
 /// assert_eq!(command, Command::Text("hello my dear friend!".to_string()));
 /// ```
 ///
@@ -157,12 +156,11 @@ use std::error::Error;
 ///         2 => {
 ///             let num =
 ///                 input.parse().map_err(|_| ParseError::IncorrectFormat)?;
-///             Ok((num, ))
+///             Ok((num,))
 ///         }
-///         len => Err(ParseError::Custom(format!(
-///             "Only 2 digits allowed, not {}",
-///             len
-///         ).into())),
+///         len => Err(ParseError::Custom(
+///             format!("Only 2 digits allowed, not {}", len).into(),
+///         )),
 ///     }
 /// }
 ///
