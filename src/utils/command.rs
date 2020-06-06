@@ -86,9 +86,10 @@ pub use teloxide_macros::BotCommand;
 ///
 ///  4. `#[command(parser = "parser")]`
 /// Change the parser of arguments. Possible values:
-///  - `default` - it also will be used if `parser` attribute will not be specified.
-/// It can only put all text after first space into first argument, which implement
-/// FromStr trait.
+///  - `default` - it also will be used if `parser` attribute will not be
+///    specified.
+/// It can only put all text after first space into first argument, which
+/// implement FromStr trait.
 /// Example:
 /// ```
 /// use teloxide::utils::command::BotCommand;
@@ -99,12 +100,14 @@ pub use teloxide_macros::BotCommand;
 ///     Text(String),
 /// }
 ///
-/// let command = AdminCommand::parse("/text hello my dear friend!", "").unwrap();
+/// let command =
+///     AdminCommand::parse("/text hello my dear friend!", "").unwrap();
 /// assert_eq!(command, Command::Text("hello my dear friend!".to_string()));
 /// ```
-///  - `split` - parse args by split incoming text by value specified in `separator`
-///   attribute. By default use space seperator. All args must implement FromStr trait.
-/// Example:
+///  - `split` - parse args by split incoming text by value specified in
+///    `separator`
+///   attribute. By default use space seperator. All args must implement FromStr
+/// trait. Example:
 /// ```
 /// use teloxide::utils::command::BotCommand;
 ///
@@ -117,7 +120,8 @@ pub use teloxide_macros::BotCommand;
 /// let command = AdminCommand::parse("/nums 1 32 -5", "").unwrap();
 /// assert_eq!(command, Command::Nums(1, 32, -5));
 /// ```
-///  - `custom_parser` - you can use your own parser, which must used signature `Fn(String) -> Result<Tuple, ParseError>`
+///  - `custom_parser` - you can use your own parser, which must used signature
+///    `Fn(String) -> Result<Tuple, ParseError>`
 /// where `Tuple` - tuple with all fields in type. Allowed only on variant.
 /// Example:
 /// ```
@@ -126,10 +130,14 @@ pub use teloxide_macros::BotCommand;
 /// fn accept_two_digits(input: String) -> Result<(u8), ParseError> {
 ///     match input.len() {
 ///         2 => {
-///             let num = input.parse().map_err(|_|ParseError::IncorrectFormat)?;
+///             let num =
+///                 input.parse().map_err(|_| ParseError::IncorrectFormat)?;
 ///             Ok((num))
 ///         }
-///         len => Err(ParseError::Custom(format!("Only 2 digits allowed, not {}", len)))
+///         len => Err(ParseError::Custom(format!(
+///             "Only 2 digits allowed, not {}",
+///             len
+///         ))),
 ///     }
 /// }
 ///
@@ -190,15 +198,20 @@ pub trait BotCommand: Sized {
 /// Error returned from `BotCommand::parse` method.
 #[derive(Debug)]
 pub enum ParseError {
-    /// This error was returned when count of arguments will be less than expected count.
+    /// This error was returned when count of arguments will be less than
+    /// expected count.
     TooFewArguments { expected: usize, found: usize, message: String },
-    /// This error was returned when count of arguments will be greater than expected count.
+    /// This error was returned when count of arguments will be greater than
+    /// expected count.
     TooManyArguments { expected: usize, found: usize, message: String },
-    /// This error was returned when error from `FromStr::from_str` was occured.
+    /// This error was returned when error from `FromStr::from_str` was
+    /// occured.
     IncorrectFormat,
-    /// This error was returned when input command does not represent in list of commands.
+    /// This error was returned when input command does not represent in list
+    /// of commands.
     UnknownCommand(String),
-    /// This error was returned when command bot name is different from expected bot name.
+    /// This error was returned when command bot name is different from
+    /// expected bot name.
     WrongBotName(String),
     /// Custom error which you can return from custom parser.
     Custom(String),
@@ -281,178 +294,5 @@ mod tests {
         let expected = Some(("command", vec![]));
         let actual = parse_command(data, "");
         assert_eq!(actual, expected)
-    }
-
-    #[test]
-    fn parse_command_with_args() {
-        #[command(rename = "lowercase")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            Start(String),
-            Help,
-        }
-
-        let data = "/start arg1 arg2";
-        let expected = DefaultCommands::Start("arg1 arg2".to_string());
-        let actual = DefaultCommands::parse(data, "").unwrap();
-        assert_eq!(actual, expected)
-    }
-
-    #[test]
-    fn attribute_prefix() {
-        #[command(rename = "lowercase")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            #[command(prefix = "!")]
-            Start(String),
-            Help,
-        }
-
-        let data = "!start arg1 arg2";
-        let expected = DefaultCommands::Start("arg1 arg2".to_string());
-        let actual = DefaultCommands::parse(data, "").unwrap();
-        assert_eq!(actual, expected)
-    }
-
-    #[test]
-    fn many_attributes() {
-        #[command(rename = "lowercase")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            #[command(prefix = "!", description = "desc")]
-            Start,
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start,
-            DefaultCommands::parse("!start", "").unwrap()
-        );
-        assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
-    }
-
-    #[test]
-    fn global_attributes() {
-        #[command(
-            prefix = "!",
-            rename = "lowercase",
-            description = "Bot commands"
-        )]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            #[command(prefix = "/")]
-            Start,
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start,
-            DefaultCommands::parse("/start", "MyNameBot").unwrap()
-        );
-        assert_eq!(
-            DefaultCommands::Help,
-            DefaultCommands::parse("!help", "MyNameBot").unwrap()
-        );
-        assert_eq!(
-            DefaultCommands::descriptions(),
-            "Bot commands\n/start\n!help\n"
-        );
-    }
-
-    #[test]
-    fn parse_command_with_bot_name() {
-        #[command(rename = "lowercase")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            #[command(prefix = "/")]
-            Start,
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start,
-            DefaultCommands::parse("/start@MyNameBot", "MyNameBot").unwrap()
-        );
-    }
-
-    #[test]
-    fn parse_with_split() {
-        #[command(rename = "lowercase")]
-        #[command(parse_with = "split")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            Start(u8, String),
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start(10, "hello".to_string()),
-            DefaultCommands::parse("/start 10 hello", "").unwrap()
-        );
-    }
-
-    #[test]
-    fn parse_with_split2() {
-        #[command(rename = "lowercase")]
-        #[command(parse_with = "split", separator = "|")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            Start(u8, String),
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start(10, "hello".to_string()),
-            DefaultCommands::parse("/start 10|hello", "").unwrap()
-        );
-    }
-
-    #[test]
-    fn parse_custom_parser() {
-        fn custom_parse_function(
-            s: String,
-        ) -> Result<(u8, String), ParseError> {
-            let vec = s.split_whitespace().collect::<Vec<_>>();
-            let (left, right) = match vec.as_slice() {
-                [l, r] => (l, r),
-                _ => return Err(ParseError::IncorrectFormat),
-            };
-            left.parse::<u8>().map(|res| (res, right.to_string())).map_err(
-                |_| {
-                    ParseError::Custom(
-                        "First argument must be a integer!".to_owned(),
-                    )
-                },
-            )
-        }
-
-        #[command(rename = "lowercase")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            #[command(parse_with = "custom_parse_function")]
-            Start(u8, String),
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start(10, "hello".to_string()),
-            DefaultCommands::parse("/start 10 hello", "").unwrap()
-        );
-    }
-
-    #[test]
-    fn parse_named_fields() {
-        #[command(rename = "lowercase")]
-        #[command(parse_with = "split")]
-        #[derive(BotCommand, Debug, PartialEq)]
-        enum DefaultCommands {
-            Start { num: u8, data: String },
-            Help,
-        }
-
-        assert_eq!(
-            DefaultCommands::Start { num: 10, data: "hello".to_string() },
-            DefaultCommands::parse("/start 10 hello", "").unwrap()
-        );
     }
 }
