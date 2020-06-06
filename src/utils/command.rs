@@ -11,7 +11,7 @@
 //! type UnitOfTime = u8;
 //!
 //! #[derive(BotCommand, PartialEq, Debug)]
-//! #[command(rename = "lowercase", parser = "split")]
+//! #[command(rename = "lowercase", parse_with = "split")]
 //! enum AdminCommand {
 //!     Mute(UnitOfTime, char),
 //!     Ban(UnitOfTime, char),
@@ -57,7 +57,7 @@ use std::error::Error;
 /// type UnitOfTime = u8;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parser = "split")]
+/// #[command(rename = "lowercase", parse_with = "split")]
 /// enum AdminCommand {
 ///     Mute(UnitOfTime, char),
 ///     Ban(UnitOfTime, char),
@@ -95,7 +95,7 @@ use std::error::Error;
 /// }
 ///
 /// let command =
-///     AdminCommand::parse("/text hello my dear friend!", "").unwrap();
+///     Command::parse("/text hello my dear friend!", "").unwrap();
 /// assert_eq!(command, Command::Text("hello my dear friend!".to_string()));
 /// ```
 ///
@@ -108,12 +108,12 @@ use std::error::Error;
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parser = "split")]
+/// #[command(rename = "lowercase", parse_with = "split")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
 ///
-/// let command = AdminCommand::parse("/nums 1 32 -5", "").unwrap();
+/// let command = Command::parse("/nums 1 32 -5", "").unwrap();
 /// assert_eq!(command, Command::Nums(1, 32, -5));
 /// ```
 ///
@@ -126,12 +126,12 @@ use std::error::Error;
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parser = "split", separator = "|")]
+/// #[command(rename = "lowercase", parse_with = "split", separator = "|")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
 ///
-/// let command = AdminCommand::parse("/nums 1|32|5", "").unwrap();
+/// let command = Command::parse("/nums 1|32|5", "").unwrap();
 /// assert_eq!(command, Command::Nums(1, 32, 5));
 /// ```
 ///
@@ -152,12 +152,12 @@ use std::error::Error;
 /// ```
 /// use teloxide::utils::command::{BotCommand, ParseError};
 ///
-/// fn accept_two_digits(input: String) -> Result<(u8), ParseError> {
+/// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
 ///     match input.len() {
 ///         2 => {
 ///             let num =
 ///                 input.parse().map_err(|_| ParseError::IncorrectFormat)?;
-///             Ok((num))
+///             Ok((num, ))
 ///         }
 ///         len => Err(ParseError::Custom(format!(
 ///             "Only 2 digits allowed, not {}",
@@ -169,7 +169,7 @@ use std::error::Error;
 /// #[derive(BotCommand, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
 /// enum Command {
-///     #[command(parser = "accept_two_digits")]
+///     #[command(parse_with = "accept_two_digits")]
 ///     Num(u8),
 /// }
 ///
