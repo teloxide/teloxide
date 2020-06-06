@@ -46,6 +46,7 @@
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
 pub use teloxide_macros::BotCommand;
+use std::error::Error;
 
 /// An enumeration of bot's commands.
 ///
@@ -161,13 +162,14 @@ pub use teloxide_macros::BotCommand;
 ///         len => Err(ParseError::Custom(format!(
 ///             "Only 2 digits allowed, not {}",
 ///             len
-///         ))),
+///         ).into())),
 ///     }
 /// }
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parser = "split")]
+/// #[command(rename = "lowercase")]
 /// enum Command {
+///     #[command(parser = "accept_two_digits")]
 ///     Num(u8),
 /// }
 ///
@@ -217,7 +219,7 @@ pub enum ParseError {
     WrongBotName(String),
 
     /// A custom error which you can return from your custom parser.
-    Custom(String),
+    Custom(Box<dyn Error>),
 }
 
 /// Parses a string into a command with args.
