@@ -300,6 +300,8 @@ where
     Some((command, words.collect()))
 }
 
+// The rest of tests are integrational due to problems with macro expansion in
+// unit tests.
 #[cfg(test)]
 mod tests {
     use super::*;
