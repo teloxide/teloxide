@@ -1,5 +1,5 @@
 use crate::{
-    prelude::DispatcherHandlerCx, types::Message, utils::command::BotCommand,
+    prelude::UpdateWithCx, types::Message, utils::command::BotCommand,
 };
 use futures::{stream::BoxStream, Stream, StreamExt};
 
@@ -10,18 +10,18 @@ pub trait DispatcherHandlerRxExt {
     /// Extracts only text messages from this stream of arbitrary messages.
     fn text_messages(
         self,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, String)>
+    ) -> BoxStream<'static, (UpdateWithCx<Message>, String)>
     where
-        Self: Stream<Item = DispatcherHandlerCx<Message>>;
+        Self: Stream<Item = UpdateWithCx<Message>>;
 
     /// Extracts only commands with their arguments from this stream of
     /// arbitrary messages.
     fn commands<C, N>(
         self,
         bot_name: N,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
+    ) -> BoxStream<'static, (UpdateWithCx<Message>, C, Vec<String>)>
     where
-        Self: Stream<Item = DispatcherHandlerCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<Message>>,
         C: BotCommand,
         N: Into<String> + Send;
 }
@@ -32,9 +32,9 @@ where
 {
     fn text_messages(
         self,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, String)>
+    ) -> BoxStream<'static, (UpdateWithCx<Message>, String)>
     where
-        Self: Stream<Item = DispatcherHandlerCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<Message>>,
     {
         Box::pin(self.filter_map(|cx| async move {
             cx.update.text_owned().map(|text| (cx, text))
@@ -44,9 +44,9 @@ where
     fn commands<C, N>(
         self,
         bot_name: N,
-    ) -> BoxStream<'static, (DispatcherHandlerCx<Message>, C, Vec<String>)>
+    ) -> BoxStream<'static, (UpdateWithCx<Message>, C, Vec<String>)>
     where
-        Self: Stream<Item = DispatcherHandlerCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<Message>>,
         C: BotCommand,
         N: Into<String> + Send,
     {

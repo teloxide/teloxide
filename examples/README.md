@@ -3,7 +3,8 @@ Just enter the directory (for example, `cd dialogue_bot`) and execute `cargo run
 | Bot | Description |
 |---|-----------|
 | [ping_pong_bot](ping_pong_bot) | Answers "pong" to each incoming message. |
-| [webhook_ping_pong_bot](webhook_ping_pong_bot) | How to use webhooks with teloxide. |
+| [ngrok_ping_pong_bot](ngrok_ping_pong_bot) | The ngrok version of ping-pong-bot that uses webhooks. |
+| [heroku_ping_pong_bot](heroku_ping_pong_bot) | The Heroku version of ping-pong-bot that uses webhooks. |
 | [simple_commands_bot](simple_commands_bot) | Shows how to deal with bot's commands. |
 | [guess_a_number_bot](guess_a_number_bot) | The "guess a number" game. |
 | [dialogue_bot](dialogue_bot) | Drive a dialogue with a user using a type-safe finite automaton. |
