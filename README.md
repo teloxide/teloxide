@@ -402,7 +402,7 @@ Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/telo
 Feel free to push your own bot into our collection!
 
  - [Rust subreddit reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
- - [with_webserver - How to use teloxide with warp](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/with_webserver)
+ - [with_webserver - An example of the teloxide + warp combination](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/with_webserver)
  - [vzmuinebot - Telegram bot for food menu navigate](https://github.com/ArtHome12/vzmuinebot)
 
 ## Contributing
