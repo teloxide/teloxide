@@ -129,7 +129,11 @@ fn parse_custom_parser() {
         let vec = s.split_whitespace().collect::<Vec<_>>();
         let (left, right) = match vec.as_slice() {
             [l, r] => (l, r),
-            _ => return Err(ParseError::IncorrectFormat),
+            _ => {
+                return Err(ParseError::IncorrectFormat(
+                    "might be 2 arguments!".into(),
+                ))
+            }
         };
         left.parse::<u8>().map(|res| (res, right.to_string())).map_err(|_| {
             ParseError::Custom(

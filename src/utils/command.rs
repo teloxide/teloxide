@@ -154,8 +154,9 @@ pub use teloxide_macros::BotCommand;
 /// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
 ///     match input.len() {
 ///         2 => {
-///             let num =
-///                 input.parse().map_err(|_| ParseError::IncorrectFormat)?;
+///             let num = input
+///                 .parse::<u8>()
+///                 .map_err(|e| ParseError::IncorrectFormat(e.into()))?;
 ///             Ok((num,))
 ///         }
 ///         len => Err(ParseError::Custom(
@@ -214,7 +215,7 @@ pub enum ParseError {
     /// Redirected from [`FromStr::from_str`].
     ///
     /// [`FromStr::from_str`]: https://doc.rust-lang.org/std/str/trait.FromStr.html#tymethod.from_str
-    IncorrectFormat,
+    IncorrectFormat(Box<dyn Error>),
 
     UnknownCommand(PrefixedBotCommand),
     WrongBotName(BotName),
