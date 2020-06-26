@@ -38,18 +38,21 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| async move {
-            let DialogueWithCx { cx, dialogue } = cx;
+        .messages_handler(DialogueDispatcher::new(
+            |cx| async move {
+                let DialogueWithCx { cx, dialogue } = cx;
 
-            // Unwrap without panic because of std::convert::Infallible.
-            let Wrapper(dialogue) = dialogue.unwrap();
+                // Unwrap without panic because of std::convert::Infallible.
+                let dialogue = dialogue.unwrap();
 
-            dispatch!(
+                dispatch!(
                 [cx, dialogue] ->
                 [start, receive_full_name, receive_age, receive_favourite_music]
             )
             .expect("Something wrong with the bot!")
-        }))
+            },
+            || Dialogue::inject(StartState),
+        ))
         .dispatch()
         .await;
 }

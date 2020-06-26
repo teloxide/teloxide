@@ -52,7 +52,7 @@ mod storage;
 use crate::{requests::ResponseResult, types::Message};
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
-pub use dialogue_stage::{exit, next, DialogueStage, DialogueWrapper};
+pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 
@@ -79,13 +79,8 @@ pub use storage::{InMemStorage, Storage};
 ///     ReceiveNumberState,
 /// );
 ///
-/// wrap_dialogue!(
-///     Wrapper(Dialogue),
-///     default Self(Dialogue::inject(StartState)),
-/// );
-///
 /// pub type In<State> = TransitionIn<State, std::convert::Infallible>;
-/// pub type Out = TransitionOut<Wrapper>;
+/// pub type Out = TransitionOut<Dialogue>;
 ///
 /// pub async fn start(cx: In<StartState>) -> Out { todo!() }
 /// pub async fn receive_word(cx: In<ReceiveWordState>) -> Out { todo!() }
@@ -122,59 +117,6 @@ macro_rules! dispatch {
                 $transition(teloxide::dispatching::dialogue::DialogueWithCx::new($cx, state)).await
             }
             Coproduct::Inr(_absurd) => unreachable!(),
-        }
-    };
-}
-
-/// Generates a dialogue wrapper and implements `Default` for it.
-///
-/// The reason is to bypass orphan rules to be able to pass a user-defined
-/// dialogue into [`DialogueDispatcher`]. Since a dialogue is
-/// [`frunk::Coproduct`], we cannot directly satisfy the `D: Default`
-/// constraint.
-///
-/// # Examples
-/// ```
-/// use teloxide::prelude::*;
-///
-/// struct StartState;
-/// struct ReceiveWordState;
-/// struct ReceiveNumberState;
-/// struct ExitState;
-///
-/// type Dialogue = Coprod!(
-///     StartState,
-///     ReceiveWordState,
-///     ReceiveNumberState,
-/// );
-///
-/// wrap_dialogue!(
-///     Wrapper(Dialogue),
-///     default Self(Dialogue::inject(StartState)),
-/// );
-///
-/// let start_state = Wrapper::default();
-/// ```
-///
-/// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
-/// [`frunk::Coproduct`]: https://docs.rs/frunk/0.3.1/frunk/coproduct/enum.Coproduct.html
-#[macro_export]
-macro_rules! wrap_dialogue {
-    ($name:ident($dialogue:ident), default $default_block:expr, ) => {
-        pub struct $name(pub $dialogue);
-
-        impl teloxide::dispatching::dialogue::DialogueWrapper<$dialogue>
-            for $name
-        {
-            fn new(d: $dialogue) -> Wrapper {
-                $name(d)
-            }
-        }
-
-        impl Default for $name {
-            fn default() -> $name {
-                $default_block
-            }
         }
     };
 }
@@ -232,4 +174,4 @@ macro_rules! up {
 pub type TransitionIn<State, E> = DialogueWithCx<Message, State, E>;
 
 // A type returned from a FSM transition function.
-pub type TransitionOut<DWrapper> = ResponseResult<DialogueStage<DWrapper>>;
+pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;
