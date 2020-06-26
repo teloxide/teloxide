@@ -3,7 +3,7 @@ use teloxide::prelude::*;
 use super::{favourite_music::FavouriteMusic, states::*};
 
 pub type In<State> = TransitionIn<State, std::convert::Infallible>;
-pub type Out = TransitionOut<Wrapper>;
+pub type Out = TransitionOut<Dialogue>;
 
 pub async fn start(cx: In<StartState>) -> Out {
     let (cx, dialogue) = cx.unpack();

@@ -42,8 +42,3 @@ pub type Dialogue = Coprod!(
     ReceiveAgeState,
     ReceiveFavouriteMusicState,
 );
-
-wrap_dialogue!(
-    Wrapper(Dialogue),
-    default Self(Dialogue::inject(StartState)),
-);

@@ -5,14 +5,14 @@ pub use crate::{
     dispatching::{
         dialogue::{
             exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
-            DialogueWrapper, GetChatId, TransitionIn, TransitionOut,
+            GetChatId, TransitionIn, TransitionOut,
         },
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
-    up, wrap_dialogue, Bot, RequestError,
+    up, Bot, RequestError,
 };
 
 pub use frunk::{Coprod, Coproduct};
