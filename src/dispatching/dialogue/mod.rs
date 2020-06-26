@@ -60,8 +60,6 @@ pub use get_chat_id::GetChatId;
 pub use storage::RedisStorage;
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
 
-pub use storage::{InMemStorage, Storage};
-
 /// Dispatches a dialogue state into transition functions.
 ///
 /// # Example
