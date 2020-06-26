@@ -74,13 +74,8 @@ pub use storage::{InMemStorage, Storage};
 ///     ReceiveNumberState,
 /// );
 ///
-/// wrap_dialogue!(
-///     Wrapper(Dialogue),
-///     default Self(Dialogue::inject(StartState)),
-/// );
-///
 /// pub type In<State> = TransitionIn<State, std::convert::Infallible>;
-/// pub type Out = TransitionOut<Wrapper>;
+/// pub type Out = TransitionOut<Dialogue>;
 ///
 /// pub async fn start(cx: In<StartState>) -> Out { todo!() }
 /// pub async fn receive_word(cx: In<ReceiveWordState>) -> Out { todo!() }
