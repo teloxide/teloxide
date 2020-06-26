@@ -222,11 +222,6 @@ pub type Dialogue = Coprod!(
     ReceiveAgeState,
     ReceiveFavouriteMusicState,
 );
-
-wrap_dialogue!(
-    Wrapper(Dialogue),
-    default Self(Dialogue::inject(StartState)),
-);
 ```
 
 The [`wrap_dialogue!`](https://docs.rs/teloxide/latest/teloxide/macro.wrap_dialogue.html) macro generates a new-type of `Dialogue` with a default implementation.
@@ -345,7 +340,7 @@ async fn main() {
                 [start, receive_full_name, receive_age, receive_favourite_music]
             )
             .expect("Something wrong with the bot!")
-        }))
+        }, || Dialogue::inject(StartState)))
         .dispatch()
         .await;
 }
