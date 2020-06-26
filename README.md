@@ -399,7 +399,11 @@ Associated links:
 Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
 
 ## Community bots
-Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
+Feel free to push your own bot into our collection!
+
+ - [Rust subreddit reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
+ - [with_webserver - An example of the teloxide + warp combination](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/with_webserver)
+ - [vzmuinebot - Telegram bot for food menu navigate](https://github.com/ArtHome12/vzmuinebot)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
