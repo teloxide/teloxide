@@ -30,7 +30,7 @@ jobs:
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
         with:
           command: build
-          args: --verbose --features ""
+          args: --verbose --all-features
 
       - name: nightly build 
         uses: actions-rs/cargo@v1
@@ -44,7 +44,7 @@ jobs:
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
         with:
           command: test
-          args: --verbose --features ""
+          args: --verbose --all-features
 
       - name: nightly test
         uses: actions-rs/cargo@v1
@@ -58,7 +58,7 @@ jobs:
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
         with:
           command: clippy
-          args: --all-targets --features "" -- -D warnings
+          args: --all-targets --all-features -- -D warnings
 
       - name: nightly clippy
         uses: actions-rs/cargo@v1
