@@ -3,6 +3,7 @@ use teloxide::prelude::*;
 use super::favourite_music::FavouriteMusic;
 use parse_display::Display;
 
+#[derive(Default)]
 pub struct StartState;
 
 pub struct ReceiveFullNameState {
@@ -36,9 +37,11 @@ up!(
     ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
 );
 
-pub type Dialogue = Coprod!(
-    StartState,
-    ReceiveFullNameState,
-    ReceiveAgeState,
-    ReceiveFavouriteMusicState,
-);
+#[derive(SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    Start(StartState),
+    ReceiveFullName(ReceiveFullNameState),
+    ReceiveAge(ReceiveAgeState),
+    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
+}

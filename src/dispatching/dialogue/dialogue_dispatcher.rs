@@ -26,7 +26,6 @@ use std::sync::{Arc, Mutex};
 pub struct DialogueDispatcher<D, S, H, Upd> {
     storage: Arc<S>,
     handler: Arc<H>,
-    default: Arc<dyn Fn() -> D + Send + Sync + 'static>,
     _phantom: PhantomData<Mutex<D>>,
 
     /// A lock-free map to handle updates from the same chat sequentially, but
@@ -42,22 +41,17 @@ impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
-    D: Send + 'static,
+    D: Default + Send + 'static,
 {
-    /// Creates a dispatcher with the specified `handler,  [`InMemStorage`]
-    /// (a default storage), and a function that returns a default dialogue,
-    /// used when a user initiates a new dialogue.
+    /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
+    /// (a default storage).
     ///
     /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
     #[must_use]
-    pub fn new<F>(handler: H, default: F) -> Self
-    where
-        F: Fn() -> D + Send + Sync + 'static,
-    {
+    pub fn new(handler: H) -> Self {
         Self {
             storage: InMemStorage::new(),
             handler: Arc::new(handler),
-            default: Arc::new(default),
             senders: Arc::new(Map::new()),
             _phantom: PhantomData,
         }
@@ -68,22 +62,16 @@ impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
-    D: Send + 'static,
+    D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
 {
-    /// Creates a dispatcher with the specified `handler`, `storage`, and a
-    /// function that returns a default dialogue, used when a user initiates a
-    /// new dialogue.
+    /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
-    pub fn with_storage<F>(handler: H, storage: Arc<S>, default: F) -> Self
-    where
-        F: Fn() -> D + Send + Sync + 'static,
-    {
+    pub fn with_storage(handler: H, storage: Arc<S>) -> Self {
         Self {
             storage,
             handler: Arc::new(handler),
-            default: Arc::new(default),
             senders: Arc::new(Map::new()),
             _phantom: PhantomData,
         }
@@ -95,13 +83,11 @@ where
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
-        let default = Arc::clone(&self.default);
         let senders = Arc::clone(&self.senders);
 
         tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
-            let default = Arc::clone(&default);
             let senders = Arc::clone(&senders);
 
             async move {
@@ -110,7 +96,7 @@ where
                 let dialogue = Arc::clone(&storage)
                     .remove_dialogue(chat_id)
                     .await
-                    .map(|opt| opt.unwrap_or_else(move || default()));
+                    .map(Option::unwrap_or_default);
 
                 match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
@@ -145,7 +131,7 @@ impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
 where
     H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
-    D: Send + 'static,
+    D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
 {
@@ -203,7 +189,7 @@ mod tests {
 
     #[tokio::test]
     async fn updates_from_same_chat_executed_sequentially() {
-        #[derive(Debug, Default)]
+        #[derive(Debug)]
         struct MyUpdate {
             chat_id: i64,
             unique_number: u32,
@@ -246,7 +232,6 @@ mod tests {
 
                 DialogueStage::Next(())
             },
-            || (),
         );
 
         let updates = stream::iter(

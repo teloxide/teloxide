@@ -17,6 +17,11 @@
 #![allow(clippy::trivial_regex)]
 #![allow(dead_code)]
 
+#[macro_use]
+extern crate smart_default;
+#[macro_use]
+extern crate derive_more;
+
 mod favourite_music;
 mod states;
 mod transitions;
@@ -24,6 +29,7 @@ mod transitions;
 use states::*;
 use transitions::*;
 
+use std::convert::Infallible;
 use teloxide::prelude::*;
 
 #[tokio::main]
@@ -39,19 +45,12 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |cx| async move {
-                let DialogueWithCx { cx, dialogue } = cx;
-
+            |cx: DialogueWithCx<Message, Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                let dialogue = dialogue.unwrap();
-
-                dispatch!(
-                [cx, dialogue] ->
-                [start, receive_full_name, receive_age, receive_favourite_music]
-            )
-            .expect("Something wrong with the bot!")
+                dispatch(cx.cx, cx.dialogue.unwrap())
+                    .await
+                    .expect("Something wrong with the bot!")
             },
-            || Dialogue::inject(StartState),
         ))
         .dispatch()
         .await;

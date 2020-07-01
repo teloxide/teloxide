@@ -1,5 +1,4 @@
 use crate::dispatching::dialogue::TransitionOut;
-use frunk::coproduct::CoprodInjector;
 
 /// Continue or terminate a dialogue.
 ///
@@ -15,11 +14,11 @@ pub enum DialogueStage<D> {
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching::dialogue).
-pub fn next<Dialogue, State, Index>(new_state: State) -> TransitionOut<Dialogue>
+pub fn next<Dialogue, State>(new_state: State) -> TransitionOut<Dialogue>
 where
-    Dialogue: CoprodInjector<State, Index>,
+    Dialogue: From<State>,
 {
-    Ok(DialogueStage::Next(Dialogue::inject(new_state)))
+    Ok(DialogueStage::Next(Dialogue::from(new_state)))
 }
 
 /// Exits a dialogue.
