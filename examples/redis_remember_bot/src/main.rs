@@ -1,18 +1,20 @@
-use serde::{Deserialize, Serialize};
-use smart_default::SmartDefault;
+#[macro_use]
+extern crate smart_default;
+#[macro_use]
+extern crate derive_more;
+
+mod states;
+mod transitions;
+
+use states::*;
+use transitions::*;
+
 use std::sync::Arc;
 use teloxide::{
     dispatching::dialogue::{serializer::Bincode, RedisStorage, Storage},
     prelude::*,
 };
 use thiserror::Error;
-
-#[derive(SmartDefault, Serialize, Deserialize)]
-enum Dialogue {
-    #[default]
-    Start,
-    HaveNumber(i32),
-}
 
 type StorageError = <RedisStorage<Bincode> as Storage<Dialogue>>::Error;
 
@@ -24,70 +26,20 @@ enum Error {
     StorageError(#[from] StorageError),
 }
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State, StorageError>;
+type In = TransitionIn<Dialogue, StorageError>;
 
-type Res = Result<DialogueStage<Dialogue>, Error>;
+async fn handle_message(input: In) -> Out {
+    let (cx, dialogue) = input.unpack();
 
-async fn handle_message(cx: Cx<Dialogue>) -> Res {
-    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
-    let text = match update.text() {
+    let text = match cx.update.text_owned() {
         Some(text) => text,
         None => {
-            bot.send_message(
-                update.chat_id(),
-                "Please, send me a text message",
-            )
-            .send()
-            .await?;
-            return next(Dialogue::Start);
+            cx.answer_str("Please, send me a text message").await?;
+            return next(StartState);
         }
     };
 
-    match dialogue? {
-        Dialogue::Start => {
-            if let Ok(number) = text.parse() {
-                bot.send_message(
-                    update.chat_id(),
-                    format!(
-                        "Remembered number {}. Now use /get or /reset",
-                        number
-                    ),
-                )
-                .send()
-                .await?;
-                next(Dialogue::HaveNumber(number))
-            } else {
-                bot.send_message(update.chat_id(), "Please, send me a number")
-                    .send()
-                    .await?;
-                next(Dialogue::Start)
-            }
-        }
-        Dialogue::HaveNumber(num) => {
-            if text.starts_with("/get") {
-                bot.send_message(
-                    update.chat_id(),
-                    format!("Here is your number: {}", num),
-                )
-                .send()
-                .await?;
-                next(Dialogue::HaveNumber(num))
-            } else if text.starts_with("/reset") {
-                bot.send_message(update.chat_id(), format!("Resetted number"))
-                    .send()
-                    .await?;
-                next(Dialogue::Start)
-            } else {
-                bot.send_message(
-                    update.chat_id(),
-                    "Please, send /get or /reset",
-                )
-                .send()
-                .await?;
-                next(Dialogue::HaveNumber(num))
-            }
-        }
-    }
+    dispatch(cx, dialogue, &text).await
 }
 
 #[tokio::main]
