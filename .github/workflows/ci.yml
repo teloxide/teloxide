@@ -22,6 +22,9 @@ jobs:
           override: true
           components: rustfmt, clippy
 
+      - name: Setup redis
+        run: sudo apt install redis-server && redis-server
+
       - name: stable/beta build 
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
