@@ -3,6 +3,15 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
+  vm-job:
+    name: CI
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        ports:
+        - 6379/tcp
+
   ci:
     runs-on: ubuntu-latest
     strategy:
@@ -20,7 +29,7 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.rust }}
           override: true
-          components: rustfmt, clippy
+          components: rustfmt, clippyz
 
       - name: stable/beta build 
         uses: actions-rs/cargo@v1
