@@ -34,7 +34,7 @@ where
     <S as Serializer<Dialogue>>::Error: Debug + Display,
 {
     let storage = Arc::new(
-        RedisStorage::open("redis://127.0.0.1:6379", serializer).await.unwrap(),
+        RedisStorage::open("redis://127.0.0.1:7777", serializer).await.unwrap(),
     );
 
     check_dialogue(
