@@ -1,5 +1,7 @@
+/// Various serializers for memory storages.
 use serde::{de::DeserializeOwned, ser::Serialize};
 
+/// A serializer for memory storages.
 pub trait Serializer<D> {
     type Error;
 
@@ -7,6 +9,7 @@ pub trait Serializer<D> {
     fn deserialize(&self, data: &[u8]) -> Result<D, Self::Error>;
 }
 
+/// The JSON serializer for memory storages.
 pub struct JSON;
 
 impl<D> Serializer<D> for JSON
@@ -24,6 +27,7 @@ where
     }
 }
 
+/// The CBOR serializer for memory storages.
 #[cfg(feature = "cbor-serializer")]
 pub struct CBOR;
 
@@ -43,6 +47,7 @@ where
     }
 }
 
+/// The Bincode serializer for memory storages.
 #[cfg(feature = "bincode-serializer")]
 pub struct Bincode;
 

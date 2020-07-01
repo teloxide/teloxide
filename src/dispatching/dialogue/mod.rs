@@ -57,7 +57,8 @@ pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 
 #[cfg(feature = "redis-storage")]
-pub use storage::RedisStorage;
+pub use storage::{RedisStorage, RedisStorageError};
+
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
 
 /// Generates `.up(field)` methods for dialogue states.

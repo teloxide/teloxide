@@ -11,8 +11,11 @@ use std::{
 use thiserror::Error;
 use tokio::sync::Mutex;
 
+/// An error returned from [`RedisStorage`].
+///
+/// [`RedisStorage`]: struct.RedisStorage.html
 #[derive(Debug, Error)]
-pub enum Error<SE>
+pub enum RedisStorageError<SE>
 where
     SE: Debug + Display,
 {
@@ -22,6 +25,7 @@ where
     RedisError(#[from] redis::RedisError),
 }
 
+/// A memory storage based on [Redis](https://redis.io/).
 pub struct RedisStorage<S> {
     conn: Mutex<redis::aio::Connection>,
     serializer: S,
@@ -31,7 +35,7 @@ impl<S> RedisStorage<S> {
     pub async fn open(
         url: impl IntoConnectionInfo,
         serializer: S,
-    ) -> Result<Self, Error<Infallible>> {
+    ) -> Result<Self, RedisStorageError<Infallible>> {
         Ok(Self {
             conn: Mutex::new(
                 redis::Client::open(url)?.get_async_connection().await?,
@@ -47,7 +51,7 @@ where
     D: Send + Serialize + DeserializeOwned + 'static,
     <S as Serializer<D>>::Error: Debug + Display,
 {
-    type Error = Error<<S as Serializer<D>>::Error>;
+    type Error = RedisStorageError<<S as Serializer<D>>::Error>;
 
     // `.del().ignore()` is much more readable than `.del()\n.ignore()`
     #[rustfmt::skip]
@@ -72,7 +76,7 @@ where
                         .map(|v| {
                             self.serializer
                                 .deserialize(&v)
-                                .map_err(Error::SerdeError)
+                                .map_err(RedisStorageError::SerdeError)
                         })
                         .transpose()?)
                 }
@@ -90,7 +94,7 @@ where
             let dialogue = self
                 .serializer
                 .serialize(&dialogue)
-                .map_err(Error::SerdeError)?;
+                .map_err(RedisStorageError::SerdeError)?;
             Ok(self
                 .conn
                 .lock()
@@ -98,7 +102,9 @@ where
                 .getset::<_, Vec<u8>, Option<Vec<u8>>>(chat_id, dialogue)
                 .await?
                 .map(|d| {
-                    self.serializer.deserialize(&d).map_err(Error::SerdeError)
+                    self.serializer
+                        .deserialize(&d)
+                        .map_err(RedisStorageError::SerdeError)
                 })
                 .transpose()?)
         })
