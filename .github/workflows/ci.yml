@@ -25,6 +25,9 @@ jobs:
           override: true
           components: rustfmt
 
+      - name: Setup redis
+        run: redis-server
+
       - name: stable/beta test 
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
