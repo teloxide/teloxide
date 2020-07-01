@@ -31,15 +31,13 @@ type In = TransitionIn<Dialogue, StorageError>;
 async fn handle_message(input: In) -> Out {
     let (cx, dialogue) = input.unpack();
 
-    let text = match cx.update.text_owned() {
-        Some(text) => text,
+    match cx.update.text_owned() {
+        Some(text) => dispatch(cx, dialogue, &text).await,
         None => {
             cx.answer_str("Please, send me a text message").await?;
-            return next(StartState);
+            next(StartState)
         }
-    };
-
-    dispatch(cx, dialogue, &text).await
+    }
 }
 
 #[tokio::main]
