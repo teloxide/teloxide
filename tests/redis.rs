@@ -3,12 +3,9 @@ use std::{
     future::Future,
     sync::Arc,
 };
-use teloxide::{
-    dispatching::dialogue::{
-        serializer::{Bincode, CBOR, JSON},
-        RedisStorage, Serializer, Storage,
-    },
-    prelude::*,
+use teloxide::dispatching::dialogue::{
+    serializer::{Bincode, CBOR, JSON},
+    RedisStorage, Serializer, Storage,
 };
 
 #[tokio::test]
@@ -40,28 +37,33 @@ where
     check_dialogue(
         None,
         Arc::clone(&storage).update_dialogue(11, "ABC".to_owned()),
-    );
+    )
+    .await;
     check_dialogue(
         None,
         Arc::clone(&storage).update_dialogue(256, "DEF".to_owned()),
-    );
+    )
+    .await;
     check_dialogue(
         None,
         Arc::clone(&storage).update_dialogue(11, "GHI".to_owned()),
-    );
+    )
+    .await;
 
     check_dialogue(
         "ABC",
         Arc::clone(&storage).update_dialogue(1, "JKL".to_owned()),
-    );
+    )
+    .await;
     check_dialogue(
         "GHI",
         Arc::clone(&storage).update_dialogue(11, "MNO".to_owned()),
-    );
+    )
+    .await;
 
-    check_dialogue("JKL", Arc::clone(&storage).remove_dialogue(1));
-    check_dialogue("DEF", Arc::clone(&storage).remove_dialogue(256));
-    check_dialogue("MNO", Arc::clone(&storage).remove_dialogue(11));
+    check_dialogue("JKL", Arc::clone(&storage).remove_dialogue(1)).await;
+    check_dialogue("DEF", Arc::clone(&storage).remove_dialogue(256)).await;
+    check_dialogue("MNO", Arc::clone(&storage).remove_dialogue(11)).await;
 }
 
 async fn check_dialogue<E>(
