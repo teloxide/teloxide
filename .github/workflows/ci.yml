@@ -27,20 +27,6 @@ jobs:
           override: true
           components: rustfmt, clippyz
 
-      - name: stable/beta build 
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'stable' || matrix.rust == 'beta'
-        with:
-          command: build
-          args: --verbose --all-features
-
-      - name: nightly build 
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: build
-          args: --verbose --all-features
-
       - name: stable/beta test 
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
@@ -48,23 +34,9 @@ jobs:
           command: test
           args: --verbose --all-features
 
-      - name: nightly test
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: test
-          args: --verbose --all-features
-
       - name: stable/beta clippy
         uses: actions-rs/cargo@v1
         if: matrix.rust == 'stable' || matrix.rust == 'beta'
-        with:
-          command: clippy
-          args: --all-targets --all-features -- -D warnings
-
-      - name: nightly clippy
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
         with:
           command: clippy
           args: --all-targets --all-features -- -D warnings
