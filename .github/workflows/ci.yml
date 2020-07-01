@@ -21,7 +21,7 @@ jobs:
           components: rustfmt
 
       - name: Setup redis
-        run: sudo apt install redis-server && redis-server
+        run: sudo apt install redis-server && redis-server --port 7777
 
       - name: stable/beta test 
         uses: actions-rs/cargo@v1
