@@ -26,7 +26,7 @@ async fn have_number(cx: Cx, state: HaveNumberState, text: &str) -> Out {
         cx.answer_str(format!("Here is your number: {}", num)).await?;
         next(state)
     } else if text.starts_with("/reset") {
-        cx.answer_str(format!("Resetted number")).await?;
+        cx.answer_str("Resetted number").await?;
         next(StartState)
     } else {
         cx.answer_str("Please, send /get or /reset").await?;
