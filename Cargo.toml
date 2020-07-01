@@ -44,7 +44,6 @@ async-trait = "0.1.22"
 futures = "0.3.1"
 pin-project = "0.4.6"
 serde_with_macros = "1.0.1"
-frunk = "0.3.1"
 
 teloxide-macros = "0.2.1"
 

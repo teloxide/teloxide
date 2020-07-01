@@ -1,7 +1,6 @@
 //! Commonly used items.
 
 pub use crate::{
-    dispatch,
     dispatching::{
         dialogue::{
             exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
@@ -15,7 +14,6 @@ pub use crate::{
     up, Bot, RequestError,
 };
 
-pub use frunk::{Coprod, Coproduct};
 pub use tokio::sync::mpsc::UnboundedReceiver;
 
 pub use futures::StreamExt;

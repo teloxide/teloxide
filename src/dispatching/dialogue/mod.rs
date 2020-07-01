@@ -57,65 +57,6 @@ pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};
 
-/// Dispatches a dialogue state into transition functions.
-///
-/// # Example
-/// ```no_run
-/// use teloxide::prelude::*;
-///
-/// pub struct StartState;
-/// pub struct ReceiveWordState;
-/// pub struct ReceiveNumberState;
-/// pub struct ExitState;
-///
-/// pub type Dialogue = Coprod!(
-///     StartState,
-///     ReceiveWordState,
-///     ReceiveNumberState,
-/// );
-///
-/// pub type In<State> = TransitionIn<State, std::convert::Infallible>;
-/// pub type Out = TransitionOut<Dialogue>;
-///
-/// pub async fn start(cx: In<StartState>) -> Out { todo!() }
-/// pub async fn receive_word(cx: In<ReceiveWordState>) -> Out { todo!() }
-/// pub async fn receive_number(cx: In<ReceiveNumberState>) -> Out { todo!() }
-///
-/// # #[tokio::main]
-/// # async fn main() {
-/// let cx: In<Dialogue> = todo!();
-/// let (cx, dialogue) = cx.unpack();
-///
-/// // StartState -> start
-/// // ReceiveWordState -> receive_word
-/// // ReceiveNumberState -> receive_number
-/// let stage = dispatch!(
-///     [cx, dialogue] ->
-///     [start, receive_word, receive_number]
-/// );
-/// # }
-/// ```
-#[macro_export]
-macro_rules! dispatch {
-    ([$cx:ident, $dialogue:ident] -> [$transition:ident, $($transitions:ident),+]) => {
-        match $dialogue {
-            Coproduct::Inl(state) => {
-                $transition(teloxide::dispatching::dialogue::DialogueWithCx::new($cx, state)).await
-            }
-            Coproduct::Inr(another) => { dispatch!([$cx, another] -> [$($transitions),+]) }
-        }
-    };
-
-    ([$cx:ident, $dialogue:ident] -> [$transition:ident]) => {
-        match $dialogue {
-            Coproduct::Inl(state) => {
-                $transition(teloxide::dispatching::dialogue::DialogueWithCx::new($cx, state)).await
-            }
-            Coproduct::Inr(_absurd) => unreachable!(),
-        }
-    };
-}
-
 /// Generates `.up(field)` methods for dialogue states.
 ///
 /// Given inductively defined states, this macro generates `.up(field)` methods
