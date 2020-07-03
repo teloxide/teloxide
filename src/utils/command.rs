@@ -45,7 +45,8 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
-use std::error::Error;
+use serde::export::Formatter;
+use std::{error::Error, fmt::Display};
 pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.
@@ -223,6 +224,29 @@ pub enum ParseError {
     /// A custom error which you can return from your custom parser.
     Custom(Box<dyn Error>),
 }
+
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        match self {
+            ParseError::TooFewArguments { expected: _, found: _, message } => {
+                write!(f, "{}", message)
+            }
+            ParseError::TooManyArguments { expected: _, found: _, message } => {
+                write!(f, "{}", message)
+            }
+            ParseError::IncorrectFormat(e) => {
+                write!(f, "Incorrect format of command args: {}", e)
+            }
+            ParseError::UnknownCommand(e) => {
+                write!(f, "Unknown command: {}", e)
+            }
+            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
+            ParseError::Custom(e) => write!(f, "{}", e),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
 
 /// Parses a string into a command with args.
 ///
