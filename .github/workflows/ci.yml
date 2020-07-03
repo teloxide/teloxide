@@ -1,75 +1,61 @@
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 name: Continuous integration
 
 jobs:
-  ci:
+  code-checks:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust: 
-          - stable
-          - beta
-          - nightly
-      
     steps:
-      - uses: actions/checkout@v1
-
+      - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: nightly
           override: true
           components: rustfmt, clippy
-
-      - name: stable/beta build 
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'stable' || matrix.rust == 'beta'
+      - name: Cargo fmt
+        run: cargo +nightly fmt --all -- --check
+      - uses: actions-rs/toolchain@v1
         with:
-          command: build
-          args: --verbose --features ""
-
-      - name: nightly build 
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+  stable-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          command: build
-          args: --verbose --all-features
-
-      - name: stable/beta test 
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'stable' || matrix.rust == 'beta'
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Cargo test
+        run: cargo test --all-features
+  build-example:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [
+            admin_bot, 
+            dialogue_bot, 
+            heroku_ping_pong_bot, 
+            ngrok_ping_pong_bot, 
+            ping_pong_bot, 
+            shared_state_bot,
+            simple_commands_bot,
+        ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          command: test
-          args: --verbose --features ""
-
-      - name: nightly test
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: test
-          args: --verbose --all-features
-
-      - name: stable/beta clippy
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'stable' || matrix.rust == 'beta'
-        with:
-          command: clippy
-          args: --all-targets --features "" -- -D warnings
-
-      - name: nightly clippy
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: clippy
-          args: --all-targets --all-features -- -D warnings
-
-      - name: Test the examples
-        run: cd examples && bash test_examples.sh
-
-      - name: fmt
-        uses: actions-rs/cargo@v1
-        if: matrix.rust == 'nightly'
-        with:
-          command: fmt
-          args: --all -- --check
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Test the example
+        run: cd examples && cd ${{ matrix.example }} && cargo check
