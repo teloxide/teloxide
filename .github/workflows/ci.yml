@@ -10,7 +10,6 @@ jobs:
   code-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -19,17 +18,33 @@ jobs:
           components: rustfmt, clippy
       - name: Cargo fmt
         run: cargo +nightly fmt --all -- --check
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
       - name: Cargo clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
   stable-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
       - name: Cargo test
         run: cargo test --all-features
   test-examples:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
       - name: Test the examples
         run: cargo check --examples
