@@ -78,7 +78,7 @@ pub use teloxide_macros::BotCommand;
 ///  3. `#[command(description = "description")]`
 /// Add a sumary description of commands before all commands.
 ///
-///  4. `#[command(parser = "parser")]`
+///  4. `#[command(parse_with = "parser")]`
 /// Change the parser of arguments. Possible values:
 ///    - `default` - the same as the unspecified parser. It only puts all text
 ///    after the first space into the first argument, which must implement
@@ -141,7 +141,7 @@ pub use teloxide_macros::BotCommand;
 /// Rename one command by a rule. Allowed rules are `lowercase`, `%some_name%`,
 /// where `%some_name%` is any string, a new name.
 ///
-///  2. `#[command(parser = "parser")]`
+///  2. `#[command(parse_with = "parser")]`
 /// One more option is available for variants.
 ///    - `custom_parser` - your own parser of the signature `fn(String) ->
 ///    Result<Tuple, ParseError>`, where `Tuple` corresponds to the variant's
