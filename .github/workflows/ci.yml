@@ -6,18 +6,6 @@ on:
 
 name: Continuous integration
 
-strategy:
-  matrix:
-    example: [
-        admin_bot, 
-        dialogue_bot, 
-        heroku_ping_pong_bot, 
-        ngrok_ping_pong_bot, 
-        ping_pong_bot, 
-        shared_state_bot,
-        simple_commands_bot,
-    ]
-
 jobs:
   code-checks:
     runs-on: ubuntu-latest
@@ -51,6 +39,17 @@ jobs:
         run: cargo test --all-features
   build-example:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [
+            admin_bot, 
+            dialogue_bot, 
+            heroku_ping_pong_bot, 
+            ngrok_ping_pong_bot, 
+            ping_pong_bot, 
+            shared_state_bot,
+            simple_commands_bot,
+        ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
