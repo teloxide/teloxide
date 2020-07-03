@@ -1,7 +1,7 @@
 // TODO: simplify this and use typed command variants (see https://github.com/teloxide/teloxide/issues/152).
 
 use teloxide::{
-    prelude::*, types::ChatPermissions, utils::command::BotCommand,
+    prelude::*, types::ChatPermissions, utils::command::BotCommand
 };
 
 use futures::future;
@@ -64,7 +64,7 @@ fn parse_time_restrict(args: &[String]) -> Result<i32, &str> {
     calc_restrict_time(num, unit)
 }
 
-type Cx = DispatcherHandlerCx<Message>;
+type Cx = UpdateWithCx<Message>;
 
 // Mute a user with a replied message.
 async fn mute_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
@@ -158,7 +158,7 @@ async fn ban_user(cx: &Cx, args: &[String]) -> ResponseResult<()> {
 }
 
 async fn action(
-    cx: DispatcherHandlerCx<Message>,
+    cx: UpdateWithCx<Message>,
     command: Command,
     args: &[String],
 ) -> ResponseResult<()> {
