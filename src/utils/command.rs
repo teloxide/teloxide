@@ -228,11 +228,18 @@ pub enum ParseError {
 impl Display for ParseError {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
-            ParseError::TooFewArguments { expected: _, found: _, message } => {
-                write!(f, "{}", message)
-            }
-            ParseError::TooManyArguments { expected: _, found: _, message } => {
-                write!(f, "{}", message)
+            ParseError::TooFewArguments { expected, found, message } => write!(
+                f,
+                "Too few arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::TooManyArguments { expected, found, message } => {
+                write!(
+                    f,
+                    "Too many arguments (expected {}, found {}, message = \
+                     '{}')",
+                    expected, found, message
+                )
             }
             ParseError::IncorrectFormat(e) => {
                 write!(f, "Incorrect format of command args: {}", e)
