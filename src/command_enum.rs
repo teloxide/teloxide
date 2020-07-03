@@ -19,9 +19,8 @@ impl CommandEnum {
         let rename = attrs.rename;
         let separator = attrs.separator;
         let mut parser = attrs.parser.unwrap_or(ParserType::Default);
-        match (&mut parser, &separator) {
-            (ParserType::Split { separator }, Some(s)) => *separator = Some(s.clone()),
-            _ => {}
+        if let (ParserType::Split { separator }, Some(s)) = (&mut parser, &separator) {
+            *separator = Some(s.clone())
         }
         if let Some(rename_rule) = &rename {
             match rename_rule.as_str() {

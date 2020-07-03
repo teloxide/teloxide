@@ -79,7 +79,7 @@ fn create_parser<'a>(
             _ => quote! { compile_error!("Expected 1 argument") },
         },
         ParserType::Split { separator } => parser_with_separator(
-            &separator.clone().unwrap_or(" ".to_owned()),
+            &separator.clone().unwrap_or_else(|| " ".to_owned()),
             types,
             count_args,
         ),
