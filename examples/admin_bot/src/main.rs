@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use teloxide::{
-    prelude::*, types::ChatPermissions, utils::command::BotCommand,
+    prelude::*, types::ChatPermissions, utils::command::BotCommand
 };
 
 use futures::future;
@@ -64,7 +64,7 @@ fn calc_restrict_time(time: u32, unit: UnitOfTime) -> u32 {
     }
 }
 
-type Cx = DispatcherHandlerCx<Message>;
+type Cx = UpdateWithCx<Message>;
 
 // Mute a user with a replied message.
 async fn mute_user(cx: &Cx, time: u32) -> ResponseResult<()> {
@@ -131,7 +131,7 @@ async fn ban_user(cx: &Cx, time: u32) -> ResponseResult<()> {
 }
 
 async fn action(
-    cx: DispatcherHandlerCx<Message>,
+    cx: UpdateWithCx<Message>,
     command: Command,
 ) -> ResponseResult<()> {
     match command {
@@ -150,11 +150,8 @@ async fn action(
     Ok(())
 }
 
-// Handle all messages.
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through messages from groups:
     rx.filter(|cx| future::ready(cx.update.chat.is_group()))
-        // Only iterate through commands in a proper format:
         .commands::<Command, &str>(panic!("Insert here your bot's name"))
         // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command)| async move {

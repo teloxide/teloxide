@@ -1,4 +1,4 @@
-// The version of ping-pong-bot, which uses a webhook to receive updates from
+// The version of ngrok ping-pong-bot, which uses a webhook to receive updates from
 // Telegram, instead of long polling.
 
 use teloxide::{dispatching::update_listeners, prelude::*};
@@ -56,14 +56,14 @@ pub async fn webhook<'a>(
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting ping_pong_bot!");
+    log::info!("Starting ngrok_ping_pong_bot!");
 
     let bot = Bot::from_env();
 
     Dispatcher::new(Arc::clone(&bot))
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
-                message.answer("pong").send().await.log_on_error().await;
+                message.answer_str("pong").await.log_on_error().await;
             })
         })
         .dispatch_with_listener(

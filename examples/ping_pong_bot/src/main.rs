@@ -16,7 +16,7 @@ async fn run() {
     Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
-                message.answer("pong").send().await.log_on_error().await;
+                message.answer_str("pong").await.log_on_error().await;
             })
         })
         .dispatch()

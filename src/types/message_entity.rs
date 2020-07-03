@@ -50,7 +50,10 @@ impl MessageEntity {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Chat, ChatKind, ForwardKind, MediaKind, MessageKind};
+    use crate::types::{
+        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind,
+        MediaText, MessageCommon, MessageKind,
+    };
 
     #[test]
     fn recursive_kind() {
@@ -103,15 +106,15 @@ mod tests {
             date: 0,
             chat: Chat {
                 id: 0,
-                kind: ChatKind::Private {
+                kind: ChatKind::Private(ChatPrivate {
                     type_: (),
                     username: None,
                     first_name: None,
                     last_name: None,
-                },
+                }),
                 photo: None,
             },
-            kind: MessageKind::Common {
+            kind: MessageKind::Common(MessageCommon {
                 from: Some(User {
                     id: 0,
                     is_bot: false,
@@ -120,18 +123,20 @@ mod tests {
                     username: None,
                     language_code: None,
                 }),
-                forward_kind: ForwardKind::Origin { reply_to_message: None },
+                forward_kind: ForwardKind::Origin(ForwardOrigin {
+                    reply_to_message: None,
+                }),
                 edit_date: None,
-                media_kind: MediaKind::Text {
+                media_kind: MediaKind::Text(MediaText {
                     text: "no yes no".to_string(),
                     entities: vec![MessageEntity {
                         kind: MessageEntityKind::Mention,
                         offset: 3,
                         length: 3,
                     }],
-                },
+                }),
                 reply_markup: None,
-            },
+            }),
         }
     }
 }

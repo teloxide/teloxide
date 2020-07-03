@@ -125,8 +125,9 @@ impl Update {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Update,
-        UpdateKind, User,
+        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind,
+        MediaText, Message, MessageCommon, MessageKind, Update, UpdateKind,
+        User,
     };
 
     // TODO: more tests for deserialization
@@ -161,15 +162,15 @@ mod test {
                 date: 1_569_518_342,
                 chat: Chat {
                     id: 218_485_655,
-                    kind: ChatKind::Private {
+                    kind: ChatKind::Private(ChatPrivate {
                         type_: (),
                         username: Some(String::from("WaffleLapkin")),
                         first_name: Some(String::from("Waffle")),
                         last_name: None,
-                    },
+                    }),
                     photo: None,
                 },
-                kind: MessageKind::Common {
+                kind: MessageKind::Common(MessageCommon {
                     from: Some(User {
                         id: 218_485_655,
                         is_bot: false,
@@ -178,16 +179,16 @@ mod test {
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(String::from("en")),
                     }),
-                    forward_kind: ForwardKind::Origin {
+                    forward_kind: ForwardKind::Origin(ForwardOrigin {
                         reply_to_message: None,
-                    },
+                    }),
                     edit_date: None,
-                    media_kind: MediaKind::Text {
+                    media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),
                         entities: vec![],
-                    },
+                    }),
                     reply_markup: None,
-                },
+                }),
             }),
         };
 

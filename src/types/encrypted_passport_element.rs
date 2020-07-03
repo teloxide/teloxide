@@ -19,337 +19,392 @@ pub struct EncryptedPassportElement {
     pub kind: EncryptedPassportElementKind,
 }
 
-#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[allow(clippy::large_enum_variant)]
 pub enum EncryptedPassportElementKind {
-    PersonalDetails {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
-    },
-    Passport {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
+    PersonalDetails(EncryptedPassportElementPersonalDetails),
+    Passport(EncryptedPassportElementPassport),
+    DriverLicense(EncryptedPassportElementDriverLicense),
+    IdentityCard(EncryptedPassportElementIdentityCard),
+    InternalPassport(EncryptedPassportElementInternalPassport),
+    Address(EncryptedPassportElementAddress),
+    UtilityBill(EncryptedPassportElementUtilityBill),
+    BankStatement(EncryptedPassportElementBankStatement),
+    RentalAgreement(EncryptedPassportElementRentalAgreement),
+    PassportRegistration(EncryptedPassportElementPassportRegistration),
+    EncryptedPassportElement(EncryptedPassportElementTemporaryRegistration),
+    PhoneNumber(EncryptedPassportElementPhoneNumber),
+    Email(EncryptedPassportElementEmail),
+}
 
-        /// Encrypted file with the front side of the document, provided by the
-        /// user. Available for `passport`, `driver_license`, `identity_card`
-        /// and `internal_passport`. The file can be decrypted and verified
-        /// using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        front_side: PassportFile,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementPersonalDetails {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
+}
 
-        /// Encrypted file with the selfie of the user holding a document,
-        /// provided by the user; available for `passport`, `driver_license`,
-        /// `identity_card` and `internal_passport`. The file can be decrypted
-        /// and verified using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        selfie: PassportFile,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementPassport {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    DriverLicense {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
+    /// Encrypted file with the front side of the document, provided by the
+    /// user. Available for `passport`, `driver_license`, `identity_card`
+    /// and `internal_passport`. The file can be decrypted and verified
+    /// using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub front_side: PassportFile,
 
-        /// Encrypted file with the front side of the document, provided by the
-        /// user. Available for `passport`, `driver_license`, `identity_card`
-        /// and `internal_passport`. The file can be decrypted and verified
-        /// using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        front_side: PassportFile,
+    /// Encrypted file with the selfie of the user holding a document,
+    /// provided by the user; available for `passport`, `driver_license`,
+    /// `identity_card` and `internal_passport`. The file can be decrypted
+    /// and verified using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub selfie: PassportFile,
 
-        /// Encrypted file with the reverse side of the document, provided by
-        /// the user. Available for `driver_license` and `identity_card`. The
-        /// file can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        reverse_side: PassportFile,
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
 
-        /// Encrypted file with the selfie of the user holding a document,
-        /// provided by the user; available for `passport`, `driver_license`,
-        /// `identity_card` and `internal_passport`. The file can be decrypted
-        /// and verified using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        selfie: PassportFile,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementDriverLicense {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    IdentityCard {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
+    /// Encrypted file with the front side of the document, provided by the
+    /// user. Available for `passport`, `driver_license`, `identity_card`
+    /// and `internal_passport`. The file can be decrypted and verified
+    /// using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub front_side: PassportFile,
 
-        /// Encrypted file with the front side of the document, provided by the
-        /// user. Available for `passport`, `driver_license`, `identity_card`
-        /// and `internal_passport`. The file can be decrypted and verified
-        /// using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        front_side: PassportFile,
+    /// Encrypted file with the reverse side of the document, provided by
+    /// the user. Available for `driver_license` and `identity_card`. The
+    /// file can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub reverse_side: PassportFile,
 
-        /// Encrypted file with the reverse side of the document, provided by
-        /// the user. Available for `driver_license` and `identity_card`. The
-        /// file can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        reverse_side: PassportFile,
+    /// Encrypted file with the selfie of the user holding a document,
+    /// provided by the user; available for `passport`, `driver_license`,
+    /// `identity_card` and `internal_passport`. The file can be decrypted
+    /// and verified using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub selfie: PassportFile,
 
-        /// Encrypted file with the selfie of the user holding a document,
-        /// provided by the user; available for `passport`, `driver_license`,
-        /// `identity_card` and `internal_passport`. The file can be decrypted
-        /// and verified using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        selfie: PassportFile,
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    InternalPassport {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementIdentityCard {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
 
-        /// Encrypted file with the front side of the document, provided by the
-        /// user. Available for `passport`, `driver_license`, `identity_card`
-        /// and `internal_passport`. The file can be decrypted and verified
-        /// using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        front_side: PassportFile,
+    /// Encrypted file with the front side of the document, provided by the
+    /// user. Available for `passport`, `driver_license`, `identity_card`
+    /// and `internal_passport`. The file can be decrypted and verified
+    /// using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub front_side: PassportFile,
 
-        /// Encrypted file with the selfie of the user holding a document,
-        /// provided by the user; available for `passport`, `driver_license`,
-        /// `identity_card` and `internal_passport`. The file can be decrypted
-        /// and verified using the accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        selfie: PassportFile,
+    /// Encrypted file with the reverse side of the document, provided by
+    /// the user. Available for `driver_license` and `identity_card`. The
+    /// file can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub reverse_side: PassportFile,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    Address {
-        ///  Base64-encoded encrypted Telegram Passport element data provided
-        /// by the user, available for `personal_details`, `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport` and
-        /// `address` types. Can be decrypted and verified using the
-        /// accompanying [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        data: String,
-    },
-    UtilityBill {
-        /// Array of encrypted files with documents provided by the user,
-        /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        files: Vec<PassportFile>,
+    /// Encrypted file with the selfie of the user holding a document,
+    /// provided by the user; available for `passport`, `driver_license`,
+    /// `identity_card` and `internal_passport`. The file can be decrypted
+    /// and verified using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub selfie: PassportFile,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    BankStatement {
-        /// Array of encrypted files with documents provided by the user,
-        /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        files: Vec<PassportFile>,
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    RentalAgreement {
-        /// Array of encrypted files with documents provided by the user,
-        /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        files: Vec<PassportFile>,
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    PassportRegistration {
-        /// Array of encrypted files with documents provided by the user,
-        /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        files: Vec<PassportFile>,
+pub struct EncryptedPassportElementInternalPassport {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    TemporaryRegistration {
-        /// Array of encrypted files with documents provided by the user,
-        /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        files: Vec<PassportFile>,
+    /// Encrypted file with the front side of the document, provided by the
+    /// user. Available for `passport`, `driver_license`, `identity_card`
+    /// and `internal_passport`. The file can be decrypted and verified
+    /// using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub front_side: PassportFile,
 
-        /// Array of encrypted files with translated versions of documents
-        /// provided by the user. Available if requested for `passport`,
-        /// `driver_license`, `identity_card`, `internal_passport`,
-        /// `utility_bill`, `bank_statement`, `rental_agreement`,
-        /// `passport_registration` and `temporary_registration` types. Files
-        /// can be decrypted and verified using the accompanying
-        /// [`EncryptedCredentials`].
-        ///
-        /// [`EncryptedCredentials`]:
-        /// crate::types::EncryptedCredentials
-        translation: Option<Vec<PassportFile>>,
-    },
-    PhoneNumber {
-        /// User's verified phone number, available only for `phone_number`
-        /// type.
-        phone_number: String,
-    },
-    Email {
-        /// User's verified email address, available only for `email` type.
-        email: String,
-    },
+    /// Encrypted file with the selfie of the user holding a document,
+    /// provided by the user; available for `passport`, `driver_license`,
+    /// `identity_card` and `internal_passport`. The file can be decrypted
+    /// and verified using the accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub selfie: PassportFile,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementAddress {
+    ///  Base64-encoded encrypted Telegram Passport element data provided
+    /// by the user, available for `personal_details`, `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport` and
+    /// `address` types. Can be decrypted and verified using the
+    /// accompanying [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub data: String,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementUtilityBill {
+    /// Array of encrypted files with documents provided by the user,
+    /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub files: Vec<PassportFile>,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+
+pub struct EncryptedPassportElementBankStatement {
+    /// Array of encrypted files with documents provided by the user,
+    /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub files: Vec<PassportFile>,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementRentalAgreement {
+    /// Array of encrypted files with documents provided by the user,
+    /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub files: Vec<PassportFile>,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+
+pub struct EncryptedPassportElementPassportRegistration {
+    /// Array of encrypted files with documents provided by the user,
+    /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub files: Vec<PassportFile>,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementTemporaryRegistration {
+    /// Array of encrypted files with documents provided by the user,
+    /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub files: Vec<PassportFile>,
+
+    /// Array of encrypted files with translated versions of documents
+    /// provided by the user. Available if requested for `passport`,
+    /// `driver_license`, `identity_card`, `internal_passport`,
+    /// `utility_bill`, `bank_statement`, `rental_agreement`,
+    /// `passport_registration` and `temporary_registration` types. Files
+    /// can be decrypted and verified using the accompanying
+    /// [`EncryptedCredentials`].
+    ///
+    /// [`EncryptedCredentials`]:
+    /// crate::types::EncryptedCredentials
+    pub translation: Option<Vec<PassportFile>>,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct EncryptedPassportElementPhoneNumber {
+    /// User's verified phone number, available only for `phone_number`
+    /// type.
+    pub phone_number: String,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+
+pub struct EncryptedPassportElementEmail {
+    /// User's verified email address, available only for `email` type.
+    pub email: String,
 }

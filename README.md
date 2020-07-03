@@ -14,33 +14,26 @@
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
   </a>
+  <a href="https://core.telegram.org/bots/api">
+    <img src="https://img.shields.io/badge/API coverage-Up to 0.4.6 (inclusively)-green.svg">
+  </a>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
 
 ## Table of contents
  - [Features](https://github.com/teloxide/teloxide#features)
- - [Getting started](https://github.com/teloxide/teloxide#getting-started)
- - [Examples](https://github.com/teloxide/teloxide#examples)
+ - [Setting up your environment](https://github.com/teloxide/teloxide#setting-up-your-environment)
+ - [API overview](https://github.com/teloxide/teloxide#api-overview)
    - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
    - [Commands](https://github.com/teloxide/teloxide#commands)
-   - [Guess a number](https://github.com/teloxide/teloxide#guess-a-number)
- - [More examples!](https://github.com/teloxide/teloxide#more-examples)
+   - [Dialogues](https://github.com/teloxide/teloxide#dialogues)
  - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
  - [FAQ](https://github.com/teloxide/teloxide#faq)
-   - [Where I can ask questions?](https://github.com/teloxide/teloxide#where-i-can-ask-questions)
-   - [Why Rust?](https://github.com/teloxide/teloxide#why-rust)
-   - [Can I use different loggers?](https://github.com/teloxide/teloxide#can-i-use-different-loggers)
  - [Community bots](https://github.com/teloxide/teloxide#community-bots)
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
 ## Features
-<h3 align="center">Higher-order design</h3>
-<p align="center">
-teloxide supports <a href="https://en.wikipedia.org/wiki/Higher-order_programming">higher-order programming</a> by making <a href="https://docs.rs/futures/latest/futures/prelude/trait.Stream.html">streams</a> a <a href="https://en.wikipedia.org/wiki/First-class_citizen">first-class citizen</a>: feel free to (de)multiplex them, apply arbitrary transformations, pass to/return from other functions, <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazily evaluate them</a>, concurrently process their items, and much more, thereby achieving extremely flexible design.
-</p>
-
-<hr>
 
 <h3 align="center">Type safety</h3>
 <p align="center">
@@ -49,29 +42,23 @@ All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">
 
 <hr>
 
-<h3 align="center">Persistency</h3>
+<h3 align="center">Persistence</h3>
 <p align="center">
-By default, teloxide stores all user dialogues in RAM, but you can store them somewhere else (for example, in a database) just by implementing <a href="https://docs.rs/teloxide/latest/teloxide/dispatching/dialogue/trait.Storage.html">2 functions</a>.
+Dialogues management is independent of how/where they are stored: just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a> (for example, store on a disk, transmit through a network), without affecting the actual <a href="https://en.wikipedia.org/wiki/Finite-state_machine">FSM</a> algorithm. By default, teloxide stores all user dialogues in RAM. Default database implementations <a href="https://github.com/teloxide/teloxide/issues/183">are coming</a>!
 </p>
 
-<hr>
-
-<h3 align="center">Convenient dialogues management</h3>
-<p align="center">
-Define a type-safe <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite automaton</a> and transition functions to drive a user dialogue with ease (see <a href="#guess-a-number">the guess-a-number example</a> below).
-</p>
-
-## Getting started
- 1. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
- 2. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
+## Setting up your environment
+ 1. [Download Rust](http://rustup.rs/).
+ 2. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
+ 3. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
 ```bash
-# Unix
+# Unix-like
 $ export TELOXIDE_TOKEN=<Your token here>
 
 # Windows
 $ set TELOXIDE_TOKEN=<Your token here>
 ```
- 3. Be sure that you are up to date:
+ 4. Be sure that you are up to date:
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -82,7 +69,7 @@ $ rustup update nightly
 $ rustup override set nightly
 ```
 
- 4. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
+ 5. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
 teloxide = "0.2.0"
@@ -91,7 +78,9 @@ tokio = "0.2.11"
 pretty_env_logger = "0.4.0"
 ```
 
-## The ping-pong bot
+## API overview
+
+### The ping-pong bot
 This bot has a single message handler, which answers "pong" to each incoming message:
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
@@ -123,7 +112,7 @@ async fn main() {
   </kbd>
 </div>
 
-## Commands
+### Commands
 Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow`, generates a random number within [0; 1) on `/generate`, and shows the usage guide on `/help`:
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
@@ -159,9 +148,7 @@ async fn answer(
 }
 
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    // Only iterate through commands in a proper format:
     rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        // Execute all incoming commands concurrently:
         .for_each_concurrent(None, |(cx, command, _)| async move {
             answer(cx, command).await.log_on_error().await;
         })
@@ -189,84 +176,177 @@ See? The dispatcher gives us a stream of messages, so we can handle it as we wan
  
  - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) and [others](https://docs.rs/teloxide/latest/teloxide/dispatching/trait.DispatcherHandlerRxExt.html) and [others](https://docs.rs/tokio/0.2.13/tokio/sync/index.html)!
 
-## Guess a number
-Wanna see more? This is a bot, which starts a game on each incoming message. You must guess a number from 1 to 10 (inclusively):
+### Dialogues
+Wanna see more? This is how dialogues management is made in teloxide.
 
-([Full](https://github.com/teloxide/teloxide/blob/master/examples/guess_a_number_bot/src/main.rs))
+([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
 ```rust
 // Imports are omitted...
 
-#[derive(SmartDefault)]
-enum Dialogue {
-    #[default]
-    Start,
-    ReceiveAttempt(u8),
+pub struct StartState;
+
+pub struct ReceiveFullNameState {
+    rest: StartState,
 }
 
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State>;
-type Res = ResponseResult<DialogueStage<Dialogue>>;
-
-async fn start(cx: Cx<()>) -> Res {
-    cx.answer("Let's play a game! Guess a number from 1 to 10 (inclusively).")
-        .send()
-        .await?;
-    next(Dialogue::ReceiveAttempt(thread_rng().gen_range(1, 11)))
+pub struct ReceiveAgeState {
+    rest: ReceiveFullNameState,
+    full_name: String,
 }
 
-async fn receive_attempt(cx: Cx<u8>) -> Res {
-    let secret = cx.dialogue;
+pub struct ReceiveFavouriteMusicState {
+    rest: ReceiveAgeState,
+    age: u8,
+}
 
-    match cx.update.text() {
-        None => {
-            cx.answer("Oh, please, send me a text message!").send().await?;
-            next(Dialogue::ReceiveAttempt(secret))
+#[derive(Display)]
+#[display(
+    "Your full name: {rest.rest.full_name}, your age: {rest.age}, your \
+     favourite music: {favourite_music}"
+)]
+pub struct ExitState {
+    rest: ReceiveFavouriteMusicState,
+    favourite_music: FavouriteMusic,
+}
+
+up!(
+    StartState -> ReceiveFullNameState,
+    ReceiveFullNameState + [full_name: String] -> ReceiveAgeState,
+    ReceiveAgeState + [age: u8] -> ReceiveFavouriteMusicState,
+    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
+);
+
+pub type Dialogue = Coprod!(
+    StartState,
+    ReceiveFullNameState,
+    ReceiveAgeState,
+    ReceiveFavouriteMusicState,
+);
+```
+
+The [`wrap_dialogue!`](https://docs.rs/teloxide/latest/teloxide/macro.wrap_dialogue.html) macro generates a new-type of `Dialogue` with a default implementation.
+
+([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
+```rust
+// Imports are omitted...
+
+pub type In<State> = TransitionIn<State, std::convert::Infallible>;
+pub type Out = TransitionOut<Wrapper>;
+
+pub async fn start(cx: In<StartState>) -> Out {
+    let (cx, dialogue) = cx.unpack();
+
+    cx.answer_str("Let's start! First, what's your full name?").await?;
+    next(dialogue.up())
+}
+
+pub async fn receive_full_name(cx: In<ReceiveFullNameState>) -> Out {
+    let (cx, dialogue) = cx.unpack();
+
+    match cx.update.text_owned() {
+        Some(full_name) => {
+            cx.answer_str("What a wonderful name! Your age?").await?;
+            next(dialogue.up(full_name))
         }
-        Some(text) => match text.parse::<u8>() {
-            Ok(attempt) => {
-                if attempt == secret {
-                    cx.answer("Congratulations! You won!").send().await?;
-                    exit()
-                } else {
-                    cx.answer("No.").send().await?;
-                    next(Dialogue::ReceiveAttempt(secret))
-                }
-            }
-            Err(_) => {
-                cx.answer("Oh, please, send me a number in the range [1; 10]!")
-                    .send()
-                    .await?;
-                next(Dialogue::ReceiveAttempt(secret))
-            }
-        },
+        _ => {
+            cx.answer_str("Please, enter a text message!").await?;
+            next(dialogue)
+        }
     }
 }
 
-async fn handle_message(
-    cx: DialogueDispatcherHandlerCx<Message, Dialogue>,
-) -> Res {
-    // Match is omitted...
+pub async fn receive_age(cx: In<ReceiveAgeState>) -> Out {
+    let (cx, dialogue) = cx.unpack();
+
+    match cx.update.text().map(str::parse) {
+        Some(Ok(age)) => {
+            cx.answer("Good. Now choose your favourite music:")
+                .reply_markup(FavouriteMusic::markup())
+                .send()
+                .await?;
+            next(dialogue.up(age))
+        }
+        _ => {
+            cx.answer_str("Please, enter a number!").await?;
+            next(dialogue)
+        }
+    }
 }
 
-#[tokio::main]
-async fn main() {
-    // Setup is omitted...
+pub async fn receive_favourite_music(
+    cx: In<ReceiveFavouriteMusicState>,
+) -> Out {
+    let (cx, dialogue) = cx.unpack();
+
+    match cx.update.text().map(str::parse) {
+        Some(Ok(favourite_music)) => {
+            cx.answer_str(format!("Fine. {}", dialogue.up(favourite_music)))
+                .await?;
+            exit()
+        }
+        _ => {
+            cx.answer_str("Please, enter from the keyboard!").await?;
+            next(dialogue)
+        }
+    }
 }
 ```
 
-<div align="center">
-  <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/GUESS_A_NUMBER_BOT.png width="600" />
-  </kbd>
-  <br/><br/>
-</div>
+([dialogue_bot/src/favourite_music.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/favourite_music.rs))
+```rust
+// Imports are omitted...
 
-Our [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine), designating a user dialogue, cannot be in an invalid state, and this is why it is called "type-safe". We could use `enum` + `Option`s instead, but it would lead us to lots of unpleasant `.unwrap()`s.
+#[derive(Copy, Clone, Display, FromStr)]
+pub enum FavouriteMusic {
+    Rock,
+    Metal,
+    Pop,
+    Other,
+}
 
-Remember that a classical [finite automaton](https://en.wikipedia.org/wiki/Finite-state_machine) is defined by its initial state, a list of its possible states and a transition function? We can think that `Dialogue` is a finite automaton with a context type at each state (`Dialogue::Start` has `()`, `Dialogue::ReceiveAttempt` has `u8`).
+impl FavouriteMusic {
+    pub fn markup() -> ReplyKeyboardMarkup {
+        ReplyKeyboardMarkup::default().append_row(vec![
+            KeyboardButton::new("Rock"),
+            KeyboardButton::new("Metal"),
+            KeyboardButton::new("Pop"),
+            KeyboardButton::new("Other"),
+        ])
+    }
+}
+```
 
-See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs) to see a bit more complicated bot with dialogues.
 
-## [More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
+([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
+```rust
+// Imports are omitted...
+
+#[tokio::main]
+async fn main() {
+    teloxide::enable_logging!();
+    log::info!("Starting dialogue_bot!");
+
+    let bot = Bot::from_env();
+
+    Dispatcher::new(bot)
+        .messages_handler(DialogueDispatcher::new(|cx| async move {
+            let DialogueWithCx { cx, dialogue } = cx;
+
+            // Unwrap without panic because of std::convert::Infallible.
+            let Wrapper(dialogue) = dialogue.unwrap();
+
+            dispatch!(
+                [cx, dialogue] ->
+                [start, receive_full_name, receive_age, receive_favourite_music]
+            )
+            .expect("Something wrong with the bot!")
+        }, || Dialogue::inject(StartState)))
+        .dispatch()
+        .await;
+}
+```
+
+[More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
 
 ## Recommendations
  - Use this pattern:
@@ -294,24 +374,33 @@ See [examples/dialogue_bot](https://github.com/teloxide/teloxide/blob/master/exa
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
 ## FAQ
-### Where I can ask questions?
-[Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
+Q: Where I can ask questions?
 
-### Why Rust?
-Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
 
-### Can I use webhooks?
-teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/webhook_ping_pong_bot/src/main.rs).
+Q: Why Rust?
+
+A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+
+Q: Can I use webhooks?
+
+A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [webhook_ping_pong_bot](examples/ngrok_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
 
-### Can I use different loggers?
-Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
+Q: Can I use different loggers?
+
+A: Of course, you can. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
 
 ## Community bots
-Feel free to push your own bot into our collection: https://github.com/teloxide/community-bots. Later you will be able to play with them right in our official chat: https://t.me/teloxide.
+Feel free to push your own bot into our collection!
+
+ - [Rust subreddit reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
+ - [with_webserver - An example of the teloxide + warp combination](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/with_webserver)
+ - [vzmuinebot - Telegram bot for food menu navigate](https://github.com/ArtHome12/vzmuinebot)
+ - [Tepe - A CLI to command a bot to send messages and files over Telegram](https://lib.rs/crates/tepe)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).

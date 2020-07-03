@@ -36,22 +36,78 @@
 //! [`Dispatcher::messages_handler`]:
 //! crate::dispatching::Dispatcher::messages_handler
 //! [`UpdateKind::Message(message)`]: crate::types::UpdateKind::Message
-//! [`DialogueDispatcherHandlerCx<YourUpdate, D>`]:
-//! crate::dispatching::dialogue::DialogueDispatcherHandlerCx
+//! [`DialogueWithCx<YourUpdate, D>`]:
+//! crate::dispatching::dialogue::DialogueWithCx
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 #![allow(clippy::type_complexity)]
 
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
-mod dialogue_dispatcher_handler_cx;
 mod dialogue_stage;
+mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 
+use crate::{requests::ResponseResult, types::Message};
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
-pub use dialogue_dispatcher_handler_cx::DialogueDispatcherHandlerCx;
 pub use dialogue_stage::{exit, next, DialogueStage};
+pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use storage::{InMemStorage, Storage};
+
+/// Generates `.up(field)` methods for dialogue states.
+///
+/// Given inductively defined states, this macro generates `.up(field)` methods
+/// from `Sn` to `Sn+1`.
+///
+/// # Examples
+/// ```
+/// use teloxide::prelude::*;
+///
+/// struct StartState;
+///
+/// struct ReceiveWordState {
+///     rest: StartState,
+/// }
+///
+/// struct ReceiveNumberState {
+///     rest: ReceiveWordState,
+///     word: String,
+/// }
+///
+/// struct ExitState {
+///     rest: ReceiveNumberState,
+///     number: i32,
+/// }
+///
+/// up!(
+///     StartState -> ReceiveWordState,
+///     ReceiveWordState + [word: String] -> ReceiveNumberState,
+///     ReceiveNumberState + [number: i32] -> ExitState,
+/// );
+///
+/// let start_state = StartState;
+/// let receive_word_state = start_state.up();
+/// let receive_number_state = receive_word_state.up("Hello".to_owned());
+/// let exit_state = receive_number_state.up(123);
+/// ```
+#[macro_export]
+macro_rules! up {
+    ( $( $from:ident $(+ [$field_name:ident : $field_type:ty])? -> $to:ident ),+, ) => {
+        $(
+            impl $from {
+                pub fn up(self, $( $field_name: $field_type )?) -> $to {
+                    $to { rest: self, $($field_name)? }
+                }
+            }
+        )+
+    };
+}
+
+/// A type passed into a FSM transition function.
+pub type TransitionIn<State, E> = DialogueWithCx<Message, State, E>;
+
+// A type returned from a FSM transition function.
+pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;

@@ -80,17 +80,17 @@
 pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler;
-mod dispatcher_handler_cx;
 mod dispatcher_handler_rx_ext;
 pub mod update_listeners;
+mod update_with_cx;
 
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
-pub use dispatcher_handler_cx::DispatcherHandlerCx;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
+pub use update_with_cx::UpdateWithCx;
 
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub type DispatcherHandlerRx<Upd> = UnboundedReceiver<DispatcherHandlerCx<Upd>>;
+pub type DispatcherHandlerRx<Upd> = UnboundedReceiver<UpdateWithCx<Upd>>;

@@ -59,6 +59,7 @@ mod tests {
     use crate::types::{
         inline_keyboard_markup::InlineKeyboardMarkup, parse_mode::ParseMode,
         InlineQueryResult, InlineQueryResultCachedAudio, InputMessageContent,
+        InputMessageContentText,
     };
 
     #[test]
@@ -89,11 +90,13 @@ mod tests {
                 caption: Some(String::from("caption")),
                 parse_mode: Some(ParseMode::HTML),
                 reply_markup: Some(InlineKeyboardMarkup::default()),
-                input_message_content: Some(InputMessageContent::Text {
-                    message_text: String::from("message_text"),
-                    parse_mode: Some(ParseMode::MarkdownV2),
-                    disable_web_page_preview: Some(true),
-                }),
+                input_message_content: Some(InputMessageContent::Text(
+                    InputMessageContentText {
+                        message_text: String::from("message_text"),
+                        parse_mode: Some(ParseMode::MarkdownV2),
+                        disable_web_page_preview: Some(true),
+                    },
+                )),
             });
 
         let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;

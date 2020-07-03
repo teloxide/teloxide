@@ -15,167 +15,22 @@
 // ```
 
 #![allow(clippy::trivial_regex)]
+#![allow(dead_code)]
 
 #[macro_use]
 extern crate smart_default;
+#[macro_use]
+extern crate derive_more;
+
+mod favourite_music;
+mod states;
+mod transitions;
+
+use states::*;
+use transitions::*;
 
 use std::convert::Infallible;
-use teloxide::{
-    prelude::*,
-    types::{KeyboardButton, ReplyKeyboardMarkup},
-};
-
-use parse_display::{Display, FromStr};
-
-// ============================================================================
-// [Favourite music kinds]
-// ============================================================================
-
-#[derive(Copy, Clone, Display, FromStr)]
-enum FavouriteMusic {
-    Rock,
-    Metal,
-    Pop,
-    Other,
-}
-
-impl FavouriteMusic {
-    fn markup() -> ReplyKeyboardMarkup {
-        ReplyKeyboardMarkup::default().append_row(vec![
-            KeyboardButton::new("Rock"),
-            KeyboardButton::new("Metal"),
-            KeyboardButton::new("Pop"),
-            KeyboardButton::new("Other"),
-        ])
-    }
-}
-
-// ============================================================================
-// [A type-safe finite automaton]
-// ============================================================================
-
-#[derive(Clone)]
-struct ReceiveAgeState {
-    full_name: String,
-}
-
-#[derive(Clone)]
-struct ReceiveFavouriteMusicState {
-    data: ReceiveAgeState,
-    age: u8,
-}
-
-#[derive(Display)]
-#[display(
-    "Your full name: {data.data.full_name}, your age: {data.age}, your \
-     favourite music: {favourite_music}"
-)]
-struct ExitState {
-    data: ReceiveFavouriteMusicState,
-    favourite_music: FavouriteMusic,
-}
-
-#[derive(SmartDefault)]
-enum Dialogue {
-    #[default]
-    Start,
-    ReceiveFullName,
-    ReceiveAge(ReceiveAgeState),
-    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
-}
-
-// ============================================================================
-// [Control a dialogue]
-// ============================================================================
-
-type Cx<State> = DialogueDispatcherHandlerCx<Message, State, Infallible>;
-type Res = ResponseResult<DialogueStage<Dialogue>>;
-
-async fn start(cx: Cx<()>) -> Res {
-    cx.answer("Let's start! First, what's your full name?").send().await?;
-    next(Dialogue::ReceiveFullName)
-}
-
-async fn full_name(cx: Cx<()>) -> Res {
-    match cx.update.text() {
-        None => {
-            cx.answer("Please, send me a text message!").send().await?;
-            next(Dialogue::ReceiveFullName)
-        }
-        Some(full_name) => {
-            cx.answer("What a wonderful name! Your age?").send().await?;
-            next(Dialogue::ReceiveAge(ReceiveAgeState {
-                full_name: full_name.to_owned(),
-            }))
-        }
-    }
-}
-
-async fn age(cx: Cx<ReceiveAgeState>) -> Res {
-    match cx.update.text().unwrap().parse() {
-        Ok(age) => {
-            cx.answer("Good. Now choose your favourite music:")
-                .reply_markup(FavouriteMusic::markup())
-                .send()
-                .await?;
-            next(Dialogue::ReceiveFavouriteMusic(ReceiveFavouriteMusicState {
-                data: cx.dialogue.unwrap(),
-                age,
-            }))
-        }
-        Err(_) => {
-            cx.answer("Oh, please, enter a number!").send().await?;
-            next(Dialogue::ReceiveAge(cx.dialogue.unwrap()))
-        }
-    }
-}
-
-async fn favourite_music(cx: Cx<ReceiveFavouriteMusicState>) -> Res {
-    match cx.update.text().unwrap().parse() {
-        Ok(favourite_music) => {
-            cx.answer(format!(
-                "Fine. {}",
-                ExitState {
-                    data: cx.dialogue.clone().unwrap(),
-                    favourite_music
-                }
-            ))
-            .send()
-            .await?;
-            exit()
-        }
-        Err(_) => {
-            cx.answer("Oh, please, enter from the keyboard!").send().await?;
-            next(Dialogue::ReceiveFavouriteMusic(cx.dialogue.unwrap()))
-        }
-    }
-}
-
-async fn handle_message(cx: Cx<Dialogue>) -> Res {
-    let DialogueDispatcherHandlerCx { bot, update, dialogue } = cx;
-
-    // You need handle the error instead of panicking in real-world code, maybe
-    // send diagnostics to a development chat.
-    match dialogue.expect("Failed to get dialogue info from storage") {
-        Dialogue::Start => {
-            start(DialogueDispatcherHandlerCx::new(bot, update, ())).await
-        }
-        Dialogue::ReceiveFullName => {
-            full_name(DialogueDispatcherHandlerCx::new(bot, update, ())).await
-        }
-        Dialogue::ReceiveAge(s) => {
-            age(DialogueDispatcherHandlerCx::new(bot, update, s)).await
-        }
-        Dialogue::ReceiveFavouriteMusic(s) => {
-            favourite_music(DialogueDispatcherHandlerCx::new(bot, update, s))
-                .await
-        }
-    }
-}
-
-// ============================================================================
-// [Run!]
-// ============================================================================
+use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -189,9 +44,14 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| async move {
-            handle_message(cx).await.expect("Something wrong with the bot!")
-        }))
+        .messages_handler(DialogueDispatcher::new(
+            |cx: DialogueWithCx<Message, Dialogue, Infallible>| async move {
+                // Unwrap without panic because of std::convert::Infallible.
+                dispatch(cx.cx, cx.dialogue.unwrap())
+                    .await
+                    .expect("Something wrong with the bot!")
+            },
+        ))
         .dispatch()
         .await;
 }

@@ -3,16 +3,15 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            exit, next, DialogueDispatcher, DialogueDispatcherHandlerCx,
-            DialogueStage, GetChatId,
+            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
+            GetChatId, TransitionIn, TransitionOut,
         },
-        Dispatcher, DispatcherHandlerCx, DispatcherHandlerRx,
-        DispatcherHandlerRxExt,
+        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
-    Bot, RequestError,
+    up, Bot, RequestError,
 };
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
