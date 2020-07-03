@@ -24,7 +24,6 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
       - name: Cargo clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
   stable-test:
@@ -36,7 +35,6 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
       - name: Cargo test
         run: cargo test --all-features
   test-examples:
@@ -48,6 +46,5 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
       - name: Test the examples
         run: cd examples && bash test_examples.sh
