@@ -50,4 +50,4 @@ jobs:
           override: true
           components: rustfmt, clippy
       - name: Test the examples
-        run: cargo check --examples
+        run: cd examples && bash test_examples.sh
