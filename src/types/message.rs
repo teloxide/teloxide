@@ -505,9 +505,7 @@ mod getters {
                 _ => None,
             }
         }
-
-        // TODO: rewrite to nested patterns after stabilize
-        #[allow(clippy::unnested_or_patterns)]
+        
         pub fn forward_date(&self) -> Option<&i32> {
             match &self.kind {
                 Common(MessageCommon {
@@ -543,9 +541,7 @@ mod getters {
                 _ => None,
             }
         }
-
-        // TODO: rewrite to nested patterns after stabilize
-        #[allow(clippy::unnested_or_patterns)]
+        
         pub fn media_group_id(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
@@ -586,8 +582,6 @@ mod getters {
             }
         }
 
-        // TODO: rewrite to nested patterns after stabilize
-        #[allow(clippy::unnested_or_patterns)]
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -927,8 +921,6 @@ mod getters {
 }
 
 impl Message {
-    // TODO: rewrite to nested patterns after stabilize
-    #[allow(clippy::unnested_or_patterns)]
     pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
             ChatKind::Public(ChatPublic {
