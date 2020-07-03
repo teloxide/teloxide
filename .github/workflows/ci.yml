@@ -6,6 +6,18 @@ on:
 
 name: Continuous integration
 
+strategy:
+  matrix:
+    example: [
+        admin_bot, 
+        dialogue_bot, 
+        heroku_ping_pong_bot, 
+        ngrok_ping_pong_bot, 
+        ping_pong_bot, 
+        shared_state_bot,
+        simple_commands_bot,
+    ]
+
 jobs:
   code-checks:
     runs-on: ubuntu-latest
@@ -37,7 +49,7 @@ jobs:
           override: true
       - name: Cargo test
         run: cargo test --all-features
-  test-examples:
+  build-example:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -46,5 +58,5 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Test the examples
-        run: cd examples && bash test_examples.sh
+      - name: Test the example
+        run: cd examples && cd ${{ matrix.example }} && cargo check
