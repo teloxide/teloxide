@@ -7,6 +7,8 @@ pub enum BotCommandAttribute {
     Prefix,
     Description,
     RenameRule,
+    CustomParser,
+    Separator,
 }
 
 impl Parse for BotCommandAttribute {
@@ -16,6 +18,8 @@ impl Parse for BotCommandAttribute {
             "prefix" => Ok(BotCommandAttribute::Prefix),
             "description" => Ok(BotCommandAttribute::Description),
             "rename" => Ok(BotCommandAttribute::RenameRule),
+            "parse_with" => Ok(BotCommandAttribute::CustomParser),
+            "separator" => Ok(BotCommandAttribute::Separator),
             _ => Err(syn::Error::new(name_arg.span(), "unexpected argument")),
         }
     }

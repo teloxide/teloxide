@@ -1,19 +1,21 @@
 mod attr;
 mod command;
-mod enum_attributes;
+mod command_enum;
+mod fields_parse;
 mod rename_rules;
 
 extern crate proc_macro;
+extern crate quote;
 extern crate syn;
+use crate::fields_parse::{impl_parse_args_named, impl_parse_args_unnamed};
 use crate::{
     attr::{Attr, VecAttrs},
     command::Command,
-    enum_attributes::CommandEnum,
-    rename_rules::rename_by_rule,
+    command_enum::CommandEnum,
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput};
+use syn::{parse_macro_input, DeriveInput, Fields};
 
 macro_rules! get_or_return {
     ($($some:tt)*) => {
@@ -37,7 +39,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         Err(e) => return compile_error(e),
     };
 
-    let variants: Vec<&syn::Variant> = data_enum.variants.iter().map(|attr| attr).collect();
+    let variants: Vec<&syn::Variant> = data_enum.variants.iter().map(|variant| variant).collect();
 
     let mut variant_infos = vec![];
     for variant in variants.iter() {
@@ -58,79 +60,95 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         }
     }
 
-    let variant_ident = variants.iter().map(|variant| &variant.ident);
-    let variant_name = variant_infos.iter().map(|info| {
-        if info.renamed {
-            info.name.clone()
-        } else if let Some(rename_rule) = &command_enum.rename_rule {
-            rename_by_rule(&info.name, rename_rule)
-        } else {
-            info.name.clone()
+    let mut vec_impl_create = vec![];
+    for (variant, info) in variants.iter().zip(variant_infos.iter()) {
+        let var = &variant.ident;
+        let variantt = quote! { Self::#var };
+        match &variant.fields {
+            Fields::Unnamed(fields) => {
+                let parser = info.parser.as_ref().unwrap_or(&command_enum.parser_type);
+                vec_impl_create.push(impl_parse_args_unnamed(fields, variantt, parser));
+            }
+            Fields::Unit => {
+                vec_impl_create.push(variantt);
+            }
+            Fields::Named(named) => {
+                let parser = info.parser.as_ref().unwrap_or(&command_enum.parser_type);
+                vec_impl_create.push(impl_parse_args_named(named, variantt, parser));
+            }
         }
-    });
-    let variant_prefixes = variant_infos.iter().map(|info| {
-        if let Some(prefix) = &info.prefix {
-            prefix
-        } else if let Some(prefix) = &command_enum.prefix {
-            prefix
-        } else {
-            "/"
+    }
+
+    let ident = &input.ident;
+
+    let fn_descriptions = impl_descriptions(&variant_infos, &command_enum);
+    let fn_parse = impl_parse(&variant_infos, &command_enum, &vec_impl_create);
+
+    let trait_impl = quote! {
+        impl BotCommand for #ident {
+            #fn_descriptions
+            #fn_parse
         }
-    });
-    let variant_str1 = variant_prefixes
-        .zip(variant_name)
-        .map(|(prefix, command)| prefix.to_string() + command.as_str());
-    let variant_str2 = variant_str1.clone();
-    let variant_description = variant_infos.iter().map(|info| {
+    };
+
+    TokenStream::from(trait_impl)
+}
+
+fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__private::TokenStream {
+    let global_description = if let Some(s) = &global.description {
+        quote! { #s, "\n", }
+    } else {
+        quote! {}
+    };
+    let command = infos.iter().map(|c| c.get_matched_value(global));
+    let description = infos.iter().map(|info| {
         info.description
             .as_deref()
             .map(|e| format!(" - {}", e))
             .unwrap_or_default()
     });
 
-    let ident = &input.ident;
-
-    let global_description = if let Some(s) = &command_enum.description {
-        quote! { #s, "\n", }
-    } else {
-        quote! {}
-    };
-
-    let expanded = quote! {
-        impl BotCommand for #ident {
-            fn try_from(value: &str) -> Option<Self> {
-                match value {
-                    #(
-                        #variant_str1 => Some(Self::#variant_ident),
-                    )*
-                    _ => None
-                }
-            }
-            fn descriptions() -> String {
-                std::concat!(#global_description #(#variant_str2, #variant_description, '\n'),*).to_string()
-            }
-            fn parse<N>(s: &str, bot_name: N) -> Option<(Self, Vec<&str>)>
-             where
-                N: Into<String>
-             {
-                let mut words = s.split_whitespace();
-                let mut splited = words.next()?.split('@');
-                let command_raw = splited.next()?;
-                let bot = splited.next();
-                let bot_name = bot_name.into();
-                match bot {
-                    Some(name) if name == bot_name => {}
-                    None => {}
-                    _ => return None,
-                }
-                let command = Self::try_from(command_raw)?;
-                Some((command, words.collect()))
-            }
+    quote! {
+        fn descriptions() -> String {
+            std::concat!(#global_description #(#command, #description, '\n'),*).to_string()
         }
-    };
-    //for debug
-    //println!("{}", &expanded.to_string());
-    TokenStream::from(expanded)
+    }
+}
+
+fn impl_parse(
+    infos: &[Command],
+    global: &CommandEnum,
+    variants_initialization: &[quote::__private::TokenStream],
+) -> quote::__private::TokenStream {
+    let matching_values = infos.iter().map(|c| c.get_matched_value(global));
+
+    quote! {
+         fn parse<N>(s: &str, bot_name: N) -> Result<Self, teloxide::utils::command::ParseError>
+         where
+              N: Into<String>
+         {
+              use std::str::FromStr;
+              use teloxide::utils::command::ParseError;
+
+              let mut words = s.splitn(2, ' ');
+              let mut splited = words.next().expect("First item will be always.").split('@');
+              let command_raw = splited.next().expect("First item will be always.");
+              let bot = splited.next();
+              let bot_name = bot_name.into();
+              match bot {
+                  Some(name) if name == bot_name => {}
+                  None => {}
+                  Some(n) => return Err(ParseError::WrongBotName(n.to_string())),
+              }
+              let mut args = words.next().unwrap_or("").to_string();
+              match command_raw {
+                   #(
+                        #matching_values => Ok(#variants_initialization),
+                   )*
+                   _ => Err(ParseError::UnknownCommand(command_raw.to_string())),
+              }
+         }
+    }
 }
 
 fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
