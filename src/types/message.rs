@@ -505,7 +505,7 @@ mod getters {
                 _ => None,
             }
         }
-        
+
         pub fn forward_date(&self) -> Option<&i32> {
             match &self.kind {
                 Common(MessageCommon {
@@ -541,7 +541,7 @@ mod getters {
                 _ => None,
             }
         }
-        
+
         pub fn media_group_id(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
