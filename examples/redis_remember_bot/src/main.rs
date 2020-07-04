@@ -9,7 +9,6 @@ mod transitions;
 use states::*;
 use transitions::*;
 
-use std::sync::Arc;
 use teloxide::{
     dispatching::dialogue::{serializer::Bincode, RedisStorage, Storage},
     prelude::*,
@@ -54,15 +53,13 @@ async fn run() {
                     .await
                     .expect("Something is wrong with the bot!")
             },
-            Arc::new(
-                // You can also choose serializer::JSON or serializer::CBOR
-                // All serializers but JSON require enabling feature
-                // "serializer-<name>", e. g. "serializer-cbor"
-                // or "serializer-bincode"
-                RedisStorage::open("redis://127.0.0.1:6379", Bincode)
-                    .await
-                    .unwrap(),
-            ),
+            // You can also choose serializer::JSON or serializer::CBOR
+            // All serializers but JSON require enabling feature
+            // "serializer-<name>", e. g. "serializer-cbor"
+            // or "serializer-bincode"
+            RedisStorage::open("redis://127.0.0.1:6379", Bincode)
+                .await
+                .unwrap(),
         ))
         .dispatch()
         .await;

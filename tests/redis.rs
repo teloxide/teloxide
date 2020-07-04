@@ -10,25 +10,22 @@ use teloxide::dispatching::dialogue::{
 
 #[tokio::test]
 async fn test_redis_json() {
-    let storage = Arc::new(
-        RedisStorage::open("redis://127.0.0.1:7777", JSON).await.unwrap(),
-    );
+    let storage =
+        RedisStorage::open("redis://127.0.0.1:7777", JSON).await.unwrap();
     test_redis(storage).await;
 }
 
 #[tokio::test]
 async fn test_redis_bincode() {
-    let storage = Arc::new(
-        RedisStorage::open("redis://127.0.0.1:7778", Bincode).await.unwrap(),
-    );
+    let storage =
+        RedisStorage::open("redis://127.0.0.1:7778", Bincode).await.unwrap();
     test_redis(storage).await;
 }
 
 #[tokio::test]
 async fn test_redis_cbor() {
-    let storage = Arc::new(
-        RedisStorage::open("redis://127.0.0.1:7779", CBOR).await.unwrap(),
-    );
+    let storage =
+        RedisStorage::open("redis://127.0.0.1:7779", CBOR).await.unwrap();
     test_redis(storage).await;
 }
 

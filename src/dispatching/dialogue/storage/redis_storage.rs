@@ -35,13 +35,13 @@ impl<S> RedisStorage<S> {
     pub async fn open(
         url: impl IntoConnectionInfo,
         serializer: S,
-    ) -> Result<Self, RedisStorageError<Infallible>> {
-        Ok(Self {
+    ) -> Result<Arc<Self>, RedisStorageError<Infallible>> {
+        Ok(Arc::new(Self {
             conn: Mutex::new(
                 redis::Client::open(url)?.get_async_connection().await?,
             ),
             serializer,
-        })
+        }))
     }
 }
 
