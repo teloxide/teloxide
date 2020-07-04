@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -26,34 +26,29 @@ pub struct SendDocument {
 }
 
 #[async_trait::async_trait]
-impl Request for SendDocument {
+impl RequestWithFile for SendDocument {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+        let mut builder = FormBuilder::new()
+            .add_text("chat_id", &self.chat_id)
+            .add_input_file("document", &self.document)
+            .await?
+            .add_text("caption", &self.caption)
+            .add_text("parse_mode", &self.parse_mode)
+            .add_text("disable_notification", &self.disable_notification)
+            .add_text("reply_to_message_id", &self.reply_to_message_id)
+            .add_text("reply_markup", &self.reply_markup);
+        if let Some(thumb) = self.thumb.as_ref() {
+            builder = builder.add_input_file("thumb", thumb).await?;
+        }
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendDocument",
-            FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .await
-                .add("document", &self.document)
-                .await
-                .add("thumb", &self.thumb)
-                .await
-                .add("caption", &self.caption)
-                .await
-                .add("parse_mode", &self.parse_mode)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
-                .build(),
+            builder.build(),
         )
-        .await
+        .await)
     }
 }
 

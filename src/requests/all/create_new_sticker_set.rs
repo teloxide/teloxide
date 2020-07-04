@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
 };
@@ -23,32 +23,26 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request for CreateNewStickerSet {
+impl RequestWithFile for CreateNewStickerSet {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "createNewStickerSet",
             FormBuilder::new()
-                .add("user_id", &self.user_id)
-                .await
-                .add("name", &self.name)
-                .await
-                .add("title", &self.title)
-                .await
-                .add("png_sticker", &self.png_sticker)
-                .await
-                .add("emojis", &self.emojis)
-                .await
-                .add("contains_masks", &self.contains_masks)
-                .await
-                .add("mask_position", &self.mask_position)
-                .await
+                .add_text("user_id", &self.user_id)
+                .add_text("name", &self.name)
+                .add_text("title", &self.title)
+                .add_input_file("png_sticker", &self.png_sticker)
+                .await?
+                .add_text("emojis", &self.emojis)
+                .add_text("contains_masks", &self.contains_masks)
+                .add_text("mask_position", &self.mask_position)
                 .build(),
         )
-        .await
+        .await)
     }
 }
 
