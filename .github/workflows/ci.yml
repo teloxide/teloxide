@@ -37,7 +37,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Setup redis
-        run: sudo apt install redis-server && redis-server --port 7777 > /dev/null &
+        run: sudo apt install redis-server && redis-server --port 7777 --port 7778 --port 7779 > /dev/null &
       - name: Cargo test
         run: cargo test --all-features
   build-example:
