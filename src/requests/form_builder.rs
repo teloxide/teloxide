@@ -32,12 +32,12 @@ impl FormBuilder {
         }
     }
 
-    pub async fn add_input_file<'a, N>(self, name: N, value: &InputFile) -> Self
+    pub async fn add_input_file<'a, N>(self, name: N, value: &InputFile) -> tokio::io::Result<Self>
         where
             N: Into<Cow<'a, str>>,
     {
-        match value {
-            InputFile::File(path) => self.add_file(name, path.clone()).await,
+        Ok(match value {
+            InputFile::File(path) => self.add_file(name, path.clone()).await?,
             InputFile::Memory { file_name, data } => self.add_file_from_memory(
                 name,
                 file_name.clone(),
@@ -45,20 +45,20 @@ impl FormBuilder {
             ),
             InputFile::Url(url) => self.add_text(name, url),
             InputFile::FileId(file_id) => self.add_text(name, file_id),
-        }
+        })
     }
     
     // used in SendMediaGroup
-    pub async fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> Self
+    pub async fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> tokio::io::Result<Self>
     where
         N: Into<Cow<'a, str>>,
     {
-        Self {
+        Ok(Self {
             form: self.form.part(
                 name.into().into_owned(),
-                file_to_part(path_to_file).await,
+                file_to_part(path_to_file).await?,
             ),
-        }
+        })
     }
 
     fn add_file_from_memory<'a, N>(

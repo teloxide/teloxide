@@ -1,10 +1,11 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
 };
 use std::sync::Arc;
+use crate::requests::RequestFile;
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set.
@@ -23,11 +24,11 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request for CreateNewStickerSet {
+impl RequestFile for CreateNewStickerSet {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "createNewStickerSet",
@@ -36,13 +37,13 @@ impl Request for CreateNewStickerSet {
                 .add_text("name", &self.name)
                 .add_text("title", &self.title)
                 .add_input_file("png_sticker", &self.png_sticker)
-                .await
+                .await?
                 .add_text("emojis", &self.emojis)
                 .add_text("contains_masks", &self.contains_masks)
                 .add_text("mask_position", &self.mask_position)
                 .build(),
         )
-        .await
+        .await)
     }
 }
 

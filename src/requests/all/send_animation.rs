@@ -1,10 +1,11 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
+use crate::requests::RequestFile;
 
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -30,15 +31,15 @@ pub struct SendAnimation {
 }
 
 #[async_trait::async_trait]
-impl Request for SendAnimation {
+impl RequestFile for SendAnimation {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
         let mut builder =
             FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("animation", &self.animation)
-            .await
+            .await?
             .add_text("duration", &self.duration)
             .add_text("width", &self.width)
             .add_text("height", &self.height)
@@ -48,15 +49,15 @@ impl Request for SendAnimation {
             .add_text("reply_to_message_id", &self.reply_to_message_id)
             .add_text("reply_markup", &self.reply_markup);
         if let Some(thumb) = self.thumb.as_ref() {
-            builder = builder.add_input_file("thumb", thumb).await;
+            builder = builder.add_input_file("thumb", thumb).await?;
         }
-        net::request_multipart(
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendAnimation",
             builder.build(),
         )
-        .await
+        .await)
     }
 }
 

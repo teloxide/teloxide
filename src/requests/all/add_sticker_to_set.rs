@@ -5,7 +5,7 @@ use crate::{
     Bot,
 };
 
-use crate::requests::{Request, ResponseResult};
+use crate::requests::{ResponseResult, RequestFile};
 use std::sync::Arc;
 
 /// Use this method to add a new sticker to a set created by the bot.
@@ -22,11 +22,11 @@ pub struct AddStickerToSet {
 }
 
 #[async_trait::async_trait]
-impl Request for AddStickerToSet {
+impl RequestFile for AddStickerToSet {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "addStickerToSet",
@@ -34,12 +34,12 @@ impl Request for AddStickerToSet {
                 .add_text("user_id", &self.user_id)
                 .add_text("name", &self.name)
                 .add_input_file("png_sticker", &self.png_sticker)
-                .await
+                .await?
                 .add_text("emojis", &self.emojis)
                 .add_text("mask_position", &self.mask_position)
                 .build(),
         )
-        .await
+        .await)
     }
 }
 

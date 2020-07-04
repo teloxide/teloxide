@@ -1,10 +1,11 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
+use crate::requests::RequestFile;
 
 /// Use this method to send photos.
 ///
@@ -22,18 +23,18 @@ pub struct SendPhoto {
 }
 
 #[async_trait::async_trait]
-impl Request for SendPhoto {
+impl RequestFile for SendPhoto {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendPhoto",
             FormBuilder::new()
                 .add_text("chat_id", &self.chat_id)
                 .add_input_file("photo", &self.photo)
-                .await
+                .await?
                 .add_text("caption", &self.caption)
                 .add_text("parse_mode", &self.parse_mode)
                 .add_text("disable_notification", &self.disable_notification)
@@ -41,7 +42,7 @@ impl Request for SendPhoto {
                 .add_text("reply_markup", &self.reply_markup)
                 .build(),
         )
-        .await
+        .await)
     }
 }
 

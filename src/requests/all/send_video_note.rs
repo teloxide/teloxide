@@ -1,10 +1,11 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
+use crate::requests::RequestFile;
 
 /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages.
@@ -26,29 +27,29 @@ pub struct SendVideoNote {
 }
 
 #[async_trait::async_trait]
-impl Request for SendVideoNote {
+impl RequestFile for SendVideoNote {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
         let mut builder = FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("video_note", &self.video_note)
-            .await
+            .await?
             .add_text("duration", &self.duration)
             .add_text("length", &self.length)
             .add_text("disable_notification", &self.disable_notification)
             .add_text("reply_to_message_id", &self.reply_to_message_id)
             .add_text("reply_markup", &self.reply_markup);
         if let Some(thumb) = self.thumb.as_ref() {
-            builder = builder.add_input_file("thumb", thumb).await;
+            builder = builder.add_input_file("thumb", thumb).await?;
         }
-        net::request_multipart(
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendVideoNote",
             builder.build(),
         )
-        .await
+        .await)
     }
 }
 

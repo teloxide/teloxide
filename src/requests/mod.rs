@@ -18,3 +18,14 @@ pub trait Request {
     /// Asynchronously sends this request to Telegram and returns the result.
     async fn send(&self) -> ResponseResult<Self::Output>;
 }
+
+/// Designates an API request.
+#[async_trait::async_trait]
+pub trait RequestFile {
+    /// A data structure returned if success.
+    type Output;
+
+    /// Asynchronously sends this request to Telegram and returns the result.
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Self::Output>>;
+}
+
