@@ -182,8 +182,5 @@ fn descriptions_off() {
         Help,
     }
 
-    assert_eq!(
-        DefaultCommands::descriptions(),
-        "/help\n".to_owned()
-    );
+    assert_eq!(DefaultCommands::descriptions(), "/help\n".to_owned());
 }
