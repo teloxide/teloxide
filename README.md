@@ -37,7 +37,7 @@
 
 <h3 align="center">Functional reactive design</h3>
 <p align="center">
-All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/latest/teloxide/requests/index.html">methods</a> are hand-written, with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> (algebraic data types) to enforce type safety and tight integration with IDEs. As few <code>Option</code>s as possible.
+teloxide has <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">functional reactive design</a>, allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of <a href="https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html">other adaptors</a>.
 </p>
 
 <hr>
