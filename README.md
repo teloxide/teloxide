@@ -35,9 +35,16 @@
 
 ## Features
 
-<h3 align="center">Type safety</h3>
+<h3 align="center">Functional reactive design</h3>
 <p align="center">
-All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/0.2.0/teloxide/requests/index.html">methods</a> are implemented with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> to enforce type safety and tight integration with IDEs. Bot&#39;s commands <a href="https://github.com/teloxide/teloxide#commands">have precise types too</a>, thereby serving as a self-documenting code and respecting the <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">parse, don&#39;t validate</a> programming idiom.
+teloxide has <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">functional reactive design</a>, allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of <a href="https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html">other adaptors</a>.
+</p>
+
+<hr>
+
+<h3 align="center">API types as ADTs</h3>
+<p align="center">
+All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/latest/teloxide/requests/index.html">methods</a> are hand-written, with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> (algebraic data types) to enforce type safety and tight integration with IDEs. As few <code>Option</code>s as possible.
 </p>
 
 <hr>
@@ -46,6 +53,15 @@ All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">
 <p align="center">
 Dialogues management is independent of how/where they are stored: just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a> (for example, store on a disk, transmit through a network), without affecting the actual <a href="https://en.wikipedia.org/wiki/Finite-state_machine">FSM</a> algorithm. By default, teloxide stores all user dialogues in RAM. Default database implementations <a href="https://github.com/teloxide/teloxide/issues/183">are coming</a>!
 </p>
+
+<hr>
+
+<h3 align="center">Strongly typed bot commands</h3>
+<p align="center">
+You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in <a href="https://github.com/serde-rs/json">serde-json</a> and command-line arguments in <a href="https://github.com/TeXitoi/structopt">structopt</a>.
+</p>
+
+<hr>
 
 ## Setting up your environment
  1. [Download Rust](http://rustup.rs/).
