@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to send static .WEBP or [animated] .TGS stickers.
 ///

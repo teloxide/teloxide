@@ -22,34 +22,42 @@ impl FormBuilder {
     }
 
     pub fn add_text<'a, T, N>(self, name: N, value: &T) -> Self
-        where
-            N: Into<Cow<'a, str>>,
-            T: IntoFormText,
+    where
+        N: Into<Cow<'a, str>>,
+        T: IntoFormText,
     {
         match value.into_form_text() {
-            Some(val) => Self { form: self.form.text(name.into().into_owned(), val) },
-            None => self
+            Some(val) => {
+                Self { form: self.form.text(name.into().into_owned(), val) }
+            }
+            None => self,
         }
     }
 
-    pub async fn add_input_file<'a, N>(self, name: N, value: &InputFile) -> tokio::io::Result<Self>
-        where
-            N: Into<Cow<'a, str>>,
+    pub async fn add_input_file<'a, N>(
+        self,
+        name: N,
+        value: &InputFile,
+    ) -> tokio::io::Result<Self>
+    where
+        N: Into<Cow<'a, str>>,
     {
         Ok(match value {
             InputFile::File(path) => self.add_file(name, path.clone()).await?,
-            InputFile::Memory { file_name, data } => self.add_file_from_memory(
-                name,
-                file_name.clone(),
-                data.clone(),
-            ),
+            InputFile::Memory { file_name, data } => {
+                self.add_file_from_memory(name, file_name.clone(), data.clone())
+            }
             InputFile::Url(url) => self.add_text(name, url),
             InputFile::FileId(file_id) => self.add_text(name, file_id),
         })
     }
-    
+
     // used in SendMediaGroup
-    pub async fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> tokio::io::Result<Self>
+    pub async fn add_file<'a, N>(
+        self,
+        name: N,
+        path_to_file: PathBuf,
+    ) -> tokio::io::Result<Self>
     where
         N: Into<Cow<'a, str>>,
     {

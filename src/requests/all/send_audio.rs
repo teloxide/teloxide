@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// them in the music player.
@@ -58,7 +57,7 @@ impl RequestFile for SendAudio {
             self.bot.client(),
             self.bot.token(),
             "sendAudio",
-            builder.build()
+            builder.build(),
         )
         .await)
     }

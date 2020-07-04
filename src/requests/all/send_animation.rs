@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -35,8 +34,7 @@ impl RequestFile for SendAnimation {
     type Output = Message;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
-        let mut builder =
-            FormBuilder::new()
+        let mut builder = FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("animation", &self.animation)
             .await?

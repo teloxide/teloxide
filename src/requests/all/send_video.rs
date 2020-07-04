@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to send video files, Telegram clients support mp4 videos
 /// (other formats may be sent as Document).

@@ -24,10 +24,9 @@ impl Decoder for FileDecoder {
 pub async fn file_to_part(path_to_file: PathBuf) -> std::io::Result<Part> {
     let file_name =
         path_to_file.file_name().unwrap().to_string_lossy().into_owned();
-    
+
     let file = FramedRead::new(
-        tokio::fs::File::open(path_to_file)
-            .await?,
+        tokio::fs::File::open(path_to_file).await?,
         FileDecoder,
     );
 

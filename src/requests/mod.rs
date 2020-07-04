@@ -28,4 +28,3 @@ pub trait RequestFile {
     /// Asynchronously sends this request to Telegram and returns the result.
     async fn send(&self) -> tokio::io::Result<ResponseResult<Self::Output>>;
 }
-

@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set.

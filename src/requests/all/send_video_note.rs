@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages.

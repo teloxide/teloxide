@@ -5,7 +5,7 @@ use crate::{
     Bot,
 };
 
-use crate::requests::{ResponseResult, RequestFile};
+use crate::requests::{RequestFile, ResponseResult};
 use std::sync::Arc;
 
 /// Use this method to add a new sticker to a set created by the bot.

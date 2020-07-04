@@ -1,11 +1,10 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
 use std::sync::Arc;
-use crate::requests::RequestFile;
 
 /// Use this method to send general files.
 ///
@@ -41,14 +40,13 @@ impl RequestFile for SendDocument {
             .add_text("reply_to_message_id", &self.reply_to_message_id)
             .add_text("reply_markup", &self.reply_markup);
         if let Some(thumb) = self.thumb.as_ref() {
-            builder = builder.add_input_file("thumb", thumb)
-                .await?;
+            builder = builder.add_input_file("thumb", thumb).await?;
         }
         Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendDocument",
-            builder.build()
+            builder.build(),
         )
         .await)
     }
