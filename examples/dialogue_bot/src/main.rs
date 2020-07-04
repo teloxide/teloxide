@@ -45,9 +45,9 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |cx: DialogueWithCx<Message, Dialogue, Infallible>| async move {
+            |input: TransitionIn<Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                dispatch(cx.cx, cx.dialogue.unwrap())
+                dispatch(input.cx, input.dialogue.unwrap())
                     .await
                     .expect("Something wrong with the bot!")
             },
