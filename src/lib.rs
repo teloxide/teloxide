@@ -104,13 +104,19 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__privat
     let description = infos.iter().map(|info| {
         info.description
             .as_deref()
-            .map(|e| format!(" - {}", e))
+            .map(|e| if e != "off" { format!(" - {}", e) } else { e.to_string() })
             .unwrap_or_default()
+    });
+    let result_iter = command.zip(description).map(|(c, d)| {
+        match &d == "off" {
+            true => quote! {},
+            false => quote! { #c, #d, '\n', }
+        }
     });
 
     quote! {
         fn descriptions() -> String {
-            std::concat!(#global_description #(#command, #description, '\n'),*).to_string()
+            std::concat!(#global_description #(#result_iter)*).to_string()
         }
     }
 }
