@@ -51,7 +51,7 @@ All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">
 
 <h3 align="center">Persistence</h3>
 <p align="center">
-Dialogues management is independent of how/where they are stored: you can just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a> (e.g. store on a disk, transmit through a network). By default, teloxide stores all user dialogues in RAM. Out-of-the-box storages include <a href="https://redis.io/">Redis</a>.
+Dialogues management is independent of how/where they are stored: you can just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a>. By default, teloxide stores all user dialogues in RAM. Out-of-the-box storages include <a href="https://redis.io/">Redis</a>.
 </p>
 
 <hr>
