@@ -171,3 +171,19 @@ fn parse_named_fields() {
         DefaultCommands::parse("/start 10 hello", "").unwrap()
     );
 }
+
+#[test]
+fn descriptions_off() {
+    #[command(rename = "lowercase")]
+    #[derive(BotCommand, Debug, PartialEq)]
+    enum DefaultCommands {
+        #[command(description = "off")]
+        Start,
+        Help,
+    }
+
+    assert_eq!(
+        DefaultCommands::descriptions(),
+        "/help\n".to_owned()
+    );
+}
