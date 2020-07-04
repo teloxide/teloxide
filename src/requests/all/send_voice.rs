@@ -41,22 +41,15 @@ impl Request for SendVoice {
             self.bot.token(),
             "sendVoice",
             FormBuilder::new()
-                .add("chat_id", &self.chat_id)
+                .add_text("chat_id", &self.chat_id)
+                .add_input_file("voice", &self.voice)
                 .await
-                .add("voice", &self.voice)
-                .await
-                .add("caption", &self.caption)
-                .await
-                .add("parse_mode", &self.parse_mode)
-                .await
-                .add("duration", &self.duration)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
+                .add_text("caption", &self.caption)
+                .add_text("parse_mode", &self.parse_mode)
+                .add_text("duration", &self.duration)
+                .add_text("disable_notification", &self.disable_notification)
+                .add_text("reply_to_message_id", &self.reply_to_message_id)
+                .add_text("reply_markup", &self.reply_markup)
                 .build(),
         )
         .await

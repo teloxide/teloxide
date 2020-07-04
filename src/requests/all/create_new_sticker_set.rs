@@ -32,20 +32,14 @@ impl Request for CreateNewStickerSet {
             self.bot.token(),
             "createNewStickerSet",
             FormBuilder::new()
-                .add("user_id", &self.user_id)
+                .add_text("user_id", &self.user_id)
+                .add_text("name", &self.name)
+                .add_text("title", &self.title)
+                .add_input_file("png_sticker", &self.png_sticker)
                 .await
-                .add("name", &self.name)
-                .await
-                .add("title", &self.title)
-                .await
-                .add("png_sticker", &self.png_sticker)
-                .await
-                .add("emojis", &self.emojis)
-                .await
-                .add("contains_masks", &self.contains_masks)
-                .await
-                .add("mask_position", &self.mask_position)
-                .await
+                .add_text("emojis", &self.emojis)
+                .add_text("contains_masks", &self.contains_masks)
+                .add_text("mask_position", &self.mask_position)
                 .build(),
         )
         .await

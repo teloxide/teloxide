@@ -38,34 +38,26 @@ impl Request for SendAudio {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
+        let mut builder = FormBuilder::new()
+            .add_text("chat_id", &self.chat_id)
+            .add_input_file("audio", &self.audio)
+            .await
+            .add_text("caption", &self.caption)
+            .add_text("parse_mode", &self.parse_mode)
+            .add_text("duration", &self.duration)
+            .add_text("performer", &self.performer)
+            .add_text("title", &self.title)
+            .add_text("disable_notification", &self.disable_notification)
+            .add_text("reply_to_message_id", &self.reply_to_message_id)
+            .add_text("reply_markup", &self.reply_markup);
+        if let Some(thumb) = self.thumb.as_ref() {
+            builder = builder.add_input_file("thumb", thumb).await;
+        }
         net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendAudio",
-            FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .await
-                .add("audio", &self.audio)
-                .await
-                .add("caption", &self.caption)
-                .await
-                .add("parse_mode", &self.parse_mode)
-                .await
-                .add("duration", &self.duration)
-                .await
-                .add("performer", &self.performer)
-                .await
-                .add("title", &self.title)
-                .await
-                .add("thumb", &self.thumb)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
-                .build(),
+            builder.build()
         )
         .await
     }

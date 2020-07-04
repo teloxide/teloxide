@@ -31,16 +31,12 @@ impl Request for AddStickerToSet {
             self.bot.token(),
             "addStickerToSet",
             FormBuilder::new()
-                .add("user_id", &self.user_id)
+                .add_text("user_id", &self.user_id)
+                .add_text("name", &self.name)
+                .add_input_file("png_sticker", &self.png_sticker)
                 .await
-                .add("name", &self.name)
-                .await
-                .add("png_sticker", &self.png_sticker)
-                .await
-                .add("emojis", &self.emojis)
-                .await
-                .add("mask_position", &self.mask_position)
-                .await
+                .add_text("emojis", &self.emojis)
+                .add_text("mask_position", &self.mask_position)
                 .build(),
         )
         .await

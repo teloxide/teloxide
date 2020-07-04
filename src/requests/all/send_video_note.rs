@@ -30,28 +30,23 @@ impl Request for SendVideoNote {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
+        let mut builder = FormBuilder::new()
+            .add_text("chat_id", &self.chat_id)
+            .add_input_file("video_note", &self.video_note)
+            .await
+            .add_text("duration", &self.duration)
+            .add_text("length", &self.length)
+            .add_text("disable_notification", &self.disable_notification)
+            .add_text("reply_to_message_id", &self.reply_to_message_id)
+            .add_text("reply_markup", &self.reply_markup);
+        if let Some(thumb) = self.thumb.as_ref() {
+            builder = builder.add_input_file("thumb", thumb).await;
+        }
         net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendVideoNote",
-            FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .await
-                .add("video_note", &self.video_note)
-                .await
-                .add("duration", &self.duration)
-                .await
-                .add("length", &self.length)
-                .await
-                .add("thumb", &self.thumb)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
-                .build(),
+            builder.build(),
         )
         .await
     }

@@ -31,16 +31,12 @@ impl Request for SendSticker {
             self.bot.token(),
             "sendSticker",
             FormBuilder::new()
-                .add("chat_id", &self.chat_id)
+                .add_text("chat_id", &self.chat_id)
+                .add_input_file("sticker", &self.sticker)
                 .await
-                .add("sticker", &self.sticker)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
+                .add_text("disable_notification", &self.disable_notification)
+                .add_text("reply_to_message_id", &self.reply_to_message_id)
+                .add_text("reply_markup", &self.reply_markup)
                 .build(),
         )
         .await
