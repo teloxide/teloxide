@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
@@ -22,7 +22,7 @@ pub struct SendSticker {
 }
 
 #[async_trait::async_trait]
-impl RequestFile for SendSticker {
+impl RequestWithFile for SendSticker {
     type Output = Message;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {

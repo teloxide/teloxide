@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -32,7 +32,7 @@ pub struct SendVoice {
 }
 
 #[async_trait::async_trait]
-impl RequestFile for SendVoice {
+impl RequestWithFile for SendVoice {
     type Output = Message;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {

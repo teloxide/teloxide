@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestFile, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{InputFile, MaskPosition, True},
     Bot,
 };
@@ -23,7 +23,7 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl RequestFile for CreateNewStickerSet {
+impl RequestWithFile for CreateNewStickerSet {
     type Output = True;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {

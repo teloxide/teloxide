@@ -21,7 +21,7 @@ pub trait Request {
 
 /// Designates an API request.
 #[async_trait::async_trait]
-pub trait RequestFile {
+pub trait RequestWithFile {
     /// A data structure returned if success.
     type Output;
 

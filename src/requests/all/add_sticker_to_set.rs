@@ -5,7 +5,7 @@ use crate::{
     Bot,
 };
 
-use crate::requests::{RequestFile, ResponseResult};
+use crate::requests::{RequestWithFile, ResponseResult};
 use std::sync::Arc;
 
 /// Use this method to add a new sticker to a set created by the bot.
@@ -22,7 +22,7 @@ pub struct AddStickerToSet {
 }
 
 #[async_trait::async_trait]
-impl RequestFile for AddStickerToSet {
+impl RequestWithFile for AddStickerToSet {
     type Output = True;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
