@@ -108,9 +108,10 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__privat
             .unwrap_or_default()
     });
     let result_iter = command.zip(description).map(|(c, d)| {
-        match &d == "off" {
-            true => quote! {},
-            false => quote! { #c, #d, '\n', }
+        if &d == "off" {
+            quote! {}
+        } else {
+            quote! { #c, #d, '\n', }
         }
     });
 
