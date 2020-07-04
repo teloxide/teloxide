@@ -10,45 +10,52 @@ use teloxide::dispatching::dialogue::{
 
 #[tokio::test]
 async fn test_redis_json() {
-    test_redis(JSON).await;
+    let storage = Arc::new(
+        RedisStorage::open("redis://127.0.0.1:7777", JSON).await.unwrap(),
+    );
+    test_redis(storage).await;
 }
 
 #[tokio::test]
 async fn test_redis_bincode() {
-    test_redis(Bincode).await;
+    let storage = Arc::new(
+        RedisStorage::open("redis://127.0.0.1:7778", Bincode).await.unwrap(),
+    );
+    test_redis(storage).await;
 }
 
 #[tokio::test]
 async fn test_redis_cbor() {
-    test_redis(CBOR).await;
+    let storage = Arc::new(
+        RedisStorage::open("redis://127.0.0.1:7779", CBOR).await.unwrap(),
+    );
+    test_redis(storage).await;
 }
 
 type Dialogue = String;
 
-async fn test_redis<S>(serializer: S)
+async fn test_redis<S>(storage: Arc<RedisStorage<S>>)
 where
     S: Send + Sync + Serializer<Dialogue> + 'static,
     <S as Serializer<Dialogue>>::Error: Debug + Display,
 {
-    let storage = Arc::new(
-        RedisStorage::open("redis://127.0.0.1:7777", serializer).await.unwrap(),
-    );
+    check_dialogue(
+        None,
+        Arc::clone(&storage).update_dialogue(1, "ABC".to_owned()),
+    )
+    .await;
+    check_dialogue(
+        None,
+        Arc::clone(&storage).update_dialogue(11, "DEF".to_owned()),
+    )
+    .await;
+    check_dialogue(
+        None,
+        Arc::clone(&storage).update_dialogue(256, "GHI".to_owned()),
+    )
+    .await;
 
-    check_dialogue(
-        None,
-        Arc::clone(&storage).update_dialogue(11, "ABC".to_owned()),
-    )
-    .await;
-    check_dialogue(
-        None,
-        Arc::clone(&storage).update_dialogue(256, "DEF".to_owned()),
-    )
-    .await;
-    check_dialogue(
-        None,
-        Arc::clone(&storage).update_dialogue(11, "GHI".to_owned()),
-    )
-    .await;
+    // 1 - ABC, 11 - DEF, 256 - GHI
 
     check_dialogue(
         "ABC",
@@ -57,13 +64,15 @@ where
     .await;
     check_dialogue(
         "GHI",
-        Arc::clone(&storage).update_dialogue(11, "MNO".to_owned()),
+        Arc::clone(&storage).update_dialogue(256, "MNO".to_owned()),
     )
     .await;
 
+    // 1 - GKL, 11 - DEF, 256 - MNO
+
     check_dialogue("JKL", Arc::clone(&storage).remove_dialogue(1)).await;
-    check_dialogue("DEF", Arc::clone(&storage).remove_dialogue(256)).await;
-    check_dialogue("MNO", Arc::clone(&storage).remove_dialogue(11)).await;
+    check_dialogue("DEF", Arc::clone(&storage).remove_dialogue(11)).await;
+    check_dialogue("MNO", Arc::clone(&storage).remove_dialogue(256)).await;
 }
 
 async fn check_dialogue<E>(
