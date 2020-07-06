@@ -1,0 +1,16 @@
+[package]
+name = "redis_remember_bot"
+version = "0.1.0"
+authors = ["Maximilian Siling <mouse-art@ya.ru>"]
+edition = "2018"
+
+[dependencies]
+tokio = "0.2.9"
+
+# You can also choose "cbor-serializer" or built-in JSON serializer
+teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer"] }
+serde = "1.0.104"
+
+thiserror = "1.0.15"
+smart-default = "0.6.0"
+derive_more = "0.99.9"

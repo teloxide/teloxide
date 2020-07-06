@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
@@ -22,28 +22,24 @@ pub struct SendSticker {
 }
 
 #[async_trait::async_trait]
-impl Request for SendSticker {
+impl RequestWithFile for SendSticker {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
-        net::request_multipart(
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "sendSticker",
             FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .await
-                .add("sticker", &self.sticker)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
+                .add_text("chat_id", &self.chat_id)
+                .add_input_file("sticker", &self.sticker)
+                .await?
+                .add_text("disable_notification", &self.disable_notification)
+                .add_text("reply_to_message_id", &self.reply_to_message_id)
+                .add_text("reply_markup", &self.reply_markup)
                 .build(),
         )
-        .await
+        .await)
     }
 }
 

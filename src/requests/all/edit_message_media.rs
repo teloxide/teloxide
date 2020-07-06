@@ -38,14 +38,12 @@ impl Request for EditMessageMedia {
         match &self.chat_or_inline_message {
             ChatOrInlineMessage::Chat { chat_id, message_id } => {
                 params = params
-                    .add("chat_id", chat_id)
-                    .await
-                    .add("message_id", message_id)
-                    .await;
+                    .add_text("chat_id", chat_id)
+                    .add_text("message_id", message_id);
             }
             ChatOrInlineMessage::Inline { inline_message_id } => {
                 params =
-                    params.add("inline_message_id", inline_message_id).await;
+                    params.add_text("inline_message_id", inline_message_id);
             }
         }
 
@@ -54,10 +52,8 @@ impl Request for EditMessageMedia {
             self.bot.token(),
             "editMessageMedia",
             params
-                .add("media", &self.media)
-                .await
-                .add("reply_markup", &self.reply_markup)
-                .await
+                .add_text("media", &self.media)
+                .add_text("reply_markup", &self.reply_markup)
                 .build(),
         )
         .await

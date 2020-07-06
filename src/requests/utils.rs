@@ -21,18 +21,16 @@ impl Decoder for FileDecoder {
     }
 }
 
-pub async fn file_to_part(path_to_file: PathBuf) -> Part {
+pub async fn file_to_part(path_to_file: PathBuf) -> std::io::Result<Part> {
     let file_name =
         path_to_file.file_name().unwrap().to_string_lossy().into_owned();
 
     let file = FramedRead::new(
-        tokio::fs::File::open(path_to_file).await.unwrap(), /* TODO: this
-                                                             * can
-                                                             * cause panics */
+        tokio::fs::File::open(path_to_file).await?,
         FileDecoder,
     );
 
-    Part::stream(Body::wrap_stream(file)).file_name(file_name)
+    Ok(Part::stream(Body::wrap_stream(file)).file_name(file_name))
 }
 
 pub fn file_from_memory_to_part(

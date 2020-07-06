@@ -1,7 +1,16 @@
+pub mod serializer;
+
 mod in_mem_storage;
 
+#[cfg(feature = "redis-storage")]
+mod redis_storage;
+
 use futures::future::BoxFuture;
+
 pub use in_mem_storage::InMemStorage;
+#[cfg(feature = "redis-storage")]
+pub use redis_storage::{RedisStorage, RedisStorageError};
+pub use serializer::Serializer;
 use std::sync::Arc;
 
 /// A storage of dialogues.

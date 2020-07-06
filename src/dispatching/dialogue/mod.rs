@@ -55,7 +55,11 @@ pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
-pub use storage::{InMemStorage, Storage};
+
+#[cfg(feature = "redis-storage")]
+pub use storage::{RedisStorage, RedisStorageError};
+
+pub use storage::{serializer, InMemStorage, Serializer, Storage};
 
 /// Generates `.up(field)` methods for dialogue states.
 ///

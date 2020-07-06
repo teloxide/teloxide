@@ -1,3 +1,4 @@
+
 on:
   push:
     branches: [ master ]
@@ -35,6 +36,12 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - name: Setup redis
+        run: |
+          sudo apt install redis-server
+          redis-server --port 7777 > /dev/null &
+          redis-server --port 7778 > /dev/null &
+          redis-server --port 7779 > /dev/null &
       - name: Cargo test
         run: cargo test --all-features
   build-example:

@@ -28,14 +28,10 @@ impl Request for SendMediaGroup {
             self.bot.token(),
             "sendMediaGroup",
             FormBuilder::new()
-                .add("chat_id", &self.chat_id)
-                .await
-                .add("media", &self.media)
-                .await
-                .add("disable_notification", &self.disable_notification)
-                .await
-                .add("reply_to_message_id", &self.reply_to_message_id)
-                .await
+                .add_text("chat_id", &self.chat_id)
+                .add_text("media", &self.media)
+                .add_text("disable_notification", &self.disable_notification)
+                .add_text("reply_to_message_id", &self.reply_to_message_id)
                 .build(),
         )
         .await
