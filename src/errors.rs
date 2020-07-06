@@ -3,7 +3,6 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use thiserror::Error;
 
-//<editor-fold desc="download">
 /// An error occurred after downloading a file.
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
@@ -14,9 +13,6 @@ pub enum DownloadError {
     Io(#[source] std::io::Error),
 }
 
-//</editor-fold>
-
-//<editor-fold desc="request">
 /// An error occurred after making a request to Telegram.
 #[derive(Debug, Error)]
 pub enum RequestError {
@@ -39,8 +35,6 @@ pub enum RequestError {
     #[error("An error while parsing JSON: {0}")]
     InvalidJson(#[source] serde_json::Error),
 }
-
-//</editor-fold>
 
 /// A kind of an API error returned from Telegram.
 #[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
