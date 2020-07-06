@@ -514,7 +514,4 @@ pub enum ApiErrorKindKnown {
     /// [`GetFile`]: crate::requests::GetFile
     #[serde(rename = "Bad Request: invalid file id")]
     FileIdInvalid,
-
-    #[serde(other)]
-    Other,
 }
