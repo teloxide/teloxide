@@ -62,12 +62,12 @@ impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::Update;
-    use crate::errors::ApiErrorKindKnown;
+    use crate::{errors::ApiErrorKindKnown, types::Update};
 
     #[test]
     fn terminated_by_other_get_updates() {
-        let expected = ApiErrorKind::Known(ApiErrorKindKnown::TerminatedByOtherGetUpdates);
+        let expected =
+            ApiErrorKind::Known(ApiErrorKindKnown::TerminatedByOtherGetUpdates);
         if let TelegramResponse::Err{ kind, .. } = serde_json::from_str::<TelegramResponse<Update>>(r#"{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}"#).unwrap() {
             assert_eq!(expected, kind);
         }

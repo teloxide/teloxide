@@ -36,14 +36,14 @@ pub enum RequestError {
     InvalidJson(#[source] serde_json::Error),
 }
 
-/// A kind of an API error returned from Telegram. If you receive Unknown value, please
-/// [open the issue](https://github.com/teloxide/teloxide/issues/new) with description
+/// A kind of an API error returned from Telegram. If you receive Unknown value,
+/// please [open the issue](https://github.com/teloxide/teloxide/issues/new) with description
 /// of error.
 #[derive(Debug, Deserialize, PartialEq, Hash, Eq, Clone)]
 #[serde(untagged)]
 pub enum ApiErrorKind {
     Known(ApiErrorKindKnown),
-    Unknown(String)
+    Unknown(String),
 }
 
 /// A kind of an known API error returned from Telegram.
