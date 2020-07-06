@@ -36,9 +36,19 @@ pub enum RequestError {
     InvalidJson(#[source] serde_json::Error),
 }
 
-/// A kind of an API error returned from Telegram.
-#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
+/// A kind of an API error returned from Telegram. If you receive Unknown value, please
+/// [open the issue](https://github.com/teloxide/teloxide/issues/new) with description
+/// of error.
+#[derive(Debug, Deserialize, PartialEq, Hash, Eq, Clone)]
+#[serde(untagged)]
 pub enum ApiErrorKind {
+    Known(ApiErrorKindKnown),
+    Unknown(String)
+}
+
+/// A kind of an known API error returned from Telegram.
+#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
+pub enum ApiErrorKindKnown {
     /// Occurs when the bot tries to send message to user who blocked the bot.
     #[serde(rename = "Forbidden: bot was blocked by the user")]
     BotBlocked,
