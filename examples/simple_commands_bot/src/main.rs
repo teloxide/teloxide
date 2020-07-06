@@ -1,20 +1,17 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
-use rand::{thread_rng, Rng};
-
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
     Help,
-    #[command(description = "be a cat.")]
-    Meow,
-    #[command(description = "generate a random number within [0; 1).")]
-    Generate,
-}
-
-fn generate() -> String {
-    thread_rng().gen_range(0.0, 1.0).to_string()
+    #[command(description = "handle a username.")]
+    Username(String),
+    #[command(
+        description = "handle a username and an age.",
+        parse_with = "split"
+    )]
+    UsernameAndAge { username: String, age: u8 },
 }
 
 async fn answer(
@@ -23,8 +20,16 @@ async fn answer(
 ) -> ResponseResult<()> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
-        Command::Generate => cx.answer(generate()).send().await?,
-        Command::Meow => cx.answer("I am a cat! Meow!").send().await?,
+        Command::Username(username) => {
+            cx.answer_str(format!("Your username is @{}.", username)).await?
+        }
+        Command::UsernameAndAge { username, age } => {
+            cx.answer_str(format!(
+                "Your username is @{} and age is {}.",
+                username, age
+            ))
+            .await?
+        }
     };
 
     Ok(())
