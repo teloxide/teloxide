@@ -120,11 +120,11 @@ pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
 }
 impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 
-/// Returns a long polling update listener with `timeout` of 1 minute.
+/// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
 /// See also: [`polling`](polling).
 pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {
-    polling(bot, Some(Duration::from_secs(60)), None, None)
+    polling(bot, Some(Duration::from_secs(10)), None, None)
 }
 
 /// Returns a long/short polling update listener with some additional options.

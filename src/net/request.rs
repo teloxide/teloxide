@@ -4,6 +4,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{requests::ResponseResult, RequestError};
 
 use super::{TelegramResponse, TELEGRAM_API_URL};
+use reqwest::header::CONNECTION;
 
 pub async fn request_multipart<T>(
     client: &Client,
@@ -16,6 +17,7 @@ where
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .header(CONNECTION, "keep-alive")
         .multipart(params)
         .send()
         .await
@@ -36,6 +38,7 @@ where
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .header(CONNECTION, "keep-alive")
         .json(params)
         .send()
         .await
