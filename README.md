@@ -129,7 +129,10 @@ async fn main() {
 </div>
 
 ### Commands
-Commands are defined similar to how we define CLI using [structopt](https://docs.rs/structopt/0.3.9/structopt/). This bot says "I am a cat! Meow!" on `/meow`, generates a random number within [0; 1) on `/generate`, and shows the usage guide on `/help`:
+Commands are defined similar to how we define CLI using [structopt] and JSON structures in [serde-json]. The following bot accepts either `/username YourUsername`, `/usernameandage YourUsername YourAge` and shows the usage guide on `/help`:
+
+[structopt]: https://docs.rs/structopt/0.3.9/structopt/
+[serde-json]: https://github.com/serde-rs/json
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
 ```rust
@@ -140,24 +143,31 @@ Commands are defined similar to how we define CLI using [structopt](https://docs
 enum Command {
     #[command(description = "display this text.")]
     Help,
-    #[command(description = "be a cat.")]
-    Meow,
-    #[command(description = "generate a random number within [0; 1).")]
-    Generate,
-}
-
-fn generate() -> String {
-    thread_rng().gen_range(0.0, 1.0).to_string()
+    #[command(description = "handle a username.")]
+    Username(String),
+    #[command(
+        description = "handle a username and an age.",
+        parse_with = "split"
+    )]
+    UsernameAndAge { username: String, age: u8 },
 }
 
 async fn answer(
-    cx: DispatcherHandlerCx<Message>,
+    cx: UpdateWithCx<Message>,
     command: Command,
 ) -> ResponseResult<()> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
-        Command::Generate => cx.answer(generate()).send().await?,
-        Command::Meow => cx.answer("I am a cat! Meow!").send().await?,
+        Command::Username(username) => {
+            cx.answer_str(format!("Your username is @{}.", username)).await?
+        }
+        Command::UsernameAndAge { username, age } => {
+            cx.answer_str(format!(
+                "Your username is @{} and age is {}.",
+                username, age
+            ))
+            .await?
+        }
     };
 
     Ok(())
@@ -165,7 +175,7 @@ async fn answer(
 
 async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
     rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        .for_each_concurrent(None, |(cx, command, _)| async move {
+        .for_each_concurrent(None, |(cx, command)| async move {
             answer(cx, command).await.log_on_error().await;
         })
         .await;
@@ -183,14 +193,6 @@ async fn main() {
   </kbd>
   <br/><br/>
 </div>
-
-See? The dispatcher gives us a stream of messages, so we can handle it as we want! Here we use our `.commands::<Command>()` and [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent), but others are also available:
- - [`.filter()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter) / [`.filter_map()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.filter_map) to filter certain kinds of updates;
- - [`.inspect()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.inspect) for debugging purposes;
- - [`.for_each_concurrent()`](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html#method.for_each_concurrent) + [`tokio::sync::watch`](https://docs.rs/tokio/0.2.13/tokio/sync/watch/index.html) to register multiple handlers;
- - [`.text_messages()`](https://docs.rs/teloxide/0.2.0/teloxide/dispatching/trait.DispatcherHandlerRxExt.html#tymethod.text_messages) to receive only text messages;
- 
- - ... And lots of [others](https://docs.rs/futures/0.3.4/futures/stream/trait.StreamExt.html) and [others](https://docs.rs/teloxide/latest/teloxide/dispatching/trait.DispatcherHandlerRxExt.html) and [others](https://docs.rs/tokio/0.2.13/tokio/sync/index.html)!
 
 ### Dialogues
 Wanna see more? This is how dialogues management is made in teloxide.
