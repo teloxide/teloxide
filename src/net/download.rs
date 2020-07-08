@@ -4,6 +4,7 @@ use tokio::io::{AsyncWrite, AsyncWriteExt};
 use crate::errors::DownloadError;
 
 use super::TELEGRAM_API_URL;
+use reqwest::header::CONNECTION;
 
 pub async fn download_file<D>(
     client: &Client,
@@ -16,6 +17,7 @@ where
 {
     let mut res = client
         .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .header(CONNECTION, "keep-alive")
         .send()
         .await?
         .error_for_status()?;
@@ -35,6 +37,7 @@ pub async fn download_file_stream(
 ) -> Result<impl Stream<Item = reqwest::Result<Bytes>>, reqwest::Error> {
     let res = client
         .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .header(CONNECTION, "keep-alive")
         .send()
         .await?
         .error_for_status()?;
