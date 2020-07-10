@@ -29,14 +29,13 @@ cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
 [dependencies]
-serde_json = "1.0.56"
+serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }
 
 tokio = { version = "0.2.21", features = ["full"] }
 tokio-util = { version = "0.3.1", features = ["full"] }
 
-#reqwest = { version = "0.10.6", features = ["json", "stream"] } TODO: uncomment this line
-reqwest = { git = "https://github.com/seanmonstar/reqwest", branch = "master", features = ["json", "stream"] }
+reqwest = { version = "0.10.6", features = ["json", "stream"] }
 log = "0.4.8"
 lockfree = "0.5.1"
 bytes = "0.5.5"
