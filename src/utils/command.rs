@@ -216,13 +216,13 @@ pub enum ParseError {
     /// Redirected from [`FromStr::from_str`].
     ///
     /// [`FromStr::from_str`]: https://doc.rust-lang.org/std/str/trait.FromStr.html#tymethod.from_str
-    IncorrectFormat(Box<dyn Error>),
+    IncorrectFormat(Box<dyn Error + Send + Sync + 'static>),
 
     UnknownCommand(PrefixedBotCommand),
     WrongBotName(BotName),
 
     /// A custom error which you can return from your custom parser.
-    Custom(Box<dyn Error>),
+    Custom(Box<dyn Error + Send + Sync + 'static>),
 }
 
 impl Display for ParseError {
