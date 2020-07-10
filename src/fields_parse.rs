@@ -105,7 +105,7 @@ fn parser_with_separator<'a>(
             expected: #count_args,
             found: #i,
             message: format!("Expected but not found arg number {}", #i + 1),
-        })?).map_err(|e|ParseError::IncorrectFormat({ let e: Box<dyn std::error::Error> = e.into(); e }))?,)*
+        })?).map_err(|e|ParseError::IncorrectFormat({ let e: Box<dyn std::error::Error + Send + Sync + 'static> = e.into(); e }))?,)*
     };
     let res = quote! {
         (|s: String| {
