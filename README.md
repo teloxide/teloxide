@@ -35,33 +35,20 @@
 
 ## Features
 
-<h3 align="center">Functional reactive design</h3>
-<p align="center">
-teloxide has <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">functional reactive design</a>, allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of <a href="https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html">other adaptors</a>.
-</p>
+ - **Functioal reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
 
-<hr>
+[functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
+[other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
-<h3 align="center">API types as ADTs</h3>
-<p align="center">
-All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/latest/teloxide/requests/index.html">methods</a> are hand-written, with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> (algebraic data types) to enforce type safety and tight integration with IDEs. As few <code>Option</code>s as possible.
-</p>
+ - **Persistence.** Dialogues management is independent of how/where dialogues are stored: you can just replace one line and make them [persistent]. Out-of-the-box storages include [Redis].
 
-<hr>
+[persistent]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
+[Redis]: https://redis.io/
 
-<h3 align="center">Persistence</h3>
-<p align="center">
-Dialogues management is independent of how/where dialogues are stored: you can just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a>. Out-of-the-box storages include <a href="https://redis.io/">Redis</a>.
-</p>
+ - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in [serde-json] and command-line arguments in [structopt].
 
-<hr>
-
-<h3 align="center">Strongly typed bot commands</h3>
-<p align="center">
-You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in <a href="https://github.com/serde-rs/json">serde-json</a> and command-line arguments in <a href="https://github.com/TeXitoi/structopt">structopt</a>.
-</p>
-
-<hr>
+[structopt]: https://github.com/TeXitoi/structopt
+[serde-json]: https://github.com/serde-rs/json
 
 ## Setting up your environment
  1. [Download Rust](http://rustup.rs/).
