@@ -188,6 +188,7 @@ mod tests {
     };
 
     #[tokio::test]
+    #[allow(deprecated)]
     async fn updates_from_same_chat_executed_sequentially() {
         #[derive(Debug)]
         struct MyUpdate {

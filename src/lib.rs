@@ -15,7 +15,7 @@
 )]
 #![allow(clippy::match_bool)]
 
-pub use bot::Bot;
+pub use bot::{Bot, BotBuilder};
 pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;

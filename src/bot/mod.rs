@@ -19,6 +19,7 @@ impl Bot {
     /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    #[allow(deprecated)]
     pub fn from_env() -> Arc<Self> {
         Self::from_env_with_client(Client::new())
     }
@@ -31,6 +32,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
+    #[allow(deprecated)]
     pub fn from_env_with_client(client: Client) -> Arc<Self> {
         Self::with_client(
             &std::env::var("TELOXIDE_TOKEN")
@@ -44,6 +46,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
+    #[allow(deprecated)]
     pub fn new<S>(token: S) -> Arc<Self>
     where
         S: Into<String>,
@@ -56,6 +59,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
+    #[allow(deprecated)]
     pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
     where
         S: Into<String>,
@@ -76,8 +80,8 @@ impl Bot {
     }
 }
 
-#[derive(Debug)]
-struct BotBuilder {
+#[derive(Debug, Default)]
+pub struct BotBuilder {
     token: Option<String>,
     client: Option<Client>,
 }
@@ -88,14 +92,19 @@ impl BotBuilder {
         Self { token: None, client: None }
     }
 
+    /// Specifies a custom HTTPS client. Otherwise, the default will be used.
     #[must_use]
     pub fn client(mut self, client: Client) -> Self {
         self.client = Some(client);
         self
     }
 
+    /// Specified a custom token.
+    ///
+    /// Otherwise, a token will be extracted from the `TELOXIDE_TOKEN`
+    /// environmental variable.
     #[must_use]
-    pub fn token(mut self, token: S) -> Self
+    pub fn token<S>(mut self, token: S) -> Self
     where
         S: Into<String>,
     {
@@ -103,6 +112,14 @@ impl BotBuilder {
         self
     }
 
+    /// Builds [`Bot`].
+    ///
+    /// # Panics
+    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    ///
+    /// [`Bot`]: crate::Bot
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
