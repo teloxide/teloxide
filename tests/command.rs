@@ -135,11 +135,13 @@ fn parse_custom_parser() {
                 ))
             }
         };
-        left.parse::<u8>().map(|res| (res, right.to_string())).map_err(|_| {
-            ParseError::Custom(
-                "First argument must be a integer!".to_owned().into(),
-            )
-        })
+        left.parse::<u8>().map(|res| (res, (*right).to_string())).map_err(
+            |_| {
+                ParseError::Custom(
+                    "First argument must be a integer!".to_owned().into(),
+                )
+            },
+        )
     }
 
     #[command(rename = "lowercase")]
