@@ -155,11 +155,11 @@ impl BotBuilder {
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
-            client: self.client.unwrap_or(Client::new()),
-            token: self.token.unwrap_or(
+            client: self.client.unwrap_or_default(),
+            token: self.token.unwrap_or_else(|| {
                 std::env::var("TELOXIDE_TOKEN")
-                    .expect("Cannot get the TELOXIDE_TOKEN env variable"),
-            ),
+                    .expect("Cannot get the TELOXIDE_TOKEN env variable")
+            }),
             parse_mode: self.parse_mode,
         }
     }
