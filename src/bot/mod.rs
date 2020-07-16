@@ -30,6 +30,7 @@ impl Bot {
     /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    #[deprecated]
     pub fn from_env_with_client(client: Client) -> Arc<Self> {
         Self::with_client(
             &std::env::var("TELOXIDE_TOKEN")
@@ -42,6 +43,7 @@ impl Bot {
     /// [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    #[deprecated]
     pub fn new<S>(token: S) -> Arc<Self>
     where
         S: Into<String>,
@@ -53,6 +55,7 @@ impl Bot {
     /// [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    #[deprecated]
     pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
     where
         S: Into<String>,
@@ -92,14 +95,22 @@ impl BotBuilder {
     }
 
     #[must_use]
-    pub fn token(mut self, token: S) -> Self where S: Into<String> {
+    pub fn token(mut self, token: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.token = Some(token.into());
         self
     }
 
     #[must_use]
     pub fn build(self) -> Bot {
-        Bot { client: self.client.unwrap_or(Client::new()), token: self.token.unwrap_or(std::env::var("TELOXIDE_TOKEN")
-            .expect("Cannot get the TELOXIDE_TOKEN env variable"))}
+        Bot {
+            client: self.client.unwrap_or(Client::new()),
+            token: self.token.unwrap_or(
+                std::env::var("TELOXIDE_TOKEN")
+                    .expect("Cannot get the TELOXIDE_TOKEN env variable"),
+            ),
+        }
     }
 }
