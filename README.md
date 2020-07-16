@@ -35,33 +35,20 @@
 
 ## Features
 
-<h3 align="center">Functional reactive design</h3>
-<p align="center">
-teloxide has <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">functional reactive design</a>, allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of <a href="https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html">other adaptors</a>.
-</p>
+ - **Functioal reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
 
-<hr>
+[functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
+[other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
-<h3 align="center">API types as ADTs</h3>
-<p align="center">
-All the API <a href="https://docs.rs/teloxide/latest/teloxide/types/index.html">types</a> and <a href="https://docs.rs/teloxide/latest/teloxide/requests/index.html">methods</a> are hand-written, with heavy use of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><strong>ADT</strong>s</a> (algebraic data types) to enforce type safety and tight integration with IDEs. As few <code>Option</code>s as possible.
-</p>
+ - **Persistence.** Dialogues management is independent of how/where dialogues are stored: you can just replace one line and make them [persistent]. Out-of-the-box storages include [Redis].
 
-<hr>
+[persistent]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
+[Redis]: https://redis.io/
 
-<h3 align="center">Persistence</h3>
-<p align="center">
-Dialogues management is independent of how/where dialogues are stored: you can just replace one line and make them <a href="https://en.wikipedia.org/wiki/Persistence_(computer_science)">persistent</a>. Out-of-the-box storages include <a href="https://redis.io/">Redis</a>.
-</p>
+ - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in [serde-json] and command-line arguments in [structopt].
 
-<hr>
-
-<h3 align="center">Strongly typed bot commands</h3>
-<p align="center">
-You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in <a href="https://github.com/serde-rs/json">serde-json</a> and command-line arguments in <a href="https://github.com/TeXitoi/structopt">structopt</a>.
-</p>
-
-<hr>
+[structopt]: https://github.com/TeXitoi/structopt
+[serde-json]: https://github.com/serde-rs/json
 
 ## Setting up your environment
  1. [Download Rust](http://rustup.rs/).
@@ -187,20 +174,18 @@ async fn main() {
 }
 ```
 
-<div align="center">
-  <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.png width="500"/>
-  </kbd>
-  <br/><br/>
-</div>
-
 ### Dialogues
-Wanna see more? This is how dialogues management is made in teloxide.
+A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
+
+[FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
+
+States and transition functions are placed into separated modules. For example:
 
 ([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
 ```rust
 // Imports are omitted...
 
+#[derive(Default)]
 pub struct StartState;
 
 pub struct ReceiveFullNameState {
@@ -234,77 +219,83 @@ up!(
     ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
 );
 
-pub type Dialogue = Coprod!(
-    StartState,
-    ReceiveFullNameState,
-    ReceiveAgeState,
-    ReceiveFavouriteMusicState,
-);
+#[derive(SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    Start(StartState),
+    ReceiveFullName(ReceiveFullNameState),
+    ReceiveAge(ReceiveAgeState),
+    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
+}
 ```
 
-The [`wrap_dialogue!`](https://docs.rs/teloxide/latest/teloxide/macro.wrap_dialogue.html) macro generates a new-type of `Dialogue` with a default implementation.
+The handy `up!` macro automatically generates functions that complete one state to another by appending a field.
 
 ([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
 ```rust
 // Imports are omitted...
 
-pub type In<State> = TransitionIn<State, std::convert::Infallible>;
-pub type Out = TransitionOut<Wrapper>;
+pub type Cx = UpdateWithCx<Message>;
+pub type Out = TransitionOut<Dialogue>;
 
-pub async fn start(cx: In<StartState>) -> Out {
-    let (cx, dialogue) = cx.unpack();
-
+async fn start(cx: Cx, state: StartState) -> Out {
     cx.answer_str("Let's start! First, what's your full name?").await?;
-    next(dialogue.up())
+    next(state.up())
 }
 
-pub async fn receive_full_name(cx: In<ReceiveFullNameState>) -> Out {
-    let (cx, dialogue) = cx.unpack();
-
+async fn receive_full_name(cx: Cx, state: ReceiveFullNameState) -> Out {
     match cx.update.text_owned() {
         Some(full_name) => {
             cx.answer_str("What a wonderful name! Your age?").await?;
-            next(dialogue.up(full_name))
+            next(state.up(full_name))
         }
         _ => {
             cx.answer_str("Please, enter a text message!").await?;
-            next(dialogue)
+            next(state)
         }
     }
 }
 
-pub async fn receive_age(cx: In<ReceiveAgeState>) -> Out {
-    let (cx, dialogue) = cx.unpack();
-
+async fn receive_age(cx: Cx, state: ReceiveAgeState) -> Out {
     match cx.update.text().map(str::parse) {
         Some(Ok(age)) => {
             cx.answer("Good. Now choose your favourite music:")
                 .reply_markup(FavouriteMusic::markup())
                 .send()
                 .await?;
-            next(dialogue.up(age))
+            next(state.up(age))
         }
         _ => {
             cx.answer_str("Please, enter a number!").await?;
-            next(dialogue)
+            next(state)
         }
     }
 }
 
-pub async fn receive_favourite_music(
-    cx: In<ReceiveFavouriteMusicState>,
+async fn receive_favourite_music(
+    cx: Cx,
+    state: ReceiveFavouriteMusicState,
 ) -> Out {
-    let (cx, dialogue) = cx.unpack();
-
     match cx.update.text().map(str::parse) {
         Some(Ok(favourite_music)) => {
-            cx.answer_str(format!("Fine. {}", dialogue.up(favourite_music)))
+            cx.answer_str(format!("Fine. {}", state.up(favourite_music)))
                 .await?;
             exit()
         }
         _ => {
             cx.answer_str("Please, enter from the keyboard!").await?;
-            next(dialogue)
+            next(state)
+        }
+    }
+}
+
+pub async fn dispatch(cx: Cx, dialogue: Dialogue) -> Out {
+    match dialogue {
+        Dialogue::Start(state) => start(cx, state).await,
+        Dialogue::ReceiveFullName(state) => receive_full_name(cx, state).await,
+        Dialogue::ReceiveAge(state) => receive_age(cx, state).await,
+        Dialogue::ReceiveFavouriteMusic(state) => {
+            receive_favourite_music(cx, state).await
         }
     }
 }
@@ -335,6 +326,7 @@ impl FavouriteMusic {
 ```
 
 
+
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
 ```rust
 // Imports are omitted...
@@ -347,18 +339,14 @@ async fn main() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|cx| async move {
-            let DialogueWithCx { cx, dialogue } = cx;
-
-            // Unwrap without panic because of std::convert::Infallible.
-            let Wrapper(dialogue) = dialogue.unwrap();
-
-            dispatch!(
-                [cx, dialogue] ->
-                [start, receive_full_name, receive_age, receive_favourite_music]
-            )
-            .expect("Something wrong with the bot!")
-        }, || Dialogue::inject(StartState)))
+        .messages_handler(DialogueDispatcher::new(
+            |input: TransitionIn<Dialogue, Infallible>| async move {
+                // Unwrap without panic because of std::convert::Infallible.
+                dispatch(input.cx, input.dialogue.unwrap())
+                    .await
+                    .expect("Something wrong with the bot!")
+            },
+        ))
         .dispatch()
         .await;
 }

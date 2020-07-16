@@ -3,7 +3,6 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use thiserror::Error;
 
-//<editor-fold desc="download">
 /// An error occurred after downloading a file.
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
@@ -14,9 +13,6 @@ pub enum DownloadError {
     Io(#[source] std::io::Error),
 }
 
-//</editor-fold>
-
-//<editor-fold desc="request">
 /// An error occurred after making a request to Telegram.
 #[derive(Debug, Error)]
 pub enum RequestError {
@@ -40,11 +36,19 @@ pub enum RequestError {
     InvalidJson(#[source] serde_json::Error),
 }
 
-//</editor-fold>
-
-/// A kind of an API error returned from Telegram.
-#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
+/// A kind of a API error returned from Telegram. If you receive Unknown value,
+/// please [open the issue](https://github.com/teloxide/teloxide/issues/new) with description
+/// of error.
+#[derive(Debug, Deserialize, PartialEq, Hash, Eq, Clone)]
+#[serde(untagged)]
 pub enum ApiErrorKind {
+    Known(KnownApiErrorKind),
+    Unknown(String),
+}
+
+/// A kind of a known API error returned from Telegram.
+#[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
+pub enum KnownApiErrorKind {
     /// Occurs when the bot tries to send message to user who blocked the bot.
     #[serde(rename = "Forbidden: bot was blocked by the user")]
     BotBlocked,
@@ -510,7 +514,4 @@ pub enum ApiErrorKind {
     /// [`GetFile`]: crate::requests::GetFile
     #[serde(rename = "Bad Request: invalid file id")]
     FileIdInvalid,
-
-    #[serde(other)]
-    Other,
 }

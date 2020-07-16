@@ -39,9 +39,13 @@ impl Update {
         match serde_json::from_str(&value.to_string()) {
             Ok(update) => Ok(update),
             Err(error) => {
-                log::error!("Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                log::error!(
+                    "Cannot parse an update.\nError: {:?}\nValue: {}\n\
                         This is a bug in teloxide, please open an issue here: \
-                        https://github.com/teloxide/teloxide/issues.", error, value);
+                        https://github.com/teloxide/teloxide/issues.",
+                    error,
+                    value
+                );
                 Err(error)
             }
         }
