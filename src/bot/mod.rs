@@ -1,5 +1,8 @@
-use reqwest::Client;
-use std::sync::Arc;
+use reqwest::{
+    header::{HeaderMap, CONNECTION},
+    Client, ClientBuilder,
+};
+use std::{sync::Arc, time::Duration};
 
 mod api;
 mod download;
@@ -20,7 +23,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     pub fn from_env() -> Arc<Self> {
-        Self::from_env_with_client(Client::new())
+        Self::from_env_with_client(sound_bot())
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -46,7 +49,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Self::with_client(token, Client::new())
+        Self::with_client(token, sound_bot())
     }
 
     /// Creates a new `Bot` with the specified token and your
@@ -59,6 +62,23 @@ impl Bot {
     {
         Arc::new(Self { token: token.into(), client })
     }
+}
+
+// See https://github.com/teloxide/teloxide/issues/223.
+fn sound_bot() -> Client {
+    let mut headers = HeaderMap::new();
+    headers.insert(CONNECTION, "keep-alive".parse().unwrap());
+
+    let connect_timeout = Duration::from_secs(5);
+    let timeout = 10;
+
+    ClientBuilder::new()
+        .connect_timeout(connect_timeout)
+        .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
+        .tcp_nodelay_(true)
+        .default_headers(headers)
+        .build()
+        .expect("Cannot build reqwest::Client")
 }
 
 impl Bot {
