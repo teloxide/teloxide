@@ -1,3 +1,4 @@
+use crate::types::ParseMode;
 use reqwest::Client;
 use std::sync::Arc;
 
@@ -9,6 +10,7 @@ mod download;
 pub struct Bot {
     token: String,
     client: Client,
+    parse_mode: Option<ParseMode>,
 }
 
 impl Bot {
@@ -64,7 +66,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Arc::new(Self { token: token.into(), client })
+        Arc::new(Self { token: token.into(), client, parse_mode: None })
     }
 }
 
@@ -84,12 +86,13 @@ impl Bot {
 pub struct BotBuilder {
     token: Option<String>,
     client: Option<Client>,
+    parse_mode: Option<ParseMode>,
 }
 
 impl BotBuilder {
     #[must_use]
     pub fn new() -> Self {
-        Self { token: None, client: None }
+        Self::default()
     }
 
     /// Specifies a custom HTTPS client. Otherwise, the default will be used.
@@ -112,6 +115,35 @@ impl BotBuilder {
         self
     }
 
+    /// Specifies [`ParseMode`], which will be used during all calls to:
+    ///
+    ///  - [`send_message`]
+    ///  - [`send_photo`]
+    ///  - [`send_video`]
+    ///  - [`send_audio`]
+    ///  - [`send_document`]
+    ///  - [`send_animation`]
+    ///  - [`send_voice`]
+    ///  - [`send_poll`]
+    ///  - [`edit_message_text`]
+    ///  - [`edit_message_caption`]
+    ///
+    /// [`send_message`]: crate::Bot::send_message
+    /// [`send_photo`]: crate::Bot::send_photo
+    /// [`send_video`]: crate::Bot::send_video
+    /// [`send_audio`]: crate::Bot::send_audio
+    /// [`send_document`]: crate::Bot::send_document
+    /// [`send_animation`]: crate::Bot::send_animation
+    /// [`send_voice`]: crate::Bot::send_voice
+    /// [`send_poll`]: crate::Bot::send_poll
+    /// [`edit_message_text`]: crate::Bot::edit_message_text
+    /// [`edit_message_caption`]: crate::Bot::edit_message_caption
+    #[must_use]
+    pub fn parse_mode(mut self, parse_mode: ParseMode) -> Self {
+        self.parse_mode = Some(parse_mode);
+        self
+    }
+
     /// Builds [`Bot`].
     ///
     /// # Panics
@@ -128,6 +160,7 @@ impl BotBuilder {
                 std::env::var("TELOXIDE_TOKEN")
                     .expect("Cannot get the TELOXIDE_TOKEN env variable"),
             ),
+            parse_mode: self.parse_mode,
         }
     }
 }

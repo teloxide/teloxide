@@ -108,6 +108,12 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `text`: Text of the message to be sent.
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_message<C, T>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -117,7 +123,13 @@ impl Bot {
         C: Into<ChatId>,
         T: Into<String>,
     {
-        SendMessage::new(Arc::clone(self), chat_id, text)
+        match self.parse_mode {
+            None => SendMessage::new(Arc::clone(self), chat_id, text),
+            Some(parse_mode) => {
+                SendMessage::new(Arc::clone(self), chat_id, text)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// Use this method to forward messages of any kind.
@@ -166,6 +178,12 @@ impl Bot {
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_photo<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -174,7 +192,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendPhoto::new(Arc::clone(self), chat_id, photo)
+        match self.parse_mode {
+            None => SendPhoto::new(Arc::clone(self), chat_id, photo),
+            Some(parse_mode) => {
+                SendPhoto::new(Arc::clone(self), chat_id, photo)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     ///
@@ -182,6 +206,12 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_audio<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -190,7 +220,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendAudio::new(Arc::clone(self), chat_id, audio)
+        match self.parse_mode {
+            None => SendAudio::new(Arc::clone(self), chat_id, audio),
+            Some(parse_mode) => {
+                SendAudio::new(Arc::clone(self), chat_id, audio)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// Use this method to send general files.
@@ -211,6 +247,12 @@ impl Bot {
     /// `multipart/form-data`. [More info on Sending Files »].
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_document<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -219,7 +261,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendDocument::new(Arc::clone(self), chat_id, document)
+        match self.parse_mode {
+            None => SendDocument::new(Arc::clone(self), chat_id, document),
+            Some(parse_mode) => {
+                SendDocument::new(Arc::clone(self), chat_id, document)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// Use this method to send video files, Telegram clients support mp4 videos
@@ -243,6 +291,12 @@ impl Bot {
     /// [`InputFile::File`]: crate::types::InputFile::File
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_video<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -251,7 +305,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendVideo::new(Arc::clone(self), chat_id, video)
+        match self.parse_mode {
+            None => SendVideo::new(Arc::clone(self), chat_id, video),
+            Some(parse_mode) => {
+                SendVideo::new(Arc::clone(self), chat_id, video)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -266,6 +326,12 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `animation`: Animation to send.
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_animation<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -274,7 +340,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendAnimation::new(Arc::clone(self), chat_id, animation)
+        match self.parse_mode {
+            None => SendAnimation::new(Arc::clone(self), chat_id, animation),
+            Some(parse_mode) => {
+                SendAnimation::new(Arc::clone(self), chat_id, animation)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// Use this method to send audio files, if you want Telegram clients to
@@ -304,6 +376,12 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_voice<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -312,7 +390,13 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendVoice::new(Arc::clone(self), chat_id, voice)
+        match self.parse_mode {
+            None => SendVoice::new(Arc::clone(self), chat_id, voice),
+            Some(parse_mode) => {
+                SendVoice::new(Arc::clone(self), chat_id, voice)
+                    .parse_mode(parse_mode)
+            }
+        }
     }
 
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up
@@ -335,6 +419,7 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+
     pub fn send_video_note<C>(
         self: &Arc<Bot>,
         chat_id: C,
@@ -515,6 +600,7 @@ impl Bot {
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
+        // FIXME: parse_mode
         SendPoll::new(Arc::clone(self), chat_id, question, options)
     }
 
@@ -1044,6 +1130,12 @@ impl Bot {
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_text<T>(
         self: &Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
@@ -1052,7 +1144,19 @@ impl Bot {
     where
         T: Into<String>,
     {
-        EditMessageText::new(Arc::clone(self), chat_or_inline_message, text)
+        match self.parse_mode {
+            None => EditMessageText::new(
+                Arc::clone(self),
+                chat_or_inline_message,
+                text,
+            ),
+            Some(parse_mode) => EditMessageText::new(
+                Arc::clone(self),
+                chat_or_inline_message,
+                text,
+            )
+            .parse_mode(parse_mode),
+        }
     }
 
     /// Use this method to edit captions of messages.
@@ -1064,11 +1168,27 @@ impl Bot {
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_caption(
         self: &Arc<Bot>,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> EditMessageCaption {
-        EditMessageCaption::new(Arc::clone(self), chat_or_inline_message)
+        match self.parse_mode {
+            None => EditMessageCaption::new(
+                Arc::clone(self),
+                chat_or_inline_message,
+            ),
+            Some(parse_mode) => EditMessageCaption::new(
+                Arc::clone(self),
+                chat_or_inline_message,
+            )
+            .parse_mode(parse_mode),
+        }
     }
 
     /// Use this method to edit animation, audio, document, photo, or video
