@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to unban a previously kicked user in a supergroup or
 /// channel. The user will **not** return to the group or channel automatically,
@@ -18,7 +17,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct UnbanChatMember {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
 }
@@ -39,7 +38,7 @@ impl Request for UnbanChatMember {
 }
 
 impl UnbanChatMember {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {

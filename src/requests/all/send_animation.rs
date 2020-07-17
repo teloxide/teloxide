@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -15,7 +14,7 @@ use std::sync::Arc;
 /// [The official docs](https://core.telegram.org/bots/api#sendanimation).
 #[derive(Debug, Clone)]
 pub struct SendAnimation {
-    bot: Arc<Bot>,
+    bot: Bot,
     pub chat_id: ChatId,
     pub animation: InputFile,
     pub duration: Option<u32>,
@@ -60,11 +59,7 @@ impl RequestWithFile for SendAnimation {
 }
 
 impl SendAnimation {
-    pub(crate) fn new<C>(
-        bot: Arc<Bot>,
-        chat_id: C,
-        animation: InputFile,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, animation: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

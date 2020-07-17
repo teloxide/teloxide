@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, ChatMember},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get information about a member of a chat.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChatMember {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
 }
@@ -36,7 +35,7 @@ impl Request for GetChatMember {
 }
 
 impl GetChatMember {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {

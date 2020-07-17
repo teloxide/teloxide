@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to edit live location messages.
 ///
@@ -23,7 +22,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageLiveLocation {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     latitude: f32,
@@ -48,7 +47,7 @@ impl Request for EditMessageLiveLocation {
 
 impl EditMessageLiveLocation {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
         latitude: f32,
         longitude: f32,

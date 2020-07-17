@@ -112,7 +112,7 @@ use crate::{
     RequestError,
 };
 
-use std::{convert::TryInto, sync::Arc, time::Duration};
+use std::{convert::TryInto, time::Duration};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
@@ -123,7 +123,7 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// Returns a long polling update listener with `timeout` of 1 minute.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {
+pub fn polling_default(bot: Bot) -> impl UpdateListener<RequestError> {
     polling(bot, Some(Duration::from_secs(60)), None, None)
 }
 
@@ -140,7 +140,7 @@ pub fn polling_default(bot: Arc<Bot>) -> impl UpdateListener<RequestError> {
 ///
 /// [`GetUpdates`]: crate::requests::GetUpdates
 pub fn polling(
-    bot: Arc<Bot>,
+    bot: Bot,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,

@@ -6,7 +6,6 @@ use crate::{
     types::{InlineKeyboardMarkup, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send a game.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendGame {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: i32,
     game_short_name: String,
     disable_notification: Option<bool>,
@@ -39,11 +38,7 @@ impl Request for SendGame {
 }
 
 impl SendGame {
-    pub(crate) fn new<G>(
-        bot: Arc<Bot>,
-        chat_id: i32,
-        game_short_name: G,
-    ) -> Self
+    pub(crate) fn new<G>(bot: Bot, chat_id: i32, game_short_name: G) -> Self
     where
         G: Into<String>,
     {

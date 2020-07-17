@@ -6,7 +6,6 @@ use crate::{
     types::ChatId,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to generate a new invite link for a chat; any previously
 /// generated link is revoked.
@@ -31,7 +30,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct ExportChatInviteLink {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
 }
 
@@ -52,7 +51,7 @@ impl Request for ExportChatInviteLink {
 }
 
 impl ExportChatInviteLink {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message, PollType, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send a native poll.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendPoll {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     question: String,
     options: Vec<String>,
@@ -46,7 +45,7 @@ impl Request for SendPoll {
 
 impl SendPoll {
     pub(crate) fn new<C, Q, O>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         question: Q,
         options: O,

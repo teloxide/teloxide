@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send video files, Telegram clients support mp4 videos
 /// (other formats may be sent as Document).
@@ -15,7 +14,7 @@ use std::sync::Arc;
 /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
 #[derive(Debug, Clone)]
 pub struct SendVideo {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     video: InputFile,
     duration: Option<i32>,
@@ -62,7 +61,7 @@ impl RequestWithFile for SendVideo {
 }
 
 impl SendVideo {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, video: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, video: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

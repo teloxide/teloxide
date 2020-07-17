@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to edit captions of messages.
 ///
@@ -21,7 +20,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageCaption {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     caption: Option<String>,
@@ -46,7 +45,7 @@ impl Request for EditMessageCaption {
 
 impl EditMessageCaption {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self {

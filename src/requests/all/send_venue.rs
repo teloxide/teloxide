@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send information about a venue.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendVenue {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     latitude: f32,
     longitude: f32,
@@ -45,7 +44,7 @@ impl Request for SendVenue {
 
 impl SendVenue {
     pub(crate) fn new<C, T, A>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         latitude: f32,
         longitude: f32,

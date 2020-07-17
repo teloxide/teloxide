@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to kick a user from a group, a supergroup or a channel.
 ///
@@ -22,7 +21,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct KickChatMember {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
     until_date: Option<i32>,
@@ -44,7 +43,7 @@ impl Request for KickChatMember {
 }
 
 impl KickChatMember {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {

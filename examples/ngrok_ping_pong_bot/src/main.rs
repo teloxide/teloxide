@@ -3,7 +3,7 @@
 
 use teloxide::{dispatching::update_listeners, prelude::*};
 
-use std::{convert::Infallible, net::SocketAddr, sync::Arc};
+use std::{convert::Infallible, net::SocketAddr};
 use tokio::sync::mpsc;
 use warp::Filter;
 
@@ -22,7 +22,7 @@ async fn handle_rejection(
 }
 
 pub async fn webhook<'a>(
-    bot: Arc<Bot>,
+    bot: Bot,
 ) -> impl update_listeners::UpdateListener<Infallible> {
     // You might want to specify a self-signed certificate via .certificate
     // method on SetWebhook.
@@ -60,7 +60,7 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(Arc::clone(&bot))
+    Dispatcher::new(bot.clone())
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
                 message.answer_str("pong").await.log_on_error().await;

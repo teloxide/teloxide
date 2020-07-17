@@ -4,14 +4,13 @@ use crate::{
     types::{ChatId, InputMedia, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send a group of photos or videos as an album.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendmediagroup).
 #[derive(Debug, Clone)]
 pub struct SendMediaGroup {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
     disable_notification: Option<bool>,
@@ -39,7 +38,7 @@ impl Request for SendMediaGroup {
 }
 
 impl SendMediaGroup {
-    pub(crate) fn new<C, M>(bot: Arc<Bot>, chat_id: C, media: M) -> Self
+    pub(crate) fn new<C, M>(bot: Bot, chat_id: C, media: M) -> Self
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,

@@ -4,14 +4,13 @@ use crate::{
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send photos.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendphoto).
 #[derive(Debug, Clone)]
 pub struct SendPhoto {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     photo: InputFile,
     caption: Option<String>,
@@ -46,7 +45,7 @@ impl RequestWithFile for SendPhoto {
 }
 
 impl SendPhoto {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, photo: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, photo: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

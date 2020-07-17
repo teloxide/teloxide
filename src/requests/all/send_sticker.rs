@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send static .WEBP or [animated] .TGS stickers.
 ///
@@ -13,7 +12,7 @@ use std::sync::Arc;
 /// [animated]: https://telegram.org/blog/animated-stickers
 #[derive(Debug, Clone)]
 pub struct SendSticker {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     sticker: InputFile,
     disable_notification: Option<bool>,
@@ -44,7 +43,7 @@ impl RequestWithFile for SendSticker {
 }
 
 impl SendSticker {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, sticker: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, sticker: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

@@ -6,7 +6,6 @@ use crate::{
     types::WebhookInfo,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get current webhook status.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetWebhookInfo {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
 }
 
 #[async_trait::async_trait]
@@ -39,7 +38,7 @@ impl Request for GetWebhookInfo {
 }
 
 impl GetWebhookInfo {
-    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+    pub(crate) fn new(bot: Bot) -> Self {
         Self { bot }
     }
 }

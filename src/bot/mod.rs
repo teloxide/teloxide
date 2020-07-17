@@ -6,11 +6,13 @@ mod api;
 mod download;
 
 /// A Telegram bot used to send requests.
+///
+/// No need to put `Bot` into `Arc`, because it's already in.
 #[derive(Debug, Clone)]
 pub struct Bot {
-    token: String,
+    token: Arc<str>,
     client: Client,
-    parse_mode: Option<ParseMode>,
+    parse_mode: Arc<Option<ParseMode>>,
 }
 
 impl Bot {
@@ -22,7 +24,7 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[allow(deprecated)]
-    pub fn from_env() -> Arc<Self> {
+    pub fn from_env() -> Self {
         Self::from_env_with_client(Client::new())
     }
 
@@ -35,7 +37,7 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
     #[allow(deprecated)]
-    pub fn from_env_with_client(client: Client) -> Arc<Self> {
+    pub fn from_env_with_client(client: Client) -> Self {
         Self::with_client(
             &std::env::var("TELOXIDE_TOKEN")
                 .expect("Cannot get the TELOXIDE_TOKEN env variable"),
@@ -49,7 +51,7 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
     #[allow(deprecated)]
-    pub fn new<S>(token: S) -> Arc<Self>
+    pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
     {
@@ -62,11 +64,15 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[deprecated]
     #[allow(deprecated)]
-    pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
+    pub fn with_client<S>(token: S, client: Client) -> Self
     where
         S: Into<String>,
     {
-        Arc::new(Self { token: token.into(), client, parse_mode: None })
+        Self {
+            token: Into::<Arc<str>>::into(Into::<String>::into(token)),
+            client,
+            parse_mode: Arc::new(None),
+        }
     }
 }
 
@@ -156,11 +162,14 @@ impl BotBuilder {
     pub fn build(self) -> Bot {
         Bot {
             client: self.client.unwrap_or_default(),
-            token: self.token.unwrap_or_else(|| {
-                std::env::var("TELOXIDE_TOKEN")
-                    .expect("Cannot get the TELOXIDE_TOKEN env variable")
-            }),
-            parse_mode: self.parse_mode,
+            token: self
+                .token
+                .unwrap_or_else(|| {
+                    std::env::var("TELOXIDE_TOKEN")
+                        .expect("Cannot get the TELOXIDE_TOKEN env variable")
+                })
+                .into(),
+            parse_mode: Arc::new(self.parse_mode),
         }
     }
 }

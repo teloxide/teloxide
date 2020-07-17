@@ -6,7 +6,6 @@ use crate::{
     types::True,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to remove webhook integration if you decide to switch back
 /// to [Bot::get_updates].
@@ -18,7 +17,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteWebhook {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
 }
 
 #[async_trait::async_trait]
@@ -38,7 +37,7 @@ impl Request for DeleteWebhook {
 }
 
 impl DeleteWebhook {
-    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+    pub(crate) fn new(bot: Bot) -> Self {
         Self { bot }
     }
 }

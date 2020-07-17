@@ -6,7 +6,6 @@ use crate::{
     types::True,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to delete a sticker from a set created by the bot.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteStickerFromSet {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     sticker: String,
 }
 
@@ -35,7 +34,7 @@ impl Request for DeleteStickerFromSet {
 }
 
 impl DeleteStickerFromSet {
-    pub(crate) fn new<S>(bot: Arc<Bot>, sticker: S) -> Self
+    pub(crate) fn new<S>(bot: Bot, sticker: S) -> Self
     where
         S: Into<String>,
     {

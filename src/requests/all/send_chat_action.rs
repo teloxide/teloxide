@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method when you need to tell the user that something is happening
 /// on the bot's side.
@@ -29,7 +28,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendChatAction {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     action: SendChatActionKind,
 }
@@ -88,7 +87,7 @@ impl Request for SendChatAction {
 
 impl SendChatAction {
     pub(crate) fn new<C>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         action: SendChatActionKind,
     ) -> Self

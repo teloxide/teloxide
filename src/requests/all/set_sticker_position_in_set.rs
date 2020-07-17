@@ -6,7 +6,6 @@ use crate::{
     types::True,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to move a sticker in a set created by the bot to a specific
 /// position.
@@ -16,7 +15,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetStickerPositionInSet {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     sticker: String,
     position: i32,
 }
@@ -37,7 +36,7 @@ impl Request for SetStickerPositionInSet {
 }
 
 impl SetStickerPositionInSet {
-    pub(crate) fn new<S>(bot: Arc<Bot>, sticker: S, position: i32) -> Self
+    pub(crate) fn new<S>(bot: Bot, sticker: S, position: i32) -> Self
     where
         S: Into<String>,
     {
