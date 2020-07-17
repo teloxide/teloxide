@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to unpin a message in a group, a supergroup, or a channel.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct UnpinChatMessage {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
 }
 
@@ -39,7 +38,7 @@ impl Request for UnpinChatMessage {
 }
 
 impl UnpinChatMessage {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

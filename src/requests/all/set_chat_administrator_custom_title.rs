@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to set a custom title for an administrator in a supergroup
 /// promoted by the bot.
@@ -16,7 +15,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatAdministratorCustomTitle {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
     custom_title: String,
@@ -39,7 +38,7 @@ impl Request for SetChatAdministratorCustomTitle {
 
 impl SetChatAdministratorCustomTitle {
     pub(crate) fn new<C, CT>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         user_id: i32,
         custom_title: CT,

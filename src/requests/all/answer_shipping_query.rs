@@ -6,7 +6,6 @@ use crate::{
     types::{ShippingOption, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// If you sent an invoice requesting a shipping address and the parameter
 /// `is_flexible` was specified, the Bot API will send an [`Update`] with a
@@ -20,7 +19,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct AnswerShippingQuery {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     shipping_query_id: String,
     ok: bool,
     shipping_options: Option<Vec<ShippingOption>>,
@@ -43,7 +42,7 @@ impl Request for AnswerShippingQuery {
 }
 
 impl AnswerShippingQuery {
-    pub(crate) fn new<S>(bot: Arc<Bot>, shipping_query_id: S, ok: bool) -> Self
+    pub(crate) fn new<S>(bot: Bot, shipping_query_id: S, ok: bool) -> Self
     where
         S: Into<String>,
     {

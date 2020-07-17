@@ -6,7 +6,6 @@ use crate::{
     types::StickerSet,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get a sticker set.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetStickerSet {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     name: String,
 }
 
@@ -35,7 +34,7 @@ impl Request for GetStickerSet {
 }
 
 impl GetStickerSet {
-    pub(crate) fn new<N>(bot: Arc<Bot>, name: N) -> Self
+    pub(crate) fn new<N>(bot: Bot, name: N) -> Self
     where
         N: Into<String>,
     {

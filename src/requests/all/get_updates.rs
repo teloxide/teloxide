@@ -7,7 +7,6 @@ use crate::{
     Bot, RequestError,
 };
 use serde_json::Value;
-use std::sync::Arc;
 
 /// Use this method to receive incoming updates using long polling ([wiki]).
 ///
@@ -23,7 +22,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUpdates {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     pub(crate) offset: Option<i32>,
     pub(crate) limit: Option<u8>,
     pub(crate) timeout: Option<u32>,
@@ -64,7 +63,7 @@ impl Request for GetUpdates {
 }
 
 impl GetUpdates {
-    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+    pub(crate) fn new(bot: Bot) -> Self {
         Self {
             bot,
             offset: None,

@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send point on the map.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendLocation {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     latitude: f32,
     longitude: f32,
@@ -42,7 +41,7 @@ impl Request for SendLocation {
 
 impl SendLocation {
     pub(crate) fn new<C>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         latitude: f32,
         longitude: f32,

@@ -9,7 +9,6 @@ use crate::{
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// A [`Dispatcher`]'s handler's context of a bot and an update.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
 pub struct UpdateWithCx<Upd> {
-    pub bot: Arc<Bot>,
+    pub bot: Bot,
     pub update: Upd,
 }
 

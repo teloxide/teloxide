@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to promote or demote a user in a supergroup or a channel.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct PromoteChatMember {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
     can_change_info: Option<bool>,
@@ -48,7 +47,7 @@ impl Request for PromoteChatMember {
 }
 
 impl PromoteChatMember {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, user_id: i32) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, user_id: i32) -> Self
     where
         C: Into<ChatId>,
     {

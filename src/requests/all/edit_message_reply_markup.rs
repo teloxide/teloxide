@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to edit only the reply markup of messages.
 ///
@@ -21,7 +20,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageReplyMarkup {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     reply_markup: Option<InlineKeyboardMarkup>,
@@ -44,7 +43,7 @@ impl Request for EditMessageReplyMarkup {
 
 impl EditMessageReplyMarkup {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> Self {
         Self { bot, chat_or_inline_message, reply_markup: None }

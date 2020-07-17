@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send text messages.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendMessage {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     pub chat_id: ChatId,
     pub text: String,
     pub parse_mode: Option<ParseMode>,
@@ -41,7 +40,7 @@ impl Request for SendMessage {
 }
 
 impl SendMessage {
-    pub(crate) fn new<C, T>(bot: Arc<Bot>, chat_id: C, text: T) -> Self
+    pub(crate) fn new<C, T>(bot: Bot, chat_id: C, text: T) -> Self
     where
         C: Into<ChatId>,
         T: Into<String>,

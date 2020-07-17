@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up to 1
 /// minute long. Use this method to send video messages.
@@ -14,7 +13,7 @@ use std::sync::Arc;
 /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
 #[derive(Debug, Clone)]
 pub struct SendVideoNote {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     video_note: InputFile,
     duration: Option<i32>,
@@ -53,11 +52,7 @@ impl RequestWithFile for SendVideoNote {
 }
 
 impl SendVideoNote {
-    pub(crate) fn new<C>(
-        bot: Arc<Bot>,
-        chat_id: C,
-        video_note: InputFile,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, video_note: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

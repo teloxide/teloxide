@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to delete a group sticker set from a supergroup.
 ///
@@ -22,7 +21,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct DeleteChatStickerSet {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
 }
 
@@ -42,7 +41,7 @@ impl Request for DeleteChatStickerSet {
 }
 
 impl DeleteChatStickerSet {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

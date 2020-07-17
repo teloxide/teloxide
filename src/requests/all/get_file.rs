@@ -6,7 +6,6 @@ use crate::{
     types::File,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get basic info about a file and prepare it for
 /// downloading.
@@ -31,7 +30,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetFile {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     file_id: String,
 }
 
@@ -46,7 +45,7 @@ impl Request for GetFile {
 }
 
 impl GetFile {
-    pub(crate) fn new<F>(bot: Arc<Bot>, file_id: F) -> Self
+    pub(crate) fn new<F>(bot: Bot, file_id: F) -> Self
     where
         F: Into<String>,
     {

@@ -6,7 +6,6 @@ use crate::{
     types::True,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send answers to callback queries sent from [inline
 /// keyboards].
@@ -21,7 +20,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct AnswerCallbackQuery {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     callback_query_id: String,
     text: Option<String>,
     show_alert: Option<bool>,
@@ -45,7 +44,7 @@ impl Request for AnswerCallbackQuery {
 }
 
 impl AnswerCallbackQuery {
-    pub(crate) fn new<C>(bot: Arc<Bot>, callback_query_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, callback_query_id: C) -> Self
     where
         C: Into<String>,
     {

@@ -5,7 +5,6 @@ use crate::{
     Bot,
 };
 use serde::Serialize;
-use std::sync::Arc;
 
 /// A simple method for testing your bot's auth token. Requires no parameters.
 ///
@@ -13,7 +12,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetMe {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
 }
 
 #[async_trait::async_trait]
@@ -29,7 +28,7 @@ impl Request for GetMe {
 }
 
 impl GetMe {
-    pub(crate) fn new(bot: Arc<Bot>) -> Self {
+    pub(crate) fn new(bot: Bot) -> Self {
         Self { bot }
     }
 }

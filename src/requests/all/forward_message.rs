@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to forward messages of any kind.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct ForwardMessage {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     from_chat_id: ChatId,
     disable_notification: Option<bool>,
@@ -39,7 +38,7 @@ impl Request for ForwardMessage {
 
 impl ForwardMessage {
     pub(crate) fn new<C, F>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         from_chat_id: F,
         message_id: i32,

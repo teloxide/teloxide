@@ -4,7 +4,6 @@ use crate::{
     types::{InputFile, MaskPosition, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to create new sticker set owned by a user. The bot will be
 /// able to edit the created sticker set.
@@ -12,7 +11,7 @@ use std::sync::Arc;
 /// [The official docs](https://core.telegram.org/bots/api#createnewstickerset).
 #[derive(Debug, Clone)]
 pub struct CreateNewStickerSet {
-    bot: Arc<Bot>,
+    bot: Bot,
     user_id: i32,
     name: String,
     title: String,
@@ -48,7 +47,7 @@ impl RequestWithFile for CreateNewStickerSet {
 
 impl CreateNewStickerSet {
     pub(crate) fn new<N, T, E>(
-        bot: Arc<Bot>,
+        bot: Bot,
         user_id: i32,
         name: N,
         title: T,

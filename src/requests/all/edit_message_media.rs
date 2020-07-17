@@ -4,7 +4,6 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, InputMedia, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to edit animation, audio, document, photo, or video
 /// messages.
@@ -22,7 +21,7 @@ use std::sync::Arc;
 /// [`True`]: crate::types::True
 #[derive(Debug, Clone)]
 pub struct EditMessageMedia {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_or_inline_message: ChatOrInlineMessage,
     media: InputMedia,
     reply_markup: Option<InlineKeyboardMarkup>,
@@ -62,7 +61,7 @@ impl Request for EditMessageMedia {
 
 impl EditMessageMedia {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
     ) -> Self {

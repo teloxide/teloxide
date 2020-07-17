@@ -6,7 +6,6 @@ use crate::{
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send invoices.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendInvoice {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: i32,
     title: String,
     description: String,
@@ -59,7 +58,7 @@ impl Request for SendInvoice {
 impl SendInvoice {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new<T, D, Pl, Pt, S, C, Pr>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: i32,
         title: T,
         description: D,

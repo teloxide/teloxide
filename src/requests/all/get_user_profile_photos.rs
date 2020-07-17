@@ -6,7 +6,6 @@ use crate::{
     types::UserProfilePhotos,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get a list of profile pictures for a user.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetUserProfilePhotos {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     user_id: i32,
     offset: Option<i32>,
     limit: Option<i32>,
@@ -37,7 +36,7 @@ impl Request for GetUserProfilePhotos {
 }
 
 impl GetUserProfilePhotos {
-    pub(crate) fn new(bot: Arc<Bot>, user_id: i32) -> Self {
+    pub(crate) fn new(bot: Bot, user_id: i32) -> Self {
         Self { bot, user_id, offset: None, limit: None }
     }
 

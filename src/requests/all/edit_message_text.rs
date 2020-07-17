@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to edit text and game messages.
 ///
@@ -21,7 +20,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageText {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     text: String,
@@ -47,7 +46,7 @@ impl Request for EditMessageText {
 
 impl EditMessageText {
     pub(crate) fn new<T>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
         text: T,
     ) -> Self

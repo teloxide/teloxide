@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, GameHighScore},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get data for high score tables.
 ///
@@ -24,7 +23,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetGameHighScores {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     user_id: i32,
@@ -47,7 +46,7 @@ impl Request for GetGameHighScores {
 
 impl GetGameHighScores {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
     ) -> Self {
