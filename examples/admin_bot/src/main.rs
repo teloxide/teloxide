@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use teloxide::{
-    prelude::*, types::ChatPermissions, utils::command::BotCommand
+    prelude::*, types::ChatPermissions, utils::command::BotCommand,
 };
 
 use futures::future;
@@ -15,7 +15,7 @@ use futures::future;
 // your commands in this format:
 // %GENERAL-DESCRIPTION%
 // %PREFIX%%COMMAND% - %DESCRIPTION%
-#[derive(BotCommand)]
+#[derive(BotCommand, Debug)]
 #[command(
     rename = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
@@ -37,6 +37,7 @@ enum Command {
     Help,
 }
 
+#[derive(Debug, Copy, Clone)]
 enum UnitOfTime {
     Seconds,
     Minutes,
@@ -130,34 +131,24 @@ async fn ban_user(cx: &Cx, time: u32) -> ResponseResult<()> {
     Ok(())
 }
 
-async fn action(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn action(cx: UpdateWithCx<(Message, Command)>) -> ResponseResult<()> {
+    let UpdateWithCx { bot, update: (message, command) } = &cx;
+    let message_cx = UpdateWithCx { bot: bot.clone(), update: message.clone() };
+
     match command {
         Command::Help => {
             cx.answer(Command::descriptions()).send().await.map(|_| ())?
         }
-        Command::Kick => kick_user(&cx).await?,
+        Command::Kick => kick_user(&message_cx).await?,
         Command::Ban { time, unit } => {
-            ban_user(&cx, calc_restrict_time(time, unit)).await?
+            ban_user(&message_cx, calc_restrict_time(*time, *unit)).await?
         }
         Command::Mute { time, unit } => {
-            mute_user(&cx, calc_restrict_time(time, unit)).await?
+            mute_user(&message_cx, calc_restrict_time(*time, *unit)).await?
         }
     };
 
     Ok(())
-}
-
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.filter(|cx| future::ready(cx.update.chat.is_group()))
-        .commands::<Command, &str>(panic!("Insert here your bot's name"))
-        // Execute all incoming commands concurrently:
-        .for_each_concurrent(None, |(cx, command)| async move {
-            action(cx, command).await.log_on_error().await;
-        })
-        .await;
 }
 
 #[tokio::main]
@@ -171,5 +162,21 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await
+    Dispatcher::new(bot)
+        .commands_handler::<_, &str>(
+            |rx: DispatcherHandlerRx<(Message, Command)>| {
+                rx.filter(|UpdateWithCx { bot: _, update: (message, _) }| {
+                    future::ready(message.chat.is_group())
+                })
+                .for_each_concurrent(
+                    None,
+                    |update| async move {
+                        action(update).await.log_on_error().await;
+                    },
+                )
+            },
+            panic!("Your bot's name"),
+        )
+        .dispatch()
+        .await
 }

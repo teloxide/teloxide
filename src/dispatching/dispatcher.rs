@@ -8,6 +8,7 @@ use crate::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
+    utils::command::BotCommand,
     Bot,
 };
 use futures::StreamExt;
@@ -50,7 +51,7 @@ fn send<'a, Upd>(
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
-pub struct Dispatcher {
+pub struct Dispatcher<Cmd> {
     bot: Bot,
 
     messages_queue: Tx<Message>,
@@ -64,9 +65,12 @@ pub struct Dispatcher {
     pre_checkout_queries_queue: Tx<PreCheckoutQuery>,
     polls_queue: Tx<Poll>,
     poll_answers_queue: Tx<PollAnswer>,
+
+    commands_queue: Tx<(Message, Cmd)>,
+    bot_name: Option<String>,
 }
 
-impl Dispatcher {
+impl<Cmd> Dispatcher<Cmd> {
     /// Constructs a new dispatcher with the specified `bot`.
     #[must_use]
     pub fn new(bot: Bot) -> Self {
@@ -83,6 +87,8 @@ impl Dispatcher {
             pre_checkout_queries_queue: None,
             polls_queue: None,
             poll_answers_queue: None,
+            commands_queue: None,
+            bot_name: None,
         }
     }
 
@@ -199,11 +205,32 @@ impl Dispatcher {
         self
     }
 
+    /// Sets a handler for commands.
+    ///
+    /// Commands will be passed into this handler if an incoming message
+    /// contains text, and if this text is a valid command (according to the
+    /// `Cmd` generic). In this case, the message will **NOT** be passed into a
+    /// handler for messages, otherwise, it will be.
+    #[must_use]
+    pub fn commands_handler<H, S>(mut self, h: H, bot_name: S) -> Self
+    where
+        Cmd: BotCommand + 'static + Send,
+        H: DispatcherHandler<(Message, Cmd)> + 'static + Send,
+        S: Into<String>,
+    {
+        self.commands_queue = self.new_tx(h);
+        self.bot_name = Some(bot_name.into());
+        self
+    }
+
     /// Starts your bot with the default parameters.
     ///
     /// The default parameters are a long polling update listener and log all
     /// errors produced by this listener).
-    pub async fn dispatch(&self) {
+    pub async fn dispatch(&self)
+    where
+        Cmd: BotCommand + 'static + Send + Debug,
+    {
         self.dispatch_with_listener(
             update_listeners::polling_default(self.bot.clone()),
             LoggingErrorHandler::with_custom_text(
@@ -223,6 +250,7 @@ impl Dispatcher {
         UListener: UpdateListener<ListenerE> + 'a,
         Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
+        Cmd: BotCommand + 'static + Send + Debug,
     {
         let update_listener = Box::pin(update_listener);
 
@@ -246,6 +274,26 @@ impl Dispatcher {
 
                     match update.kind {
                         UpdateKind::Message(message) => {
+                            if self.commands_queue.is_some() {
+                                if let Some(text) = message.text() {
+                                    if let Ok(cmd) = Cmd::parse(
+                                        text,
+                                        self.bot_name
+                                            .as_ref() /* Because commands_queue is
+                                             * Some */
+                                            .unwrap(),
+                                    ) {
+                                        send!(
+                                            &self.bot,
+                                            &self.commands_queue,
+                                            (message, cmd),
+                                            commands_queue
+                                        );
+                                        return;
+                                    }
+                                }
+                            }
+
                             send!(
                                 &self.bot,
                                 &self.messages_queue,

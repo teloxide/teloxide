@@ -16,6 +16,7 @@ pub trait DispatcherHandlerRxExt {
 
     /// Extracts only commands with their arguments from this stream of
     /// arbitrary messages.
+    #[deprecated(since = "0.3.0", note = "Use Dispatcher::commands_handler")]
     fn commands<C, N>(
         self,
         bot_name: N,

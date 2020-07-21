@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - ???
 ### Added
- - `BotBuilder`, which allows setting a default `ParseMode`.
+ - `BotBuilder`, which allows setting a default `ParseMode`
+ - `Dispatcher::commands_handler`
+ - `GetId`
 
 ### Deprecated
- - `Bot::{from_env_with_client, new, with_client}`.
+ - `Bot::{from_env_with_client, new, with_client}`
+ - `DispatcherHandlerRxExt::commands`
 
 ### Changed
  - Now methods which can send file to Telegram returns tokio::io::Result<T>. Early its could panic. ([issue 216](https://github.com/teloxide/teloxide/issues/216))

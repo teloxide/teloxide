@@ -1,5 +1,5 @@
 use crate::{
-    dispatching::dialogue::GetChatId,
+    dispatching::dialogue::{GetChatId, GetId},
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
         PinChatMessage, Request, ResponseResult, SendAnimation, SendAudio,
@@ -31,7 +31,10 @@ where
     }
 }
 
-impl UpdateWithCx<Message> {
+impl<Upd> UpdateWithCx<Upd>
+where
+    Upd: GetChatId + GetId,
+{
     pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
     where
         T: Into<String>,
@@ -43,7 +46,7 @@ impl UpdateWithCx<Message> {
     where
         T: Into<String>,
     {
-        self.bot.send_message(self.chat_id(), text)
+        self.bot.send_message(self.update.chat_id(), text)
     }
 
     pub fn reply_to<T>(&self, text: T) -> SendMessage
@@ -51,39 +54,39 @@ impl UpdateWithCx<Message> {
         T: Into<String>,
     {
         self.bot
-            .send_message(self.chat_id(), text)
-            .reply_to_message_id(self.update.id)
+            .send_message(self.update.chat_id(), text)
+            .reply_to_message_id(self.update.id())
     }
 
     pub fn answer_photo(&self, photo: InputFile) -> SendPhoto {
-        self.bot.send_photo(self.update.chat.id, photo)
+        self.bot.send_photo(self.update.chat_id(), photo)
     }
 
     pub fn answer_audio(&self, audio: InputFile) -> SendAudio {
-        self.bot.send_audio(self.update.chat.id, audio)
+        self.bot.send_audio(self.update.chat_id(), audio)
     }
 
     pub fn answer_animation(&self, animation: InputFile) -> SendAnimation {
-        self.bot.send_animation(self.update.chat.id, animation)
+        self.bot.send_animation(self.update.chat_id(), animation)
     }
 
     pub fn answer_document(&self, document: InputFile) -> SendDocument {
-        self.bot.send_document(self.update.chat.id, document)
+        self.bot.send_document(self.update.chat_id(), document)
     }
 
     pub fn answer_video(&self, video: InputFile) -> SendVideo {
-        self.bot.send_video(self.update.chat.id, video)
+        self.bot.send_video(self.update.chat_id(), video)
     }
 
     pub fn answer_voice(&self, voice: InputFile) -> SendVoice {
-        self.bot.send_voice(self.update.chat.id, voice)
+        self.bot.send_voice(self.update.chat_id(), voice)
     }
 
     pub fn answer_media_group<T>(&self, media_group: T) -> SendMediaGroup
     where
         T: Into<Vec<InputMedia>>,
     {
-        self.bot.send_media_group(self.update.chat.id, media_group)
+        self.bot.send_media_group(self.update.chat_id(), media_group)
     }
 
     pub fn answer_location(
@@ -91,7 +94,7 @@ impl UpdateWithCx<Message> {
         latitude: f32,
         longitude: f32,
     ) -> SendLocation {
-        self.bot.send_location(self.update.chat.id, latitude, longitude)
+        self.bot.send_location(self.update.chat_id(), latitude, longitude)
     }
 
     pub fn answer_venue<T, U>(
@@ -106,7 +109,7 @@ impl UpdateWithCx<Message> {
         U: Into<String>,
     {
         self.bot.send_venue(
-            self.update.chat.id,
+            self.update.chat_id(),
             latitude,
             longitude,
             title,
@@ -115,7 +118,7 @@ impl UpdateWithCx<Message> {
     }
 
     pub fn answer_video_note(&self, video_note: InputFile) -> SendVideoNote {
-        self.bot.send_video_note(self.update.chat.id, video_note)
+        self.bot.send_video_note(self.update.chat_id(), video_note)
     }
 
     pub fn answer_contact<T, U>(
@@ -127,18 +130,22 @@ impl UpdateWithCx<Message> {
         T: Into<String>,
         U: Into<String>,
     {
-        self.bot.send_contact(self.chat_id(), phone_number, first_name)
+        self.bot.send_contact(self.update.chat_id(), phone_number, first_name)
     }
 
     pub fn answer_sticker(&self, sticker: InputFile) -> SendSticker {
-        self.bot.send_sticker(self.update.chat.id, sticker)
+        self.bot.send_sticker(self.update.chat_id(), sticker)
     }
 
     pub fn forward_to<T>(&self, chat_id: T) -> ForwardMessage
     where
         T: Into<ChatId>,
     {
-        self.bot.forward_message(chat_id, self.update.chat.id, self.update.id)
+        self.bot.forward_message(
+            chat_id,
+            self.update.chat_id(),
+            self.update.id(),
+        )
     }
 
     pub fn edit_message_text<T>(&self, text: T) -> EditMessageText
@@ -147,8 +154,8 @@ impl UpdateWithCx<Message> {
     {
         self.bot.edit_message_text(
             ChatOrInlineMessage::Chat {
-                chat_id: self.update.chat.id.into(),
-                message_id: self.update.id,
+                chat_id: self.update.chat_id().into(),
+                message_id: self.update.id(),
             },
             text,
         )
@@ -156,16 +163,16 @@ impl UpdateWithCx<Message> {
 
     pub fn edit_message_caption(&self) -> EditMessageCaption {
         self.bot.edit_message_caption(ChatOrInlineMessage::Chat {
-            chat_id: self.update.chat.id.into(),
-            message_id: self.update.id,
+            chat_id: self.update.chat_id().into(),
+            message_id: self.update.id(),
         })
     }
 
     pub fn delete_message(&self) -> DeleteMessage {
-        self.bot.delete_message(self.update.chat.id, self.update.id)
+        self.bot.delete_message(self.update.chat_id(), self.update.id())
     }
 
     pub fn pin_message(&self) -> PinChatMessage {
-        self.bot.pin_chat_message(self.update.chat.id, self.update.id)
+        self.bot.pin_chat_message(self.update.chat_id(), self.update.id())
     }
 }

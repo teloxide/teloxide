@@ -125,7 +125,7 @@ Commands are defined similar to how we define CLI using [structopt] and JSON str
 ```rust
 // Imports are omitted...
 
-#[derive(BotCommand)]
+#[derive(BotCommand, Debug)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -139,10 +139,9 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn answer(cx: UpdateWithCx<(Message, Command)>) -> ResponseResult<()> {
+    let command = &cx.update.1;
+
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
@@ -158,14 +157,6 @@ async fn answer(
     };
 
     Ok(())
-}
-
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        .for_each_concurrent(None, |(cx, command)| async move {
-            answer(cx, command).await.log_on_error().await;
-        })
-        .await;
 }
 
 #[tokio::main]

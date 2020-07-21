@@ -1,6 +1,6 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
-#[derive(BotCommand)]
+#[derive(BotCommand, Debug)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -14,10 +14,9 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn answer(cx: UpdateWithCx<(Message, Command)>) -> ResponseResult<()> {
+    let command = &cx.update.1;
+
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
@@ -35,14 +34,6 @@ async fn answer(
     Ok(())
 }
 
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        .for_each_concurrent(None, |(cx, command)| async move {
-            answer(cx, command).await.log_on_error().await;
-        })
-        .await;
-}
-
 #[tokio::main]
 async fn main() {
     run().await;
@@ -54,5 +45,15 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await;
+    Dispatcher::new(bot)
+        .commands_handler::<_, &str>(
+            |rx: DispatcherHandlerRx<(Message, Command)>| {
+                rx.for_each_concurrent(None, |update| async move {
+                    answer(update).await.log_on_error().await;
+                })
+            },
+            panic!("Your bot's name"),
+        )
+        .dispatch()
+        .await;
 }

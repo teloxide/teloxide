@@ -47,6 +47,7 @@ mod dialogue_dispatcher_handler;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
+mod get_id;
 mod storage;
 
 use crate::{requests::ResponseResult, types::Message};
@@ -55,6 +56,7 @@ pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
+pub use get_id::GetId;
 
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};
