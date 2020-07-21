@@ -8,11 +8,16 @@ use crate::{
         CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
-    utils::command::BotCommand,
+    utils::command::{BotCommand, ParseError},
     Bot,
 };
 use futures::StreamExt;
-use std::{fmt::Debug, sync::Arc};
+use serde::export::Formatter;
+use std::{
+    error::Error,
+    fmt::{Debug, Display},
+    sync::Arc,
+};
 use tokio::sync::mpsc;
 
 type Tx<Upd> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd>>>;
@@ -47,11 +52,39 @@ fn send<'a, Upd>(
     }
 }
 
+/// A bot command that always fails.
+#[derive(Debug, Copy, Clone)]
+pub struct FailingBotCommand;
+
+impl BotCommand for FailingBotCommand {
+    fn descriptions() -> String {
+        unimplemented!()
+    }
+
+    fn parse<N>(_s: &str, _bot_name: N) -> Result<Self, ParseError>
+    where
+        N: Into<String>,
+    {
+        Err(ParseError::Custom(Box::new(FailingBotCommandError)))
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct FailingBotCommandError;
+
+impl Display for FailingBotCommandError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "FailingBotCommandError")
+    }
+}
+
+impl Error for FailingBotCommandError {}
+
 /// One dispatcher to rule them all.
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
-pub struct Dispatcher<Cmd> {
+pub struct Dispatcher<Cmd = FailingBotCommand> {
     bot: Bot,
 
     messages_queue: Tx<Message>,
