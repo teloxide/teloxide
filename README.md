@@ -229,7 +229,7 @@ pub enum Dialogue {
 }
 ```
 
-The handy `up!` macro automatically generates functions that complete one state to another by appending a field.
+The handy `up!` macro automatically generates functions that complete one state to another by appending a field. Here are the transition functions:
 
 ([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
 ```rust
