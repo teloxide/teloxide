@@ -31,7 +31,7 @@ pub fn bot_dialogue(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
-    write!(dispatch_fn, "impl {} {{ pub async fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> TransitionOut<Self> {{ match self {{", input.ident).unwrap();
+    write!(dispatch_fn, "impl {} {{ pub async fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> teloxide::dispatching::dialogue::TransitionOut<Self> {{ match self {{", input.ident).unwrap();
 
     for variant in input.variants.iter() {
         if let Some(handler) = variant
