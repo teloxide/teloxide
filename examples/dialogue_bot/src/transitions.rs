@@ -55,18 +55,3 @@ async fn receive_gandalf_alternative_name(
         }
     }
 }
-
-pub async fn dispatch(cx: Cx, dialogue: Dialogue) -> Out {
-    match dialogue {
-        Dialogue::Start(state) => start(cx, state).await,
-        Dialogue::ReceiveDaysOfWeek(state) => {
-            receive_days_of_week(cx, state).await
-        }
-        Dialogue::Receive10x5Answer(state) => {
-            receive_10x5_answer(cx, state).await
-        }
-        Dialogue::ReceiveGandalfAlternativeName(state) => {
-            receive_gandalf_alternative_name(cx, state).await
-        }
-    }
-}

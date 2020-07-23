@@ -21,6 +21,8 @@
 extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
+#[macro_use]
+extern crate teloxide_macros;
 
 mod states;
 mod transitions;
@@ -46,7 +48,10 @@ async fn run() {
         .messages_handler(DialogueDispatcher::new(
             |input: TransitionIn<Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                dispatch(input.cx, input.dialogue.unwrap())
+                input
+                    .dialogue
+                    .unwrap()
+                    .dispatch(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },
