@@ -1,56 +1,56 @@
 use teloxide::prelude::*;
 
-use super::{favourite_music::FavouriteMusic, states::*};
+use super::states::*;
 
 pub type Cx = UpdateWithCx<Message>;
 pub type Out = TransitionOut<Dialogue>;
 
 async fn start(cx: Cx, state: StartState) -> Out {
-    cx.answer_str("Let's start! First, what's your full name?").await?;
+    cx.answer_str("Let's start our test! How many days per week are there?")
+        .await?;
     next(state.up())
 }
 
-async fn receive_full_name(cx: Cx, state: ReceiveFullNameState) -> Out {
-    match cx.update.text_owned() {
-        Some(full_name) => {
-            cx.answer_str("What a wonderful name! Your age?").await?;
-            next(state.up(full_name))
-        }
-        _ => {
-            cx.answer_str("Please, enter a text message!").await?;
-            next(state)
-        }
-    }
-}
-
-async fn receive_age(cx: Cx, state: ReceiveAgeState) -> Out {
+async fn receive_days_of_week(cx: Cx, state: ReceiveDaysOfWeekState) -> Out {
     match cx.update.text().map(str::parse) {
-        Some(Ok(age)) => {
-            cx.answer("Good. Now choose your favourite music:")
-                .reply_markup(FavouriteMusic::markup())
-                .send()
-                .await?;
-            next(state.up(age))
+        Some(Ok(ans)) if ans == 7 => {
+            cx.answer_str("10*5 = ?").await?;
+            next(state.up(ans))
         }
         _ => {
-            cx.answer_str("Please, enter a number!").await?;
+            cx.answer_str("Try again.").await?;
             next(state)
         }
     }
 }
 
-async fn receive_favourite_music(
+async fn receive_10x5_answer(cx: Cx, state: Receive10x5AnswerState) -> Out {
+    match cx.update.text().map(str::parse) {
+        Some(Ok(ans)) if ans == 50 => {
+            cx.answer_str("What's an alternative name of Gandalf?").await?;
+            next(state.up(ans))
+        }
+        _ => {
+            cx.answer_str("Try again.").await?;
+            next(state)
+        }
+    }
+}
+
+async fn receive_gandalf_alternative_name(
     cx: Cx,
-    state: ReceiveFavouriteMusicState,
+    state: ReceiveGandalfAlternativeNameState,
 ) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(favourite_music)) => {
-            cx.answer_str(format!("Fine. {}", state.up(favourite_music)))
-                .await?;
+    match cx.update.text() {
+        Some(ans) if ans == "Mithrandir" => {
+            cx.answer_str(
+                "Congratulations! You've successfully passed the test!",
+            )
+            .await?;
             exit()
         }
         _ => {
-            cx.answer_str("Please, enter from the keyboard!").await?;
+            cx.answer_str("Try again.").await?;
             next(state)
         }
     }
@@ -59,10 +59,14 @@ async fn receive_favourite_music(
 pub async fn dispatch(cx: Cx, dialogue: Dialogue) -> Out {
     match dialogue {
         Dialogue::Start(state) => start(cx, state).await,
-        Dialogue::ReceiveFullName(state) => receive_full_name(cx, state).await,
-        Dialogue::ReceiveAge(state) => receive_age(cx, state).await,
-        Dialogue::ReceiveFavouriteMusic(state) => {
-            receive_favourite_music(cx, state).await
+        Dialogue::ReceiveDaysOfWeek(state) => {
+            receive_days_of_week(cx, state).await
+        }
+        Dialogue::Receive10x5Answer(state) => {
+            receive_10x5_answer(cx, state).await
+        }
+        Dialogue::ReceiveGandalfAlternativeName(state) => {
+            receive_gandalf_alternative_name(cx, state).await
         }
     }
 }

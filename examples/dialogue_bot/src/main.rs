@@ -22,7 +22,6 @@ extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
 
-mod favourite_music;
 mod states;
 mod transitions;
 
