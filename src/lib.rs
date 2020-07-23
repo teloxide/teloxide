@@ -1,3 +1,5 @@
+// TODO: refactor this shit.
+
 mod attr;
 mod command;
 mod command_enum;
@@ -15,7 +17,46 @@ use crate::{
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Fields};
+use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
+
+use std::fmt::Write;
+
+#[proc_macro_attribute]
+pub fn handler(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+
+#[proc_macro_attribute]
+pub fn bot_dialogue(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as ItemEnum);
+    let mut dispatch_fn = "".to_owned();
+
+    write!(dispatch_fn, "impl {0} {{ pub fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> TransitionOut<{0}> {{ match self {{", input.ident).unwrap();
+
+    for variant in input.variants.iter() {
+        if let Some(handler) = variant
+            .attrs
+            .iter()
+            .find(|attr| match attr.path.get_ident() {
+                Some(ident) => ident == "handler",
+                None => false,
+            })
+        {
+            let mut handler_fn = handler.tokens.to_string()[1..].to_owned();
+            handler_fn.pop();
+
+            write!(
+                dispatch_fn,
+                "{}::{}(state) => {}(cx, state).await,",
+                input.ident, variant.ident, handler_fn
+            )
+            .unwrap();
+        }
+    }
+
+    write!(dispatch_fn, "}} }} }}").unwrap();
+    dispatch_fn.parse().unwrap()
+}
 
 macro_rules! get_or_return {
     ($($some:tt)*) => {
