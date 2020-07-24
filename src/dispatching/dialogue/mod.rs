@@ -36,15 +36,15 @@
 //! struct _2State;
 //! struct _3State;
 //!
-//! pub type Out = TransitionOut<D>;
+//! type Out = TransitionOut<D>;
 //!
-//! pub async fn _1_transition(cx: TransitionIn, state: _1State) -> Out {
+//! async fn _1_transition(_cx: TransitionIn, _state: _1State) -> Out {
 //!     todo!()
 //! }
-//! pub async fn _2_transition(cx: TransitionIn, state: _2State) -> Out {
+//! async fn _2_transition(_cx: TransitionIn, _state: _2State) -> Out {
 //!     todo!()
 //! }
-//! pub async fn _3_transition(cx: TransitionIn, state: _3State) -> Out {
+//! async fn _3_transition(_cx: TransitionIn, _state: _3State) -> Out {
 //!     todo!()
 //! }
 //!
