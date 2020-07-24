@@ -7,7 +7,6 @@ mod states;
 mod transitions;
 
 use states::*;
-use transitions::*;
 
 use teloxide::{
     dispatching::dialogue::{serializer::Bincode, RedisStorage, Storage},
@@ -27,18 +26,6 @@ enum Error {
 
 type In = DialogueWithCx<Message, Dialogue, StorageError>;
 
-async fn handle_message(input: In) -> Out {
-    let (cx, dialogue) = input.unpack();
-
-    match cx.update.text_owned() {
-        Some(text) => dispatch(cx, dialogue, &text).await,
-        None => {
-            cx.answer_str("Please, send me a text message").await?;
-            next(StartState)
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() {
     run().await;
@@ -48,8 +35,11 @@ async fn run() {
     let bot = Bot::from_env();
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::with_storage(
-            |cx| async move {
-                handle_message(cx)
+            |input: In| async move {
+                let (cx, dialogue) = input.unpack();
+
+                dialogue
+                    .dispatch(cx)
                     .await
                     .expect("Something is wrong with the bot!")
             },

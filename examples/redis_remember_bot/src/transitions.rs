@@ -2,9 +2,24 @@ use teloxide::prelude::*;
 
 use super::states::*;
 
+#[macro_export]
+macro_rules! extract_text {
+    ($cx:ident) => {
+        match $cx.update.text_owned() {
+            Some(text) => text,
+            None => {
+                $cx.answer_str("Please, send me a text message").await?;
+                return next(StartState);
+            }
+        }
+    };
+}
+
 pub type Out = TransitionOut<Dialogue>;
 
-async fn start(cx: TransitionIn, state: StartState, text: &str) -> Out {
+pub async fn start(cx: TransitionIn, state: StartState) -> Out {
+    let text = extract_text!(cx);
+
     if let Ok(number) = text.parse() {
         cx.answer_str(format!(
             "Remembered number {}. Now use /get or /reset",
@@ -18,11 +33,8 @@ async fn start(cx: TransitionIn, state: StartState, text: &str) -> Out {
     }
 }
 
-async fn have_number(
-    cx: TransitionIn,
-    state: HaveNumberState,
-    text: &str,
-) -> Out {
+pub async fn have_number(cx: TransitionIn, state: HaveNumberState) -> Out {
+    let text = extract_text!(cx);
     let num = state.number;
 
     if text.starts_with("/get") {
@@ -34,12 +46,5 @@ async fn have_number(
     } else {
         cx.answer_str("Please, send /get or /reset").await?;
         next(state)
-    }
-}
-
-pub async fn dispatch(cx: TransitionIn, dialogue: Dialogue, text: &str) -> Out {
-    match dialogue {
-        Dialogue::Start(state) => start(cx, state, text).await,
-        Dialogue::HaveNumber(state) => have_number(cx, state, text).await,
     }
 }
