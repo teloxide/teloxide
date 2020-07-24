@@ -1,9 +1,9 @@
+use crate::types::ParseMode;
 use reqwest::{
     header::{HeaderMap, CONNECTION},
     Client, ClientBuilder,
 };
 use std::{sync::Arc, time::Duration};
-use crate::types::ParseMode;
 
 mod api;
 mod download;
