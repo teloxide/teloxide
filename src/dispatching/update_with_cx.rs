@@ -32,6 +32,7 @@ where
 }
 
 impl UpdateWithCx<Message> {
+    /// A shortcut for `.answer(text).send().await`.
     pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
     where
         T: Into<String>,

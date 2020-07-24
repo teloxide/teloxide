@@ -46,7 +46,9 @@ pub enum PassportElementErrorKind {
 }
 
 /// Represents an issue in one of the data fields that was provided by the
-/// user. The error is considered resolved when the field's value changes.
+/// user.
+///
+/// The error is considered resolved when the field's value changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrordatafield).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -61,9 +63,10 @@ pub struct PassportElementErrorDataField {
     pub data_hash: String,
 }
 
-/// Represents an issue with the front side of a document. The error is
-/// considered resolved when the file with the front side of the document
-/// changes.
+/// Represents an issue with the front side of a document.
+///
+/// The error is considered resolved when the file with the front side of the
+/// document changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfrontside).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -76,9 +79,10 @@ pub struct PassportElementErrorFrontSide {
     pub file_hash: String,
 }
 
-/// Represents an issue with the reverse side of a document. The error is
-/// considered resolved when the file with reverse side of the document
-/// changes.
+/// Represents an issue with the reverse side of a document.
+///
+/// The error is considered resolved when the file with reverse side of the
+/// document changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorreverseside).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -91,8 +95,9 @@ pub struct PassportElementErrorReverseSide {
     pub file_hash: String,
 }
 
-//// Represents an issue with the selfie with a document. The error is
-//// considered resolved when the file with the selfie changes.
+//// Represents an issue with the selfie with a document.
+//
+/// The error is considered resolved when the file with the selfie changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorselfie).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -104,8 +109,10 @@ pub struct PassportElementErrorSelfie {
     pub file_hash: String,
 }
 
-/// Represents an issue with a document scan. The error is considered
-/// resolved when the file with the document scan changes.
+/// Represents an issue with a document scan.
+///
+/// The error is considered resolved when the file with the document scan
+/// changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfile).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -117,8 +124,10 @@ pub struct PassportElementErrorFile {
     pub file_hash: String,
 }
 
-/// Represents an issue with a list of scans. The error is considered
-/// resolved when the list of files containing the scans changes.
+/// Represents an issue with a list of scans.
+///
+/// The error is considered resolved when the list of files containing the scans
+/// changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfiles).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -131,8 +140,9 @@ pub struct PassportElementErrorFiles {
 }
 
 /// Represents an issue with one of the files that constitute the
-/// translation of a document. The error is considered resolved when the
-/// file changes.
+/// translation of a document.
+///
+/// The error is considered resolved when the file changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrortranslationfile).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -145,8 +155,9 @@ pub struct PassportElementErrorTranslationFile {
     pub file_hash: String,
 }
 
-/// Represents an issue with the translated version of a document. The
-/// error is considered resolved when a file with the document translation
+/// Represents an issue with the translated version of a document.
+///
+/// The error is considered resolved when a file with the document translation
 /// change.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrortranslationfiles).
@@ -159,8 +170,9 @@ pub struct PassportElementErrorTranslationFiles {
     pub file_hashes: Vec<String>,
 }
 
-/// Represents an issue in an unspecified place. The error is considered
-/// resolved when new data is added.
+/// Represents an issue in an unspecified place.
+///
+/// The error is considered resolved when new data is added.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorunspecified).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]

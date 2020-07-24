@@ -92,7 +92,7 @@
 //!   updates `0..=N`.
 //!
 //! # Webhooks
-//! See the [README FAQ about webhooks](https://github.com/teloxide/teloxide/blob/master/README.md#can-i-use-webhooks).
+//! See the [README FAQ about webhooks](https://github.com/teloxide/teloxide/blob/master/README.md#faq).
 //!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default

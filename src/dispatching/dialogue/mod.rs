@@ -116,5 +116,5 @@ macro_rules! up {
 /// An input passed into a FSM transition function.
 pub type TransitionIn = UpdateWithCx<Message>;
 
-// A type returned from a FSM transition function.
+/// A type returned from a FSM transition function.
 pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;

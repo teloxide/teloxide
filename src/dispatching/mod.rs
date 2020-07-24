@@ -1,12 +1,11 @@
 //! Updates dispatching.
 //!
 //! The key type here is [`Dispatcher`]. It encapsulates [`Bot`] and handlers
-//! for [the 11 update kinds].
+//! for [all the update kinds].
 //!
-//! You can register a maximum of 11 handlers for [the 11 update kinds]. Every
-//! handler accept [`tokio::sync::mpsc::UnboundedReceiver`] (the RX halve of an
-//! asynchronous unbounded MPSC channel). Inside a body of your handler, you
-//! typically asynchronously concurrently iterate through updates like this:
+//! Every handler accept [`tokio::sync::mpsc::UnboundedReceiver`] (the RX halve
+//! of an asynchronous channel). Inside a body of your handler, you typically
+//! asynchronously concurrently iterate through updates like this:
 //!
 //! ```
 //! use teloxide::prelude::*;
@@ -29,12 +28,11 @@
 //!    [`tokio::sync::mpsc::UnboundedReceiver`] and return `Future<Output = ()`
 //!    as a handler.
 //!
-//! Since they implement [`DispatcherHandler`] too!
+//! Since they implement [`DispatcherHandler`] too.
 //!
-//! # Examples
-//! ### The ping-pong bot
-//! This bot has a single message handler, which answers "pong" to each incoming
-//! message:
+//! # The ping-pong bot
+//! This bot has a single handler of messages, which answers "pong" to each
+//! incoming message:
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
 //! ```no_run
@@ -67,7 +65,7 @@
 //! [See more examples](https://github.com/teloxide/teloxide/tree/master/examples).
 //!
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [the 11 update kinds]: crate::types::UpdateKind
+//! [all the update kinds]: crate::types::UpdateKind
 //! [`Update`]: crate::types::Update
 //! [`ErrorHandler`]: crate::dispatching::ErrorHandler
 //! [`DispatcherHandler`]: crate::dispatching::DispatcherHandler

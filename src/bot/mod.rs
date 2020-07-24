@@ -8,9 +8,11 @@ use std::{sync::Arc, time::Duration};
 mod api;
 mod download;
 
-/// A Telegram bot used to send requests.
+/// A requests sender.
 ///
-/// No need to put `Bot` into `Arc`, because it's already in.
+/// No need to put it into [`Arc`], because it's already in.
+///
+/// [`Arc`]: std::sync::Arc
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
