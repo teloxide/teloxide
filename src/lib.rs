@@ -21,7 +21,7 @@ use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
 
 use std::fmt::Write;
 
-#[proc_macro_derive(BotDialogue, attributes(handler))]
+#[proc_macro_derive(BotDialogue, attributes(transition))]
 pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
