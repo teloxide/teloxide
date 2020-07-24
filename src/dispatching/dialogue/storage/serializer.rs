@@ -1,4 +1,5 @@
-/// Various serializers for memory storages.
+//! Various serializers for memory storages.
+
 use serde::{de::DeserializeOwned, ser::Serialize};
 
 /// A serializer for memory storages.

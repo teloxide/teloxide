@@ -1,10 +1,4 @@
-use crate::{
-    dispatching::{
-        dialogue::{TransitionIn, TransitionOut},
-        UpdateWithCx,
-    },
-    types::Message,
-};
+use crate::dispatching::dialogue::{TransitionIn, TransitionOut};
 use futures::future::BoxFuture;
 
 /// Represents a dialogue FSM.

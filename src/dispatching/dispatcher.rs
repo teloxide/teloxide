@@ -48,8 +48,8 @@ fn send<'a, Upd>(
 
 /// One dispatcher to rule them all.
 ///
-/// See [the module-level documentation for the design
-/// overview](crate::dispatching).
+/// See the [module-level documentation](crate::dispatching) for the design
+/// overview.
 pub struct Dispatcher {
     bot: Bot,
 

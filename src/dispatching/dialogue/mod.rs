@@ -1,20 +1,19 @@
 //! Dealing with dialogues.
 //!
-//! There are four main components:
+//! There are three main components:
 //!
-//!  1. Your type `D`, which designates a dialogue state at the current
-//! moment.
+//!  1. Your type `D` (typically an enumeration), implementing [`BotDialogue`].
+//! It is essentially a [FSM]: its variants are possible dialogue states and
+//! [`BotDialogue::dispatch`] is a transition function.
+//!
 //!  2. [`Storage<D>`], which encapsulates all the dialogues.
-//!  3. Your handler, which receives an update and turns your dialogue into the
-//! next state ([`DialogueDispatcherHandlerCx<YourUpdate, D>`] ->
-//! [`DialogueStage<D>`]).
-//!  4. [`DialogueDispatcher`], which encapsulates your handler, [`Storage<D>`],
+//!
+//!  3. [`DialogueDispatcher`], which encapsulates your handler, [`Storage<D>`],
 //! and implements [`DispatcherHandler`].
 //!
-//! For example, you supply [`DialogueDispatcher`] into
-//! [`Dispatcher::messages_handler`]. Every time [`Dispatcher`] sees an incoming
-//! [`UpdateKind::Message(message)`], `message` is transferred into
-//! [`DialogueDispatcher`]. After this, following steps are executed:
+//! You pass [`DialogueDispatcher`] into [`Dispatcher`]. Every time
+//! [`Dispatcher`] sees an incoming input, it is transferred into
+//! [`DialogueDispatcher`], and the following steps are executed:
 //!
 //!  1. If a storage doesn't contain a dialogue from this chat, supply
 //! `D::default()` into you handler, otherwise, supply the saved dialogue
@@ -23,21 +22,102 @@
 //! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
 //! update the dialogue.
 //!
-//! Please, see [examples/dialogue_bot] as an example.
+//! To avoid boilerplate, teloxide exports these convenient things: the [`up!`]
+//! macro, the [`next`] and [`exit`] functions, and `#[derive(BotDialogue)]`.
+//! Here's how your dialogues management code skeleton should look like:
+//!
+//! ```no_run
+//! use std::convert::Infallible;
+//!
+//! use teloxide::prelude::*;
+//! use teloxide_macros::BotDialogue;
+//!
+//! struct _1State;
+//! struct _2State;
+//! struct _3State;
+//!
+//! pub type Out = TransitionOut<D>;
+//!
+//! pub async fn _1_transition(cx: TransitionIn, state: _1State) {
+//!     todo!()
+//! }
+//! pub async fn _2_transition(cx: TransitionIn, state: _2State) {
+//!     todo!()
+//! }
+//! pub async fn _3_transition(cx: TransitionIn, state: _3State) {
+//!     todo!()
+//! }
+//!
+//! #[derive(BotDialogue)]
+//! enum D {
+//!     #[transition(_1_transition)]
+//!     _1(_1State),
+//!     #[transition(_2_transition)]
+//!     _2(_2State),
+//!     #[transition(_3_transition)]
+//!     _3(_3State),
+//! }
+//!
+//! impl Default for D {
+//!     fn default() -> Self {
+//!         Self::_1(_1State)
+//!     }
+//! }
+//!
+//! #[tokio::main]
+//! async fn main() {
+//!     run().await;
+//! }
+//!
+//! async fn run() {
+//!     teloxide::enable_logging!();
+//!     log::info!("Starting dialogue_bot!");
+//!
+//!     let bot = Bot::from_env();
+//!
+//!     Dispatcher::new(bot)
+//!         .messages_handler(DialogueDispatcher::new(
+//!             |input: DialogueWithCx<Message, D, Infallible>| async move {
+//!                 // Unwrap without panic because of std::convert::Infallible.
+//!                 input
+//!                     .dialogue
+//!                     .unwrap()
+//!                     .dispatch(input.cx)
+//!                     .await
+//!                     .expect("Something wrong with the bot!")
+//!             },
+//!         ))
+//!         .dispatch()
+//!         .await;
+//! }
+//! ```
+//!
+//! See [examples/dialogue_bot] as a real example.
+//!
+//! [`BotDialogue`]: crate::dispatching::dialogue::BotDialogue
+//! [`BotDialogue::dispatch`]:
+//! crate::dispatching::dialogue::BotDialogue::dispatch
+//! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 //!
 //! [`Storage<D>`]: crate::dispatching::dialogue::Storage
+//!
 //! [`DialogueStage<D>`]: crate::dispatching::dialogue::DialogueStage
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
+//!
 //! [`DialogueStage::Exit`]:
 //! crate::dispatching::dialogue::DialogueStage::Exit
 //! [`DialogueStage::Next`]: crate::dispatching::dialogue::DialogueStage::Next
+//!
+//! [`up!`]: crate::up
+//! [`next`]: crate::dispatching::dialogue::next
+//! [`exit`]: crate::dispatching::dialogue::exit
+//!
 //! [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
 //! [`Dispatcher::messages_handler`]:
 //! crate::dispatching::Dispatcher::messages_handler
 //! [`UpdateKind::Message(message)`]: crate::types::UpdateKind::Message
-//! [`DialogueWithCx<YourUpdate, D>`]:
-//! crate::dispatching::dialogue::DialogueWithCx
+//!
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 #![allow(clippy::type_complexity)]
