@@ -185,6 +185,22 @@ States and transition functions are placed into separated modules. For example:
 ```rust
 // Imports are omitted...
 
+#[derive(BotDialogue, SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    #[transition(start)]
+    Start(StartState),
+
+    #[transition(receive_days_of_week)]
+    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
+
+    #[transition(receive_10x5_answer)]
+    Receive10x5Answer(Receive10x5AnswerState),
+
+    #[transition(receive_gandalf_alternative_name)]
+    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+}
+
 #[derive(Default)]
 pub struct StartState;
 
@@ -213,15 +229,6 @@ up!(
     Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
     ReceiveGandalfAlternativeNameState + [gandalf_alternative_name: String] -> ExitState,
 );
-
-#[derive(SmartDefault, From)]
-pub enum Dialogue {
-    #[default]
-    Start(StartState),
-    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
-    Receive10x5Answer(Receive10x5AnswerState),
-    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
-}
 ```
 
 The handy `up!` macro automatically generates functions that complete one state to another by appending a field. Here are the transition functions:
@@ -233,13 +240,16 @@ The handy `up!` macro automatically generates functions that complete one state 
 pub type Cx = UpdateWithCx<Message>;
 pub type Out = TransitionOut<Dialogue>;
 
-async fn start(cx: Cx, state: StartState) -> Out {
+pub async fn start(cx: Cx, state: StartState) -> Out {
     cx.answer_str("Let's start our test! How many days per week are there?")
         .await?;
     next(state.up())
 }
 
-async fn receive_days_of_week(cx: Cx, state: ReceiveDaysOfWeekState) -> Out {
+pub async fn receive_days_of_week(
+    cx: Cx,
+    state: ReceiveDaysOfWeekState,
+) -> Out {
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 7 => {
             cx.answer_str("10*5 = ?").await?;
@@ -252,7 +262,7 @@ async fn receive_days_of_week(cx: Cx, state: ReceiveDaysOfWeekState) -> Out {
     }
 }
 
-async fn receive_10x5_answer(cx: Cx, state: Receive10x5AnswerState) -> Out {
+pub async fn receive_10x5_answer(cx: Cx, state: Receive10x5AnswerState) -> Out {
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 50 => {
             cx.answer_str("What's an alternative name of Gandalf?").await?;
@@ -265,7 +275,7 @@ async fn receive_10x5_answer(cx: Cx, state: Receive10x5AnswerState) -> Out {
     }
 }
 
-async fn receive_gandalf_alternative_name(
+pub async fn receive_gandalf_alternative_name(
     cx: Cx,
     state: ReceiveGandalfAlternativeNameState,
 ) -> Out {
@@ -280,21 +290,6 @@ async fn receive_gandalf_alternative_name(
         _ => {
             cx.answer_str("Try again.").await?;
             next(state)
-        }
-    }
-}
-
-pub async fn dispatch(cx: Cx, dialogue: Dialogue) -> Out {
-    match dialogue {
-        Dialogue::Start(state) => start(cx, state).await,
-        Dialogue::ReceiveDaysOfWeek(state) => {
-            receive_days_of_week(cx, state).await
-        }
-        Dialogue::Receive10x5Answer(state) => {
-            receive_10x5_answer(cx, state).await
-        }
-        Dialogue::ReceiveGandalfAlternativeName(state) => {
-            receive_gandalf_alternative_name(cx, state).await
         }
     }
 }
@@ -315,7 +310,10 @@ async fn main() {
         .messages_handler(DialogueDispatcher::new(
             |input: TransitionIn<Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                dispatch(input.cx, input.dialogue.unwrap())
+                input
+                    .dialogue
+                    .unwrap()
+                    .dispatch(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },
