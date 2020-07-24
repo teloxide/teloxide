@@ -25,12 +25,15 @@ impl Bot {
     /// bot's token) and the default [`reqwest::Client`].
     ///
     /// # Panics
-    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[allow(deprecated)]
     pub fn from_env() -> Self {
-        Self::from_env_with_client(Client::new())
+        Self::from_env_with_client(
+            sound_bot().build().expect("creating reqwest::Client"),
+        )
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -39,7 +42,12 @@ impl Bot {
     /// # Panics
     /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///
+    /// # Caution
+    /// Your custom client might not be configured correctly to be able to work
+    /// in long time durations, see [issue 223].
+    ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
     #[deprecated]
     #[allow(deprecated)]
     pub fn from_env_with_client(client: Client) -> Self {
@@ -53,20 +61,31 @@ impl Bot {
     /// Creates a new `Bot` with the specified token and the default
     /// [`reqwest::Client`].
     ///
-    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    /// # Panics
+    /// If it cannot create [`reqwest::Client`].
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
     #[deprecated]
     #[allow(deprecated)]
     pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
     {
-        Self::with_client(token, sound_bot())
+        Self::with_client(
+            token,
+            sound_bot().build().expect("creating reqwest::Client"),
+        )
     }
 
     /// Creates a new `Bot` with the specified token and your
     /// [`reqwest::Client`].
     ///
-    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    /// # Caution
+    /// Your custom client might not be configured correctly to be able to work
+    /// in long time durations, see [issue 223].
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
+    /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
     #[deprecated]
     #[allow(deprecated)]
     pub fn with_client<S>(token: S, client: Client) -> Self
@@ -81,8 +100,13 @@ impl Bot {
     }
 }
 
-// See https://github.com/teloxide/teloxide/issues/223.
-fn sound_bot() -> Client {
+/// Returns a builder with safe settings.
+///
+/// By "safe settings" I mean that a client will be able to work in long time
+/// durations, see the [issue 223].
+///
+/// [issue 223]: https://github.com/teloxide/teloxide/issues/223
+pub(crate) fn sound_bot() -> ClientBuilder {
     let mut headers = HeaderMap::new();
     headers.insert(CONNECTION, "keep-alive".parse().unwrap());
 
@@ -94,8 +118,6 @@ fn sound_bot() -> Client {
         .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
         .tcp_nodelay_(true)
         .default_headers(headers)
-        .build()
-        .expect("Cannot build reqwest::Client")
 }
 
 impl Bot {
@@ -127,6 +149,12 @@ impl BotBuilder {
     }
 
     /// Specifies a custom HTTPS client. Otherwise, the default will be used.
+    ///
+    /// # Caution
+    /// Your custom client might not be configured correctly to be able to work
+    /// in long time durations, see [issue 223].
+    ///
+    /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
     #[must_use]
     pub fn client(mut self, client: Client) -> Self {
         self.client = Some(client);
@@ -178,7 +206,8 @@ impl BotBuilder {
     /// Builds [`Bot`].
     ///
     /// # Panics
-    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     ///
@@ -186,7 +215,9 @@ impl BotBuilder {
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
-            client: self.client.unwrap_or_default(),
+            client: self.client.unwrap_or_else(|| {
+                sound_bot().build().expect("creating reqwest::Client")
+            }),
             token: self
                 .token
                 .unwrap_or_else(|| {
