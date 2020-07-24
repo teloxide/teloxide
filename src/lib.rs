@@ -21,19 +21,12 @@ use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
 
 use std::fmt::Write;
 
-#[proc_macro_attribute]
-pub fn handler(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    item
-}
-
-#[proc_macro_attribute]
-pub fn bot_dialogue(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let item_cloned = item.clone();
+#[proc_macro_derive(BotDialogue, attributes(handler))]
+pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
-    write!(dispatch_fn, "{}", item_cloned).unwrap();
-    write!(dispatch_fn, "impl {} {{ pub async fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> teloxide::dispatching::dialogue::TransitionOut<Self> {{ match self {{", input.ident).unwrap();
+    write!(dispatch_fn, "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> futures::future::BoxFuture<'static, teloxide::dispatching::dialogue::TransitionOut<Self>> {{ futures::future::FutureExt::boxed(async {{ match self {{", input.ident).unwrap();
 
     for variant in input.variants.iter() {
         if let Some(handler) = variant
@@ -56,7 +49,7 @@ pub fn bot_dialogue(_attr: TokenStream, item: TokenStream) -> TokenStream {
         }
     }
 
-    write!(dispatch_fn, "}} }} }}").unwrap();
+    write!(dispatch_fn, "}} }}) }} }}").unwrap();
     dispatch_fn.parse().unwrap()
 }
 
