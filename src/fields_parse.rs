@@ -1,7 +1,6 @@
 extern crate quote;
 
-use quote::__private::Span;
-use quote::{quote, ToTokens};
+use quote::{__private::Span, quote, ToTokens};
 use syn::{FieldsNamed, FieldsUnnamed, Type};
 
 #[derive(Debug)]

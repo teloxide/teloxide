@@ -1,7 +1,7 @@
-use crate::command_enum::CommandEnum;
-use crate::fields_parse::ParserType;
 use crate::{
     attr::{Attr, BotCommandAttribute},
+    command_enum::CommandEnum,
+    fields_parse::ParserType,
     rename_rules::rename_by_rule,
 };
 
@@ -27,13 +27,7 @@ impl Command {
             new_name = rename_by_rule(name, &rename_rule);
             renamed = true;
         }
-        Ok(Self {
-            prefix,
-            description,
-            parser,
-            name: new_name,
-            renamed,
-        })
+        Ok(Self { prefix, description, parser, name: new_name, renamed })
     }
 
     pub fn get_matched_value(&self, global_parameters: &CommandEnum) -> String {
@@ -70,9 +64,13 @@ pub fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
     for attr in attrs {
         match attr.name() {
             BotCommandAttribute::Prefix => prefix = Some(attr.value()),
-            BotCommandAttribute::Description => description = Some(attr.value()),
+            BotCommandAttribute::Description => {
+                description = Some(attr.value())
+            }
             BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
-            BotCommandAttribute::CustomParser => parser = Some(ParserType::parse(&attr.value())),
+            BotCommandAttribute::CustomParser => {
+                parser = Some(ParserType::parse(&attr.value()))
+            }
             BotCommandAttribute::Separator => separator = Some(attr.value()),
         }
     }

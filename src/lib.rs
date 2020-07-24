@@ -9,11 +9,11 @@ mod rename_rules;
 extern crate proc_macro;
 extern crate quote;
 extern crate syn;
-use crate::fields_parse::{impl_parse_args_named, impl_parse_args_unnamed};
 use crate::{
     attr::{Attr, VecAttrs},
     command::Command,
     command_enum::CommandEnum,
+    fields_parse::{impl_parse_args_named, impl_parse_args_unnamed},
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
@@ -26,13 +26,20 @@ pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
-    write!(dispatch_fn, "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn dispatch(self, cx: teloxide::dispatching::dialogue::TransitionIn) -> futures::future::BoxFuture<'static, teloxide::dispatching::dialogue::TransitionOut<Self>> {{ futures::future::FutureExt::boxed(async {{ match self {{", input.ident).unwrap();
+    write!(
+        dispatch_fn,
+        "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn \
+         dispatch(self, cx: teloxide::dispatching::dialogue::TransitionIn) -> \
+         futures::future::BoxFuture<'static, \
+         teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
+         futures::future::FutureExt::boxed(async {{ match self {{",
+        input.ident
+    )
+    .unwrap();
 
     for variant in input.variants.iter() {
-        if let Some(handler) = variant
-            .attrs
-            .iter()
-            .find(|attr| match attr.path.get_ident() {
+        if let Some(handler) =
+            variant.attrs.iter().find(|attr| match attr.path.get_ident() {
                 Some(ident) => ident == "transition",
                 None => false,
             })
@@ -75,7 +82,8 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         Err(e) => return compile_error(e),
     };
 
-    let variants: Vec<&syn::Variant> = data_enum.variants.iter().map(|variant| variant).collect();
+    let variants: Vec<&syn::Variant> =
+        data_enum.variants.iter().map(|variant| variant).collect();
 
     let mut variant_infos = vec![];
     for variant in variants.iter() {
@@ -102,15 +110,19 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         let variantt = quote! { Self::#var };
         match &variant.fields {
             Fields::Unnamed(fields) => {
-                let parser = info.parser.as_ref().unwrap_or(&command_enum.parser_type);
-                vec_impl_create.push(impl_parse_args_unnamed(fields, variantt, parser));
+                let parser =
+                    info.parser.as_ref().unwrap_or(&command_enum.parser_type);
+                vec_impl_create
+                    .push(impl_parse_args_unnamed(fields, variantt, parser));
             }
             Fields::Unit => {
                 vec_impl_create.push(variantt);
             }
             Fields::Named(named) => {
-                let parser = info.parser.as_ref().unwrap_or(&command_enum.parser_type);
-                vec_impl_create.push(impl_parse_args_named(named, variantt, parser));
+                let parser =
+                    info.parser.as_ref().unwrap_or(&command_enum.parser_type);
+                vec_impl_create
+                    .push(impl_parse_args_named(named, variantt, parser));
             }
         }
     }
@@ -130,25 +142,29 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     TokenStream::from(trait_impl)
 }
 
-fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> quote::__private::TokenStream {
+fn impl_descriptions(
+    infos: &[Command],
+    global: &CommandEnum,
+) -> quote::__private::TokenStream {
     let global_description = if let Some(s) = &global.description {
         quote! { #s, "\n", }
     } else {
         quote! {}
     };
     let command = infos.iter().map(|c| c.get_matched_value(global));
-    let description = infos.iter().map(|info| {
-        info.description
-            .as_deref()
-            .map(|e| {
-                if e != "off" {
-                    format!(" - {}", e)
-                } else {
-                    e.to_string()
-                }
-            })
-            .unwrap_or_default()
-    });
+    let description =
+        infos.iter().map(|info| {
+            info.description
+                .as_deref()
+                .map(|e| {
+                    if e != "off" {
+                        format!(" - {}", e)
+                    } else {
+                        e.to_string()
+                    }
+                })
+                .unwrap_or_default()
+        });
     let result_iter = command.zip(description).map(|(c, d)| {
         if &d == "off" {
             quote! {}
@@ -207,7 +223,9 @@ fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum, TokenStream> {
     }
 }
 
-fn parse_attributes(input: &[syn::Attribute]) -> Result<Vec<Attr>, TokenStream> {
+fn parse_attributes(
+    input: &[syn::Attribute],
+) -> Result<Vec<Attr>, TokenStream> {
     let mut enum_attrs = Vec::new();
     for attr in input.iter() {
         match attr.parse_args::<VecAttrs>() {

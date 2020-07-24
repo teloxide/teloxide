@@ -1,6 +1,4 @@
-use crate::attr::Attr;
-use crate::command::parse_attrs;
-use crate::fields_parse::ParserType;
+use crate::{attr::Attr, command::parse_attrs, fields_parse::ParserType};
 
 #[derive(Debug)]
 pub struct CommandEnum {
@@ -19,7 +17,9 @@ impl CommandEnum {
         let rename = attrs.rename;
         let separator = attrs.separator;
         let mut parser = attrs.parser.unwrap_or(ParserType::Default);
-        if let (ParserType::Split { separator }, Some(s)) = (&mut parser, &separator) {
+        if let (ParserType::Split { separator }, Some(s)) =
+            (&mut parser, &separator)
+        {
             *separator = Some(s.clone())
         }
         if let Some(rename_rule) = &rename {
