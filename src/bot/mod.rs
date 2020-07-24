@@ -31,9 +31,7 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     #[allow(deprecated)]
     pub fn from_env() -> Self {
-        Self::from_env_with_client(
-            sound_bot().build().expect("creating reqwest::Client"),
-        )
+        Self::from_env_with_client(build_sound_bot())
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -51,11 +49,7 @@ impl Bot {
     #[deprecated]
     #[allow(deprecated)]
     pub fn from_env_with_client(client: Client) -> Self {
-        Self::with_client(
-            &std::env::var("TELOXIDE_TOKEN")
-                .expect("Cannot get the TELOXIDE_TOKEN env variable"),
-            client,
-        )
+        Self::with_client(&get_token_from_env(), client)
     }
 
     /// Creates a new `Bot` with the specified token and the default
@@ -71,10 +65,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Self::with_client(
-            token,
-            sound_bot().build().expect("creating reqwest::Client"),
-        )
+        Self::with_client(token, build_sound_bot())
     }
 
     /// Creates a new `Bot` with the specified token and your
@@ -118,6 +109,15 @@ pub(crate) fn sound_bot() -> ClientBuilder {
         .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
         .tcp_nodelay_(true)
         .default_headers(headers)
+}
+
+pub(crate) fn build_sound_bot() -> Client {
+    sound_bot().build().expect("creating reqwest::Client")
+}
+
+fn get_token_from_env() -> String {
+    std::env::var("TELOXIDE_TOKEN")
+        .expect("Cannot get the TELOXIDE_TOKEN env variable")
 }
 
 impl Bot {
@@ -215,16 +215,8 @@ impl BotBuilder {
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
-            client: self.client.unwrap_or_else(|| {
-                sound_bot().build().expect("creating reqwest::Client")
-            }),
-            token: self
-                .token
-                .unwrap_or_else(|| {
-                    std::env::var("TELOXIDE_TOKEN")
-                        .expect("Cannot get the TELOXIDE_TOKEN env variable")
-                })
-                .into(),
+            client: self.client.unwrap_or_else(build_sound_bot),
+            token: self.token.unwrap_or_else(get_token_from_env).into(),
             parse_mode: Arc::new(self.parse_mode),
         }
     }
