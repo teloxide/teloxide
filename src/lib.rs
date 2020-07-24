@@ -26,7 +26,7 @@ pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
-    write!(dispatch_fn, "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn dispatch(self, cx: teloxide::dispatching::UpdateWithCx<teloxide::types::Message>) -> futures::future::BoxFuture<'static, teloxide::dispatching::dialogue::TransitionOut<Self>> {{ futures::future::FutureExt::boxed(async {{ match self {{", input.ident).unwrap();
+    write!(dispatch_fn, "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn dispatch(self, cx: teloxide::dispatching::dialogue::TransitionIn) -> futures::future::BoxFuture<'static, teloxide::dispatching::dialogue::TransitionOut<Self>> {{ futures::future::FutureExt::boxed(async {{ match self {{", input.ident).unwrap();
 
     for variant in input.variants.iter() {
         if let Some(handler) = variant
