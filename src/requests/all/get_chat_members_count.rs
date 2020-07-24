@@ -6,7 +6,6 @@ use crate::{
     types::ChatId,
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get the number of members in a chat.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChatMembersCount {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
 }
 
@@ -35,7 +34,7 @@ impl Request for GetChatMembersCount {
 }
 
 impl GetChatMembersCount {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

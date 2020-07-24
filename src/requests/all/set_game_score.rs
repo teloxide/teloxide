@@ -6,7 +6,6 @@ use crate::{
     types::{ChatOrInlineMessage, Message},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to set the score of the specified user in a game.
 ///
@@ -23,7 +22,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetGameScore {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     #[serde(flatten)]
     chat_or_inline_message: ChatOrInlineMessage,
     user_id: i32,
@@ -49,7 +48,7 @@ impl Request for SetGameScore {
 
 impl SetGameScore {
     pub(crate) fn new(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
         score: i32,

@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, Message, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send phone contacts.
 ///
@@ -15,7 +14,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SendContact {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     phone_number: String,
     first_name: String,
@@ -43,7 +42,7 @@ impl Request for SendContact {
 
 impl SendContact {
     pub(crate) fn new<C, P, F>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         phone_number: P,
         first_name: F,

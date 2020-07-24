@@ -14,8 +14,9 @@
     html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
 )]
 #![allow(clippy::match_bool)]
+#![forbid(unsafe_code)]
 
-pub use bot::Bot;
+pub use bot::{Bot, BotBuilder};
 pub use errors::{ApiErrorKind, DownloadError, RequestError};
 
 mod errors;

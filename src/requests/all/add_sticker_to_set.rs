@@ -6,14 +6,13 @@ use crate::{
 };
 
 use crate::requests::{RequestWithFile, ResponseResult};
-use std::sync::Arc;
 
 /// Use this method to add a new sticker to a set created by the bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#addstickertoset).
 #[derive(Debug, Clone)]
 pub struct AddStickerToSet {
-    bot: Arc<Bot>,
+    bot: Bot,
     user_id: i32,
     name: String,
     png_sticker: InputFile,
@@ -45,7 +44,7 @@ impl RequestWithFile for AddStickerToSet {
 
 impl AddStickerToSet {
     pub(crate) fn new<N, E>(
-        bot: Arc<Bot>,
+        bot: Bot,
         user_id: i32,
         name: N,
         png_sticker: InputFile,

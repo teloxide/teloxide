@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to set default chat permissions for all members.
 ///
@@ -18,7 +17,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatPermissions {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     permissions: ChatPermissions,
 }
@@ -40,7 +39,7 @@ impl Request for SetChatPermissions {
 
 impl SetChatPermissions {
     pub(crate) fn new<C>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         permissions: ChatPermissions,
     ) -> Self

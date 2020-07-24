@@ -6,7 +6,6 @@ use crate::{
     types::{InlineQueryResult, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send answers to an inline query.
 ///
@@ -17,7 +16,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct AnswerInlineQuery {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     inline_query_id: String,
     results: Vec<InlineQueryResult>,
     cache_time: Option<i32>,
@@ -43,11 +42,7 @@ impl Request for AnswerInlineQuery {
 }
 
 impl AnswerInlineQuery {
-    pub(crate) fn new<I, R>(
-        bot: Arc<Bot>,
-        inline_query_id: I,
-        results: R,
-    ) -> Self
+    pub(crate) fn new<I, R>(bot: Bot, inline_query_id: I, results: R) -> Self
     where
         I: Into<String>,
         R: Into<Vec<InlineQueryResult>>,

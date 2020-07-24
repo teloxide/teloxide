@@ -6,7 +6,6 @@ use crate::{
     types::True,
     Bot,
 };
-use std::sync::Arc;
 
 /// Once the user has confirmed their payment and shipping details, the Bot API
 /// sends the final confirmation in the form of an [`Update`] with the field
@@ -21,7 +20,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct AnswerPreCheckoutQuery {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     pre_checkout_query_id: String,
     ok: bool,
     error_message: Option<String>,
@@ -43,11 +42,7 @@ impl Request for AnswerPreCheckoutQuery {
 }
 
 impl AnswerPreCheckoutQuery {
-    pub(crate) fn new<P>(
-        bot: Arc<Bot>,
-        pre_checkout_query_id: P,
-        ok: bool,
-    ) -> Self
+    pub(crate) fn new<P>(bot: Bot, pre_checkout_query_id: P, ok: bool) -> Self
     where
         P: Into<String>,
     {

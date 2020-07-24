@@ -3,15 +3,19 @@ use reqwest::{
     Client, ClientBuilder,
 };
 use std::{sync::Arc, time::Duration};
+use crate::types::ParseMode;
 
 mod api;
 mod download;
 
 /// A Telegram bot used to send requests.
+///
+/// No need to put `Bot` into `Arc`, because it's already in.
 #[derive(Debug, Clone)]
 pub struct Bot {
-    token: String,
+    token: Arc<str>,
     client: Client,
+    parse_mode: Arc<Option<ParseMode>>,
 }
 
 impl Bot {
@@ -22,8 +26,9 @@ impl Bot {
     /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
-    pub fn from_env() -> Arc<Self> {
-        Self::from_env_with_client(sound_bot())
+    #[allow(deprecated)]
+    pub fn from_env() -> Self {
+        Self::from_env_with_client(Client::new())
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -33,7 +38,9 @@ impl Bot {
     /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
-    pub fn from_env_with_client(client: Client) -> Arc<Self> {
+    #[deprecated]
+    #[allow(deprecated)]
+    pub fn from_env_with_client(client: Client) -> Self {
         Self::with_client(
             &std::env::var("TELOXIDE_TOKEN")
                 .expect("Cannot get the TELOXIDE_TOKEN env variable"),
@@ -45,7 +52,9 @@ impl Bot {
     /// [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
-    pub fn new<S>(token: S) -> Arc<Self>
+    #[deprecated]
+    #[allow(deprecated)]
+    pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
     {
@@ -56,11 +65,17 @@ impl Bot {
     /// [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
-    pub fn with_client<S>(token: S, client: Client) -> Arc<Self>
+    #[deprecated]
+    #[allow(deprecated)]
+    pub fn with_client<S>(token: S, client: Client) -> Self
     where
         S: Into<String>,
     {
-        Arc::new(Self { token: token.into(), client })
+        Self {
+            token: Into::<Arc<str>>::into(Into::<String>::into(token)),
+            client,
+            parse_mode: Arc::new(None),
+        }
     }
 }
 
@@ -90,5 +105,91 @@ impl Bot {
     // TODO: const fn
     pub fn client(&self) -> &Client {
         &self.client
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct BotBuilder {
+    token: Option<String>,
+    client: Option<Client>,
+    parse_mode: Option<ParseMode>,
+}
+
+impl BotBuilder {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Specifies a custom HTTPS client. Otherwise, the default will be used.
+    #[must_use]
+    pub fn client(mut self, client: Client) -> Self {
+        self.client = Some(client);
+        self
+    }
+
+    /// Specified a custom token.
+    ///
+    /// Otherwise, a token will be extracted from the `TELOXIDE_TOKEN`
+    /// environmental variable.
+    #[must_use]
+    pub fn token<S>(mut self, token: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.token = Some(token.into());
+        self
+    }
+
+    /// Specifies [`ParseMode`], which will be used during all calls to:
+    ///
+    ///  - [`send_message`]
+    ///  - [`send_photo`]
+    ///  - [`send_video`]
+    ///  - [`send_audio`]
+    ///  - [`send_document`]
+    ///  - [`send_animation`]
+    ///  - [`send_voice`]
+    ///  - [`send_poll`]
+    ///  - [`edit_message_text`]
+    ///  - [`edit_message_caption`]
+    ///
+    /// [`send_message`]: crate::Bot::send_message
+    /// [`send_photo`]: crate::Bot::send_photo
+    /// [`send_video`]: crate::Bot::send_video
+    /// [`send_audio`]: crate::Bot::send_audio
+    /// [`send_document`]: crate::Bot::send_document
+    /// [`send_animation`]: crate::Bot::send_animation
+    /// [`send_voice`]: crate::Bot::send_voice
+    /// [`send_poll`]: crate::Bot::send_poll
+    /// [`edit_message_text`]: crate::Bot::edit_message_text
+    /// [`edit_message_caption`]: crate::Bot::edit_message_caption
+    #[must_use]
+    pub fn parse_mode(mut self, parse_mode: ParseMode) -> Self {
+        self.parse_mode = Some(parse_mode);
+        self
+    }
+
+    /// Builds [`Bot`].
+    ///
+    /// # Panics
+    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///
+    /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
+    ///
+    /// [`Bot`]: crate::Bot
+    #[must_use]
+    pub fn build(self) -> Bot {
+        Bot {
+            client: self.client.unwrap_or_default(),
+            token: self
+                .token
+                .unwrap_or_else(|| {
+                    std::env::var("TELOXIDE_TOKEN")
+                        .expect("Cannot get the TELOXIDE_TOKEN env variable")
+                })
+                .into(),
+            parse_mode: Arc::new(self.parse_mode),
+        }
     }
 }

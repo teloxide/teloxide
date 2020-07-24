@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to change the description of a group, a supergroup or a
 /// channel.
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatDescription {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     description: Option<String>,
 }
@@ -40,7 +39,7 @@ impl Request for SetChatDescription {
 }
 
 impl SetChatDescription {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

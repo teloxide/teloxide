@@ -6,7 +6,6 @@ use crate::{
     types::{AllowedUpdate, InputFile, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to specify a url and receive incoming updates via an
 /// outgoing webhook.
@@ -28,7 +27,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetWebhook {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     url: String,
     certificate: Option<InputFile>,
     max_connections: Option<i32>,
@@ -51,7 +50,7 @@ impl Request for SetWebhook {
 }
 
 impl SetWebhook {
-    pub(crate) fn new<U>(bot: Arc<Bot>, url: U) -> Self
+    pub(crate) fn new<U>(bot: Bot, url: U) -> Self
     where
         U: Into<String>,
     {

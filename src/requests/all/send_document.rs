@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send general files.
 ///
@@ -14,7 +13,7 @@ use std::sync::Arc;
 /// [The official docs](https://core.telegram.org/bots/api#senddocument).
 #[derive(Debug, Clone)]
 pub struct SendDocument {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     document: InputFile,
     thumb: Option<InputFile>,
@@ -53,7 +52,7 @@ impl RequestWithFile for SendDocument {
 }
 
 impl SendDocument {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, document: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, document: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

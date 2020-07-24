@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to set a new group sticker set for a supergroup.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatStickerSet {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     sticker_set_name: String,
 }
@@ -40,11 +39,7 @@ impl Request for SetChatStickerSet {
 }
 
 impl SetChatStickerSet {
-    pub(crate) fn new<C, S>(
-        bot: Arc<Bot>,
-        chat_id: C,
-        sticker_set_name: S,
-    ) -> Self
+    pub(crate) fn new<C, S>(bot: Bot, chat_id: C, sticker_set_name: S) -> Self
     where
         C: Into<ChatId>,
         S: Into<String>,

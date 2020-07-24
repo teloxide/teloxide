@@ -25,7 +25,7 @@ use crate::{
     },
     Bot,
 };
-use std::sync::Arc;
+use std::ops::Deref;
 
 impl Bot {
     /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -38,8 +38,8 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#getupdates).
     ///
     /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
-    pub fn get_updates(self: &Arc<Bot>) -> GetUpdates {
-        GetUpdates::new(Arc::clone(self))
+    pub fn get_updates(&self) -> GetUpdates {
+        GetUpdates::new(self.clone())
     }
 
     /// Use this method to specify a url and receive incoming updates via an
@@ -63,11 +63,11 @@ impl Bot {
     /// Use an empty string to remove webhook integration.
     ///
     /// [`Update`]: crate::types::Update
-    pub fn set_webhook<U>(self: &Arc<Bot>, url: U) -> SetWebhook
+    pub fn set_webhook<U>(&self, url: U) -> SetWebhook
     where
         U: Into<String>,
     {
-        SetWebhook::new(Arc::clone(self), url)
+        SetWebhook::new(self.clone(), url)
     }
 
     /// Use this method to remove webhook integration if you decide to switch
@@ -76,8 +76,8 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#deletewebhook).
     ///
     /// [Bot::get_updates]: crate::Bot::get_updates
-    pub fn delete_webhook(self: &Arc<Bot>) -> DeleteWebhook {
-        DeleteWebhook::new(Arc::clone(self))
+    pub fn delete_webhook(&self) -> DeleteWebhook {
+        DeleteWebhook::new(self.clone())
     }
 
     /// Use this method to get current webhook status.
@@ -88,16 +88,16 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#getwebhookinfo).
     ///
     /// [`Bot::get_updates`]: crate::Bot::get_updates
-    pub fn get_webhook_info(self: &Arc<Bot>) -> GetWebhookInfo {
-        GetWebhookInfo::new(Arc::clone(self))
+    pub fn get_webhook_info(&self) -> GetWebhookInfo {
+        GetWebhookInfo::new(self.clone())
     }
 
     /// A simple method for testing your bot's auth token. Requires no
     /// parameters.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#getme).
-    pub fn get_me(self: &Arc<Bot>) -> GetMe {
-        GetMe::new(Arc::clone(self))
+    pub fn get_me(&self) -> GetMe {
+        GetMe::new(self.clone())
     }
 
     /// Use this method to send text messages.
@@ -108,16 +108,22 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `text`: Text of the message to be sent.
-    pub fn send_message<C, T>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        text: T,
-    ) -> SendMessage
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
-        SendMessage::new(Arc::clone(self), chat_id, text)
+        match self.parse_mode.deref() {
+            None => SendMessage::new(self.clone(), chat_id, text),
+            Some(parse_mode) => SendMessage::new(self.clone(), chat_id, text)
+                .parse_mode(*parse_mode.deref()),
+        }
     }
 
     /// Use this method to forward messages of any kind.
@@ -135,7 +141,7 @@ impl Bot {
     ///
     /// [`from_chat_id`]: ForwardMessage::from_chat_id
     pub fn forward_message<C, F>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         from_chat_id: F,
         message_id: i32,
@@ -144,7 +150,7 @@ impl Bot {
         C: Into<ChatId>,
         F: Into<ChatId>,
     {
-        ForwardMessage::new(Arc::clone(self), chat_id, from_chat_id, message_id)
+        ForwardMessage::new(self.clone(), chat_id, from_chat_id, message_id)
     }
 
     /// Use this method to send photos.
@@ -166,15 +172,21 @@ impl Bot {
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    pub fn send_photo<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        photo: InputFile,
-    ) -> SendPhoto
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> SendPhoto
     where
         C: Into<ChatId>,
     {
-        SendPhoto::new(Arc::clone(self), chat_id, photo)
+        match self.parse_mode.deref() {
+            None => SendPhoto::new(self.clone(), chat_id, photo),
+            Some(parse_mode) => SendPhoto::new(self.clone(), chat_id, photo)
+                .parse_mode(*parse_mode.deref()),
+        }
     }
 
     ///
@@ -182,15 +194,21 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn send_audio<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        audio: InputFile,
-    ) -> SendAudio
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> SendAudio
     where
         C: Into<ChatId>,
     {
-        SendAudio::new(Arc::clone(self), chat_id, audio)
+        match self.parse_mode.deref() {
+            None => SendAudio::new(self.clone(), chat_id, audio),
+            Some(parse_mode) => SendAudio::new(self.clone(), chat_id, audio)
+                .parse_mode(*parse_mode.deref()),
+        }
     }
 
     /// Use this method to send general files.
@@ -211,15 +229,27 @@ impl Bot {
     /// `multipart/form-data`. [More info on Sending Files »].
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_document<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         document: InputFile,
     ) -> SendDocument
     where
         C: Into<ChatId>,
     {
-        SendDocument::new(Arc::clone(self), chat_id, document)
+        match self.parse_mode.deref() {
+            None => SendDocument::new(self.clone(), chat_id, document),
+            Some(parse_mode) => {
+                SendDocument::new(self.clone(), chat_id, document)
+                    .parse_mode(*parse_mode.deref())
+            }
+        }
     }
 
     /// Use this method to send video files, Telegram clients support mp4 videos
@@ -243,15 +273,21 @@ impl Bot {
     /// [`InputFile::File`]: crate::types::InputFile::File
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
-    pub fn send_video<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        video: InputFile,
-    ) -> SendVideo
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn send_video<C>(&self, chat_id: C, video: InputFile) -> SendVideo
     where
         C: Into<ChatId>,
     {
-        SendVideo::new(Arc::clone(self), chat_id, video)
+        match self.parse_mode.deref() {
+            None => SendVideo::new(self.clone(), chat_id, video),
+            Some(parse_mode) => SendVideo::new(self.clone(), chat_id, video)
+                .parse_mode(*parse_mode.deref()),
+        }
     }
 
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -266,15 +302,27 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `animation`: Animation to send.
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_animation<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         animation: InputFile,
     ) -> SendAnimation
     where
         C: Into<ChatId>,
     {
-        SendAnimation::new(Arc::clone(self), chat_id, animation)
+        match self.parse_mode.deref() {
+            None => SendAnimation::new(self.clone(), chat_id, animation),
+            Some(parse_mode) => {
+                SendAnimation::new(self.clone(), chat_id, animation)
+                    .parse_mode(*parse_mode.deref())
+            }
+        }
     }
 
     /// Use this method to send audio files, if you want Telegram clients to
@@ -304,15 +352,21 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    pub fn send_voice<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        voice: InputFile,
-    ) -> SendVoice
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> SendVoice
     where
         C: Into<ChatId>,
     {
-        SendVoice::new(Arc::clone(self), chat_id, voice)
+        match self.parse_mode.deref() {
+            None => SendVoice::new(self.clone(), chat_id, voice),
+            Some(parse_mode) => SendVoice::new(self.clone(), chat_id, voice)
+                .parse_mode(*parse_mode.deref()),
+        }
     }
 
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up
@@ -335,15 +389,16 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+
     pub fn send_video_note<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         video_note: InputFile,
     ) -> SendVideoNote
     where
         C: Into<ChatId>,
     {
-        SendVideoNote::new(Arc::clone(self), chat_id, video_note)
+        SendVideoNote::new(self.clone(), chat_id, video_note)
     }
 
     /// Use this method to send a group of photos or videos as an album.
@@ -355,16 +410,12 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `media`: A JSON-serialized array describing photos and videos to be
     ///     sent, must include 2–10 items.
-    pub fn send_media_group<C, M>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        media: M,
-    ) -> SendMediaGroup
+    pub fn send_media_group<C, M>(&self, chat_id: C, media: M) -> SendMediaGroup
     where
         C: Into<ChatId>,
         M: Into<Vec<InputMedia>>,
     {
-        SendMediaGroup::new(Arc::clone(self), chat_id, media)
+        SendMediaGroup::new(self.clone(), chat_id, media)
     }
 
     /// Use this method to send point on the map.
@@ -377,7 +428,7 @@ impl Bot {
     ///   - `latitude`: Latitude of the location.
     ///   - `longitude`: Latitude of the location.
     pub fn send_location<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         latitude: f32,
         longitude: f32,
@@ -385,7 +436,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        SendLocation::new(Arc::clone(self), chat_id, latitude, longitude)
+        SendLocation::new(self.clone(), chat_id, latitude, longitude)
     }
 
     /// Use this method to edit live location messages.
@@ -404,13 +455,13 @@ impl Bot {
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
     pub fn edit_message_live_location(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
         latitude: f32,
         longitude: f32,
     ) -> EditMessageLiveLocation {
         EditMessageLiveLocation::new(
-            Arc::clone(self),
+            self.clone(),
             chat_or_inline_message,
             latitude,
             longitude,
@@ -428,10 +479,10 @@ impl Bot {
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
     pub fn stop_message_live_location(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> StopMessageLiveLocation {
-        StopMessageLiveLocation::new(Arc::clone(self), chat_or_inline_message)
+        StopMessageLiveLocation::new(self.clone(), chat_or_inline_message)
     }
 
     /// Use this method to send information about a venue.
@@ -446,7 +497,7 @@ impl Bot {
     ///  - `title`: Name of the venue.
     ///  - `address`: Address of the venue.
     pub fn send_venue<C, T, A>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         latitude: f32,
         longitude: f32,
@@ -459,7 +510,7 @@ impl Bot {
         A: Into<String>,
     {
         SendVenue::new(
-            Arc::clone(self),
+            self.clone(),
             chat_id,
             latitude,
             longitude,
@@ -479,7 +530,7 @@ impl Bot {
     ///   - `phone_number`: Contact's phone number.
     ///   - `first_name`: Contact's first name.
     pub fn send_contact<C, P, F>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         phone_number: P,
         first_name: F,
@@ -489,7 +540,7 @@ impl Bot {
         P: Into<String>,
         F: Into<String>,
     {
-        SendContact::new(Arc::clone(self), chat_id, phone_number, first_name)
+        SendContact::new(self.clone(), chat_id, phone_number, first_name)
     }
 
     /// Use this method to send a native poll. A native poll can't be sent to a
@@ -505,7 +556,7 @@ impl Bot {
     ///   - `options`: List of answer options, 2-10 strings 1-100 characters
     ///     each.
     pub fn send_poll<C, Q, O>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         question: Q,
         options: O,
@@ -515,7 +566,8 @@ impl Bot {
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
-        SendPoll::new(Arc::clone(self), chat_id, question, options)
+        // FIXME: parse_mode
+        SendPoll::new(self.clone(), chat_id, question, options)
     }
 
     /// Use this method when you need to tell the user that something is
@@ -541,14 +593,14 @@ impl Bot {
     /// [ImageBot]: https://t.me/imagebot
     /// [`Bot::send_chat_action`]: crate::Bot::send_chat_action
     pub fn send_chat_action<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         action: SendChatActionKind,
     ) -> SendChatAction
     where
         C: Into<ChatId>,
     {
-        SendChatAction::new(Arc::clone(self), chat_id, action)
+        SendChatAction::new(self.clone(), chat_id, action)
     }
 
     /// Use this method to get a list of profile pictures for a user.
@@ -558,10 +610,10 @@ impl Bot {
     /// # Params
     ///   - `user_id`: Unique identifier of the target user.
     pub fn get_user_profile_photos(
-        self: &Arc<Bot>,
+        &self,
         user_id: i32,
     ) -> GetUserProfilePhotos {
-        GetUserProfilePhotos::new(Arc::clone(self), user_id)
+        GetUserProfilePhotos::new(self.clone(), user_id)
     }
 
     /// Use this method to get basic info about a file and prepare it for
@@ -586,11 +638,11 @@ impl Bot {
     ///
     /// [`File`]: crate::types::file
     /// [`GetFile`]: self::GetFile
-    pub fn get_file<F>(self: &Arc<Bot>, file_id: F) -> GetFile
+    pub fn get_file<F>(&self, file_id: F) -> GetFile
     where
         F: Into<String>,
     {
-        GetFile::new(Arc::clone(self), file_id)
+        GetFile::new(self.clone(), file_id)
     }
 
     /// Use this method to kick a user from a group, a supergroup or a channel.
@@ -609,14 +661,14 @@ impl Bot {
     ///
     /// [unbanned]: crate::Bot::unban_chat_member
     pub fn kick_chat_member<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         user_id: i32,
     ) -> KickChatMember
     where
         C: Into<ChatId>,
     {
-        KickChatMember::new(Arc::clone(self), chat_id, user_id)
+        KickChatMember::new(self.clone(), chat_id, user_id)
     }
 
     /// Use this method to unban a previously kicked user in a supergroup or
@@ -631,14 +683,14 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `user_id`: Unique identifier of the target user.
     pub fn unban_chat_member<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         user_id: i32,
     ) -> UnbanChatMember
     where
         C: Into<ChatId>,
     {
-        UnbanChatMember::new(Arc::clone(self), chat_id, user_id)
+        UnbanChatMember::new(self.clone(), chat_id, user_id)
     }
 
     /// Use this method to restrict a user in a supergroup.
@@ -655,7 +707,7 @@ impl Bot {
     ///   - `user_id`: Unique identifier of the target user.
     ///   - `permissions`: New user permissions.
     pub fn restrict_chat_member<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,
@@ -663,7 +715,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        RestrictChatMember::new(Arc::clone(self), chat_id, user_id, permissions)
+        RestrictChatMember::new(self.clone(), chat_id, user_id, permissions)
     }
 
     /// Use this method to promote or demote a user in a supergroup or a
@@ -680,14 +732,14 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `user_id`: Unique identifier of the target user.
     pub fn promote_chat_member<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         user_id: i32,
     ) -> PromoteChatMember
     where
         C: Into<ChatId>,
     {
-        PromoteChatMember::new(Arc::clone(self), chat_id, user_id)
+        PromoteChatMember::new(self.clone(), chat_id, user_id)
     }
 
     /// Use this method to set default chat permissions for all members.
@@ -702,14 +754,14 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `permissions`: New default chat permissions.
     pub fn set_chat_permissions<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         permissions: ChatPermissions,
     ) -> SetChatPermissions
     where
         C: Into<ChatId>,
     {
-        SetChatPermissions::new(Arc::clone(self), chat_id, permissions)
+        SetChatPermissions::new(self.clone(), chat_id, permissions)
     }
 
     /// Use this method to generate a new invite link for a chat; any previously
@@ -735,14 +787,11 @@ impl Bot {
     ///
     /// [`Bot::export_chat_invite_link`]: crate::Bot::export_chat_invite_link
     /// [`Bot::get_chat`]: crate::Bot::get_chat
-    pub fn export_chat_invite_link<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-    ) -> ExportChatInviteLink
+    pub fn export_chat_invite_link<C>(&self, chat_id: C) -> ExportChatInviteLink
     where
         C: Into<ChatId>,
     {
-        ExportChatInviteLink::new(Arc::clone(self), chat_id)
+        ExportChatInviteLink::new(self.clone(), chat_id)
     }
 
     /// Use this method to set a new profile photo for the chat.
@@ -758,14 +807,14 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `photo`: New chat photo, uploaded using `multipart/form-data`.
     pub fn set_chat_photo<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         photo: InputFile,
     ) -> SetChatPhoto
     where
         C: Into<ChatId>,
     {
-        SetChatPhoto::new(Arc::clone(self), chat_id, photo)
+        SetChatPhoto::new(self.clone(), chat_id, photo)
     }
 
     /// Use this method to delete a chat photo. Photos can't be changed for
@@ -777,11 +826,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn delete_chat_photo<C>(self: &Arc<Bot>, chat_id: C) -> DeleteChatPhoto
+    pub fn delete_chat_photo<C>(&self, chat_id: C) -> DeleteChatPhoto
     where
         C: Into<ChatId>,
     {
-        DeleteChatPhoto::new(Arc::clone(self), chat_id)
+        DeleteChatPhoto::new(self.clone(), chat_id)
     }
 
     /// Use this method to change the title of a chat.
@@ -796,16 +845,12 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `title`: New chat title, 1-255 characters.
-    pub fn set_chat_title<C, T>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        title: T,
-    ) -> SetChatTitle
+    pub fn set_chat_title<C, T>(&self, chat_id: C, title: T) -> SetChatTitle
     where
         C: Into<ChatId>,
         T: Into<String>,
     {
-        SetChatTitle::new(Arc::clone(self), chat_id, title)
+        SetChatTitle::new(self.clone(), chat_id, title)
     }
 
     /// Use this method to change the description of a group, a supergroup or a
@@ -819,14 +864,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn set_chat_description<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-    ) -> SetChatDescription
+    pub fn set_chat_description<C>(&self, chat_id: C) -> SetChatDescription
     where
         C: Into<ChatId>,
     {
-        SetChatDescription::new(Arc::clone(self), chat_id)
+        SetChatDescription::new(self.clone(), chat_id)
     }
 
     /// Use this method to pin a message in a group, a supergroup, or a channel.
@@ -842,14 +884,14 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `message_id`: Identifier of a message to pin.
     pub fn pin_chat_message<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         message_id: i32,
     ) -> PinChatMessage
     where
         C: Into<ChatId>,
     {
-        PinChatMessage::new(Arc::clone(self), chat_id, message_id)
+        PinChatMessage::new(self.clone(), chat_id, message_id)
     }
 
     /// Use this method to unpin a message in a group, a supergroup, or a
@@ -864,14 +906,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn unpin_chat_message<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-    ) -> UnpinChatMessage
+    pub fn unpin_chat_message<C>(&self, chat_id: C) -> UnpinChatMessage
     where
         C: Into<ChatId>,
     {
-        UnpinChatMessage::new(Arc::clone(self), chat_id)
+        UnpinChatMessage::new(self.clone(), chat_id)
     }
 
     /// Use this method for your bot to leave a group, supergroup or channel.
@@ -881,11 +920,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn leave_chat<C>(self: &Arc<Bot>, chat_id: C) -> LeaveChat
+    pub fn leave_chat<C>(&self, chat_id: C) -> LeaveChat
     where
         C: Into<ChatId>,
     {
-        LeaveChat::new(Arc::clone(self), chat_id)
+        LeaveChat::new(self.clone(), chat_id)
     }
 
     /// Use this method to get up to date information about the chat (current
@@ -897,11 +936,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn get_chat<C>(self: &Arc<Bot>, chat_id: C) -> GetChat
+    pub fn get_chat<C>(&self, chat_id: C) -> GetChat
     where
         C: Into<ChatId>,
     {
-        GetChat::new(Arc::clone(self), chat_id)
+        GetChat::new(self.clone(), chat_id)
     }
 
     /// Use this method to get a list of administrators in a chat.
@@ -915,13 +954,13 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     pub fn get_chat_administrators<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
     ) -> GetChatAdministrators
     where
         C: Into<ChatId>,
     {
-        GetChatAdministrators::new(Arc::clone(self), chat_id)
+        GetChatAdministrators::new(self.clone(), chat_id)
     }
 
     /// Use this method to get the number of members in a chat.
@@ -931,14 +970,11 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn get_chat_members_count<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-    ) -> GetChatMembersCount
+    pub fn get_chat_members_count<C>(&self, chat_id: C) -> GetChatMembersCount
     where
         C: Into<ChatId>,
     {
-        GetChatMembersCount::new(Arc::clone(self), chat_id)
+        GetChatMembersCount::new(self.clone(), chat_id)
     }
 
     /// Use this method to get information about a member of a chat.
@@ -949,15 +985,11 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `user_id`: Unique identifier of the target user.
-    pub fn get_chat_member<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        user_id: i32,
-    ) -> GetChatMember
+    pub fn get_chat_member<C>(&self, chat_id: C, user_id: i32) -> GetChatMember
     where
         C: Into<ChatId>,
     {
-        GetChatMember::new(Arc::clone(self), chat_id, user_id)
+        GetChatMember::new(self.clone(), chat_id, user_id)
     }
 
     /// Use this method to set a new group sticker set for a supergroup.
@@ -975,7 +1007,7 @@ impl Bot {
     ///   - `sticker_set_name`: Name of the sticker set to be set as the group
     ///     sticker set.
     pub fn set_chat_sticker_set<C, S>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         sticker_set_name: S,
     ) -> SetChatStickerSet
@@ -983,7 +1015,7 @@ impl Bot {
         C: Into<ChatId>,
         S: Into<String>,
     {
-        SetChatStickerSet::new(Arc::clone(self), chat_id, sticker_set_name)
+        SetChatStickerSet::new(self.clone(), chat_id, sticker_set_name)
     }
 
     /// Use this method to delete a group sticker set from a supergroup.
@@ -1000,14 +1032,11 @@ impl Bot {
     ///     target supergroup (in the format `@supergroupusername`).
     ///
     /// [`Bot::get_chat`]: crate::Bot::get_chat
-    pub fn delete_chat_sticker_set<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-    ) -> DeleteChatStickerSet
+    pub fn delete_chat_sticker_set<C>(&self, chat_id: C) -> DeleteChatStickerSet
     where
         C: Into<ChatId>,
     {
-        DeleteChatStickerSet::new(Arc::clone(self), chat_id)
+        DeleteChatStickerSet::new(self.clone(), chat_id)
     }
 
     /// Use this method to send answers to callback queries sent from [inline
@@ -1023,13 +1052,13 @@ impl Bot {
     ///
     /// [inline keyboards]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
     pub fn answer_callback_query<C>(
-        self: &Arc<Bot>,
+        &self,
         callback_query_id: C,
     ) -> AnswerCallbackQuery
     where
         C: Into<String>,
     {
-        AnswerCallbackQuery::new(Arc::clone(self), callback_query_id)
+        AnswerCallbackQuery::new(self.clone(), callback_query_id)
     }
 
     /// Use this method to edit text and game messages.
@@ -1044,15 +1073,29 @@ impl Bot {
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_text<T>(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
         text: T,
     ) -> EditMessageText
     where
         T: Into<String>,
     {
-        EditMessageText::new(Arc::clone(self), chat_or_inline_message, text)
+        match self.parse_mode.deref() {
+            None => {
+                EditMessageText::new(self.clone(), chat_or_inline_message, text)
+            }
+            Some(parse_mode) => {
+                EditMessageText::new(self.clone(), chat_or_inline_message, text)
+                    .parse_mode(*parse_mode.deref())
+            }
+        }
     }
 
     /// Use this method to edit captions of messages.
@@ -1064,11 +1107,25 @@ impl Bot {
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_caption(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> EditMessageCaption {
-        EditMessageCaption::new(Arc::clone(self), chat_or_inline_message)
+        match self.parse_mode.deref() {
+            None => {
+                EditMessageCaption::new(self.clone(), chat_or_inline_message)
+            }
+            Some(parse_mode) => {
+                EditMessageCaption::new(self.clone(), chat_or_inline_message)
+                    .parse_mode(*parse_mode.deref())
+            }
+        }
     }
 
     /// Use this method to edit animation, audio, document, photo, or video
@@ -1086,11 +1143,11 @@ impl Bot {
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
     pub fn edit_message_media(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
         media: InputMedia,
     ) -> EditMessageMedia {
-        EditMessageMedia::new(Arc::clone(self), chat_or_inline_message, media)
+        EditMessageMedia::new(self.clone(), chat_or_inline_message, media)
     }
 
     /// Use this method to edit only the reply markup of messages.
@@ -1103,10 +1160,10 @@ impl Bot {
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
     pub fn edit_message_reply_markup(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> EditMessageReplyMarkup {
-        EditMessageReplyMarkup::new(Arc::clone(self), chat_or_inline_message)
+        EditMessageReplyMarkup::new(self.clone(), chat_or_inline_message)
     }
 
     /// Use this method to stop a poll which was sent by the bot.
@@ -1118,15 +1175,11 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target channel (in the format `@channelusername`).
     ///   - `message_id`: Identifier of the original message with the poll.
-    pub fn stop_poll<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        message_id: i32,
-    ) -> StopPoll
+    pub fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> StopPoll
     where
         C: Into<ChatId>,
     {
-        StopPoll::new(Arc::clone(self), chat_id, message_id)
+        StopPoll::new(self.clone(), chat_id, message_id)
     }
 
     /// Use this method to delete a message, including service messages.
@@ -1150,14 +1203,14 @@ impl Bot {
     ///     target channel (in the format `@channelusername`).
     ///   - `message_id`: Identifier of the message to delete.
     pub fn delete_message<C>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         message_id: i32,
     ) -> DeleteMessage
     where
         C: Into<ChatId>,
     {
-        DeleteMessage::new(Arc::clone(self), chat_id, message_id)
+        DeleteMessage::new(self.clone(), chat_id, message_id)
     }
 
     /// Use this method to send static .WEBP or [animated] .TGS stickers.
@@ -1179,15 +1232,11 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    pub fn send_sticker<C>(
-        self: &Arc<Bot>,
-        chat_id: C,
-        sticker: InputFile,
-    ) -> SendSticker
+    pub fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> SendSticker
     where
         C: Into<ChatId>,
     {
-        SendSticker::new(Arc::clone(self), chat_id, sticker)
+        SendSticker::new(self.clone(), chat_id, sticker)
     }
 
     /// Use this method to get a sticker set.
@@ -1196,11 +1245,11 @@ impl Bot {
     ///
     /// # Params
     ///   - `name`: Name of the sticker set.
-    pub fn get_sticker_set<N>(self: &Arc<Bot>, name: N) -> GetStickerSet
+    pub fn get_sticker_set<N>(&self, name: N) -> GetStickerSet
     where
         N: Into<String>,
     {
-        GetStickerSet::new(Arc::clone(self), name)
+        GetStickerSet::new(self.clone(), name)
     }
 
     /// Use this method to upload a .png file with a sticker for later use in
@@ -1220,11 +1269,11 @@ impl Bot {
     /// [`Bot::create_new_sticker_set`]: crate::Bot::create_new_sticker_set
     /// [`Bot::add_sticker_to_set`]: crate::Bot::add_sticker_to_set
     pub fn upload_sticker_file(
-        self: &Arc<Bot>,
+        &self,
         user_id: i32,
         png_sticker: InputFile,
     ) -> UploadStickerFile {
-        UploadStickerFile::new(Arc::clone(self), user_id, png_sticker)
+        UploadStickerFile::new(self.clone(), user_id, png_sticker)
     }
 
     /// Use this method to create new sticker set owned by a user. The bot will
@@ -1256,7 +1305,7 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn create_new_sticker_set<N, T, E>(
-        self: &Arc<Bot>,
+        &self,
         user_id: i32,
         name: N,
         title: T,
@@ -1269,7 +1318,7 @@ impl Bot {
         E: Into<String>,
     {
         CreateNewStickerSet::new(
-            Arc::clone(self),
+            self.clone(),
             user_id,
             name,
             title,
@@ -1299,7 +1348,7 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn add_sticker_to_set<N, E>(
-        self: &Arc<Bot>,
+        &self,
         user_id: i32,
         name: N,
         png_sticker: InputFile,
@@ -1309,13 +1358,7 @@ impl Bot {
         N: Into<String>,
         E: Into<String>,
     {
-        AddStickerToSet::new(
-            Arc::clone(self),
-            user_id,
-            name,
-            png_sticker,
-            emojis,
-        )
+        AddStickerToSet::new(self.clone(), user_id, name, png_sticker, emojis)
     }
 
     /// Use this method to move a sticker in a set created by the bot to a
@@ -1327,14 +1370,14 @@ impl Bot {
     ///   - `sticker`: File identifier of the sticker.
     ///   - `position`: New sticker position in the set, zero-based.
     pub fn set_sticker_position_in_set<S>(
-        self: &Arc<Bot>,
+        &self,
         sticker: S,
         position: i32,
     ) -> SetStickerPositionInSet
     where
         S: Into<String>,
     {
-        SetStickerPositionInSet::new(Arc::clone(self), sticker, position)
+        SetStickerPositionInSet::new(self.clone(), sticker, position)
     }
 
     /// Use this method to delete a sticker from a set created by the bot.
@@ -1343,14 +1386,11 @@ impl Bot {
     ///
     /// # Params
     ///   - `sticker`: File identifier of the sticker.
-    pub fn delete_sticker_from_set<S>(
-        self: &Arc<Bot>,
-        sticker: S,
-    ) -> DeleteStickerFromSet
+    pub fn delete_sticker_from_set<S>(&self, sticker: S) -> DeleteStickerFromSet
     where
         S: Into<String>,
     {
-        DeleteStickerFromSet::new(Arc::clone(self), sticker)
+        DeleteStickerFromSet::new(self.clone(), sticker)
     }
 
     /// Use this method to send answers to an inline query.
@@ -1363,7 +1403,7 @@ impl Bot {
     ///   - `inline_query_id`: Unique identifier for the answered query.
     ///   - `results`: A JSON-serialized array of results for the inline query.
     pub fn answer_inline_query<I, R>(
-        self: &Arc<Bot>,
+        &self,
         inline_query_id: I,
         results: R,
     ) -> AnswerInlineQuery
@@ -1371,7 +1411,7 @@ impl Bot {
         I: Into<String>,
         R: Into<Vec<InlineQueryResult>>,
     {
-        AnswerInlineQuery::new(Arc::clone(self), inline_query_id, results)
+        AnswerInlineQuery::new(self.clone(), inline_query_id, results)
     }
 
     /// Use this method to send invoices.
@@ -1397,7 +1437,7 @@ impl Bot {
     /// [@Botfather]: https://t.me/botfather
     #[allow(clippy::too_many_arguments)]
     pub fn send_invoice<T, D, Pl, Pt, S, C, Pr>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: i32,
         title: T,
         description: D,
@@ -1417,7 +1457,7 @@ impl Bot {
         Pr: Into<Vec<LabeledPrice>>,
     {
         SendInvoice::new(
-            Arc::clone(self),
+            self.clone(),
             chat_id,
             title,
             description,
@@ -1445,14 +1485,14 @@ impl Bot {
     ///
     /// [`Update`]: crate::types::Update
     pub fn answer_shipping_query<S>(
-        self: &Arc<Bot>,
+        &self,
         shipping_query_id: S,
         ok: bool,
     ) -> AnswerShippingQuery
     where
         S: Into<String>,
     {
-        AnswerShippingQuery::new(Arc::clone(self), shipping_query_id, ok)
+        AnswerShippingQuery::new(self.clone(), shipping_query_id, ok)
     }
 
     /// Once the user has confirmed their payment and shipping details, the Bot
@@ -1472,14 +1512,14 @@ impl Bot {
     ///
     /// [`Update`]: crate::types::Update
     pub fn answer_pre_checkout_query<P>(
-        self: &Arc<Bot>,
+        &self,
         pre_checkout_query_id: P,
         ok: bool,
     ) -> AnswerPreCheckoutQuery
     where
         P: Into<String>,
     {
-        AnswerPreCheckoutQuery::new(Arc::clone(self), pre_checkout_query_id, ok)
+        AnswerPreCheckoutQuery::new(self.clone(), pre_checkout_query_id, ok)
     }
 
     /// Use this method to send a game.
@@ -1492,15 +1532,11 @@ impl Bot {
     ///     identifier for the game. Set up your games via [@Botfather].
     ///
     /// [@Botfather]: https://t.me/botfather
-    pub fn send_game<G>(
-        self: &Arc<Bot>,
-        chat_id: i32,
-        game_short_name: G,
-    ) -> SendGame
+    pub fn send_game<G>(&self, chat_id: i32, game_short_name: G) -> SendGame
     where
         G: Into<String>,
     {
-        SendGame::new(Arc::clone(self), chat_id, game_short_name)
+        SendGame::new(self.clone(), chat_id, game_short_name)
     }
 
     /// Use this method to set the score of the specified user in a game.
@@ -1519,17 +1555,12 @@ impl Bot {
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
     pub fn set_game_score(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
         score: i32,
     ) -> SetGameScore {
-        SetGameScore::new(
-            Arc::clone(self),
-            chat_or_inline_message,
-            user_id,
-            score,
-        )
+        SetGameScore::new(self.clone(), chat_or_inline_message, user_id, score)
     }
 
     /// Use this method to get data for high score tables.
@@ -1548,15 +1579,11 @@ impl Bot {
     /// # Params
     ///   - `user_id`: Target user id.
     pub fn get_game_high_scores(
-        self: &Arc<Bot>,
+        &self,
         chat_or_inline_message: ChatOrInlineMessage,
         user_id: i32,
     ) -> GetGameHighScores {
-        GetGameHighScores::new(
-            Arc::clone(self),
-            chat_or_inline_message,
-            user_id,
-        )
+        GetGameHighScores::new(self.clone(), chat_or_inline_message, user_id)
     }
 
     /// Use this method to set a custom title for an administrator in a
@@ -1571,7 +1598,7 @@ impl Bot {
     ///   - `custom_title`: New custom title for the administrator; 0-16
     ///     characters, emoji are not allowed.
     pub fn set_chat_administrator_custom_title<C, CT>(
-        self: &Arc<Bot>,
+        &self,
         chat_id: C,
         user_id: i32,
         custom_title: CT,
@@ -1581,7 +1608,7 @@ impl Bot {
         CT: Into<String>,
     {
         SetChatAdministratorCustomTitle::new(
-            Arc::clone(self),
+            self.clone(),
             chat_id,
             user_id,
             custom_title,

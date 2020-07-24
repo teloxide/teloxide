@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to restrict a user in a supergroup.
 ///
@@ -19,7 +18,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct RestrictChatMember {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     user_id: i32,
     permissions: ChatPermissions,
@@ -43,7 +42,7 @@ impl Request for RestrictChatMember {
 
 impl RestrictChatMember {
     pub(crate) fn new<C>(
-        bot: Arc<Bot>,
+        bot: Bot,
         chat_id: C,
         user_id: i32,
         permissions: ChatPermissions,

@@ -6,7 +6,6 @@ use crate::{
     types::{File, InputFile},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to upload a .png file with a sticker for later use in
 /// [`Bot::create_new_sticker_set`] and [`Bot::add_sticker_to_set`] methods (can
@@ -20,7 +19,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct UploadStickerFile {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     user_id: i32,
     png_sticker: InputFile,
 }
@@ -40,11 +39,7 @@ impl Request for UploadStickerFile {
 }
 
 impl UploadStickerFile {
-    pub(crate) fn new(
-        bot: Arc<Bot>,
-        user_id: i32,
-        png_sticker: InputFile,
-    ) -> Self {
+    pub(crate) fn new(bot: Bot, user_id: i32, png_sticker: InputFile) -> Self {
         Self { bot, user_id, png_sticker }
     }
 

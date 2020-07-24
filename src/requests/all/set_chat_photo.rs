@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, InputFile, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to set a new profile photo for the chat.
 ///
@@ -18,7 +17,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatPhoto {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     photo: InputFile,
 }
@@ -39,7 +38,7 @@ impl Request for SetChatPhoto {
 }
 
 impl SetChatPhoto {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, photo: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, photo: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

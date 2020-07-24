@@ -6,7 +6,6 @@ use crate::{
     types::{Chat, ChatId},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to get up to date information about the chat (current name
 /// of the user for one-on-one conversations, current username of a user, group
@@ -17,7 +16,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct GetChat {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
 }
 
@@ -32,7 +31,7 @@ impl Request for GetChat {
 }
 
 impl GetChat {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C) -> Self
     where
         C: Into<ChatId>,
     {

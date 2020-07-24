@@ -6,7 +6,6 @@ use crate::{
     types::{ChatId, True},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to change the title of a chat.
 ///
@@ -18,7 +17,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, Serialize)]
 pub struct SetChatTitle {
     #[serde(skip_serializing)]
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     title: String,
 }
@@ -39,7 +38,7 @@ impl Request for SetChatTitle {
 }
 
 impl SetChatTitle {
-    pub(crate) fn new<C, T>(bot: Arc<Bot>, chat_id: C, title: T) -> Self
+    pub(crate) fn new<C, T>(bot: Bot, chat_id: C, title: T) -> Self
     where
         C: Into<ChatId>,
         T: Into<String>,

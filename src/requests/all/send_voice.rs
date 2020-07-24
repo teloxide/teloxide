@@ -4,7 +4,6 @@ use crate::{
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
-use std::sync::Arc;
 
 /// Use this method to send audio files, if you want Telegram clients to display
 /// the file as a playable voice message.
@@ -20,7 +19,7 @@ use std::sync::Arc;
 /// [`Document`]: crate::types::Document
 #[derive(Debug, Clone)]
 pub struct SendVoice {
-    bot: Arc<Bot>,
+    bot: Bot,
     chat_id: ChatId,
     voice: InputFile,
     caption: Option<String>,
@@ -57,7 +56,7 @@ impl RequestWithFile for SendVoice {
 }
 
 impl SendVoice {
-    pub(crate) fn new<C>(bot: Arc<Bot>, chat_id: C, voice: InputFile) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, voice: InputFile) -> Self
     where
         C: Into<ChatId>,
     {

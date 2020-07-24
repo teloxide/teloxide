@@ -27,7 +27,7 @@ mod macros {
 }
 
 fn send<'a, Upd>(
-    bot: &'a Arc<Bot>,
+    bot: &'a Bot,
     tx: &'a Tx<Upd>,
     update: Upd,
     variant: &'static str,
@@ -35,9 +35,7 @@ fn send<'a, Upd>(
     Upd: Debug,
 {
     if let Some(tx) = tx {
-        if let Err(error) =
-            tx.send(UpdateWithCx { bot: Arc::clone(&bot), update })
-        {
+        if let Err(error) = tx.send(UpdateWithCx { bot: bot.clone(), update }) {
             log::error!(
                 "The RX part of the {} channel is closed, but an update is \
                  received.\nError:{}\n",
@@ -53,7 +51,7 @@ fn send<'a, Upd>(
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
 pub struct Dispatcher {
-    bot: Arc<Bot>,
+    bot: Bot,
 
     messages_queue: Tx<Message>,
     edited_messages_queue: Tx<Message>,
@@ -71,7 +69,7 @@ pub struct Dispatcher {
 impl Dispatcher {
     /// Constructs a new dispatcher with the specified `bot`.
     #[must_use]
-    pub fn new(bot: Arc<Bot>) -> Self {
+    pub fn new(bot: Bot) -> Self {
         Self {
             bot,
             messages_queue: None,
@@ -207,7 +205,7 @@ impl Dispatcher {
     /// errors produced by this listener).
     pub async fn dispatch(&self) {
         self.dispatch_with_listener(
-            update_listeners::polling_default(Arc::clone(&self.bot)),
+            update_listeners::polling_default(self.bot.clone()),
             LoggingErrorHandler::with_custom_text(
                 "An error from the update listener",
             ),
