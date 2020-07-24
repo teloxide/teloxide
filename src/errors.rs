@@ -3,7 +3,7 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use thiserror::Error;
 
-/// An error occurred after downloading a file.
+/// An error caused by downloading a file.
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
     #[error("A network error: {0}")]
@@ -13,7 +13,7 @@ pub enum DownloadError {
     Io(#[source] std::io::Error),
 }
 
-/// An error occurred after making a request to Telegram.
+/// An error caused by sending a request to Telegram.
 #[derive(Debug, Error)]
 pub enum RequestError {
     #[error("A Telegram's error #{status_code}: {kind:?}")]
@@ -36,9 +36,13 @@ pub enum RequestError {
     InvalidJson(#[source] serde_json::Error),
 }
 
-/// A kind of a API error returned from Telegram. If you receive Unknown value,
-/// please [open the issue](https://github.com/teloxide/teloxide/issues/new) with description
-/// of error.
+/// A kind of an API error.
+///
+/// If you receive [`ApiErrorKind::Unknown`], please [open an issue] with
+/// the description of the error.
+///
+/// [`ApiErrorKind::Unknown`]: crate::ApiErrorKind::Unknown
+/// [open an issue]: https://github.com/teloxide/teloxide/issues/new
 #[derive(Debug, Deserialize, PartialEq, Hash, Eq, Clone)]
 #[serde(untagged)]
 pub enum ApiErrorKind {
@@ -46,7 +50,7 @@ pub enum ApiErrorKind {
     Unknown(String),
 }
 
-/// A kind of a known API error returned from Telegram.
+/// A kind of a known API error.
 #[derive(Debug, Deserialize, PartialEq, Copy, Hash, Eq, Clone)]
 pub enum KnownApiErrorKind {
     /// Occurs when the bot tries to send message to user who blocked the bot.
