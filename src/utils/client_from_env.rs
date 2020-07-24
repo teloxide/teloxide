@@ -1,3 +1,10 @@
+/// Constructs a client from the `TELOXIDE_PROXY` environmental variable.
+///
+/// This function passes the value of `TELOXIDE_PROXY` into
+/// [`reqwest::Proxy::all`], if it exists, otherwise returns the default
+/// client.
+///
+/// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
 pub fn client_from_env() -> reqwest::Client {
     use reqwest::{Client, Proxy};
 

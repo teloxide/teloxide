@@ -12,8 +12,15 @@ pub enum DialogueStage<D> {
 
 /// Returns a new dialogue state.
 ///
+/// Note the `Dialogue: From<State>` constraint. It means that you don't need to
+/// pass `Dialogue` -- you can just pass one of it's states. [`From`] can be
+/// conveniently derived by [derive-more].
+///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching::dialogue).
+///
+/// [`From`]: std::convert::From
+/// [derive-more]: https://crates.io/crates/derive_more
 pub fn next<Dialogue, State>(new_state: State) -> TransitionOut<Dialogue>
 where
     Dialogue: From<State>,

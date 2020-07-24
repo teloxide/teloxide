@@ -5,6 +5,9 @@ use futures::{stream::BoxStream, Stream, StreamExt};
 
 /// An extension trait to be used with [`DispatcherHandlerRx`].
 ///
+/// See the [module-level documentation](crate::dispatching) for the design
+/// overview.
+///
 /// [`DispatcherHandlerRx`]: crate::dispatching::DispatcherHandlerRx
 pub trait DispatcherHandlerRxExt {
     /// Extracts only text messages from this stream of arbitrary messages.

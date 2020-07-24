@@ -5,8 +5,8 @@ use futures::future::BoxFuture;
 
 /// An asynchronous handler of a stream of updates used in [`Dispatcher`].
 ///
-/// See [the module-level documentation for the design
-/// overview](crate::dispatching).
+/// See the [module-level documentation](crate::dispatching) for the design
+/// overview.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub trait DispatcherHandler<Upd> {

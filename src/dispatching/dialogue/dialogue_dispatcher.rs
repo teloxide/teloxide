@@ -15,11 +15,11 @@ use std::sync::{Arc, Mutex};
 
 /// A dispatcher of dialogues.
 ///
-/// Note that `DialogueDispatcher` implements [`DispatcherHandler`], so you can
-/// just put an instance of this dispatcher into the [`Dispatcher`]'s methods.
+/// Note that it implements [`DispatcherHandler`], so you can just put an
+/// instance of this dispatcher into the [`Dispatcher`]'s methods.
 ///
-/// See [the module-level documentation for the design
-/// overview](crate::dispatching::dialogue).
+/// See the [module-level documentation](crate::dispatching::dialogue) for the
+/// design overview.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler

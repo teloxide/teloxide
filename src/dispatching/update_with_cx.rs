@@ -12,8 +12,8 @@ use crate::{
 
 /// A [`Dispatcher`]'s handler's context of a bot and an update.
 ///
-/// See [the module-level documentation for the design
-/// overview](crate::dispatching).
+/// See the [module-level documentation](crate::dispatching) for the design
+/// overview.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
@@ -32,6 +32,7 @@ where
 }
 
 impl UpdateWithCx<Message> {
+    /// A shortcut for `.answer(text).send().await`.
     pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
     where
         T: Into<String>,
