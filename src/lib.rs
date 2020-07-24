@@ -33,7 +33,7 @@ pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
             .attrs
             .iter()
             .find(|attr| match attr.path.get_ident() {
-                Some(ident) => ident == "handler",
+                Some(ident) => ident == "transition",
                 None => false,
             })
         {
