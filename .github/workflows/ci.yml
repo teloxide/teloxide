@@ -26,7 +26,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Cargo clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: cargo clippy --all --all-targets --all-features -- -D warnings
   stable-test:
     runs-on: ubuntu-latest
     steps:
@@ -43,7 +43,7 @@ jobs:
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
       - name: Cargo test
-        run: cargo test --all-features
+        run: cargo test --all --all-features
   build-example:
     runs-on: ubuntu-latest
     strategy:
