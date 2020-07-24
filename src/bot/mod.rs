@@ -1,6 +1,9 @@
 use crate::types::ParseMode;
-use reqwest::Client;
-use std::sync::Arc;
+use reqwest::{
+    header::{HeaderMap, CONNECTION},
+    Client, ClientBuilder,
+};
+use std::{sync::Arc, time::Duration};
 
 mod api;
 mod download;
@@ -55,7 +58,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Self::with_client(token, Client::new())
+        Self::with_client(token, sound_bot())
     }
 
     /// Creates a new `Bot` with the specified token and your
@@ -74,6 +77,23 @@ impl Bot {
             parse_mode: Arc::new(None),
         }
     }
+}
+
+// See https://github.com/teloxide/teloxide/issues/223.
+fn sound_bot() -> Client {
+    let mut headers = HeaderMap::new();
+    headers.insert(CONNECTION, "keep-alive".parse().unwrap());
+
+    let connect_timeout = Duration::from_secs(5);
+    let timeout = 10;
+
+    ClientBuilder::new()
+        .connect_timeout(connect_timeout)
+        .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
+        .tcp_nodelay_(true)
+        .default_headers(headers)
+        .build()
+        .expect("Cannot build reqwest::Client")
 }
 
 impl Bot {

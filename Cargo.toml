@@ -29,7 +29,7 @@ cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
 [dependencies]
-serde_json = "1.0.56"
+serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }
 
 tokio = { version = "0.2.21", features = ["full"] }
