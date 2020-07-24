@@ -42,6 +42,7 @@
 
 #![allow(clippy::type_complexity)]
 
+mod bot_dialogue;
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
 mod dialogue_stage;
@@ -50,6 +51,7 @@ mod get_chat_id;
 mod storage;
 
 use crate::{requests::ResponseResult, types::Message};
+pub use bot_dialogue::BotDialogue;
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage};
