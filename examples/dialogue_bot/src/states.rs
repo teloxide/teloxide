@@ -37,10 +37,13 @@ pub enum Dialogue {
     #[default]
     #[handler(start)]
     Start(StartState),
+
     #[handler(receive_days_of_week)]
     ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
+
     #[handler(receive_10x5_answer)]
     Receive10x5Answer(Receive10x5AnswerState),
+
     #[handler(receive_gandalf_alternative_name)]
     ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
 }
