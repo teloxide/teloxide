@@ -61,6 +61,7 @@ pub use get_chat_id::GetChatId;
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};
 
+use crate::dispatching::UpdateWithCx;
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
 
 /// Generates `.up(field)` methods for dialogue states.
@@ -112,8 +113,8 @@ macro_rules! up {
     };
 }
 
-/// A type passed into a FSM transition function.
-pub type TransitionIn<State, E> = DialogueWithCx<Message, State, E>;
+/// An input passed into a FSM transition function.
+pub type TransitionIn = UpdateWithCx<Message>;
 
 // A type returned from a FSM transition function.
 pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;

@@ -2,10 +2,9 @@ use teloxide::prelude::*;
 
 use super::states::*;
 
-pub type Cx = UpdateWithCx<Message>;
 pub type Out = TransitionOut<Dialogue>;
 
-async fn start(cx: Cx, state: StartState, text: &str) -> Out {
+async fn start(cx: TransitionIn, state: StartState, text: &str) -> Out {
     if let Ok(number) = text.parse() {
         cx.answer_str(format!(
             "Remembered number {}. Now use /get or /reset",
@@ -19,7 +18,11 @@ async fn start(cx: Cx, state: StartState, text: &str) -> Out {
     }
 }
 
-async fn have_number(cx: Cx, state: HaveNumberState, text: &str) -> Out {
+async fn have_number(
+    cx: TransitionIn,
+    state: HaveNumberState,
+    text: &str,
+) -> Out {
     let num = state.number;
 
     if text.starts_with("/get") {
@@ -34,7 +37,7 @@ async fn have_number(cx: Cx, state: HaveNumberState, text: &str) -> Out {
     }
 }
 
-pub async fn dispatch(cx: Cx, dialogue: Dialogue, text: &str) -> Out {
+pub async fn dispatch(cx: TransitionIn, dialogue: Dialogue, text: &str) -> Out {
     match dialogue {
         Dialogue::Start(state) => start(cx, state, text).await,
         Dialogue::HaveNumber(state) => have_number(cx, state, text).await,
