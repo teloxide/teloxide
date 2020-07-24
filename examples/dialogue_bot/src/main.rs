@@ -28,7 +28,6 @@ mod states;
 mod transitions;
 
 use states::*;
-use transitions::*;
 
 use std::convert::Infallible;
 use teloxide::prelude::*;

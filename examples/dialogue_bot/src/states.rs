@@ -1,5 +1,26 @@
 use teloxide::prelude::*;
 
+use super::transitions::{
+    receive_10x5_answer, receive_days_of_week,
+    receive_gandalf_alternative_name, start,
+};
+
+#[derive(BotDialogue, SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    #[handler(start)]
+    Start(StartState),
+
+    #[handler(receive_days_of_week)]
+    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
+
+    #[handler(receive_10x5_answer)]
+    Receive10x5Answer(Receive10x5AnswerState),
+
+    #[handler(receive_gandalf_alternative_name)]
+    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+}
+
 #[derive(Default)]
 pub struct StartState;
 
