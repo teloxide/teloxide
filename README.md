@@ -185,48 +185,50 @@ States and transition functions are placed into separated modules. For example:
 ```rust
 // Imports are omitted...
 
+#[derive(BotDialogue, SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    #[transition(start)]
+    Start(StartState),
+
+    #[transition(receive_days_of_week)]
+    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
+
+    #[transition(receive_10x5_answer)]
+    Receive10x5Answer(Receive10x5AnswerState),
+
+    #[transition(receive_gandalf_alternative_name)]
+    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+}
+
 #[derive(Default)]
 pub struct StartState;
 
-pub struct ReceiveFullNameState {
+pub struct ReceiveDaysOfWeekState {
     rest: StartState,
 }
 
-pub struct ReceiveAgeState {
-    rest: ReceiveFullNameState,
-    full_name: String,
+pub struct Receive10x5AnswerState {
+    rest: ReceiveDaysOfWeekState,
+    days_of_week: u8,
 }
 
-pub struct ReceiveFavouriteMusicState {
-    rest: ReceiveAgeState,
-    age: u8,
+pub struct ReceiveGandalfAlternativeNameState {
+    rest: Receive10x5AnswerState,
+    _10x5_answer: u8,
 }
 
-#[derive(Display)]
-#[display(
-    "Your full name: {rest.rest.full_name}, your age: {rest.age}, your \
-     favourite music: {favourite_music}"
-)]
 pub struct ExitState {
-    rest: ReceiveFavouriteMusicState,
-    favourite_music: FavouriteMusic,
+    rest: ReceiveGandalfAlternativeNameState,
+    gandalf_alternative_name: String,
 }
 
 up!(
-    StartState -> ReceiveFullNameState,
-    ReceiveFullNameState + [full_name: String] -> ReceiveAgeState,
-    ReceiveAgeState + [age: u8] -> ReceiveFavouriteMusicState,
-    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
+    StartState -> ReceiveDaysOfWeekState,
+    ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
+    Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
+    ReceiveGandalfAlternativeNameState + [gandalf_alternative_name: String] -> ExitState,
 );
-
-#[derive(SmartDefault, From)]
-pub enum Dialogue {
-    #[default]
-    Start(StartState),
-    ReceiveFullName(ReceiveFullNameState),
-    ReceiveAge(ReceiveAgeState),
-    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
-}
 ```
 
 The handy `up!` macro automatically generates functions that complete one state to another by appending a field. Here are the transition functions:
@@ -235,97 +237,65 @@ The handy `up!` macro automatically generates functions that complete one state 
 ```rust
 // Imports are omitted...
 
-pub type Cx = UpdateWithCx<Message>;
 pub type Out = TransitionOut<Dialogue>;
 
-async fn start(cx: Cx, state: StartState) -> Out {
-    cx.answer_str("Let's start! First, what's your full name?").await?;
+pub async fn start(cx: TransitionIn, state: StartState) -> Out {
+    cx.answer_str("Let's start our test! How many days per week are there?")
+        .await?;
     next(state.up())
 }
 
-async fn receive_full_name(cx: Cx, state: ReceiveFullNameState) -> Out {
-    match cx.update.text_owned() {
-        Some(full_name) => {
-            cx.answer_str("What a wonderful name! Your age?").await?;
-            next(state.up(full_name))
-        }
-        _ => {
-            cx.answer_str("Please, enter a text message!").await?;
-            next(state)
-        }
-    }
-}
-
-async fn receive_age(cx: Cx, state: ReceiveAgeState) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(age)) => {
-            cx.answer("Good. Now choose your favourite music:")
-                .reply_markup(FavouriteMusic::markup())
-                .send()
-                .await?;
-            next(state.up(age))
-        }
-        _ => {
-            cx.answer_str("Please, enter a number!").await?;
-            next(state)
-        }
-    }
-}
-
-async fn receive_favourite_music(
-    cx: Cx,
-    state: ReceiveFavouriteMusicState,
+pub async fn receive_days_of_week(
+    cx: TransitionIn,
+    state: ReceiveDaysOfWeekState,
 ) -> Out {
     match cx.update.text().map(str::parse) {
-        Some(Ok(favourite_music)) => {
-            cx.answer_str(format!("Fine. {}", state.up(favourite_music)))
-                .await?;
+        Some(Ok(ans)) if ans == 7 => {
+            cx.answer_str("10*5 = ?").await?;
+            next(state.up(ans))
+        }
+        _ => {
+            cx.answer_str("Try again.").await?;
+            next(state)
+        }
+    }
+}
+
+pub async fn receive_10x5_answer(
+    cx: TransitionIn,
+    state: Receive10x5AnswerState,
+) -> Out {
+    match cx.update.text().map(str::parse) {
+        Some(Ok(ans)) if ans == 50 => {
+            cx.answer_str("What's an alternative name of Gandalf?").await?;
+            next(state.up(ans))
+        }
+        _ => {
+            cx.answer_str("Try again.").await?;
+            next(state)
+        }
+    }
+}
+
+pub async fn receive_gandalf_alternative_name(
+    cx: TransitionIn,
+    state: ReceiveGandalfAlternativeNameState,
+) -> Out {
+    match cx.update.text() {
+        Some(ans) if ans == "Mithrandir" => {
+            cx.answer_str(
+                "Congratulations! You've successfully passed the test!",
+            )
+            .await?;
             exit()
         }
         _ => {
-            cx.answer_str("Please, enter from the keyboard!").await?;
+            cx.answer_str("Try again.").await?;
             next(state)
         }
     }
 }
-
-pub async fn dispatch(cx: Cx, dialogue: Dialogue) -> Out {
-    match dialogue {
-        Dialogue::Start(state) => start(cx, state).await,
-        Dialogue::ReceiveFullName(state) => receive_full_name(cx, state).await,
-        Dialogue::ReceiveAge(state) => receive_age(cx, state).await,
-        Dialogue::ReceiveFavouriteMusic(state) => {
-            receive_favourite_music(cx, state).await
-        }
-    }
-}
 ```
-
-([dialogue_bot/src/favourite_music.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/favourite_music.rs))
-```rust
-// Imports are omitted...
-
-#[derive(Copy, Clone, Display, FromStr)]
-pub enum FavouriteMusic {
-    Rock,
-    Metal,
-    Pop,
-    Other,
-}
-
-impl FavouriteMusic {
-    pub fn markup() -> ReplyKeyboardMarkup {
-        ReplyKeyboardMarkup::default().append_row(vec![
-            KeyboardButton::new("Rock"),
-            KeyboardButton::new("Metal"),
-            KeyboardButton::new("Pop"),
-            KeyboardButton::new("Other"),
-        ])
-    }
-}
-```
-
-
 
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
 ```rust
@@ -340,9 +310,12 @@ async fn main() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |input: TransitionIn<Dialogue, Infallible>| async move {
+            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                dispatch(input.cx, input.dialogue.unwrap())
+                input
+                    .dialogue
+                    .unwrap()
+                    .dispatch(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },

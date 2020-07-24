@@ -25,7 +25,7 @@ enum Error {
     StorageError(#[from] StorageError),
 }
 
-type In = TransitionIn<Dialogue, StorageError>;
+type In = DialogueWithCx<Message, Dialogue, StorageError>;
 
 async fn handle_message(input: In) -> Out {
     let (cx, dialogue) = input.unpack();

@@ -1,47 +1,51 @@
 use teloxide::prelude::*;
 
-use super::favourite_music::FavouriteMusic;
-use parse_display::Display;
+use super::transitions::{
+    receive_10x5_answer, receive_days_of_week,
+    receive_gandalf_alternative_name, start,
+};
+
+#[derive(BotDialogue, SmartDefault, From)]
+pub enum Dialogue {
+    #[default]
+    #[transition(start)]
+    Start(StartState),
+
+    #[transition(receive_days_of_week)]
+    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
+
+    #[transition(receive_10x5_answer)]
+    Receive10x5Answer(Receive10x5AnswerState),
+
+    #[transition(receive_gandalf_alternative_name)]
+    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+}
 
 #[derive(Default)]
 pub struct StartState;
 
-pub struct ReceiveFullNameState {
+pub struct ReceiveDaysOfWeekState {
     rest: StartState,
 }
 
-pub struct ReceiveAgeState {
-    rest: ReceiveFullNameState,
-    full_name: String,
+pub struct Receive10x5AnswerState {
+    rest: ReceiveDaysOfWeekState,
+    days_of_week: u8,
 }
 
-pub struct ReceiveFavouriteMusicState {
-    rest: ReceiveAgeState,
-    age: u8,
+pub struct ReceiveGandalfAlternativeNameState {
+    rest: Receive10x5AnswerState,
+    _10x5_answer: u8,
 }
 
-#[derive(Display)]
-#[display(
-    "Your full name: {rest.rest.full_name}, your age: {rest.age}, your \
-     favourite music: {favourite_music}"
-)]
 pub struct ExitState {
-    rest: ReceiveFavouriteMusicState,
-    favourite_music: FavouriteMusic,
+    rest: ReceiveGandalfAlternativeNameState,
+    gandalf_alternative_name: String,
 }
 
 up!(
-    StartState -> ReceiveFullNameState,
-    ReceiveFullNameState + [full_name: String] -> ReceiveAgeState,
-    ReceiveAgeState + [age: u8] -> ReceiveFavouriteMusicState,
-    ReceiveFavouriteMusicState + [favourite_music: FavouriteMusic] -> ExitState,
+    StartState -> ReceiveDaysOfWeekState,
+    ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
+    Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
+    ReceiveGandalfAlternativeNameState + [gandalf_alternative_name: String] -> ExitState,
 );
-
-#[derive(SmartDefault, From)]
-pub enum Dialogue {
-    #[default]
-    Start(StartState),
-    ReceiveFullName(ReceiveFullNameState),
-    ReceiveAge(ReceiveAgeState),
-    ReceiveFavouriteMusic(ReceiveFavouriteMusicState),
-}

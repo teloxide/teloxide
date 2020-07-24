@@ -10,12 +10,11 @@ edition = "2018"
 log = "0.4.8"
 tokio = "0.2.9"
 pretty_env_logger = "0.4.0"
-
+futures = "0.3.5"
 smart-default = "0.6.0"
 derive_more = "0.99.9"
-parse-display = "0.1.1"
-
 teloxide = { path = "../../" }
+teloxide-macros = { git = "http://github.com/teloxide/teloxide-macros", branch = "master" }
 
 [profile.release]
 lto = true

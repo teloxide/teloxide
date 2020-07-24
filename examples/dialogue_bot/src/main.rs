@@ -21,13 +21,13 @@
 extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
+#[macro_use]
+extern crate teloxide_macros;
 
-mod favourite_music;
 mod states;
 mod transitions;
 
 use states::*;
-use transitions::*;
 
 use std::convert::Infallible;
 use teloxide::prelude::*;
@@ -45,9 +45,12 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |input: TransitionIn<Dialogue, Infallible>| async move {
+            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
                 // Unwrap without panic because of std::convert::Infallible.
-                dispatch(input.cx, input.dialogue.unwrap())
+                input
+                    .dialogue
+                    .unwrap()
+                    .dispatch(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },
