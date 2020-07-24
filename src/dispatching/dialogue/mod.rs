@@ -38,13 +38,13 @@
 //!
 //! pub type Out = TransitionOut<D>;
 //!
-//! pub async fn _1_transition(cx: TransitionIn, state: _1State) {
+//! pub async fn _1_transition(cx: TransitionIn, state: _1State) -> Out {
 //!     todo!()
 //! }
-//! pub async fn _2_transition(cx: TransitionIn, state: _2State) {
+//! pub async fn _2_transition(cx: TransitionIn, state: _2State) -> Out {
 //!     todo!()
 //! }
-//! pub async fn _3_transition(cx: TransitionIn, state: _3State) {
+//! pub async fn _3_transition(cx: TransitionIn, state: _3State) -> Out {
 //!     todo!()
 //! }
 //!
