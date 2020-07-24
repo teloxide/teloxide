@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - ???
 ### Added
  - `BotBuilder`, which allows setting a default `ParseMode`.
+ - The `BotDialogue` trait.
+ - Automatic `dispatch` function generation via `#[derive(BotDialogue)]` + `#[handler(handler_fn)]`.
 
 ### Deprecated
  - `Bot::{from_env_with_client, new, with_client}`.
