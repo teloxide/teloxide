@@ -108,6 +108,9 @@ impl Bot {
     }
 }
 
+/// A builder of [`Bot`], supporting some extra settings.
+///
+/// [`Bot`] crate::Bot
 #[derive(Debug, Default)]
 pub struct BotBuilder {
     token: Option<String>,
