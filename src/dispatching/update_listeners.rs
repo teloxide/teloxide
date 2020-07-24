@@ -112,7 +112,7 @@ use crate::{
     RequestError,
 };
 
-use std::{convert::TryInto, time::Duration};
+use std::{convert::TryInto, sync::Arc, time::Duration};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
