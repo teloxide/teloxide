@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - `#[derive(BotDialogue)]` with `#[transition(<your transition fn)]`.
 
+### Removed
+ - The `dev` branch.
+
 ## [0.3.1] - 2020-07-04
 ### Added
  - Now you can remove command from showing in descriptions by defining `description` attribute as `"off"`.
