@@ -86,7 +86,7 @@
 //!                 input
 //!                     .dialogue
 //!                     .unwrap()
-//!                     .dispatch(input.cx)
+//!                     .react(input.cx)
 //!                     .await
 //!                     .expect("Something wrong with the bot!")
 //!             },
