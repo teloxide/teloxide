@@ -58,7 +58,7 @@
 //!
 //! <div align="center">
 //!   <kbd>
-//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.png width="600" />
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.gif />
 //!   </kbd>
 //! </div>
 //!
