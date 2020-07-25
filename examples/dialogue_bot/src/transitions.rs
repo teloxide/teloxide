@@ -21,7 +21,7 @@ async fn receive_full_name(
     match cx.update.text_owned() {
         Some(ans) => {
             cx.answer_str("How old are you?").await?;
-            next(append_field::<_, ReceiveAgeState, _, _>(state, ans))
+            next(ReceiveAgeState::up(state, ans))
         }
         _ => {
             cx.answer_str("Send me a text message.").await?;
@@ -35,7 +35,7 @@ async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
     match cx.update.text().map(str::parse::<u8>) {
         Some(Ok(ans)) => {
             cx.answer_str("What's your location?").await?;
-            next(append_field::<_, ReceiveLocationState, _, _>(state, ans))
+            next(ReceiveLocationState::up(state, ans))
         }
         _ => {
             cx.answer_str("Send me a number.").await?;

@@ -15,7 +15,7 @@ pub use crate::{
 };
 
 #[cfg(feature = "frunk")]
-pub use crate::append_field::append_field;
+pub use crate::up_state::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
 

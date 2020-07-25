@@ -24,7 +24,6 @@ pub use errors::{
 mod errors;
 mod net;
 
-mod append_field;
 mod bot;
 pub mod dispatching;
 pub mod error_handlers;
@@ -32,6 +31,7 @@ mod logging;
 pub mod prelude;
 pub mod requests;
 pub mod types;
+mod up_state;
 pub mod utils;
 
 extern crate teloxide_macros;
