@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 ### Added
- - `#[derive(BotDialogue)]` with `#[transition(<your transition fn)]`.
+ - `#[derive(Transition)]` with `#[teloxide(transition)]`.
 
 ### Removed
  - The `dev` branch.

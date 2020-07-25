@@ -17,19 +17,73 @@ use crate::{
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
+use syn::{
+    parse_macro_input, DeriveInput, Fields, FnArg, ItemEnum, ItemFn, ReturnType,
+};
 
 use std::fmt::Write;
 
-#[proc_macro_derive(BotDialogue, attributes(transition))]
-pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
+#[proc_macro_attribute]
+pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
+    match attr.to_string().as_ref() {
+        "transition" => {
+            let item_cloned = item.clone();
+            let input = parse_macro_input!(item as ItemFn);
+            let params = input.sig.inputs.iter().collect::<Vec<&FnArg>>();
+
+            if params.len() != 2 {
+                panic!(
+                    "An transition function must accept two parameters: a \
+                     state type and TransitionIn"
+                );
+            }
+
+            // This is actually used inside the quite! { ... } below.
+            #[allow(unused_variables)]
+            let state_type = match params[0] {
+                FnArg::Typed(pat_type) => &pat_type.ty,
+                _ => unreachable!(),
+            };
+            let fn_name = input.sig.ident;
+            let fn_return_type = match input.sig.output {
+                ReturnType::Type(_arrow, _type) => _type,
+                _ => panic!(
+                    "A subtransition must return TransitionOut<your dialogue \
+                     type>"
+                ),
+            };
+            let item = proc_macro2::TokenStream::from(item_cloned);
+
+            let impl_transition = quote! {
+                impl teloxide::dispatching::dialogue::SubTransition<
+                <#fn_return_type as teloxide::dispatching::dialogue::SubTransitionOutputType>::Output>
+                    for #state_type {
+                    fn react(self, cx: teloxide::dispatching::dialogue::TransitionIn)
+                        -> futures::future::BoxFuture<'static, #fn_return_type> {
+                                #item
+
+                                futures::future::FutureExt::boxed(#fn_name(self, cx))
+                            }
+                }
+            };
+
+            impl_transition.into()
+        }
+        _ => {
+            panic!("Unrecognised attribute '{}'", attr);
+        }
+    }
+}
+
+#[proc_macro_derive(Transition)]
+pub fn derive_transition(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
     write!(
         dispatch_fn,
-        "impl teloxide::dispatching::dialogue::BotDialogue for {} {{ fn \
-         dispatch(self, cx: teloxide::dispatching::dialogue::TransitionIn) -> \
+        "impl teloxide::dispatching::dialogue::Transition for {} {{ fn \
+         react(self, cx: teloxide::dispatching::dialogue::TransitionIn) -> \
          futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
          futures::future::FutureExt::boxed(async {{ match self {{",
@@ -38,22 +92,14 @@ pub fn derive_bot_dialogue(item: TokenStream) -> TokenStream {
     .unwrap();
 
     for variant in input.variants.iter() {
-        if let Some(handler) =
-            variant.attrs.iter().find(|attr| match attr.path.get_ident() {
-                Some(ident) => ident == "transition",
-                None => false,
-            })
-        {
-            let mut handler_fn = handler.tokens.to_string()[1..].to_owned();
-            handler_fn.pop();
-
-            write!(
-                dispatch_fn,
-                "{}::{}(state) => {}(cx, state).await,",
-                input.ident, variant.ident, handler_fn
-            )
-            .unwrap();
-        }
+        write!(
+            dispatch_fn,
+            "{}::{}(state) => \
+             teloxide::dispatching::dialogue::SubTransition::react(state, \
+             cx).await,",
+            input.ident, variant.ident
+        )
+        .unwrap();
     }
 
     write!(dispatch_fn, "}} }}) }} }}").unwrap();
