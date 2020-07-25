@@ -189,7 +189,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-States and transition functions are placed into separated modules. For example, below is a bot, which asks you three questions:
+Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
 
 ([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
 ```rust
@@ -199,36 +199,30 @@ States and transition functions are placed into separated modules. For example, 
 pub enum Dialogue {
     #[default]
     Start(StartState),
-    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
-    Receive10x5Answer(Receive10x5AnswerState),
-    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+    ReceiveFullName(ReceiveFullNameState),
+    ReceiveAge(ReceiveAgeState),
+    ReceiveLocation(ReceiveLocationState),
 }
 
 #[derive(Default)]
 pub struct StartState;
 
-pub struct ReceiveDaysOfWeekState {
-    rest: StartState,
+#[derive(Generic)]
+pub struct ReceiveFullNameState;
+
+#[derive(Generic)]
+pub struct ReceiveAgeState {
+    pub full_name: String,
 }
 
-pub struct Receive10x5AnswerState {
-    rest: ReceiveDaysOfWeekState,
-    days_of_week: u8,
+#[derive(Generic)]
+pub struct ReceiveLocationState {
+    pub full_name: String,
+    pub age: u8,
 }
-
-pub struct ReceiveGandalfAlternativeNameState {
-    rest: Receive10x5AnswerState,
-    _10x5_answer: u8,
-}
-
-up!(
-    StartState -> ReceiveDaysOfWeekState,
-    ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
-    Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
-);
 ```
 
-The handy `up!` macro automatically generates functions that complete one state to another by appending a field. Here are the transition functions:
+... and here are transition functions, which turn one state into another:
 
 ([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
 ```rust
@@ -237,68 +231,65 @@ The handy `up!` macro automatically generates functions that complete one state 
 pub type Out = TransitionOut<Dialogue>;
 
 #[teloxide(transition)]
-async fn start(state: StartState, cx: TransitionIn) -> Out {
-    cx.answer_str("Let's start our test! How many days per week are there?")
-        .await?;
-    next(state.up())
+async fn start(_state: StartState, cx: TransitionIn) -> Out {
+    cx.answer_str("Let's start! What's your full name?").await?;
+    next(ReceiveFullNameState)
 }
 
 #[teloxide(transition)]
-async fn receive_days_of_week(
-    state: ReceiveDaysOfWeekState,
+async fn receive_full_name(
+    state: ReceiveFullNameState,
     cx: TransitionIn,
 ) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 7 => {
-            cx.answer_str("10*5 = ?").await?;
-            next(state.up(ans))
+    match cx.update.text_owned() {
+        Some(ans) => {
+            cx.answer_str("How old are you?").await?;
+            next(ReceiveAgeState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a text message.").await?;
             next(state)
         }
     }
 }
 
 #[teloxide(transition)]
-async fn receive_10x5_answer(
-    state: Receive10x5AnswerState,
-    cx: TransitionIn,
-) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 50 => {
-            cx.answer_str("What's an alternative name of Gandalf?").await?;
-            next(state.up(ans))
+async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
+    match cx.update.text().map(str::parse::<u8>) {
+        Some(Ok(ans)) => {
+            cx.answer_str("What's your location?").await?;
+            next(ReceiveLocationState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a number.").await?;
             next(state)
         }
     }
 }
 
 #[teloxide(transition)]
-async fn receive_gandalf_alternative_name(
-    state: ReceiveGandalfAlternativeNameState,
+async fn receive_location(
+    state: ReceiveLocationState,
     cx: TransitionIn,
 ) -> Out {
     match cx.update.text() {
-        Some(ans) if ans == "Mithrandir" => {
-            cx.answer_str(
-                "Congratulations! You've successfully passed the test!",
-            )
+        Some(ans) => {
+            cx.answer_str(format!(
+                "Full name: {}\nAge: {}\nLocation: {}",
+                state.full_name, state.age, ans
+            ))
             .await?;
             exit()
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a text message.").await?;
             next(state)
         }
     }
 }
 ```
 
-And, finally, the `main` function looks like this:
+Finally, the `main` function looks like this:
 
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
 ```rust
