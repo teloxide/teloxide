@@ -167,7 +167,7 @@ async fn main() {
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting admin_bot!");
+    log::info!("Starting admin_bot...");
 
     let bot = Bot::from_env();
 

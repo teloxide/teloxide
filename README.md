@@ -93,7 +93,7 @@ use teloxide::prelude::*;
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting ping_pong_bot!");
+    log::info!("Starting ping_pong_bot...");
 
     let bot = Bot::from_env();
 
@@ -316,7 +316,7 @@ And, finally, the `main` function looks like this:
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting dialogue_bot!");
+    log::info!("Starting dialogue_bot...");
 
     let bot = Bot::from_env();
 

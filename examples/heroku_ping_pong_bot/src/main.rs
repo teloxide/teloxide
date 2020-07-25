@@ -75,7 +75,7 @@ pub async fn webhook<'a>(
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting heroku_ping_pong_bot!");
+    log::info!("Starting heroku_ping_pong_bot...");
 
     let bot = Bot::from_env();
 

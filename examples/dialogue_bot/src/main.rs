@@ -39,7 +39,7 @@ async fn main() {
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting dialogue_bot!");
+    log::info!("Starting dialogue_bot...");
 
     let bot = Bot::from_env();
 

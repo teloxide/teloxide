@@ -16,7 +16,7 @@ async fn main() {
 
 async fn run() {
     teloxide::enable_logging!();
-    log::info!("Starting shared_state_bot!");
+    log::info!("Starting shared_state_bot...");
 
     let bot = Bot::from_env();
 

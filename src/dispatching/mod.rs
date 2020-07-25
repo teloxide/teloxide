@@ -41,7 +41,7 @@
 //! # #[tokio::main]
 //! # async fn main_() {
 //! teloxide::enable_logging!();
-//! log::info!("Starting ping_pong_bot!");
+//! log::info!("Starting ping_pong_bot...");
 //!
 //! let bot = Bot::from_env();
 //!
