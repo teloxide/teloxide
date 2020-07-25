@@ -116,7 +116,11 @@ async fn main() {
 </div>
 
 ### Commands
-Commands are defined similar to how we define CLI using [structopt] and JSON structures in [serde-json]. The following bot accepts either `/username YourUsername`, `/usernameandage YourUsername YourAge` and shows the usage guide on `/help`:
+Commands are strongly typed and defined declaratively, similar to how we define CLI using [structopt] and JSON structures in [serde-json]. The following bot accepts these commands:
+
+ - `/username <your username>`
+ - `/usernameandage <your username> <your age>`
+ - `/help`
 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
@@ -302,6 +306,8 @@ pub async fn receive_gandalf_alternative_name(
     }
 }
 ```
+
+And, finally, the `main` function looks like this:
 
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
 ```rust
