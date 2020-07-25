@@ -10,7 +10,7 @@ pub enum Dialogue {
     ReceiveLocation(ReceiveLocationState),
 }
 
-#[derive(Generic, Default)]
+#[derive(Default)]
 pub struct StartState;
 
 #[derive(Generic)]
@@ -21,6 +21,7 @@ pub struct ReceiveAgeState {
     pub full_name: String,
 }
 
+#[derive(Generic)]
 pub struct ReceiveLocationState {
     pub full_name: String,
     pub age: u8,

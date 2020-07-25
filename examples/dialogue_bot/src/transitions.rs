@@ -8,7 +8,7 @@ use teloxide::prelude::*;
 pub type Out = TransitionOut<Dialogue>;
 
 #[teloxide(transition)]
-async fn start(state: StartState, cx: TransitionIn) -> Out {
+async fn start(_state: StartState, cx: TransitionIn) -> Out {
     cx.answer_str("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
 }
@@ -18,10 +18,10 @@ async fn receive_full_name(
     state: ReceiveFullNameState,
     cx: TransitionIn,
 ) -> Out {
-    match cx.update.text() {
+    match cx.update.text_owned() {
         Some(ans) => {
             cx.answer_str("How old are you?").await?;
-            next(append_field(state, ans))
+            next(append_field::<_, ReceiveAgeState, _, _>(state, ans))
         }
         _ => {
             cx.answer_str("Send me a text message.").await?;
@@ -32,10 +32,10 @@ async fn receive_full_name(
 
 #[teloxide(transition)]
 async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
-    match cx.update.text().map(str::parse) {
+    match cx.update.text().map(str::parse::<u8>) {
         Some(Ok(ans)) => {
             cx.answer_str("What's your location?").await?;
-            next(append_field(state, ans))
+            next(append_field::<_, ReceiveLocationState, _, _>(state, ans))
         }
         _ => {
             cx.answer_str("Send me a number.").await?;
