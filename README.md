@@ -174,6 +174,12 @@ async fn main() {
 }
 ```
 
+<div align="center">
+  <kbd>
+    <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.gif />
+  </kbd>
+</div>
+
 ### Dialogues
 A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
 
@@ -324,6 +330,12 @@ async fn main() {
         .await;
 }
 ```
+
+<div align="center">
+  <kbd>
+    <img src=https://github.com/teloxide/teloxide/raw/master/media/DIALOGUE_BOT.gif />
+  </kbd>
+</div>
 
 [More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
 
