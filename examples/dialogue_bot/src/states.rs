@@ -5,23 +5,23 @@ use teloxide_macros::Transition;
 pub enum Dialogue {
     #[default]
     Start(StartState),
-    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
-    Receive10x5Answer(Receive10x5AnswerState),
-    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+    ReceiveFullName(ReceiveFullNameState),
+    ReceiveAge(ReceiveAgeState),
+    ReceiveLocation(ReceiveLocationState),
 }
 
 #[derive(Generic, Default)]
 pub struct StartState;
 
 #[derive(Generic)]
-pub struct ReceiveDaysOfWeekState;
+pub struct ReceiveFullNameState;
 
 #[derive(Generic)]
-pub struct Receive10x5AnswerState {
-    days_of_week: u8,
+pub struct ReceiveAgeState {
+    pub full_name: String,
 }
 
-pub struct ReceiveGandalfAlternativeNameState {
-    days_of_week: u8,
-    _10x5_answer: u8,
+pub struct ReceiveLocationState {
+    pub full_name: String,
+    pub age: u8,
 }

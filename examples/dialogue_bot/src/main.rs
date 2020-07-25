@@ -20,6 +20,9 @@ extern crate smart_default;
 extern crate derive_more;
 #[macro_use]
 extern crate frunk;
+extern crate frunk_core;
+#[macro_use]
+extern crate teloxide_macros;
 
 mod states;
 mod transitions;

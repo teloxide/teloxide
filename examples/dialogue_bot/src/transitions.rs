@@ -1,69 +1,65 @@
 use crate::states::{
-    Dialogue, Receive10x5AnswerState, ReceiveDaysOfWeekState,
-    ReceiveGandalfAlternativeNameState, StartState,
+    Dialogue, ReceiveAgeState, ReceiveFullNameState, ReceiveLocationState,
+    StartState,
 };
 
 use teloxide::prelude::*;
-use teloxide_macros::teloxide;
 
 pub type Out = TransitionOut<Dialogue>;
 
 #[teloxide(transition)]
 async fn start(state: StartState, cx: TransitionIn) -> Out {
-    cx.answer_str("Let's start our test! How many days per week are there?")
-        .await?;
-    next(ReceiveDaysOfWeekState)
+    cx.answer_str("Let's start! What's your full name?").await?;
+    next(ReceiveFullNameState)
 }
 
 #[teloxide(transition)]
-async fn receive_days_of_week(
-    state: ReceiveDaysOfWeekState,
-    cx: TransitionIn,
-) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 7 => {
-            cx.answer_str("10*5 = ?").await?;
-            next(append_field(state, ans))
-        }
-        _ => {
-            cx.answer_str("Try again.").await?;
-            next(state)
-        }
-    }
-}
-
-#[teloxide(transition)]
-async fn receive_10x5_answer(
-    state: Receive10x5AnswerState,
-    cx: TransitionIn,
-) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 50 => {
-            cx.answer_str("What's an alternative name of Gandalf?").await?;
-            next(append_field(state, ans))
-        }
-        _ => {
-            cx.answer_str("Try again.").await?;
-            next(state)
-        }
-    }
-}
-
-#[teloxide(transition)]
-async fn receive_gandalf_alternative_name(
-    state: ReceiveGandalfAlternativeNameState,
+async fn receive_full_name(
+    state: ReceiveFullNameState,
     cx: TransitionIn,
 ) -> Out {
     match cx.update.text() {
-        Some(ans) if ans == "Mithrandir" => {
-            cx.answer_str(
-                "Congratulations! You've successfully passed the test!",
-            )
+        Some(ans) => {
+            cx.answer_str("How old are you?").await?;
+            next(append_field(state, ans))
+        }
+        _ => {
+            cx.answer_str("Send me a text message.").await?;
+            next(state)
+        }
+    }
+}
+
+#[teloxide(transition)]
+async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
+    match cx.update.text().map(str::parse) {
+        Some(Ok(ans)) => {
+            cx.answer_str("What's your location?").await?;
+            next(append_field(state, ans))
+        }
+        _ => {
+            cx.answer_str("Send me a number.").await?;
+            next(state)
+        }
+    }
+}
+
+#[teloxide(transition)]
+async fn receive_location(
+    state: ReceiveLocationState,
+    cx: TransitionIn,
+) -> Out {
+    match cx.update.text() {
+        Some(ans) => {
+            cx.answer_str(format!(
+                "Full name: {}\nAge: {}\nLocation: {}",
+                state.full_name, state.age, ans
+            ))
             .await?;
             exit()
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a text message.").await?;
             next(state)
         }
     }
