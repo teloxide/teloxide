@@ -195,19 +195,12 @@ States and transition functions are placed into separated modules. For example, 
 ```rust
 // Imports are omitted...
 
-#[derive(BotDialogue, SmartDefault, From)]
+#[derive(Transition, SmartDefault, From)]
 pub enum Dialogue {
     #[default]
-    #[transition(start)]
     Start(StartState),
-
-    #[transition(receive_days_of_week)]
     ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
-
-    #[transition(receive_10x5_answer)]
     Receive10x5Answer(Receive10x5AnswerState),
-
-    #[transition(receive_gandalf_alternative_name)]
     ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
 }
 
@@ -228,16 +221,10 @@ pub struct ReceiveGandalfAlternativeNameState {
     _10x5_answer: u8,
 }
 
-pub struct ExitState {
-    rest: ReceiveGandalfAlternativeNameState,
-    gandalf_alternative_name: String,
-}
-
 up!(
     StartState -> ReceiveDaysOfWeekState,
     ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
     Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
-    ReceiveGandalfAlternativeNameState + [gandalf_alternative_name: String] -> ExitState,
 );
 ```
 
@@ -249,15 +236,17 @@ The handy `up!` macro automatically generates functions that complete one state 
 
 pub type Out = TransitionOut<Dialogue>;
 
-pub async fn start(cx: TransitionIn, state: StartState) -> Out {
+#[teloxide(transition)]
+async fn start(state: StartState, cx: TransitionIn) -> Out {
     cx.answer_str("Let's start our test! How many days per week are there?")
         .await?;
     next(state.up())
 }
 
-pub async fn receive_days_of_week(
-    cx: TransitionIn,
+#[teloxide(transition)]
+async fn receive_days_of_week(
     state: ReceiveDaysOfWeekState,
+    cx: TransitionIn,
 ) -> Out {
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 7 => {
@@ -271,9 +260,10 @@ pub async fn receive_days_of_week(
     }
 }
 
-pub async fn receive_10x5_answer(
-    cx: TransitionIn,
+#[teloxide(transition)]
+async fn receive_10x5_answer(
     state: Receive10x5AnswerState,
+    cx: TransitionIn,
 ) -> Out {
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 50 => {
@@ -287,9 +277,10 @@ pub async fn receive_10x5_answer(
     }
 }
 
-pub async fn receive_gandalf_alternative_name(
-    cx: TransitionIn,
+#[teloxide(transition)]
+async fn receive_gandalf_alternative_name(
     state: ReceiveGandalfAlternativeNameState,
+    cx: TransitionIn,
 ) -> Out {
     match cx.update.text() {
         Some(ans) if ans == "Mithrandir" => {
@@ -327,7 +318,7 @@ async fn main() {
                 input
                     .dialogue
                     .unwrap()
-                    .dispatch(input.cx)
+                    .react(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },

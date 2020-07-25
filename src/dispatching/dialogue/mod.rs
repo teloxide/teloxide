@@ -2,9 +2,11 @@
 //!
 //! There are three main components:
 //!
-//!  1. Your type `D` (typically an enumeration), implementing [`BotDialogue`].
+//!  1. Your type `D` (typically an enumeration), implementing [`Transition`].
 //! It is essentially a [FSM]: its variants are possible dialogue states and
-//! [`BotDialogue::dispatch`] is a transition function.
+//! [`Transition::react`] is a transition function.
+//!
+//!  2. State types, forming `D`. They implement [`SubTransition`].
 //!
 //!  2. [`Storage<D>`], which encapsulates all the dialogues.
 //!
@@ -30,7 +32,7 @@
 //! use std::convert::Infallible;
 //!
 //! use teloxide::prelude::*;
-//! use teloxide_macros::BotDialogue;
+//! use teloxide_macros::{teloxide, Transition};
 //!
 //! struct _1State;
 //! struct _2State;
@@ -38,23 +40,25 @@
 //!
 //! type Out = TransitionOut<D>;
 //!
-//! async fn _1_transition(_cx: TransitionIn, _state: _1State) -> Out {
-//!     todo!()
-//! }
-//! async fn _2_transition(_cx: TransitionIn, _state: _2State) -> Out {
-//!     todo!()
-//! }
-//! async fn _3_transition(_cx: TransitionIn, _state: _3State) -> Out {
+//! #[teloxide(transition)]
+//! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
 //!     todo!()
 //! }
 //!
-//! #[derive(BotDialogue)]
+//! #[teloxide(transition)]
+//! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
+//!     todo!()
+//! }
+//!
+//! #[teloxide(transition)]
+//! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
+//!     todo!()
+//! }
+//!
+//! #[derive(Transition)]
 //! enum D {
-//!     #[transition(_1_transition)]
 //!     _1(_1State),
-//!     #[transition(_2_transition)]
 //!     _2(_2State),
-//!     #[transition(_3_transition)]
 //!     _3(_3State),
 //! }
 //!
@@ -94,9 +98,10 @@
 //!
 //! See [examples/dialogue_bot] as a real example.
 //!
-//! [`BotDialogue`]: crate::dispatching::dialogue::BotDialogue
-//! [`BotDialogue::dispatch`]:
-//! crate::dispatching::dialogue::BotDialogue::dispatch
+//! [`Transition`]: crate::dispatching::dialogue::Transition
+//! [`SubTransition`]: crate::dispatching::dialogue::SubTransition
+//! [`Transition::react`]:
+//! crate::dispatching::dialogue::Transition::react
 //! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 //!
 //! [`Storage<D>`]: crate::dispatching::dialogue::Storage
@@ -122,26 +127,27 @@
 
 #![allow(clippy::type_complexity)]
 
-mod bot_dialogue;
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
+mod transition;
 
-use crate::{requests::ResponseResult, types::Message};
-pub use bot_dialogue::BotDialogue;
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
+pub use transition::{
+    SubTransition, SubTransitionOutputType, Transition, TransitionIn,
+    TransitionOut,
+};
 
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};
 
-use crate::dispatching::UpdateWithCx;
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
 
 /// Generates `.up(field)` methods for dialogue states.
@@ -192,9 +198,3 @@ macro_rules! up {
         )+
     };
 }
-
-/// An input passed into a FSM transition function.
-pub type TransitionIn = UpdateWithCx<Message>;
-
-/// A type returned from a FSM transition function.
-pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;

@@ -3,8 +3,8 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            exit, next, BotDialogue, DialogueDispatcher, DialogueStage,
-            DialogueWithCx, GetChatId, TransitionIn, TransitionOut,
+            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
+            GetChatId, Transition, TransitionIn, TransitionOut,
         },
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },

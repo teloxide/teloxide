@@ -39,7 +39,7 @@ async fn run() {
                 let (cx, dialogue) = input.unpack();
 
                 dialogue
-                    .dispatch(cx)
+                    .react(cx)
                     .await
                     .expect("Something is wrong with the bot!")
             },

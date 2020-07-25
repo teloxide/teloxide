@@ -1,17 +1,14 @@
-// This is a bot that asks your full name, your age, your favourite kind of
-// music and sends all the gathered information back.
+// This is a bot that asks you three questions, e.g. a simple test.
 //
 // # Example
 // ```
-//  - Let's start! First, what's your full name?
-//  - Luke Skywalker
-//  - What a wonderful name! Your age?
-//  - 26
-//  - Good. Now choose your favourite music
-// *A keyboard of music kinds is displayed*
-// *You select Metal*
-//  - Metal
-//  - Fine. Your full name: Luke Skywalker, your age: 26, your favourite music: Metal
+//  - Let's start our test! How many days per week are there?
+//  - 7
+//  - 10*5 = ?
+//  - 50
+//  - What's an alternative name of Gandalf?
+//  - Mithrandir
+//  - Congratulations! You've successfully passed the test!
 // ```
 
 #![allow(clippy::trivial_regex)]
@@ -21,8 +18,6 @@
 extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
-#[macro_use]
-extern crate teloxide_macros;
 
 mod states;
 mod transitions;
@@ -50,7 +45,7 @@ async fn run() {
                 input
                     .dialogue
                     .unwrap()
-                    .dispatch(input.cx)
+                    .react(input.cx)
                     .await
                     .expect("Something wrong with the bot!")
             },

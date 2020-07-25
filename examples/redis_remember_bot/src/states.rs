@@ -1,7 +1,5 @@
 use teloxide::prelude::*;
-use teloxide_macros::BotDialogue;
-
-use super::transitions::{have_number, start};
+use teloxide_macros::Transition;
 
 use serde::{Deserialize, Serialize};
 
@@ -18,12 +16,9 @@ up!(
     StartState + [number: i32] -> HaveNumberState,
 );
 
-#[derive(BotDialogue, SmartDefault, From, Serialize, Deserialize)]
+#[derive(Transition, SmartDefault, From, Serialize, Deserialize)]
 pub enum Dialogue {
     #[default]
-    #[transition(start)]
     Start(StartState),
-
-    #[transition(have_number)]
     HaveNumber(HaveNumberState),
 }

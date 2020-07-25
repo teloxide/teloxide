@@ -1,4 +1,5 @@
 use teloxide::prelude::*;
+use teloxide_macros::teloxide;
 
 use super::states::*;
 
@@ -17,7 +18,8 @@ macro_rules! extract_text {
 
 pub type Out = TransitionOut<Dialogue>;
 
-pub async fn start(cx: TransitionIn, state: StartState) -> Out {
+#[teloxide(transition)]
+async fn start(state: StartState, cx: TransitionIn) -> Out {
     let text = extract_text!(cx);
 
     if let Ok(number) = text.parse() {
@@ -33,7 +35,8 @@ pub async fn start(cx: TransitionIn, state: StartState) -> Out {
     }
 }
 
-pub async fn have_number(cx: TransitionIn, state: HaveNumberState) -> Out {
+#[teloxide(transition)]
+async fn have_number(state: HaveNumberState, cx: TransitionIn) -> Out {
     let text = extract_text!(cx);
     let num = state.number;
 
