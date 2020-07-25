@@ -11,7 +11,7 @@ pub use crate::{
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
-    up, Bot, RequestError,
+    Bot, RequestError,
 };
 
 #[cfg(feature = "frunk")]

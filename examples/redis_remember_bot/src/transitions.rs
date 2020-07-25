@@ -28,7 +28,7 @@ async fn start(state: StartState, cx: TransitionIn) -> Out {
             number
         ))
         .await?;
-        next(state.up(number))
+        next(HaveNumberState { number })
     } else {
         cx.answer_str("Please, send me a number").await?;
         next(state)

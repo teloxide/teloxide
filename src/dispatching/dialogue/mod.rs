@@ -24,9 +24,10 @@
 //! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
 //! update the dialogue.
 //!
-//! To avoid boilerplate, teloxide exports these convenient things: the [`up!`]
-//! macro, the [`next`] and [`exit`] functions, and `#[derive(BotDialogue)]`.
-//! Here's how your dialogues management code skeleton should look like:
+//! To avoid boilerplate, teloxide exports these convenient things: the [`next`]
+//! and [`exit`] functions, and `#[derive(BotDialogue)]` with
+//! `#[teloxide(transition)]`. Here's how your dialogues management code
+//! skeleton should look like:
 //!
 //! ```no_run
 //! use std::convert::Infallible;
@@ -96,6 +97,11 @@
 //! }
 //! ```
 //!
+//!  - `#[teloxide(transition)]` implements [`SubTransition`] for the first
+//!    argument of a function.
+//!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
+//!    variants implement [`SubTransition`].
+//!
 //! See [examples/dialogue_bot] as a real example.
 //!
 //! [`Transition`]: crate::dispatching::dialogue::Transition
@@ -149,52 +155,3 @@ pub use transition::{
 pub use storage::{RedisStorage, RedisStorageError};
 
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
-
-/// Generates `.up(field)` methods for dialogue states.
-///
-/// Given inductively defined states, this macro generates `.up(field)` methods
-/// from `Sn` to `Sn+1`.
-///
-/// # Examples
-/// ```
-/// use teloxide::prelude::*;
-///
-/// struct StartState;
-///
-/// struct ReceiveWordState {
-///     rest: StartState,
-/// }
-///
-/// struct ReceiveNumberState {
-///     rest: ReceiveWordState,
-///     word: String,
-/// }
-///
-/// struct ExitState {
-///     rest: ReceiveNumberState,
-///     number: i32,
-/// }
-///
-/// up!(
-///     StartState -> ReceiveWordState,
-///     ReceiveWordState + [word: String] -> ReceiveNumberState,
-///     ReceiveNumberState + [number: i32] -> ExitState,
-/// );
-///
-/// let start_state = StartState;
-/// let receive_word_state = start_state.up();
-/// let receive_number_state = receive_word_state.up("Hello".to_owned());
-/// let exit_state = receive_number_state.up(123);
-/// ```
-#[macro_export]
-macro_rules! up {
-    ( $( $from:ident $(+ [$field_name:ident : $field_type:ty])? -> $to:ident ),+, ) => {
-        $(
-            impl $from {
-                pub fn up(self, $( $field_name: $field_type )?) -> $to {
-                    $to { rest: self, $($field_name)? }
-                }
-            }
-        )+
-    };
-}

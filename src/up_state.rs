@@ -13,4 +13,5 @@ pub trait UpState: Sized {
     }
 }
 
+#[cfg(feature = "frunk")]
 impl<T2> UpState for T2 {}
