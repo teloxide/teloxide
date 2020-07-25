@@ -185,7 +185,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-States and transition functions are placed into separated modules. For example:
+States and transition functions are placed into separated modules. For example, below is a bot, which asks you three questions:
 
 ([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
 ```rust
