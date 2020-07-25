@@ -24,6 +24,7 @@ pub use errors::{
 mod errors;
 mod net;
 
+mod append_field;
 mod bot;
 pub mod dispatching;
 pub mod error_handlers;

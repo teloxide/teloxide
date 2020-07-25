@@ -14,6 +14,9 @@ pub use crate::{
     up, Bot, RequestError,
 };
 
+#[cfg(feature = "frunk")]
+pub use crate::append_field::append_field;
+
 pub use tokio::sync::mpsc::UnboundedReceiver;
 
 pub use futures::StreamExt;

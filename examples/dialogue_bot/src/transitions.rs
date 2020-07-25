@@ -12,7 +12,7 @@ pub type Out = TransitionOut<Dialogue>;
 async fn start(state: StartState, cx: TransitionIn) -> Out {
     cx.answer_str("Let's start our test! How many days per week are there?")
         .await?;
-    next(state.up())
+    next(ReceiveDaysOfWeekState)
 }
 
 #[teloxide(transition)]
@@ -23,7 +23,7 @@ async fn receive_days_of_week(
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 7 => {
             cx.answer_str("10*5 = ?").await?;
-            next(state.up(ans))
+            next(append_field(state, ans))
         }
         _ => {
             cx.answer_str("Try again.").await?;
@@ -40,7 +40,7 @@ async fn receive_10x5_answer(
     match cx.update.text().map(str::parse) {
         Some(Ok(ans)) if ans == 50 => {
             cx.answer_str("What's an alternative name of Gandalf?").await?;
-            next(state.up(ans))
+            next(append_field(state, ans))
         }
         _ => {
             cx.answer_str("Try again.").await?;

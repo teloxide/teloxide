@@ -10,25 +10,18 @@ pub enum Dialogue {
     ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
 }
 
-#[derive(Default)]
+#[derive(Generic, Default)]
 pub struct StartState;
 
-pub struct ReceiveDaysOfWeekState {
-    rest: StartState,
-}
+#[derive(Generic)]
+pub struct ReceiveDaysOfWeekState;
 
+#[derive(Generic)]
 pub struct Receive10x5AnswerState {
-    rest: ReceiveDaysOfWeekState,
     days_of_week: u8,
 }
 
 pub struct ReceiveGandalfAlternativeNameState {
-    rest: Receive10x5AnswerState,
+    days_of_week: u8,
     _10x5_answer: u8,
 }
-
-up!(
-    StartState -> ReceiveDaysOfWeekState,
-    ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
-    Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
-);

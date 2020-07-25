@@ -18,6 +18,8 @@
 extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
+#[macro_use]
+extern crate frunk;
 
 mod states;
 mod transitions;
