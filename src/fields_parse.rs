@@ -31,7 +31,7 @@ pub fn impl_parse_args_unnamed(
         data.unnamed.iter().map(|f| &f.ty),
         data.unnamed.len(),
     );
-    let iter = 0..data.unnamed.len();
+    let iter = (0..data.unnamed.len()).map( syn::Index::from);
     let mut initialization = quote! {};
     for i in iter {
         initialization.extend(quote! { arguments.#i, })
@@ -55,7 +55,7 @@ pub fn impl_parse_args_named(
         data.named.iter().map(|f| &f.ty),
         data.named.len(),
     );
-    let i = (0..data.named.len()).map(|u| syn::Index::from(u));
+    let i = (0..data.named.len()).map(syn::Index::from);
     let name = data.named.iter().map(|f| f.ident.as_ref().unwrap());
     let res = quote! {
         {
