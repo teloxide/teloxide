@@ -26,7 +26,7 @@
 //!
 //! To avoid boilerplate, teloxide exports these convenient things: the [`next`]
 //! and [`exit`] functions, and `#[derive(BotDialogue)]` with
-//! `#[teloxide(transition)]`. Here's how your dialogues management code
+//! `#[teloxide(subtransition)]`. Here's how your dialogues management code
 //! skeleton should look like:
 //!
 //! ```no_run
@@ -41,17 +41,17 @@
 //!
 //! type Out = TransitionOut<D>;
 //!
-//! #[teloxide(transition)]
+//! #[teloxide(subtransition)]
 //! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
 //!     todo!()
 //! }
 //!
-//! #[teloxide(transition)]
+//! #[teloxide(subtransition)]
 //! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
 //!     todo!()
 //! }
 //!
-//! #[teloxide(transition)]
+//! #[teloxide(subtransition)]
 //! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
 //!     todo!()
 //! }
@@ -99,7 +99,7 @@
 //! }
 //! ```
 //!
-//!  - `#[teloxide(transition)]` implements [`Subtransition`] for the first
+//!  - `#[teloxide(subtransition)]` implements [`Subtransition`] for the first
 //!    argument of a function.
 //!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
 //!    variants implement [`Subtransition`].

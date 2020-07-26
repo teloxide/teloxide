@@ -38,7 +38,7 @@ where
 
 /// A type returned from a FSM subtransition function.
 ///
-/// Now it is used only inside `#[teloxide(transition)]` for type inference.
+/// Now it is used only inside `#[teloxide(subtransition)]` for type inference.
 pub trait SubtransitionOutputType {
     type Output;
 }

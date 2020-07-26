@@ -5,7 +5,7 @@ use teloxide_macros::teloxide;
 #[derive(Generic)]
 pub struct ReceiveFullNameState;
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_full_name(
     state: ReceiveFullNameState,
     cx: TransitionIn,

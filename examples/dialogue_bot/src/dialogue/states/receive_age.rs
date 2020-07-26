@@ -7,7 +7,7 @@ pub struct ReceiveAgeState {
     pub full_name: String,
 }
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_age_state(
     state: ReceiveAgeState,
     cx: TransitionIn,

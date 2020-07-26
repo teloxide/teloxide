@@ -8,7 +8,7 @@ pub struct ReceiveLocationState {
     pub age: u8,
 }
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_location(
     state: ReceiveLocationState,
     cx: TransitionIn,

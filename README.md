@@ -208,7 +208,7 @@ impl Default for Dialogue {
 #[derive(Default)]
 pub struct StartState;
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> TransitionOut<Dialogue> {
     cx.answer_str("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
@@ -224,7 +224,7 @@ pub struct ReceiveAgeState {
     pub full_name: String,
 }
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_age_state(
     state: ReceiveAgeState,
     cx: TransitionIn,
@@ -250,7 +250,7 @@ async fn receive_age_state(
 #[derive(Generic)]
 pub struct ReceiveFullNameState;
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_full_name(
     state: ReceiveFullNameState,
     cx: TransitionIn,
@@ -271,7 +271,7 @@ pub struct ReceiveLocationState {
     pub age: u8,
 }
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn receive_location(
     state: ReceiveLocationState,
     cx: TransitionIn,

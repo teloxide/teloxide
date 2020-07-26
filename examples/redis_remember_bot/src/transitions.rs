@@ -3,7 +3,7 @@ use teloxide_macros::teloxide;
 
 use super::states::*;
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn start(state: StartState, cx: TransitionIn, ans: String) -> TransitionOut<Dialogue> {
     if let Ok(number) = ans.parse() {
         cx.answer_str(format!("Remembered number {}. Now use /get or /reset", number)).await?;
@@ -14,7 +14,7 @@ async fn start(state: StartState, cx: TransitionIn, ans: String) -> TransitionOu
     }
 }
 
-#[teloxide(transition)]
+#[teloxide(subtransition)]
 async fn have_number(
     state: HaveNumberState,
     cx: TransitionIn,
