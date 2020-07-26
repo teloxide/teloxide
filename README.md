@@ -189,59 +189,40 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-States and transition functions are placed into separated modules. For example, below is a bot, which asks you three questions:
+Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
 
 ([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
 ```rust
 // Imports are omitted...
 
-#[derive(BotDialogue, SmartDefault, From)]
+#[derive(Transition, SmartDefault, From)]
 pub enum Dialogue {
     #[default]
-    #[transition(start)]
     Start(StartState),
-
-    #[transition(receive_days_of_week)]
-    ReceiveDaysOfWeek(ReceiveDaysOfWeekState),
-
-    #[transition(receive_10x5_answer)]
-    Receive10x5Answer(Receive10x5AnswerState),
-
-    #[transition(receive_gandalf_alternative_name)]
-    ReceiveGandalfAlternativeName(ReceiveGandalfAlternativeNameState),
+    ReceiveFullName(ReceiveFullNameState),
+    ReceiveAge(ReceiveAgeState),
+    ReceiveLocation(ReceiveLocationState),
 }
 
 #[derive(Default)]
 pub struct StartState;
 
-pub struct ReceiveDaysOfWeekState {
-    rest: StartState,
+#[derive(Generic)]
+pub struct ReceiveFullNameState;
+
+#[derive(Generic)]
+pub struct ReceiveAgeState {
+    pub full_name: String,
 }
 
-pub struct Receive10x5AnswerState {
-    rest: ReceiveDaysOfWeekState,
-    days_of_week: u8,
+#[derive(Generic)]
+pub struct ReceiveLocationState {
+    pub full_name: String,
+    pub age: u8,
 }
-
-pub struct ReceiveGandalfAlternativeNameState {
-    rest: Receive10x5AnswerState,
-    _10x5_answer: u8,
-}
-
-pub struct ExitState {
-    rest: ReceiveGandalfAlternativeNameState,
-    gandalf_alternative_name: String,
-}
-
-up!(
-    StartState -> ReceiveDaysOfWeekState,
-    ReceiveDaysOfWeekState + [days_of_week: u8] -> Receive10x5AnswerState,
-    Receive10x5AnswerState + [_10x5_answer: u8] -> ReceiveGandalfAlternativeNameState,
-    ReceiveGandalfAlternativeNameState + [gandalf_alternative_name: String] -> ExitState,
-);
 ```
 
-The handy `up!` macro automatically generates functions that complete one state to another by appending a field. Here are the transition functions:
+... and here are the transition functions, which turn one state into another:
 
 ([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
 ```rust
@@ -249,69 +230,72 @@ The handy `up!` macro automatically generates functions that complete one state 
 
 pub type Out = TransitionOut<Dialogue>;
 
-pub async fn start(cx: TransitionIn, state: StartState) -> Out {
-    cx.answer_str("Let's start our test! How many days per week are there?")
-        .await?;
-    next(state.up())
+#[teloxide(transition)]
+async fn start(_state: StartState, cx: TransitionIn) -> Out {
+    cx.answer_str("Let's start! What's your full name?").await?;
+    next(ReceiveFullNameState)
 }
 
-pub async fn receive_days_of_week(
+#[teloxide(transition)]
+async fn receive_full_name(
+    state: ReceiveFullNameState,
     cx: TransitionIn,
-    state: ReceiveDaysOfWeekState,
 ) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 7 => {
-            cx.answer_str("10*5 = ?").await?;
-            next(state.up(ans))
+    match cx.update.text_owned() {
+        Some(ans) => {
+            cx.answer_str("How old are you?").await?;
+            next(ReceiveAgeState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a text message.").await?;
             next(state)
         }
     }
 }
 
-pub async fn receive_10x5_answer(
-    cx: TransitionIn,
-    state: Receive10x5AnswerState,
-) -> Out {
-    match cx.update.text().map(str::parse) {
-        Some(Ok(ans)) if ans == 50 => {
-            cx.answer_str("What's an alternative name of Gandalf?").await?;
-            next(state.up(ans))
+#[teloxide(transition)]
+async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
+    match cx.update.text().map(str::parse::<u8>) {
+        Some(Ok(ans)) => {
+            cx.answer_str("What's your location?").await?;
+            next(ReceiveLocationState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a number.").await?;
             next(state)
         }
     }
 }
 
-pub async fn receive_gandalf_alternative_name(
+#[teloxide(transition)]
+async fn receive_location(
+    state: ReceiveLocationState,
     cx: TransitionIn,
-    state: ReceiveGandalfAlternativeNameState,
 ) -> Out {
     match cx.update.text() {
-        Some(ans) if ans == "Mithrandir" => {
-            cx.answer_str(
-                "Congratulations! You've successfully passed the test!",
-            )
+        Some(ans) => {
+            cx.answer_str(format!(
+                "Full name: {}\nAge: {}\nLocation: {}",
+                state.full_name, state.age, ans
+            ))
             .await?;
             exit()
         }
         _ => {
-            cx.answer_str("Try again.").await?;
+            cx.answer_str("Send me a text message.").await?;
             next(state)
         }
     }
 }
 ```
 
-And, finally, the `main` function looks like this:
+Finally, the `main` function looks like this:
 
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
 ```rust
 // Imports are omitted...
+
+type In = DialogueWithCx<Message, Dialogue, Infallible>;
 
 #[tokio::main]
 async fn main() {
@@ -322,14 +306,10 @@ async fn main() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
-                // Unwrap without panic because of std::convert::Infallible.
-                input
-                    .dialogue
-                    .unwrap()
-                    .dispatch(input.cx)
-                    .await
-                    .expect("Something wrong with the bot!")
+            |DialogueWithCx { cx, dialogue }: In| async move {
+                // No panic because of std::convert::Infallible.
+                let dialogue = dialogue.unwrap();
+                dialogue.react(cx).await.expect("Something wrong with the bot!")
             },
         ))
         .dispatch()

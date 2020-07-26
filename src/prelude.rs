@@ -3,16 +3,19 @@
 pub use crate::{
     dispatching::{
         dialogue::{
-            exit, next, BotDialogue, DialogueDispatcher, DialogueStage,
-            DialogueWithCx, GetChatId, TransitionIn, TransitionOut,
+            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx,
+            GetChatId, Transition, TransitionIn, TransitionOut,
         },
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},
     types::{Message, Update},
-    up, Bot, RequestError,
+    Bot, RequestError,
 };
+
+#[cfg(feature = "frunk")]
+pub use crate::up_state::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
 

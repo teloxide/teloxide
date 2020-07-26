@@ -2,9 +2,11 @@
 //!
 //! There are three main components:
 //!
-//!  1. Your type `D` (typically an enumeration), implementing [`BotDialogue`].
+//!  1. Your type `D` (typically an enumeration), implementing [`Transition`].
 //! It is essentially a [FSM]: its variants are possible dialogue states and
-//! [`BotDialogue::dispatch`] is a transition function.
+//! [`Transition::react`] is a transition function.
+//!
+//!  2. State types, forming `D`. They implement [`SubTransition`].
 //!
 //!  2. [`Storage<D>`], which encapsulates all the dialogues.
 //!
@@ -22,15 +24,16 @@
 //! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
 //! update the dialogue.
 //!
-//! To avoid boilerplate, teloxide exports these convenient things: the [`up!`]
-//! macro, the [`next`] and [`exit`] functions, and `#[derive(BotDialogue)]`.
-//! Here's how your dialogues management code skeleton should look like:
+//! To avoid boilerplate, teloxide exports these convenient things: the [`next`]
+//! and [`exit`] functions, and `#[derive(BotDialogue)]` with
+//! `#[teloxide(transition)]`. Here's how your dialogues management code
+//! skeleton should look like:
 //!
 //! ```no_run
 //! use std::convert::Infallible;
 //!
 //! use teloxide::prelude::*;
-//! use teloxide_macros::BotDialogue;
+//! use teloxide_macros::{teloxide, Transition};
 //!
 //! struct _1State;
 //! struct _2State;
@@ -38,23 +41,25 @@
 //!
 //! type Out = TransitionOut<D>;
 //!
-//! async fn _1_transition(_cx: TransitionIn, _state: _1State) -> Out {
-//!     todo!()
-//! }
-//! async fn _2_transition(_cx: TransitionIn, _state: _2State) -> Out {
-//!     todo!()
-//! }
-//! async fn _3_transition(_cx: TransitionIn, _state: _3State) -> Out {
+//! #[teloxide(transition)]
+//! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
 //!     todo!()
 //! }
 //!
-//! #[derive(BotDialogue)]
+//! #[teloxide(transition)]
+//! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
+//!     todo!()
+//! }
+//!
+//! #[teloxide(transition)]
+//! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
+//!     todo!()
+//! }
+//!
+//! #[derive(Transition)]
 //! enum D {
-//!     #[transition(_1_transition)]
 //!     _1(_1State),
-//!     #[transition(_2_transition)]
 //!     _2(_2State),
-//!     #[transition(_3_transition)]
 //!     _3(_3State),
 //! }
 //!
@@ -63,6 +68,8 @@
 //!         Self::_1(_1State)
 //!     }
 //! }
+//!
+//! type In = DialogueWithCx<Message, D, Infallible>;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -77,12 +84,11 @@
 //!
 //!     Dispatcher::new(bot)
 //!         .messages_handler(DialogueDispatcher::new(
-//!             |input: DialogueWithCx<Message, D, Infallible>| async move {
-//!                 // Unwrap without panic because of std::convert::Infallible.
-//!                 input
-//!                     .dialogue
-//!                     .unwrap()
-//!                     .dispatch(input.cx)
+//!             |DialogueWithCx { cx, dialogue }: In| async move {
+//!                 // No panic because of std::convert::Infallible.
+//!                 let dialogue = dialogue.unwrap();
+//!                 dialogue
+//!                     .react(cx)
 //!                     .await
 //!                     .expect("Something wrong with the bot!")
 //!             },
@@ -92,11 +98,17 @@
 //! }
 //! ```
 //!
+//!  - `#[teloxide(transition)]` implements [`SubTransition`] for the first
+//!    argument of a function.
+//!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
+//!    variants implement [`SubTransition`].
+//!
 //! See [examples/dialogue_bot] as a real example.
 //!
-//! [`BotDialogue`]: crate::dispatching::dialogue::BotDialogue
-//! [`BotDialogue::dispatch`]:
-//! crate::dispatching::dialogue::BotDialogue::dispatch
+//! [`Transition`]: crate::dispatching::dialogue::Transition
+//! [`SubTransition`]: crate::dispatching::dialogue::SubTransition
+//! [`Transition::react`]:
+//! crate::dispatching::dialogue::Transition::react
 //! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 //!
 //! [`Storage<D>`]: crate::dispatching::dialogue::Storage
@@ -122,79 +134,25 @@
 
 #![allow(clippy::type_complexity)]
 
-mod bot_dialogue;
 mod dialogue_dispatcher;
 mod dialogue_dispatcher_handler;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
+mod transition;
 
-use crate::{requests::ResponseResult, types::Message};
-pub use bot_dialogue::BotDialogue;
 pub use dialogue_dispatcher::DialogueDispatcher;
 pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
+pub use transition::{
+    SubTransition, SubTransitionOutputType, Transition, TransitionIn,
+    TransitionOut,
+};
 
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};
 
-use crate::dispatching::UpdateWithCx;
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
-
-/// Generates `.up(field)` methods for dialogue states.
-///
-/// Given inductively defined states, this macro generates `.up(field)` methods
-/// from `Sn` to `Sn+1`.
-///
-/// # Examples
-/// ```
-/// use teloxide::prelude::*;
-///
-/// struct StartState;
-///
-/// struct ReceiveWordState {
-///     rest: StartState,
-/// }
-///
-/// struct ReceiveNumberState {
-///     rest: ReceiveWordState,
-///     word: String,
-/// }
-///
-/// struct ExitState {
-///     rest: ReceiveNumberState,
-///     number: i32,
-/// }
-///
-/// up!(
-///     StartState -> ReceiveWordState,
-///     ReceiveWordState + [word: String] -> ReceiveNumberState,
-///     ReceiveNumberState + [number: i32] -> ExitState,
-/// );
-///
-/// let start_state = StartState;
-/// let receive_word_state = start_state.up();
-/// let receive_number_state = receive_word_state.up("Hello".to_owned());
-/// let exit_state = receive_number_state.up(123);
-/// ```
-#[macro_export]
-macro_rules! up {
-    ( $( $from:ident $(+ [$field_name:ident : $field_type:ty])? -> $to:ident ),+, ) => {
-        $(
-            impl $from {
-                pub fn up(self, $( $field_name: $field_type )?) -> $to {
-                    $to { rest: self, $($field_name)? }
-                }
-            }
-        )+
-    };
-}
-
-/// An input passed into a FSM transition function.
-pub type TransitionIn = UpdateWithCx<Message>;
-
-/// A type returned from a FSM transition function.
-pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;

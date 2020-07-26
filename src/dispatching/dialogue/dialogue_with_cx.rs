@@ -14,16 +14,6 @@ pub struct DialogueWithCx<Upd, D, E> {
 }
 
 impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
-    /// Returns the inner `UpdateWithCx<Upd>` and an unwrapped dialogue.
-    pub fn unpack(self) -> (UpdateWithCx<Upd>, D)
-    where
-        E: Debug,
-    {
-        (self.cx, self.dialogue.unwrap())
-    }
-}
-
-impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
     /// Creates a new instance with the provided fields.
     pub fn new(cx: UpdateWithCx<Upd>, dialogue: D) -> Self {
         Self { cx, dialogue: Ok(dialogue) }

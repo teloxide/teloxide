@@ -1,17 +1,17 @@
-// This is a bot that asks your full name, your age, your favourite kind of
-// music and sends all the gathered information back.
+// This is a bot that asks you three questions, e.g. a simple test.
 //
 // # Example
 // ```
-//  - Let's start! First, what's your full name?
-//  - Luke Skywalker
-//  - What a wonderful name! Your age?
-//  - 26
-//  - Good. Now choose your favourite music
-// *A keyboard of music kinds is displayed*
-// *You select Metal*
-//  - Metal
-//  - Fine. Your full name: Luke Skywalker, your age: 26, your favourite music: Metal
+//  - Hey
+//  - Let's start! What's your full name?
+//  - Gandalf the Grey
+//  - How old are you?
+//  - 223
+//  - What's your location?
+//  - Middle-earth
+//  - Full name: Gandalf the Grey
+//    Age: 223
+//    Location: Middle-earth
 // ```
 
 #![allow(clippy::trivial_regex)]
@@ -22,6 +22,9 @@ extern crate smart_default;
 #[macro_use]
 extern crate derive_more;
 #[macro_use]
+extern crate frunk;
+extern crate frunk_core;
+#[macro_use]
 extern crate teloxide_macros;
 
 mod states;
@@ -31,6 +34,8 @@ use states::*;
 
 use std::convert::Infallible;
 use teloxide::prelude::*;
+
+type In = DialogueWithCx<Message, Dialogue, Infallible>;
 
 #[tokio::main]
 async fn main() {
@@ -45,14 +50,10 @@ async fn run() {
 
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
-            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
-                // Unwrap without panic because of std::convert::Infallible.
-                input
-                    .dialogue
-                    .unwrap()
-                    .dispatch(input.cx)
-                    .await
-                    .expect("Something wrong with the bot!")
+            |DialogueWithCx { cx, dialogue }: In| async move {
+                // No panic because of std::convert::Infallible.
+                let dialogue = dialogue.unwrap();
+                dialogue.react(cx).await.expect("Something wrong with the bot!")
             },
         ))
         .dispatch()
