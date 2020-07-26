@@ -191,7 +191,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
 
-([dialogue_bot/src/states/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/mod.rs))
+([dialogue_bot/src/dialogue/states/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/mod.rs))
 ```rust
 // Imports are omitted...
 
@@ -205,7 +205,7 @@ pub enum Dialogue {
 }
 ```
 
-([dialogue_bot/src/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/start.rs))
+([dialogue_bot/src/dialogue/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/start.rs))
 ```rust
 // Imports are omitted...
 
@@ -223,7 +223,7 @@ async fn start(
 }
 ```
 
-([dialogue_bot/src/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_age.rs))
+([dialogue_bot/src/dialogue/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_age.rs))
 ```rust
 // Imports are omitted...
 
@@ -251,7 +251,7 @@ async fn receive_age_state(
 }
 ```
 
-([dialogue_bot/src/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_full_name.rs))
+([dialogue_bot/src/dialogue/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
 ```rust
 // Imports are omitted...
 
@@ -269,7 +269,7 @@ async fn receive_full_name(
 }
 ```
 
-([dialogue_bot/src/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_location.rs))
+([dialogue_bot/src/dialogue/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_location.rs))
 ```rust
 // Imports are omitted...
 
