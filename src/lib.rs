@@ -24,6 +24,30 @@ use syn::{
 
 use std::fmt::Write;
 
+/// The docs is below.
+///
+/// The only accepted form at the current moment is `#[teloxide(transition)]` on
+/// an asynchronous function. Either this:
+///
+/// ```no_compile
+/// #[teloxide(transition)]
+/// async fn my_transition(state: MyState, cx: TransitionIn, ans: T) -> TransitionOut<MyDialogue> {
+///     todo!()
+/// }
+/// ```
+///
+/// Or this:
+///
+/// ```no_compile
+/// #[teloxide(transition)]
+/// async fn my_transition(state: MyState, cx: TransitionIn) -> TransitionOut<MyDialogue> {
+///     todo!()
+/// }
+/// ```
+///
+/// Notice the presence/absence of `ans: T`. In the first case, it generates
+/// `impl SubTransition for MyState { type Aux = T; type Dialogue = MyDialogue;
+/// ... }`. In the second case, the `Aux` type defaults to `()`.
 #[proc_macro_attribute]
 pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
     match attr.to_string().as_ref() {
@@ -93,6 +117,12 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
     }
 }
 
+/// The docs is below.
+///
+/// All the variants must be of the form `VariantName(MyStateType)`, and
+/// `MyStateType` must implement `SubTransition`. All `MyStateType`s must have
+/// the same `SubTransition::Aux`, which will be also used in the generated
+/// implementation.
 #[proc_macro_derive(Transition)]
 pub fn derive_transition(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
