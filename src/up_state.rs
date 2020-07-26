@@ -1,4 +1,5 @@
-#[cfg(feature = "frunk")]
+#![cfg(feature = "frunk")]
+
 use frunk::{from_generic, generic::Generic, hlist::HAppender, into_generic};
 
 /// Constructs a structure from another structure and a field.
@@ -9,7 +10,6 @@ use frunk::{from_generic, generic::Generic, hlist::HAppender, into_generic};
 /// `fieldN+1`.
 ///
 /// [`Generic`]: https://docs.rs/frunk/latest/frunk/generic/trait.Generic.html
-#[cfg(feature = "frunk")]
 pub trait UpState: Sized {
     fn up<T1, T1Repr, F>(src: T1, field: F) -> Self
     where
@@ -21,5 +21,4 @@ pub trait UpState: Sized {
     }
 }
 
-#[cfg(feature = "frunk")]
 impl<T2> UpState for T2 {}
