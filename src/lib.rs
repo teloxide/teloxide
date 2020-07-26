@@ -97,9 +97,9 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
             let item = proc_macro2::TokenStream::from(item_cloned);
 
             let impl_transition = quote! {
-                impl teloxide::dispatching::dialogue::SubTransition for #state_type {
+                impl teloxide::dispatching::dialogue::Subtransition for #state_type {
                     type Aux = #aux_param_type;
-                    type Dialogue = <#fn_return_type as teloxide::dispatching::dialogue::SubTransitionOutputType>::Output;
+                    type Dialogue = <#fn_return_type as teloxide::dispatching::dialogue::SubtransitionOutputType>::Output;
 
                     fn react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: #aux_param_type)
                         -> futures::future::BoxFuture<'static, #fn_return_type> {
@@ -120,8 +120,8 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// The docs is below.
 ///
 /// All the variants must be of the form `VariantName(MyStateType)`, and
-/// `MyStateType` must implement `SubTransition`. All `MyStateType`s must have
-/// the same `SubTransition::Aux`, which will be also used in the generated
+/// `MyStateType` must implement `Subtransition`. All `MyStateType`s must have
+/// the same `Subtransition::Aux`, which will be also used in the generated
 /// implementation.
 #[proc_macro_derive(Transition)]
 pub fn derive_transition(item: TokenStream) -> TokenStream {
@@ -149,7 +149,7 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
     write!(
         dispatch_fn,
         "impl teloxide::dispatching::dialogue::Transition for {1} {{type Aux \
-         = <{0} as teloxide::dispatching::dialogue::SubTransition>::Aux;fn \
+         = <{0} as teloxide::dispatching::dialogue::Subtransition>::Aux;fn \
          react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: \
          Self::Aux) -> futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
@@ -162,7 +162,7 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
         write!(
             dispatch_fn,
             "{}::{}(state) => \
-             teloxide::dispatching::dialogue::SubTransition::react(state, cx, \
+             teloxide::dispatching::dialogue::Subtransition::react(state, cx, \
              aux).await,",
             enum_name, variant.ident
         )
