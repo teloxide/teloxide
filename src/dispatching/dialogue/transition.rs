@@ -6,24 +6,36 @@ use crate::{
 use futures::future::BoxFuture;
 
 /// Represents a transition function of a dialogue FSM.
-pub trait Transition: Sized {
+pub trait Transition<T>: Sized {
     /// Turns itself into another state, depending on the input message.
-    fn react(self, cx: TransitionIn)
-        -> BoxFuture<'static, TransitionOut<Self>>;
+    ///
+    /// `aux` will be passed to each subtransition function.
+    fn react(
+        self,
+        cx: TransitionIn,
+        aux: T,
+    ) -> BoxFuture<'static, TransitionOut<Self>>;
 }
 
 /// Like [`Transition`], but from `StateN` -> `Dialogue`.
 ///
 /// [`Transition`]: crate::dispatching::dialogue::Transition
-pub trait SubTransition<Dialogue>
+pub trait SubTransition
 where
-    Dialogue: Transition,
+    Self::Dialogue: Transition<Self::Aux>,
 {
+    type Aux;
+    type Dialogue;
+
     /// Turns itself into another state, depending on the input message.
+    ///
+    /// `aux` is something that is provided by the call side, for example, a
+    /// message's text.
     fn react(
         self,
         cx: TransitionIn,
-    ) -> BoxFuture<'static, TransitionOut<Dialogue>>;
+        aux: Self::Aux,
+    ) -> BoxFuture<'static, TransitionOut<Self::Dialogue>>;
 }
 
 /// A type returned from a FSM subtransition function.

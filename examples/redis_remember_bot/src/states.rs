@@ -1,4 +1,3 @@
-use teloxide::prelude::*;
 use teloxide_macros::Transition;
 
 use serde::{Deserialize, Serialize};

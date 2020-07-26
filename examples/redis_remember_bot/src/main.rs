@@ -38,11 +38,9 @@ async fn run() {
             |DialogueWithCx { cx, dialogue }: In| async move {
                 // No panic because of std::convert::Infallible.
                 let dialogue = dialogue.unwrap();
-
-                dialogue
-                    .react(cx)
+                handle_message(cx, dialogue)
                     .await
-                    .expect("Something is wrong with the bot!")
+                    .expect("Something wrong with the bot!")
             },
             // You can also choose serializer::JSON or serializer::CBOR
             // All serializers but JSON require enabling feature
@@ -54,4 +52,17 @@ async fn run() {
         ))
         .dispatch()
         .await;
+}
+
+async fn handle_message(
+    cx: UpdateWithCx<Message>,
+    dialogue: Dialogue,
+) -> TransitionOut<Dialogue> {
+    match cx.update.text_owned() {
+        None => {
+            cx.answer_str("Send me a text message.").await?;
+            next(dialogue)
+        }
+        Some(ans) => dialogue.react(cx, ans).await,
+    }
 }

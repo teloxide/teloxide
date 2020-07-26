@@ -191,7 +191,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
 
-([dialogue_bot/src/states.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states.rs))
+([dialogue_bot/src/states/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/mod.rs))
 ```rust
 // Imports are omitted...
 
@@ -203,60 +203,43 @@ pub enum Dialogue {
     ReceiveAge(ReceiveAgeState),
     ReceiveLocation(ReceiveLocationState),
 }
+```
+
+([dialogue_bot/src/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/start.rs))
+```rust
+// Imports are omitted...
 
 #[derive(Default)]
 pub struct StartState;
 
-#[derive(Generic)]
-pub struct ReceiveFullNameState;
+#[teloxide(transition)]
+async fn start(
+    _state: StartState,
+    cx: TransitionIn,
+    _ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer_str("Let's start! What's your full name?").await?;
+    next(ReceiveFullNameState)
+}
+```
+
+([dialogue_bot/src/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_age.rs))
+```rust
+// Imports are omitted...
 
 #[derive(Generic)]
 pub struct ReceiveAgeState {
     pub full_name: String,
 }
 
-#[derive(Generic)]
-pub struct ReceiveLocationState {
-    pub full_name: String,
-    pub age: u8,
-}
-```
-
-... and here are the transition functions, which turn one state into another:
-
-([dialogue_bot/src/transitions.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/transitions.rs))
-```rust
-// Imports are omitted...
-
-pub type Out = TransitionOut<Dialogue>;
-
 #[teloxide(transition)]
-async fn start(_state: StartState, cx: TransitionIn) -> Out {
-    cx.answer_str("Let's start! What's your full name?").await?;
-    next(ReceiveFullNameState)
-}
-
-#[teloxide(transition)]
-async fn receive_full_name(
-    state: ReceiveFullNameState,
+async fn receive_age_state(
+    state: ReceiveAgeState,
     cx: TransitionIn,
-) -> Out {
-    match cx.update.text_owned() {
-        Some(ans) => {
-            cx.answer_str("How old are you?").await?;
-            next(ReceiveAgeState::up(state, ans))
-        }
-        _ => {
-            cx.answer_str("Send me a text message.").await?;
-            next(state)
-        }
-    }
-}
-
-#[teloxide(transition)]
-async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
-    match cx.update.text().map(str::parse::<u8>) {
-        Some(Ok(ans)) => {
+    ans: String,
+) -> TransitionOut<Dialogue> {
+    match ans.parse::<u8>() {
+        Ok(ans) => {
             cx.answer_str("What's your location?").await?;
             next(ReceiveLocationState::up(state, ans))
         }
@@ -266,26 +249,48 @@ async fn receive_age_state(state: ReceiveAgeState, cx: TransitionIn) -> Out {
         }
     }
 }
+```
+
+([dialogue_bot/src/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_full_name.rs))
+```rust
+// Imports are omitted...
+
+#[derive(Generic)]
+pub struct ReceiveFullNameState;
+
+#[teloxide(transition)]
+async fn receive_full_name(
+    state: ReceiveFullNameState,
+    cx: TransitionIn,
+    ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer_str("How old are you?").await?;
+    next(ReceiveAgeState::up(state, ans))
+}
+```
+
+([dialogue_bot/src/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/states/receive_location.rs))
+```rust
+// Imports are omitted...
+
+#[derive(Generic)]
+pub struct ReceiveLocationState {
+    pub full_name: String,
+    pub age: u8,
+}
 
 #[teloxide(transition)]
 async fn receive_location(
     state: ReceiveLocationState,
     cx: TransitionIn,
-) -> Out {
-    match cx.update.text() {
-        Some(ans) => {
-            cx.answer_str(format!(
-                "Full name: {}\nAge: {}\nLocation: {}",
-                state.full_name, state.age, ans
-            ))
-            .await?;
-            exit()
-        }
-        _ => {
-            cx.answer_str("Send me a text message.").await?;
-            next(state)
-        }
-    }
+    ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer_str(format!(
+        "Full name: {}\nAge: {}\nLocation: {}",
+        state.full_name, state.age, ans
+    ))
+    .await?;
+    exit()
 }
 ```
 
@@ -309,11 +314,26 @@ async fn main() {
             |DialogueWithCx { cx, dialogue }: In| async move {
                 // No panic because of std::convert::Infallible.
                 let dialogue = dialogue.unwrap();
-                dialogue.react(cx).await.expect("Something wrong with the bot!")
+                handle_message(cx, dialogue)
+                    .await
+                    .expect("Something wrong with the bot!")
             },
         ))
         .dispatch()
         .await;
+}
+
+async fn handle_message(
+    cx: UpdateWithCx<Message>,
+    dialogue: Dialogue,
+) -> TransitionOut<Dialogue> {
+    match cx.update.text_owned() {
+        None => {
+            cx.answer_str("Send me a text message.").await?;
+            next(dialogue)
+        }
+        Some(ans) => dialogue.react(cx, ans).await,
+    }
 }
 ```
 
