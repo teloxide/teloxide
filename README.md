@@ -27,7 +27,7 @@
  - [API overview](https://github.com/teloxide/teloxide#api-overview)
    - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
    - [Commands](https://github.com/teloxide/teloxide#commands)
-   - [Dialogues](https://github.com/teloxide/teloxide#dialogues)
+   - [Dialogues management](https://github.com/teloxide/teloxide#dialogues-management)
  - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
  - [FAQ](https://github.com/teloxide/teloxide#faq)
  - [Community bots](https://github.com/teloxide/teloxide#community-bots)
@@ -184,7 +184,7 @@ async fn main() {
   </kbd>
 </div>
 
-### Dialogues
+### Dialogues management
 A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
