@@ -305,12 +305,13 @@ async fn main() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(|input: In| async move {
-            // No panic because of std::convert::Infallible.
-            let (cx, dialogue) = input.unpack();
-
-            dialogue.react(cx).await.expect("Something wrong with the bot!")
-        }))
+        .messages_handler(DialogueDispatcher::new(
+            |DialogueWithCx { cx, dialogue }: In| async move {
+                // No panic because of std::convert::Infallible.
+                let dialogue = dialogue.unwrap();
+                dialogue.react(cx).await.expect("Something wrong with the bot!")
+            },
+        ))
         .dispatch()
         .await;
 }
