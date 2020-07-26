@@ -98,6 +98,24 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     let mut dispatch_fn = "".to_owned();
 
+    let enum_name = input.ident;
+    let field_type_of_first_variant =
+        match &input.variants.iter().next().unwrap().fields {
+            Fields::Unnamed(fields) => {
+                fields
+                    .unnamed
+                    .iter()
+                    .next()
+                    // .unwrap() because empty enumerations are not yet allowed
+                    // in stable Rust.
+                    .unwrap()
+                    .ty
+                    .to_token_stream()
+                    .to_string()
+            }
+            _ => panic!("Only one unnamed field per variant is allowed"),
+        };
+
     write!(
         dispatch_fn,
         "impl teloxide::dispatching::dialogue::Transition<<{0} as \
@@ -107,22 +125,7 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
          futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
          futures::future::FutureExt::boxed(async {{ match self {{",
-        // .unwrap() because empty enumerations are not yet allowed in stable
-        // Rust.
-        match &input.variants.iter().next().unwrap().fields {
-            Fields::Unnamed(fields) => {
-                fields
-                    .unnamed
-                    .iter()
-                    .next()
-                    .unwrap()
-                    .ty
-                    .to_token_stream()
-                    .to_string()
-            }
-            _ => panic!("Only one unnamed field per variant is allowed"),
-        },
-        input.ident
+        field_type_of_first_variant, enum_name
     )
     .unwrap();
 
@@ -132,7 +135,7 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
             "{}::{}(state) => \
              teloxide::dispatching::dialogue::SubTransition::react(state, cx, \
              aux).await,",
-            input.ident, variant.ident
+            enum_name, variant.ident
         )
         .unwrap();
     }
