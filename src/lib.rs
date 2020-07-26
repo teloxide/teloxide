@@ -124,7 +124,7 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
          <{0} as teloxide::dispatching::dialogue::SubTransition>::Aux) -> \
          futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
-         futures::future::FutureExt::boxed(async {{ match self {{",
+         futures::future::FutureExt::boxed(async move {{ match self {{",
         field_type_of_first_variant, enum_name
     )
     .unwrap();
