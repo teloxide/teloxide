@@ -11,7 +11,7 @@ log = "0.4.8"
 tokio = "0.2.9"
 
 frunk = { git = "https://github.com/Hirrolot/frunk", branch = "append-to-hlist" }
-frunk_core = { git = "https://github.com/Hirrolot/frunk-core", branch = "master" }
+frunk-core = { git = "https://github.com/Hirrolot/frunk", branch = "append-to-hlist", package = "frunk_core" }
 
 pretty_env_logger = "0.4.0"
 futures = "0.3.5"
