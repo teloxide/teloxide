@@ -589,7 +589,7 @@ impl Bot {
     /// # Params
     ///   - `file_id`: File identifier to get info about.
     ///
-    /// [`File`]: crate::types::file
+    /// [`File`]: crate::types::File
     /// [`GetFile`]: self::GetFile
     pub fn get_file<F>(&self, file_id: F) -> GetFile
     where

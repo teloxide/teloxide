@@ -24,7 +24,7 @@ use crate::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#getfile).
 ///
-/// [`File`]: crate::types::file
+/// [`File`]: crate::types::File
 /// [`GetFile`]: self::GetFile
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
