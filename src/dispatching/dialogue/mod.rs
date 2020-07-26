@@ -6,7 +6,7 @@
 //! It is essentially a [FSM]: its variants are possible dialogue states and
 //! [`Transition::react`] is a transition function.
 //!
-//!  2. State types, forming `D`. They implement [`SubTransition`].
+//!  2. State types, forming `D`. They implement [`Subtransition`].
 //!
 //!  2. [`Storage<D>`], which encapsulates all the dialogues.
 //!
@@ -99,19 +99,19 @@
 //! }
 //! ```
 //!
-//!  - `#[teloxide(transition)]` implements [`SubTransition`] for the first
+//!  - `#[teloxide(transition)]` implements [`Subtransition`] for the first
 //!    argument of a function.
 //!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
-//!    variants implement [`SubTransition`].
+//!    variants implement [`Subtransition`].
 //!
 //! `()` in `.react(cx, ())` is an arbitrary value, which you can pass into
-//! subtransitions. Just append `ans: T` to the parameters of the
-//! subtransitions to pass a differen type.
+//! Subtransitions. Just append `ans: T` to the parameters of the
+//! Subtransitions to pass a differen type.
 //!
 //! See [examples/dialogue_bot] as a real example.
 //!
 //! [`Transition`]: crate::dispatching::dialogue::Transition
-//! [`SubTransition`]: crate::dispatching::dialogue::SubTransition
+//! [`Subtransition`]: crate::dispatching::dialogue::Subtransition
 //! [`Transition::react`]:
 //! crate::dispatching::dialogue::Transition::react
 //! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
@@ -153,7 +153,7 @@ pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use transition::{
-    SubTransition, SubTransitionOutputType, Transition, TransitionIn, TransitionOut,
+    Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
 
 #[cfg(feature = "redis-storage")]

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - ???
 ### Added
  - `BotBuilder`, which allows setting a default `ParseMode`.
- - The `Transition`, `SubTransition`, `SubTransitionOutputType` traits.
+ - The `Transition`, `Subtransition`, `SubtransitionOutputType` traits.
  - A nicer approach to manage dialogues via `#[derive(Transition)]` + `#[teloxide(transition)]` (see `examples/dialogue_bot`).
 
 ### Deprecated

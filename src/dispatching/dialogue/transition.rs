@@ -18,7 +18,7 @@ pub trait Transition: Sized {
 /// Like [`Transition`], but from `StateN` -> `Dialogue`.
 ///
 /// [`Transition`]: crate::dispatching::dialogue::Transition
-pub trait SubTransition
+pub trait Subtransition
 where
     Self::Dialogue: Transition<Aux = Self::Aux>,
 {
@@ -39,11 +39,11 @@ where
 /// A type returned from a FSM subtransition function.
 ///
 /// Now it is used only inside `#[teloxide(transition)]` for type inference.
-pub trait SubTransitionOutputType {
+pub trait SubtransitionOutputType {
     type Output;
 }
 
-impl<D> SubTransitionOutputType for TransitionOut<D> {
+impl<D> SubtransitionOutputType for TransitionOut<D> {
     type Output = D;
 }
 
