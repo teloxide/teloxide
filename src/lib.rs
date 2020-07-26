@@ -166,8 +166,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         Err(e) => return compile_error(e),
     };
 
-    let variants: Vec<&syn::Variant> =
-        data_enum.variants.iter().map(|variant| variant).collect();
+    let variants: Vec<&syn::Variant> = data_enum.variants.iter().collect();
 
     let mut variant_infos = vec![];
     for variant in variants.iter() {
