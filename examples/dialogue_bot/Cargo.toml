@@ -17,7 +17,7 @@ pretty_env_logger = "0.4.0"
 futures = "0.3.5"
 derive_more = "0.99.9"
 teloxide = { path = "../../", features = ["frunk"] }
-teloxide-macros = { git = "http://github.com/teloxide/teloxide-macros", branch = "master" }
+teloxide-macros = "0.3.2"
 
 [profile.release]
 lto = true

@@ -9,7 +9,7 @@ tokio = "0.2.9"
 
 # You can also choose "cbor-serializer" or built-in JSON serializer
 teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer"] }
-teloxide-macros = { git = "http://github.com/teloxide/teloxide-macros", branch = "master" }
+teloxide-macros = "0.3.2"
 
 serde = "1.0.104"
 futures = "0.3.5"
