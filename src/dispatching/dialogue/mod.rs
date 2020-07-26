@@ -69,6 +69,8 @@
 //!     }
 //! }
 //!
+//! type In = DialogueWithCx<Message, D, Infallible>;
+//!
 //! #[tokio::main]
 //! async fn main() {
 //!     run().await;
@@ -81,17 +83,12 @@
 //!     let bot = Bot::from_env();
 //!
 //!     Dispatcher::new(bot)
-//!         .messages_handler(DialogueDispatcher::new(
-//!             |input: DialogueWithCx<Message, D, Infallible>| async move {
-//!                 // Unwrap without panic because of std::convert::Infallible.
-//!                 input
-//!                     .dialogue
-//!                     .unwrap()
-//!                     .react(input.cx)
-//!                     .await
-//!                     .expect("Something wrong with the bot!")
-//!             },
-//!         ))
+//!         .messages_handler(DialogueDispatcher::new(|input: In| async move {
+//!             // No panic because of std::convert::Infallible.
+//!             let (cx, dialogue) = input.unpack();
+//!
+//!             dialogue.react(cx).await.expect("Something wrong with the bot!")
+//!         }))
 //!         .dispatch()
 //!         .await;
 //! }
