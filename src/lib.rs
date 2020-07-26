@@ -118,11 +118,10 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
 
     write!(
         dispatch_fn,
-        "impl teloxide::dispatching::dialogue::Transition<<{0} as \
-         teloxide::dispatching::dialogue::SubTransition>::Aux> for {1} {{ fn \
+        "impl teloxide::dispatching::dialogue::Transition for {1} {{type Aux \
+         = <{0} as teloxide::dispatching::dialogue::SubTransition>::Aux;fn \
          react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: \
-         <{0} as teloxide::dispatching::dialogue::SubTransition>::Aux) -> \
-         futures::future::BoxFuture<'static, \
+         Self::Aux) -> futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
          futures::future::FutureExt::boxed(async move {{ match self {{",
         field_type_of_first_variant, enum_name
