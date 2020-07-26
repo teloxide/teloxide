@@ -191,7 +191,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
 
-([dialogue_bot/src/dialogue/states/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/mod.rs))
+([dialogue_bot/src/dialogue/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/mod.rs))
 ```rust
 // Imports are omitted...
 
