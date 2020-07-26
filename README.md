@@ -203,6 +203,12 @@ pub enum Dialogue {
     ReceiveAge(ReceiveAgeState),
     ReceiveLocation(ReceiveLocationState),
 }
+
+impl Default for Dialogue {
+    fn default() -> Self {
+        Self::Start(StartState)
+    }
+}
 ```
 
 ([dialogue_bot/src/dialogue/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/start.rs))

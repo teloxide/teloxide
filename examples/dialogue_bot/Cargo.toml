@@ -15,7 +15,6 @@ frunk-core = { git = "https://github.com/Hirrolot/frunk", branch = "append-to-hl
 
 pretty_env_logger = "0.4.0"
 futures = "0.3.5"
-smart-default = "0.6.0"
 derive_more = "0.99.9"
 teloxide = { path = "../../", features = ["frunk"] }
 teloxide-macros = { git = "http://github.com/teloxide/teloxide-macros", branch = "master" }

@@ -88,7 +88,8 @@
 //!                 // No panic because of std::convert::Infallible.
 //!                 let dialogue = dialogue.unwrap();
 //!                 dialogue
-//!                     .react(cx)
+//!                     // Instead of () you can pass an arbitrary value, see below.
+//!                     .react(cx, ())
 //!                     .await
 //!                     .expect("Something wrong with the bot!")
 //!             },
@@ -102,6 +103,10 @@
 //!    argument of a function.
 //!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
 //!    variants implement [`SubTransition`].
+//!
+//! `()` in `.react(cx, ())` is an arbitrary value, which you can pass into
+//! subtransitions. Just append `ans: T` to the parameters of the
+//! subtransitions to pass a differen type.
 //!
 //! See [examples/dialogue_bot] as a real example.
 //!

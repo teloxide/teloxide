@@ -18,14 +18,7 @@
 #![allow(dead_code)]
 
 #[macro_use]
-extern crate smart_default;
-#[macro_use]
-extern crate derive_more;
-#[macro_use]
 extern crate frunk;
-extern crate frunk_core;
-#[macro_use]
-extern crate teloxide_macros;
 
 mod dialogue;
 
