@@ -36,6 +36,7 @@ async fn run() {
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::with_storage(
             |input: In| async move {
+                // No panic because of std::convert::Infallible.
                 let (cx, dialogue) = input.unpack();
 
                 dialogue

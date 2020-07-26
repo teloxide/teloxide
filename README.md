@@ -295,6 +295,8 @@ Finally, the `main` function looks like this:
 ```rust
 // Imports are omitted...
 
+type In = DialogueWithCx<Message, Dialogue, Infallible>;
+
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
@@ -303,17 +305,12 @@ async fn main() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(
-            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
-                // Unwrap without panic because of std::convert::Infallible.
-                input
-                    .dialogue
-                    .unwrap()
-                    .react(input.cx)
-                    .await
-                    .expect("Something wrong with the bot!")
-            },
-        ))
+        .messages_handler(DialogueDispatcher::new(|input: In| async move {
+            // No panic because of std::convert::Infallible.
+            let (cx, dialogue) = input.unpack();
+
+            dialogue.react(cx).await.expect("Something wrong with the bot!")
+        }))
         .dispatch()
         .await;
 }

@@ -15,6 +15,9 @@ pub struct DialogueWithCx<Upd, D, E> {
 
 impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
     /// Returns the inner `UpdateWithCx<Upd>` and an unwrapped dialogue.
+    ///
+    /// # Panics
+    /// If `self.dialogue` is `Err`.
     pub fn unpack(self) -> (UpdateWithCx<Upd>, D)
     where
         E: Debug,

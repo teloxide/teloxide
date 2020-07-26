@@ -2,13 +2,16 @@
 //
 // # Example
 // ```
-//  - Let's start our test! How many days per week are there?
-//  - 7
-//  - 10*5 = ?
-//  - 50
-//  - What's an alternative name of Gandalf?
-//  - Mithrandir
-//  - Congratulations! You've successfully passed the test!
+//  - Hey
+//  - Let's start! What's your full name?
+//  - Gandalf the Grey
+//  - How old are you?
+//  - 223
+//  - What's your location?
+//  - Middle-earth
+//  - Full name: Gandalf the Grey
+//    Age: 223
+//    Location: Middle-earth
 // ```
 
 #![allow(clippy::trivial_regex)]
@@ -32,6 +35,8 @@ use states::*;
 use std::convert::Infallible;
 use teloxide::prelude::*;
 
+type In = DialogueWithCx<Message, Dialogue, Infallible>;
+
 #[tokio::main]
 async fn main() {
     run().await;
@@ -44,17 +49,12 @@ async fn run() {
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(
-            |input: DialogueWithCx<Message, Dialogue, Infallible>| async move {
-                // Unwrap without panic because of std::convert::Infallible.
-                input
-                    .dialogue
-                    .unwrap()
-                    .react(input.cx)
-                    .await
-                    .expect("Something wrong with the bot!")
-            },
-        ))
+        .messages_handler(DialogueDispatcher::new(|input: In| async move {
+            // No panic because of std::convert::Infallible.
+            let (cx, dialogue) = input.unpack();
+
+            dialogue.react(cx).await.expect("Something wrong with the bot!")
+        }))
         .dispatch()
         .await;
 }
