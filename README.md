@@ -76,9 +76,13 @@ $ rustup override set nightly
 ```toml
 [dependencies]
 teloxide = "0.2.0"
+teloxide-macros = "0.3.2"
+
 log = "0.4.8"
-tokio = "0.2.11"
 pretty_env_logger = "0.4.0"
+
+tokio = "0.2.11"
+futures = "0.3.5"
 ```
 
 ## API overview
