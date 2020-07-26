@@ -26,11 +26,11 @@ use std::fmt::Write;
 
 /// The docs is below.
 ///
-/// The only accepted form at the current moment is `#[teloxide(transition)]` on
-/// an asynchronous function. Either this:
+/// The only accepted form at the current moment is `#[teloxide(subtransition)]`
+/// on an asynchronous function. Either this:
 ///
 /// ```no_compile
-/// #[teloxide(transition)]
+/// #[teloxide(subtransition)]
 /// async fn my_transition(state: MyState, cx: TransitionIn, ans: T) -> TransitionOut<MyDialogue> {
 ///     todo!()
 /// }
@@ -39,7 +39,7 @@ use std::fmt::Write;
 /// Or this:
 ///
 /// ```no_compile
-/// #[teloxide(transition)]
+/// #[teloxide(subtransition)]
 /// async fn my_transition(state: MyState, cx: TransitionIn) -> TransitionOut<MyDialogue> {
 ///     todo!()
 /// }
@@ -51,7 +51,7 @@ use std::fmt::Write;
 #[proc_macro_attribute]
 pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
     match attr.to_string().as_ref() {
-        "transition" => {
+        "subtransition" => {
             let item_cloned = item.clone();
             let input = parse_macro_input!(item as ItemFn);
             let params = input.sig.inputs.iter().collect::<Vec<&FnArg>>();

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 ### Added
- - `#[derive(Transition)]` with `#[teloxide(transition)]`.
+ - `#[derive(Transition)]` with `#[teloxide(subtransition)]`.
 
 ### Removed
  - The `dev` branch.
