@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{
-    InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode,
-};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode};
 
 /// Represents a link to a page containing an embedded video player or a video
 /// file.

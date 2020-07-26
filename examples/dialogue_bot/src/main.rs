@@ -44,19 +44,14 @@ async fn run() {
             |DialogueWithCx { cx, dialogue }: In| async move {
                 // No panic because of std::convert::Infallible.
                 let dialogue = dialogue.unwrap();
-                handle_message(cx, dialogue)
-                    .await
-                    .expect("Something wrong with the bot!")
+                handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
             },
         ))
         .dispatch()
         .await;
 }
 
-async fn handle_message(
-    cx: UpdateWithCx<Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
+async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
     match cx.update.text_owned() {
         None => {
             cx.answer_str("Send me a text message.").await?;

@@ -85,19 +85,13 @@ impl Serialize for InputFile {
                 // multipart/form-data
                 serializer.serialize_str(
                     // TODO: remove unwrap (?)
-                    &format!(
-                        "attach://{}",
-                        path.file_name().unwrap().to_string_lossy()
-                    ),
+                    &format!("attach://{}", path.file_name().unwrap().to_string_lossy()),
                 )
             }
             InputFile::Memory { data, .. } => {
                 // NOTE: file should be actually attached with
                 // multipart/form-data
-                serializer.serialize_str(&format!(
-                    "attach://{}",
-                    String::from_utf8_lossy(data)
-                ))
+                serializer.serialize_str(&format!("attach://{}", String::from_utf8_lossy(data)))
             }
             InputFile::Url(url) => serializer.serialize_str(url),
             InputFile::FileId(id) => serializer.serialize_str(id),

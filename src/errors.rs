@@ -63,9 +63,9 @@ pub enum KnownApiErrorKind {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::requests::EditMessageText
-    #[serde(rename = "Bad Request: message is not modified: specified new \
-                      message content and reply markup are exactly the same \
-                      as a current content and reply markup of the message")]
+    #[serde(rename = "Bad Request: message is not modified: specified new message content and \
+                      reply markup are exactly the same as a current content and reply markup \
+                      of the message")]
     MessageNotModified,
 
     /// Occurs when bot tries to forward or delete a message which was deleted.
@@ -285,8 +285,8 @@ pub enum KnownApiErrorKind {
     /// 1. [`AnswerCallbackQuery`]
     ///
     /// [`AnswerCallbackQuery`]: crate::requests::AnswerCallbackQuery
-    #[serde(rename = "Bad Request: query is too old and response timeout \
-                      expired or query id is invalid")]
+    #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is \
+                      invalid")]
     InvalidQueryID,
 
     /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button
@@ -314,8 +314,8 @@ pub enum KnownApiErrorKind {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::requests::SendMessage
-    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text \
-                      buttons are unallowed in the inline keyboard")]
+    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are \
+                      unallowed in the inline keyboard")]
     TextButtonsAreUnallowed,
 
     /// Occurs when bot tries to get file by wrong file id.
@@ -361,8 +361,7 @@ pub enum KnownApiErrorKind {
 
     /// Occurs when bot tries to use method in group which is allowed only in a
     /// supergroup or channel.
-    #[serde(rename = "Bad Request: method is available only for supergroups \
-                      and channel")]
+    #[serde(rename = "Bad Request: method is available only for supergroups and channel")]
     MethodNotAvailableInPrivateChats,
 
     /// Occurs when bot tries to demote chat creator.
@@ -390,8 +389,7 @@ pub enum KnownApiErrorKind {
     /// 1. [`RestrictChatMember`]
     ///
     /// [`RestrictChatMember`]: crate::requests::RestrictChatMember
-    #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict \
-                      chat member")]
+    #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
     NotEnoughRightsToRestrict,
 
     /// Occurs when bot tries set webhook to protocol other than HTTPS.
@@ -400,8 +398,7 @@ pub enum KnownApiErrorKind {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::requests::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided \
-                      for webhook")]
+    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
     WebhookRequireHTTPS,
 
     /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or
@@ -411,8 +408,8 @@ pub enum KnownApiErrorKind {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::requests::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only \
-                      on ports 80, 88, 443 or 8443")]
+    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 \
+                      or 8443")]
     BadWebhookPort,
 
     /// Occurs when bot tries to set webhook to unknown host.
@@ -421,8 +418,7 @@ pub enum KnownApiErrorKind {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::requests::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: \
-                      Name or service not known")]
+    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
     UnknownHost,
 
     /// Occurs when bot tries to set webhook to invalid URL.
@@ -476,9 +472,7 @@ pub enum KnownApiErrorKind {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::requests::SendMessage
-    #[serde(
-        rename = "Unauthorized: bot can't initiate conversation with a user"
-    )]
+    #[serde(rename = "Unauthorized: bot can't initiate conversation with a user")]
     CantInitiateConversation,
 
     /// Occurs when you tries to send message to bot.
@@ -506,8 +500,8 @@ pub enum KnownApiErrorKind {
     /// 1. [`GetUpdates`]
     ///
     /// [`GetUpdates`]: crate::requests::GetUpdates
-    #[serde(rename = "Conflict: terminated by other getUpdates request; \
-                      make sure that only one bot instance is running")]
+    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one \
+                      bot instance is running")]
     TerminatedByOtherGetUpdates,
 
     /// Occurs when bot tries to get file by invalid file id.

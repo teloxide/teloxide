@@ -30,23 +30,12 @@ impl Request for RestrictChatMember {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "restrictChatMember",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "restrictChatMember", &self).await
     }
 }
 
 impl RestrictChatMember {
-    pub(crate) fn new<C>(
-        bot: Bot,
-        chat_id: C,
-        user_id: i32,
-        permissions: ChatPermissions,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, user_id: i32, permissions: ChatPermissions) -> Self
     where
         C: Into<ChatId>,
     {

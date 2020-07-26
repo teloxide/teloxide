@@ -17,24 +17,14 @@ const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 ///
 /// [Telegram documentation]: https://core.telegram.org/bots/api#making-requests
 fn method_url(base: &str, token: &str, method_name: &str) -> String {
-    format!(
-        "{url}/bot{token}/{method}",
-        url = base,
-        token = token,
-        method = method_name,
-    )
+    format!("{url}/bot{token}/{method}", url = base, token = token, method = method_name,)
 }
 
 /// Creates URL for downloading a file. See the [Telegram documentation].
 ///
 /// [Telegram documentation]: https://core.telegram.org/bots/api#file
 fn file_url(base: &str, token: &str, file_path: &str) -> String {
-    format!(
-        "{url}/file/bot{token}/{file}",
-        url = base,
-        token = token,
-        file = file_path,
-    )
+    format!("{url}/file/bot{token}/{file}", url = base, token = token, file = file_path,)
 }
 
 #[cfg(test)]

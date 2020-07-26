@@ -28,13 +28,7 @@ impl Request for StopPoll {
     ///
     /// [`Poll`]: crate::types::Poll
     async fn send(&self) -> ResponseResult<Poll> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "stopPoll",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "stopPoll", &self).await
     }
 }
 impl StopPoll {

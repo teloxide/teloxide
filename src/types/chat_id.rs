@@ -3,9 +3,7 @@ use serde::{Deserialize, Serialize};
 
 /// A unique identifier for the target chat or username of the target channel
 /// (in the format `@channelusername`).
-#[derive(
-    Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Display, From,
-)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Display, From)]
 #[serde(untagged)]
 pub enum ChatId {
     /// A chat identifier.
@@ -32,10 +30,8 @@ mod tests {
     #[test]
     fn chat_id_channel_username_serialization() {
         let expected_json = String::from(r#""@username""#);
-        let actual_json = serde_json::to_string(&ChatId::ChannelUsername(
-            String::from("@username"),
-        ))
-        .unwrap();
+        let actual_json =
+            serde_json::to_string(&ChatId::ChannelUsername(String::from("@username"))).unwrap();
 
         assert_eq!(expected_json, actual_json)
     }

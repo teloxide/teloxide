@@ -10,10 +10,7 @@ impl Decoder for FileDecoder {
     type Item = Bytes;
     type Error = std::io::Error;
 
-    fn decode(
-        &mut self,
-        src: &mut BytesMut,
-    ) -> Result<Option<Self::Item>, Self::Error> {
+    fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         if src.is_empty() {
             return Ok(None);
         }
@@ -22,20 +19,13 @@ impl Decoder for FileDecoder {
 }
 
 pub async fn file_to_part(path_to_file: PathBuf) -> std::io::Result<Part> {
-    let file_name =
-        path_to_file.file_name().unwrap().to_string_lossy().into_owned();
+    let file_name = path_to_file.file_name().unwrap().to_string_lossy().into_owned();
 
-    let file = FramedRead::new(
-        tokio::fs::File::open(path_to_file).await?,
-        FileDecoder,
-    );
+    let file = FramedRead::new(tokio::fs::File::open(path_to_file).await?, FileDecoder);
 
     Ok(Part::stream(Body::wrap_stream(file)).file_name(file_name))
 }
 
-pub fn file_from_memory_to_part(
-    data: Cow<'static, [u8]>,
-    name: String,
-) -> Part {
+pub fn file_from_memory_to_part(data: Cow<'static, [u8]>, name: String) -> Part {
     Part::bytes(data).file_name(name)
 }

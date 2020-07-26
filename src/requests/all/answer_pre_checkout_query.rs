@@ -34,13 +34,8 @@ impl Request for AnswerPreCheckoutQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "answerPreCheckoutQuery",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "answerPreCheckoutQuery", &self)
+            .await
     }
 }
 

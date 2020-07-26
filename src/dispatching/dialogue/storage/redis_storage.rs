@@ -37,9 +37,7 @@ impl<S> RedisStorage<S> {
         serializer: S,
     ) -> Result<Arc<Self>, RedisStorageError<Infallible>> {
         Ok(Arc::new(Self {
-            conn: Mutex::new(
-                redis::Client::open(url)?.get_async_connection().await?,
-            ),
+            conn: Mutex::new(redis::Client::open(url)?.get_async_connection().await?),
             serializer,
         }))
     }
@@ -91,21 +89,15 @@ where
         dialogue: D,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
-            let dialogue = self
-                .serializer
-                .serialize(&dialogue)
-                .map_err(RedisStorageError::SerdeError)?;
+            let dialogue =
+                self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
             Ok(self
                 .conn
                 .lock()
                 .await
                 .getset::<_, Vec<u8>, Option<Vec<u8>>>(chat_id, dialogue)
                 .await?
-                .map(|d| {
-                    self.serializer
-                        .deserialize(&d)
-                        .map_err(RedisStorageError::SerdeError)
-                })
+                .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()?)
         })
     }

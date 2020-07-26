@@ -39,13 +39,7 @@ impl Request for SetWebhook {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "setWebhook",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "setWebhook", &self).await
     }
 }
 
@@ -55,13 +49,7 @@ impl SetWebhook {
         U: Into<String>,
     {
         let url = url.into();
-        Self {
-            bot,
-            url,
-            certificate: None,
-            max_connections: None,
-            allowed_updates: None,
-        }
+        Self { bot, url, certificate: None, max_connections: None, allowed_updates: None }
     }
 
     /// HTTPS url to send updates to.

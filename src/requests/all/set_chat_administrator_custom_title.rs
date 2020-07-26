@@ -37,12 +37,7 @@ impl Request for SetChatAdministratorCustomTitle {
 }
 
 impl SetChatAdministratorCustomTitle {
-    pub(crate) fn new<C, CT>(
-        bot: Bot,
-        chat_id: C,
-        user_id: i32,
-        custom_title: CT,
-    ) -> Self
+    pub(crate) fn new<C, CT>(bot: Bot, chat_id: C, user_id: i32, custom_title: CT) -> Self
     where
         C: Into<ChatId>,
         CT: Into<String>,

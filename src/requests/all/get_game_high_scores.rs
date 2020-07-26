@@ -34,22 +34,12 @@ impl Request for GetGameHighScores {
     type Output = Vec<GameHighScore>;
 
     async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getGameHighScores",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getGameHighScores", &self).await
     }
 }
 
 impl GetGameHighScores {
-    pub(crate) fn new(
-        bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-    ) -> Self {
+    pub(crate) fn new(bot: Bot, chat_or_inline_message: ChatOrInlineMessage, user_id: i32) -> Self {
         Self { bot, chat_or_inline_message, user_id }
     }
 

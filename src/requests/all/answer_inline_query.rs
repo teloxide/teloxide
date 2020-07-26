@@ -31,13 +31,7 @@ impl Request for AnswerInlineQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "answerInlineQuery",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "answerInlineQuery", &self).await
     }
 }
 

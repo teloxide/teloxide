@@ -27,13 +27,7 @@ impl Request for GetWebhookInfo {
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<WebhookInfo> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getWebhookInfo",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getWebhookInfo", &self).await
     }
 }
 

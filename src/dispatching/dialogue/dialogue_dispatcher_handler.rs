@@ -23,10 +23,7 @@ where
     F: Fn(DialogueWithCx<Upd, D, E>) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
 {
-    fn handle(
-        self: Arc<Self>,
-        cx: DialogueWithCx<Upd, D, E>,
-    ) -> BoxFuture<'static, Fut::Output>
+    fn handle(self: Arc<Self>, cx: DialogueWithCx<Upd, D, E>) -> BoxFuture<'static, Fut::Output>
     where
         DialogueWithCx<Upd, D, E>: Send + 'static,
     {

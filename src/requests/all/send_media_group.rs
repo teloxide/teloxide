@@ -45,13 +45,7 @@ impl SendMediaGroup {
     {
         let chat_id = chat_id.into();
         let media = media.into();
-        Self {
-            bot,
-            chat_id,
-            media,
-            disable_notification: None,
-            reply_to_message_id: None,
-        }
+        Self { bot, chat_id, media, disable_notification: None, reply_to_message_id: None }
     }
 
     /// Unique identifier for the target chat or username of the target channel

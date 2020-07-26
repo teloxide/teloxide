@@ -75,22 +75,12 @@ impl Request for SendChatAction {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendChatAction",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendChatAction", &self).await
     }
 }
 
 impl SendChatAction {
-    pub(crate) fn new<C>(
-        bot: Bot,
-        chat_id: C,
-        action: SendChatActionKind,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, action: SendChatActionKind) -> Self
     where
         C: Into<ChatId>,
     {

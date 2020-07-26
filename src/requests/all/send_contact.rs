@@ -30,23 +30,12 @@ impl Request for SendContact {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendContact",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendContact", &self).await
     }
 }
 
 impl SendContact {
-    pub(crate) fn new<C, P, F>(
-        bot: Bot,
-        chat_id: C,
-        phone_number: P,
-        first_name: F,
-    ) -> Self
+    pub(crate) fn new<C, P, F>(bot: Bot, chat_id: C, phone_number: P, first_name: F) -> Self
     where
         C: Into<ChatId>,
         P: Into<String>,

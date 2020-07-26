@@ -17,9 +17,7 @@
 #![forbid(unsafe_code)]
 
 pub use bot::{Bot, BotBuilder};
-pub use errors::{
-    ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError,
-};
+pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;
 mod net;

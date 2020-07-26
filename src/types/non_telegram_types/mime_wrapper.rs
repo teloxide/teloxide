@@ -1,19 +1,13 @@
 use derive_more::From;
 use mime::Mime;
-use serde::{
-    de::Visitor, export::Formatter, Deserialize, Deserializer, Serialize,
-    Serializer,
-};
+use serde::{de::Visitor, export::Formatter, Deserialize, Deserializer, Serialize, Serializer};
 
 /// Serializable & deserializable `MIME` wrapper.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, From)]
 pub struct MimeWrapper(pub Mime);
 
 impl Serialize for MimeWrapper {
-    fn serialize<S>(
-        &self,
-        serializer: S,
-    ) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
+    fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
     where
         S: Serializer,
     {
@@ -25,10 +19,7 @@ struct MimeVisitor;
 impl<'a> Visitor<'a> for MimeVisitor {
     type Value = MimeWrapper;
 
-    fn expecting(
-        &self,
-        formatter: &mut Formatter<'_>,
-    ) -> Result<(), serde::export::fmt::Error> {
+    fn expecting(&self, formatter: &mut Formatter<'_>) -> Result<(), serde::export::fmt::Error> {
         formatter.write_str("mime type")
     }
 
@@ -44,9 +35,7 @@ impl<'a> Visitor<'a> for MimeVisitor {
 }
 
 impl<'de> Deserialize<'de> for MimeWrapper {
-    fn deserialize<D>(
-        deserializer: D,
-    ) -> Result<Self, <D as Deserializer<'de>>::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
     where
         D: Deserializer<'de>,
     {

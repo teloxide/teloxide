@@ -33,13 +33,7 @@ impl Request for AnswerCallbackQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "answerCallbackQuery",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "answerCallbackQuery", &self).await
     }
 }
 
@@ -49,14 +43,7 @@ impl AnswerCallbackQuery {
         C: Into<String>,
     {
         let callback_query_id = callback_query_id.into();
-        Self {
-            bot,
-            callback_query_id,
-            text: None,
-            show_alert: None,
-            url: None,
-            cache_time: None,
-        }
+        Self { bot, callback_query_id, text: None, show_alert: None, url: None, cache_time: None }
     }
 
     /// Unique identifier for the query to be answered.

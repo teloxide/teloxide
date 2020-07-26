@@ -26,10 +26,7 @@ async fn run() {
                 let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
 
                 message
-                    .answer_str(format!(
-                        "I received {} messages in total.",
-                        previous
-                    ))
+                    .answer_str(format!("I received {} messages in total.", previous))
                     .await
                     .log_on_error()
                     .await;

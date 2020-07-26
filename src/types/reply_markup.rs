@@ -1,9 +1,7 @@
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{
-    ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-};
+use crate::types::{ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, From)]
 #[serde(untagged)]

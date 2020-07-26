@@ -25,8 +25,7 @@
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
-//! let (command, args) =
-//!     parse_command("/ban@MyBotName 3 hours", "MyBotName").unwrap();
+//! let (command, args) = parse_command("/ban@MyBotName 3 hours", "MyBotName").unwrap();
 //! assert_eq!(command, "ban");
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
@@ -155,14 +154,10 @@ pub use teloxide_macros::BotCommand;
 /// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
 ///     match input.len() {
 ///         2 => {
-///             let num = input
-///                 .parse::<u8>()
-///                 .map_err(|e| ParseError::IncorrectFormat(e.into()))?;
+///             let num = input.parse::<u8>().map_err(|e| ParseError::IncorrectFormat(e.into()))?;
 ///             Ok((num,))
 ///         }
-///         len => Err(ParseError::Custom(
-///             format!("Only 2 digits allowed, not {}", len).into(),
-///         )),
+///         len => Err(ParseError::Custom(format!("Only 2 digits allowed, not {}", len).into())),
 ///     }
 /// }
 ///
@@ -233,20 +228,13 @@ impl Display for ParseError {
                 "Too few arguments (expected {}, found {}, message = '{}')",
                 expected, found, message
             ),
-            ParseError::TooManyArguments { expected, found, message } => {
-                write!(
-                    f,
-                    "Too many arguments (expected {}, found {}, message = \
-                     '{}')",
-                    expected, found, message
-                )
-            }
-            ParseError::IncorrectFormat(e) => {
-                write!(f, "Incorrect format of command args: {}", e)
-            }
-            ParseError::UnknownCommand(e) => {
-                write!(f, "Unknown command: {}", e)
-            }
+            ParseError::TooManyArguments { expected, found, message } => write!(
+                f,
+                "Too many arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
+            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
             ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
             ParseError::Custom(e) => write!(f, "{}", e),
         }
@@ -305,8 +293,7 @@ where
 /// ```
 /// use teloxide::utils::command::parse_command_with_prefix;
 ///
-/// let result =
-///     parse_command_with_prefix("!", "!ban@MyNameBot1 3 hours", "MyNameBot2");
+/// let result = parse_command_with_prefix("!", "!ban@MyNameBot1 3 hours", "MyNameBot2");
 /// assert!(result.is_none());
 /// ```
 pub fn parse_command_with_prefix<'a, N>(

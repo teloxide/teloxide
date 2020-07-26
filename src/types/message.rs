@@ -4,10 +4,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{
     chat::{ChatKind, PublicChatKind},
-    Animation, Audio, Chat, ChatPublic, Contact, Document, Game,
-    InlineKeyboardMarkup, Invoice, Location, MessageEntity, PassportData,
-    PhotoSize, Poll, PublicChatChannel, PublicChatSupergroup, Sticker,
-    SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
+    Animation, Audio, Chat, ChatPublic, Contact, Document, Game, InlineKeyboardMarkup, Invoice,
+    Location, MessageEntity, PassportData, PhotoSize, Poll, PublicChatChannel,
+    PublicChatSupergroup, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
 };
 
 /// This object represents a message.
@@ -425,23 +424,19 @@ mod getters {
         message::{
             ForwardKind::NonChannel,
             MessageKind::{
-                ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto,
-                GroupChatCreated, Invoice, LeftChatMember, Migrate,
-                NewChatMembers, NewChatPhoto, NewChatTitle, PassportData,
-                Pinned, SuccessfulPayment, SupergroupChatCreated,
+                ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto, GroupChatCreated,
+                Invoice, LeftChatMember, Migrate, NewChatMembers, NewChatPhoto, NewChatTitle,
+                PassportData, Pinned, SuccessfulPayment, SupergroupChatCreated,
             },
         },
-        Chat, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin,
-        ForwardedFrom, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
-        MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll,
-        MediaSticker, MediaText, MediaVenue, MediaVideo, MediaVideoNote,
-        MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageEntity,
-        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember,
-        MessageMigrate, MessageNewChatMembers, MessageNewChatPhoto,
-        MessageNewChatTitle, MessagePassportData, MessagePinned,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, PhotoSize,
-        True, User,
+        Chat, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin, ForwardedFrom,
+        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
+        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
+        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageEntity, MessageGroupChatCreated,
+        MessageInvoice, MessageLeftChatMember, MessageMigrate, MessageNewChatMembers,
+        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -476,8 +471,7 @@ mod getters {
         pub fn forward_from_chat(&self) -> Option<&Chat> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Channel(ForwardChannel { chat, .. }),
+                    forward_kind: ForwardKind::Channel(ForwardChannel { chat, .. }),
                     ..
                 }) => Some(chat),
                 _ => None,
@@ -487,8 +481,7 @@ mod getters {
         pub fn forward_from_message_id(&self) -> Option<&i32> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Channel(ForwardChannel { message_id, .. }),
+                    forward_kind: ForwardKind::Channel(ForwardChannel { message_id, .. }),
                     ..
                 }) => Some(message_id),
                 _ => None,
@@ -498,8 +491,7 @@ mod getters {
         pub fn forward_signature(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Channel(ForwardChannel { signature, .. }),
+                    forward_kind: ForwardKind::Channel(ForwardChannel { signature, .. }),
                     ..
                 }) => signature.as_ref().map(Deref::deref),
                 _ => None,
@@ -509,13 +501,11 @@ mod getters {
         pub fn forward_date(&self) -> Option<&i32> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Channel(ForwardChannel { date, .. }),
+                    forward_kind: ForwardKind::Channel(ForwardChannel { date, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::NonChannel(ForwardNonChannel { date, .. }),
+                    forward_kind: ForwardKind::NonChannel(ForwardNonChannel { date, .. }),
                     ..
                 }) => Some(date),
                 _ => None,
@@ -525,10 +515,7 @@ mod getters {
         pub fn reply_to_message(&self) -> Option<&Message> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Origin(ForwardOrigin {
-                            reply_to_message, ..
-                        }),
+                    forward_kind: ForwardKind::Origin(ForwardOrigin { reply_to_message, .. }),
                     ..
                 }) => reply_to_message.as_ref().map(Deref::deref),
                 _ => None,
@@ -545,13 +532,11 @@ mod getters {
         pub fn media_group_id(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Video(MediaVideo { media_group_id, .. }),
+                    media_kind: MediaKind::Video(MediaVideo { media_group_id, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Photo(MediaPhoto { media_group_id, .. }),
+                    media_kind: MediaKind::Photo(MediaPhoto { media_group_id, .. }),
                     ..
                 }) => media_group_id.as_ref().map(Deref::deref),
                 _ => None,
@@ -585,38 +570,27 @@ mod getters {
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Animation(MediaAnimation {
-                            caption_entities,
-                            ..
-                        }),
+                    media_kind: MediaKind::Animation(MediaAnimation { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Audio(MediaAudio { caption_entities, .. }),
+                    media_kind: MediaKind::Audio(MediaAudio { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Document(MediaDocument {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Document(MediaDocument { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Photo(MediaPhoto { caption_entities, .. }),
+                    media_kind: MediaKind::Photo(MediaPhoto { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Video(MediaVideo { caption_entities, .. }),
+                    media_kind: MediaKind::Video(MediaVideo { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Voice(MediaVoice { caption_entities, .. }),
+                    media_kind: MediaKind::Voice(MediaVoice { caption_entities, .. }),
                     ..
                 }) => Some(caption_entities),
                 _ => None,
@@ -636,8 +610,7 @@ mod getters {
         pub fn document(&self) -> Option<&types::Document> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Document(MediaDocument { document, .. }),
+                    media_kind: MediaKind::Document(MediaDocument { document, .. }),
                     ..
                 }) => Some(document),
                 _ => None,
@@ -647,8 +620,7 @@ mod getters {
         pub fn animation(&self) -> Option<&types::Animation> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Animation(MediaAnimation { animation, .. }),
+                    media_kind: MediaKind::Animation(MediaAnimation { animation, .. }),
                     ..
                 }) => Some(animation),
                 _ => None,
@@ -708,8 +680,7 @@ mod getters {
         pub fn video_note(&self) -> Option<&types::VideoNote> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::VideoNote(MediaVideoNote { video_note, .. }),
+                    media_kind: MediaKind::VideoNote(MediaVideoNote { video_note, .. }),
                     ..
                 }) => Some(video_note),
                 _ => None,
@@ -719,9 +690,7 @@ mod getters {
         pub fn caption(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon { media_kind, .. }) => match media_kind {
-                    MediaKind::Animation(MediaAnimation {
-                        caption, ..
-                    })
+                    MediaKind::Animation(MediaAnimation { caption, .. })
                     | MediaKind::Audio(MediaAudio { caption, .. })
                     | MediaKind::Document(MediaDocument { caption, .. })
                     | MediaKind::Photo(MediaPhoto { caption, .. })
@@ -748,8 +717,7 @@ mod getters {
         pub fn location(&self) -> Option<&types::Location> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Location(MediaLocation { location, .. }),
+                    media_kind: MediaKind::Location(MediaLocation { location, .. }),
                     ..
                 }) => Some(location),
                 _ => None,
@@ -796,18 +764,14 @@ mod getters {
 
         pub fn new_chat_title(&self) -> Option<&str> {
             match &self.kind {
-                NewChatTitle(MessageNewChatTitle { new_chat_title }) => {
-                    Some(new_chat_title)
-                }
+                NewChatTitle(MessageNewChatTitle { new_chat_title }) => Some(new_chat_title),
                 _ => None,
             }
         }
 
         pub fn new_chat_photo(&self) -> Option<&[PhotoSize]> {
             match &self.kind {
-                NewChatPhoto(MessageNewChatPhoto { new_chat_photo }) => {
-                    Some(new_chat_photo)
-                }
+                NewChatPhoto(MessageNewChatPhoto { new_chat_photo }) => Some(new_chat_photo),
                 _ => None,
             }
         }
@@ -816,54 +780,50 @@ mod getters {
         //       mb smt like `is_delete_chat_photo(&self) -> bool`?
         pub fn delete_chat_photo(&self) -> Option<True> {
             match &self.kind {
-                DeleteChatPhoto(MessageDeleteChatPhoto {
-                    delete_chat_photo,
-                }) => Some(*delete_chat_photo),
+                DeleteChatPhoto(MessageDeleteChatPhoto { delete_chat_photo }) => {
+                    Some(*delete_chat_photo)
+                }
                 _ => None,
             }
         }
 
         pub fn group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                GroupChatCreated(MessageGroupChatCreated {
-                    group_chat_created,
-                }) => Some(*group_chat_created),
+                GroupChatCreated(MessageGroupChatCreated { group_chat_created }) => {
+                    Some(*group_chat_created)
+                }
                 _ => None,
             }
         }
 
         pub fn super_group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                SupergroupChatCreated(MessageSupergroupChatCreated {
-                    supergroup_chat_created,
-                }) => Some(*supergroup_chat_created),
+                SupergroupChatCreated(MessageSupergroupChatCreated { supergroup_chat_created }) => {
+                    Some(*supergroup_chat_created)
+                }
                 _ => None,
             }
         }
 
         pub fn channel_chat_created(&self) -> Option<True> {
             match &self.kind {
-                ChannelChatCreated(MessageChannelChatCreated {
-                    channel_chat_created,
-                }) => Some(*channel_chat_created),
+                ChannelChatCreated(MessageChannelChatCreated { channel_chat_created }) => {
+                    Some(*channel_chat_created)
+                }
                 _ => None,
             }
         }
 
         pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_to_chat_id, .. }) => {
-                    Some(*migrate_to_chat_id)
-                }
+                Migrate(MessageMigrate { migrate_to_chat_id, .. }) => Some(*migrate_to_chat_id),
                 _ => None,
             }
         }
 
         pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_from_chat_id, .. }) => {
-                    Some(*migrate_from_chat_id)
-                }
+                Migrate(MessageMigrate { migrate_from_chat_id, .. }) => Some(*migrate_from_chat_id),
                 _ => None,
             }
         }
@@ -884,36 +844,32 @@ mod getters {
 
         pub fn successful_payment(&self) -> Option<&types::SuccessfulPayment> {
             match &self.kind {
-                SuccessfulPayment(MessageSuccessfulPayment {
-                    successful_payment,
-                }) => Some(successful_payment),
+                SuccessfulPayment(MessageSuccessfulPayment { successful_payment }) => {
+                    Some(successful_payment)
+                }
                 _ => None,
             }
         }
 
         pub fn connected_website(&self) -> Option<&str> {
             match &self.kind {
-                ConnectedWebsite(MessageConnectedWebsite {
-                    connected_website,
-                }) => Some(connected_website),
+                ConnectedWebsite(MessageConnectedWebsite { connected_website }) => {
+                    Some(connected_website)
+                }
                 _ => None,
             }
         }
 
         pub fn passport_data(&self) -> Option<&types::PassportData> {
             match &self.kind {
-                PassportData(MessagePassportData { passport_data }) => {
-                    Some(passport_data)
-                }
+                PassportData(MessagePassportData { passport_data }) => Some(passport_data),
                 _ => None,
             }
         }
 
         pub fn reply_markup(&self) -> Option<&types::InlineKeyboardMarkup> {
             match &self.kind {
-                Common(MessageCommon { reply_markup, .. }) => {
-                    reply_markup.as_ref()
-                }
+                Common(MessageCommon { reply_markup, .. }) => reply_markup.as_ref(),
                 _ => None,
             }
         }
@@ -924,25 +880,18 @@ impl Message {
     pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
             ChatKind::Public(ChatPublic {
-                kind:
-                    PublicChatKind::Channel(PublicChatChannel {
-                        username: Some(username),
-                    }),
+                kind: PublicChatKind::Channel(PublicChatChannel { username: Some(username) }),
                 ..
             })
             | ChatKind::Public(ChatPublic {
                 kind:
                     PublicChatKind::Supergroup(PublicChatSupergroup {
-                        username: Some(username),
-                        ..
+                        username: Some(username), ..
                     }),
                 ..
             }) => Some(
-                reqwest::Url::parse(
-                    format!("https://t.me/{0}/{1}/", username, self.id)
-                        .as_str(),
-                )
-                .unwrap(),
+                reqwest::Url::parse(format!("https://t.me/{0}/{1}/", username, self.id).as_str())
+                    .unwrap(),
             ),
             _ => None,
         }

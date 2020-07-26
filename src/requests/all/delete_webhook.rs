@@ -26,13 +26,7 @@ impl Request for DeleteWebhook {
 
     #[allow(clippy::trivially_copy_pass_by_ref)]
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "deleteWebhook",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "deleteWebhook", &self).await
     }
 }
 

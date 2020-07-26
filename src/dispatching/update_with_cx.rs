@@ -1,10 +1,10 @@
 use crate::{
     dispatching::dialogue::GetChatId,
     requests::{
-        DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
-        PinChatMessage, Request, ResponseResult, SendAnimation, SendAudio,
-        SendContact, SendDocument, SendLocation, SendMediaGroup, SendMessage,
-        SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
+        DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage, PinChatMessage,
+        Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDocument, SendLocation,
+        SendMediaGroup, SendMessage, SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote,
+        SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -51,9 +51,7 @@ impl UpdateWithCx<Message> {
     where
         T: Into<String>,
     {
-        self.bot
-            .send_message(self.chat_id(), text)
-            .reply_to_message_id(self.update.id)
+        self.bot.send_message(self.chat_id(), text).reply_to_message_id(self.update.id)
     }
 
     pub fn answer_photo(&self, photo: InputFile) -> SendPhoto {
@@ -87,11 +85,7 @@ impl UpdateWithCx<Message> {
         self.bot.send_media_group(self.update.chat.id, media_group)
     }
 
-    pub fn answer_location(
-        &self,
-        latitude: f32,
-        longitude: f32,
-    ) -> SendLocation {
+    pub fn answer_location(&self, latitude: f32, longitude: f32) -> SendLocation {
         self.bot.send_location(self.update.chat.id, latitude, longitude)
     }
 
@@ -106,24 +100,14 @@ impl UpdateWithCx<Message> {
         T: Into<String>,
         U: Into<String>,
     {
-        self.bot.send_venue(
-            self.update.chat.id,
-            latitude,
-            longitude,
-            title,
-            address,
-        )
+        self.bot.send_venue(self.update.chat.id, latitude, longitude, title, address)
     }
 
     pub fn answer_video_note(&self, video_note: InputFile) -> SendVideoNote {
         self.bot.send_video_note(self.update.chat.id, video_note)
     }
 
-    pub fn answer_contact<T, U>(
-        &self,
-        phone_number: T,
-        first_name: U,
-    ) -> SendContact
+    pub fn answer_contact<T, U>(&self, phone_number: T, first_name: U) -> SendContact
     where
         T: Into<String>,
         U: Into<String>,

@@ -28,13 +28,7 @@ impl Request for SetChatDescription {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "setChatDescription",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "setChatDescription", &self).await
     }
 }
 

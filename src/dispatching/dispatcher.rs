@@ -1,12 +1,11 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener, DispatcherHandler,
-        UpdateWithCx,
+        update_listeners, update_listeners::UpdateListener, DispatcherHandler, UpdateWithCx,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     types::{
-        CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
-        PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
+        CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
+        PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
     Bot,
 };
@@ -26,19 +25,14 @@ mod macros {
     }
 }
 
-fn send<'a, Upd>(
-    bot: &'a Bot,
-    tx: &'a Tx<Upd>,
-    update: Upd,
-    variant: &'static str,
-) where
+fn send<'a, Upd>(bot: &'a Bot, tx: &'a Tx<Upd>, update: Upd, variant: &'static str)
+where
     Upd: Debug,
 {
     if let Some(tx) = tx {
         if let Err(error) = tx.send(UpdateWithCx { bot: bot.clone(), update }) {
             log::error!(
-                "The RX part of the {} channel is closed, but an update is \
-                 received.\nError:{}\n",
+                "The RX part of the {} channel is closed, but an update is received.\nError:{}\n",
                 variant,
                 error
             );
@@ -206,9 +200,7 @@ impl Dispatcher {
     pub async fn dispatch(&self) {
         self.dispatch_with_listener(
             update_listeners::polling_default(self.bot.clone()),
-            LoggingErrorHandler::with_custom_text(
-                "An error from the update listener",
-            ),
+            LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
         .await;
     }
@@ -228,8 +220,7 @@ impl Dispatcher {
 
         update_listener
             .for_each(move |update| {
-                let update_listener_error_handler =
-                    Arc::clone(&update_listener_error_handler);
+                let update_listener_error_handler = Arc::clone(&update_listener_error_handler);
 
                 async move {
                     log::trace!("Dispatcher received an update: {:?}", update);
@@ -237,21 +228,14 @@ impl Dispatcher {
                     let update = match update {
                         Ok(update) => update,
                         Err(error) => {
-                            Arc::clone(&update_listener_error_handler)
-                                .handle_error(error)
-                                .await;
+                            Arc::clone(&update_listener_error_handler).handle_error(error).await;
                             return;
                         }
                     };
 
                     match update.kind {
                         UpdateKind::Message(message) => {
-                            send!(
-                                &self.bot,
-                                &self.messages_queue,
-                                message,
-                                UpdateKind::Message
-                            );
+                            send!(&self.bot, &self.messages_queue, message, UpdateKind::Message);
                         }
                         UpdateKind::EditedMessage(message) => {
                             send!(
@@ -318,12 +302,7 @@ impl Dispatcher {
                             );
                         }
                         UpdateKind::Poll(poll) => {
-                            send!(
-                                &self.bot,
-                                &self.polls_queue,
-                                poll,
-                                UpdateKind::Poll
-                            );
+                            send!(&self.bot, &self.polls_queue, poll, UpdateKind::Poll);
                         }
                         UpdateKind::PollAnswer(answer) => {
                             send!(

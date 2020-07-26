@@ -29,23 +29,12 @@ impl Request for SendLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendLocation",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendLocation", &self).await
     }
 }
 
 impl SendLocation {
-    pub(crate) fn new<C>(
-        bot: Bot,
-        chat_id: C,
-        latitude: f32,
-        longitude: f32,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, latitude: f32, longitude: f32) -> Self
     where
         C: Into<ChatId>,
     {

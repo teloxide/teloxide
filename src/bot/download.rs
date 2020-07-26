@@ -59,8 +59,7 @@ impl Bot {
     pub async fn download_file_stream(
         &self,
         path: &str,
-    ) -> Result<impl Stream<Item = Result<Bytes, reqwest::Error>>, reqwest::Error>
-    {
+    ) -> Result<impl Stream<Item = Result<Bytes, reqwest::Error>>, reqwest::Error> {
         download_file_stream(&self.client, &self.token, path).await
     }
 }

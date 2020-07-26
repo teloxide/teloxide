@@ -1,27 +1,23 @@
 use crate::{
     requests::{
-        AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery,
-        AnswerPreCheckoutQuery, AnswerShippingQuery, CreateNewStickerSet,
-        DeleteChatPhoto, DeleteChatStickerSet, DeleteMessage,
-        DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
-        EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup,
-        EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
-        GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile,
-        GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
-        GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
-        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
-        SendAudio, SendChatAction, SendChatActionKind, SendContact,
-        SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
-        SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
-        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
-        SetChatDescription, SetChatPermissions, SetChatPhoto,
-        SetChatStickerSet, SetChatTitle, SetGameScore, SetStickerPositionInSet,
-        SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
+        AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery, AnswerPreCheckoutQuery,
+        AnswerShippingQuery, CreateNewStickerSet, DeleteChatPhoto, DeleteChatStickerSet,
+        DeleteMessage, DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
+        EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup, EditMessageText,
+        ExportChatInviteLink, ForwardMessage, GetChat, GetChatAdministrators, GetChatMember,
+        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
+        GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage,
+        PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
+        SendChatActionKind, SendContact, SendDocument, SendGame, SendInvoice, SendLocation,
+        SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
+        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
+        SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore,
+        SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
         UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult,
-        InputFile, InputMedia, LabeledPrice,
+        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
+        LabeledPrice,
     },
     Bot,
 };
@@ -121,8 +117,9 @@ impl Bot {
     {
         match self.parse_mode.deref() {
             None => SendMessage::new(self.clone(), chat_id, text),
-            Some(parse_mode) => SendMessage::new(self.clone(), chat_id, text)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                SendMessage::new(self.clone(), chat_id, text).parse_mode(*parse_mode.deref())
+            }
         }
     }
 
@@ -184,8 +181,9 @@ impl Bot {
     {
         match self.parse_mode.deref() {
             None => SendPhoto::new(self.clone(), chat_id, photo),
-            Some(parse_mode) => SendPhoto::new(self.clone(), chat_id, photo)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                SendPhoto::new(self.clone(), chat_id, photo).parse_mode(*parse_mode.deref())
+            }
         }
     }
 
@@ -206,8 +204,9 @@ impl Bot {
     {
         match self.parse_mode.deref() {
             None => SendAudio::new(self.clone(), chat_id, audio),
-            Some(parse_mode) => SendAudio::new(self.clone(), chat_id, audio)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                SendAudio::new(self.clone(), chat_id, audio).parse_mode(*parse_mode.deref())
+            }
         }
     }
 
@@ -235,19 +234,14 @@ impl Bot {
     ///
     /// [a default parse mode]: crate::BotBuilder::parse_mode
     /// [`BotBuilder`]: crate::BotBuilder
-    pub fn send_document<C>(
-        &self,
-        chat_id: C,
-        document: InputFile,
-    ) -> SendDocument
+    pub fn send_document<C>(&self, chat_id: C, document: InputFile) -> SendDocument
     where
         C: Into<ChatId>,
     {
         match self.parse_mode.deref() {
             None => SendDocument::new(self.clone(), chat_id, document),
             Some(parse_mode) => {
-                SendDocument::new(self.clone(), chat_id, document)
-                    .parse_mode(*parse_mode.deref())
+                SendDocument::new(self.clone(), chat_id, document).parse_mode(*parse_mode.deref())
             }
         }
     }
@@ -285,8 +279,9 @@ impl Bot {
     {
         match self.parse_mode.deref() {
             None => SendVideo::new(self.clone(), chat_id, video),
-            Some(parse_mode) => SendVideo::new(self.clone(), chat_id, video)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                SendVideo::new(self.clone(), chat_id, video).parse_mode(*parse_mode.deref())
+            }
         }
     }
 
@@ -308,19 +303,14 @@ impl Bot {
     ///
     /// [a default parse mode]: crate::BotBuilder::parse_mode
     /// [`BotBuilder`]: crate::BotBuilder
-    pub fn send_animation<C>(
-        &self,
-        chat_id: C,
-        animation: InputFile,
-    ) -> SendAnimation
+    pub fn send_animation<C>(&self, chat_id: C, animation: InputFile) -> SendAnimation
     where
         C: Into<ChatId>,
     {
         match self.parse_mode.deref() {
             None => SendAnimation::new(self.clone(), chat_id, animation),
             Some(parse_mode) => {
-                SendAnimation::new(self.clone(), chat_id, animation)
-                    .parse_mode(*parse_mode.deref())
+                SendAnimation::new(self.clone(), chat_id, animation).parse_mode(*parse_mode.deref())
             }
         }
     }
@@ -364,8 +354,9 @@ impl Bot {
     {
         match self.parse_mode.deref() {
             None => SendVoice::new(self.clone(), chat_id, voice),
-            Some(parse_mode) => SendVoice::new(self.clone(), chat_id, voice)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                SendVoice::new(self.clone(), chat_id, voice).parse_mode(*parse_mode.deref())
+            }
         }
     }
 
@@ -390,11 +381,7 @@ impl Bot {
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
 
-    pub fn send_video_note<C>(
-        &self,
-        chat_id: C,
-        video_note: InputFile,
-    ) -> SendVideoNote
+    pub fn send_video_note<C>(&self, chat_id: C, video_note: InputFile) -> SendVideoNote
     where
         C: Into<ChatId>,
     {
@@ -427,12 +414,7 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `latitude`: Latitude of the location.
     ///   - `longitude`: Latitude of the location.
-    pub fn send_location<C>(
-        &self,
-        chat_id: C,
-        latitude: f32,
-        longitude: f32,
-    ) -> SendLocation
+    pub fn send_location<C>(&self, chat_id: C, latitude: f32, longitude: f32) -> SendLocation
     where
         C: Into<ChatId>,
     {
@@ -460,12 +442,7 @@ impl Bot {
         latitude: f32,
         longitude: f32,
     ) -> EditMessageLiveLocation {
-        EditMessageLiveLocation::new(
-            self.clone(),
-            chat_or_inline_message,
-            latitude,
-            longitude,
-        )
+        EditMessageLiveLocation::new(self.clone(), chat_or_inline_message, latitude, longitude)
     }
 
     /// Use this method to stop updating a live location message before
@@ -509,14 +486,7 @@ impl Bot {
         T: Into<String>,
         A: Into<String>,
     {
-        SendVenue::new(
-            self.clone(),
-            chat_id,
-            latitude,
-            longitude,
-            title,
-            address,
-        )
+        SendVenue::new(self.clone(), chat_id, latitude, longitude, title, address)
     }
 
     /// Use this method to send phone contacts.
@@ -529,12 +499,7 @@ impl Bot {
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `phone_number`: Contact's phone number.
     ///   - `first_name`: Contact's first name.
-    pub fn send_contact<C, P, F>(
-        &self,
-        chat_id: C,
-        phone_number: P,
-        first_name: F,
-    ) -> SendContact
+    pub fn send_contact<C, P, F>(&self, chat_id: C, phone_number: P, first_name: F) -> SendContact
     where
         C: Into<ChatId>,
         P: Into<String>,
@@ -555,12 +520,7 @@ impl Bot {
     ///   - `question`: Poll question, 1-255 characters.
     ///   - `options`: List of answer options, 2-10 strings 1-100 characters
     ///     each.
-    pub fn send_poll<C, Q, O>(
-        &self,
-        chat_id: C,
-        question: Q,
-        options: O,
-    ) -> SendPoll
+    pub fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
@@ -592,11 +552,7 @@ impl Bot {
     ///
     /// [ImageBot]: https://t.me/imagebot
     /// [`Bot::send_chat_action`]: crate::Bot::send_chat_action
-    pub fn send_chat_action<C>(
-        &self,
-        chat_id: C,
-        action: SendChatActionKind,
-    ) -> SendChatAction
+    pub fn send_chat_action<C>(&self, chat_id: C, action: SendChatActionKind) -> SendChatAction
     where
         C: Into<ChatId>,
     {
@@ -609,10 +565,7 @@ impl Bot {
     ///
     /// # Params
     ///   - `user_id`: Unique identifier of the target user.
-    pub fn get_user_profile_photos(
-        &self,
-        user_id: i32,
-    ) -> GetUserProfilePhotos {
+    pub fn get_user_profile_photos(&self, user_id: i32) -> GetUserProfilePhotos {
         GetUserProfilePhotos::new(self.clone(), user_id)
     }
 
@@ -660,11 +613,7 @@ impl Bot {
     ///   - `user_id`: Unique identifier of the target user.
     ///
     /// [unbanned]: crate::Bot::unban_chat_member
-    pub fn kick_chat_member<C>(
-        &self,
-        chat_id: C,
-        user_id: i32,
-    ) -> KickChatMember
+    pub fn kick_chat_member<C>(&self, chat_id: C, user_id: i32) -> KickChatMember
     where
         C: Into<ChatId>,
     {
@@ -682,11 +631,7 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `user_id`: Unique identifier of the target user.
-    pub fn unban_chat_member<C>(
-        &self,
-        chat_id: C,
-        user_id: i32,
-    ) -> UnbanChatMember
+    pub fn unban_chat_member<C>(&self, chat_id: C, user_id: i32) -> UnbanChatMember
     where
         C: Into<ChatId>,
     {
@@ -731,11 +676,7 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `user_id`: Unique identifier of the target user.
-    pub fn promote_chat_member<C>(
-        &self,
-        chat_id: C,
-        user_id: i32,
-    ) -> PromoteChatMember
+    pub fn promote_chat_member<C>(&self, chat_id: C, user_id: i32) -> PromoteChatMember
     where
         C: Into<ChatId>,
     {
@@ -806,11 +747,7 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `photo`: New chat photo, uploaded using `multipart/form-data`.
-    pub fn set_chat_photo<C>(
-        &self,
-        chat_id: C,
-        photo: InputFile,
-    ) -> SetChatPhoto
+    pub fn set_chat_photo<C>(&self, chat_id: C, photo: InputFile) -> SetChatPhoto
     where
         C: Into<ChatId>,
     {
@@ -883,11 +820,7 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `message_id`: Identifier of a message to pin.
-    pub fn pin_chat_message<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> PinChatMessage
+    pub fn pin_chat_message<C>(&self, chat_id: C, message_id: i32) -> PinChatMessage
     where
         C: Into<ChatId>,
     {
@@ -953,10 +886,7 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    pub fn get_chat_administrators<C>(
-        &self,
-        chat_id: C,
-    ) -> GetChatAdministrators
+    pub fn get_chat_administrators<C>(&self, chat_id: C) -> GetChatAdministrators
     where
         C: Into<ChatId>,
     {
@@ -1006,11 +936,7 @@ impl Bot {
     ///     target supergroup (in the format `@supergroupusername`).
     ///   - `sticker_set_name`: Name of the sticker set to be set as the group
     ///     sticker set.
-    pub fn set_chat_sticker_set<C, S>(
-        &self,
-        chat_id: C,
-        sticker_set_name: S,
-    ) -> SetChatStickerSet
+    pub fn set_chat_sticker_set<C, S>(&self, chat_id: C, sticker_set_name: S) -> SetChatStickerSet
     where
         C: Into<ChatId>,
         S: Into<String>,
@@ -1051,10 +977,7 @@ impl Bot {
     ///   - `callback_query_id`: Unique identifier for the query to be answered.
     ///
     /// [inline keyboards]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-    pub fn answer_callback_query<C>(
-        &self,
-        callback_query_id: C,
-    ) -> AnswerCallbackQuery
+    pub fn answer_callback_query<C>(&self, callback_query_id: C) -> AnswerCallbackQuery
     where
         C: Into<String>,
     {
@@ -1088,13 +1011,9 @@ impl Bot {
         T: Into<String>,
     {
         match self.parse_mode.deref() {
-            None => {
-                EditMessageText::new(self.clone(), chat_or_inline_message, text)
-            }
-            Some(parse_mode) => {
-                EditMessageText::new(self.clone(), chat_or_inline_message, text)
-                    .parse_mode(*parse_mode.deref())
-            }
+            None => EditMessageText::new(self.clone(), chat_or_inline_message, text),
+            Some(parse_mode) => EditMessageText::new(self.clone(), chat_or_inline_message, text)
+                .parse_mode(*parse_mode.deref()),
         }
     }
 
@@ -1118,13 +1037,9 @@ impl Bot {
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> EditMessageCaption {
         match self.parse_mode.deref() {
-            None => {
-                EditMessageCaption::new(self.clone(), chat_or_inline_message)
-            }
-            Some(parse_mode) => {
-                EditMessageCaption::new(self.clone(), chat_or_inline_message)
-                    .parse_mode(*parse_mode.deref())
-            }
+            None => EditMessageCaption::new(self.clone(), chat_or_inline_message),
+            Some(parse_mode) => EditMessageCaption::new(self.clone(), chat_or_inline_message)
+                .parse_mode(*parse_mode.deref()),
         }
     }
 
@@ -1202,11 +1117,7 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target channel (in the format `@channelusername`).
     ///   - `message_id`: Identifier of the message to delete.
-    pub fn delete_message<C>(
-        &self,
-        chat_id: C,
-        message_id: i32,
-    ) -> DeleteMessage
+    pub fn delete_message<C>(&self, chat_id: C, message_id: i32) -> DeleteMessage
     where
         C: Into<ChatId>,
     {
@@ -1268,11 +1179,7 @@ impl Bot {
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     /// [`Bot::create_new_sticker_set`]: crate::Bot::create_new_sticker_set
     /// [`Bot::add_sticker_to_set`]: crate::Bot::add_sticker_to_set
-    pub fn upload_sticker_file(
-        &self,
-        user_id: i32,
-        png_sticker: InputFile,
-    ) -> UploadStickerFile {
+    pub fn upload_sticker_file(&self, user_id: i32, png_sticker: InputFile) -> UploadStickerFile {
         UploadStickerFile::new(self.clone(), user_id, png_sticker)
     }
 
@@ -1317,14 +1224,7 @@ impl Bot {
         T: Into<String>,
         E: Into<String>,
     {
-        CreateNewStickerSet::new(
-            self.clone(),
-            user_id,
-            name,
-            title,
-            png_sticker,
-            emojis,
-        )
+        CreateNewStickerSet::new(self.clone(), user_id, name, title, png_sticker, emojis)
     }
 
     /// Use this method to add a new sticker to a set created by the bot.
@@ -1402,11 +1302,7 @@ impl Bot {
     /// # Params
     ///   - `inline_query_id`: Unique identifier for the answered query.
     ///   - `results`: A JSON-serialized array of results for the inline query.
-    pub fn answer_inline_query<I, R>(
-        &self,
-        inline_query_id: I,
-        results: R,
-    ) -> AnswerInlineQuery
+    pub fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> AnswerInlineQuery
     where
         I: Into<String>,
         R: Into<Vec<InlineQueryResult>>,
@@ -1484,11 +1380,7 @@ impl Bot {
     ///     delivery to the specified address is not possible).
     ///
     /// [`Update`]: crate::types::Update
-    pub fn answer_shipping_query<S>(
-        &self,
-        shipping_query_id: S,
-        ok: bool,
-    ) -> AnswerShippingQuery
+    pub fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> AnswerShippingQuery
     where
         S: Into<String>,
     {
@@ -1607,11 +1499,6 @@ impl Bot {
         C: Into<ChatId>,
         CT: Into<String>,
     {
-        SetChatAdministratorCustomTitle::new(
-            self.clone(),
-            chat_id,
-            user_id,
-            custom_title,
-        )
+        SetChatAdministratorCustomTitle::new(self.clone(), chat_id, user_id, custom_title)
     }
 }

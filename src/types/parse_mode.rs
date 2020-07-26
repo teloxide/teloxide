@@ -129,8 +129,8 @@ use serde::{Deserialize, Serialize};
 pub enum ParseMode {
     MarkdownV2,
     HTML,
-    #[deprecated = "This is a legacy mode, retained for backward \
-                    compatibility. Use `MarkdownV2` instead."]
+    #[deprecated = "This is a legacy mode, retained for backward compatibility. Use `MarkdownV2` \
+                    instead."]
     Markdown,
 }
 

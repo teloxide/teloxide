@@ -118,12 +118,11 @@ mod tests {
     #[test]
     fn location_serialize() {
         let expected_json = r#"{"latitude":59.08,"longitude":38.4326}"#;
-        let location_content =
-            InputMessageContent::Location(InputMessageContentLocation {
-                latitude: 59.08,
-                longitude: 38.4326,
-                live_period: None,
-            });
+        let location_content = InputMessageContent::Location(InputMessageContentLocation {
+            latitude: 59.08,
+            longitude: 38.4326,
+            live_period: None,
+        });
 
         let actual_json = serde_json::to_string(&location_content).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -132,15 +131,14 @@ mod tests {
     #[test]
     fn venue_serialize() {
         let expected_json = r#"{"latitude":59.08,"longitude":38.4326,"title":"some title","address":"some address"}"#;
-        let venue_content =
-            InputMessageContent::Venue(InputMessageContentVenue {
-                latitude: 59.08,
-                longitude: 38.4326,
-                title: String::from("some title"),
-                address: String::from("some address"),
-                foursquare_id: None,
-                foursquare_type: None,
-            });
+        let venue_content = InputMessageContent::Venue(InputMessageContentVenue {
+            latitude: 59.08,
+            longitude: 38.4326,
+            title: String::from("some title"),
+            address: String::from("some address"),
+            foursquare_id: None,
+            foursquare_type: None,
+        });
 
         let actual_json = serde_json::to_string(&venue_content).unwrap();
         assert_eq!(expected_json, actual_json);
@@ -148,15 +146,13 @@ mod tests {
 
     #[test]
     fn contact_serialize() {
-        let expected_json =
-            r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
-        let contact_content =
-            InputMessageContent::Contact(InputMessageContentContact {
-                phone_number: String::from("+3800000000"),
-                first_name: String::from("jhon"),
-                last_name: None,
-                vcard: None,
-            });
+        let expected_json = r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
+        let contact_content = InputMessageContent::Contact(InputMessageContentContact {
+            phone_number: String::from("+3800000000"),
+            first_name: String::from("jhon"),
+            last_name: None,
+            vcard: None,
+        });
 
         let actual_json = serde_json::to_string(&contact_content).unwrap();
         assert_eq!(expected_json, actual_json);

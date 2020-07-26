@@ -31,21 +31,13 @@ impl Request for EditMessageReplyMarkup {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "editMessageReplyMarkup",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "editMessageReplyMarkup", &self)
+            .await
     }
 }
 
 impl EditMessageReplyMarkup {
-    pub(crate) fn new(
-        bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
-    ) -> Self {
+    pub(crate) fn new(bot: Bot, chat_or_inline_message: ChatOrInlineMessage) -> Self {
         Self { bot, chat_or_inline_message, reply_markup: None }
     }
 

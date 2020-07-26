@@ -44,10 +44,7 @@ fn many_attributes() {
         Help,
     }
 
-    assert_eq!(
-        DefaultCommands::Start,
-        DefaultCommands::parse("!start", "").unwrap()
-    );
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("!start", "").unwrap());
     assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
 }
 
@@ -61,18 +58,9 @@ fn global_attributes() {
         Help,
     }
 
-    assert_eq!(
-        DefaultCommands::Start,
-        DefaultCommands::parse("/start", "MyNameBot").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::Help,
-        DefaultCommands::parse("!help", "MyNameBot").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::descriptions(),
-        "Bot commands\n/start\n!help\n"
-    );
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/start", "MyNameBot").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("!help", "MyNameBot").unwrap());
+    assert_eq!(DefaultCommands::descriptions(), "Bot commands\n/start\n!help\n");
 }
 
 #[test]
@@ -129,19 +117,11 @@ fn parse_custom_parser() {
         let vec = s.split_whitespace().collect::<Vec<_>>();
         let (left, right) = match vec.as_slice() {
             [l, r] => (l, r),
-            _ => {
-                return Err(ParseError::IncorrectFormat(
-                    "might be 2 arguments!".into(),
-                ))
-            }
+            _ => return Err(ParseError::IncorrectFormat("might be 2 arguments!".into())),
         };
-        left.parse::<u8>().map(|res| (res, (*right).to_string())).map_err(
-            |_| {
-                ParseError::Custom(
-                    "First argument must be a integer!".to_owned().into(),
-                )
-            },
-        )
+        left.parse::<u8>()
+            .map(|res| (res, (*right).to_string()))
+            .map_err(|_| ParseError::Custom("First argument must be a integer!".to_owned().into()))
     }
 
     #[command(rename = "lowercase")]

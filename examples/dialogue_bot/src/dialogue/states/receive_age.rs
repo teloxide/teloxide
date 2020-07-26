@@ -1,6 +1,4 @@
-use crate::dialogue::{
-    states::receive_location::ReceiveLocationState, Dialogue,
-};
+use crate::dialogue::{states::receive_location::ReceiveLocationState, Dialogue};
 use teloxide::prelude::*;
 use teloxide_macros::teloxide;
 

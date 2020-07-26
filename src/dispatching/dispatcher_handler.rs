@@ -11,10 +11,7 @@ use futures::future::BoxFuture;
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub trait DispatcherHandler<Upd> {
     #[must_use]
-    fn handle(
-        self,
-        updates: DispatcherHandlerRx<Upd>,
-    ) -> BoxFuture<'static, ()>
+    fn handle(self, updates: DispatcherHandlerRx<Upd>) -> BoxFuture<'static, ()>
     where
         UpdateWithCx<Upd>: Send + 'static;
 }

@@ -31,13 +31,7 @@ impl Request for AnswerShippingQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "answerShippingQuery",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "answerShippingQuery", &self).await
     }
 }
 
@@ -47,13 +41,7 @@ impl AnswerShippingQuery {
         S: Into<String>,
     {
         let shipping_query_id = shipping_query_id.into();
-        Self {
-            bot,
-            shipping_query_id,
-            ok,
-            shipping_options: None,
-            error_message: None,
-        }
+        Self { bot, shipping_query_id, ok, shipping_options: None, error_message: None }
     }
 
     /// Unique identifier for the query to be answered.

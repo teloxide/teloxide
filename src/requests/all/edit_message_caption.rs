@@ -33,28 +33,13 @@ impl Request for EditMessageCaption {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "editMessageCaption",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "editMessageCaption", &self).await
     }
 }
 
 impl EditMessageCaption {
-    pub(crate) fn new(
-        bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
-    ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            caption: None,
-            parse_mode: None,
-            reply_markup: None,
-        }
+    pub(crate) fn new(bot: Bot, chat_or_inline_message: ChatOrInlineMessage) -> Self {
+        Self { bot, chat_or_inline_message, caption: None, parse_mode: None, reply_markup: None }
     }
 
     pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {

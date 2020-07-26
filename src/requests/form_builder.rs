@@ -5,8 +5,7 @@ use reqwest::multipart::Form;
 use crate::{
     requests::utils::{file_from_memory_to_part, file_to_part},
     types::{
-        ChatId, InlineKeyboardMarkup, InputFile, InputMedia, MaskPosition,
-        ParseMode, ReplyMarkup,
+        ChatId, InlineKeyboardMarkup, InputFile, InputMedia, MaskPosition, ParseMode, ReplyMarkup,
     },
 };
 
@@ -27,18 +26,12 @@ impl FormBuilder {
         T: IntoFormText,
     {
         match value.into_form_text() {
-            Some(val) => {
-                Self { form: self.form.text(name.into().into_owned(), val) }
-            }
+            Some(val) => Self { form: self.form.text(name.into().into_owned(), val) },
             None => self,
         }
     }
 
-    pub async fn add_input_file<'a, N>(
-        self,
-        name: N,
-        value: &InputFile,
-    ) -> tokio::io::Result<Self>
+    pub async fn add_input_file<'a, N>(self, name: N, value: &InputFile) -> tokio::io::Result<Self>
     where
         N: Into<Cow<'a, str>>,
     {
@@ -53,19 +46,12 @@ impl FormBuilder {
     }
 
     // used in SendMediaGroup
-    pub async fn add_file<'a, N>(
-        self,
-        name: N,
-        path_to_file: PathBuf,
-    ) -> tokio::io::Result<Self>
+    pub async fn add_file<'a, N>(self, name: N, path_to_file: PathBuf) -> tokio::io::Result<Self>
     where
         N: Into<Cow<'a, str>>,
     {
         Ok(Self {
-            form: self.form.part(
-                name.into().into_owned(),
-                file_to_part(path_to_file).await?,
-            ),
+            form: self.form.part(name.into().into_owned(), file_to_part(path_to_file).await?),
         })
     }
 
@@ -79,10 +65,9 @@ impl FormBuilder {
         N: Into<Cow<'a, str>>,
     {
         Self {
-            form: self.form.part(
-                name.into().into_owned(),
-                file_from_memory_to_part(data, file_name),
-            ),
+            form: self
+                .form
+                .part(name.into().into_owned(), file_from_memory_to_part(data, file_name)),
         }
     }
 
@@ -109,15 +94,7 @@ macro_rules! impl_for_struct {
     };
 }
 
-impl_for_struct!(
-    bool,
-    i32,
-    i64,
-    u32,
-    ReplyMarkup,
-    InlineKeyboardMarkup,
-    MaskPosition
-);
+impl_for_struct!(bool, i32, i64, u32, ReplyMarkup, InlineKeyboardMarkup, MaskPosition);
 
 impl<T> IntoFormText for Option<T>
 where
@@ -132,16 +109,14 @@ where
 // encode files :|)
 impl IntoFormText for Vec<InputMedia> {
     fn into_form_text(&self) -> Option<String> {
-        let json =
-            serde_json::to_string(self).expect("serde_json::to_string failed");
+        let json = serde_json::to_string(self).expect("serde_json::to_string failed");
         Some(json)
     }
 }
 
 impl IntoFormText for InputMedia {
     fn into_form_text(&self) -> Option<String> {
-        let json =
-            serde_json::to_string(self).expect("serde_json::to_string failed");
+        let json = serde_json::to_string(self).expect("serde_json::to_string failed");
         Some(json)
     }
 }

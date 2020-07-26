@@ -1,5 +1,5 @@
-// The version of ngrok ping-pong-bot, which uses a webhook to receive updates from
-// Telegram, instead of long polling.
+// The version of ngrok ping-pong-bot, which uses a webhook to receive updates
+// from Telegram, instead of long polling.
 
 use teloxide::{dispatching::update_listeners, prelude::*};
 
@@ -14,16 +14,12 @@ async fn main() {
     run().await;
 }
 
-async fn handle_rejection(
-    error: warp::Rejection,
-) -> Result<impl warp::Reply, Infallible> {
+async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, Infallible> {
     log::error!("Cannot process the request due to: {:?}", error);
     Ok(StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn webhook<'a>(
-    bot: Bot,
-) -> impl update_listeners::UpdateListener<Infallible> {
+pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infallible> {
     // You might want to specify a self-signed certificate via .certificate
     // method on SetWebhook.
     bot.set_webhook("Your HTTPS ngrok URL here. Get it by 'ngrok http 80'")
@@ -37,8 +33,7 @@ pub async fn webhook<'a>(
         .and(warp::body::json())
         .map(move |json: serde_json::Value| {
             if let Ok(update) = Update::try_parse(&json) {
-                tx.send(Ok(update))
-                    .expect("Cannot send an incoming update from the webhook")
+                tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
             }
 
             StatusCode::OK
@@ -68,9 +63,7 @@ async fn run() {
         })
         .dispatch_with_listener(
             webhook(bot).await,
-            LoggingErrorHandler::with_custom_text(
-                "An error from the update listener",
-            ),
+            LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
         .await;
 }

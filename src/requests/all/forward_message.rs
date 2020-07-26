@@ -26,36 +26,19 @@ impl Request for ForwardMessage {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "forwardMessage",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "forwardMessage", &self).await
     }
 }
 
 impl ForwardMessage {
-    pub(crate) fn new<C, F>(
-        bot: Bot,
-        chat_id: C,
-        from_chat_id: F,
-        message_id: i32,
-    ) -> Self
+    pub(crate) fn new<C, F>(bot: Bot, chat_id: C, from_chat_id: F, message_id: i32) -> Self
     where
         C: Into<ChatId>,
         F: Into<ChatId>,
     {
         let chat_id = chat_id.into();
         let from_chat_id = from_chat_id.into();
-        Self {
-            bot,
-            chat_id,
-            from_chat_id,
-            message_id,
-            disable_notification: None,
-        }
+        Self { bot, chat_id, from_chat_id, message_id, disable_notification: None }
     }
 
     /// Unique identifier for the target chat or username of the target channel

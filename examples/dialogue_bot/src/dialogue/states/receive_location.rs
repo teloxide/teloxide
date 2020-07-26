@@ -14,10 +14,7 @@ async fn receive_location(
     cx: TransitionIn,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str(format!(
-        "Full name: {}\nAge: {}\nLocation: {}",
-        state.full_name, state.age, ans
-    ))
-    .await?;
+    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
+        .await?;
     exit()
 }

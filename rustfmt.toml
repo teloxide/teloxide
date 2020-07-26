@@ -1,7 +1,6 @@
 format_code_in_doc_comments = true
 wrap_comments = true
 format_strings = true
-max_width = 80
 merge_imports = true
 use_small_heuristics = "Max"
 use_field_init_shorthand = true

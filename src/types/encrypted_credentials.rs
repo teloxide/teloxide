@@ -51,8 +51,7 @@ mod tests {
             secret: "secret".to_string(),
         };
         // when
-        let actual_json =
-            serde_json::to_string(&encrypted_credentials).unwrap();
+        let actual_json = serde_json::to_string(&encrypted_credentials).unwrap();
         //then
         assert_eq!(actual_json, expected_json)
     }

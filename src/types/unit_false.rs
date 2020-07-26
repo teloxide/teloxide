@@ -29,10 +29,7 @@ struct FalseVisitor;
 impl<'de> Visitor<'de> for FalseVisitor {
     type Value = False;
 
-    fn expecting(
-        &self,
-        formatter: &mut std::fmt::Formatter,
-    ) -> std::fmt::Result {
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(formatter, "bool, equal to `false`")
     }
 

@@ -16,8 +16,9 @@ pub fn client_from_env() -> reqwest::Client {
     use reqwest::{Client, Proxy};
 
     match std::env::var("TELOXIDE_PROXY").ok() {
-        Some(proxy) => Client::builder()
-            .proxy(Proxy::all(&proxy).expect("creating reqwest::Proxy")),
+        Some(proxy) => {
+            Client::builder().proxy(Proxy::all(&proxy).expect("creating reqwest::Proxy"))
+        }
         None => sound_bot(),
     }
     .build()

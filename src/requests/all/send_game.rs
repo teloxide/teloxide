@@ -27,13 +27,7 @@ impl Request for SendGame {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendGame",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendGame", &self).await
     }
 }
 

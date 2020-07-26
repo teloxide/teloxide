@@ -176,10 +176,7 @@ mod tests {
 
     #[test]
     fn test_user_mention() {
-        assert_eq!(
-            user_mention(123_456_789, "pwner666"),
-            "[pwner666](tg://user?id=123456789)"
-        );
+        assert_eq!(user_mention(123_456_789, "pwner666"), "[pwner666](tg://user?id=123456789)");
     }
 
     #[test]
@@ -193,26 +190,16 @@ mod tests {
     #[test]
     fn test_code_block_with_lang() {
         assert_eq!(
-            code_block_with_lang(
-                "pre-'formatted'\nfixed-width \\code `block`",
-                "[python]"
-            ),
-            "```\\[python\\]\npre-'formatted'\nfixed-width \\\\code \
-             \\`block\\`\n```"
+            code_block_with_lang("pre-'formatted'\nfixed-width \\code `block`", "[python]"),
+            "```\\[python\\]\npre-'formatted'\nfixed-width \\\\code \\`block\\`\n```"
         );
     }
 
     #[test]
     fn test_code_inline() {
-        assert_eq!(
-            code_inline(" let x = (1, 2, 3); "),
-            "` let x = (1, 2, 3); `"
-        );
+        assert_eq!(code_inline(" let x = (1, 2, 3); "), "` let x = (1, 2, 3); `");
         assert_eq!(code_inline("<html>foo</html>"), "`<html>foo</html>`");
-        assert_eq!(
-            code_inline(r" `(code inside code \ )` "),
-            r"` \`(code inside code \\ )\` `"
-        );
+        assert_eq!(code_inline(r" `(code inside code \ )` "), r"` \`(code inside code \\ )\` `");
     }
 
     #[test]
@@ -227,27 +214,19 @@ mod tests {
     #[test]
     fn test_escape_link_url() {
         assert_eq!(
-            escape_link_url(
-                r"https://en.wikipedia.org/wiki/Development+(Software)"
-            ),
+            escape_link_url(r"https://en.wikipedia.org/wiki/Development+(Software)"),
             r"https://en.wikipedia.org/wiki/Development+(Software\)"
         );
         assert_eq!(
             escape_link_url(r"https://en.wikipedia.org/wiki/`"),
             r"https://en.wikipedia.org/wiki/\`"
         );
-        assert_eq!(
-            escape_link_url(r"_*[]()~`#+-=|{}.!\"),
-            r"_*[](\)~\`#+-=|{}.!\"
-        );
+        assert_eq!(escape_link_url(r"_*[]()~`#+-=|{}.!\"), r"_*[](\)~\`#+-=|{}.!\");
     }
 
     #[test]
     fn test_escape_code() {
-        assert_eq!(
-            escape_code(r"` \code inside the code\ `"),
-            r"\` \\code inside the code\\ \`"
-        );
+        assert_eq!(escape_code(r"` \code inside the code\ `"), r"\` \\code inside the code\\ \`");
         assert_eq!(escape_code(r"_*[]()~`#+-=|{}.!\"), r"_*[]()~\`#+-=|{}.!\\");
     }
 

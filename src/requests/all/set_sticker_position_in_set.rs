@@ -25,13 +25,8 @@ impl Request for SetStickerPositionInSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "setStickerPositionInSet",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "setStickerPositionInSet", &self)
+            .await
     }
 }
 

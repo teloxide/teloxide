@@ -27,13 +27,7 @@ impl Request for UnpinChatMessage {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "unpinChatMessage",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "unpinChatMessage", &self).await
     }
 }
 

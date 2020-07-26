@@ -145,8 +145,7 @@ pub fn polling(
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
 ) -> impl UpdateListener<RequestError> {
-    let timeout =
-        timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+    let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
 
     stream::unfold(
         (allowed_updates, bot, 0),
@@ -165,10 +164,7 @@ pub fn polling(
                             Ok(ok) => ok.id,
                             Err((value, _)) => value["update_id"]
                                 .as_i64()
-                                .expect(
-                                    "The 'update_id' field must always exist \
-                                     in Update",
-                                )
+                                .expect("The 'update_id' field must always exist in Update")
                                 .try_into()
                                 .expect("update_id must be i32"),
                         };
@@ -176,10 +172,8 @@ pub fn polling(
                         offset = id + 1;
                     }
 
-                    let updates = updates
-                        .into_iter()
-                        .filter_map(Result::ok)
-                        .collect::<Vec<Update>>();
+                    let updates =
+                        updates.into_iter().filter_map(Result::ok).collect::<Vec<Update>>();
 
                     updates.into_iter().map(Ok).collect::<Vec<_>>()
                 }

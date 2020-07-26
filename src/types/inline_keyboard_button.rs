@@ -79,35 +79,21 @@ pub enum InlineKeyboardButtonKind {
 /// ```
 /// use teloxide::types::InlineKeyboardButton;
 ///
-/// let url_button = InlineKeyboardButton::url(
-///     "Text".to_string(),
-///     "http://url.com".to_string(),
-/// );
+/// let url_button = InlineKeyboardButton::url("Text".to_string(), "http://url.com".to_string());
 /// ```
 impl InlineKeyboardButton {
     pub fn url(text: String, url: String) -> InlineKeyboardButton {
         InlineKeyboardButton { text, kind: InlineKeyboardButtonKind::Url(url) }
     }
 
-    pub fn callback(
-        text: String,
-        callback_data: String,
-    ) -> InlineKeyboardButton {
-        InlineKeyboardButton {
-            text,
-            kind: InlineKeyboardButtonKind::CallbackData(callback_data),
-        }
+    pub fn callback(text: String, callback_data: String) -> InlineKeyboardButton {
+        InlineKeyboardButton { text, kind: InlineKeyboardButtonKind::CallbackData(callback_data) }
     }
 
-    pub fn switch_inline_query(
-        text: String,
-        switch_inline_query: String,
-    ) -> InlineKeyboardButton {
+    pub fn switch_inline_query(text: String, switch_inline_query: String) -> InlineKeyboardButton {
         InlineKeyboardButton {
             text,
-            kind: InlineKeyboardButtonKind::SwitchInlineQuery(
-                switch_inline_query,
-            ),
+            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query),
         }
     }
 

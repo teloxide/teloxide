@@ -116,8 +116,7 @@ pub(crate) fn build_sound_bot() -> Client {
 }
 
 fn get_token_from_env() -> String {
-    std::env::var("TELOXIDE_TOKEN")
-        .expect("Cannot get the TELOXIDE_TOKEN env variable")
+    std::env::var("TELOXIDE_TOKEN").expect("Cannot get the TELOXIDE_TOKEN env variable")
 }
 
 impl Bot {

@@ -291,13 +291,11 @@ mod tests {
     fn serialize_data_field() {
         let data = PassportElementError {
             message: "This is an error message!".to_owned(),
-            kind: PassportElementErrorKind::DataField(
-                PassportElementErrorDataField {
-                    r#type: PassportElementErrorDataFieldType::InternalPassport,
-                    field_name: "The field name".to_owned(),
-                    data_hash: "This is a data hash".to_owned(),
-                },
-            ),
+            kind: PassportElementErrorKind::DataField(PassportElementErrorDataField {
+                r#type: PassportElementErrorDataFieldType::InternalPassport,
+                field_name: "The field name".to_owned(),
+                data_hash: "This is a data hash".to_owned(),
+            }),
         };
 
         assert_eq!(

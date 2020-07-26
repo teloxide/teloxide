@@ -23,13 +23,7 @@ impl Request for GetChatMembersCount {
     type Output = i32;
 
     async fn send(&self) -> ResponseResult<i32> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getChatMembersCount",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getChatMembersCount", &self).await
     }
 }
 

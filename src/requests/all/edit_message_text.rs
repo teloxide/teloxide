@@ -34,22 +34,12 @@ impl Request for EditMessageText {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "editMessageText",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "editMessageText", &self).await
     }
 }
 
 impl EditMessageText {
-    pub(crate) fn new<T>(
-        bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
-        text: T,
-    ) -> Self
+    pub(crate) fn new<T>(bot: Bot, chat_or_inline_message: ChatOrInlineMessage, text: T) -> Self
     where
         T: Into<String>,
     {

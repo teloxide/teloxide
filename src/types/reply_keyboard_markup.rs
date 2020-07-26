@@ -50,11 +50,7 @@ impl ReplyKeyboardMarkup {
         self
     }
 
-    pub fn append_to_row(
-        mut self,
-        button: KeyboardButton,
-        index: usize,
-    ) -> Self {
+    pub fn append_to_row(mut self, button: KeyboardButton, index: usize) -> Self {
         match self.keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),
             None => self.keyboard.push(vec![button]),

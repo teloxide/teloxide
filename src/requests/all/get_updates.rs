@@ -36,23 +36,14 @@ impl Request for GetUpdates {
     /// Deserialize to `Vec<serde_json::Result<Update>>` instead of
     /// `Vec<Update>`, because we want to parse the rest of updates even if our
     /// library hasn't parsed one.
-    async fn send(
-        &self,
-    ) -> ResponseResult<Vec<Result<Update, (Value, serde_json::Error)>>> {
-        let value: Value = net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getUpdates",
-            &self,
-        )
-        .await?;
+    async fn send(&self) -> ResponseResult<Vec<Result<Update, (Value, serde_json::Error)>>> {
+        let value: Value =
+            net::request_json(self.bot.client(), self.bot.token(), "getUpdates", &self).await?;
 
         match value {
             Value::Array(array) => Ok(array
                 .into_iter()
-                .map(|value| {
-                    Update::try_parse(&value).map_err(|error| (value, error))
-                })
+                .map(|value| Update::try_parse(&value).map_err(|error| (value, error)))
                 .collect()),
             _ => Err(RequestError::InvalidJson(
                 serde_json::from_value::<Vec<Update>>(value)
@@ -64,13 +55,7 @@ impl Request for GetUpdates {
 
 impl GetUpdates {
     pub(crate) fn new(bot: Bot) -> Self {
-        Self {
-            bot,
-            offset: None,
-            limit: None,
-            timeout: None,
-            allowed_updates: None,
-        }
+        Self { bot, offset: None, limit: None, timeout: None, allowed_updates: None }
     }
 
     /// Identifier of the first update to be returned.

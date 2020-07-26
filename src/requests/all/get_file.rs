@@ -39,8 +39,7 @@ impl Request for GetFile {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {
-        net::request_json(self.bot.client(), self.bot.token(), "getFile", &self)
-            .await
+        net::request_json(self.bot.client(), self.bot.token(), "getFile", &self).await
     }
 }
 

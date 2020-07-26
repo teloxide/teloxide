@@ -25,13 +25,7 @@ impl Request for GetUserProfilePhotos {
     type Output = UserProfilePhotos;
 
     async fn send(&self) -> ResponseResult<UserProfilePhotos> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "getUserProfilePhotos",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "getUserProfilePhotos", &self).await
     }
 }
 

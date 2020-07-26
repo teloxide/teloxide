@@ -7,28 +7,18 @@ enum Command {
     Help,
     #[command(description = "handle a username.")]
     Username(String),
-    #[command(
-        description = "handle a username and an age.",
-        parse_with = "split"
-    )]
+    #[command(description = "handle a username and an age.", parse_with = "split")]
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
             cx.answer_str(format!("Your username is @{}.", username)).await?
         }
         Command::UsernameAndAge { username, age } => {
-            cx.answer_str(format!(
-                "Your username is @{} and age is {}.",
-                username, age
-            ))
-            .await?
+            cx.answer_str(format!("Your username is @{} and age is {}.", username, age)).await?
         }
     };
 

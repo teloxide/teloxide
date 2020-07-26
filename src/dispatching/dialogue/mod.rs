@@ -153,8 +153,7 @@ pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use transition::{
-    SubTransition, SubTransitionOutputType, Transition, TransitionIn,
-    TransitionOut,
+    SubTransition, SubTransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
 
 #[cfg(feature = "redis-storage")]

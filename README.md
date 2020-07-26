@@ -100,7 +100,7 @@ async fn main() {
     Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
-                message.answer("pong").send().await.log_on_error().await;
+                message.answer_str("pong").await.log_on_error().await;
             })
         })
         .dispatch()
@@ -136,28 +136,18 @@ enum Command {
     Help,
     #[command(description = "handle a username.")]
     Username(String),
-    #[command(
-        description = "handle a username and an age.",
-        parse_with = "split"
-    )]
+    #[command(description = "handle a username and an age.", parse_with = "split")]
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
             cx.answer_str(format!("Your username is @{}.", username)).await?
         }
         Command::UsernameAndAge { username, age } => {
-            cx.answer_str(format!(
-                "Your username is @{} and age is {}.",
-                username, age
-            ))
-            .await?
+            cx.answer_str(format!("Your username is @{} and age is {}.", username, age)).await?
         }
     };
 
@@ -176,6 +166,7 @@ async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
 async fn main() {
     // Setup is omitted...
 }
+
 ```
 
 <div align="center">
@@ -195,9 +186,8 @@ Below is a bot, which asks you three questions and then sends the answers back t
 ```rust
 // Imports are omitted...
 
-#[derive(Transition, SmartDefault, From)]
+#[derive(Transition, From)]
 pub enum Dialogue {
-    #[default]
     Start(StartState),
     ReceiveFullName(ReceiveFullNameState),
     ReceiveAge(ReceiveAgeState),
@@ -219,11 +209,7 @@ impl Default for Dialogue {
 pub struct StartState;
 
 #[teloxide(transition)]
-async fn start(
-    _state: StartState,
-    cx: TransitionIn,
-    _ans: String,
-) -> TransitionOut<Dialogue> {
+async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> TransitionOut<Dialogue> {
     cx.answer_str("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
 }
@@ -291,11 +277,8 @@ async fn receive_location(
     cx: TransitionIn,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str(format!(
-        "Full name: {}\nAge: {}\nLocation: {}",
-        state.full_name, state.age, ans
-    ))
-    .await?;
+    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
+        .await?;
     exit()
 }
 ```
@@ -320,19 +303,14 @@ async fn main() {
             |DialogueWithCx { cx, dialogue }: In| async move {
                 // No panic because of std::convert::Infallible.
                 let dialogue = dialogue.unwrap();
-                handle_message(cx, dialogue)
-                    .await
-                    .expect("Something wrong with the bot!")
+                handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
             },
         ))
         .dispatch()
         .await;
 }
 
-async fn handle_message(
-    cx: UpdateWithCx<Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
+async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
     match cx.update.text_owned() {
         None => {
             cx.answer_str("Send me a text message.").await?;
@@ -341,6 +319,7 @@ async fn handle_message(
         Some(ans) => dialogue.react(cx, ans).await,
     }
 }
+
 ```
 
 <div align="center">

@@ -64,9 +64,7 @@ mod tests {
             duration: 60,
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
-            mime_type: Some(
-                serde_json::from_str("\"application/zip\"").unwrap(),
-            ),
+            mime_type: Some(serde_json::from_str("\"application/zip\"").unwrap()),
             file_size: Some(123_456),
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),

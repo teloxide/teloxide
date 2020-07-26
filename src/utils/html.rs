@@ -127,8 +127,7 @@ mod tests {
     fn test_link() {
         assert_eq!(
             link("https://www.google.com/?q=foo&l=ru", "<google>"),
-            "<a href=\"https://www.google.com/?q=foo&amp;l=ru\">&lt;google&gt;\
-             </a>",
+            "<a href=\"https://www.google.com/?q=foo&amp;l=ru\">&lt;google&gt;</a>",
         );
     }
 
@@ -144,8 +143,7 @@ mod tests {
     fn test_code_block() {
         assert_eq!(
             code_block("<p>pre-'formatted'\n & fixed-width \\code `block`</p>"),
-            "<pre>&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code \
-             `block`&lt;/p&gt;</pre>"
+            "<pre>&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code `block`&lt;/p&gt;</pre>"
         );
     }
 
@@ -158,8 +156,7 @@ mod tests {
             ),
             concat!(
                 "<pre><code class=\"language-&lt;html&gt;&quot;\">",
-                "&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code \
-                 `block`&lt;/p&gt;",
+                "&lt;p&gt;pre-'formatted'\n &amp; fixed-width \\code `block`&lt;/p&gt;",
                 "</code></pre>",
             )
         );
@@ -179,10 +176,7 @@ mod tests {
             escape("  <title>Foo & Bar</title>   "),
             "  &lt;title&gt;Foo &amp; Bar&lt;/title&gt;   "
         );
-        assert_eq!(
-            escape("<p>你好 & 再見</p>"),
-            "&lt;p&gt;你好 &amp; 再見&lt;/p&gt;"
-        );
+        assert_eq!(escape("<p>你好 & 再見</p>"), "&lt;p&gt;你好 &amp; 再見&lt;/p&gt;");
         assert_eq!(escape("'foo\""), "'foo\"");
     }
 

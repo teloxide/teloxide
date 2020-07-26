@@ -40,8 +40,7 @@ impl User {
     }
 
     pub fn url(&self) -> reqwest::Url {
-        reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str())
-            .unwrap()
+        reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str()).unwrap()
     }
 }
 

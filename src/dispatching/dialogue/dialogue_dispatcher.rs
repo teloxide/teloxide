@@ -1,7 +1,6 @@
 use crate::dispatching::{
     dialogue::{
-        DialogueDispatcherHandler, DialogueStage, DialogueWithCx, GetChatId,
-        InMemStorage, Storage,
+        DialogueDispatcherHandler, DialogueStage, DialogueWithCx, GetChatId, InMemStorage, Storage,
     },
     DispatcherHandler, UpdateWithCx,
 };
@@ -100,13 +99,10 @@ where
 
                 match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
-                        if let Ok(Some(_)) =
-                            storage.update_dialogue(chat_id, new_dialogue).await
-                        {
+                        if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
                             panic!(
-                                "Oops, you have an bug in your Storage: \
-                                 update_dialogue returns Some after \
-                                 remove_dialogue"
+                                "Oops, you have an bug in your Storage: update_dialogue returns \
+                                 Some after remove_dialogue"
                             );
                         }
                     }
@@ -135,10 +131,7 @@ where
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
 {
-    fn handle(
-        self,
-        updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>,
-    ) -> BoxFuture<'static, ()>
+    fn handle(self, updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>) -> BoxFuture<'static, ()>
     where
         UpdateWithCx<Upd>: 'static,
     {
@@ -152,19 +145,13 @@ where
                 // An old dialogue
                 Some(tx) => {
                     if tx.1.send(cx).is_err() {
-                        panic!(
-                            "We are not dropping a receiver or call .close() \
-                             on it",
-                        );
+                        panic!("We are not dropping a receiver or call .close() on it",);
                     }
                 }
                 None => {
                     let tx = this.new_tx();
                     if tx.send(cx).is_err() {
-                        panic!(
-                            "We are not dropping a receiver or call .close() \
-                             on it",
-                        );
+                        panic!("We are not dropping a receiver or call .close() on it",);
                     }
                     this.senders.insert(chat_id, tx);
                 }
@@ -214,8 +201,8 @@ mod tests {
             static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
         }
 
-        let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
+        let dispatcher =
+            DialogueDispatcher::new(|cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
                 delay_for(Duration::from_millis(300)).await;
 
                 match cx.cx.update {
@@ -232,8 +219,7 @@ mod tests {
                 }
 
                 DialogueStage::Next(())
-            },
-        );
+            });
 
         let updates = stream::iter(
             vec![
@@ -260,10 +246,7 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| UpdateWithCx {
-                update,
-                bot: Bot::new("Doesn't matter here"),
-            })
+            .map(|update| UpdateWithCx { update, bot: Bot::new("Doesn't matter here") })
             .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
         );
 
@@ -287,13 +270,7 @@ mod tests {
         delay_for(Duration::from_millis(3000)).await;
 
         assert_eq!(*SEQ1.lock().await, vec![174, 125, 2, 193, 104, 7, 7778]);
-        assert_eq!(
-            *SEQ2.lock().await,
-            vec![411, 515, 623, 2222, 737, 10, 55456]
-        );
-        assert_eq!(
-            *SEQ3.lock().await,
-            vec![72782, 2737, 5475, 1096, 872, 5665, 1611]
-        );
+        assert_eq!(*SEQ2.lock().await, vec![411, 515, 623, 2222, 737, 10, 55456]);
+        assert_eq!(*SEQ3.lock().await, vec![72782, 2737, 5475, 1096, 872, 5665, 1611]);
     }
 }

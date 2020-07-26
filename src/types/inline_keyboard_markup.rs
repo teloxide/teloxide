@@ -26,10 +26,7 @@ pub struct InlineKeyboardMarkup {
 /// ```
 /// use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 ///
-/// let url_button = InlineKeyboardButton::url(
-///     "text".to_string(),
-///     "http://url.com".to_string(),
-/// );
+/// let url_button = InlineKeyboardButton::url("text".to_string(), "http://url.com".to_string());
 /// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
@@ -38,11 +35,7 @@ impl InlineKeyboardMarkup {
         self
     }
 
-    pub fn append_to_row(
-        mut self,
-        button: InlineKeyboardButton,
-        index: usize,
-    ) -> Self {
+    pub fn append_to_row(mut self, button: InlineKeyboardButton, index: usize) -> Self {
         match self.inline_keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),
             None => self.inline_keyboard.push(vec![button]),
@@ -57,65 +50,41 @@ mod tests {
 
     #[test]
     fn append_row() {
-        let button1 = InlineKeyboardButton::url(
-            "text 1".to_string(),
-            "url 1".to_string(),
-        );
-        let button2 = InlineKeyboardButton::url(
-            "text 2".to_string(),
-            "url 2".to_string(),
-        );
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
 
-        let markup = InlineKeyboardMarkup::default()
-            .append_row(vec![button1.clone(), button2.clone()]);
+        let markup =
+            InlineKeyboardMarkup::default().append_row(vec![button1.clone(), button2.clone()]);
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1, button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
 
         assert_eq!(markup, expected);
     }
 
     #[test]
     fn append_to_row_existent_row() {
-        let button1 = InlineKeyboardButton::url(
-            "text 1".to_string(),
-            "url 1".to_string(),
-        );
-        let button2 = InlineKeyboardButton::url(
-            "text 2".to_string(),
-            "url 2".to_string(),
-        );
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 0);
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1, button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
 
         assert_eq!(markup, expected);
     }
 
     #[test]
     fn append_to_row_nonexistent_row() {
-        let button1 = InlineKeyboardButton::url(
-            "text 1".to_string(),
-            "url 1".to_string(),
-        );
-        let button2 = InlineKeyboardButton::url(
-            "text 2".to_string(),
-            "url 2".to_string(),
-        );
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
             .append_to_row(button2.clone(), 1);
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1], vec![button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1], vec![button2]] };
 
         assert_eq!(markup, expected);
     }

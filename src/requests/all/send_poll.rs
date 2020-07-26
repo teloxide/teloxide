@@ -33,23 +33,12 @@ impl Request for SendPoll {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendPoll",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendPoll", &self).await
     }
 }
 
 impl SendPoll {
-    pub(crate) fn new<C, Q, O>(
-        bot: Bot,
-        chat_id: C,
-        question: Q,
-        options: O,
-    ) -> Self
+    pub(crate) fn new<C, Q, O>(bot: Bot, chat_id: C, question: Q, options: O) -> Self
     where
         C: Into<ChatId>,
         Q: Into<String>,

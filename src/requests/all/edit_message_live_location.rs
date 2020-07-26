@@ -35,13 +35,8 @@ impl Request for EditMessageLiveLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "editMessageLiveLocation",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "editMessageLiveLocation", &self)
+            .await
     }
 }
 
@@ -52,13 +47,7 @@ impl EditMessageLiveLocation {
         latitude: f32,
         longitude: f32,
     ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            latitude,
-            longitude,
-            reply_markup: None,
-        }
+        Self { bot, chat_or_inline_message, latitude, longitude, reply_markup: None }
     }
 
     pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {

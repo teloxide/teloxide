@@ -43,8 +43,6 @@ impl<D> Storage<D> for InMemStorage<D> {
     where
         D: Send + 'static,
     {
-        Box::pin(
-            async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) },
-        )
+        Box::pin(async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) })
     }
 }

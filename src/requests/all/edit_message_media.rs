@@ -36,13 +36,10 @@ impl Request for EditMessageMedia {
 
         match &self.chat_or_inline_message {
             ChatOrInlineMessage::Chat { chat_id, message_id } => {
-                params = params
-                    .add_text("chat_id", chat_id)
-                    .add_text("message_id", message_id);
+                params = params.add_text("chat_id", chat_id).add_text("message_id", message_id);
             }
             ChatOrInlineMessage::Inline { inline_message_id } => {
-                params =
-                    params.add_text("inline_message_id", inline_message_id);
+                params = params.add_text("inline_message_id", inline_message_id);
             }
         }
 

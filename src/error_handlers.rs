@@ -174,9 +174,7 @@ impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
 ///
 /// LoggingErrorHandler::new().handle_error(()).await;
 /// LoggingErrorHandler::with_custom_text("Omg1").handle_error(404).await;
-/// LoggingErrorHandler::with_custom_text("Omg2")
-///     .handle_error("Invalid data type!")
-///     .await;
+/// LoggingErrorHandler::with_custom_text("Omg2").handle_error("Invalid data type!").await;
 /// # }
 /// ```
 pub struct LoggingErrorHandler {

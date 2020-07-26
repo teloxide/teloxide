@@ -10,11 +10,7 @@ pub trait Transition<T>: Sized {
     /// Turns itself into another state, depending on the input message.
     ///
     /// `aux` will be passed to each subtransition function.
-    fn react(
-        self,
-        cx: TransitionIn,
-        aux: T,
-    ) -> BoxFuture<'static, TransitionOut<Self>>;
+    fn react(self, cx: TransitionIn, aux: T) -> BoxFuture<'static, TransitionOut<Self>>;
 }
 
 /// Like [`Transition`], but from `StateN` -> `Dialogue`.

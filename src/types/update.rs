@@ -3,8 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
-    PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
+    PreCheckoutQuery, ShippingQuery, User,
 };
 use serde_json::Value;
 
@@ -129,9 +129,8 @@ impl Update {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind,
-        MediaText, Message, MessageCommon, MessageKind, Update, UpdateKind,
-        User,
+        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText, Message,
+        MessageCommon, MessageKind, Update, UpdateKind, User,
     };
 
     // TODO: more tests for deserialization
@@ -183,9 +182,7 @@ mod test {
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(String::from("en")),
                     }),
-                    forward_kind: ForwardKind::Origin(ForwardOrigin {
-                        reply_to_message: None,
-                    }),
+                    forward_kind: ForwardKind::Origin(ForwardOrigin { reply_to_message: None }),
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),

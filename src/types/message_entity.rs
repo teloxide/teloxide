@@ -51,8 +51,8 @@ impl MessageEntity {
 mod tests {
     use super::*;
     use crate::types::{
-        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind,
-        MediaText, MessageCommon, MessageKind,
+        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText,
+        MessageCommon, MessageKind,
     };
 
     #[test]
@@ -78,9 +78,7 @@ mod tests {
 
         assert_eq!(
             MessageEntity {
-                kind: MessageEntityKind::Pre {
-                    language: Some("rust".to_string()),
-                },
+                kind: MessageEntityKind::Pre { language: Some("rust".to_string()) },
                 offset: 1,
                 length: 2,
             },
@@ -123,9 +121,7 @@ mod tests {
                     username: None,
                     language_code: None,
                 }),
-                forward_kind: ForwardKind::Origin(ForwardOrigin {
-                    reply_to_message: None,
-                }),
+                forward_kind: ForwardKind::Origin(ForwardOrigin { reply_to_message: None }),
                 edit_date: None,
                 media_kind: MediaKind::Text(MediaText {
                     text: "no yes no".to_string(),

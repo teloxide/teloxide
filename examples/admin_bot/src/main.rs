@@ -1,8 +1,6 @@
 use std::str::FromStr;
 
-use teloxide::{
-    prelude::*, types::ChatPermissions, utils::command::BotCommand
-};
+use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
 
 use futures::future;
 
@@ -81,9 +79,7 @@ async fn mute_user(cx: &Cx, time: u32) -> ResponseResult<()> {
                 .await?;
         }
         None => {
-            cx.reply_to("Use this command in reply to another message")
-                .send()
-                .await?;
+            cx.reply_to("Use this command in reply to another message").send().await?;
         }
     }
     Ok(())
@@ -94,15 +90,10 @@ async fn kick_user(cx: &Cx) -> ResponseResult<()> {
     match cx.update.reply_to_message() {
         Some(mes) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            cx.bot
-                .unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id)
-                .send()
-                .await?;
+            cx.bot.unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id).send().await?;
         }
         None => {
-            cx.reply_to("Use this command in reply to another message")
-                .send()
-                .await?;
+            cx.reply_to("Use this command in reply to another message").send().await?;
         }
     }
     Ok(())
@@ -122,29 +113,18 @@ async fn ban_user(cx: &Cx, time: u32) -> ResponseResult<()> {
                 .await?;
         }
         None => {
-            cx.reply_to("Use this command in a reply to another message!")
-                .send()
-                .await?;
+            cx.reply_to("Use this command in a reply to another message!").send().await?;
         }
     }
     Ok(())
 }
 
-async fn action(
-    cx: UpdateWithCx<Message>,
-    command: Command,
-) -> ResponseResult<()> {
+async fn action(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
     match command {
-        Command::Help => {
-            cx.answer(Command::descriptions()).send().await.map(|_| ())?
-        }
+        Command::Help => cx.answer(Command::descriptions()).send().await.map(|_| ())?,
         Command::Kick => kick_user(&cx).await?,
-        Command::Ban { time, unit } => {
-            ban_user(&cx, calc_restrict_time(time, unit)).await?
-        }
-        Command::Mute { time, unit } => {
-            mute_user(&cx, calc_restrict_time(time, unit)).await?
-        }
+        Command::Ban { time, unit } => ban_user(&cx, calc_restrict_time(time, unit)).await?,
+        Command::Mute { time, unit } => mute_user(&cx, calc_restrict_time(time, unit)).await?,
     };
 
     Ok(())

@@ -4,17 +4,9 @@ use teloxide_macros::teloxide;
 use super::states::*;
 
 #[teloxide(transition)]
-async fn start(
-    state: StartState,
-    cx: TransitionIn,
-    ans: String,
-) -> TransitionOut<Dialogue> {
+async fn start(state: StartState, cx: TransitionIn, ans: String) -> TransitionOut<Dialogue> {
     if let Ok(number) = ans.parse() {
-        cx.answer_str(format!(
-            "Remembered number {}. Now use /get or /reset",
-            number
-        ))
-        .await?;
+        cx.answer_str(format!("Remembered number {}. Now use /get or /reset", number)).await?;
         next(HaveNumberState { number })
     } else {
         cx.answer_str("Please, send me a number").await?;

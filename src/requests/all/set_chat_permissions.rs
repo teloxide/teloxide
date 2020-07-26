@@ -27,22 +27,12 @@ impl Request for SetChatPermissions {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_json(
-            self.bot.client(),
-            self.bot.token(),
-            "sendChatPermissions",
-            &self,
-        )
-        .await
+        net::request_json(self.bot.client(), self.bot.token(), "sendChatPermissions", &self).await
     }
 }
 
 impl SetChatPermissions {
-    pub(crate) fn new<C>(
-        bot: Bot,
-        chat_id: C,
-        permissions: ChatPermissions,
-    ) -> Self
+    pub(crate) fn new<C>(bot: Bot, chat_id: C, permissions: ChatPermissions) -> Self
     where
         C: Into<ChatId>,
     {

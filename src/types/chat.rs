@@ -154,16 +154,10 @@ impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
         write!(f, r#"field equal to "private""#)
     }
 
-    fn visit_borrowed_str<E: serde::de::Error>(
-        self,
-        v: &'de str,
-    ) -> Result<Self::Value, E> {
+    fn visit_borrowed_str<E: serde::de::Error>(self, v: &'de str) -> Result<Self::Value, E> {
         match v {
             "private" => Ok(()),
-            _ => Err(E::invalid_value(
-                serde::de::Unexpected::Str(v),
-                &r#""private""#,
-            )),
+            _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &r#""private""#)),
         }
     }
 }
@@ -180,30 +174,16 @@ impl Chat {
         matches!(self.kind, ChatKind::Private(_))
     }
     pub fn is_group(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Group(_), ..
-            })
-        )
+        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
     }
     pub fn is_supergroup(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Supergroup(_),
-                ..
-            })
+            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
         )
     }
     pub fn is_channel(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Channel(_),
-                ..
-            })
-        )
+        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
     }
 
     pub fn is_chat(&self) -> bool {
@@ -232,9 +212,7 @@ mod tests {
             }),
             photo: None,
         };
-        let actual =
-            from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#)
-                .unwrap();
+        let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
         assert_eq!(expected, actual);
     }
 
@@ -251,9 +229,9 @@ mod tests {
                 }),
                 photo: None,
             },
-            from_str(
-                r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#
-            ).unwrap());
+            from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
+                .unwrap()
+        );
     }
 
     #[test]
