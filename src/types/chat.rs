@@ -126,7 +126,7 @@ impl ChatPublic {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ChatPrivate {
     /// A dummy field. Used to ensure that the `type` field is equal to
@@ -144,6 +144,36 @@ pub struct ChatPrivate {
 
     /// A last name of the other party in a private chat.
     pub last_name: Option<String>,
+}
+
+impl ChatPrivate {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn username<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.username = Some(val.into());
+        self
+    }
+
+    pub fn first_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.first_name = Some(val.into());
+        self
+    }
+
+    pub fn last_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.last_name = Some(val.into());
+        self
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
