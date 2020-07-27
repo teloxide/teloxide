@@ -38,6 +38,30 @@ pub struct InputMediaPhoto {
     pub parse_mode: Option<ParseMode>,
 }
 
+impl InputMediaPhoto {
+    pub fn new(media: InputFile) -> Self {
+        Self { media, caption: None, parse_mode: None }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+}
+
 /// Represents a video to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
