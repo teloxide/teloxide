@@ -186,6 +186,23 @@ pub struct MessageNewChatTitle {
     pub new_chat_title: String,
 }
 
+impl MessageNewChatTitle {
+    pub fn new<N>(new_chat_title: N) -> Self
+    where
+        N: Into<String>,
+    {
+        Self { new_chat_title: new_chat_title.into() }
+    }
+
+    pub fn new_chat_title<N>(mut self, val: N) -> Self
+    where
+        N: Into<String>,
+    {
+        self.new_chat_title = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageNewChatPhoto {
