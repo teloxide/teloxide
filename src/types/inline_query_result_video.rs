@@ -65,3 +65,118 @@ pub struct InlineQueryResultVideo {
     /// crate::types::InlineQueryResultVideo
     pub input_message_content: Option<InputMessageContent>,
 }
+
+impl InlineQueryResultVideo {
+    pub fn new<S1, S2, S3, S4>(
+        id: S1,
+        video_url: S2,
+        mime_type: MimeWrapper,
+        thumb_url: S3,
+        title: S4,
+    ) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+        S4: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            video_url: video_url.into(),
+            mime_type,
+            thumb_url: thumb_url.into(),
+            title: title.into(),
+            caption: None,
+            parse_mode: None,
+            video_width: None,
+            video_height: None,
+            video_duration: None,
+            description: None,
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn video_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.video_url = val.into();
+        self
+    }
+
+    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+        self.mime_type = val;
+        self
+    }
+
+    pub fn thumb_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.thumb_url = val.into();
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn video_width(mut self, val: i32) -> Self {
+        self.video_width = Some(val);
+        self
+    }
+
+    pub fn video_height(mut self, val: i32) -> Self {
+        self.video_height = Some(val);
+        self
+    }
+
+    pub fn video_duration(mut self, val: i32) -> Self {
+        self.video_duration = Some(val);
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+}
