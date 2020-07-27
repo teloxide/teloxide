@@ -27,3 +27,37 @@ pub struct InlineQuery {
     /// Offset of the results to be returned, can be controlled by the bot.
     pub offset: String,
 }
+
+impl InlineQuery {
+    pub fn new<S1, S2, S3>(id: S1, from: User, query: S2, offset: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self { id: id.into(), from, location: None, query: query.into(), offset: offset.into() }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self where S: Into<String> {
+        self.id = val.into();self
+    }
+
+    pub fn from(mut self, val: User) -> Self {
+        self.from =val;
+        self
+    }
+
+    pub fn location(mut self, val: Location) -> Self {
+        self.location = Some(val);
+        self
+    }
+
+    pub fn query<S>(mut self, val: S) -> Self where S: Into<String> {
+        self.query = val.into();self
+    }
+
+    pub fn offset<S>(mut self, val: S) -> Self where S: Into<String> {
+        self.offset = val.into();self
+    }
+
+}
