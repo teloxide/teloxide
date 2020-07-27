@@ -378,6 +378,30 @@ pub struct InputMediaDocument {
     pub parse_mode: Option<ParseMode>,
 }
 
+impl InputMediaDocument {
+    pub fn new(media: InputFile) -> Self {
+        Self { media, thumb: None, caption: None, parse_mode: None }
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+}
+
 impl InputMedia {
     pub fn media(&self) -> &InputFile {
         match self {
