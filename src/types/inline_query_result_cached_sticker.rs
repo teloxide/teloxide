@@ -27,3 +27,44 @@ pub struct InlineQueryResultCachedSticker {
     /// Content of the message to be sent instead of the sticker.
     pub input_message_content: Option<InputMessageContent>,
 }
+
+impl InlineQueryResultCachedSticker {
+    pub fn new<S1, S2>(id: S1, sticker_file_id: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            sticker_file_id: sticker_file_id.into(),
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn sticker_file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.sticker_file_id = val.into();
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+}
