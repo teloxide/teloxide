@@ -29,6 +29,32 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
+impl Message {
+    pub fn new(id: i32, date: i32, chat: Chat, kind: MessageKind) -> Self {
+        Self { id, date, chat, kind }
+    }
+
+    pub fn id(mut self, val: i32) -> Self {
+        self.id = val;
+        self
+    }
+
+    pub fn date(mut self, val: i32) -> Self {
+        self.date = val;
+        self
+    }
+
+    pub fn chat(mut self, val: Chat) -> Self {
+        self.chat = val;
+        self
+    }
+
+    pub fn kind(mut self, val: MessageKind) -> Self {
+        self.kind = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 #[non_exhaustive]
