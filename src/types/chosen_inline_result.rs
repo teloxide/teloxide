@@ -57,6 +57,11 @@ impl ChosenInlineResult {
         self
     }
 
+    pub fn from(mut self, val: User) -> Self {
+        self.from = val;
+        self
+    }
+
     pub fn location<S>(mut self, val: Location) -> Self {
         self.location = val.into();
         self
