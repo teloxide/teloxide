@@ -466,6 +466,35 @@ pub struct ForwardChannel {
     pub signature: Option<String>,
 }
 
+impl ForwardChannel {
+    pub fn new(date: i32, chat: Chat, message_id: i32) -> Self {
+        Self { date, chat, message_id, signature: None }
+    }
+
+    pub fn date(mut self, val: i32) -> Self {
+        self.date = val;
+        self
+    }
+
+    pub fn chat(mut self, val: Chat) -> Self {
+        self.chat = val;
+        self
+    }
+
+    pub fn message_id(mut self, val: i32) -> Self {
+        self.message_id = val;
+        self
+    }
+
+    pub fn signature<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.signature = Some(val.into());
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ForwardNonChannel {
