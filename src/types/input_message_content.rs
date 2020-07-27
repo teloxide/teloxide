@@ -80,6 +80,27 @@ pub struct InputMessageContentLocation {
     pub live_period: Option<u32>,
 }
 
+impl InputMessageContentLocation {
+    pub fn new(latitude: f64, longitude: f64) -> Self {
+        Self { latitude, longitude, live_period: None }
+    }
+
+    pub fn latitude(mut self, val: f64) -> Self {
+        self.latitude = val;
+        self
+    }
+
+    pub fn longitude(mut self, val: f64) -> Self {
+        self.longitude = val;
+        self
+    }
+
+    pub fn live_period(mut self, val: u32) -> Self {
+        self.live_period = Some(val);
+        self
+    }
+}
+
 /// Represents the content of a venue message to be sent as the result of
 /// an inline query.
 #[serde_with_macros::skip_serializing_none]
