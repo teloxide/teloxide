@@ -14,6 +14,28 @@ pub struct InlineKeyboardButton {
     pub kind: InlineKeyboardButtonKind,
 }
 
+impl InlineKeyboardButton {
+    pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { text: text.into(), kind }
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
+        self.kind = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
