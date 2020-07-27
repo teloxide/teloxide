@@ -36,6 +36,33 @@ pub struct InputMessageContentText {
     pub disable_web_page_preview: Option<bool>,
 }
 
+impl InputMessageContentText {
+    pub fn new<S>(message_text: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { message_text: message_text.into(), parse_mode: None, disable_web_page_preview: None }
+    }
+
+    pub fn message_text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.message_text = val.into();
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn disable_web_page_preview(mut self, val: bool) -> Self {
+        self.disable_web_page_preview = Some(val);
+        self
+    }
+}
+
 /// Represents the content of a location message to be sent as the result of an
 /// inline query.
 #[serde_with_macros::skip_serializing_none]
