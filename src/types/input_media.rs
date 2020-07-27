@@ -148,6 +148,7 @@ pub struct InputMediaAnimation {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaAudio {
     /// File to send.
     pub media: InputFile,
