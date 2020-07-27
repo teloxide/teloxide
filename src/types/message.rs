@@ -210,6 +210,23 @@ pub struct MessageNewChatPhoto {
     pub new_chat_photo: Vec<PhotoSize>,
 }
 
+impl MessageNewChatPhoto {
+    pub fn new<N>(new_chat_photo: N) -> Self
+    where
+        N: Into<Vec<PhotoSize>>,
+    {
+        Self { new_chat_photo: new_chat_photo.into() }
+    }
+
+    pub fn new_chat_photo<N>(mut self, val: N) -> Self
+    where
+        N: Into<Vec<PhotoSize>>,
+    {
+        self.new_chat_photo = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageDeleteChatPhoto {
