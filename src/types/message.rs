@@ -253,7 +253,7 @@ impl MessageGroupChatCreated {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageSupergroupChatCreated {
     /// Service message: the supergroup has been created. This field can‘t
@@ -262,6 +262,12 @@ pub struct MessageSupergroupChatCreated {
     /// found in `reply_to_message` if someone replies to a very first
     /// message in a directly created supergroup.
     pub supergroup_chat_created: True,
+}
+
+impl MessageSupergroupChatCreated {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
