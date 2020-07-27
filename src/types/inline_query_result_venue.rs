@@ -53,3 +53,105 @@ pub struct InlineQueryResultVenue {
     /// Thumbnail height.
     pub thumb_height: Option<i32>,
 }
+
+impl InlineQueryResultVenue {
+    pub fn new<S1, S2, S3>(id: S1, latitude: f64, longitude: f64, title: S2, address: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            latitude,
+            longitude,
+            title: title.into(),
+            address: address.into(),
+            foursquare_id: None,
+            foursquare_type: None,
+            reply_markup: None,
+            input_message_content: None,
+            thumb_url: None,
+            thumb_width: None,
+            thumb_height: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn latitude(mut self, val: f64) -> Self {
+        self.latitude = val;
+        self
+    }
+
+    pub fn longitude(mut self, val: f64) -> Self {
+        self.longitude = val;
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn address<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.address = val.into();
+        self
+    }
+
+    pub fn foursquare_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.foursquare_id = Some(val.into());
+        self
+    }
+
+    pub fn foursquare_type<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.foursquare_type = Some(val.into());
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+
+    pub fn thumb_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.thumb_url = Some(val.into());
+        self
+    }
+
+    pub fn thumb_width(mut self, val: i32) -> Self {
+        self.thumb_width = Some(val);
+        self
+    }
+
+    pub fn thumb_height(mut self, val: i32) -> Self {
+        self.thumb_height = Some(val);
+        self
+    }
+}

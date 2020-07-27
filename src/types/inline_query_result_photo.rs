@@ -101,14 +101,12 @@ impl InlineQueryResultPhoto {
         self
     }
 
-    pub fn photo_width<S>(mut self, val: i32) -> Self
-    {
+    pub fn photo_width<S>(mut self, val: i32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
-    pub fn photo_height<S>(mut self, val: i32) -> Self
-    {
+    pub fn photo_height<S>(mut self, val: i32) -> Self {
         self.photo_height = Some(val);
         self
     }
