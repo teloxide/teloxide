@@ -270,7 +270,7 @@ impl MessageSupergroupChatCreated {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageChannelChatCreated {
     /// Service message: the channel has been created. This field can‘t be
@@ -279,6 +279,12 @@ pub struct MessageChannelChatCreated {
     /// `reply_to_message` if someone replies to a very first message in a
     /// channel.
     pub channel_chat_created: True,
+}
+
+impl MessageChannelChatCreated {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
