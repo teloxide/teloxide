@@ -227,11 +227,17 @@ impl MessageNewChatPhoto {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageDeleteChatPhoto {
     /// Service message: the chat photo was deleted.
     pub delete_chat_photo: True,
+}
+
+impl MessageDeleteChatPhoto {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
