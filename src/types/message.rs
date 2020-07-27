@@ -580,6 +580,36 @@ pub struct MediaAnimation {
     pub caption_entities: Vec<MessageEntity>,
 }
 
+impl MediaAnimation {
+    pub fn new<CE>(animation: Animation, caption_entities: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        Self { animation, document: (), caption: None, caption_entities: caption_entities.into() }
+    }
+
+    pub fn animation(mut self, val: Animation) -> Self {
+        self.animation = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn caption_entities<CE>(mut self, val: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        self.caption_entities = val.into();
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
