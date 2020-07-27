@@ -38,12 +38,16 @@ impl InlineQuery {
         Self { id: id.into(), from, location: None, query: query.into(), offset: offset.into() }
     }
 
-    pub fn id<S>(mut self, val: S) -> Self where S: Into<String> {
-        self.id = val.into();self
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
     }
 
     pub fn from(mut self, val: User) -> Self {
-        self.from =val;
+        self.from = val;
         self
     }
 
@@ -52,12 +56,19 @@ impl InlineQuery {
         self
     }
 
-    pub fn query<S>(mut self, val: S) -> Self where S: Into<String> {
-        self.query = val.into();self
+    pub fn query<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.query = val.into();
+        self
     }
 
-    pub fn offset<S>(mut self, val: S) -> Self where S: Into<String> {
-        self.offset = val.into();self
+    pub fn offset<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.offset = val.into();
+        self
     }
-
 }
