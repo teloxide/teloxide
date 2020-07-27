@@ -663,6 +663,17 @@ pub struct MediaContact {
     contact: Contact,
 }
 
+impl MediaContact {
+    pub fn new(contact: Contact) -> Self {
+        Self { contact }
+    }
+
+    pub fn contact(mut self, val: Contact) -> Self {
+        self.contact = val;
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
