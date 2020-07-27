@@ -307,6 +307,22 @@ pub struct MessageMigrate {
     pub migrate_from_chat_id: i64,
 }
 
+impl MessageMigrate {
+    pub fn new(migrate_to_chat_id: i64, migrate_from_chat_id: i64) -> Self {
+        Self { migrate_to_chat_id, migrate_from_chat_id }
+    }
+
+    pub fn migrate_to_chat_id(mut self, val: i64) -> Self {
+        self.migrate_to_chat_id = val;
+        self
+    }
+
+    pub fn migrate_from_chat_id(mut self, val: i64) -> Self {
+        self.migrate_from_chat_id = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessagePinned {
