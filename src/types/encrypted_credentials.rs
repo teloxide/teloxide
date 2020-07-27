@@ -31,6 +31,41 @@ pub struct EncryptedCredentials {
     pub secret: String,
 }
 
+impl EncryptedCredentials {
+    pub fn new<S1, S2, S3>(data: S1, hash: S2, secret: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self { data: data.into(), hash: hash.into(), secret: secret.into() }
+    }
+
+    pub fn data<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data = val.into();
+        self
+    }
+
+    pub fn hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.hash = val.into();
+        self
+    }
+
+    pub fn secret<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.secret = val.into();
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
