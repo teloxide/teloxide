@@ -20,6 +20,28 @@ pub struct LabeledPrice {
     pub amount: i32,
 }
 
+impl LabeledPrice {
+    pub fn new<S>(label: S, amount: i32) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { label: label.into(), amount }
+    }
+
+    pub fn label<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.label = val.into();
+        self
+    }
+
+    pub fn amount(mut self, val: i32) -> Self {
+        self.amount = val;
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
