@@ -128,6 +128,65 @@ pub struct InputMessageContentVenue {
     pub foursquare_type: Option<String>,
 }
 
+impl InputMessageContentVenue {
+    pub fn new<S1, S2>(latitude: f64, longitude: f64, title: S1, address: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            latitude,
+            longitude,
+            title: title.into(),
+            address: address.into(),
+            foursquare_id: None,
+            foursquare_type: None,
+        }
+    }
+
+    pub fn latitude(mut self, val: f64) -> Self {
+        self.latitude = val;
+        self
+    }
+
+    pub fn longitude(mut self, val: f64) -> Self {
+        self.longitude = val;
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn address<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.address = val.into();
+        self
+    }
+
+    pub fn foursquare_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.foursquare_id = Some(val.into());
+        self
+    }
+
+    pub fn foursquare_type<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.foursquare_type = Some(val.into());
+        self
+    }
+}
+
 /// Represents the content of a contact message to be sent as the result of
 /// an inline query.
 #[serde_with_macros::skip_serializing_none]
