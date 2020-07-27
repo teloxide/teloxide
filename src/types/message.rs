@@ -333,6 +333,17 @@ pub struct MessagePinned {
     pub pinned: Box<Message>,
 }
 
+impl MessagePinned {
+    pub fn new(pinned: Message) -> Self {
+        Self { pinned: Box::new(pinned) }
+    }
+
+    pub fn pinned(mut self, val: Message) -> Self {
+        self.pinned = Box::new(val);
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageInvoice {
