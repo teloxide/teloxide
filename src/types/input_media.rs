@@ -279,7 +279,7 @@ pub struct InputMediaAudio {
     /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-    pub parse_mode: Option<String>,
+    pub parse_mode: Option<ParseMode>,
 
     /// Duration of the audio in seconds.
     pub duration: Option<u16>,
@@ -322,7 +322,7 @@ impl InputMediaAudio {
         self
     }
 
-    pub fn parse_mode(mut self, val: String) -> Self {
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
