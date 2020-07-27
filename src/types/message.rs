@@ -137,6 +137,23 @@ pub struct MessageNewChatMembers {
     pub new_chat_members: Vec<User>,
 }
 
+impl MessageNewChatMembers {
+    pub fn new<N>(new_chat_members: N) -> Self
+    where
+        N: Into<Vec<User>>,
+    {
+        Self { new_chat_members: new_chat_members.into() }
+    }
+
+    pub fn new_chat_members<N>(mut self, val: N) -> Self
+    where
+        N: Into<Vec<User>>,
+    {
+        self.new_chat_members = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageLeftChatMember {
