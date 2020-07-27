@@ -97,6 +97,37 @@ pub struct MessageCommon {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
+impl MessageCommon {
+    pub fn new(forward_kind: ForwardKind, media_kind: MediaKind) -> Self {
+        Self { from: None, forward_kind, edit_date: None, media_kind, reply_markup: None }
+    }
+
+    pub fn from(mut self, val: User) -> Self {
+        self.from = Some(val);
+        self
+    }
+
+    pub fn forward_kind(mut self, val: ForwardKind) -> Self {
+        self.forward_kind = val;
+        self
+    }
+
+    pub fn edit_date(mut self, val: i32) -> Self {
+        self.edit_date = Some(val);
+        self
+    }
+
+    pub fn media_kind(mut self, val: MediaKind) -> Self {
+        self.media_kind = val;
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageNewChatMembers {
