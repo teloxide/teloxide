@@ -20,6 +20,28 @@ pub struct EncryptedPassportElement {
     pub kind: EncryptedPassportElementKind,
 }
 
+impl EncryptedPassportElement {
+    pub fn new<S>(hash: S, kind: EncryptedPassportElementKind) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { hash: hash.into(), kind }
+    }
+
+    pub fn hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.hash = val.into();
+        self
+    }
+
+    pub fn kind(mut self, val: EncryptedPassportElementKind) -> Self {
+        self.kind = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[allow(clippy::large_enum_variant)]
