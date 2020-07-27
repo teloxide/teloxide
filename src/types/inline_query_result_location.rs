@@ -46,3 +46,83 @@ pub struct InlineQueryResultLocation {
     /// Thumbnail height.
     pub thumb_height: Option<i32>,
 }
+
+impl InlineQueryResultLocation {
+    pub fn new<S1, S2>(id: S1, title: S2, latitude: f64, longitude: f64) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            title: title.into(),
+            latitude,
+            longitude,
+            live_period: None,
+            reply_markup: None,
+            input_message_content: None,
+            thumb_url: None,
+            thumb_width: None,
+            thumb_height: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn latitude(mut self, val: f64) -> Self {
+        self.latitude = val;
+        self
+    }
+
+    pub fn longitude(mut self, val: f64) -> Self {
+        self.longitude = val;
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn live_period(mut self, val: i32) -> Self {
+        self.live_period = Some(val);
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+
+    pub fn thumb_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.thumb_url = Some(val.into());
+        self
+    }
+
+    pub fn thumb_width(mut self, val: i32) -> Self {
+        self.thumb_width = Some(val);
+        self
+    }
+
+    pub fn thumb_height(mut self, val: i32) -> Self {
+        self.thumb_height = Some(val);
+        self
+    }
+}
