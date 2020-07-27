@@ -46,6 +46,24 @@ pub struct InlineQueryResultCachedDocument {
 }
 
 impl InlineQueryResultCachedDocument {
+    pub fn new<S1, S2, S3>(id: S1, title: S2, document_file_id: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            title: title.into(),
+            document_file_id: document_file_id.into(),
+            description: None,
+            caption: None,
+            parse_mode: None,
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
     pub fn id<S>(mut self, val: S) -> Self
     where
         S: Into<String>,
@@ -86,8 +104,7 @@ impl InlineQueryResultCachedDocument {
         self
     }
 
-    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self
-    {
+    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
