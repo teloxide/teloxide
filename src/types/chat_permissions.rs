@@ -40,3 +40,9 @@ pub struct ChatPermissions {
     /// supergroups.
     pub can_pin_messages: Option<bool>,
 }
+
+impl ChatPermissions {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
