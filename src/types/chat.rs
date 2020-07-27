@@ -219,7 +219,7 @@ impl PublicChatGroup {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
@@ -249,6 +249,12 @@ pub struct PublicChatSupergroup {
     ///
     /// [`Bot::get_chat`]: crate::Bot::get_chat
     pub slow_mode_delay: Option<i32>,
+}
+
+impl PublicChatSupergroup {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 struct PrivateChatKindVisitor;
