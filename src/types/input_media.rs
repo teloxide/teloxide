@@ -104,6 +104,64 @@ pub struct InputMediaVideo {
     pub supports_streaming: Option<bool>,
 }
 
+impl InputMediaVideo {
+    pub fn new(media: InputFile) -> Self {
+        Self {
+            media,
+            thumb: None,
+            caption: None,
+            parse_mode: None,
+            width: None,
+            height: None,
+            duration: None,
+            supports_streaming: None,
+        }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn width(mut self, val: u16) -> Self {
+        self.width = Some(val);
+        self
+    }
+
+    pub fn height(mut self, val: u16) -> Self {
+        self.height = Some(val);
+        self
+    }
+
+    pub fn duration(mut self, val: u16) -> Self {
+        self.duration = Some(val);
+        self
+    }
+
+    pub fn supports_streaming(mut self, val: bool) -> Self {
+        self.supports_streaming = Some(val);
+        self
+    }
+}
+
 /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
 /// sound) to be sent.
 ///
