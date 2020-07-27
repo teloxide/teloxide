@@ -162,6 +162,23 @@ pub struct MessageLeftChatMember {
     pub left_chat_member: User,
 }
 
+impl MessageLeftChatMember {
+    pub fn new<N>(left_chat_member: N) -> Self
+    where
+        N: Into<User>,
+    {
+        Self { left_chat_member: left_chat_member.into() }
+    }
+
+    pub fn left_chat_member<N>(mut self, val: N) -> Self
+    where
+        N: Into<User>,
+    {
+        self.left_chat_member = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageNewChatTitle {
