@@ -440,6 +440,7 @@ impl EncryptedPassportElementInternalPassport {
         self.selfie = val;
         self
     }
+
     pub fn translation<P>(mut self, val: P) -> Self
     where
         P: Into<Vec<PassportFile>>,
@@ -506,6 +507,31 @@ pub struct EncryptedPassportElementUtilityBill {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub translation: Option<Vec<PassportFile>>,
+}
+
+impl EncryptedPassportElementUtilityBill {
+    pub fn new<F>(files: F) -> Self
+    where
+        F: Into<Vec<PassportFile>>,
+    {
+        Self { files: files.into(), translation: None }
+    }
+
+    pub fn files<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PassportFile>>,
+    {
+        self.files = val.into();
+        self
+    }
+
+    pub fn translation<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PassportFile>>,
+    {
+        self.translation = Some(val.into());
+        self
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
