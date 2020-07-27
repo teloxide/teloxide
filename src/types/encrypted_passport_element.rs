@@ -665,6 +665,31 @@ pub struct EncryptedPassportElementPassportRegistration {
     pub translation: Option<Vec<PassportFile>>,
 }
 
+impl EncryptedPassportElementPassportRegistration {
+    pub fn new<F>(files: F) -> Self
+        where
+            F: Into<Vec<PassportFile>>,
+    {
+        Self { files: files.into(), translation: None }
+    }
+
+    pub fn files<P>(mut self, val: P) -> Self
+        where
+            P: Into<Vec<PassportFile>>,
+    {
+        self.files = val.into();
+        self
+    }
+
+    pub fn translation<P>(mut self, val: P) -> Self
+        where
+            P: Into<Vec<PassportFile>>,
+    {
+        self.translation = Some(val.into());
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
