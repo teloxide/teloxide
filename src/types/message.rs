@@ -355,6 +355,17 @@ pub struct MessageInvoice {
     pub invoice: Invoice,
 }
 
+impl MessageInvoice {
+    pub fn new(invoice: Invoice) -> Self {
+        Self { invoice }
+    }
+
+    pub fn invoice(mut self, val: Invoice) -> Self {
+        self.invoice = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageSuccessfulPayment {
