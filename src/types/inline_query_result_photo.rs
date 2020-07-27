@@ -54,3 +54,101 @@ pub struct InlineQueryResultPhoto {
     /// Content of the message to be sent instead of the photo.
     pub input_message_content: Option<InputMessageContent>,
 }
+
+impl InlineQueryResultPhoto {
+    pub fn new<S1, S2, S3>(id: S1, photo_url: S2, thumb_url: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            photo_url: photo_url.into(),
+            thumb_url: thumb_url.into(),
+            photo_width: None,
+            photo_height: None,
+            title: None,
+            description: None,
+            caption: None,
+            parse_mode: None,
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn photo_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.photo_url = val.into();
+        self
+    }
+
+    pub fn thumb_url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.thumb_url = val.into();
+        self
+    }
+
+    pub fn photo_width<S>(mut self, val: i32) -> Self
+    {
+        self.photo_width = Some(val);
+        self
+    }
+
+    pub fn photo_height<S>(mut self, val: i32) -> Self
+    {
+        self.photo_height = Some(val);
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = Some(val.into());
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+}
