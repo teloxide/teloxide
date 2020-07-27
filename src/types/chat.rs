@@ -90,6 +90,41 @@ pub struct ChatPublic {
     pub pinned_message: Option<Box<Message>>,
 }
 
+impl ChatPublic {
+    pub fn new(kind: PublicChatKind) -> Self {
+        Self { title: None, kind, description: None, invite_link: None, pinned_message: None }
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = Some(val.into());
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn invite_link<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.invite_link = Some(val.into());
+        self
+    }
+
+    pub fn pinned_message(mut self, val: Message) -> Self {
+        self.pinned_message = Some(Box::new(val));
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
