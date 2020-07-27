@@ -7,6 +7,7 @@ use crate::types::{Currency, OrderInfo};
 /// [The official docs](https://core.telegram.org/bots/api#successfulpayment).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct SuccessfulPayment {
     /// Three-letter ISO 4217 [currency] code.
     ///

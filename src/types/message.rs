@@ -13,6 +13,7 @@ use crate::types::{
 ///
 /// [The official docs](https://core.telegram.org/bots/api#message).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Message {
     /// Unique message identifier inside this chat.
     #[serde(rename = "message_id")]
@@ -30,6 +31,7 @@ pub struct Message {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum MessageKind {
     Common(MessageCommon),
     NewChatMembers(MessageNewChatMembers),
@@ -50,6 +52,7 @@ pub enum MessageKind {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageCommon {
     /// Sender, empty for messages sent to channels.
     pub from: Option<User>,
@@ -69,6 +72,7 @@ pub struct MessageCommon {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageNewChatMembers {
     /// New members that were added to the group or supergroup and
     /// information about them (the bot itself may be one of these
@@ -77,6 +81,7 @@ pub struct MessageNewChatMembers {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageLeftChatMember {
     /// A member was removed from the group, information about them (this
     /// member may be the bot itself).
@@ -84,30 +89,35 @@ pub struct MessageLeftChatMember {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageNewChatTitle {
     /// A chat title was changed to this value.
     pub new_chat_title: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageNewChatPhoto {
     /// A chat photo was change to this value.
     pub new_chat_photo: Vec<PhotoSize>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageDeleteChatPhoto {
     /// Service message: the chat photo was deleted.
     pub delete_chat_photo: True,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageGroupChatCreated {
     /// Service message: the group has been created.
     pub group_chat_created: True,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageSupergroupChatCreated {
     /// Service message: the supergroup has been created. This field can‘t
     /// be received in a message coming through updates, because bot can’t
@@ -118,6 +128,7 @@ pub struct MessageSupergroupChatCreated {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageChannelChatCreated {
     /// Service message: the channel has been created. This field can‘t be
     /// received in a message coming through updates, because bot can’t be
@@ -128,6 +139,7 @@ pub struct MessageChannelChatCreated {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageMigrate {
     /// The group has been migrated to a supergroup with the specified
     /// identifier. This number may be greater than 32 bits and some
@@ -147,6 +159,7 @@ pub struct MessageMigrate {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessagePinned {
     /// Specified message was pinned. Note that the Message object in this
     /// field will not contain further `reply_to_message` fields even if it
@@ -156,6 +169,7 @@ pub struct MessagePinned {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageInvoice {
     /// Message is an invoice for a [payment], information about the
     /// invoice. [More about payments »].
@@ -166,6 +180,7 @@ pub struct MessageInvoice {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageSuccessfulPayment {
     /// Message is a service message about a successful payment,
     /// information about the payment. [More about payments »].
@@ -175,6 +190,7 @@ pub struct MessageSuccessfulPayment {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessageConnectedWebsite {
     /// The domain name of the website on which the user has logged in.
     /// [More about Telegram Login »].
@@ -184,12 +200,14 @@ pub struct MessageConnectedWebsite {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MessagePassportData {
     /// Telegram Passport data.
     pub passport_data: PassportData,
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum ForwardedFrom {
     #[serde(rename = "forward_from")]
     User(User),
@@ -199,6 +217,7 @@ pub enum ForwardedFrom {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum ForwardKind {
     Channel(ForwardChannel),
     NonChannel(ForwardNonChannel),
@@ -206,6 +225,7 @@ pub enum ForwardKind {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ForwardChannel {
     #[serde(rename = "forward_date")]
     pub date: i32,
@@ -221,6 +241,7 @@ pub struct ForwardChannel {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ForwardNonChannel {
     #[serde(rename = "forward_date")]
     pub date: i32,
@@ -230,12 +251,14 @@ pub struct ForwardNonChannel {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ForwardOrigin {
     pub reply_to_message: Option<Box<Message>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum MediaKind {
     Animation(MediaAnimation),
     Audio(MediaAudio),
@@ -254,6 +277,7 @@ pub enum MediaKind {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaAnimation {
     /// Message is an animation, information about the animation. For
     /// backward compatibility, when this field is set, the document field
@@ -276,6 +300,7 @@ pub struct MediaAnimation {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaAudio {
     /// Message is an audio file, information about the file.
     pub audio: Audio,
@@ -290,6 +315,7 @@ pub struct MediaAudio {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
     contact: Contact,
@@ -297,6 +323,7 @@ pub struct MediaContact {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaDocument {
     /// Message is a general file, information about the file.
     pub document: Document,
@@ -311,6 +338,7 @@ pub struct MediaDocument {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaGame {
     /// Message is a game, information about the game. [More
     /// about games »].
@@ -320,6 +348,7 @@ pub struct MediaGame {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaLocation {
     /// Message is a shared location, information about the location.
     pub location: Location,
@@ -327,6 +356,7 @@ pub struct MediaLocation {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaPhoto {
     /// Message is a photo, available sizes of the photo.
     pub photo: Vec<PhotoSize>,
@@ -345,18 +375,21 @@ pub struct MediaPhoto {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaPoll {
     /// Message is a native poll, information about the poll.
     pub poll: Poll,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaText {
     /// For text messages, the actual UTF-8 text of the message, 0-4096
     /// characters.
@@ -370,6 +403,7 @@ pub struct MediaText {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaVideo {
     /// Message is a video, information about the video.
     pub video: Video,
@@ -388,6 +422,7 @@ pub struct MediaVideo {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaVideoNote {
     /// Message is a [video note], information about the video message.
     ///
@@ -397,6 +432,7 @@ pub struct MediaVideoNote {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaVoice {
     /// Message is a voice message, information about the file.
     pub voice: Voice,
@@ -411,6 +447,7 @@ pub struct MediaVoice {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,

@@ -2,13 +2,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{InputFile, ParseMode};
 
-// TODO: should variants use new-type?
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "type")]
-#[serde(rename_all = "snake_case")]
 /// This object represents the content of a media message to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmedia).
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum InputMedia {
     Photo(InputMediaPhoto),
     Video(InputMediaVideo),

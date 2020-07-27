@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct WebhookInfo {
     /// Webhook URL, may be empty if webhook is not set up.
     pub url: String,

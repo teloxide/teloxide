@@ -17,6 +17,7 @@ use crate::types::{Message, User};
 /// [inline mode]: https://core.telegram.org/bots/api#inline-mode
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct CallbackQuery {
     /// An unique identifier for this query.
     pub id: String,

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#poll).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Poll {
     /// Unique poll identifier.
     pub id: String,
@@ -42,6 +43,7 @@ pub struct Poll {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PollOption {
     /// Option text, 1-100 characters.
     pub text: String,

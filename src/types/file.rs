@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [`Bot::get_file`]: crate::Bot::get_file
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct File {
     /// Identifier for this file.
     pub file_id: String,

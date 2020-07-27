@@ -11,6 +11,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultlocation).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InlineQueryResultLocation {
     /// Unique identifier for this result, 1-64 Bytes.
     pub id: String,

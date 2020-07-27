@@ -12,6 +12,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultmpeg4gif).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InlineQueryResultMpeg4Gif {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,

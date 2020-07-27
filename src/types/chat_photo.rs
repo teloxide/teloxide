@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatphoto).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ChatPhoto {
     /// A file identifier of small (160x160) chat photo. This file_id can be
     /// used only for photo download and only for as long as the photo is

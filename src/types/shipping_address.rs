@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#shippingaddress).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ShippingAddress {
     /// ISO 3166-1 alpha-2 country code.
     pub country_code: CountryCode,

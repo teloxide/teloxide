@@ -6,6 +6,7 @@ use crate::types::ShippingAddress;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#orderinfo).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct OrderInfo {
     /// User's name.
     pub name: String,

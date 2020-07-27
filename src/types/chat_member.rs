@@ -7,6 +7,7 @@ use crate::types::User;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ChatMember {
     /// Information about the user.
     pub user: User,
