@@ -13,7 +13,7 @@ use crate::types::True;
 ///
 /// [privacy mode]: https://core.telegram.org/bots#privacy-mode
 #[serde_with_macros::skip_serializing_none]
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ForceReply {
     /// Shows reply interface to the user, as if they manually selected the
@@ -27,4 +27,15 @@ pub struct ForceReply {
     ///
     /// [`Message`]: crate::types::Message
     pub selective: Option<bool>,
+}
+
+impl ForceReply {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn selective(mut self, val: bool) -> Self {
+        self.selective = Some(val);
+        self
+    }
 }
