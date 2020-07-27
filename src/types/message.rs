@@ -505,6 +505,22 @@ pub struct ForwardNonChannel {
     pub from: ForwardedFrom,
 }
 
+impl ForwardNonChannel {
+    pub fn new(date: i32, from: ForwardedFrom) -> Self {
+        Self { date, from }
+    }
+
+    pub fn date(mut self, val: i32) -> Self {
+        self.date = val;
+        self
+    }
+
+    pub fn from(mut self, val: ForwardedFrom) -> Self {
+        self.from = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ForwardOrigin {
