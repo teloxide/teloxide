@@ -421,6 +421,17 @@ pub struct MessagePassportData {
     pub passport_data: PassportData,
 }
 
+impl MessagePassportData {
+    pub fn new(passport_data: PassportData) -> Self {
+        Self { passport_data }
+    }
+
+    pub fn passport_data(mut self, val: PassportData) -> Self {
+        self.passport_data = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum ForwardedFrom {
