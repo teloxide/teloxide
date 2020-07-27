@@ -26,8 +26,6 @@ pub struct KeyboardButton {
 }
 
 impl KeyboardButton {
-    /// Creates `KeyboardButton` with the provided `text` and all the other
-    /// fields set to `None`.
     pub fn new<T>(text: T) -> Self
     where
         T: Into<String>,
