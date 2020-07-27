@@ -25,6 +25,27 @@ pub struct Chat {
     pub photo: Option<ChatPhoto>,
 }
 
+impl Chat {
+    pub fn new(id: i64, kind: ChatKind) -> Self {
+        Self { id, kind, photo: None }
+    }
+
+    pub fn id(mut self, val: i64) -> Self {
+        self.id = val;
+        self
+    }
+
+    pub fn kind(mut self, val: ChatKind) -> Self {
+        self.kind = val;
+        self
+    }
+
+    pub fn photo(mut self, val: ChatPhoto) -> Self {
+        self.photo = Some(val);
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
