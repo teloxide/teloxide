@@ -667,23 +667,23 @@ pub struct EncryptedPassportElementPassportRegistration {
 
 impl EncryptedPassportElementPassportRegistration {
     pub fn new<F>(files: F) -> Self
-        where
-            F: Into<Vec<PassportFile>>,
+    where
+        F: Into<Vec<PassportFile>>,
     {
         Self { files: files.into(), translation: None }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
-        where
-            P: Into<Vec<PassportFile>>,
+    where
+        P: Into<Vec<PassportFile>>,
     {
         self.files = val.into();
         self
     }
 
     pub fn translation<P>(mut self, val: P) -> Self
-        where
-            P: Into<Vec<PassportFile>>,
+    where
+        P: Into<Vec<PassportFile>>,
     {
         self.translation = Some(val.into());
         self
@@ -719,23 +719,23 @@ pub struct EncryptedPassportElementTemporaryRegistration {
 
 impl EncryptedPassportElementTemporaryRegistration {
     pub fn new<F>(files: F) -> Self
-        where
-            F: Into<Vec<PassportFile>>,
+    where
+        F: Into<Vec<PassportFile>>,
     {
         Self { files: files.into(), translation: None }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
-        where
-            P: Into<Vec<PassportFile>>,
+    where
+        P: Into<Vec<PassportFile>>,
     {
         self.files = val.into();
         self
     }
 
     pub fn translation<P>(mut self, val: P) -> Self
-        where
-            P: Into<Vec<PassportFile>>,
+    where
+        P: Into<Vec<PassportFile>>,
     {
         self.translation = Some(val.into());
         self
@@ -749,6 +749,23 @@ pub struct EncryptedPassportElementPhoneNumber {
     /// User's verified phone number, available only for `phone_number`
     /// type.
     pub phone_number: String,
+}
+
+impl EncryptedPassportElementPhoneNumber {
+    pub fn new<S>(phone_number: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { phone_number: phone_number.into() }
+    }
+
+    pub fn phone_number<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.phone_number = val.into();
+        self
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
