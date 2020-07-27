@@ -376,6 +376,17 @@ pub struct MessageSuccessfulPayment {
     pub successful_payment: SuccessfulPayment,
 }
 
+impl MessageSuccessfulPayment {
+    pub fn new(successful_payment: SuccessfulPayment) -> Self {
+        Self { successful_payment }
+    }
+
+    pub fn successful_payment(mut self, val: SuccessfulPayment) -> Self {
+        self.successful_payment = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessageConnectedWebsite {
