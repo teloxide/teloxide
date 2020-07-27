@@ -209,6 +209,53 @@ pub struct InputMessageContentContact {
     pub vcard: Option<String>,
 }
 
+impl InputMessageContentContact {
+    pub fn new<S1, S2>(phone_number: S1, first_name: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            phone_number: phone_number.into(),
+            first_name: first_name.into(),
+            last_name: None,
+            vcard: None,
+        }
+    }
+
+    pub fn phone_number<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.phone_number = val.into();
+        self
+    }
+
+    pub fn first_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.first_name = val.into();
+        self
+    }
+
+    pub fn last_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.last_name = Some(val.into());
+        self
+    }
+
+    pub fn vcard<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.vcard = Some(val.into());
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

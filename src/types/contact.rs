@@ -39,6 +39,7 @@ impl Contact {
             vcard: None,
         }
     }
+
     pub fn phone_number<S>(mut self, val: S) -> Self
     where
         S: Into<String>,
