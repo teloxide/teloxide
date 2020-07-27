@@ -202,7 +202,7 @@ impl PublicChatChannel {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
@@ -210,6 +210,12 @@ pub struct PublicChatGroup {
     ///
     /// [`Bot::get_chat`]: crate::Bot::get_chat
     pub permissions: Option<ChatPermissions>,
+}
+
+impl PublicChatGroup {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
