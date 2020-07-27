@@ -464,6 +464,23 @@ pub struct EncryptedPassportElementAddress {
     pub data: String,
 }
 
+impl EncryptedPassportElementAddress {
+    pub fn new<S>(data: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { data: data.into() }
+    }
+
+    pub fn data<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data = val.into();
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
