@@ -521,10 +521,21 @@ impl ForwardNonChannel {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ForwardOrigin {
     pub reply_to_message: Option<Box<Message>>,
+}
+
+impl ForwardOrigin {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn reply_to_message(mut self, val: Message) -> Self {
+        self.reply_to_message = Some(Box::new(val));
+        self
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
