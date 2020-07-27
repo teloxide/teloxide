@@ -44,3 +44,78 @@ pub struct InlineQueryResultCachedVideo {
     /// Content of the message to be sent instead of the video.
     pub input_message_content: Option<InputMessageContent>,
 }
+
+impl InlineQueryResultCachedVideo {
+    pub fn new<S1, S2, S3>(id: S1, video_file_id: S2, title: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            video_file_id: video_file_id.into(),
+            title: title.into(),
+            description: None,
+            caption: None,
+            parse_mode: None,
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn video_file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.video_file_id = val.into();
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+}
