@@ -326,6 +326,50 @@ pub struct EncryptedPassportElementIdentityCard {
     pub translation: Option<Vec<PassportFile>>,
 }
 
+impl EncryptedPassportElementIdentityCard {
+    pub fn new<S>(
+        data: S,
+        front_side: PassportFile,
+        reverse_side: PassportFile,
+        selfie: PassportFile,
+    ) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { data: data.into(), front_side, reverse_side, selfie, translation: None }
+    }
+
+    pub fn data<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data = val.into();
+        self
+    }
+
+    pub fn front_side(mut self, val: PassportFile) -> Self {
+        self.front_side = val;
+        self
+    }
+
+    pub fn reverse_side(mut self, val: PassportFile) -> Self {
+        self.reverse_side = val;
+        self
+    }
+
+    pub fn selfie(mut self, val: PassportFile) -> Self {
+        self.selfie = val;
+        self
+    }
+    pub fn translation<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PassportFile>>,
+    {
+        self.translation = Some(val.into());
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
