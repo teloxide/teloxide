@@ -775,3 +775,20 @@ pub struct EncryptedPassportElementEmail {
     /// User's verified email address, available only for `email` type.
     pub email: String,
 }
+
+impl EncryptedPassportElementEmail {
+    pub fn new<S>(email: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { email: email.into() }
+    }
+
+    pub fn email<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.email = val.into();
+        self
+    }
+}
