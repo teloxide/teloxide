@@ -79,15 +79,15 @@ pub struct EncryptedPassportElementPersonalDetails {
 
 impl EncryptedPassportElementPersonalDetails {
     pub fn new<S>(data: S) -> Self
-        where
-            S: Into<String>,
+    where
+        S: Into<String>,
     {
         Self { data: data.into() }
     }
 
     pub fn data<S>(mut self, val: S) -> Self
-        where
-            S: Into<String>,
+    where
+        S: Into<String>,
     {
         self.data = val.into();
         self
@@ -137,6 +137,41 @@ pub struct EncryptedPassportElementPassport {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub translation: Option<Vec<PassportFile>>,
+}
+
+impl EncryptedPassportElementPassport {
+    pub fn new<S>(data: S, front_side: PassportFile, selfie: PassportFile) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { data: data.into(), front_side, selfie, translation: None }
+    }
+
+    pub fn data<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data = val.into();
+        self
+    }
+
+    pub fn front_side(mut self, val: PassportFile) -> Self {
+        self.front_side = val;
+        self
+    }
+
+    pub fn selfie(mut self, val: PassportFile) -> Self {
+        self.selfie = val;
+        self
+    }
+
+    pub fn translation<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PassportFile>>,
+    {
+        self.translation = Some(val.into());
+        self
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
