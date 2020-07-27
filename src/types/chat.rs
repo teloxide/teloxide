@@ -188,11 +188,17 @@ pub enum PublicChatKind {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
+}
+
+impl PublicChatChannel {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 #[serde_with_macros::skip_serializing_none]
