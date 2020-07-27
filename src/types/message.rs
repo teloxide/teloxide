@@ -626,6 +626,36 @@ pub struct MediaAudio {
     pub caption_entities: Vec<MessageEntity>,
 }
 
+impl MediaAudio {
+    pub fn new<CE>(audio: Audio, caption_entities: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        Self { audio, caption: None, caption_entities: caption_entities.into() }
+    }
+
+    pub fn audio(mut self, val: Audio) -> Self {
+        self.audio = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn caption_entities<CE>(mut self, val: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        self.caption_entities = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MediaContact {
