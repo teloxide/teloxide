@@ -44,3 +44,61 @@ pub struct InlineQueryResultCachedDocument {
     /// Content of the message to be sent instead of the file.
     pub input_message_content: Option<InputMessageContent>,
 }
+
+impl InlineQueryResultCachedDocument {
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn document_file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.document_file_id = val.into();
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self
+    {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
+}
