@@ -397,6 +397,23 @@ pub struct MessageConnectedWebsite {
     pub connected_website: String,
 }
 
+impl MessageConnectedWebsite {
+    pub fn new<S>(connected_website: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { connected_website: connected_website.into() }
+    }
+
+    pub fn connected_website<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.connected_website = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MessagePassportData {
