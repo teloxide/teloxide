@@ -33,3 +33,48 @@ pub struct ChosenInlineResult {
     /// The query that was used to obtain the result.
     pub query: String,
 }
+
+impl ChosenInlineResult {
+    pub fn new<S1, S2>(result_id: S1, from: User, query: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            result_id: result_id.into(),
+            from,
+            location: None,
+            inline_message_id: None,
+            query: query.into(),
+        }
+    }
+
+    pub fn result_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.result_id = val.into();
+        self
+    }
+
+    pub fn location<S>(mut self, val: Location) -> Self {
+        self.location = val.into();
+        self
+    }
+
+    pub fn inline_message_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.inline_message_id = Some(val.into());
+        self
+    }
+
+    pub fn query<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.query = val.into();
+        self
+    }
+}
