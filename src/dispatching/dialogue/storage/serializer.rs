@@ -50,7 +50,9 @@ where
     }
 }
 
-/// The Bincode serializer for memory storages.
+/// The [Bincode] serializer for memory storages.
+///
+/// [Bincode]: https://github.com/servo/bincode
 #[cfg(feature = "bincode-serializer")]
 pub struct Bincode;
 
