@@ -748,6 +748,17 @@ pub struct MediaLocation {
     pub location: Location,
 }
 
+impl MediaLocation {
+    pub fn new(location: Location) -> Self {
+        Self { location }
+    }
+
+    pub fn location(mut self, val: Location) -> Self {
+        self.location = val;
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
