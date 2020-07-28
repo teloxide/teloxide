@@ -307,8 +307,9 @@ async fn receive_location(
 }
 ```
 
-
 </details>
+
+All these subtransitions accept a corresponding state (one of the many variants of `Dialogue`), a context, and a textual message. They return `TransitionOut<Dialogue>`, e.g. a mapping from `<your state type>` to `Dialogue`.
 
 Finally, the `main` function looks like this:
 
