@@ -26,4 +26,49 @@ pub struct Voice {
     pub file_size: Option<u64>,
 }
 
-impl Voice {}
+impl Voice {
+    pub fn new<S1, S2>(file_id: S1, file_unique_id: S2, duration: u32) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            file_id: file_id.into(),
+            file_unique_id: file_unique_id.into(),
+            duration,
+            mime_type: None,
+            file_size: None,
+        }
+    }
+
+    pub fn file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_id = val.into();
+        self
+    }
+
+    pub fn file_unique_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_unique_id = val.into();
+        self
+    }
+
+    pub fn duration(mut self, val: u32) -> Self {
+        self.duration = val;
+        self
+    }
+
+    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+        self.mime_type = Some(val);
+        self
+    }
+
+    pub fn file_size(mut self, val: u64) -> Self {
+        self.file_size = Some(val);
+        self
+    }
+}
