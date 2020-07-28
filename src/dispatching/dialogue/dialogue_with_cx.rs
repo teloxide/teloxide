@@ -18,15 +18,6 @@ impl<Upd, D, E> DialogueWithCx<Upd, D, E> {
     pub fn new(cx: UpdateWithCx<Upd>, dialogue: D) -> Self {
         Self { cx, dialogue: Ok(dialogue) }
     }
-
-    /// Creates a new instance by substituting a dialogue and preserving
-    /// `self.bot` and `self.update`.
-    pub fn with_new_dialogue<Nd, Ne>(
-        self,
-        new_dialogue: Result<Nd, Ne>,
-    ) -> DialogueWithCx<Upd, Nd, Ne> {
-        DialogueWithCx { cx: self.cx, dialogue: new_dialogue }
-    }
 }
 
 impl<Upd, D, E> GetChatId for DialogueWithCx<Upd, D, E>
