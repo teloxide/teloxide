@@ -416,7 +416,12 @@ Associated links:
 
 Q: Can I use different loggers?
 
-A: Yes. The [`enable_logging!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html) and [`enable_logging_with_filter!`](https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html) macros are just convenient utilities, not necessary to use them. You can setup a different logger, for example, [fern](https://crates.io/crates/fern), as usual, e.g. teloxide has no specific requirements as it depends only on [log](https://crates.io/crates/log).
+A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
+
+[fern]: https://crates.io/crates/fern
+[log]: https://crates.io/crates/log
+[`enable_logging!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html
+[`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
 Feel free to push your own bot into our collection!
