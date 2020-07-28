@@ -364,6 +364,10 @@ Q: Where I can ask questions?
 
 A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
 
+Q: Do you support the Telegram API for clients?
+
+A: No, only the bots API.
+
 Q: Why Rust?
 
 A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
