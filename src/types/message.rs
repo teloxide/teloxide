@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{
     chat::{ChatKind, PublicChatKind},
-    Animation, Audio, Chat, ChatPublic, Contact, Document, Game, InlineKeyboardMarkup, Invoice,
-    Location, MessageEntity, PassportData, PhotoSize, Poll, PublicChatChannel,
+    Animation, Audio, Chat, ChatPublic, Contact, Dice, Document, Game, InlineKeyboardMarkup,
+    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, PublicChatChannel,
     PublicChatSupergroup, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
 };
 
@@ -74,6 +74,7 @@ pub enum MessageKind {
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
     PassportData(MessagePassportData),
+    Dice(MessageDice),
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -1046,6 +1047,13 @@ impl MediaVenue {
         self.venue = val;
         self
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
+pub struct MessageDice {
+    /// Message is a dice with random value from 1 to 6.
+    dice: Dice,
 }
 
 mod getters {
