@@ -178,6 +178,28 @@ pub struct PassportElementErrorReverseSide {
     pub file_hash: String,
 }
 
+impl PassportElementErrorReverseSide {
+    pub fn new<S>(r#type: PassportElementErrorReverseSideType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorReverseSideType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hash = val.into();
+        self
+    }
+}
+
 //// Represents an issue with the selfie with a document.
 //
 /// The error is considered resolved when the file with the selfie changes.
