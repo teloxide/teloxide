@@ -16,3 +16,25 @@ pub struct PassportData {
     /// Encrypted credentials required to decrypt the data.
     pub credentials: EncryptedCredentials,
 }
+
+impl PassportData {
+    pub fn new<E>(data: E, credentials: EncryptedCredentials) -> Self
+    where
+        E: Into<Vec<EncryptedPassportElement>>,
+    {
+        Self { data: data.into(), credentials }
+    }
+
+    pub fn data<E>(mut self, val: E) -> Self
+    where
+        E: Into<Vec<EncryptedPassportElement>>,
+    {
+        self.data = val.into();
+        self
+    }
+
+    pub fn credentials(mut self, val: EncryptedCredentials) -> Self {
+        self.credentials = val;
+        self
+    }
+}
