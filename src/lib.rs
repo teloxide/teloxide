@@ -29,7 +29,6 @@ mod logging;
 pub mod prelude;
 pub mod requests;
 pub mod types;
-mod up_state;
 pub mod utils;
 
 extern crate teloxide_macros;

@@ -15,7 +15,7 @@ pub use crate::{
 };
 
 #[cfg(feature = "frunk")]
-pub use crate::up_state::UpState;
+pub use crate::utils::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
 
