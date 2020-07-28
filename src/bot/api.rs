@@ -8,9 +8,9 @@ use crate::{
         GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage,
         PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
-        SendChatActionKind, SendContact, SendDocument, SendGame, SendInvoice, SendLocation,
-        SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
-        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
+        SendChatActionKind, SendContact, SendDice, SendDocument, SendGame, SendInvoice,
+        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue,
+        SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
         SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore,
         SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
         UnpinChatMessage, UploadStickerFile,
@@ -1500,5 +1500,18 @@ impl Bot {
         CT: Into<String>,
     {
         SetChatAdministratorCustomTitle::new(self.clone(), chat_id, user_id, custom_title)
+    }
+
+    /// Use this method to send an animated emoji that will display a random
+    /// value.
+    ///
+    /// # Params
+    ///   - `chat_id`: Unique identifier for the target chat or username of the
+    ///     target channel  (in the format `@channelusername`).
+    pub fn send_dice<C>(&self, chat_id: C) -> SendDice
+    where
+        C: Into<ChatId>,
+    {
+        SendDice::new(self.clone(), chat_id)
     }
 }
