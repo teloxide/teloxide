@@ -833,11 +833,33 @@ pub struct MediaPoll {
     pub poll: Poll,
 }
 
+impl MediaPoll {
+    pub fn new(poll: Poll) -> Self {
+        Self { poll }
+    }
+
+    pub fn poll(mut self, val: Poll) -> Self {
+        self.poll = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
+}
+
+impl MediaSticker {
+    pub fn new(sticker: Sticker) -> Self {
+        Self { sticker }
+    }
+
+    pub fn poll(mut self, val: Sticker) -> Self {
+        self.sticker = val;
+        self
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
