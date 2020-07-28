@@ -308,7 +308,7 @@ impl PassportElementErrorFiles {
     where
         S: Into<String>,
     {
-        self.file_hashs = val.into();
+        self.file_hashes = val.into();
         self
     }
 }
@@ -328,6 +328,28 @@ pub struct PassportElementErrorTranslationFile {
 
     /// Base64-encoded file hash.
     pub file_hash: String,
+}
+
+impl PassportElementErrorTranslationFile {
+    pub fn new<S>(r#type: PassportElementErrorTranslationFileType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorTranslationFileType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hash = val.into();
+        self
+    }
 }
 
 /// Represents an issue with the translated version of a document.
