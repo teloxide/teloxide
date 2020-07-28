@@ -28,7 +28,9 @@ where
     }
 }
 
-/// The CBOR serializer for memory storages.
+/// The [CBOR] serializer for memory storages.
+///
+/// [CBOR]: https://en.wikipedia.org/wiki/CBOR
 #[cfg(feature = "cbor-serializer")]
 pub struct CBOR;
 
