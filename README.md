@@ -22,18 +22,19 @@
 </div>
 
 ## Table of contents
- - [Features](https://github.com/teloxide/teloxide#features)
+ - [Highlights](https://github.com/teloxide/teloxide#highlights)
  - [Setting up your environment](https://github.com/teloxide/teloxide#setting-up-your-environment)
  - [API overview](https://github.com/teloxide/teloxide#api-overview)
    - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
    - [Commands](https://github.com/teloxide/teloxide#commands)
    - [Dialogues management](https://github.com/teloxide/teloxide#dialogues-management)
  - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
+ - [Cargo features](https://github.com/teloxide/teloxide#cargo-features)
  - [FAQ](https://github.com/teloxide/teloxide#faq)
  - [Community bots](https://github.com/teloxide/teloxide#community-bots)
  - [Contributing](https://github.com/teloxide/teloxide#contributing)
 
-## Features
+## Highlights
 
  - **Functioal reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
 
@@ -378,8 +379,19 @@ async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> Transi
      // Your logic here...
  }
  ```
- 
+
 The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
+
+## Cargo features
+
+ - `redis-storage` -- enables the [Redis] support.
+ - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
+ - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
+ - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
+
+[CBOR]: https://en.wikipedia.org/wiki/CBOR
+[Bincode]: https://github.com/servo/bincode
+[`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
 
 ## FAQ
 Q: Where I can ask questions?
