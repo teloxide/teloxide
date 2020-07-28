@@ -180,11 +180,11 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
+A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-Below is a bot, which asks you three questions and then sends the answers back to you. Here's possible states for a dialogue:
+Below is a bot, which asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
 ([dialogue_bot/src/dialogue/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/mod.rs))
 ```rust
@@ -205,6 +205,11 @@ impl Default for Dialogue {
 }
 ```
 
+When a user sends a message to our bot, and such a dialogue does not yet exist, `Dialogue::default()` is invoked, which is `Dialogue::Start`. Every time a message is received, an associated dialogue is extracted, and then passed to a corresponding subtransition function:
+
+<details>
+  <summary>Dialogue::Start</summary>
+
 ([dialogue_bot/src/dialogue/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/start.rs))
 ```rust
 // Imports are omitted...
@@ -218,6 +223,34 @@ async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> Transition
     next(ReceiveFullNameState)
 }
 ```
+
+</details>
+
+<details>
+  <summary>Dialogue::ReceiveFullName</summary>
+
+([dialogue_bot/src/dialogue/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
+```rust
+// Imports are omitted...
+
+#[derive(Generic)]
+pub struct ReceiveFullNameState;
+
+#[teloxide(subtransition)]
+async fn receive_full_name(
+    state: ReceiveFullNameState,
+    cx: TransitionIn,
+    ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer_str("How old are you?").await?;
+    next(ReceiveAgeState::up(state, ans))
+}
+```
+
+</details>
+
+<details>
+  <summary>Dialogue::ReceiveAge</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_age.rs))
 ```rust
@@ -247,23 +280,10 @@ async fn receive_age_state(
 }
 ```
 
-([dialogue_bot/src/dialogue/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
-```rust
-// Imports are omitted...
+</details>
 
-#[derive(Generic)]
-pub struct ReceiveFullNameState;
-
-#[teloxide(subtransition)]
-async fn receive_full_name(
-    state: ReceiveFullNameState,
-    cx: TransitionIn,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer_str("How old are you?").await?;
-    next(ReceiveAgeState::up(state, ans))
-}
-```
+<details>
+    <summary>Dialogue::ReceiveLocation</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_location.rs))
 ```rust
@@ -286,6 +306,9 @@ async fn receive_location(
     exit()
 }
 ```
+
+
+</details>
 
 Finally, the `main` function looks like this:
 
