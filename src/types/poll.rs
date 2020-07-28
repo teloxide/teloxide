@@ -139,6 +139,28 @@ pub struct PollOption {
     pub voter_count: i32,
 }
 
+impl PollOption {
+    pub fn new<S>(text: S, voter_count: i32) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { text: text.into(), voter_count }
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    pub fn voter_count(mut self, val: i32) -> Self {
+        self.voter_count = val;
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
