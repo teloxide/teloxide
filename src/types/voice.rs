@@ -25,3 +25,5 @@ pub struct Voice {
     /// File size.
     pub file_size: Option<u64>,
 }
+
+impl Voice {}
