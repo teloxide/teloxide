@@ -730,6 +730,17 @@ pub struct MediaGame {
     pub game: Game,
 }
 
+impl MediaGame {
+    pub fn new(game: Game) -> Self {
+        Self { game }
+    }
+
+    pub fn game(mut self, val: Game) -> Self {
+        self.game = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MediaLocation {
