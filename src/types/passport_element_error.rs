@@ -296,7 +296,7 @@ impl PassportElementErrorFiles {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self { r#type, file_hashes: file_hash.into() }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorFilesType) -> Self {
@@ -304,11 +304,11 @@ impl PassportElementErrorFiles {
         self
     }
 
-    pub fn file_hash<S>(mut self, val: S) -> Self
+    pub fn file_hashes<S>(mut self, val: S) -> Self
     where
         S: Into<String>,
     {
-        self.file_hash = val.into();
+        self.file_hashs = val.into();
         self
     }
 }
