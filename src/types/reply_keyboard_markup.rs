@@ -46,6 +46,19 @@ pub struct ReplyKeyboardMarkup {
 }
 
 impl ReplyKeyboardMarkup {
+    pub fn new<K1, K2>(keyboard: K1) -> Self
+    where
+        K1: Into<Vec<K2>>,
+        K2: Into<Vec<KeyboardButton>>,
+    {
+        Self {
+            keyboard: keyboard.into().into_iter().map(Into::into).collect(),
+            resize_keyboard: None,
+            one_time_keyboard: None,
+            selective: None,
+        }
+    }
+
     pub fn append_row(mut self, buttons: Vec<KeyboardButton>) -> Self {
         self.keyboard.push(buttons);
         self
