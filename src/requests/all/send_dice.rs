@@ -16,7 +16,7 @@ pub struct SendDice {
 
     chat_id: ChatId,
     #[serde(flatten)]
-    emoji: Option<SendDiceEmoji>,
+    emoji: Option<DiceEmoji>,
     disable_notification: Option<bool>,
     reply_to_message_id: Option<i32>,
     reply_markup: Option<ReplyMarkup>,
@@ -57,7 +57,7 @@ impl SendDice {
     }
 
     /// Emoji on which the dice throw animation is based.
-    pub fn emoji(mut self, val: SendDiceEmoji) -> Self {
+    pub fn emoji(mut self, val: DiceEmoji) -> Self {
         self.emoji = Some(val);
         self
     }
@@ -92,7 +92,7 @@ impl SendDice {
 }
 
 #[derive(Copy, Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
-pub enum SendDiceEmoji {
+pub enum DiceEmoji {
     /// Values from 1-6. Defaults to this variant.
     #[serde(rename = "🎲")]
     Dice,
