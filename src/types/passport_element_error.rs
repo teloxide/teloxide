@@ -368,6 +368,28 @@ pub struct PassportElementErrorTranslationFiles {
     pub file_hashes: Vec<String>,
 }
 
+impl PassportElementErrorTranslationFiles {
+    pub fn new<S>(r#type: PassportElementErrorTranslationFilesType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hashes: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorTranslationFilesType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hashes<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hashes = val.into();
+        self
+    }
+}
+
 /// Represents an issue in an unspecified place.
 ///
 /// The error is considered resolved when new data is added.
