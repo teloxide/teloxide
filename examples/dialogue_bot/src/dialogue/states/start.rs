@@ -2,7 +2,6 @@ use crate::dialogue::{states::ReceiveFullNameState, Dialogue};
 use teloxide::prelude::*;
 use teloxide_macros::teloxide;
 
-#[derive(Default)]
 pub struct StartState;
 
 #[teloxide(subtransition)]

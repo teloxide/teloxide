@@ -214,7 +214,6 @@ When a user sends a message to our bot, and such a dialogue does not yet exist, 
 ```rust
 // Imports are omitted...
 
-#[derive(Default)]
 pub struct StartState;
 
 #[teloxide(subtransition)]
