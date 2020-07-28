@@ -1037,6 +1037,17 @@ pub struct MediaVenue {
     pub venue: Venue,
 }
 
+impl MediaVenue {
+    pub fn new(venue: Venue) -> Self {
+        Self { venue }
+    }
+
+    pub fn venue(mut self, val: Venue) -> Self {
+        self.venue = val;
+        self
+    }
+}
+
 mod getters {
     use std::ops::Deref;
 
