@@ -215,6 +215,28 @@ pub struct PassportElementErrorSelfie {
     pub file_hash: String,
 }
 
+impl PassportElementErrorSelfie {
+    pub fn new<S>(r#type: PassportElementErrorSelfieType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorSelfieType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hash = val.into();
+        self
+    }
+}
+
 /// Represents an issue with a document scan.
 ///
 /// The error is considered resolved when the file with the document scan
