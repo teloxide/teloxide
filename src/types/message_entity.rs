@@ -20,6 +20,27 @@ pub struct MessageEntity {
     pub length: usize,
 }
 
+impl MessageEntity {
+    pub fn new(kind: MessageEntityKind, offset: usize, length: usize) -> Self {
+        Self { kind, offset, length }
+    }
+
+    pub fn kind(mut self, val: MessageEntityKind) -> Self {
+        self.kind = val;
+        self
+    }
+
+    pub fn offset(mut self, val: usize) -> Self {
+        self.offset = val;
+        self
+    }
+
+    pub fn length(mut self, val: usize) -> Self {
+        self.length = val;
+        self
+    }
+}
+
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
