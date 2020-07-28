@@ -779,6 +779,53 @@ pub struct MediaPhoto {
     pub media_group_id: Option<String>,
 }
 
+impl MediaPhoto {
+    pub fn new<P, CE>(photo: P, caption_entities: CE) -> Self
+    where
+        P: Into<Vec<PhotoSize>>,
+        CE: Into<Vec<MessageEntity>>,
+    {
+        Self {
+            photo: photo.into(),
+            caption: None,
+            caption_entities: caption_entities.into(),
+            media_group_id: None,
+        }
+    }
+
+    pub fn photo<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PhotoSize>>,
+    {
+        self.photo = val.into();
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn caption_entities<CE>(mut self, val: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        self.caption_entities = val.into();
+        self
+    }
+
+    pub fn media_group_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.media_group_id = Some(val.into());
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MediaPoll {
