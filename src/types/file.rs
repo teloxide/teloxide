@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [`Bot::get_file`]: crate::Bot::get_file
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct File {
     /// Identifier for this file.
     pub file_id: String,
@@ -26,4 +27,49 @@ pub struct File {
     /// File path. Use `https://api.telegram.org/file/bot<token>/<file_path>`
     /// to get the file.
     pub file_path: String,
+}
+
+impl File {
+    pub fn new<S1, S2, S3>(file_id: S1, file_unique_id: S2, file_size: u32, file_path: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self {
+            file_id: file_id.into(),
+            file_unique_id: file_unique_id.into(),
+            file_size,
+            file_path: file_path.into(),
+        }
+    }
+
+    pub fn file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_id = val.into();
+        self
+    }
+
+    pub fn file_unique_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_unique_id = val.into();
+        self
+    }
+
+    pub fn file_size(mut self, val: u32) -> Self {
+        self.file_size = val;
+        self
+    }
+
+    pub fn file_path<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_id = val.into();
+        self
+    }
 }

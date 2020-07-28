@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 /// [sticker]: crate::types::Sticker
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PhotoSize {
     /// Identifier for this file.
     pub file_id: String,
@@ -23,6 +24,53 @@ pub struct PhotoSize {
 
     /// File size.
     pub file_size: Option<u32>,
+}
+
+impl PhotoSize {
+    pub fn new<S1, S2>(file_id: S1, file_unique_id: S2, width: i32, height: i32) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            file_id: file_id.into(),
+            file_unique_id: file_unique_id.into(),
+            width,
+            height,
+            file_size: None,
+        }
+    }
+
+    pub fn file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_id = val.into();
+        self
+    }
+
+    pub fn file_unique_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_unique_id = val.into();
+        self
+    }
+
+    pub fn width(mut self, val: i32) -> Self {
+        self.width = val;
+        self
+    }
+
+    pub fn height(mut self, val: i32) -> Self {
+        self.height = val;
+        self
+    }
+
+    pub fn file_size(mut self, val: u32) -> Self {
+        self.file_size = Some(val);
+        self
+    }
 }
 
 #[cfg(test)]

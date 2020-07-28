@@ -17,6 +17,7 @@ use crate::types::{Message, User};
 /// [inline mode]: https://core.telegram.org/bots/api#inline-mode
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct CallbackQuery {
     /// An unique identifier for this query.
     pub id: String,
@@ -47,6 +48,74 @@ pub struct CallbackQuery {
     /// A short name of a Game to be returned, serves as the unique identifier
     /// for the game.
     pub game_short_name: Option<String>,
+}
+
+impl CallbackQuery {
+    pub fn new<S1, S2>(id: S1, from: User, chat_instance: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            from,
+            message: None,
+            inline_message_id: None,
+            chat_instance: chat_instance.into(),
+            data: None,
+            game_short_name: None,
+        }
+    }
+
+    pub fn id<S>(mut self, id: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = id.into();
+        self
+    }
+
+    pub fn from(mut self, val: User) -> Self {
+        self.from = val;
+        self
+    }
+
+    pub fn message(mut self, val: Message) -> Self {
+        self.message = Some(val);
+        self
+    }
+
+    pub fn inline_message_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.inline_message_id = Some(val.into());
+        self
+    }
+
+    pub fn chat_instance<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.chat_instance = val.into();
+        self
+    }
+
+    pub fn data<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data = Some(val.into());
+        self
+    }
+
+    pub fn game_short_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.game_short_name = Some(val.into());
+        self
+    }
 }
 
 #[cfg(test)]

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#poll).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Poll {
     /// Unique poll identifier.
     pub id: String,
@@ -38,16 +39,126 @@ pub struct Poll {
     pub correct_option_id: Option<i32>,
 }
 
+impl Poll {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new<S1, S2, O>(
+        id: S1,
+        question: S2,
+        options: O,
+        is_closed: bool,
+        total_voter_count: i32,
+        is_anonymous: bool,
+        poll_type: PollType,
+        allows_multiple_answers: bool,
+    ) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        O: Into<Vec<PollOption>>,
+    {
+        Self {
+            id: id.into(),
+            question: question.into(),
+            options: options.into(),
+            is_closed,
+            total_voter_count,
+            is_anonymous,
+            poll_type,
+            allows_multiple_answers,
+            correct_option_id: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn question<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.question = val.into();
+        self
+    }
+
+    pub fn options<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PollOption>>,
+    {
+        self.options = val.into();
+        self
+    }
+
+    #[allow(clippy::wrong_self_convention)]
+    pub fn is_closed(mut self, val: bool) -> Self {
+        self.is_closed = val;
+        self
+    }
+
+    pub fn total_voter_count(mut self, val: i32) -> Self {
+        self.total_voter_count = val;
+        self
+    }
+
+    #[allow(clippy::wrong_self_convention)]
+    pub fn is_anonymous(mut self, val: bool) -> Self {
+        self.is_anonymous = val;
+        self
+    }
+
+    pub fn poll_type(mut self, val: PollType) -> Self {
+        self.poll_type = val;
+        self
+    }
+
+    pub fn allows_multiple_answers(mut self, val: bool) -> Self {
+        self.allows_multiple_answers = val;
+        self
+    }
+
+    pub fn correct_option_id(mut self, val: i32) -> Self {
+        self.correct_option_id = Some(val);
+        self
+    }
+}
+
 /// This object contains information about one answer option in a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PollOption {
     /// Option text, 1-100 characters.
     pub text: String,
 
     /// Number of users that voted for this option.
     pub voter_count: i32,
+}
+
+impl PollOption {
+    pub fn new<S>(text: S, voter_count: i32) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { text: text.into(), voter_count }
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    pub fn voter_count(mut self, val: i32) -> Self {
+        self.voter_count = val;
+        self
+    }
 }
 
 #[cfg(test)]

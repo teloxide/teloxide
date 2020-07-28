@@ -19,6 +19,7 @@ use crate::types::{
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum InlineQueryResult {
     #[serde(rename = "audio")]
     CachedAudio(InlineQueryResultCachedAudio),

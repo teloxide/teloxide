@@ -12,6 +12,7 @@ use crate::types::{MimeWrapper, PhotoSize};
 /// [audio files]: https://core.telegram.org/bots/api#audio
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Document {
     /// An identifier for this file.
     pub file_id: String,
@@ -32,4 +33,60 @@ pub struct Document {
 
     /// A size of a file.
     pub file_size: Option<u32>,
+}
+
+impl Document {
+    pub fn new<S1, S2>(file_id: S1, file_unique_id: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            file_id: file_id.into(),
+            file_unique_id: file_unique_id.into(),
+            thumb: None,
+            file_name: None,
+            mime_type: None,
+            file_size: None,
+        }
+    }
+
+    pub fn file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_id = val.into();
+        self
+    }
+
+    pub fn file_unique_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_unique_id = val.into();
+        self
+    }
+
+    pub fn thumb(mut self, val: PhotoSize) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn file_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_name = Some(val.into());
+        self
+    }
+
+    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+        self.mime_type = Some(val);
+        self
+    }
+
+    pub fn file_size(mut self, val: u32) -> Self {
+        self.file_size = Some(val);
+        self
+    }
 }

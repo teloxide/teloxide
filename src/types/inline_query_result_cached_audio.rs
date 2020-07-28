@@ -11,6 +11,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedaudio).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InlineQueryResultCachedAudio {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,
@@ -36,4 +37,60 @@ pub struct InlineQueryResultCachedAudio {
 
     /// Content of the message to be sent instead of the audio.
     pub input_message_content: Option<InputMessageContent>,
+}
+
+impl InlineQueryResultCachedAudio {
+    pub fn new<S1, S2>(id: S1, audio_file_id: S2) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self {
+            id: id.into(),
+            audio_file_id: audio_file_id.into(),
+            caption: None,
+            parse_mode: None,
+            reply_markup: None,
+            input_message_content: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn audio_file_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.audio_file_id = val.into();
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
+        self.reply_markup = Some(val);
+        self
+    }
+
+    pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
+        self.input_message_content = Some(val);
+        self
+    }
 }

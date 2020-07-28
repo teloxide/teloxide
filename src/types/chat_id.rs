@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 /// (in the format `@channelusername`).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Display, From)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum ChatId {
     /// A chat identifier.
     #[display(fmt = "{}", _0)]

@@ -10,6 +10,7 @@ use crate::types::{KeyboardButtonPollType, True};
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct KeyboardButton {
     /// Text of the button. If none of the optional fields are used, it will
     /// be sent as a message when the button is pressed.
@@ -25,8 +26,6 @@ pub struct KeyboardButton {
 }
 
 impl KeyboardButton {
-    /// Creates `KeyboardButton` with the provided `text` and all the other
-    /// fields set to `None`.
     pub fn new<T>(text: T) -> Self
     where
         T: Into<String>,
@@ -45,6 +44,7 @@ impl KeyboardButton {
 
 // Serialize + Deserialize are implemented by hand
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[non_exhaustive]
 pub enum ButtonRequest {
     Location,
     Contact,
@@ -54,6 +54,7 @@ pub enum ButtonRequest {
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
 #[serde_with_macros::skip_serializing_none]
 #[derive(Serialize, Deserialize)]
+#[non_exhaustive]
 struct RawRequest {
     /// If `true`, the user's phone number will be sent as a contact
     /// when the button is pressed. Available in private chats only.

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#labeledprice).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct LabeledPrice {
     /// Portion label.
     pub label: String,
@@ -17,6 +18,28 @@ pub struct LabeledPrice {
     /// [currency]: https://core.telegram.org/bots/payments#supported-currencies
     /// [`currencies.json`]: https://core.telegram.org/bots/payments/currencies.json
     pub amount: i32,
+}
+
+impl LabeledPrice {
+    pub fn new<S>(label: S, amount: i32) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { label: label.into(), amount }
+    }
+
+    pub fn label<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.label = val.into();
+        self
+    }
+
+    pub fn amount(mut self, val: i32) -> Self {
+        self.amount = val;
+        self
+    }
 }
 
 #[cfg(test)]

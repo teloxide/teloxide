@@ -14,6 +14,7 @@ use serde_json::Value;
 ///
 /// [object]: https://core.telegram.org/bots/api#available-types
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Update {
     /// The update‘s unique identifier. Update identifiers start from a certain
     /// positive number and increase sequentially. This ID becomes especially
@@ -54,6 +55,7 @@ impl Update {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum UpdateKind {
     /// New incoming message of any kind — text, photo, sticker, etc.
     Message(Message),

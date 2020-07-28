@@ -5,6 +5,7 @@ use crate::types::{ForceReply, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyK
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, From)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum ReplyMarkup {
     InlineKeyboardMarkup(InlineKeyboardMarkup),
     ReplyKeyboardMarkup(ReplyKeyboardMarkup),

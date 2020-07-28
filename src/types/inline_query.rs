@@ -10,6 +10,7 @@ use crate::types::{Location, User};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequery).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InlineQuery {
     /// Unique identifier for this query.
     pub id: String,
@@ -25,4 +26,49 @@ pub struct InlineQuery {
 
     /// Offset of the results to be returned, can be controlled by the bot.
     pub offset: String,
+}
+
+impl InlineQuery {
+    pub fn new<S1, S2, S3>(id: S1, from: User, query: S2, offset: S3) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<String>,
+    {
+        Self { id: id.into(), from, location: None, query: query.into(), offset: offset.into() }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn from(mut self, val: User) -> Self {
+        self.from = val;
+        self
+    }
+
+    pub fn location(mut self, val: Location) -> Self {
+        self.location = Some(val);
+        self
+    }
+
+    pub fn query<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.query = val.into();
+        self
+    }
+
+    pub fn offset<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.offset = val.into();
+        self
+    }
 }

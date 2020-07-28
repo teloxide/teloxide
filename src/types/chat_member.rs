@@ -7,6 +7,7 @@ use crate::types::User;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ChatMember {
     /// Information about the user.
     pub user: User,
@@ -74,6 +75,118 @@ pub struct ChatMember {
     /// Restricted only. `true`, if the user is allowed to add web page
     /// previews to their messages.
     pub can_add_web_page_previews: Option<bool>,
+}
+
+impl ChatMember {
+    pub fn new(user: User, status: ChatMemberStatus) -> Self {
+        Self {
+            user,
+            status,
+            custom_title: None,
+            until_date: None,
+            can_be_edited: None,
+            can_change_info: None,
+            can_post_messages: None,
+            can_edit_messages: None,
+            can_delete_messages: None,
+            can_invite_users: None,
+            can_restrict_members: None,
+            can_pin_messages: None,
+            can_promote_members: None,
+            can_send_messages: None,
+            can_send_media_messages: None,
+            can_send_other_messages: None,
+            can_add_web_page_previews: None,
+        }
+    }
+
+    pub fn user(mut self, val: User) -> Self {
+        self.user = val;
+        self
+    }
+
+    pub fn status(mut self, val: ChatMemberStatus) -> Self {
+        self.status = val;
+        self
+    }
+
+    pub fn custom_title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.custom_title = Some(val.into());
+        self
+    }
+
+    pub fn until_date(mut self, val: i32) -> Self {
+        self.until_date = Some(val);
+        self
+    }
+
+    pub fn can_be_edited(mut self, val: bool) -> Self {
+        self.can_be_edited = Some(val);
+        self
+    }
+
+    pub fn can_change_info(mut self, val: bool) -> Self {
+        self.can_change_info = Some(val);
+        self
+    }
+
+    pub fn can_post_messages(mut self, val: bool) -> Self {
+        self.can_post_messages = Some(val);
+        self
+    }
+
+    pub fn can_edit_messages(mut self, val: bool) -> Self {
+        self.can_edit_messages = Some(val);
+        self
+    }
+
+    pub fn can_delete_messages(mut self, val: bool) -> Self {
+        self.can_delete_messages = Some(val);
+        self
+    }
+
+    pub fn can_invite_users(mut self, val: bool) -> Self {
+        self.can_invite_users = Some(val);
+        self
+    }
+
+    pub fn can_restrict_members(mut self, val: bool) -> Self {
+        self.can_restrict_members = Some(val);
+        self
+    }
+
+    pub fn can_pin_messages(mut self, val: bool) -> Self {
+        self.can_pin_messages = Some(val);
+        self
+    }
+
+    pub fn can_promote_members(mut self, val: bool) -> Self {
+        self.can_promote_members = Some(val);
+        self
+    }
+
+    pub fn can_send_messages(mut self, val: bool) -> Self {
+        self.can_send_messages = Some(val);
+        self
+    }
+
+    pub fn can_send_media_messages(mut self, val: bool) -> Self {
+        self.can_send_media_messages = Some(val);
+        self
+    }
+
+    pub fn can_send_other_messages(mut self, val: bool) -> Self {
+        self.can_send_other_messages = Some(val);
+        self
+    }
+
+    pub fn can_add_web_page_previews(mut self, val: bool) -> Self {
+        self.can_add_web_page_previews = Some(val);
+        self
+    }
 }
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]

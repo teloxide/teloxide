@@ -14,9 +14,41 @@ use serde::{Deserialize, Serialize};
 /// [Telegram Login Widget]: https://core.telegram.org/widgets/login
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct LoginUrl {
     pub url: String,
     pub forward_text: Option<String>,
     pub bot_username: Option<String>,
     pub request_write_access: Option<bool>,
+}
+
+impl LoginUrl {
+    pub fn url<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.url = val.into();
+        self
+    }
+
+    pub fn forward_text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.forward_text = Some(val.into());
+        self
+    }
+
+    pub fn bot_username<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.bot_username = Some(val.into());
+        self
+    }
+
+    pub fn request_write_access<S>(mut self, val: bool) -> Self {
+        self.request_write_access = Some(val);
+        self
+    }
 }

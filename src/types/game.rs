@@ -10,6 +10,7 @@ use crate::types::{Animation, MessageEntity, PhotoSize};
 /// [@Botfather]: https://t.me/botfather
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Game {
     /// Title of the game.
     pub title: String,
@@ -39,4 +40,67 @@ pub struct Game {
     ///
     /// [@Botfather]: https://t.me/botfather
     pub animation: Option<Animation>,
+}
+
+impl Game {
+    pub fn new<S1, S2, P>(title: S1, description: S2, photo: P) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        P: Into<Vec<PhotoSize>>,
+    {
+        Self {
+            title: title.into(),
+            description: description.into(),
+            photo: photo.into(),
+            text: None,
+            text_entities: None,
+            animation: None,
+        }
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = val.into();
+        self
+    }
+
+    pub fn photo<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<PhotoSize>>,
+    {
+        self.photo = val.into();
+        self
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = Some(val.into());
+        self
+    }
+
+    pub fn text_entities<T>(mut self, val: T) -> Self
+    where
+        T: Into<Vec<MessageEntity>>,
+    {
+        self.text_entities = Some(val.into());
+        self
+    }
+
+    pub fn animation(mut self, val: Animation) -> Self {
+        self.animation = Some(val);
+        self
+    }
 }

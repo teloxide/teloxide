@@ -2,13 +2,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{InputFile, ParseMode};
 
-// TODO: should variants use new-type?
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "type")]
-#[serde(rename_all = "snake_case")]
 /// This object represents the content of a media message to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmedia).
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum InputMedia {
     Photo(InputMediaPhoto),
     Video(InputMediaVideo),
@@ -22,6 +22,7 @@ pub enum InputMedia {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaPhoto {
     /// File to send.
     pub media: InputFile,
@@ -38,11 +39,36 @@ pub struct InputMediaPhoto {
     pub parse_mode: Option<ParseMode>,
 }
 
+impl InputMediaPhoto {
+    pub fn new(media: InputFile) -> Self {
+        Self { media, caption: None, parse_mode: None }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+}
+
 /// Represents a video to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaVideo {
     // File to send.
     pub media: InputFile,
@@ -78,12 +104,71 @@ pub struct InputMediaVideo {
     pub supports_streaming: Option<bool>,
 }
 
+impl InputMediaVideo {
+    pub fn new(media: InputFile) -> Self {
+        Self {
+            media,
+            thumb: None,
+            caption: None,
+            parse_mode: None,
+            width: None,
+            height: None,
+            duration: None,
+            supports_streaming: None,
+        }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn width(mut self, val: u16) -> Self {
+        self.width = Some(val);
+        self
+    }
+
+    pub fn height(mut self, val: u16) -> Self {
+        self.height = Some(val);
+        self
+    }
+
+    pub fn duration(mut self, val: u16) -> Self {
+        self.duration = Some(val);
+        self
+    }
+
+    pub fn supports_streaming(mut self, val: bool) -> Self {
+        self.supports_streaming = Some(val);
+        self
+    }
+}
+
 /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
 /// sound) to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaAnimation {
     /// File to send.
     pub media: InputFile,
@@ -116,11 +201,64 @@ pub struct InputMediaAnimation {
     pub duration: Option<u16>,
 }
 
+impl InputMediaAnimation {
+    pub fn new(media: InputFile) -> Self {
+        Self {
+            media,
+            thumb: None,
+            caption: None,
+            parse_mode: None,
+            width: None,
+            height: None,
+            duration: None,
+        }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn width(mut self, val: u16) -> Self {
+        self.width = Some(val);
+        self
+    }
+
+    pub fn height(mut self, val: u16) -> Self {
+        self.height = Some(val);
+        self
+    }
+
+    pub fn duration(mut self, val: u16) -> Self {
+        self.duration = Some(val);
+        self
+    }
+}
+
 /// Represents an audio file to be treated as music to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaAudio {
     /// File to send.
     pub media: InputFile,
@@ -141,7 +279,7 @@ pub struct InputMediaAudio {
     /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
-    pub parse_mode: Option<String>,
+    pub parse_mode: Option<ParseMode>,
 
     /// Duration of the audio in seconds.
     pub duration: Option<u16>,
@@ -153,11 +291,70 @@ pub struct InputMediaAudio {
     pub title: Option<String>,
 }
 
+impl InputMediaAudio {
+    pub fn new(media: InputFile) -> Self {
+        Self {
+            media,
+            thumb: None,
+            caption: None,
+            parse_mode: None,
+            performer: None,
+            title: None,
+            duration: None,
+        }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn duration(mut self, val: u16) -> Self {
+        self.duration = Some(val);
+        self
+    }
+
+    pub fn performer<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.performer = Some(val.into());
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = Some(val.into());
+        self
+    }
+}
+
 /// Represents a general file to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct InputMediaDocument {
     /// File to send.
     pub media: InputFile,
@@ -179,6 +376,30 @@ pub struct InputMediaDocument {
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
+}
+
+impl InputMediaDocument {
+    pub fn new(media: InputFile) -> Self {
+        Self { media, thumb: None, caption: None, parse_mode: None }
+    }
+
+    pub fn thumb(mut self, val: InputFile) -> Self {
+        self.thumb = Some(val);
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
 }
 
 impl InputMedia {

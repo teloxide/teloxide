@@ -9,4 +9,5 @@ use serde::{Deserialize, Serialize};
 ///
 /// [@Botfather]:  https://t.me/botfather
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct CallbackGame;

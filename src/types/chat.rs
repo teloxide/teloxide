@@ -7,6 +7,7 @@ use crate::types::{ChatPermissions, ChatPhoto, Message};
 /// [The official docs](https://core.telegram.org/bots/api#chat).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Chat {
     /// A unique identifier for this chat. This number may be greater than 32
     /// bits and some programming languages may have difficulty/silent defects
@@ -24,9 +25,31 @@ pub struct Chat {
     pub photo: Option<ChatPhoto>,
 }
 
+impl Chat {
+    pub fn new(id: i64, kind: ChatKind) -> Self {
+        Self { id, kind, photo: None }
+    }
+
+    pub fn id(mut self, val: i64) -> Self {
+        self.id = val;
+        self
+    }
+
+    pub fn kind(mut self, val: ChatKind) -> Self {
+        self.kind = val;
+        self
+    }
+
+    pub fn photo(mut self, val: ChatPhoto) -> Self {
+        self.photo = Some(val);
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum ChatKind {
     Public(ChatPublic),
     Private(ChatPrivate),
@@ -34,6 +57,7 @@ pub enum ChatKind {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
@@ -66,8 +90,44 @@ pub struct ChatPublic {
     pub pinned_message: Option<Box<Message>>,
 }
 
+impl ChatPublic {
+    pub fn new(kind: PublicChatKind) -> Self {
+        Self { title: None, kind, description: None, invite_link: None, pinned_message: None }
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = Some(val.into());
+        self
+    }
+
+    pub fn description<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.description = Some(val.into());
+        self
+    }
+
+    pub fn invite_link<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.invite_link = Some(val.into());
+        self
+    }
+
+    pub fn pinned_message(mut self, val: Message) -> Self {
+        self.pinned_message = Some(Box::new(val));
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ChatPrivate {
     /// A dummy field. Used to ensure that the `type` field is equal to
     /// `private`.
@@ -86,10 +146,41 @@ pub struct ChatPrivate {
     pub last_name: Option<String>,
 }
 
+impl ChatPrivate {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn username<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.username = Some(val.into());
+        self
+    }
+
+    pub fn first_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.first_name = Some(val.into());
+        self
+    }
+
+    pub fn last_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.last_name = Some(val.into());
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
+#[non_exhaustive]
 pub enum PublicChatKind {
     Channel(PublicChatChannel),
     Group(PublicChatGroup),
@@ -97,14 +188,22 @@ pub enum PublicChatKind {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
 }
 
+impl PublicChatChannel {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
     /// only from [`Bot::get_chat`].
@@ -113,8 +212,15 @@ pub struct PublicChatGroup {
     pub permissions: Option<ChatPermissions>,
 }
 
+impl PublicChatGroup {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
@@ -143,6 +249,12 @@ pub struct PublicChatSupergroup {
     ///
     /// [`Bot::get_chat`]: crate::Bot::get_chat
     pub slow_mode_delay: Option<i32>,
+}
+
+impl PublicChatSupergroup {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 struct PrivateChatKindVisitor;

@@ -11,6 +11,7 @@ use crate::types::KeyboardButton;
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
+#[non_exhaustive]
 pub struct ReplyKeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects

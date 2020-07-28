@@ -11,6 +11,7 @@ use crate::types::PhotoSize;
 /// [v4.0]: https://telegram.org/blog/video-messages-and-telescope
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct VideoNote {
     /// Identifier for this file.
     pub file_id: String,
