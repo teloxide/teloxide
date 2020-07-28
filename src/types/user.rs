@@ -48,7 +48,7 @@ impl User {
         self
     }
 
-    #[warn(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_bot<S>(mut self, val: bool) -> Self {
         self.is_bot = val;
         self

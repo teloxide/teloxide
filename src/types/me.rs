@@ -21,3 +21,37 @@ pub struct Me {
     /// `true`, if the bot supports inline queries.
     pub supports_inline_queries: bool,
 }
+
+impl Me {
+    pub fn new(
+        user: User,
+        can_join_groups: bool,
+        can_read_all_group_messages: bool,
+        supports_inline_queries: bool,
+    ) -> Self {
+        Self { user, can_join_groups, can_read_all_group_messages, supports_inline_queries }
+    }
+
+    pub fn user(mut self, val: User) -> Self {
+        self.user = val;
+        self
+    }
+
+    #[warn(clippy::wrong_self_convention)]
+    pub fn can_join_groups<S>(mut self, val: bool) -> Self {
+        self.can_join_groups = val;
+        self
+    }
+
+    #[warn(clippy::wrong_self_convention)]
+    pub fn can_read_all_group_messages<S>(mut self, val: bool) -> Self {
+        self.can_read_all_group_messages = val;
+        self
+    }
+
+    #[warn(clippy::wrong_self_convention)]
+    pub fn supports_inline_queries<S>(mut self, val: bool) -> Self {
+        self.supports_inline_queries = val;
+        self
+    }
+}
