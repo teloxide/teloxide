@@ -1,6 +1,4 @@
 #[macro_use]
-extern crate smart_default;
-#[macro_use]
 extern crate derive_more;
 
 mod states;

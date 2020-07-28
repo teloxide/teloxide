@@ -2,14 +2,19 @@ use teloxide_macros::Transition;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Transition, SmartDefault, From, Serialize, Deserialize)]
+#[derive(Transition, From, Serialize, Deserialize)]
 pub enum Dialogue {
-    #[default]
     Start(StartState),
     HaveNumber(HaveNumberState),
 }
 
-#[derive(Default, Serialize, Deserialize)]
+impl Default for Dialogue {
+    fn default() -> Self {
+        Self::Start(StartState)
+    }
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct StartState;
 
 #[derive(Serialize, Deserialize)]
