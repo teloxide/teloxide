@@ -253,6 +253,28 @@ pub struct PassportElementErrorFile {
     pub file_hash: String,
 }
 
+impl PassportElementErrorFile {
+    pub fn new<S>(r#type: PassportElementErrorFileType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorFileType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hash = val.into();
+        self
+    }
+}
+
 /// Represents an issue with a list of scans.
 ///
 /// The error is considered resolved when the list of files containing the scans
