@@ -87,6 +87,41 @@ pub struct PassportElementErrorDataField {
     pub data_hash: String,
 }
 
+impl PassportElementErrorDataField {
+    pub fn new<S1, S2>(
+        r#type: PassportElementErrorDataFieldType,
+        field_name: S1,
+        data_hash: S2,
+    ) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+    {
+        Self { r#type, field_name: field_name.into(), data_hash: data_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorDataFieldType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn field_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.field_name = val.into();
+        self
+    }
+
+    pub fn data_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.data_hash = val.into();
+        self
+    }
+}
+
 /// Represents an issue with the front side of a document.
 ///
 /// The error is considered resolved when the file with the front side of the
@@ -102,6 +137,28 @@ pub struct PassportElementErrorFrontSide {
     /// Base64-encoded hash of the file with the front side of the
     /// document.
     pub file_hash: String,
+}
+
+impl PassportElementErrorFrontSide {
+    pub fn new<S>(r#type: PassportElementErrorFrontSideType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, file_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorFrontSideType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn file_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.file_hash = val.into();
+        self
+    }
 }
 
 /// Represents an issue with the reverse side of a document.
