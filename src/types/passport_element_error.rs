@@ -292,11 +292,11 @@ pub struct PassportElementErrorFiles {
 }
 
 impl PassportElementErrorFiles {
-    pub fn new<S>(r#type: PassportElementErrorFilesType, file_hash: S) -> Self
+    pub fn new<S>(r#type: PassportElementErrorFilesType, file_hashes: S) -> Self
     where
-        S: Into<String>,
+        S: Into<Vec<String>>,
     {
-        Self { r#type, file_hashes: file_hash.into() }
+        Self { r#type, file_hashes: file_hashes.into() }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorFilesType) -> Self {
@@ -306,7 +306,7 @@ impl PassportElementErrorFiles {
 
     pub fn file_hashes<S>(mut self, val: S) -> Self
     where
-        S: Into<String>,
+        S: Into<Vec<String>>,
     {
         self.file_hashes = val.into();
         self
@@ -369,11 +369,11 @@ pub struct PassportElementErrorTranslationFiles {
 }
 
 impl PassportElementErrorTranslationFiles {
-    pub fn new<S>(r#type: PassportElementErrorTranslationFilesType, file_hash: S) -> Self
+    pub fn new<S>(r#type: PassportElementErrorTranslationFilesType, file_hashes: S) -> Self
     where
-        S: Into<String>,
+        S: Into<Vec<String>>,
     {
-        Self { r#type, file_hashes: file_hash.into() }
+        Self { r#type, file_hashes: file_hashes.into() }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorTranslationFilesType) -> Self {
@@ -383,7 +383,7 @@ impl PassportElementErrorTranslationFiles {
 
     pub fn file_hashes<S>(mut self, val: S) -> Self
     where
-        S: Into<String>,
+        S: Into<Vec<String>>,
     {
         self.file_hashes = val.into();
         self
