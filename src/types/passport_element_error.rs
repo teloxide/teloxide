@@ -14,7 +14,28 @@ pub struct PassportElementError {
     kind: PassportElementErrorKind,
 }
 
-// TODO: use different types?
+impl PassportElementError {
+    pub fn new<S>(message: S, kind: PassportElementErrorKind) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { message: message.into(), kind }
+    }
+
+    pub fn message<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.message = val.into();
+        self
+    }
+
+    pub fn kind(mut self, val: PassportElementErrorKind) -> Self {
+        self.kind = val;
+        self
+    }
+}
+
 #[serde(tag = "source")]
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
