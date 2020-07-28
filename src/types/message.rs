@@ -875,6 +875,32 @@ pub struct MediaText {
     pub entities: Vec<MessageEntity>,
 }
 
+impl MediaText {
+    pub fn new<S, E>(text: S, entities: E) -> Self
+    where
+        S: Into<String>,
+        E: Into<Vec<MessageEntity>>,
+    {
+        Self { text: text.into(), entities: entities.into() }
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    pub fn entities<CE>(mut self, val: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        self.entities = val.into();
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
