@@ -973,6 +973,17 @@ pub struct MediaVideoNote {
     pub video_note: VideoNote,
 }
 
+impl MediaVideoNote {
+    pub fn new(video_note: VideoNote) -> Self {
+        Self { video_note }
+    }
+
+    pub fn video_note(mut self, val: VideoNote) -> Self {
+        self.video_note = val;
+        self
+    }
+}
+
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
