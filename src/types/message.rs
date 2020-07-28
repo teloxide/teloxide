@@ -690,6 +690,36 @@ pub struct MediaDocument {
     pub caption_entities: Vec<MessageEntity>,
 }
 
+impl MediaDocument {
+    pub fn new<CE>(document: Document, caption_entities: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        Self { document, caption: None, caption_entities: caption_entities.into() }
+    }
+
+    pub fn document(mut self, val: Document) -> Self {
+        self.document = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub fn caption_entities<CE>(mut self, val: CE) -> Self
+    where
+        CE: Into<Vec<MessageEntity>>,
+    {
+        self.caption_entities = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct MediaGame {
