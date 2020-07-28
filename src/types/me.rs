@@ -1,3 +1,4 @@
+use crate::types::User;
 use serde::{Deserialize, Serialize};
 
 /// Returned only in [`Bot::get_me`].
