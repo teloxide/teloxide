@@ -396,7 +396,14 @@ The second one produces very strange compiler messages because of the `#[tokio::
 ## FAQ
 Q: Where I can ask questions?
 
-A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about the library design, enhancements, bug reports. But if you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official group](https://t.me/teloxide).
+A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about:
+
+ - the library design;
+ - enhancements;
+ - bug reports;
+ - ...
+
+If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
 
 Q: Do you support the Telegram API for clients?
 
