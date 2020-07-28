@@ -406,6 +406,28 @@ pub struct PassportElementErrorUnspecified {
     pub element_hash: String,
 }
 
+impl PassportElementErrorUnspecified {
+    pub fn new<S>(r#type: PassportElementErrorUnspecifiedType, file_hash: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { r#type, element_hash: file_hash.into() }
+    }
+
+    pub fn r#type(mut self, val: PassportElementErrorUnspecifiedType) -> Self {
+        self.r#type = val;
+        self
+    }
+
+    pub fn element_hash<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.element_hash = val.into();
+        self
+    }
+}
+
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
