@@ -5,15 +5,15 @@ use crate::{
         DeleteMessage, DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
         EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup, EditMessageText,
         ExportChatInviteLink, ForwardMessage, GetChat, GetChatAdministrators, GetChatMember,
-        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
-        GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage,
-        PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
-        SendChatActionKind, SendContact, SendDice, SendDocument, SendGame, SendInvoice,
-        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue,
-        SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
-        SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore,
-        SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
-        UnpinChatMessage, UploadStickerFile,
+        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetMyCommands, GetStickerSet,
+        GetUpdates, GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
+        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio,
+        SendChatAction, SendChatActionKind, SendContact, SendDice, SendDocument, SendGame,
+        SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
+        SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
+        SetChatDescription, SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
+        SetGameScore, SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll,
+        UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
         ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
@@ -1505,6 +1505,8 @@ impl Bot {
     /// Use this method to send an animated emoji that will display a random
     /// value.
     ///
+    /// [The official docs](https://core.telegram.org/bots/api#senddice).
+    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target channel  (in the format `@channelusername`).
@@ -1513,5 +1515,12 @@ impl Bot {
         C: Into<ChatId>,
     {
         SendDice::new(self.clone(), chat_id)
+    }
+
+    /// Use this method to get the current list of the bot's commands.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#getmycommands).
+    pub fn get_my_commands(&self) -> GetMyCommands {
+        GetMyCommands::new(self.clone())
     }
 }
