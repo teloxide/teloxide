@@ -1,5 +1,5 @@
 [package]
-name = "ping_pong_bot"
+name = "dices_bot"
 version = "0.1.0"
 authors = ["Temirkhan Myrzamadi <hirrolot@gmail.com>"]
 edition = "2018"

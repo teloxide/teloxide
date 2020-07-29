@@ -53,7 +53,7 @@ jobs:
             dialogue_bot, 
             heroku_ping_pong_bot, 
             ngrok_ping_pong_bot, 
-            ping_pong_bot, 
+            dices_bot,
             shared_state_bot,
             simple_commands_bot,
         ]
