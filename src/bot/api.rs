@@ -1221,31 +1221,19 @@ impl Bot {
     /// # Params
     ///   - `user_id`: User identifier of sticker set owner.
     ///   - `name`: Sticker set name.
-    ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
-    ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using [`InputFile:
-    /// :FileId`]. [More info on Sending Files »].
     ///   - `emojis`: One or more emoji corresponding to the sticker.
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn add_sticker_to_set<N, E>(
         &self,
         user_id: i32,
         name: N,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> AddStickerToSet
     where
         N: Into<String>,
         E: Into<String>,
     {
-        AddStickerToSet::new(self.clone(), user_id, name, png_sticker, emojis)
+        AddStickerToSet::new(self.clone(), user_id, name, sticker_type, emojis)
     }
 
     /// Use this method to move a sticker in a set created by the bot to a
