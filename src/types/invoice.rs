@@ -51,6 +51,7 @@ impl Invoice {
             total_amount,
         }
     }
+
     pub fn title<S>(mut self, val: S) -> Self
     where
         S: Into<String>,

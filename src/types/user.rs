@@ -29,6 +29,65 @@ pub struct User {
 }
 
 impl User {
+    pub fn new<S>(id: i32, is_bot: bool, first_name: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            id,
+            is_bot,
+            first_name: first_name.into(),
+            last_name: None,
+            username: None,
+            language_code: None,
+        }
+    }
+
+    pub fn id<S>(mut self, val: i32) -> Self {
+        self.id = val;
+        self
+    }
+
+    #[allow(clippy::wrong_self_convention)]
+    pub fn is_bot<S>(mut self, val: bool) -> Self {
+        self.is_bot = val;
+        self
+    }
+
+    pub fn first_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.first_name = val.into();
+        self
+    }
+
+    pub fn last_name<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.last_name = Some(val.into());
+        self
+    }
+
+    pub fn username<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.username = Some(val.into());
+        self
+    }
+
+    pub fn language_code<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.language_code = Some(val.into());
+        self
+    }
+}
+
+impl User {
     pub fn full_name(&self) -> String {
         match &self.last_name {
             Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
@@ -43,27 +102,6 @@ impl User {
     pub fn url(&self) -> reqwest::Url {
         reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str()).unwrap()
     }
-}
-
-/// Returned only in [`Bot::get_me`].
-///
-/// [`Bot::get_me`]: crate::Bot::get_me
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
-pub struct Me {
-    #[serde(flatten)]
-    pub user: User,
-
-    /// `true`, if the bot can be invited to groups.
-    pub can_join_groups: bool,
-
-    /// `true`, if [privacy mode] is disabled for the bot.
-    ///
-    /// [privacy mode]: https://core.telegram.org/bots#privacy-mode
-    pub can_read_all_group_messages: bool,
-
-    /// `true`, if the bot supports inline queries.
-    pub supports_inline_queries: bool,
 }
 
 #[cfg(test)]
