@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::requests::DiceEmoji;
+use crate::types::DiceEmoji;
 
 /// This object represents an animated emoji that displays a random value.
 #[serde_with_macros::skip_serializing_none]
