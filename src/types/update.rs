@@ -269,4 +269,36 @@ mod test {
 
         serde_json::from_str::<Update>(json).unwrap();
     }
+
+    #[test]
+    fn dice_works() {
+        let json = r#"
+        {
+    "message": {
+        "chat": {
+            "id": -1001276785818,
+            "title": "bla bla bla chat",
+            "type": "supergroup",
+            "username": "teloxide_dev"
+        },
+        "date": 1596014550,
+        "dice": {
+            "emoji": "🎲",
+            "value": 2
+        },
+        "from": {
+            "first_name": "Hirrolot",
+            "id": 408258968,
+            "is_bot": false,
+            "language_code": "en",
+            "username": "hirrolot"
+        },
+        "message_id": 35410
+    },
+    "update_id": 573255266
+}
+        "#;
+
+        serde_json::from_str::<Update>(json).unwrap();
+    }
 }
