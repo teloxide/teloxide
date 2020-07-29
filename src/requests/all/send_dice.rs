@@ -8,6 +8,8 @@ use crate::{
 };
 
 /// Use this method to send an animated emoji that will display a random value.
+///
+/// [The official docs](https://core.telegram.org/bots/api#senddice).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct SendDice {
