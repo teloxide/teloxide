@@ -48,6 +48,7 @@ impl StickerSet {
             is_animated,
             contains_masks,
             stickers: stickers.into(),
+            thumb: None,
         }
     }
 
