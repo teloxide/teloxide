@@ -12,8 +12,8 @@ use crate::{
         SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
         SetChatDescription, SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
-        SetGameScore, SetMyCommands, SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation,
-        StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        SetGameScore, SetMyCommands, SetStickerPositionInSet, SetStickerSetThumb, SetWebhook,
+        StopMessageLiveLocation, StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
         BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
@@ -1511,5 +1511,20 @@ impl Bot {
         C: Into<Vec<BotCommand>>,
     {
         SetMyCommands::new(self.clone(), commands)
+    }
+
+    /// Use this method to set the thumbnail of a sticker set. Animated
+    /// thumbnails can be set for animated sticker sets only.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#setstickersetthumb).
+    ///
+    /// # Params
+    ///    - `name`: Sticker set name.
+    ///    - `user_id`: User identifier of the sticker set owner.
+    pub fn set_sticker_set_thumb<S>(&self, name: S, user_id: i32) -> SetStickerSetThumb
+    where
+        S: Into<String>,
+    {
+        SetStickerSetThumb::new(self.clone(), name, user_id)
     }
 }
