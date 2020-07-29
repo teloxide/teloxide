@@ -13,7 +13,7 @@ use crate::types::True;
 ///
 /// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
 #[serde_with_macros::skip_serializing_none]
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ReplyKeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
@@ -35,4 +35,18 @@ pub struct ReplyKeyboardRemove {
     ///
     /// [`Message`]: crate::types::Message
     pub selective: Option<bool>,
+}
+
+impl ReplyKeyboardRemove {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn selective<T>(mut self, val: T) -> Self
+    where
+        T: Into<bool>,
+    {
+        self.selective = Some(val.into());
+        self
+    }
 }

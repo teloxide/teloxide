@@ -18,6 +18,41 @@ pub struct ShippingOption {
     pub prices: Vec<LabeledPrice>,
 }
 
+impl ShippingOption {
+    pub fn new<S1, S2, P>(id: S1, title: S2, prices: P) -> Self
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        P: Into<Vec<LabeledPrice>>,
+    {
+        Self { id: id.into(), title: title.into(), prices: prices.into() }
+    }
+
+    pub fn id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.id = val.into();
+        self
+    }
+
+    pub fn title<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn prices<P>(mut self, val: P) -> Self
+    where
+        P: Into<Vec<LabeledPrice>>,
+    {
+        self.prices = val.into();
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

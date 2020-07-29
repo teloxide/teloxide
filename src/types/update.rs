@@ -33,6 +33,22 @@ pub struct Update {
 }
 
 impl Update {
+    pub fn new(id: i32, kind: UpdateKind) -> Self {
+        Self { id, kind }
+    }
+
+    pub fn id<S>(mut self, val: i32) -> Self {
+        self.id = val;
+        self
+    }
+
+    pub fn kind<S>(mut self, val: UpdateKind) -> Self {
+        self.kind = val;
+        self
+    }
+}
+
+impl Update {
     /// Tries to parse `value` into `Update`, logging an error if failed.
     ///
     /// It is used to implement update listeners.
