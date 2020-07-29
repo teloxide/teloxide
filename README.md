@@ -91,7 +91,7 @@ futures = "0.3.5"
 ### The dices bot
 This bot throws a dice on each incoming message:
 
-([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
+([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
 ```rust
 use teloxide::prelude::*;
 
