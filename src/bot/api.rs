@@ -12,12 +12,12 @@ use crate::{
         SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
         SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
         SetChatDescription, SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
-        SetGameScore, SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll,
-        UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        SetGameScore, SetMyCommands, SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation,
+        StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice,
+        BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
+        InputMedia, LabeledPrice,
     },
     Bot,
 };
@@ -1522,5 +1522,19 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#getmycommands).
     pub fn get_my_commands(&self) -> GetMyCommands {
         GetMyCommands::new(self.clone())
+    }
+
+    /// Use this method to change the list of the bot's commands.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#setmycommands).
+    ///
+    /// # Params
+    ///    - `commands`: A JSON-serialized list of bot commands to be set as the
+    ///      list of the bot's commands. At most 100 commands can be specified.
+    pub fn set_my_commands<C>(&self, commands: C) -> SetMyCommands
+    where
+        C: Into<Vec<BotCommand>>,
+    {
+        SetMyCommands::new(self.clone(), commands)
     }
 }
