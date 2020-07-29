@@ -12,14 +12,14 @@ use std::ops::Add;
 ///
 /// [`Generic`]: https://docs.rs/frunk/latest/frunk/generic/trait.Generic.html
 pub trait UpState: Sized {
-    fn up<T, F>(src: T, field: F) -> Self
+    fn up<Src, F>(src: Src, field: F) -> Self
     where
-        T: Generic,
-        Self: Generic<Repr = <<T as Generic>::Repr as Add<HCons<F, HNil>>>::Output>,
-        <T as Generic>::Repr: Add<HCons<F, HNil>>,
+        Src: Generic,
+        Self: Generic<Repr = <<Src as Generic>::Repr as Add<HCons<F, HNil>>>::Output>,
+        <Src as Generic>::Repr: Add<HCons<F, HNil>>,
     {
         from_generic(into_generic(src) + h_cons(field, HNil))
     }
 }
 
-impl<T> UpState for T {}
+impl<Dst> UpState for Dst {}
