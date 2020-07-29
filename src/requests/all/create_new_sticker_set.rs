@@ -1,7 +1,7 @@
 use crate::{
     net,
     requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
-    types::{InputFile, MaskPosition, True},
+    types::{MaskPosition, StickerType, True},
     Bot,
 };
 
@@ -15,7 +15,7 @@ pub struct CreateNewStickerSet {
     user_id: i32,
     name: String,
     title: String,
-    png_sticker: InputFile,
+    sticker_type: StickerType,
     emojis: String,
     contains_masks: Option<bool>,
     mask_position: Option<MaskPosition>,
@@ -26,20 +26,25 @@ impl RequestWithFile for CreateNewStickerSet {
     type Output = True;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        let builder = FormBuilder::new()
+            .add_text("user_id", &self.user_id)
+            .add_text("name", &self.name)
+            .add_text("title", &self.title);
+
+        let builder = match &self.sticker_type {
+            StickerType::Png(file) => builder.add_input_file("png_sticker", &file),
+            StickerType::Tgs(file) => builder.add_input_file("tgs_sticker", &file),
+        }
+        .await?
+        .add_text("emojis", &self.emojis)
+        .add_text("contains_masks", &self.contains_masks)
+        .add_text("mask_position", &self.mask_position);
+
         Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "createNewStickerSet",
-            FormBuilder::new()
-                .add_text("user_id", &self.user_id)
-                .add_text("name", &self.name)
-                .add_text("title", &self.title)
-                .add_input_file("png_sticker", &self.png_sticker)
-                .await?
-                .add_text("emojis", &self.emojis)
-                .add_text("contains_masks", &self.contains_masks)
-                .add_text("mask_position", &self.mask_position)
-                .build(),
+            builder.build(),
         )
         .await)
     }
@@ -51,7 +56,7 @@ impl CreateNewStickerSet {
         user_id: i32,
         name: N,
         title: T,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> Self
     where
@@ -64,7 +69,7 @@ impl CreateNewStickerSet {
             user_id,
             name: name.into(),
             title: title.into(),
-            png_sticker,
+            sticker_type,
             emojis: emojis.into(),
             contains_masks: None,
             mask_position: None,
@@ -100,20 +105,8 @@ impl CreateNewStickerSet {
         self
     }
 
-    /// **Png** image with the sticker, must be up to 512 kilobytes in size,
-    /// dimensions must not exceed 512px, and either width or height must be
-    /// exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
-    pub fn png_sticker(mut self, val: InputFile) -> Self {
-        self.png_sticker = val;
+    pub fn sticker_type(mut self, val: StickerType) -> Self {
+        self.sticker_type = val;
         self
     }
 

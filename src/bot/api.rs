@@ -17,7 +17,7 @@ use crate::{
     },
     types::{
         BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, LabeledPrice,
+        InputMedia, LabeledPrice, StickerType,
     },
     Bot,
 };
@@ -1198,25 +1198,12 @@ impl Bot {
     /// end in `_by_<bot username>`. `<bot_username>` is case insensitive. 1-64
     /// characters.
     ///   - `title`: Sticker set title, 1-64 characters.
-    ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
-    ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///   - `emojis`: One or more emoji corresponding to the sticker.
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn create_new_sticker_set<N, T, E>(
         &self,
         user_id: i32,
         name: N,
         title: T,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> CreateNewStickerSet
     where
@@ -1224,7 +1211,7 @@ impl Bot {
         T: Into<String>,
         E: Into<String>,
     {
-        CreateNewStickerSet::new(self.clone(), user_id, name, title, png_sticker, emojis)
+        CreateNewStickerSet::new(self.clone(), user_id, name, title, sticker_type, emojis)
     }
 
     /// Use this method to add a new sticker to a set created by the bot.
