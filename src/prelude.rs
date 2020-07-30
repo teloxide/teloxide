@@ -6,7 +6,7 @@ pub use crate::{
             exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
             TransitionIn, TransitionOut,
         },
-        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
+        repl, Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     requests::{Request, ResponseResult},

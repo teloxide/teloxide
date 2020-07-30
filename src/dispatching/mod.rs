@@ -78,12 +78,14 @@ pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler;
 mod dispatcher_handler_rx_ext;
+mod repl;
 pub mod update_listeners;
 mod update_with_cx;
 
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
+pub use repl::repl;
 use tokio::sync::mpsc::UnboundedReceiver;
 pub use update_with_cx::UpdateWithCx;
 
