@@ -123,6 +123,7 @@ mod tests {
 
     fn message() -> Message {
         Message {
+            via_bot: None,
             id: 0,
             date: 0,
             chat: Chat {
