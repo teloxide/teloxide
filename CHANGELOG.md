@@ -6,17 +6,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - ???
 ### Added
+ - Support for typed bot commands ([issue 152](https://github.com/teloxide/teloxide/issues/152)).
  - `BotBuilder`, which allows setting a default `ParseMode`.
  - The `Transition`, `Subtransition`, `SubtransitionOutputType` traits.
  - A nicer approach to manage dialogues via `#[derive(Transition)]` + `#[teloxide(subtransition)]` (see [`examples/dialogue_bot`](https://github.com/teloxide/teloxide/tree/af2aa218e7bfc442ab4475023a1c661834f576fc/examples/dialogue_bot)).
+ - The `redis-storage` feature -- enables the Redis support.
+ - The `cbor-serializer` feature -- enables the `CBOR` serializer for dialogues.
+ - The `bincode-serializer` feature -- enables the `Bincode` serializer for dialogues.
+ - The `frunk` feature -- enables `teloxide::utils::UpState`, which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
+ - Upgrade to v4.9 Telegram bots API.
+ - `teloxide::utils::client_from_env` -- constructs a client from the `TELOXIDE_TOKEN` environmental variable.
+ - Import `Transition`, `TransitionIn`, `TransitionOut`, `UpState` to `teloxide::prelude`.
+ - Let users inspect an unknown API error using `ApiErrorKind::Unknown(String)`. All the known API errors are placed into `KnownApiErrorKind`.
+ - Setters to all the API types.
+ - `teloxide::dispatching::dialogue::serializer` -- various serializers for memory storages. The `Serializer` trait, `Bincode`, `CBOR`, `JSON`.
+
 
 ### Deprecated
- - `Bot::{from_env_with_client, new, with_client}`.
+ - `Bot::{from_env_with_client, new, with_client}`
 
 ### Changed
- - Now methods which can send file to Telegram returns tokio::io::Result<T>. Early its could panic. ([issue 216](https://github.com/teloxide/teloxide/issues/216))
- - Now provided description of unknown telegram error, by splitting ApiErrorKind at `ApiErrorKind` and `ApiErrorKindKnown` enums. ([issue 199](https://github.com/teloxide/teloxide/issues/199))
+ - `DialogueDispatcherHandlerCx` -> `DialogueWithCx`.
+ - `DispatcherHandlerCx` -> `UpdateWithCx`.
+ - Now provided description of unknown telegram error, by splitting ApiErrorKind at `ApiErrorKind` and `ApiErrorKindKnown` enums ([issue 199](https://github.com/teloxide/teloxide/issues/199)).
  - Extract `Bot` from `Arc` ([issue 216](https://github.com/teloxide/teloxide/issues/230)).
+ - Mark all the API types as `#[non_exhaustive]`.
+
+### Fixed
+ - Now methods which can send file to Telegram returns tokio::io::Result<T>. Early its could panic. ([issue 216](https://github.com/teloxide/teloxide/issues/216))
+ - If a bot wasn't triggered for several days, it stops responding. ([issue 223](https://github.com/teloxide/teloxide/issues/223))
 
 ## [0.2.0] - 2020-02-25
 ### Added
