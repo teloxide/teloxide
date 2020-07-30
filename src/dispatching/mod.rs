@@ -56,7 +56,7 @@ pub use commands_repl::{commands_repl, commands_repl_with_listener};
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
-pub use repl::repl;
+pub use repl::{repl, repl_with_listener};
 use tokio::sync::mpsc::UnboundedReceiver;
 pub use update_with_cx::UpdateWithCx;
 

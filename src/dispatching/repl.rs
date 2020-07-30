@@ -1,6 +1,9 @@
 use crate::{
-    dispatching::{Dispatcher, DispatcherHandlerRx, UpdateWithCx},
-    error_handlers::OnError,
+    dispatching::{
+        update_listeners, update_listeners::UpdateListener, Dispatcher, DispatcherHandlerRx,
+        UpdateWithCx,
+    },
+    error_handlers::{LoggingErrorHandler, OnError},
     types::Message,
     Bot,
 };
@@ -25,6 +28,19 @@ where
     Result<(), E>: OnError<E>,
     E: Debug + Send,
 {
+    let cloned_bot = bot.clone();
+    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
+}
+
+pub async fn repl_with_listener<'a, H, Fut, E, L, ListenerE>(bot: Bot, handler: H, listener: L)
+where
+    H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
+    Fut: Future<Output = Result<(), E>> + Send + 'static,
+    L: UpdateListener<ListenerE> + Send + 'a,
+    ListenerE: Debug,
+    Result<(), E>: OnError<E>,
+    E: Debug + Send,
+{
     let handler = Arc::new(handler);
 
     Dispatcher::new(bot)
@@ -37,6 +53,9 @@ where
                 }
             })
         })
-        .dispatch()
+        .dispatch_with_listener(
+            listener,
+            LoggingErrorHandler::with_custom_text("An error from the update listener"),
+        )
         .await;
 }
