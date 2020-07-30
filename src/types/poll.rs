@@ -45,6 +45,13 @@ pub struct Poll {
     /// Special entities like usernames, URLs, bot commands, etc. that appear in
     /// the explanation.
     pub explanation_entities: Option<Vec<MessageEntity>>,
+
+    /// Amount of time in seconds the poll will be active after creation.
+    open_period: Option<i32>,
+
+    /// Point in time (Unix timestamp) when the poll will be automatically
+    /// closed.
+    close_date: Option<i32>,
 }
 
 impl Poll {
@@ -76,6 +83,8 @@ impl Poll {
             correct_option_id: None,
             explanation: None,
             explanation_entities: None,
+            open_period: None,
+            close_date: None,
         }
     }
 
@@ -148,6 +157,16 @@ impl Poll {
         S: Into<Vec<MessageEntity>>,
     {
         self.explanation_entities = Some(val.into());
+        self
+    }
+
+    pub fn open_period(mut self, val: i32) -> Self {
+        self.open_period = Some(val);
+        self
+    }
+
+    pub fn close_date(mut self, val: i32) -> Self {
+        self.close_date = Some(val);
         self
     }
 }
