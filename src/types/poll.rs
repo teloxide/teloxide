@@ -1,4 +1,4 @@
-use crate::types::PollType;
+use crate::types::{MessageEntity, PollType};
 use serde::{Deserialize, Serialize};
 
 /// This object contains information about a poll.
@@ -37,6 +37,14 @@ pub struct Poll {
     /// polls in the quiz mode, which are closed, or was sent (not
     /// forwarded) by the bot or to the private chat with the bot.
     pub correct_option_id: Option<i32>,
+
+    /// Text that is shown when a user chooses an incorrect answer or taps on
+    /// the lamp icon in a quiz-style poll, 0-200 characters.
+    pub explanation: Option<String>,
+
+    /// Special entities like usernames, URLs, bot commands, etc. that appear in
+    /// the explanation.
+    pub explanation_entities: Option<Vec<MessageEntity>>,
 }
 
 impl Poll {
@@ -66,6 +74,8 @@ impl Poll {
             poll_type,
             allows_multiple_answers,
             correct_option_id: None,
+            explanation: None,
+            explanation_entities:None,
         }
     }
 
@@ -122,6 +132,22 @@ impl Poll {
 
     pub fn correct_option_id(mut self, val: i32) -> Self {
         self.correct_option_id = Some(val);
+        self
+    }
+
+    pub fn explanation<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.explanation = Some(val.into());
+        self
+    }
+
+    pub fn explanation_entities<S>(mut self, val: S) -> Self
+    where
+        S: Into<Vec<MessageEntity>>,
+    {
+        self.explanation_entities = Some(val.into());
         self
     }
 }
