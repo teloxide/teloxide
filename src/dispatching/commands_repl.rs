@@ -1,45 +1,84 @@
 use crate::{
-    dispatching::{Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx},
-    error_handlers::OnError,
+    dispatching::{
+        update_listeners, update_listeners::UpdateListener, Dispatcher, DispatcherHandlerRx,
+        DispatcherHandlerRxExt, UpdateWithCx,
+    },
+    error_handlers::{LoggingErrorHandler, OnError},
     requests::ResponseResult,
     types::Message,
     utils::command::BotCommand,
     Bot,
 };
-use futures::StreamExt;
-use std::{future::Future, sync::Arc};
+use futures::{future::BoxFuture, FutureExt, StreamExt};
+use std::{fmt::Debug, future::Future, sync::Arc};
 
 /// A [REPL] for commands.
 ///
 /// # Caution
-/// **DO NOT** use this function together with [`Dispatcher`] and [`repl`],
+/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`repl`]: crate::dispatching::repl
-pub async fn commands_repl<Cmd, H, Fut>(bot: Bot, bot_name: &'static str, handler: H)
+pub fn commands_repl<Cmd, H, Fut>(
+    bot: Bot,
+    bot_name: &'static str,
+    handler: H,
+) -> BoxFuture<'static, ()>
 where
     Cmd: BotCommand + Send + 'static,
     H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = ResponseResult<()>> + Send + 'static,
 {
+    let cloned_bot = bot.clone();
+
+    commands_repl_with_listener(
+        bot,
+        bot_name,
+        handler,
+        update_listeners::polling_default(cloned_bot),
+    )
+}
+
+/// Like [`commands_repl`], but with a custom [`UpdateListener`].
+///
+/// [`commands_repl`]: crate::dispatching::commands_repl
+/// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+pub fn commands_repl_with_listener<'a, Cmd, H, Fut, UL, ListenerE>(
+    bot: Bot,
+    bot_name: &'static str,
+    handler: H,
+    update_listener: UL,
+) -> BoxFuture<'a, ()>
+where
+    Cmd: BotCommand + Send + 'static,
+    H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
+    Fut: Future<Output = ResponseResult<()>> + Send + 'static,
+    UL: UpdateListener<ListenerE> + Send + 'a,
+    ListenerE: Debug + Send + 'a,
+{
     let handler = Arc::new(handler);
 
-    Dispatcher::new(bot)
-        .messages_handler(move |rx: DispatcherHandlerRx<Message>| {
-            rx.commands::<Cmd, &'static str>(bot_name).for_each_concurrent(
-                None,
-                move |(cx, cmd)| {
-                    let handler = Arc::clone(&handler);
+    async move {
+        Dispatcher::new(bot)
+            .messages_handler(move |rx: DispatcherHandlerRx<Message>| {
+                rx.commands::<Cmd, &'static str>(bot_name).for_each_concurrent(
+                    None,
+                    move |(cx, cmd)| {
+                        let handler = Arc::clone(&handler);
 
-                    async move {
-                        handler(cx, cmd).await.log_on_error().await;
-                    }
-                },
+                        async move {
+                            handler(cx, cmd).await.log_on_error().await;
+                        }
+                    },
+                )
+            })
+            .dispatch_with_listener(
+                update_listener,
+                LoggingErrorHandler::with_custom_text("An error from the update listener"),
             )
-        })
-        .dispatch()
-        .await;
+            .await
+    }
+    .boxed()
 }

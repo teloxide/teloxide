@@ -52,7 +52,7 @@ mod repl;
 pub mod update_listeners;
 mod update_with_cx;
 
-pub use commands_repl::commands_repl;
+pub use commands_repl::{commands_repl, commands_repl_with_listener};
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
