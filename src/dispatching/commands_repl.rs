@@ -43,7 +43,13 @@ where
 
 /// Like [`commands_repl`], but with a custom [`UpdateListener`].
 ///
-/// [`commands_repl`]: crate::dispatching::commands_repl
+/// # Caution
+/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
+/// because Telegram disallow multiple requests at the same time from the same
+/// bot.
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
+/// [`commands_repl`]: crate::dispatching::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 pub fn commands_repl_with_listener<'a, Cmd, H, Fut, UL, ListenerE>(
     bot: Bot,

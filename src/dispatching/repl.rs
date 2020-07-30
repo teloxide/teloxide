@@ -11,13 +11,12 @@ use std::{future::Future, sync::Arc};
 /// A [REPL] for messages.
 ///
 /// # Caution
-/// **DO NOT** use this function together with [`Dispatcher`] and
-/// [`commands_repl`], because Telegram disallow multiple requests at the same
-/// time from the same bot.
+/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
+/// because Telegram disallow multiple requests at the same time from the same
+/// bot.
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`commands_repl`]: crate::dispatching::commands_repl
 pub async fn repl<H, Fut>(bot: Bot, handler: H)
 where
     H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
