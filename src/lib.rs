@@ -4,6 +4,31 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
+//! ```no_run
+//! use teloxide::prelude::*;
+//!
+//! # #[tokio::main]
+//! # async fn main_() {
+//! teloxide::enable_logging!();
+//! log::info!("Starting dices_bot...");
+//!
+//! let bot = Bot::from_env();
+//!
+//! repl(bot, |message| async move {
+//!     message.send_dice().send().await?;
+//!     Ok(())
+//! })
+//! .await;
+//! # }
+//! ```
+//!
+//! <div align="center">
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
+//!   </kbd>
+//! </div>
+//!
 //! [Telegram bots]: https://telegram.org/blog/bot-revolution
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/
