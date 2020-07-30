@@ -10,8 +10,6 @@ use std::{future::Future, sync::Arc};
 
 /// A [REPL] for messages.
 ///
-/// Used mostly for testing and demonstrative purposes.
-///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and
 /// [`commands_repl`], because Telegram disallow multiple requests at the same

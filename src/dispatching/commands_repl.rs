@@ -11,8 +11,6 @@ use std::{future::Future, sync::Arc};
 
 /// A [REPL] for commands.
 ///
-/// Used mostly for testing and demonstrative purposes.
-///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and [`repl`],
 /// because Telegram disallow multiple requests at the same time from the same
