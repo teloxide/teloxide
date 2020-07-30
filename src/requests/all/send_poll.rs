@@ -22,6 +22,8 @@ pub struct SendPoll {
     poll_type: Option<PollType>,
     allows_multiple_answers: Option<bool>,
     correct_option_id: Option<i32>,
+    explanation: Option<String>,
+    explanation_parse_mode: Option<String>,
     is_closed: Option<bool>,
     disable_notification: Option<bool>,
     reply_to_message_id: Option<i32>,
@@ -56,6 +58,8 @@ impl SendPoll {
             poll_type: None,
             allows_multiple_answers: None,
             correct_option_id: None,
+            explanation: None,
+            explanation_parse_mode: None,
             is_closed: None,
             disable_notification: None,
             reply_to_message_id: None,
@@ -128,6 +132,22 @@ impl SendPoll {
         T: Into<i32>,
     {
         self.correct_option_id = Some(val.into());
+        self
+    }
+
+    pub fn explanation<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.explanation = Some(val.into());
+        self
+    }
+
+    pub fn explanation_parse_mode<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.explanation_parse_mode = Some(val.into());
         self
     }
 
