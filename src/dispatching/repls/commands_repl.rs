@@ -51,7 +51,7 @@ where
 /// bot.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`commands_repl`]: crate::dispatching::commands_repl()
+/// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE>(
     bot: Bot,

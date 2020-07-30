@@ -42,7 +42,7 @@ where
 /// bot.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`repl`]: crate::dispatching::repl()
+/// [`repl`]: crate::dispatching::repls::repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 pub async fn repl_with_listener<'a, H, Fut, E, L, ListenerE>(bot: Bot, handler: H, listener: L)
 where
