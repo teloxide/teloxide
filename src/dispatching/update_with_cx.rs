@@ -154,7 +154,7 @@ impl UpdateWithCx<Message> {
         self.bot.pin_chat_message(self.update.chat.id, self.update.id)
     }
 
-    pub fn send_dice(&self) -> SendDice {
+    pub fn answer_dice(&self) -> SendDice {
         self.bot.send_dice(self.update.chat.id)
     }
 }
