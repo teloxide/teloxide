@@ -56,6 +56,7 @@ jobs:
             dices_bot,
             shared_state_bot,
             simple_commands_bot,
+            redis_remember_bot,
         ]
     steps:
       - uses: actions/checkout@v2
