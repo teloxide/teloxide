@@ -135,6 +135,9 @@ impl SendPoll {
         self
     }
 
+    /// Text that is shown when a user chooses an incorrect answer or taps on
+    /// the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line
+    /// feeds after entities parsing.
     pub fn explanation<T>(mut self, val: T) -> Self
     where
         T: Into<String>,
@@ -143,6 +146,10 @@ impl SendPoll {
         self
     }
 
+    /// Mode for parsing entities in the explanation. See [formatting options]
+    /// for more details.
+    ///
+    /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
     pub fn explanation_parse_mode<T>(mut self, val: T) -> Self
     where
         T: Into<String>,

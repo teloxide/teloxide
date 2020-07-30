@@ -75,7 +75,7 @@ impl Poll {
             allows_multiple_answers,
             correct_option_id: None,
             explanation: None,
-            explanation_entities:None,
+            explanation_entities: None,
         }
     }
 
