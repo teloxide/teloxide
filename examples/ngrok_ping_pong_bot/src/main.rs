@@ -55,15 +55,14 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot.clone())
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each(|message| async move {
-                message.answer_str("pong").await.log_on_error().await;
-            })
-        })
-        .dispatch_with_listener(
-            webhook(bot).await,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
-        )
-        .await;
+    let cloned_bot = bot.clone();
+    teloxide::repl_with_listener(
+        bot,
+        |message| async move {
+            message.answer_str("pong").await?;
+            ResponseResult::<()>::Ok(())
+        },
+        webhook(cloned_bot).await,
+    )
+    .await;
 }
