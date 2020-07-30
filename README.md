@@ -83,7 +83,6 @@ log = "0.4.8"
 pretty_env_logger = "0.4.0"
 
 tokio = "0.2.11"
-futures = "0.3.5"
 ```
 
 ## API overview
