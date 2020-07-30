@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, PollType, ReplyMarkup},
+    types::{ChatId, Message, ParseMode, PollType, ReplyMarkup},
     Bot,
 };
 
@@ -23,7 +23,7 @@ pub struct SendPoll {
     allows_multiple_answers: Option<bool>,
     correct_option_id: Option<i32>,
     explanation: Option<String>,
-    explanation_parse_mode: Option<String>,
+    explanation_parse_mode: Option<ParseMode>,
     open_period: Option<i32>,
     close_date: Option<i32>,
     is_closed: Option<bool>,
@@ -66,6 +66,8 @@ impl SendPoll {
             disable_notification: None,
             reply_to_message_id: None,
             reply_markup: None,
+            close_date: None,
+            open_period: None,
         }
     }
 
@@ -152,11 +154,8 @@ impl SendPoll {
     /// for more details.
     ///
     /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
-    pub fn explanation_parse_mode<T>(mut self, val: T) -> Self
-    where
-        T: Into<String>,
-    {
-        self.explanation_parse_mode = Some(val.into());
+    pub fn explanation_parse_mode(mut self, val: ParseMode) -> Self {
+        self.explanation_parse_mode = Some(val);
         self
     }
 
