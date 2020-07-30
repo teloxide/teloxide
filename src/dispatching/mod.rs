@@ -43,6 +43,7 @@
 //! [`tokio::sync::mpsc::UnboundedReceiver`]: https://docs.rs/tokio/0.2.11/tokio/sync/mpsc/struct.UnboundedReceiver.html
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
+mod commands_repl;
 pub mod dialogue;
 mod dispatcher;
 mod dispatcher_handler;
@@ -51,6 +52,7 @@ mod repl;
 pub mod update_listeners;
 mod update_with_cx;
 
+pub use commands_repl::commands_repl;
 pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;

@@ -42,7 +42,7 @@
 #![forbid(unsafe_code)]
 
 pub use bot::{Bot, BotBuilder};
-pub use dispatching::repl;
+pub use dispatching::{commands_repl, repl};
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;

@@ -156,19 +156,15 @@ async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<(
     Ok(())
 }
 
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        .for_each_concurrent(None, |(cx, command)| async move {
-            answer(cx, command).await.log_on_error().await;
-        })
-        .await;
-}
-
 #[tokio::main]
 async fn main() {
-    // Setup is omitted...
-}
+    teloxide::enable_logging!();
+    log::info!("Starting simple_commands_bot...");
 
+    let bot = Bot::from_env();
+
+    teloxide::commands_repl(bot, panic!("Insert here your bot's name"), answer).await;
+}
 ```
 
 <div align="center">

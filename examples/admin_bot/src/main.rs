@@ -2,8 +2,6 @@ use std::str::FromStr;
 
 use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
 
-use futures::future;
-
 // Derive BotCommand to parse text with a command into this enumeration.
 //
 //  1. rename = "lowercase" turns all the commands into lowercase letters.
@@ -130,16 +128,6 @@ async fn action(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<(
     Ok(())
 }
 
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.filter(|cx| future::ready(cx.update.chat.is_group()))
-        .commands::<Command, &str>(panic!("Insert here your bot's name"))
-        // Execute all incoming commands concurrently:
-        .for_each_concurrent(None, |(cx, command)| async move {
-            action(cx, command).await.log_on_error().await;
-        })
-        .await;
-}
-
 #[tokio::main]
 async fn main() {
     run().await;
@@ -151,5 +139,5 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await
+    teloxide::commands_repl(bot, panic!("Insert here your bot's name"), action).await;
 }
