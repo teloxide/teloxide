@@ -12,7 +12,7 @@ use std::{fmt::Debug, future::Future, sync::Arc};
 
 /// A [REPL] for messages.
 ///
-/// All errors from an update listener will be logged.
+/// All errors from an update listener and a handler will be logged.
 ///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
@@ -32,6 +32,18 @@ where
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
 }
 
+/// Like [`repl`], but with a custom [`UpdateListener`].
+///
+/// All errors from an update listener and handler will be logged.
+///
+/// # Caution
+/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
+/// because Telegram disallow multiple requests at the same time from the same
+/// bot.
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
+/// [`repl`]: crate::dispatching::repl()
+/// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 pub async fn repl_with_listener<'a, H, Fut, E, L, ListenerE>(bot: Bot, handler: H, listener: L)
 where
     H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
