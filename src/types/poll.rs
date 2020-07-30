@@ -1,4 +1,4 @@
-use crate::types::PollType;
+use crate::types::{MessageEntity, PollType};
 use serde::{Deserialize, Serialize};
 
 /// This object contains information about a poll.
@@ -37,6 +37,21 @@ pub struct Poll {
     /// polls in the quiz mode, which are closed, or was sent (not
     /// forwarded) by the bot or to the private chat with the bot.
     pub correct_option_id: Option<i32>,
+
+    /// Text that is shown when a user chooses an incorrect answer or taps on
+    /// the lamp icon in a quiz-style poll, 0-200 characters.
+    pub explanation: Option<String>,
+
+    /// Special entities like usernames, URLs, bot commands, etc. that appear in
+    /// the explanation.
+    pub explanation_entities: Option<Vec<MessageEntity>>,
+
+    /// Amount of time in seconds the poll will be active after creation.
+    open_period: Option<i32>,
+
+    /// Point in time (Unix timestamp) when the poll will be automatically
+    /// closed.
+    close_date: Option<i32>,
 }
 
 impl Poll {
@@ -66,6 +81,10 @@ impl Poll {
             poll_type,
             allows_multiple_answers,
             correct_option_id: None,
+            explanation: None,
+            explanation_entities: None,
+            open_period: None,
+            close_date: None,
         }
     }
 
@@ -122,6 +141,32 @@ impl Poll {
 
     pub fn correct_option_id(mut self, val: i32) -> Self {
         self.correct_option_id = Some(val);
+        self
+    }
+
+    pub fn explanation<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.explanation = Some(val.into());
+        self
+    }
+
+    pub fn explanation_entities<S>(mut self, val: S) -> Self
+    where
+        S: Into<Vec<MessageEntity>>,
+    {
+        self.explanation_entities = Some(val.into());
+        self
+    }
+
+    pub fn open_period(mut self, val: i32) -> Self {
+        self.open_period = Some(val);
+        self
+    }
+
+    pub fn close_date(mut self, val: i32) -> Self {
+        self.close_date = Some(val);
         self
     }
 }

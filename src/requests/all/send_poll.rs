@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatId, Message, PollType, ReplyMarkup},
+    types::{ChatId, Message, ParseMode, PollType, ReplyMarkup},
     Bot,
 };
 
@@ -22,6 +22,10 @@ pub struct SendPoll {
     poll_type: Option<PollType>,
     allows_multiple_answers: Option<bool>,
     correct_option_id: Option<i32>,
+    explanation: Option<String>,
+    explanation_parse_mode: Option<ParseMode>,
+    open_period: Option<i32>,
+    close_date: Option<i32>,
     is_closed: Option<bool>,
     disable_notification: Option<bool>,
     reply_to_message_id: Option<i32>,
@@ -56,10 +60,14 @@ impl SendPoll {
             poll_type: None,
             allows_multiple_answers: None,
             correct_option_id: None,
+            explanation: None,
+            explanation_parse_mode: None,
             is_closed: None,
             disable_notification: None,
             reply_to_message_id: None,
             reply_markup: None,
+            close_date: None,
+            open_period: None,
         }
     }
 
@@ -128,6 +136,41 @@ impl SendPoll {
         T: Into<i32>,
     {
         self.correct_option_id = Some(val.into());
+        self
+    }
+
+    /// Text that is shown when a user chooses an incorrect answer or taps on
+    /// the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line
+    /// feeds after entities parsing.
+    pub fn explanation<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.explanation = Some(val.into());
+        self
+    }
+
+    /// Mode for parsing entities in the explanation. See [formatting options]
+    /// for more details.
+    ///
+    /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
+    pub fn explanation_parse_mode(mut self, val: ParseMode) -> Self {
+        self.explanation_parse_mode = Some(val);
+        self
+    }
+
+    /// Amount of time in seconds the poll will be active after creation, 5-600.
+    /// Can't be used together with `close_date`.
+    pub fn open_period(mut self, val: i32) -> Self {
+        self.open_period = Some(val);
+        self
+    }
+
+    /// Point in time (Unix timestamp) when the poll will be automatically
+    /// closed. Must be at least 5 and no more than 600 seconds in the future.
+    /// Can't be used together with `open_period`.
+    pub fn close_date(mut self, val: i32) -> Self {
+        self.close_date = Some(val);
         self
     }
 
