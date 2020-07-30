@@ -17,11 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Upgrade to v4.9 Telegram bots API.
  - `teloxide::utils::client_from_env` -- constructs a client from the `TELOXIDE_TOKEN` environmental variable.
  - Import `Transition`, `TransitionIn`, `TransitionOut`, `UpState` to `teloxide::prelude`.
- - Import `repl` to `teloxide`.
+ - Import `repl`, `commands_repl` to `teloxide`.
  - Let users inspect an unknown API error using `ApiErrorKind::Unknown(String)`. All the known API errors are placed into `KnownApiErrorKind`.
  - Setters to all the API types.
  - `teloxide::dispatching::dialogue::serializer` -- various serializers for memory storages. The `Serializer` trait, `Bincode`, `CBOR`, `JSON`.
- - `teloxide::dispatching::repl`
+ - `teloxide::dispatching::{repl, commands_repl`
 
 ### Deprecated
  - `Bot::{from_env_with_client, new, with_client}`
