@@ -2,9 +2,9 @@ use crate::{
     dispatching::dialogue::GetChatId,
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage, PinChatMessage,
-        Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDocument, SendLocation,
-        SendMediaGroup, SendMessage, SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote,
-        SendVoice,
+        Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDice, SendDocument,
+        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendSticker, SendVenue, SendVideo,
+        SendVideoNote, SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -152,5 +152,9 @@ impl UpdateWithCx<Message> {
 
     pub fn pin_message(&self) -> PinChatMessage {
         self.bot.pin_chat_message(self.update.chat.id, self.update.id)
+    }
+
+    pub fn send_dice(&self) -> SendDice {
+        self.bot.send_dice(self.update.chat.id)
     }
 }

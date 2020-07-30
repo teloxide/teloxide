@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 0.4.6 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 0.4.7 (inclusively)-green.svg">
   </a>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
@@ -25,7 +25,7 @@
  - [Highlights](https://github.com/teloxide/teloxide#highlights)
  - [Setting up your environment](https://github.com/teloxide/teloxide#setting-up-your-environment)
  - [API overview](https://github.com/teloxide/teloxide#api-overview)
-   - [The ping-pong bot](https://github.com/teloxide/teloxide#the-ping-pong-bot)
+   - [The dices bot](https://github.com/teloxide/teloxide#the-dices-bot)
    - [Commands](https://github.com/teloxide/teloxide#commands)
    - [Dialogues management](https://github.com/teloxide/teloxide#dialogues-management)
  - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
@@ -88,24 +88,24 @@ futures = "0.3.5"
 
 ## API overview
 
-### The ping-pong bot
-This bot has a single message handler, which answers "pong" to each incoming message:
+### The dices bot
+This bot throws a dice on each incoming message:
 
-([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
+([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
 ```rust
 use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
-    log::info!("Starting ping_pong_bot...");
+    log::info!("Starting dices_bot...");
 
     let bot = Bot::from_env();
 
     Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each(|message| async move {
-                message.answer_str("pong").await.log_on_error().await;
+                message.send_dice().send().await.log_on_error().await;
             })
         })
         .dispatch()
@@ -116,7 +116,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.gif />
+    <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
   </kbd>
 </div>
 

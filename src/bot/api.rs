@@ -5,19 +5,19 @@ use crate::{
         DeleteMessage, DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
         EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup, EditMessageText,
         ExportChatInviteLink, ForwardMessage, GetChat, GetChatAdministrators, GetChatMember,
-        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
-        GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage,
-        PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
-        SendChatActionKind, SendContact, SendDocument, SendGame, SendInvoice, SendLocation,
-        SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
-        SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
-        SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore,
-        SetStickerPositionInSet, SetWebhook, StopMessageLiveLocation, StopPoll, UnbanChatMember,
-        UnpinChatMessage, UploadStickerFile,
+        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetMyCommands, GetStickerSet,
+        GetUpdates, GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
+        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio,
+        SendChatAction, SendChatActionKind, SendContact, SendDice, SendDocument, SendGame,
+        SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
+        SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
+        SetChatDescription, SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
+        SetGameScore, SetMyCommands, SetStickerPositionInSet, SetStickerSetThumb, SetWebhook,
+        StopMessageLiveLocation, StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice,
+        BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
+        InputMedia, LabeledPrice, StickerType,
     },
     Bot,
 };
@@ -1198,25 +1198,12 @@ impl Bot {
     /// end in `_by_<bot username>`. `<bot_username>` is case insensitive. 1-64
     /// characters.
     ///   - `title`: Sticker set title, 1-64 characters.
-    ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
-    ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///   - `emojis`: One or more emoji corresponding to the sticker.
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn create_new_sticker_set<N, T, E>(
         &self,
         user_id: i32,
         name: N,
         title: T,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> CreateNewStickerSet
     where
@@ -1224,7 +1211,7 @@ impl Bot {
         T: Into<String>,
         E: Into<String>,
     {
-        CreateNewStickerSet::new(self.clone(), user_id, name, title, png_sticker, emojis)
+        CreateNewStickerSet::new(self.clone(), user_id, name, title, sticker_type, emojis)
     }
 
     /// Use this method to add a new sticker to a set created by the bot.
@@ -1234,31 +1221,19 @@ impl Bot {
     /// # Params
     ///   - `user_id`: User identifier of sticker set owner.
     ///   - `name`: Sticker set name.
-    ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
-    ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using [`InputFile:
-    /// :FileId`]. [More info on Sending Files »].
     ///   - `emojis`: One or more emoji corresponding to the sticker.
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     pub fn add_sticker_to_set<N, E>(
         &self,
         user_id: i32,
         name: N,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> AddStickerToSet
     where
         N: Into<String>,
         E: Into<String>,
     {
-        AddStickerToSet::new(self.clone(), user_id, name, png_sticker, emojis)
+        AddStickerToSet::new(self.clone(), user_id, name, sticker_type, emojis)
     }
 
     /// Use this method to move a sticker in a set created by the bot to a
@@ -1500,5 +1475,56 @@ impl Bot {
         CT: Into<String>,
     {
         SetChatAdministratorCustomTitle::new(self.clone(), chat_id, user_id, custom_title)
+    }
+
+    /// Use this method to send an animated emoji that will display a random
+    /// value.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#senddice).
+    ///
+    /// # Params
+    ///   - `chat_id`: Unique identifier for the target chat or username of the
+    ///     target channel  (in the format `@channelusername`).
+    pub fn send_dice<C>(&self, chat_id: C) -> SendDice
+    where
+        C: Into<ChatId>,
+    {
+        SendDice::new(self.clone(), chat_id)
+    }
+
+    /// Use this method to get the current list of the bot's commands.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#getmycommands).
+    pub fn get_my_commands(&self) -> GetMyCommands {
+        GetMyCommands::new(self.clone())
+    }
+
+    /// Use this method to change the list of the bot's commands.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#setmycommands).
+    ///
+    /// # Params
+    ///    - `commands`: A JSON-serialized list of bot commands to be set as the
+    ///      list of the bot's commands. At most 100 commands can be specified.
+    pub fn set_my_commands<C>(&self, commands: C) -> SetMyCommands
+    where
+        C: Into<Vec<BotCommand>>,
+    {
+        SetMyCommands::new(self.clone(), commands)
+    }
+
+    /// Use this method to set the thumbnail of a sticker set. Animated
+    /// thumbnails can be set for animated sticker sets only.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#setstickersetthumb).
+    ///
+    /// # Params
+    ///    - `name`: Sticker set name.
+    ///    - `user_id`: User identifier of the sticker set owner.
+    pub fn set_sticker_set_thumb<S>(&self, name: S, user_id: i32) -> SetStickerSetThumb
+    where
+        S: Into<String>,
+    {
+        SetStickerSetThumb::new(self.clone(), name, user_id)
     }
 }

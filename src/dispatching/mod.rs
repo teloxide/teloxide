@@ -30,25 +30,24 @@
 //!
 //! Since they implement [`DispatcherHandler`] too.
 //!
-//! # The ping-pong bot
-//! This bot has a single handler of messages, which answers "pong" to each
-//! incoming message:
+//! # The dices bot
+//! This bot throws a dice on each incoming message:
 //!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/ping_pong_bot/src/main.rs))
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
 //! # #[tokio::main]
 //! # async fn main_() {
 //! teloxide::enable_logging!();
-//! log::info!("Starting ping_pong_bot...");
+//! log::info!("Starting dices_bot...");
 //!
 //! let bot = Bot::from_env();
 //!
 //! Dispatcher::new(bot)
 //!     .messages_handler(|rx: DispatcherHandlerRx<Message>| {
 //!         rx.for_each(|message| async move {
-//!             message.answer("pong").send().await.log_on_error().await;
+//!             message.send_dice().send().await.log_on_error().await;
 //!         })
 //!     })
 //!     .dispatch()
@@ -58,7 +57,7 @@
 //!
 //! <div align="center">
 //!   <kbd>
-//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/PING_PONG_BOT.gif />
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
 //!   </kbd>
 //! </div>
 //!

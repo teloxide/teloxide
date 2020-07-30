@@ -1,11 +1,14 @@
 use crate::{
     net,
     requests::form_builder::FormBuilder,
-    types::{InputFile, MaskPosition, True},
+    types::{MaskPosition, True},
     Bot,
 };
 
-use crate::requests::{RequestWithFile, ResponseResult};
+use crate::{
+    requests::{RequestWithFile, ResponseResult},
+    types::StickerType,
+};
 
 /// Use this method to add a new sticker to a set created by the bot.
 ///
@@ -15,7 +18,7 @@ pub struct AddStickerToSet {
     bot: Bot,
     user_id: i32,
     name: String,
-    png_sticker: InputFile,
+    sticker_type: StickerType,
     emojis: String,
     mask_position: Option<MaskPosition>,
 }
@@ -25,18 +28,22 @@ impl RequestWithFile for AddStickerToSet {
     type Output = True;
 
     async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        let builder =
+            FormBuilder::new().add_text("user_id", &self.user_id).add_text("name", &self.name);
+
+        let builder = match &self.sticker_type {
+            StickerType::Png(file) => builder.add_input_file("png_sticker", &file),
+            StickerType::Tgs(file) => builder.add_input_file("tgs_sticker", &file),
+        }
+        .await?
+        .add_text("emojis", &self.emojis)
+        .add_text("mask_position", &self.mask_position);
+
         Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "addStickerToSet",
-            FormBuilder::new()
-                .add_text("user_id", &self.user_id)
-                .add_text("name", &self.name)
-                .add_input_file("png_sticker", &self.png_sticker)
-                .await?
-                .add_text("emojis", &self.emojis)
-                .add_text("mask_position", &self.mask_position)
-                .build(),
+            builder.build(),
         )
         .await)
     }
@@ -47,7 +54,7 @@ impl AddStickerToSet {
         bot: Bot,
         user_id: i32,
         name: N,
-        png_sticker: InputFile,
+        sticker_type: StickerType,
         emojis: E,
     ) -> Self
     where
@@ -58,7 +65,7 @@ impl AddStickerToSet {
             bot,
             user_id,
             name: name.into(),
-            png_sticker,
+            sticker_type,
             emojis: emojis.into(),
             mask_position: None,
         }
@@ -79,20 +86,8 @@ impl AddStickerToSet {
         self
     }
 
-    /// **Png** image with the sticker, must be up to 512 kilobytes in size,
-    /// dimensions must not exceed 512px, and either width or height must be
-    /// exactly 512px.
-    ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
-    pub fn png_sticker(mut self, val: InputFile) -> Self {
-        self.png_sticker = val;
+    pub fn sticker_type(mut self, val: StickerType) -> Self {
+        self.sticker_type = val;
         self
     }
 

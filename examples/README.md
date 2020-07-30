@@ -2,7 +2,7 @@
 Just enter the directory (for example, `cd dialogue_bot`) and execute `cargo run` to run an example. Don't forget to initialise the `TELOXIDE_TOKEN` environmental variable.
 | Bot | Description |
 |---|-----------|
-| [ping_pong_bot](ping_pong_bot) | Answers "pong" to each incoming message. |
+| [dices_bot](dices_bot) | This bot throws a dice on each incoming message. |
 | [ngrok_ping_pong_bot](ngrok_ping_pong_bot) | The ngrok version of ping-pong-bot that uses webhooks. |
 | [heroku_ping_pong_bot](heroku_ping_pong_bot) | The Heroku version of ping-pong-bot that uses webhooks. |
 | [simple_commands_bot](simple_commands_bot) | Shows how to deal with bot's commands. |
