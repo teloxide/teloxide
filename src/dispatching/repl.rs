@@ -1,14 +1,15 @@
 use crate::{
     dispatching::{Dispatcher, DispatcherHandlerRx, UpdateWithCx},
     error_handlers::OnError,
-    requests::ResponseResult,
     types::Message,
     Bot,
 };
 use futures::StreamExt;
-use std::{future::Future, sync::Arc};
+use std::{fmt::Debug, future::Future, sync::Arc};
 
 /// A [REPL] for messages.
+///
+/// All errors from an update listener will be logged.
 ///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
@@ -17,10 +18,12 @@ use std::{future::Future, sync::Arc};
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub async fn repl<H, Fut>(bot: Bot, handler: H)
+pub async fn repl<H, Fut, E>(bot: Bot, handler: H)
 where
     H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = ResponseResult<()>> + Send + 'static,
+    Fut: Future<Output = Result<(), E>> + Send + 'static,
+    Result<(), E>: OnError<E>,
+    E: Debug + Send,
 {
     let handler = Arc::new(handler);
 

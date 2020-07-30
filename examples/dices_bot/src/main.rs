@@ -15,7 +15,7 @@ async fn run() {
 
     teloxide::repl(bot, |message| async move {
         message.answer_dice().send().await?;
-        Ok(())
+        ResponseResult::<()>::Ok(())
     })
     .await;
 }

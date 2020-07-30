@@ -4,7 +4,6 @@ use crate::{
         DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    requests::ResponseResult,
     types::Message,
     utils::command::BotCommand,
     Bot,
@@ -14,6 +13,8 @@ use std::{fmt::Debug, future::Future, sync::Arc};
 
 /// A [REPL] for commands.
 ///
+/// All errors from an update listener will be logged.
+///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
@@ -21,7 +22,7 @@ use std::{fmt::Debug, future::Future, sync::Arc};
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub fn commands_repl<Cmd, H, Fut>(
+pub fn commands_repl<Cmd, H, Fut, HandlerE>(
     bot: Bot,
     bot_name: &'static str,
     handler: H,
@@ -29,7 +30,9 @@ pub fn commands_repl<Cmd, H, Fut>(
 where
     Cmd: BotCommand + Send + 'static,
     H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = ResponseResult<()>> + Send + 'static,
+    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
+    Result<(), HandlerE>: OnError<HandlerE>,
+    HandlerE: Debug + Send,
 {
     let cloned_bot = bot.clone();
 
@@ -43,6 +46,8 @@ where
 
 /// Like [`commands_repl`], but with a custom [`UpdateListener`].
 ///
+/// All errors from an update listener will be logged.
+///
 /// # Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
@@ -51,7 +56,7 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
-pub fn commands_repl_with_listener<'a, Cmd, H, Fut, UL, ListenerE>(
+pub fn commands_repl_with_listener<'a, Cmd, H, Fut, UL, ListenerE, HandlerE>(
     bot: Bot,
     bot_name: &'static str,
     handler: H,
@@ -60,9 +65,11 @@ pub fn commands_repl_with_listener<'a, Cmd, H, Fut, UL, ListenerE>(
 where
     Cmd: BotCommand + Send + 'static,
     H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = ResponseResult<()>> + Send + 'static,
+    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     UL: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
+    Result<(), HandlerE>: OnError<HandlerE>,
+    HandlerE: Debug + Send,
 {
     let handler = Arc::new(handler);
 
