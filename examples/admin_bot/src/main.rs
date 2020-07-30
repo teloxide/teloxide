@@ -139,5 +139,5 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    teloxide::commands_repl(bot, panic!("Insert here your bot's name"), action).await;
+    teloxide::commands_repl(bot, panic!("Your bot's name here"), action).await;
 }
