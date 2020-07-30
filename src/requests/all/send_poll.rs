@@ -24,6 +24,8 @@ pub struct SendPoll {
     correct_option_id: Option<i32>,
     explanation: Option<String>,
     explanation_parse_mode: Option<String>,
+    open_period: Option<i32>,
+    close_date: Option<i32>,
     is_closed: Option<bool>,
     disable_notification: Option<bool>,
     reply_to_message_id: Option<i32>,
@@ -155,6 +157,21 @@ impl SendPoll {
         T: Into<String>,
     {
         self.explanation_parse_mode = Some(val.into());
+        self
+    }
+
+    /// Amount of time in seconds the poll will be active after creation, 5-600.
+    /// Can't be used together with `close_date`.
+    pub fn open_period(mut self, val: i32) -> Self {
+        self.open_period = Some(val);
+        self
+    }
+
+    /// Point in time (Unix timestamp) when the poll will be automatically
+    /// closed. Must be at least 5 and no more than 600 seconds in the future.
+    /// Can't be used together with `open_period`.
+    pub fn close_date(mut self, val: i32) -> Self {
+        self.close_date = Some(val);
         self
     }
 
