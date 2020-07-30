@@ -13,7 +13,7 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    repl(bot, |message| async move {
+    teloxide::repl(bot, |message| async move {
         message.send_dice().send().await?;
         Ok(())
     })

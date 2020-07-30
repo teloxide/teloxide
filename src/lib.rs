@@ -15,7 +15,7 @@
 //!
 //! let bot = Bot::from_env();
 //!
-//! repl(bot, |message| async move {
+//! teloxide::repl(bot, |message| async move {
 //!     message.send_dice().send().await?;
 //!     Ok(())
 //! })
@@ -42,6 +42,7 @@
 #![forbid(unsafe_code)]
 
 pub use bot::{Bot, BotBuilder};
+pub use dispatching::repl;
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;
