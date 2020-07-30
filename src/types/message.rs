@@ -25,13 +25,16 @@ pub struct Message {
     /// Conversation the message belongs to.
     pub chat: Chat,
 
+    /// Bot through which the message was sent.
+    pub via_bot: Option<User>,
+
     #[serde(flatten)]
     pub kind: MessageKind,
 }
 
 impl Message {
     pub fn new(id: i32, date: i32, chat: Chat, kind: MessageKind) -> Self {
-        Self { id, date, chat, kind }
+        Self { id, date, chat, kind, via_bot: None }
     }
 
     pub fn id(mut self, val: i32) -> Self {
@@ -51,6 +54,11 @@ impl Message {
 
     pub fn kind(mut self, val: MessageKind) -> Self {
         self.kind = val;
+        self
+    }
+
+    pub fn via_bot(mut self, val: User) -> Self {
+        self.via_bot = Some(val);
         self
     }
 }

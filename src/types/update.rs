@@ -179,6 +179,7 @@ mod test {
         let expected = Update {
             id: 892_252_934,
             kind: UpdateKind::Message(Message {
+                via_bot: None,
                 id: 6557,
                 date: 1_569_518_342,
                 chat: Chat {
