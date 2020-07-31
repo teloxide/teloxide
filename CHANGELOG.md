@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Let users inspect an unknown API error using `ApiErrorKind::Unknown(String)`. All the known API errors are placed into `KnownApiErrorKind`.
  - Setters to all the API types.
  - `teloxide::dispatching::dialogue::serializer` -- various serializers for memory storages. The `Serializer` trait, `Bincode`, `CBOR`, `JSON`.
- - `teloxide::dispatching::{repl, commands_repl`
+ - `teloxide::{repl, repl_with_listener, commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener}`
 
 ### Deprecated
  - `Bot::{from_env_with_client, new, with_client}`
