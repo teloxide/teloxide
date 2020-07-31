@@ -36,7 +36,7 @@
 
 ## Highlights
 
- - **Functioal reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
+ - **Functional reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
 
 [functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
 [other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
