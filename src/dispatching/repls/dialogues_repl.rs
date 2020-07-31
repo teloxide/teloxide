@@ -55,7 +55,7 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`dialogue_repl`]: crate::dispatching::repls::dialogue_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
-pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE, HandlerE>(
+pub async fn dialogues_repl_with_listener<'a, H, D, Fut, HandlerE, L, ListenerE>(
     bot: Bot,
     bot_name: &'static str,
     handler: H,
@@ -69,16 +69,14 @@ pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE, HandlerE>
     Result<DialogueStage<D>, HandlerE>: OnError<HandlerE>,
     HandlerE: Debug + Send,
 {
-    Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::new(
-            |DialogueWithCx { cx, dialogue }: DialogueWithCx<Message, D, Infallible>| async move {
-                let dialogue = dialogue.expect("std::convert::Infallible");
-                handler(cx, dialogue).await.log_on_error().await
-            },
-        ))
+    Dispatcher::new(todo!())
+        .messages_handler(DialogueDispatcher::new(|x| async move {
+            //  let dialogue = dialogue.expect("std::convert::Infallible");
+            //  handler(cx, dialogue).await.log_on_error().await
+        }))
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
-        .await
+        .await;
 }
