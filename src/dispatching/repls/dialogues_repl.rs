@@ -27,7 +27,7 @@ pub async fn dialogues_repl<'a, H, D, Fut>(bot: Bot, handler: H)
 where
     H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
     D: Default + Send + 'static,
-    Fut: Future<Output = DialogueStage<D>> + Send + Sync + 'static,
+    Fut: Future<Output = DialogueStage<D>> + Send + 'static,
 {
     let cloned_bot = bot.clone();
 
@@ -54,7 +54,7 @@ pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE>(
 ) where
     H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
     D: Default + Send + 'static,
-    Fut: Future<Output = DialogueStage<D>> + Send + Sync + 'static,
+    Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
 {
