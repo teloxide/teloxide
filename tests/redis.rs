@@ -1,28 +1,45 @@
+#![cfg(feature = "redis_storage")]
+
 use std::{
     fmt::{Debug, Display},
     future::Future,
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{
-    serializer::{Bincode, CBOR, JSON},
-    RedisStorage, Serializer, Storage,
-};
+use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
 
 #[tokio::test]
+#[cfg(feature = "redis_storage")]
 async fn test_redis_json() {
-    let storage = RedisStorage::open("redis://127.0.0.1:7777", JSON).await.unwrap();
+    let storage = RedisStorage::open(
+        "redis://127.0.0.1:7777",
+        teloxide::dispatching::dialogue::serializer::JSON,
+    )
+    .await
+    .unwrap();
     test_redis(storage).await;
 }
 
+#[cfg(feature = "bincode_serializer")]
 #[tokio::test]
 async fn test_redis_bincode() {
-    let storage = RedisStorage::open("redis://127.0.0.1:7778", Bincode).await.unwrap();
+    let storage = RedisStorage::open(
+        "redis://127.0.0.1:7778",
+        teloxide::dispatching::dialogue::serializer::Bincode,
+    )
+    .await
+    .unwrap();
     test_redis(storage).await;
 }
 
+#[cfg(feature = "cbor_serializer")]
 #[tokio::test]
 async fn test_redis_cbor() {
-    let storage = RedisStorage::open("redis://127.0.0.1:7779", CBOR).await.unwrap();
+    let storage = RedisStorage::open(
+        "redis://127.0.0.1:7779",
+        teloxide::dispatching::dialogue::serializer::CBOR,
+    )
+    .await
+    .unwrap();
     test_redis(storage).await;
 }
 
