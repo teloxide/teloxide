@@ -1,16 +1,13 @@
-use super::{serializer::Serializer, Storage};
+// use super::{serializer::Serializer, Storage};
+// use futures::future::BoxFuture;
 use std::{
     convert::Infallible,
     fmt::{Debug, Display},
-    sync::Arc,
 };
-use sqlx::{SqliteConnection, Connection, sqlite::SqliteError};
-use serde::{de::DeserializeOwned, Serialize};
+use sqlx::sqlite::SqlitePool;
+// use serde::{de::DeserializeOwned, Serialize};
 use thiserror::Error;
-use tokio::{
-    sync::Mutex,
-    task::block_in_place,
-};
+// use tokio::task::block_in_place;
 
 pub enum SqliteStorageLocation {
     InMemory,
@@ -26,11 +23,11 @@ where
     #[error("parsing/serializing error: {0}")]
     SerdeError(SE),
     #[error("error from Sqlite: {0}")]
-    SqliteError(#[from] SqliteError),
+    SqliteError(Box<dyn std::error::Error>),
 }
 
 pub struct SqliteStorage<S> {
-    conn: Mutex<SqliteConnection>,
+    conn: SqlitePool,
     serializer: S,
 }
 
@@ -38,14 +35,39 @@ impl <S> SqliteStorage<S> {
     pub async fn open(
         path: SqliteStorageLocation,
         serializer: S,
-    ) -> Result<Arc<Self>, Box<dyn std::error::Error>>{
+    ) -> Result<Self, SqliteStorageError<Infallible>>{
         let url = match path {
             SqliteStorageLocation::InMemory => String::from("sqlite::memory:"),
             SqliteStorageLocation::Path(p) => p,
         };
-        Ok(Arc::new(Self {
-            conn: Mutex::new(SqliteConnection::connect(&url[..]).await?),
+        Ok(Self {
+            conn: SqlitePool::connect(&url[..]).await
+                .expect("Impossible sqlite error"),
             serializer,
-        }))
+        })
     }
 }
+
+// impl<S, D> Storage<D> for SqliteStorage<S>
+// where
+// S: Send + Sync + Serializer<D> + 'static,
+// D: Send + Serialize + DeserializeOwned + 'static,
+// <S as Serializer<D>>::Error: Debug + Display,
+// {
+//     type Error = SqliteStorageError<<S as Serializer<D>>::Error>;
+
+//     fn remove_dialogue(
+//         self: Arc<Self>,
+//         chat_id: i64,
+//     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+//         Box::pin(async move {
+//             todo!()
+//         });
+//     }
+
+//     fn update_dialogue(
+//         self: Arc<Self>,
+//         chat_id: i64,
+//         dialogue: D
+//     ) { todo!() }
+// }
