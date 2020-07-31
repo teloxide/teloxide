@@ -33,8 +33,7 @@ impl Bot {
     /// client.
     ///
     /// # Panics
-    ///  - If cannot get the `TELOXIDE_TOKEN` and `TELOXIDE_PROXY` environmental
-    ///    variables.
+    ///  - If cannot get the `TELOXIDE_TOKEN`  environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
@@ -221,11 +220,11 @@ impl BotBuilder {
     ///
     /// This method will attempt to build a new client with a proxy, specified
     /// in the `TELOXIDE_PROXY` (passed into [`reqwest::Proxy::all`])
-    /// environmental variable, if a client haven't been specified.
+    /// environmental variable, if a client haven't been specified. If
+    /// `TELOXIDE_PROXY` is unspecified, it'll use no proxy.
     ///
     /// # Panics
-    ///  - If cannot get the `TELOXIDE_TOKEN` and `TELOXIDE_PROXY` environmental
-    ///    variables.
+    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
