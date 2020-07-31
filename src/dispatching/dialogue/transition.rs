@@ -1,6 +1,5 @@
 use crate::{
     dispatching::{dialogue::DialogueStage, UpdateWithCx},
-    requests::ResponseResult,
     types::Message,
 };
 use futures::future::BoxFuture;
@@ -51,4 +50,4 @@ impl<D> SubtransitionOutputType for TransitionOut<D> {
 pub type TransitionIn = UpdateWithCx<Message>;
 
 /// A type returned from a FSM (sub)transition function.
-pub type TransitionOut<D> = ResponseResult<DialogueStage<D>>;
+pub type TransitionOut<D, E = crate::RequestError> = Result<DialogueStage<D>, E>;
