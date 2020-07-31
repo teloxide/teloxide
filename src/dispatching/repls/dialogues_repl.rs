@@ -1,17 +1,15 @@
 use crate::{
     dispatching::{
-        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId},
+        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx},
         update_listeners,
         update_listeners::UpdateListener,
-        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
+        Dispatcher, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
     types::Message,
-    utils::command::BotCommand,
     Bot,
 };
-use futures::StreamExt;
-use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
+use std::{convert::Infallible, fmt::Debug, future::Future};
 
 /// A [REPL] for dialogues.
 ///
@@ -74,8 +72,6 @@ pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE, HandlerE>
     Result<DialogueStage<D>, HandlerE>: OnError<HandlerE>,
     HandlerE: Debug + Send,
 {
-    let handler = Arc::new(handler);
-
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::new(
             |DialogueWithCx { cx, dialogue }: DialogueWithCx<Message, D, Infallible>| async move {
