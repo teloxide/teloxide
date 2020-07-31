@@ -23,6 +23,7 @@ use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+/// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 pub async fn dialogues_repl<'a, H, D, Fut>(bot: Bot, handler: H)
 where
     H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
@@ -34,7 +35,7 @@ where
     dialogues_repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
 }
 
-/// Like [`dialogue_repl`], but with a custom [`UpdateListener`].
+/// Like [`dialogues_repl`], but with a custom [`UpdateListener`].
 ///
 /// All errors from an update listener and handler will be logged. This function
 /// uses [`InMemStorage`].
@@ -45,8 +46,9 @@ where
 /// bot.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`dialogue_repl`]: crate::dispatching::repls::dialogue_repl()
+/// [`dialogues_repl`]: crate::dispatching::repls::dialogues_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+/// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE>(
     bot: Bot,
     handler: H,

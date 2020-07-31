@@ -17,7 +17,7 @@ use crate::{
     },
     types::{
         BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, LabeledPrice, StickerType,
+        InputMedia, LabeledPrice, ParseMode, StickerType,
     },
     Bot,
 };
@@ -115,12 +115,10 @@ impl Bot {
         C: Into<ChatId>,
         T: Into<String>,
     {
-        match self.parse_mode.deref() {
-            None => SendMessage::new(self.clone(), chat_id, text),
-            Some(parse_mode) => {
-                SendMessage::new(self.clone(), chat_id, text).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendMessage::new(self.clone(), chat_id, text),
+            SendMessage::parse_mode,
+        )
     }
 
     /// Use this method to forward messages of any kind.
@@ -179,12 +177,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendPhoto::new(self.clone(), chat_id, photo),
-            Some(parse_mode) => {
-                SendPhoto::new(self.clone(), chat_id, photo).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendPhoto::new(self.clone(), chat_id, photo),
+            SendPhoto::parse_mode,
+        )
     }
 
     ///
@@ -202,12 +198,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendAudio::new(self.clone(), chat_id, audio),
-            Some(parse_mode) => {
-                SendAudio::new(self.clone(), chat_id, audio).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendAudio::new(self.clone(), chat_id, audio),
+            SendAudio::parse_mode,
+        )
     }
 
     /// Use this method to send general files.
@@ -238,12 +232,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendDocument::new(self.clone(), chat_id, document),
-            Some(parse_mode) => {
-                SendDocument::new(self.clone(), chat_id, document).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendDocument::new(self.clone(), chat_id, document),
+            SendDocument::parse_mode,
+        )
     }
 
     /// Use this method to send video files, Telegram clients support mp4 videos
@@ -277,12 +269,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendVideo::new(self.clone(), chat_id, video),
-            Some(parse_mode) => {
-                SendVideo::new(self.clone(), chat_id, video).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendVideo::new(self.clone(), chat_id, video),
+            SendVideo::parse_mode,
+        )
     }
 
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -307,12 +297,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendAnimation::new(self.clone(), chat_id, animation),
-            Some(parse_mode) => {
-                SendAnimation::new(self.clone(), chat_id, animation).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendAnimation::new(self.clone(), chat_id, animation),
+            SendAnimation::parse_mode,
+        )
     }
 
     /// Use this method to send audio files, if you want Telegram clients to
@@ -352,12 +340,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendVoice::new(self.clone(), chat_id, voice),
-            Some(parse_mode) => {
-                SendVoice::new(self.clone(), chat_id, voice).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendVoice::new(self.clone(), chat_id, voice),
+            SendVoice::parse_mode,
+        )
     }
 
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up
@@ -513,21 +499,32 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendpoll).
     ///
-    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `question`: Poll question, 1-255 characters.
     ///   - `options`: List of answer options, 2-10 strings 1-100 characters
     ///     each.
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] ([`SendPoll::explanation_parse_mode`]) if
+    /// specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    /// [`SendPoll::explanation_parse_mode`]:
+    /// [`SendPoll::explanation_parse_mode`]:
+    /// crate::types::SendPoll::explanation_parse_mode
     pub fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
-        // FIXME: parse_mode
-        SendPoll::new(self.clone(), chat_id, question, options)
+        self.with_default_parse_mode_if_specified(
+            SendPoll::new(self.clone(), chat_id, question, options),
+            SendPoll::explanation_parse_mode,
+        )
     }
 
     /// Use this method when you need to tell the user that something is
@@ -1526,5 +1523,16 @@ impl Bot {
         S: Into<String>,
     {
         SetStickerSetThumb::new(self.clone(), name, user_id)
+    }
+
+    fn with_default_parse_mode_if_specified<Builder>(
+        &self,
+        builder: Builder,
+        f: fn(Builder, ParseMode) -> Builder,
+    ) -> Builder {
+        match self.parse_mode.deref() {
+            None => builder,
+            Some(parse_mode) => f(builder, *parse_mode.deref()),
+        }
     }
 }
