@@ -397,7 +397,7 @@ Q: Why Rust?
 
 A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
-UPD: The current design spreads wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently.
+UPD: The current design spreads wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently. What is even more interesting is that [mux-stream] could make a library from teloxide, not a framework, since the design could be defined by just combining streams of updates.
 
 [mux-stream]: https://github.com/Hirrolot/mux-stream
 
