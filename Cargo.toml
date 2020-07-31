@@ -35,7 +35,7 @@ serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }
 
 tokio = { version = "0.2.21", features = ["fs", "stream"] }
-tokio-util = { version = "0.3.1", features = ["full"] }
+tokio-util = "0.3.1"
 
 reqwest = { version = "0.10.6", features = ["json", "stream"] }
 log = "0.4.8"
