@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `teloxide::{repl, repl_with_listener, commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener}`
  - `InputFile::Memory`
  - Option to hide a command from description ([issue 217](https://github.com/teloxide/teloxide/issues/217)).
+ - Respect the `TELOXIDE_PROXY` environment variable in `Bot::from_env`.
 
 ### Deprecated
  - `Bot::{from_env_with_client, new, with_client}`
