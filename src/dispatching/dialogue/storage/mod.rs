@@ -5,6 +5,9 @@ mod in_mem_storage;
 #[cfg(feature = "redis-storage")]
 mod redis_storage;
 
+#[cfg(feature = "sqlite-storage")]
+mod sqlite_storage;
+
 use futures::future::BoxFuture;
 
 pub use in_mem_storage::InMemStorage;
@@ -12,6 +15,9 @@ pub use in_mem_storage::InMemStorage;
 pub use redis_storage::{RedisStorage, RedisStorageError};
 pub use serializer::Serializer;
 use std::sync::Arc;
+
+#[cfg(feature = "sqlite-storage")]
+pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 
 /// A storage of dialogues.
 ///

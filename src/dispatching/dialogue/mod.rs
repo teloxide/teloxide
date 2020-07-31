@@ -159,4 +159,7 @@ pub use transition::{
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};
 
+#[cfg(feature = "sqlite-storage")]
+pub use storage::{SqliteStorage, SqliteStorageError};
+
 pub use storage::{serializer, InMemStorage, Serializer, Storage};
