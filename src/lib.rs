@@ -100,6 +100,7 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
                 impl teloxide::dispatching::dialogue::Subtransition for #state_type {
                     type Aux = #aux_param_type;
                     type Dialogue = <#fn_return_type as teloxide::dispatching::dialogue::SubtransitionOutputType>::Output;
+                    type Error = <#fn_return_type as teloxide::dispatching::dialogue::SubtransitionOutputType>::Error;
 
                     fn react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: #aux_param_type)
                         -> futures::future::BoxFuture<'static, #fn_return_type> {
@@ -149,11 +150,13 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
     write!(
         dispatch_fn,
         "impl teloxide::dispatching::dialogue::Transition for {1} {{type Aux \
-         = <{0} as teloxide::dispatching::dialogue::Subtransition>::Aux;fn \
+         = <{0} as teloxide::dispatching::dialogue::Subtransition>::Aux;type \
+         Error = <{0} as \
+         teloxide::dispatching::dialogue::Subtransition>::Error;fn \
          react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: \
          Self::Aux) -> futures::future::BoxFuture<'static, \
-         teloxide::dispatching::dialogue::TransitionOut<Self>> {{ \
-         futures::future::FutureExt::boxed(async move {{ match self {{",
+         teloxide::dispatching::dialogue::TransitionOut<Self, Self::Error>> \
+         {{ futures::future::FutureExt::boxed(async move {{ match self {{",
         field_type_of_first_variant, enum_name
     )
     .unwrap();
