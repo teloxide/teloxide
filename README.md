@@ -405,6 +405,10 @@ Q: Why Rust?
 
 A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
 
+UPD: The current design spreads wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently.
+
+[mux-stream]: https://github.com/Hirrolot/mux-stream
+
 Q: Can I use webhooks?
 
 A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong_bot/src/main.rs).
