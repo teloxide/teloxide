@@ -23,12 +23,9 @@ use std::{convert::Infallible, fmt::Debug, future::Future};
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub async fn dialogues_repl<'a, H, Upd, D, Fut, HandlerE>(
-    bot: Bot,
-    bot_name: &'static str,
-    handler: H,
-) where
-    H: Fn(UpdateWithCx<Upd>, D) -> Fut + Send + Sync + 'static,
+pub async fn dialogues_repl<'a, H, D, Fut, HandlerE>(bot: Bot, bot_name: &'static str, handler: H)
+where
+    H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
     D: Default + Send + 'static,
     Fut: Future<Output = Result<DialogueStage<D>, HandlerE>> + Send + Sync + 'static,
     Result<DialogueStage<D>, HandlerE>: OnError<HandlerE>,
