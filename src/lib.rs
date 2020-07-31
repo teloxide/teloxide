@@ -43,7 +43,8 @@
 
 pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
-    commands_repl, commands_repl_with_listener, repl, repl_with_listener,
+    commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
+    repl_with_listener,
 };
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
