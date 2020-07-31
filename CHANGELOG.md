@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Setters to all the API types.
  - `teloxide::dispatching::dialogue::serializer` -- various serializers for memory storages. The `Serializer` trait, `Bincode`, `CBOR`, `JSON`.
  - `teloxide::{repl, repl_with_listener, commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener}`
+ - `InputFile::Memory`
+ - Option to hide a command from description ([issue 217](https://github.com/teloxide/teloxide/issues/217)).
 
 ### Deprecated
  - `Bot::{from_env_with_client, new, with_client}`
@@ -32,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Now provided description of unknown telegram error, by splitting ApiErrorKind at `ApiErrorKind` and `ApiErrorKindKnown` enums ([issue 199](https://github.com/teloxide/teloxide/issues/199)).
  - Extract `Bot` from `Arc` ([issue 216](https://github.com/teloxide/teloxide/issues/230)).
  - Mark all the API types as `#[non_exhaustive]`.
+ - Replace all `mime_type: String` with `MimeWrapper`.
 
 ### Fixed
  - Now methods which can send file to Telegram returns `tokio::io::Result<T>`. Early its could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
