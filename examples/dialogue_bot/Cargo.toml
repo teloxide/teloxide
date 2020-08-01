@@ -17,7 +17,7 @@ futures = "0.3.5"
 tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 
 teloxide = { path = "../../", features = ["frunk"] }
-teloxide-macros = "0.3.2"
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "feature/arbitrary-transition-result-types" }
 
 derive_more = "0.99.9"
 
