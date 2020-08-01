@@ -58,4 +58,4 @@ impl<D, E> SubtransitionOutputType for TransitionOut<D, E> {
 pub type TransitionIn = UpdateWithCx<Message>;
 
 /// A type returned from a FSM (sub)transition function.
-pub type TransitionOut<D, E> = Result<DialogueStage<D>, E>;
+pub type TransitionOut<D, E = crate::RequestError> = Result<DialogueStage<D>, E>;
