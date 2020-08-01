@@ -122,8 +122,8 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// All the variants must be of the form `VariantName(MyStateType)`, and
 /// `MyStateType` must implement `Subtransition`. All `MyStateType`s must have
-/// the same `Subtransition::Aux`, which will be also used in the generated
-/// implementation.
+/// the same `Subtransition::Aux` and `Subtransition::Error`, which will be also
+/// used in the generated implementation.
 #[proc_macro_derive(Transition)]
 pub fn derive_transition(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
