@@ -22,13 +22,14 @@ use std::{fmt::Debug, future::Future, sync::Arc};
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub async fn commands_repl<Cmd, H, Fut, HandlerE>(bot: Bot, bot_name: &'static str, handler: H)
+pub async fn commands_repl<Cmd, H, Fut, HandlerE, N>(bot: Bot, bot_name: N, handler: H)
 where
     Cmd: BotCommand + Send + 'static,
     H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     Result<(), HandlerE>: OnError<HandlerE>,
     HandlerE: Debug + Send,
+    N: Into<String> + Send + 'static,
 {
     let cloned_bot = bot.clone();
 
@@ -53,9 +54,9 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
-pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE>(
+pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE, N>(
     bot: Bot,
-    bot_name: &'static str,
+    bot_name: N,
     handler: H,
     listener: L,
 ) where
@@ -66,21 +67,19 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
     ListenerE: Debug + Send + 'a,
     Result<(), HandlerE>: OnError<HandlerE>,
     HandlerE: Debug + Send,
+    N: Into<String> + Send + 'static,
 {
     let handler = Arc::new(handler);
 
     Dispatcher::new(bot)
         .messages_handler(move |rx: DispatcherHandlerRx<Message>| {
-            rx.commands::<Cmd, &'static str>(bot_name).for_each_concurrent(
-                None,
-                move |(cx, cmd)| {
-                    let handler = Arc::clone(&handler);
+            rx.commands::<Cmd, N>(bot_name).for_each_concurrent(None, move |(cx, cmd)| {
+                let handler = Arc::clone(&handler);
 
-                    async move {
-                        handler(cx, cmd).await.log_on_error().await;
-                    }
-                },
-            )
+                async move {
+                    handler(cx, cmd).await.log_on_error().await;
+                }
+            })
         })
         .dispatch_with_listener(
             listener,
