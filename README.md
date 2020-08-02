@@ -103,7 +103,7 @@ async fn main() {
 
     teloxide::repl(bot, |message| async move {
         message.answer_dice().send().await?;
-        ResponseResult::<()>::Ok(())
+        respond(())
     })
     .await;
 }
