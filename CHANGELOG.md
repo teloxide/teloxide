@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Added
+ - Allow arbitrary error types to be returned from (sub)transitions ([issue 242](https://github.com/teloxide/teloxide/issues/242)).
+ - The `respond` function, a shortcut for `ResponseResult::Ok(())`.
+
+### Changed
+ - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
+
 ## [0.3.0] - 2020-07-31
 ### Added
  - Support for typed bot commands ([issue 152](https://github.com/teloxide/teloxide/issues/152)).
