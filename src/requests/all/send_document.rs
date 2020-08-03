@@ -28,7 +28,7 @@ pub struct SendDocument {
 impl RequestWithFile for SendDocument {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+    async fn send(self) -> tokio::io::Result<ResponseResult<Message>> {
         let mut builder = FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("document", &self.document)

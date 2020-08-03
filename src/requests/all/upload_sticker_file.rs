@@ -27,7 +27,7 @@ pub struct UploadStickerFile {
 impl Request for UploadStickerFile {
     type Output = File;
 
-    async fn send(&self) -> ResponseResult<File> {
+    async fn send(self) -> ResponseResult<File> {
         net::request_json(self.bot.client(), self.bot.token(), "uploadStickerFile", &self).await
     }
 }

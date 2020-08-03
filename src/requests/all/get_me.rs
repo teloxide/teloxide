@@ -21,7 +21,7 @@ impl Request for GetMe {
 
     /// Returns basic information about the bot.
     #[allow(clippy::trivially_copy_pass_by_ref)]
-    async fn send(&self) -> ResponseResult<Me> {
+    async fn send(self) -> ResponseResult<Me> {
         net::request_json(self.bot.client(), self.bot.token(), "getMe", &self).await
     }
 }

@@ -23,7 +23,7 @@ pub struct SetMyCommands {
 impl Request for SetMyCommands {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<Self::Output> {
+    async fn send(self) -> ResponseResult<Self::Output> {
         net::request_json(self.bot.client(), self.bot.token(), "setMyCommands", &self).await
     }
 }

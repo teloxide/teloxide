@@ -28,7 +28,7 @@ pub struct SendLocation {
 impl Request for SendLocation {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "sendLocation", &self).await
     }
 }

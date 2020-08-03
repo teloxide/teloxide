@@ -22,7 +22,7 @@ pub struct DeleteStickerFromSet {
 impl Request for DeleteStickerFromSet {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "deleteStickerFromSet", &self).await
     }
 }

@@ -22,7 +22,7 @@ pub struct GetStickerSet {
 impl Request for GetStickerSet {
     type Output = StickerSet;
 
-    async fn send(&self) -> ResponseResult<StickerSet> {
+    async fn send(self) -> ResponseResult<StickerSet> {
         net::request_json(self.bot.client(), self.bot.token(), "getStickerSet", &self).await
     }
 }

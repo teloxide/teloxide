@@ -28,7 +28,7 @@ pub struct SendDice {
 impl Request for SendDice {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "sendDice", &self).await
     }
 }

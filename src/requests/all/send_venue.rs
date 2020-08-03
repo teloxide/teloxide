@@ -31,7 +31,7 @@ pub struct SendVenue {
 impl Request for SendVenue {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "sendVenue", &self).await
     }
 }

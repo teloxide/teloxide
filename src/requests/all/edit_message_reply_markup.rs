@@ -30,7 +30,7 @@ pub struct EditMessageReplyMarkup {
 impl Request for EditMessageReplyMarkup {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "editMessageReplyMarkup", &self)
             .await
     }

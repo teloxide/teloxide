@@ -36,7 +36,7 @@ pub struct SendPoll {
 impl Request for SendPoll {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "sendPoll", &self).await
     }
 }

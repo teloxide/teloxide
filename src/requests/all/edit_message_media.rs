@@ -31,7 +31,7 @@ pub struct EditMessageMedia {
 impl Request for EditMessageMedia {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         let mut params = FormBuilder::new();
 
         match &self.chat_or_inline_message {

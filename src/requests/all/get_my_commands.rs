@@ -21,7 +21,7 @@ pub struct GetMyCommands {
 impl Request for GetMyCommands {
     type Output = Vec<BotCommand>;
 
-    async fn send(&self) -> ResponseResult<Self::Output> {
+    async fn send(self) -> ResponseResult<Self::Output> {
         net::request_json(self.bot.client(), self.bot.token(), "getMyCommands", &self).await
     }
 }

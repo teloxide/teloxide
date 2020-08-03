@@ -39,7 +39,7 @@ impl Request for ExportChatInviteLink {
     type Output = String;
 
     /// Returns the new invite link as `String` on success.
-    async fn send(&self) -> ResponseResult<String> {
+    async fn send(self) -> ResponseResult<String> {
         net::request_json(self.bot.client(), self.bot.token(), "exportChatInviteLink", &self).await
     }
 }

@@ -21,7 +21,7 @@ pub trait Request {
     type Output;
 
     /// Asynchronously sends this request to Telegram and returns the result.
-    async fn send(&self) -> ResponseResult<Self::Output>;
+    async fn send(self) -> ResponseResult<Self::Output>;
 }
 
 /// Designates an API request with possibly sending file.
@@ -33,5 +33,5 @@ pub trait RequestWithFile {
     /// Asynchronously sends this request to Telegram and returns the result.
     /// Returns `tokio::io::Result::Err` when trying to send file which does not
     /// exists.
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Self::Output>>;
+    async fn send(self) -> tokio::io::Result<ResponseResult<Self::Output>>;
 }

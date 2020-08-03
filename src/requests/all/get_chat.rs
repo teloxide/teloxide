@@ -24,7 +24,7 @@ pub struct GetChat {
 impl Request for GetChat {
     type Output = Chat;
 
-    async fn send(&self) -> ResponseResult<Chat> {
+    async fn send(self) -> ResponseResult<Chat> {
         net::request_json(self.bot.client(), self.bot.token(), "getChat", &self).await
     }
 }

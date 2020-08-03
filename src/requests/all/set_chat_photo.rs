@@ -26,7 +26,7 @@ pub struct SetChatPhoto {
 impl Request for SetChatPhoto {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "setChatPhoto", &self).await
     }
 }

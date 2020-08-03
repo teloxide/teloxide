@@ -31,7 +31,7 @@ pub struct KickChatMember {
 impl Request for KickChatMember {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "kickChatMember", &self).await
     }
 }

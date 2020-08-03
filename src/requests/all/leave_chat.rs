@@ -22,7 +22,7 @@ pub struct LeaveChat {
 impl Request for LeaveChat {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "leaveChat", &self).await
     }
 }

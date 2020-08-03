@@ -28,7 +28,7 @@ pub struct SendVideoNote {
 impl RequestWithFile for SendVideoNote {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+    async fn send(self) -> tokio::io::Result<ResponseResult<Message>> {
         let mut builder = FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("video_note", &self.video_note)

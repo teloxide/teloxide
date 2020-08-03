@@ -25,7 +25,7 @@ pub struct SetStickerSetThumb {
 impl Request for SetStickerSetThumb {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<Self::Output> {
+    async fn send(self) -> ResponseResult<Self::Output> {
         net::request_json(self.bot.client(), self.bot.token(), "setStickerSetThumb", &self).await
     }
 }

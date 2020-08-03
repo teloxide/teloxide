@@ -33,7 +33,7 @@ pub struct EditMessageText {
 impl Request for EditMessageText {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "editMessageText", &self).await
     }
 }

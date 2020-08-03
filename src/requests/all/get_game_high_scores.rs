@@ -33,7 +33,7 @@ pub struct GetGameHighScores {
 impl Request for GetGameHighScores {
     type Output = Vec<GameHighScore>;
 
-    async fn send(&self) -> ResponseResult<Vec<GameHighScore>> {
+    async fn send(self) -> ResponseResult<Vec<GameHighScore>> {
         net::request_json(self.bot.client(), self.bot.token(), "getGameHighScores", &self).await
     }
 }

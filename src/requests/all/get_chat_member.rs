@@ -23,7 +23,7 @@ pub struct GetChatMember {
 impl Request for GetChatMember {
     type Output = ChatMember;
 
-    async fn send(&self) -> ResponseResult<ChatMember> {
+    async fn send(self) -> ResponseResult<ChatMember> {
         net::request_json(self.bot.client(), self.bot.token(), "getChatMember", &self).await
     }
 }

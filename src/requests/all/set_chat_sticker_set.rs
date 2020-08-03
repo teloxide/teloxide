@@ -27,7 +27,7 @@ pub struct SetChatStickerSet {
 impl Request for SetChatStickerSet {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "setChatStickerSet", &self).await
     }
 }

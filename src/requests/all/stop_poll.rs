@@ -27,7 +27,7 @@ impl Request for StopPoll {
     /// On success, the stopped [`Poll`] with the final results is returned.
     ///
     /// [`Poll`]: crate::types::Poll
-    async fn send(&self) -> ResponseResult<Poll> {
+    async fn send(self) -> ResponseResult<Poll> {
         net::request_json(self.bot.client(), self.bot.token(), "stopPoll", &self).await
     }
 }

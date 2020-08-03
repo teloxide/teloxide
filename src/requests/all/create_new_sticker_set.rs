@@ -25,7 +25,7 @@ pub struct CreateNewStickerSet {
 impl RequestWithFile for CreateNewStickerSet {
     type Output = True;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+    async fn send(self) -> tokio::io::Result<ResponseResult<True>> {
         let builder = FormBuilder::new()
             .add_text("user_id", &self.user_id)
             .add_text("name", &self.name)

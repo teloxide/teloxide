@@ -25,7 +25,7 @@ pub struct ForwardMessage {
 impl Request for ForwardMessage {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(self) -> ResponseResult<Message> {
         net::request_json(self.bot.client(), self.bot.token(), "forwardMessage", &self).await
     }
 }

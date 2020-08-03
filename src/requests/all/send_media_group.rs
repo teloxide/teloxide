@@ -21,7 +21,7 @@ pub struct SendMediaGroup {
 impl Request for SendMediaGroup {
     type Output = Vec<Message>;
 
-    async fn send(&self) -> ResponseResult<Vec<Message>> {
+    async fn send(self) -> ResponseResult<Vec<Message>> {
         net::request_multipart(
             self.bot.client(),
             self.bot.token(),

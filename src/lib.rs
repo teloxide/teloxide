@@ -59,5 +59,6 @@ pub mod prelude;
 pub mod requests;
 pub mod types;
 pub mod utils;
+pub mod wrapper;
 
 extern crate teloxide_macros;

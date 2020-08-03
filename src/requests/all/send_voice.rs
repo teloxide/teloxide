@@ -34,7 +34,7 @@ pub struct SendVoice {
 impl RequestWithFile for SendVoice {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+    async fn send(self) -> tokio::io::Result<ResponseResult<Message>> {
         Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),

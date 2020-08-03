@@ -36,7 +36,7 @@ pub struct SendAudio {
 impl RequestWithFile for SendAudio {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+    async fn send(self) -> tokio::io::Result<ResponseResult<Message>> {
         let mut builder = FormBuilder::new()
             .add_text("chat_id", &self.chat_id)
             .add_input_file("audio", &self.audio)

@@ -36,7 +36,7 @@ impl Request for GetUpdates {
     /// Deserialize to `Vec<serde_json::Result<Update>>` instead of
     /// `Vec<Update>`, because we want to parse the rest of updates even if our
     /// library hasn't parsed one.
-    async fn send(&self) -> ResponseResult<Vec<Result<Update, (Value, serde_json::Error)>>> {
+    async fn send(self) -> ResponseResult<Vec<Result<Update, (Value, serde_json::Error)>>> {
         let value: Value =
             net::request_json(self.bot.client(), self.bot.token(), "getUpdates", &self).await?;
 

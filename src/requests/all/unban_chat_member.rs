@@ -26,7 +26,7 @@ pub struct UnbanChatMember {
 impl Request for UnbanChatMember {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<True> {
+    async fn send(self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "unbanChatMember", &self).await
     }
 }
