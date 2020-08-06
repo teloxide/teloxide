@@ -3,30 +3,29 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, Message},
+    types::{InlineKeyboardMarkup, Message},
     Bot,
 };
 
-/// Use this method to stop updating a live location message before
-/// `live_period` expires.
+/// Use this method to stop updating a live location message (sent via the bot)
+/// before `live_period` expires.
 ///
-/// On success, the sent [`Message`] is returned.
+/// On success, [`True`] is returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#stopmessagelivelocation).
 ///
-/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
-pub struct StopMessageLiveLocation {
+pub struct StopInlineMessageLiveLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
+    inline_message_id: String,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for StopMessageLiveLocation {
+impl Request for StopInlineMessageLiveLocation {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {
@@ -35,28 +34,21 @@ impl Request for StopMessageLiveLocation {
     }
 }
 
-impl StopMessageLiveLocation {
-    pub(crate) fn new<C>(bot: Bot, chat_id: C, message_id: i32) -> Self
+impl StopInlineMessageLiveLocation {
+    pub(crate) fn new<I>(bot: Bot, inline_message_id: I) -> Self
     where
-        C: Into<ChatId>,
+        I: Into<String>,
     {
-        let chat_id = chat_id.into();
-        Self { bot, chat_id, message_id, reply_markup: None }
+        let inline_message_id = inline_message_id.into();
+        Self { bot, inline_message_id, reply_markup: None }
     }
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
-    pub fn chat_id<T>(mut self, val: T) -> Self
+    /// Identifier of the inline message.
+    pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<String>,
     {
-        self.chat_id = val.into();
-        self
-    }
-
-    /// Identifier of the message to edit
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+        self.inline_message_id = val.into();
         self
     }
 
