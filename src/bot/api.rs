@@ -1563,18 +1563,18 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#setgamescore).
     ///
     /// # Params
+    ///   - `target`: Target message, either chat id and message id or inline
+    ///     message id.
     ///   - `user_id`: User identifier.
     ///   - `score`: New score, must be non-negative.
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
-    pub fn set_game_score(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-        score: i32,
-    ) -> SetGameScore {
-        SetGameScore::new(self.clone(), chat_or_inline_message, user_id, score)
+    pub fn set_game_score<T>(&self, target: T, user_id: i32, score: i32) -> SetGameScore
+    where
+        T: Into<TargetMessage>,
+    {
+        SetGameScore::new(self.clone(), target, user_id, score)
     }
 
     /// Use this method to get data for high score tables.
@@ -1591,13 +1591,14 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#getgamehighscores).
     ///
     /// # Params
+    ///   - `target`: Target message, either chat id and message id or inline
+    ///     message id.
     ///   - `user_id`: Target user id.
-    pub fn get_game_high_scores(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-    ) -> GetGameHighScores {
-        GetGameHighScores::new(self.clone(), chat_or_inline_message, user_id)
+    pub fn get_game_high_scores<T>(&self, target: T, user_id: i32) -> GetGameHighScores
+    where
+        T: Into<TargetMessage>,
+    {
+        GetGameHighScores::new(self.clone(), target, user_id)
     }
 
     /// Use this method to set a custom title for an administrator in a
