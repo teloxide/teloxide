@@ -73,10 +73,10 @@ impl SendPhoto {
 
     /// Photo to send.
     ///
-    /// Pass [`InputFile::File`] to send a photo that exists on
+    /// Pass [`InputFile::FileId`] to send a photo that exists on
     /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// Telegram to get a photo from the Internet, or upload a new one
+    /// using [`InputFile::File`] or [`InputFile::Memory`]. 
     ///
     /// [`InputFile::File`]: crate::types::InputFile::File
     /// [`InputFile::Url`]: crate::types::InputFile::Url
