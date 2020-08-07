@@ -20,7 +20,7 @@ pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
 pub struct Bot {
     token: Arc<str>,
     client: Client,
-    parse_mode: Arc<Option<ParseMode>>,
+    parse_mode: Option<ParseMode>,
 }
 
 impl Bot {
@@ -95,7 +95,7 @@ impl Bot {
         Self {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
             client,
-            parse_mode: Arc::new(None),
+            parse_mode: None,
         }
     }
 }
@@ -236,7 +236,7 @@ impl BotBuilder {
         Bot {
             client: self.client.unwrap_or_else(crate::utils::client_from_env),
             token: self.token.unwrap_or_else(|| get_env(TELOXIDE_TOKEN)).into(),
-            parse_mode: Arc::new(self.parse_mode),
+            parse_mode: self.parse_mode,
         }
     }
 }
