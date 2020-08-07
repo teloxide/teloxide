@@ -5,11 +5,16 @@ mod in_mem_storage;
 #[cfg(feature = "redis-storage")]
 mod redis_storage;
 
+#[cfg(feature = "mongodb-storage")]
+mod mongo_storage;
+
 use futures::future::BoxFuture;
 
 pub use in_mem_storage::InMemStorage;
 #[cfg(feature = "redis-storage")]
 pub use redis_storage::{RedisStorage, RedisStorageError};
+#[cfg(feature = "mongodb-storage")]
+pub use mongo_storage::{MongoStorage, MongoStorageError};
 pub use serializer::Serializer;
 use std::sync::Arc;
 
