@@ -21,7 +21,6 @@ use crate::{
     },
     Bot,
 };
-use std::ops::Deref;
 
 impl Bot {
     /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -1035,8 +1034,9 @@ impl Bot {
     ) -> EditMessageCaption {
         match self.parse_mode {
             None => EditMessageCaption::new(self.clone(), chat_or_inline_message),
-            Some(parse_mode) => EditMessageCaption::new(self.clone(), chat_or_inline_message)
-                .parse_mode(parse_mode),
+            Some(parse_mode) => {
+                EditMessageCaption::new(self.clone(), chat_or_inline_message).parse_mode(parse_mode)
+            }
         }
     }
 
