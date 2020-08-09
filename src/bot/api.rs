@@ -183,12 +183,32 @@ impl Bot {
         )
     }
 
+    /// Use this method to send audio files, if you want Telegram clients to display
+    /// them in the music player.
     ///
+    /// Your audio must be in the .MP3 or .M4A format. Bots can currently send audio
+    /// files of up to 50 MB in size, this limit may be changed in the future.
+    ///
+    /// For sending voice messages, use the [`Bot::send_voice`] method instead.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
+    ///
+    /// [`Bot::send_voice`]: crate::Bot::send_voice
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///
+    /// Pass [`InputFile::File`] to send a file that exists on
+    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    /// Telegram to get a .webp file from the Internet, or upload a new one
+    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
     ///
