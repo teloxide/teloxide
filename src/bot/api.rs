@@ -1057,8 +1057,9 @@ impl Bot {
     {
         match self.parse_mode {
             None => EditMessageText::new(self.clone(), chat_id, message_id, text),
-            Some(parse_mode) => EditMessageText::new(self.clone(), chat_id, message_id, text)
-                .parse_mode(parse_mode),
+            Some(parse_mode) => {
+                EditMessageText::new(self.clone(), chat_id, message_id, text).parse_mode(parse_mode)
+            }
         }
     }
 
@@ -1117,8 +1118,9 @@ impl Bot {
     {
         match self.parse_mode {
             None => EditMessageCaption::new(self.clone(), chat_id, message_id),
-            Some(parse_mode) => EditMessageCaption::new(self.clone(), chat_id, message_id)
-                .parse_mode(parse_mode),
+            Some(parse_mode) => {
+                EditMessageCaption::new(self.clone(), chat_id, message_id).parse_mode(parse_mode)
+            }
         }
     }
 
