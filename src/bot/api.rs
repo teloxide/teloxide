@@ -21,7 +21,6 @@ use crate::{
     },
     Bot,
 };
-use std::ops::Deref;
 
 impl Bot {
     /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -1007,10 +1006,10 @@ impl Bot {
     where
         T: Into<String>,
     {
-        match self.parse_mode.deref() {
+        match self.parse_mode {
             None => EditMessageText::new(self.clone(), chat_or_inline_message, text),
             Some(parse_mode) => EditMessageText::new(self.clone(), chat_or_inline_message, text)
-                .parse_mode(*parse_mode.deref()),
+                .parse_mode(parse_mode),
         }
     }
 
@@ -1033,10 +1032,11 @@ impl Bot {
         &self,
         chat_or_inline_message: ChatOrInlineMessage,
     ) -> EditMessageCaption {
-        match self.parse_mode.deref() {
+        match self.parse_mode {
             None => EditMessageCaption::new(self.clone(), chat_or_inline_message),
-            Some(parse_mode) => EditMessageCaption::new(self.clone(), chat_or_inline_message)
-                .parse_mode(*parse_mode.deref()),
+            Some(parse_mode) => {
+                EditMessageCaption::new(self.clone(), chat_or_inline_message).parse_mode(parse_mode)
+            }
         }
     }
 
@@ -1530,9 +1530,9 @@ impl Bot {
         builder: Builder,
         f: fn(Builder, ParseMode) -> Builder,
     ) -> Builder {
-        match self.parse_mode.deref() {
+        match self.parse_mode {
             None => builder,
-            Some(parse_mode) => f(builder, *parse_mode.deref()),
+            Some(parse_mode) => f(builder, parse_mode),
         }
     }
 }
