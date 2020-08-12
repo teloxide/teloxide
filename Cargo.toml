@@ -30,6 +30,8 @@ bincode-serializer = ["bincode"]
 
 frunk- = ["frunk"]
 
+nightly = [] # currently used only for `README.md` tests
+
 [dependencies]
 serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }

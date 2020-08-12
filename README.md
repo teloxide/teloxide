@@ -94,7 +94,7 @@ tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 This bot throws a dice on each incoming message:
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
-```rust
+```rust,no_run
 use teloxide::prelude::*;
 
 #[tokio::main]
@@ -130,8 +130,8 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [serde-json]: https://github.com/serde-rs/json
 
 ([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
-```rust
-// Imports are omitted...
+```rust,no_run
+use teloxide::{utils::command::BotCommand, prelude::*};
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -166,7 +166,7 @@ async fn main() {
     let bot = Bot::from_env();
 
     let bot_name: String = panic!("Your bot's name here");
-    teloxide::commands_repl(bot, bot_name, action).await;
+    teloxide::commands_repl(bot, bot_name, answer).await;
 }
 ```
 
@@ -184,7 +184,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 Below is a bot, which asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
 ([dialogue_bot/src/dialogue/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/mod.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Transition, From)]
@@ -208,7 +208,7 @@ When a user sends a message to our bot, and such a dialogue does not yet exist, 
   <summary>Dialogue::Start</summary>
 
 ([dialogue_bot/src/dialogue/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/start.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 pub struct StartState;
@@ -226,7 +226,7 @@ async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> Transition
   <summary>Dialogue::ReceiveFullName</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -249,7 +249,7 @@ async fn receive_full_name(
   <summary>Dialogue::ReceiveAge</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_age.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -282,7 +282,7 @@ async fn receive_age_state(
     <summary>Dialogue::ReceiveLocation</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_location.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -310,7 +310,7 @@ All these subtransitions accept a corresponding state (one of the many variants 
 Finally, the `main` function looks like this:
 
 ([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[tokio::main]
