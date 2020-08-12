@@ -6,7 +6,7 @@ use crate::{
         SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendSticker, SendVenue, SendVideo,
         SendVideoNote, SendVoice,
     },
-    types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
+    types::{ChatId, InputFile, InputMedia, Message},
     Bot,
 };
 
@@ -130,20 +130,11 @@ impl UpdateWithCx<Message> {
     where
         T: Into<String>,
     {
-        self.bot.edit_message_text(
-            ChatOrInlineMessage::Chat {
-                chat_id: self.update.chat.id.into(),
-                message_id: self.update.id,
-            },
-            text,
-        )
+        self.bot.edit_message_text(self.update.chat.id, self.update.id, text)
     }
 
     pub fn edit_message_caption(&self) -> EditMessageCaption {
-        self.bot.edit_message_caption(ChatOrInlineMessage::Chat {
-            chat_id: self.update.chat.id.into(),
-            message_id: self.update.id,
-        })
+        self.bot.edit_message_caption(self.update.chat.id, self.update.id)
     }
 
     pub fn delete_message(&self) -> DeleteMessage {
