@@ -22,17 +22,17 @@
 </div>
 
 ## Table of contents
- - [Highlights](https://github.com/teloxide/teloxide#highlights)
- - [Setting up your environment](https://github.com/teloxide/teloxide#setting-up-your-environment)
- - [API overview](https://github.com/teloxide/teloxide#api-overview)
-   - [The dices bot](https://github.com/teloxide/teloxide#the-dices-bot)
-   - [Commands](https://github.com/teloxide/teloxide#commands)
-   - [Dialogues management](https://github.com/teloxide/teloxide#dialogues-management)
- - [Recommendations](https://github.com/teloxide/teloxide#recommendations)
- - [Cargo features](https://github.com/teloxide/teloxide#cargo-features)
- - [FAQ](https://github.com/teloxide/teloxide#faq)
- - [Community bots](https://github.com/teloxide/teloxide#community-bots)
- - [Contributing](https://github.com/teloxide/teloxide#contributing)
+ - [Highlights](#highlights)
+ - [Setting up your environment](#setting-up-your-environment)
+ - [API overview](#api-overview)
+   - [The dices bot](#the-dices-bot)
+   - [Commands](#commands)
+   - [Dialogues management](#dialogues-management)
+ - [Recommendations](#recommendations)
+ - [Cargo features](#cargo-features)
+ - [FAQ](#faq)
+ - [Community bots](#community-bots)
+ - [Contributing](#contributing)
 
 ## Highlights
 
@@ -90,7 +90,7 @@ tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 ### The dices bot
 This bot throws a dice on each incoming message:
 
-([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
+([Full](./examples/dices_bot/src/main.rs))
 ```rust
 use teloxide::prelude::*;
 
@@ -103,7 +103,7 @@ async fn main() {
 
     teloxide::repl(bot, |message| async move {
         message.answer_dice().send().await?;
-        respond(())
+        ResponseResult::<()>::Ok(())
     })
     .await;
 }
@@ -112,7 +112,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
+    <img src=../../raw/master/media/DICES_BOT.gif />
   </kbd>
 </div>
 
@@ -126,7 +126,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](https://github.com/teloxide/teloxide/blob/master/examples/simple_commands_bot/src/main.rs))
+([Full](./examples/simple_commands_bot/src/main.rs))
 ```rust
 // Imports are omitted...
 
@@ -169,7 +169,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/SIMPLE_COMMANDS_BOT.gif />
+    <img src=../../raw/master/media/SIMPLE_COMMANDS_BOT.gif />
   </kbd>
 </div>
 
@@ -180,7 +180,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 
 Below is a bot, which asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
-([dialogue_bot/src/dialogue/mod.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/mod.rs))
+([dialogue_bot/src/dialogue/mod.rs](./examples/dialogue_bot/src/dialogue/mod.rs))
 ```rust
 // Imports are omitted...
 
@@ -204,7 +204,7 @@ When a user sends a message to our bot, and such a dialogue does not yet exist, 
 <details>
   <summary>Dialogue::Start</summary>
 
-([dialogue_bot/src/dialogue/states/start.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/start.rs))
+([dialogue_bot/src/dialogue/states/start.rs](./examples/dialogue_bot/src/dialogue/states/start.rs))
 ```rust
 // Imports are omitted...
 
@@ -222,7 +222,7 @@ async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> Transition
 <details>
   <summary>Dialogue::ReceiveFullName</summary>
 
-([dialogue_bot/src/dialogue/states/receive_full_name.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
+([dialogue_bot/src/dialogue/states/receive_full_name.rs](./examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
 ```rust
 // Imports are omitted...
 
@@ -245,7 +245,7 @@ async fn receive_full_name(
 <details>
   <summary>Dialogue::ReceiveAge</summary>
 
-([dialogue_bot/src/dialogue/states/receive_age.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_age.rs))
+([dialogue_bot/src/dialogue/states/receive_age.rs](./examples/dialogue_bot/src/dialogue/states/receive_age.rs))
 ```rust
 // Imports are omitted...
 
@@ -278,7 +278,7 @@ async fn receive_age_state(
 <details>
     <summary>Dialogue::ReceiveLocation</summary>
 
-([dialogue_bot/src/dialogue/states/receive_location.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/dialogue/states/receive_location.rs))
+([dialogue_bot/src/dialogue/states/receive_location.rs](./examples/dialogue_bot/src/dialogue/states/receive_location.rs))
 ```rust
 // Imports are omitted...
 
@@ -306,7 +306,7 @@ All these subtransitions accept a corresponding state (one of the many variants 
 
 Finally, the `main` function looks like this:
 
-([dialogue_bot/src/main.rs](https://github.com/teloxide/teloxide/blob/master/examples/dialogue_bot/src/main.rs))
+([dialogue_bot/src/main.rs](./examples/dialogue_bot/src/main.rs))
 ```rust
 // Imports are omitted...
 
@@ -336,11 +336,11 @@ async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> Transi
 
 <div align="center">
   <kbd>
-    <img src=https://github.com/teloxide/teloxide/raw/master/media/DIALOGUE_BOT.gif />
+    <img src=../../raw/master/media/DIALOGUE_BOT.gif />
   </kbd>
 </div>
 
-[More examples!](https://github.com/teloxide/teloxide/tree/master/examples)
+[More examples!](./examples)
 
 ## Recommendations
  - Use this pattern:
@@ -404,7 +404,7 @@ UPD: The current design spreads wide and deep trait bounds, thereby increasing c
 
 Q: Can I use webhooks?
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong_bot/src/main.rs).
+A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
