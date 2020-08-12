@@ -2,20 +2,23 @@
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
   
-  <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-v0.3.0-blue.svg">
-  </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
+  </a>
+  <a href="https://teloxide.netlify.com">
+    <img src="https://img.shields.io/badge/docs-master-blue)">
+  </a>
+  <a href="https://docs.rs/teloxide/">
+    <img src="https://img.shields.io/badge/docs.rs-v0.3.0-blue.svg">
   </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/badge/crates.io-v0.3.0-orange.svg">
   </a>
-  <a href="https://t.me/teloxide">
-    <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
-  </a>
   <a href="https://core.telegram.org/bots/api">
     <img src="https://img.shields.io/badge/API coverage-Up to 0.4.9 (inclusively)-green.svg">
+  </a>
+  <a href="https://t.me/teloxide">
+    <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
   </a>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
