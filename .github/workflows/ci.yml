@@ -54,13 +54,20 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
 
-      - name: build
+      - name: Build
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --verbose ${{ matrix.features }}
 
-      - name: test
+      - name: Setup redis
+        run: |
+          sudo apt install redis-server
+          redis-server --port 7777 > /dev/null &
+          redis-server --port 7778 > /dev/null &
+          redis-server --port 7779 > /dev/null &
+
+      - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
@@ -87,5 +94,5 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Test the example
+      - name: Check the example
         run: cd examples && cd ${{ matrix.example }} && cargo check
