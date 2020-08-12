@@ -25,7 +25,7 @@ pub struct InlineKeyboardMarkup {
 ///
 /// # Examples
 /// ```
-/// use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
+/// use teloxide_core::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 ///
 /// let url_button = InlineKeyboardButton::url("text".to_string(), "http://url.com".to_string());
 /// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);

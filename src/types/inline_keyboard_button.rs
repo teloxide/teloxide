@@ -101,7 +101,7 @@ pub enum InlineKeyboardButtonKind {
 ///
 /// # Examples
 /// ```
-/// use teloxide::types::InlineKeyboardButton;
+/// use teloxide_core::types::InlineKeyboardButton;
 ///
 /// let url_button = InlineKeyboardButton::url("Text".to_string(), "http://url.com".to_string());
 /// ```
