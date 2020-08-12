@@ -27,23 +27,45 @@ jobs:
           override: true
       - name: Cargo clippy
         run: cargo clippy --all --all-targets --all-features -- -D warnings
-  stable-test:
+
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+
+        include:
+          - rust: stable
+            features: "--features \"redis-storage cbor-serializer bincode-serializer frunk-\""
+          - rust: beta
+            features: "--features \"redis-storage cbor-serializer bincode-serializer frunk-\""
+          - rust: nightly
+            features: "--all-features"
+
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{ matrix.rust }}
           override: true
-      - name: Setup redis
-        run: |
-          sudo apt install redis-server
-          redis-server --port 7777 > /dev/null &
-          redis-server --port 7778 > /dev/null &
-          redis-server --port 7779 > /dev/null &
-      - name: Cargo test
-        run: cargo test --all --all-features
+
+      - name: build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --verbose ${{ matrix.features }}
+
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --verbose ${{ matrix.features }}
+
   build-example:
     runs-on: ubuntu-latest
     strategy:

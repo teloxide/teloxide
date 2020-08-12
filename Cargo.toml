@@ -68,3 +68,8 @@ tokio = { version = "0.2.21", features = ["fs", "stream", "rt-threaded", "macros
 
 [package.metadata."docs.rs"]
 all-features = true
+
+[[test]]
+name = "redis"
+path = "tests/redis.rs"
+required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
