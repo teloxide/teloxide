@@ -1,0 +1,26 @@
+[package]
+name = "teloxide-core"
+version = "0.1.0"
+edition = "2018"
+authors = [
+    "Temirkhan Myrzamadi <hirrolot@gmail.com>",
+    "Waffle Lapkin <waffle.lapkin@gmail.com>",
+    "p0lunin <dmytro.polunin@gmail.com>",
+    "Mishko torop'izhko",
+    "Mr-Andersen",
+    "Sergey Levitin <selevit@gmail.com>",
+    "Rustem B. <bakirov.com@yandex.ru>",
+    "Alexey Fedechkin <aleksey-fedechkin@rambler.ru>"
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[features]
+# features those require nightly compiler
+nightly = []
+
+[package.metadata."docs.rs"]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
