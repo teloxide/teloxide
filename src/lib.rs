@@ -40,6 +40,7 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
+#![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
 
 pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
@@ -61,3 +62,7 @@ pub mod types;
 pub mod utils;
 
 extern crate teloxide_macros;
+
+#[cfg(all(feature = "nightly", doctest))]
+#[doc(include = "../README.md")]
+enum ReadmeDocTests {}

@@ -2,20 +2,23 @@
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
   
-  <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-v0.3.0-blue.svg">
-  </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
+  </a>
+  <a href="https://teloxide.netlify.com">
+    <img src="https://img.shields.io/badge/docs-master-blue)">
+  </a>
+  <a href="https://docs.rs/teloxide/">
+    <img src="https://img.shields.io/badge/docs.rs-v0.3.0-blue.svg">
   </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/badge/crates.io-v0.3.0-orange.svg">
   </a>
-  <a href="https://t.me/teloxide">
-    <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
-  </a>
   <a href="https://core.telegram.org/bots/api">
     <img src="https://img.shields.io/badge/API coverage-Up to 0.4.9 (inclusively)-green.svg">
+  </a>
+  <a href="https://t.me/teloxide">
+    <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
   </a>
   
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
@@ -91,7 +94,7 @@ tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 This bot throws a dice on each incoming message:
 
 ([Full](./examples/dices_bot/src/main.rs))
-```rust
+```rust,no_run
 use teloxide::prelude::*;
 
 #[tokio::main]
@@ -127,8 +130,8 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [serde-json]: https://github.com/serde-rs/json
 
 ([Full](./examples/simple_commands_bot/src/main.rs))
-```rust
-// Imports are omitted...
+```rust,no_run
+use teloxide::{utils::command::BotCommand, prelude::*};
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -163,7 +166,7 @@ async fn main() {
     let bot = Bot::from_env();
 
     let bot_name: String = panic!("Your bot's name here");
-    teloxide::commands_repl(bot, bot_name, action).await;
+    teloxide::commands_repl(bot, bot_name, answer).await;
 }
 ```
 
@@ -181,7 +184,7 @@ A dialogue is described by an enumeration, where each variant is one of possible
 Below is a bot, which asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
 ([dialogue_bot/src/dialogue/mod.rs](./examples/dialogue_bot/src/dialogue/mod.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Transition, From)]
@@ -205,7 +208,7 @@ When a user sends a message to our bot, and such a dialogue does not yet exist, 
   <summary>Dialogue::Start</summary>
 
 ([dialogue_bot/src/dialogue/states/start.rs](./examples/dialogue_bot/src/dialogue/states/start.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 pub struct StartState;
@@ -223,7 +226,7 @@ async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> Transition
   <summary>Dialogue::ReceiveFullName</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_full_name.rs](./examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -246,7 +249,7 @@ async fn receive_full_name(
   <summary>Dialogue::ReceiveAge</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_age.rs](./examples/dialogue_bot/src/dialogue/states/receive_age.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -279,7 +282,7 @@ async fn receive_age_state(
     <summary>Dialogue::ReceiveLocation</summary>
 
 ([dialogue_bot/src/dialogue/states/receive_location.rs](./examples/dialogue_bot/src/dialogue/states/receive_location.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[derive(Generic)]
@@ -307,7 +310,7 @@ All these subtransitions accept a corresponding state (one of the many variants 
 Finally, the `main` function looks like this:
 
 ([dialogue_bot/src/main.rs](./examples/dialogue_bot/src/main.rs))
-```rust
+```rust,ignore
 // Imports are omitted...
 
 #[tokio::main]
