@@ -1,3 +1,5 @@
+use std::io;
+
 use derive_more::From;
 use reqwest::StatusCode;
 use serde::Deserialize;
@@ -34,6 +36,9 @@ pub enum RequestError {
 
     #[error("An error while parsing JSON: {0}")]
     InvalidJson(#[source] serde_json::Error),
+
+    #[error("An I/O error: {0}")]
+    Io(#[source] io::Error),
 }
 
 /// A kind of an API error.
