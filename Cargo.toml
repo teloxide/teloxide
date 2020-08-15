@@ -17,7 +17,7 @@ authors = [
 
 [dependencies]
 futures = "0.3.5"
-tokio = { version = "0.2.21", features = ["fs", "stream"] }
+tokio = { version = "0.2.21", features = ["fs", "stream", "rt-threaded", "macros"] }
 tokio-util = "0.3.1"
 bytes = "0.5.5"
 async-trait = "0.1.36"
@@ -26,6 +26,7 @@ reqwest = { version = "0.10.6", features = ["json", "stream"] }
 serde = { version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.55"
 serde_with_macros = "1.1.0"
+uuid = { version = "0.8.1", features = ["v4"] } # for attaching input files
 
 derive_more = "0.99.9"
 mime = "0.3.16"
