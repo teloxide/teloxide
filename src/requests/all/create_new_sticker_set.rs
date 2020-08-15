@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{MaskPosition, StickerType, True},
     Bot,
 };
@@ -9,12 +11,15 @@ use crate::{
 /// able to edit the created sticker set.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#createnewstickerset).
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct CreateNewStickerSet {
+    #[serde(skip_serializing)]
     bot: Bot,
     user_id: i32,
     name: String,
     title: String,
+    #[serde(flatten)]
     sticker_type: StickerType,
     emojis: String,
     contains_masks: Option<bool>,
@@ -22,31 +27,12 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl RequestWithFile for CreateNewStickerSet {
+impl Request for CreateNewStickerSet {
     type Output = True;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
-        let builder = FormBuilder::new()
-            .add_text("user_id", &self.user_id)
-            .add_text("name", &self.name)
-            .add_text("title", &self.title);
-
-        let builder = match &self.sticker_type {
-            StickerType::Png(file) => builder.add_input_file("png_sticker", &file),
-            StickerType::Tgs(file) => builder.add_input_file("tgs_sticker", &file),
-        }
-        .await?
-        .add_text("emojis", &self.emojis)
-        .add_text("contains_masks", &self.contains_masks)
-        .add_text("mask_position", &self.mask_position);
-
-        Ok(net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "createNewStickerSet",
-            builder.build(),
-        )
-        .await)
+    async fn send(&self) -> ResponseResult<True> {
+        net::request_multipart(self.bot.client(), self.bot.token(), "createNewStickerSet", self)
+            .await
     }
 }
 

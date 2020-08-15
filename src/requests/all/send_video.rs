@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -12,8 +14,10 @@ use crate::{
 /// limit may be changed in the future.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct SendVideo {
+    #[serde(skip_serializing)]
     bot: Bot,
     chat_id: ChatId,
     video: InputFile,
@@ -30,33 +34,11 @@ pub struct SendVideo {
 }
 
 #[async_trait::async_trait]
-impl RequestWithFile for SendVideo {
+impl Request for SendVideo {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
-        let mut builder = FormBuilder::new()
-            .add_text("chat_id", &self.chat_id)
-            .add_input_file("video", &self.video)
-            .await?
-            .add_text("duration", &self.duration)
-            .add_text("width", &self.width)
-            .add_text("height", &self.height)
-            .add_text("caption", &self.caption)
-            .add_text("parse_mode", &self.parse_mode)
-            .add_text("supports_streaming", &self.supports_streaming)
-            .add_text("disable_notification", &self.disable_notification)
-            .add_text("reply_to_message_id", &self.reply_to_message_id)
-            .add_text("reply_markup", &self.reply_markup);
-        if let Some(thumb) = self.thumb.as_ref() {
-            builder = builder.add_input_file("thumb", thumb).await?;
-        }
-        Ok(net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "sendVideo",
-            builder.build(),
-        )
-        .await)
+    async fn send(&self) -> ResponseResult<Message> {
+        net::request_multipart(self.bot.client(), self.bot.token(), "sendVideo", self).await
     }
 }
 
