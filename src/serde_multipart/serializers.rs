@@ -19,7 +19,7 @@ use std::{fmt, fmt::Display, io};
 pub(crate) enum Error {
     Custom(String),
     TopLevelNotStruct,
-    InputFileUnserializerError(crate::serde_multipart::unserializers::UnserializerError),
+    InputFileUnserializer(crate::serde_multipart::unserializers::UnserializerError),
     Io(std::io::Error),
     Json(serde_json::Error),
 }
@@ -38,7 +38,7 @@ impl Display for Error {
         match self {
             Self::Custom(s) => write!(f, "Custom serde error: {}", s),
             Self::TopLevelNotStruct => write!(f, "Multipart supports only structs at top level"),
-            Self::InputFileUnserializerError(inner) => {
+            Self::InputFileUnserializer(inner) => {
                 write!(f, "Error while unserializing input file: {}", inner)
             }
             Self::Io(inner) => write!(f, "Io error: {}", inner),
@@ -541,7 +541,7 @@ impl SerializeStructVariant for PartFromFile {
     where
         T: Serialize,
     {
-        self.inner.serialize_field(key, value).map_err(Error::InputFileUnserializerError)
+        self.inner.serialize_field(key, value).map_err(Error::InputFileUnserializer)
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {

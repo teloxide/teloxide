@@ -27,3 +27,23 @@ pub enum StickerType {
     /// See https://core.telegram.org/animated_stickers#technical-requirements for technical requirements
     Tgs { tgs_sticker: InputFile },
 }
+
+impl StickerType {
+    /// Create png-`StickerType`.
+    ///
+    /// See [`StickerType::Png`] for more
+    ///
+    /// [`StickerType::Png`]: crate::types::StickerType::Png
+    fn png(png_sticker: InputFile) -> Self {
+        Self::Png { png_sticker }
+    }
+
+    /// Create tgs-`StickerType`.
+    ///
+    /// See [`StickerType::Tgs`] for more
+    ///
+    /// [`StickerType::Tgs`]: crate::types::StickerType::Tgs
+    fn tgs(tgs_sticker: InputFile) -> Self {
+        Self::Tgs{ tgs_sticker }
+    }
+}

@@ -432,7 +432,7 @@ mod tests {
 
     #[test]
     fn photo_serialize() {
-        let expected_json = r#"{"type":"photo","media":"123456"}"#;
+        let expected_json = r#"{"type":"photo","media":{"FileId":"123456"}}"#;
         let photo = InputMedia::Photo(InputMediaPhoto {
             media: InputFile::FileId(String::from("123456")),
             caption: None,
@@ -445,7 +445,7 @@ mod tests {
 
     #[test]
     fn video_serialize() {
-        let expected_json = r#"{"type":"video","media":"123456"}"#;
+        let expected_json = r#"{"type":"video","media":{"FileId":"123456"}}"#;
         let video = InputMedia::Video(InputMediaVideo {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
@@ -463,7 +463,7 @@ mod tests {
 
     #[test]
     fn animation_serialize() {
-        let expected_json = r#"{"type":"animation","media":"123456"}"#;
+        let expected_json = r#"{"type":"animation","media":{"FileId":"123456"}}"#;
         let video = InputMedia::Animation(InputMediaAnimation {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
@@ -480,7 +480,7 @@ mod tests {
 
     #[test]
     fn audio_serialize() {
-        let expected_json = r#"{"type":"audio","media":"123456"}"#;
+        let expected_json = r#"{"type":"audio","media":{"FileId":"123456"}}"#;
         let video = InputMedia::Audio(InputMediaAudio {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
@@ -497,7 +497,7 @@ mod tests {
 
     #[test]
     fn document_serialize() {
-        let expected_json = r#"{"type":"document","media":"123456"}"#;
+        let expected_json = r#"{"type":"document","media":{"FileId":"123456"}}"#;
         let video = InputMedia::Document(InputMediaDocument {
             media: InputFile::FileId(String::from("123456")),
             thumb: None,
