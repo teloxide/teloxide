@@ -23,17 +23,17 @@ use crate::{
 pub struct SendAudio {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    audio: InputFile,
-    caption: Option<String>,
-    parse_mode: Option<ParseMode>,
-    duration: Option<i32>,
-    performer: Option<String>,
-    title: Option<String>,
-    thumb: Option<InputFile>,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<ReplyMarkup>,
+    pub chat_id: ChatId,
+    pub audio: InputFile,
+    pub caption: Option<String>,
+    pub parse_mode: Option<ParseMode>,
+    pub duration: Option<i32>,
+    pub performer: Option<String>,
+    pub title: Option<String>,
+    pub thumb: Option<InputFile>,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 #[async_trait::async_trait]

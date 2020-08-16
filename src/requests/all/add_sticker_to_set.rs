@@ -19,12 +19,12 @@ use crate::{
 pub struct AddStickerToSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    user_id: i32,
-    name: String,
+    pub user_id: i32,
+    pub name: String,
     #[serde(flatten)]
-    sticker_type: StickerType,
-    emojis: String,
-    mask_position: Option<MaskPosition>,
+    pub sticker_type: StickerType,
+    pub emojis: String,
+    pub mask_position: Option<MaskPosition>,
 }
 
 #[async_trait::async_trait]

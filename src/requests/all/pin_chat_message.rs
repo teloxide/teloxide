@@ -19,9 +19,9 @@ use crate::{
 pub struct PinChatMessage {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
-    disable_notification: Option<bool>,
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub disable_notification: Option<bool>,
 }
 
 #[async_trait::async_trait]

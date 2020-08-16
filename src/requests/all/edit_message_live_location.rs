@@ -21,11 +21,11 @@ use crate::{
 pub struct EditMessageLiveLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
-    latitude: f32,
-    longitude: f32,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub latitude: f32,
+    pub longitude: f32,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

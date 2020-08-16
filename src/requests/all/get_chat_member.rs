@@ -15,8 +15,8 @@ use crate::{
 pub struct GetChatMember {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    user_id: i32,
+    pub chat_id: ChatId,
+    pub user_id: i32,
 }
 
 #[async_trait::async_trait]

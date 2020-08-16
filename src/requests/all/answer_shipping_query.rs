@@ -20,10 +20,10 @@ use crate::{
 pub struct AnswerShippingQuery {
     #[serde(skip_serializing)]
     bot: Bot,
-    shipping_query_id: String,
-    ok: bool,
-    shipping_options: Option<Vec<ShippingOption>>,
-    error_message: Option<String>,
+    pub shipping_query_id: String,
+    pub ok: bool,
+    pub shipping_options: Option<Vec<ShippingOption>>,
+    pub error_message: Option<String>,
 }
 
 #[async_trait::async_trait]

@@ -22,10 +22,10 @@ use crate::{
 pub struct EditMessageMedia {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
-    media: InputMedia,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub media: InputMedia,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

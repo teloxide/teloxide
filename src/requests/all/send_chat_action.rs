@@ -29,8 +29,8 @@ use crate::{
 pub struct SendChatAction {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    action: SendChatActionKind,
+    pub chat_id: ChatId,
+    pub action: SendChatActionKind,
 }
 
 /// A type of action used in [`SendChatAction`].

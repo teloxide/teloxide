@@ -19,11 +19,11 @@ use crate::{
 pub struct EditInlineMessageText {
     #[serde(skip_serializing)]
     bot: Bot,
-    inline_message_id: String,
-    text: String,
-    parse_mode: Option<ParseMode>,
-    disable_web_page_preview: Option<bool>,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub inline_message_id: String,
+    pub text: String,
+    pub parse_mode: Option<ParseMode>,
+    pub disable_web_page_preview: Option<bool>,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

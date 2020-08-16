@@ -19,7 +19,7 @@ use crate::{
 pub struct UnpinChatMessage {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
+    pub chat_id: ChatId,
 }
 
 #[async_trait::async_trait]

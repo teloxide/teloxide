@@ -17,13 +17,13 @@ use crate::{
 pub struct AnswerInlineQuery {
     #[serde(skip_serializing)]
     bot: Bot,
-    inline_query_id: String,
-    results: Vec<InlineQueryResult>,
-    cache_time: Option<i32>,
-    is_personal: Option<bool>,
-    next_offset: Option<String>,
-    switch_pm_text: Option<String>,
-    switch_pm_parameter: Option<String>,
+    pub inline_query_id: String,
+    pub results: Vec<InlineQueryResult>,
+    pub cache_time: Option<i32>,
+    pub is_personal: Option<bool>,
+    pub next_offset: Option<String>,
+    pub switch_pm_text: Option<String>,
+    pub switch_pm_parameter: Option<String>,
 }
 
 #[async_trait::async_trait]

@@ -15,10 +15,10 @@ use crate::{
 pub struct ForwardMessage {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    from_chat_id: ChatId,
-    disable_notification: Option<bool>,
-    message_id: i32,
+    pub chat_id: ChatId,
+    pub from_chat_id: ChatId,
+    pub disable_notification: Option<bool>,
+    pub message_id: i32,
 }
 
 #[async_trait::async_trait]

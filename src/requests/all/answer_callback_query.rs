@@ -21,11 +21,11 @@ use crate::{
 pub struct AnswerCallbackQuery {
     #[serde(skip_serializing)]
     bot: Bot,
-    callback_query_id: String,
-    text: Option<String>,
-    show_alert: Option<bool>,
-    url: Option<String>,
-    cache_time: Option<i32>,
+    pub callback_query_id: String,
+    pub text: Option<String>,
+    pub show_alert: Option<bool>,
+    pub url: Option<String>,
+    pub cache_time: Option<i32>,
 }
 
 #[async_trait::async_trait]

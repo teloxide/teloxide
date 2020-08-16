@@ -19,8 +19,8 @@ use crate::{
 pub struct SetChatStickerSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    sticker_set_name: String,
+    pub chat_id: ChatId,
+    pub sticker_set_name: String,
 }
 
 #[async_trait::async_trait]

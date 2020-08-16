@@ -19,8 +19,8 @@ use crate::{
 pub struct SetChatDescription {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    description: Option<String>,
+    pub chat_id: ChatId,
+    pub description: Option<String>,
 }
 
 #[async_trait::async_trait]

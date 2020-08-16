@@ -16,9 +16,9 @@ use crate::{
 pub struct SetChatAdministratorCustomTitle {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    user_id: i32,
-    custom_title: String,
+    pub chat_id: ChatId,
+    pub user_id: i32,
+    pub custom_title: String,
 }
 
 #[async_trait::async_trait]

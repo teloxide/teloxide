@@ -20,8 +20,8 @@ use crate::{
 pub struct UploadStickerFile {
     #[serde(skip_serializing)]
     bot: Bot,
-    user_id: i32,
-    png_sticker: InputFile,
+    pub user_id: i32,
+    pub png_sticker: InputFile,
 }
 #[async_trait::async_trait]
 impl Request for UploadStickerFile {

@@ -31,7 +31,7 @@ use crate::{
 pub struct ExportChatInviteLink {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
+    pub chat_id: ChatId,
 }
 
 #[async_trait::async_trait]

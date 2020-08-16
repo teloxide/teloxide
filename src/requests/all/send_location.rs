@@ -15,13 +15,13 @@ use crate::{
 pub struct SendLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    latitude: f32,
-    longitude: f32,
-    live_period: Option<i64>,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<ReplyMarkup>,
+    pub chat_id: ChatId,
+    pub latitude: f32,
+    pub longitude: f32,
+    pub live_period: Option<i64>,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 #[async_trait::async_trait]

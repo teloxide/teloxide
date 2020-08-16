@@ -17,11 +17,11 @@ use crate::{
 pub struct SendSticker {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    sticker: InputFile,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<ReplyMarkup>,
+    pub chat_id: ChatId,
+    pub sticker: InputFile,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 #[async_trait::async_trait]

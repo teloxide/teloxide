@@ -15,10 +15,10 @@ use crate::{
 pub struct SendMediaGroup {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
+    pub chat_id: ChatId,
+    pub media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
 }
 
 #[async_trait::async_trait]

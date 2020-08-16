@@ -22,10 +22,10 @@ use crate::{
 pub struct GetUpdates {
     #[serde(skip_serializing)]
     pub(crate) bot: Bot,
-    pub(crate) offset: Option<i32>,
-    pub(crate) limit: Option<u8>,
-    pub(crate) timeout: Option<u32>,
-    pub(crate) allowed_updates: Option<Vec<AllowedUpdate>>,
+    pub offset: Option<i32>,
+    pub limit: Option<u8>,
+    pub timeout: Option<u32>,
+    pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
 #[async_trait::async_trait]

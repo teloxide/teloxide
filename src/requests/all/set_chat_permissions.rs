@@ -18,8 +18,8 @@ use crate::{
 pub struct SetChatPermissions {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    permissions: ChatPermissions,
+    pub chat_id: ChatId,
+    pub permissions: ChatPermissions,
 }
 
 #[async_trait::async_trait]

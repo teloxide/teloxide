@@ -18,8 +18,8 @@ use crate::{
 pub struct SetChatPhoto {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    photo: InputFile,
+    pub chat_id: ChatId,
+    pub photo: InputFile,
 }
 
 #[async_trait::async_trait]

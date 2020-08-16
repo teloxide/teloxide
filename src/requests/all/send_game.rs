@@ -15,11 +15,11 @@ use crate::{
 pub struct SendGame {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: i32,
-    game_short_name: String,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub chat_id: i32,
+    pub game_short_name: String,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

@@ -27,8 +27,8 @@ use crate::{
 pub struct DeleteMessage {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
+    pub chat_id: ChatId,
+    pub message_id: i32,
 }
 
 #[async_trait::async_trait]
