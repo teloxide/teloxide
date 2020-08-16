@@ -37,6 +37,7 @@ pub enum RequestError {
     #[error("An error while parsing JSON: {0}")]
     InvalidJson(#[source] serde_json::Error),
 
+    // Occurs when trying to send a file to Telegram.
     #[error("An I/O error: {0}")]
     Io(#[source] io::Error),
 }
