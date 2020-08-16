@@ -7,15 +7,15 @@ use crate::{
         EditInlineMessageText, EditMessageCaption, EditMessageLiveLocation, EditMessageMedia,
         EditMessageReplyMarkup, EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
         GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile, GetGameHighScores,
-        GetMe, GetMyCommands, GetStickerSet, GetUpdates, GetUserProfilePhotos, GetWebhookInfo,
-        KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember, RestrictChatMember,
-        SendAnimation, SendAudio, SendChatAction, SendChatActionKind, SendContact, SendDice,
-        SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
-        SendPoll, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
-        SetChatAdministratorCustomTitle, SetChatDescription, SetChatPermissions, SetChatPhoto,
-        SetChatStickerSet, SetChatTitle, SetGameScore, SetMyCommands, SetStickerPositionInSet,
-        SetStickerSetThumb, SetWebhook, StopInlineMessageLiveLocation, StopMessageLiveLocation,
-        StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        GetMe, GetMyCommands, GetStickerSet, GetUpdates, GetUpdatesNonStrict, GetUserProfilePhotos,
+        GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember,
+        RestrictChatMember, SendAnimation, SendAudio, SendChatAction, SendChatActionKind,
+        SendContact, SendDice, SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
+        SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo, SendVideoNote,
+        SendVoice, SetChatAdministratorCustomTitle, SetChatDescription, SetChatPermissions,
+        SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore, SetMyCommands,
+        SetStickerPositionInSet, SetStickerSetThumb, SetWebhook, StopInlineMessageLiveLocation,
+        StopMessageLiveLocation, StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
@@ -37,6 +37,18 @@ impl Bot {
     /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
     pub fn get_updates(&self) -> GetUpdates {
         GetUpdates::new(self.clone())
+    }
+
+    /// This is non strict version of [`get_updates`], this means that if it
+    /// will fail to deserialize some updates, it won't fail entirely, but
+    /// will just return some errors.
+    ///
+    /// Note: this is not a 'real' telegram method, this is simply
+    /// [`get_updates`] with changed return type.
+    ///
+    /// [`get_updates`]: crate::Bot::get_updates
+    pub fn get_updates_non_strict(&self) -> GetUpdatesNonStrict {
+        GetUpdatesNonStrict::new(self.clone())
     }
 
     /// Use this method to specify a url and receive incoming updates via an
