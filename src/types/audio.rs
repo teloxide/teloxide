@@ -8,7 +8,6 @@ use crate::types::{MimeWrapper, PhotoSize};
 /// [The official docs](https://core.telegram.org/bots/api#audio).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Audio {
     /// An identifier for this file.
     pub file_id: String,

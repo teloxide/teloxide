@@ -6,7 +6,6 @@ use std::{borrow::Cow, path::PathBuf};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub enum InputFile {
     File(PathBuf),
     Memory { file_name: String, data: Cow<'static, [u8]> },

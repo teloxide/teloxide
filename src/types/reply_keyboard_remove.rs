@@ -14,7 +14,6 @@ use crate::types::True;
 /// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
 #[serde_with_macros::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ReplyKeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
     /// to summon this keyboard; if you want to hide the keyboard from sight

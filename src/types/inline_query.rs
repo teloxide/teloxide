@@ -10,7 +10,6 @@ use crate::types::{Location, User};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequery).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InlineQuery {
     /// Unique identifier for this query.
     pub id: String,

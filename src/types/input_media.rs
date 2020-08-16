@@ -8,7 +8,6 @@ use crate::types::{InputFile, ParseMode};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum InputMedia {
     Photo(InputMediaPhoto),
     Video(InputMediaVideo),
@@ -22,7 +21,6 @@ pub enum InputMedia {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMediaPhoto {
     /// File to send.
     pub media: InputFile,
@@ -68,7 +66,6 @@ impl InputMediaPhoto {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMediaVideo {
     // File to send.
     pub media: InputFile,
@@ -168,7 +165,6 @@ impl InputMediaVideo {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMediaAnimation {
     /// File to send.
     pub media: InputFile,
@@ -258,7 +254,6 @@ impl InputMediaAnimation {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMediaAudio {
     /// File to send.
     pub media: InputFile,
@@ -354,7 +349,6 @@ impl InputMediaAudio {
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMediaDocument {
     /// File to send.
     pub media: InputFile,
