@@ -44,6 +44,6 @@ impl StickerType {
     ///
     /// [`StickerType::Tgs`]: crate::types::StickerType::Tgs
     pub fn tgs(tgs_sticker: InputFile) -> Self {
-        Self::Tgs{ tgs_sticker }
+        Self::Tgs { tgs_sticker }
     }
 }

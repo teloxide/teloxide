@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `client_from_env` was moved from `teloxide::utils` to crate root of `teloxide-core`
   - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>` 
     (instead of `Vec<Result<Update, (Value, serde_json::Error)>>`)
+
+### Changed
+
+- Changed internal mechanism of sending multipart requests
+- Added `RequestError::Io(io::Error)` to wrap I/O error those can happen while sending files to telegram
+- Change `StickerType`: instead of newtypes (`Png(InputFile)`) use structs (`Png { png_sticker: InputFile }`), add 
+  `StickerType::{png,tgs}` constructors
+
+### Removed
+
+- `RequestWithFile`, now multipart requests use `Request`
   
 
 [`teloxide`]: https://github.com/teloxide/teloxide
