@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - `RequestWithFile`, now multipart requests use `Request`
+- Remove all `#[non_exhaustive]` annotations
   
 
 [`teloxide`]: https://github.com/teloxide/teloxide
