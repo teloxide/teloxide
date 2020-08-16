@@ -2,44 +2,35 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
-    types::{AllowedUpdate, Update},
+    requests::{GetUpdates, Request, ResponseResult},
+    types::{AllowedUpdate, NonStrictVec, Update},
     Bot,
 };
 
-/// Use this method to receive incoming updates using long polling ([wiki]).
+/// This is non strict version of [`GetUpdates`], this means that if it will
+/// fail to deserialize some updates, it won't fail entirely, but will just
+/// return some errors.
 ///
-/// **Notes:**
-/// 1. This method will not work if an outgoing webhook is set up.
-/// 2. In order to avoid getting duplicate updates,
-///    recalculate offset after each server response.
+/// Note: this is not a 'real' telegram method, this is simply [`GetUpdates`]
+/// with changed return type.
 ///
-/// [The official docs](https://core.telegram.org/bots/api#getupdates).
-///
-/// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
-#[serde_with_macros::skip_serializing_none]
+/// [`GetUpdates`]: crate::requests::GetUpdates
 #[derive(Debug, Clone, Serialize)]
-pub struct GetUpdates {
-    #[serde(skip_serializing)]
-    pub(crate) bot: Bot,
-    pub(crate) offset: Option<i32>,
-    pub(crate) limit: Option<u8>,
-    pub(crate) timeout: Option<u32>,
-    pub(crate) allowed_updates: Option<Vec<AllowedUpdate>>,
-}
+#[serde(transparent)]
+pub struct GetUpdatesNonStrict(pub GetUpdates);
 
 #[async_trait::async_trait]
-impl Request for GetUpdates {
-    type Output = Vec<Update>;
+impl Request for GetUpdatesNonStrict {
+    type Output = NonStrictVec<Update>;
 
     async fn send(&self) -> ResponseResult<Self::Output> {
-        net::request_json(self.bot.client(), self.bot.token(), "getUpdates", &self).await
+        net::request_json(self.0.bot.client(), self.0.bot.token(), "getUpdates", &self).await
     }
 }
 
-impl GetUpdates {
+impl GetUpdatesNonStrict {
     pub(crate) fn new(bot: Bot) -> Self {
-        Self { bot, offset: None, limit: None, timeout: None, allowed_updates: None }
+        Self(GetUpdates::new(bot))
     }
 
     /// Identifier of the first update to be returned.
@@ -56,7 +47,7 @@ impl GetUpdates {
     /// [`offset`]: self::GetUpdates::offset
     /// [`id`]: crate::types::Update::id
     pub fn offset(mut self, value: i32) -> Self {
-        self.offset = Some(value);
+        self.0.offset = Some(value);
         self
     }
 
@@ -64,7 +55,7 @@ impl GetUpdates {
     ///
     /// Values between `1`—`100` are accepted. Defaults to `100`.
     pub fn limit(mut self, value: u8) -> Self {
-        self.limit = Some(value);
+        self.0.limit = Some(value);
         self
     }
 
@@ -73,7 +64,7 @@ impl GetUpdates {
     /// Defaults to `0`, i.e. usual short polling. Should be positive, short
     /// polling should be used for testing purposes only.
     pub fn timeout(mut self, value: u32) -> Self {
-        self.timeout = Some(value);
+        self.0.timeout = Some(value);
         self
     }
 
@@ -100,7 +91,7 @@ impl GetUpdates {
     where
         T: Into<Vec<AllowedUpdate>>,
     {
-        self.allowed_updates = Some(value.into());
+        self.0.allowed_updates = Some(value.into());
         self
     }
 }

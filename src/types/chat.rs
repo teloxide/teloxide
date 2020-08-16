@@ -266,7 +266,7 @@ impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
         write!(f, r#"field equal to "private""#)
     }
 
-    fn visit_borrowed_str<E: serde::de::Error>(self, v: &'de str) -> Result<Self::Value, E> {
+    fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
         match v {
             "private" => Ok(()),
             _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &r#""private""#)),
