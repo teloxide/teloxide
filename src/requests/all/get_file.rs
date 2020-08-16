@@ -31,7 +31,7 @@ use crate::{
 pub struct GetFile {
     #[serde(skip_serializing)]
     bot: Bot,
-    file_id: String,
+    pub file_id: String,
 }
 
 #[async_trait::async_trait]

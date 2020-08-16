@@ -16,14 +16,14 @@ use crate::{
 pub struct CreateNewStickerSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    user_id: i32,
-    name: String,
-    title: String,
+    pub user_id: i32,
+    pub name: String,
+    pub title: String,
     #[serde(flatten)]
-    sticker_type: StickerType,
-    emojis: String,
-    contains_masks: Option<bool>,
-    mask_position: Option<MaskPosition>,
+    pub sticker_type: StickerType,
+    pub emojis: String,
+    pub contains_masks: Option<bool>,
+    pub mask_position: Option<MaskPosition>,
 }
 
 #[async_trait::async_trait]

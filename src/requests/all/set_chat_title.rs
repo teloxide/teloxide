@@ -18,8 +18,8 @@ use crate::{
 pub struct SetChatTitle {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    title: String,
+    pub chat_id: ChatId,
+    pub title: String,
 }
 
 #[async_trait::async_trait]

@@ -15,7 +15,7 @@ use crate::{
 pub struct GetStickerSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    name: String,
+    pub name: String,
 }
 
 #[async_trait::async_trait]

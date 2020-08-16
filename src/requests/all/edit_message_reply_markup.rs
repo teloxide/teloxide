@@ -19,9 +19,9 @@ use crate::{
 pub struct EditMessageReplyMarkup {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

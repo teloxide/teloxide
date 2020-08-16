@@ -15,14 +15,14 @@ use crate::{
 pub struct SendContact {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    phone_number: String,
-    first_name: String,
-    last_name: Option<String>,
-    vcard: Option<String>,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<ReplyMarkup>,
+    pub chat_id: ChatId,
+    pub phone_number: String,
+    pub first_name: String,
+    pub last_name: Option<String>,
+    pub vcard: Option<String>,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 #[async_trait::async_trait]

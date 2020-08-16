@@ -24,9 +24,9 @@ use crate::{
 pub struct EditInlineMessageMedia {
     #[serde(skip_serializing)]
     bot: Bot,
-    inline_message_id: String,
-    media: InputMedia,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub inline_message_id: String,
+    pub media: InputMedia,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

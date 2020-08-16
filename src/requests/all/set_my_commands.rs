@@ -15,8 +15,7 @@ use crate::{
 pub struct SetMyCommands {
     #[serde(skip_serializing)]
     bot: Bot,
-
-    commands: Vec<BotCommand>,
+    pub commands: Vec<BotCommand>,
 }
 
 #[async_trait::async_trait]

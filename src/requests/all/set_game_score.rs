@@ -24,11 +24,11 @@ pub struct SetGameScore {
     #[serde(skip_serializing)]
     bot: Bot,
     #[serde(flatten)]
-    target: TargetMessage,
-    user_id: i32,
-    score: i32,
-    force: Option<bool>,
-    disable_edit_message: Option<bool>,
+    pub target: TargetMessage,
+    pub user_id: i32,
+    pub score: i32,
+    pub force: Option<bool>,
+    pub disable_edit_message: Option<bool>,
 }
 
 #[async_trait::async_trait]

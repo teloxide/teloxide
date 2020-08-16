@@ -19,16 +19,16 @@ use crate::{
 pub struct PromoteChatMember {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    user_id: i32,
-    can_change_info: Option<bool>,
-    can_post_messages: Option<bool>,
-    can_edit_messages: Option<bool>,
-    can_delete_messages: Option<bool>,
-    can_invite_users: Option<bool>,
-    can_restrict_members: Option<bool>,
-    can_pin_messages: Option<bool>,
-    can_promote_members: Option<bool>,
+    pub chat_id: ChatId,
+    pub user_id: i32,
+    pub can_change_info: Option<bool>,
+    pub can_post_messages: Option<bool>,
+    pub can_edit_messages: Option<bool>,
+    pub can_delete_messages: Option<bool>,
+    pub can_invite_users: Option<bool>,
+    pub can_restrict_members: Option<bool>,
+    pub can_pin_messages: Option<bool>,
+    pub can_promote_members: Option<bool>,
 }
 
 #[async_trait::async_trait]

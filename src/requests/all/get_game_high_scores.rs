@@ -24,8 +24,8 @@ pub struct GetGameHighScores {
     #[serde(skip_serializing)]
     bot: Bot,
     #[serde(flatten)]
-    target: TargetMessage,
-    user_id: i32,
+    pub target: TargetMessage,
+    pub user_id: i32,
 }
 
 #[async_trait::async_trait]

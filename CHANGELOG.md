@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `RequestError::Io(io::Error)` to wrap I/O error those can happen while sending files to telegram
 - Change `StickerType`: instead of newtypes (`Png(InputFile)`) use structs (`Png { png_sticker: InputFile }`), add 
   `StickerType::{png,tgs}` constructors
+- Make all fields of all methods `pub`
 
 ### Removed
 

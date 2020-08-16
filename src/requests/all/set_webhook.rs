@@ -28,10 +28,10 @@ use crate::{
 pub struct SetWebhook {
     #[serde(skip_serializing)]
     bot: Bot,
-    url: String,
-    certificate: Option<InputFile>,
-    max_connections: Option<i32>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
+    pub url: String,
+    pub certificate: Option<InputFile>,
+    pub max_connections: Option<i32>,
+    pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
 #[async_trait::async_trait]

@@ -20,8 +20,8 @@ use crate::{
 pub struct StopInlineMessageLiveLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    inline_message_id: String,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub inline_message_id: String,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]

@@ -19,18 +19,18 @@ use crate::{
 pub struct SendVideo {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    video: InputFile,
-    duration: Option<i32>,
-    width: Option<i32>,
-    height: Option<i32>,
-    thumb: Option<InputFile>,
-    caption: Option<String>,
-    parse_mode: Option<ParseMode>,
-    supports_streaming: Option<bool>,
-    disable_notification: Option<bool>,
-    reply_to_message_id: Option<i32>,
-    reply_markup: Option<ReplyMarkup>,
+    pub chat_id: ChatId,
+    pub video: InputFile,
+    pub duration: Option<i32>,
+    pub width: Option<i32>,
+    pub height: Option<i32>,
+    pub thumb: Option<InputFile>,
+    pub caption: Option<String>,
+    pub parse_mode: Option<ParseMode>,
+    pub supports_streaming: Option<bool>,
+    pub disable_notification: Option<bool>,
+    pub reply_to_message_id: Option<i32>,
+    pub reply_markup: Option<ReplyMarkup>,
 }
 
 #[async_trait::async_trait]

@@ -15,9 +15,9 @@ use crate::{
 pub struct GetUserProfilePhotos {
     #[serde(skip_serializing)]
     bot: Bot,
-    user_id: i32,
-    offset: Option<i32>,
-    limit: Option<i32>,
+    pub user_id: i32,
+    pub offset: Option<i32>,
+    pub limit: Option<i32>,
 }
 
 #[async_trait::async_trait]

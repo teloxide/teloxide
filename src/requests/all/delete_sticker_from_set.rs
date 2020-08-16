@@ -15,7 +15,7 @@ use crate::{
 pub struct DeleteStickerFromSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    sticker: String,
+    pub sticker: String,
 }
 
 #[async_trait::async_trait]

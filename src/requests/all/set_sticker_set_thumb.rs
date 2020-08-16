@@ -16,9 +16,9 @@ use crate::{
 pub struct SetStickerSetThumb {
     #[serde(skip_serializing)]
     bot: Bot,
-    name: String,
-    user_id: i32,
-    thumb: Option<InputFile>,
+    pub name: String,
+    pub user_id: i32,
+    pub thumb: Option<InputFile>,
 }
 
 #[async_trait::async_trait]

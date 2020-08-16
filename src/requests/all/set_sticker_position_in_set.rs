@@ -16,8 +16,8 @@ use crate::{
 pub struct SetStickerPositionInSet {
     #[serde(skip_serializing)]
     bot: Bot,
-    sticker: String,
-    position: i32,
+    pub sticker: String,
+    pub position: i32,
 }
 
 #[async_trait::async_trait]

@@ -19,11 +19,11 @@ use crate::{
 pub struct EditMessageCaption {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
-    caption: Option<String>,
-    parse_mode: Option<ParseMode>,
-    reply_markup: Option<InlineKeyboardMarkup>,
+    pub chat_id: ChatId,
+    pub message_id: i32,
+    pub caption: Option<String>,
+    pub parse_mode: Option<ParseMode>,
+    pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
