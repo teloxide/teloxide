@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#maskposition).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct MaskPosition {
     /// The part of the face relative to which the mask should be placed. One
     /// of `forehead`, `eyes`, `mouth`, or `chin`.

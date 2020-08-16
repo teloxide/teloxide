@@ -8,7 +8,6 @@ use crate::types::{Message, User};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#messageentity).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct MessageEntity {
     #[serde(flatten)]
     pub kind: MessageEntityKind,
@@ -44,7 +43,6 @@ impl MessageEntity {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-#[non_exhaustive]
 pub enum MessageEntityKind {
     Mention,
     Hashtag,

@@ -7,7 +7,6 @@ use crate::types::{MimeWrapper, PhotoSize};
 /// [The official docs](https://core.telegram.org/bots/api#video).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Video {
     /// Identifier for this file.
     pub file_id: String,

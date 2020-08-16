@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#botcommand).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct BotCommand {
     /// Text of the command, 1-32 characters.
     ///

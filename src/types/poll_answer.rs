@@ -2,7 +2,6 @@ use crate::types::User;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PollAnswer {
     /// Unique poll identifier.
     pub poll_id: String,

@@ -5,7 +5,6 @@ use crate::types::{ChatId, InlineKeyboardMarkup, LabeledPrice};
 // TODO: missing docs
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct SendInvoice {
     pub chat_id: ChatId,
     pub title: String,

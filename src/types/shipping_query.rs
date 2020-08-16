@@ -6,7 +6,6 @@ use crate::types::{ShippingAddress, User};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#shippingquery).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ShippingQuery {
     /// Unique query identifier.
     pub id: String,

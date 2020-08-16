@@ -7,7 +7,6 @@ use crate::types::{ChatPermissions, ChatPhoto, Message};
 /// [The official docs](https://core.telegram.org/bots/api#chat).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Chat {
     /// A unique identifier for this chat. This number may be greater than 32
     /// bits and some programming languages may have difficulty/silent defects
@@ -49,7 +48,6 @@ impl Chat {
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-#[non_exhaustive]
 pub enum ChatKind {
     Public(ChatPublic),
     Private(ChatPrivate),
@@ -57,7 +55,6 @@ pub enum ChatKind {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
@@ -127,7 +124,6 @@ impl ChatPublic {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatPrivate {
     /// A dummy field. Used to ensure that the `type` field is equal to
     /// `private`.
@@ -180,7 +176,6 @@ impl ChatPrivate {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-#[non_exhaustive]
 pub enum PublicChatKind {
     Channel(PublicChatChannel),
     Group(PublicChatGroup),
@@ -189,7 +184,6 @@ pub enum PublicChatKind {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
@@ -203,7 +197,6 @@ impl PublicChatChannel {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
     /// only from [`Bot::get_chat`].
@@ -220,7 +213,6 @@ impl PublicChatGroup {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.

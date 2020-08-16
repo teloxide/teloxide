@@ -6,7 +6,6 @@ use crate::types::PhotoSize;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#userprofilephotos).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct UserProfilePhotos {
     /// Total number of profile pictures the target user has.
     pub total_count: u32,

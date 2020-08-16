@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#chatpermissions).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Copy, Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatPermissions {
     /// `true`, if the user is allowed to send text messages, contacts,
     /// locations and venues.

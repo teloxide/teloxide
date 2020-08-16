@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerror).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementError {
     /// Error message.
     message: String,
@@ -38,7 +37,6 @@ impl PassportElementError {
 
 #[serde(tag = "source")]
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub enum PassportElementErrorKind {
     #[serde(rename = "data")]
     DataField(PassportElementErrorDataField),
@@ -75,7 +73,6 @@ pub enum PassportElementErrorKind {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrordatafield).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorDataField {
     /// The section of the user's Telegram Passport which has the error.
     pub r#type: PassportElementErrorDataFieldType,
@@ -129,7 +126,6 @@ impl PassportElementErrorDataField {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfrontside).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorFrontSide {
     /// The section of the user's Telegram Passport which has the issue.
     pub r#type: PassportElementErrorFrontSideType,
@@ -168,7 +164,6 @@ impl PassportElementErrorFrontSide {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorreverseside).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorReverseSide {
     /// The section of the user's Telegram Passport which has the issue.
     pub r#type: PassportElementErrorReverseSideType,
@@ -206,7 +201,6 @@ impl PassportElementErrorReverseSide {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorselfie).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorSelfie {
     /// The section of the user's Telegram Passport which has the issue.
     pub r#type: PassportElementErrorSelfieType,
@@ -244,7 +238,6 @@ impl PassportElementErrorSelfie {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfile).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorFile {
     /// The section of the user's Telegram Passport which has the issue.
     pub r#type: PassportElementErrorFileType,
@@ -282,7 +275,6 @@ impl PassportElementErrorFile {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorfiles).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorFiles {
     /// The section of the user's Telegram Passport which has the issue.
     pub r#type: PassportElementErrorFilesType,
@@ -320,7 +312,6 @@ impl PassportElementErrorFiles {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrortranslationfile).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorTranslationFile {
     /// Type of element of the user's Telegram Passport which has the
     /// issue.
@@ -359,7 +350,6 @@ impl PassportElementErrorTranslationFile {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrortranslationfiles).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorTranslationFiles {
     /// Type of element of the user's Telegram Passport which has the issue
     pub r#type: PassportElementErrorTranslationFilesType,
@@ -396,7 +386,6 @@ impl PassportElementErrorTranslationFiles {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorunspecified).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PassportElementErrorUnspecified {
     /// Type of element of the user's Telegram Passport which has the
     /// issue.
@@ -430,7 +419,6 @@ impl PassportElementErrorUnspecified {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorDataFieldType {
     PersonalDetails,
     Passport,
@@ -442,7 +430,6 @@ pub enum PassportElementErrorDataFieldType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorFrontSideType {
     Passport,
     DriverLicense,
@@ -452,7 +439,6 @@ pub enum PassportElementErrorFrontSideType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorReverseSideType {
     DriverLicense,
     IdentityCard,
@@ -460,7 +446,6 @@ pub enum PassportElementErrorReverseSideType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorSelfieType {
     Passport,
     DriverLicense,
@@ -470,7 +455,6 @@ pub enum PassportElementErrorSelfieType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorFileType {
     UtilityBill,
     BankStatement,
@@ -481,7 +465,6 @@ pub enum PassportElementErrorFileType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorFilesType {
     UtilityBill,
     BankStatement,
@@ -492,7 +475,6 @@ pub enum PassportElementErrorFilesType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorTranslationFileType {
     Passport,
     DriverLicense,
@@ -507,7 +489,6 @@ pub enum PassportElementErrorTranslationFileType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorTranslationFilesType {
     Passport,
     DriverLicense,
@@ -522,7 +503,6 @@ pub enum PassportElementErrorTranslationFilesType {
 
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PassportElementErrorUnspecifiedType {
     DataField,
     FrontSide,

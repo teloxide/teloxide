@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 ///
 /// [`Bot::get_me`]: crate::Bot::get_me
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Me {
     #[serde(flatten)]
     pub user: User,

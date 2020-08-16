@@ -7,7 +7,6 @@ use crate::types::{Currency, OrderInfo, User};
 /// [The official docs](https://core.telegram.org/bots/api#precheckoutquery).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PreCheckoutQuery {
     /// Unique query identifier.
     pub id: String,

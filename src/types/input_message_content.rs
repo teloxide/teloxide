@@ -8,7 +8,6 @@ use crate::types::ParseMode;
 /// [The official docs](https://core.telegram.org/bots/api#inputmessagecontent).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-#[non_exhaustive]
 pub enum InputMessageContent {
     Text(InputMessageContentText),
     Location(InputMessageContentLocation),
@@ -19,7 +18,6 @@ pub enum InputMessageContent {
 /// inline query.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMessageContentText {
     /// Text of the message to be sent, 1-4096 characters.
     pub message_text: String,
@@ -67,7 +65,6 @@ impl InputMessageContentText {
 /// inline query.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMessageContentLocation {
     /// Latitude of the location in degrees.
     pub latitude: f64,
@@ -105,7 +102,6 @@ impl InputMessageContentLocation {
 /// an inline query.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMessageContentVenue {
     /// Latitude of the venue in degrees.
     pub latitude: f64,
@@ -191,7 +187,6 @@ impl InputMessageContentVenue {
 /// an inline query.
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InputMessageContentContact {
     /// Contact's phone number.
     pub phone_number: String,

@@ -6,7 +6,6 @@ use crate::types::LabeledPrice;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#shippingoption).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ShippingOption {
     /// Shipping option identifier.
     pub id: String,

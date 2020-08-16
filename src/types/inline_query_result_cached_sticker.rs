@@ -11,7 +11,6 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedsticker).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct InlineQueryResultCachedSticker {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,

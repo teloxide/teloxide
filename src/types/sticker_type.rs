@@ -3,7 +3,6 @@ use serde::Serialize;
 use crate::types::InputFile;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize)]
-#[non_exhaustive]
 #[serde(untagged)]
 pub enum StickerType {
     /// PNG image with the sticker, must be up to 512 kilobytes in size,
