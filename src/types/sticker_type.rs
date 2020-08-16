@@ -34,7 +34,7 @@ impl StickerType {
     /// See [`StickerType::Png`] for more
     ///
     /// [`StickerType::Png`]: crate::types::StickerType::Png
-    fn png(png_sticker: InputFile) -> Self {
+    pub fn png(png_sticker: InputFile) -> Self {
         Self::Png { png_sticker }
     }
 
@@ -43,7 +43,7 @@ impl StickerType {
     /// See [`StickerType::Tgs`] for more
     ///
     /// [`StickerType::Tgs`]: crate::types::StickerType::Tgs
-    fn tgs(tgs_sticker: InputFile) -> Self {
+    pub fn tgs(tgs_sticker: InputFile) -> Self {
         Self::Tgs{ tgs_sticker }
     }
 }
