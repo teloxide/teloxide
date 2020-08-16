@@ -11,6 +11,9 @@
 #![forbid(unsafe_code)]
 //#![deny(missing_docs)]
 
+#[macro_use]
+mod local_macros; // internal helper macros
+
 pub use self::{
     bot::{Bot, BotBuilder},
     errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError},
@@ -25,6 +28,7 @@ mod errors;
 
 // implementation details
 mod net;
+mod serde_multipart;
 
 /// Constructs a client from the `TELOXIDE_PROXY` environmental variable.
 ///

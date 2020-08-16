@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{InlineKeyboardMarkup, InputMedia, True},
     Bot,
 };
@@ -17,8 +19,10 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#editmessagemedia).
 ///
 /// [`True`]: crate::types::True
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct EditInlineMessageMedia {
+    #[serde(skip_serializing)]
     bot: Bot,
     inline_message_id: String,
     media: InputMedia,
@@ -30,17 +34,7 @@ impl Request for EditInlineMessageMedia {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
-        net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "editMessageMedia",
-            FormBuilder::new()
-                .add_text("media", &self.media)
-                .add_text("reply_markup", &self.reply_markup)
-                .add_text("inline_message_id", &self.inline_message_id)
-                .build(),
-        )
-        .await
+        net::request_multipart(self.bot.client(), self.bot.token(), "editMessageMedia", self).await
     }
 }
 

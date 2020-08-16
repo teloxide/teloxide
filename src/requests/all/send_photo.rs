@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -8,8 +10,10 @@ use crate::{
 /// Use this method to send photos.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendphoto).
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct SendPhoto {
+    #[serde(skip_serializing)]
     bot: Bot,
     chat_id: ChatId,
     photo: InputFile,
@@ -21,26 +25,11 @@ pub struct SendPhoto {
 }
 
 #[async_trait::async_trait]
-impl RequestWithFile for SendPhoto {
+impl Request for SendPhoto {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
-        Ok(net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "sendPhoto",
-            FormBuilder::new()
-                .add_text("chat_id", &self.chat_id)
-                .add_input_file("photo", &self.photo)
-                .await?
-                .add_text("caption", &self.caption)
-                .add_text("parse_mode", &self.parse_mode)
-                .add_text("disable_notification", &self.disable_notification)
-                .add_text("reply_to_message_id", &self.reply_to_message_id)
-                .add_text("reply_markup", &self.reply_markup)
-                .build(),
-        )
-        .await)
+    async fn send(&self) -> ResponseResult<Message> {
+        net::request_multipart(self.bot.client(), self.bot.token(), "sendPhoto", self).await
     }
 }
 

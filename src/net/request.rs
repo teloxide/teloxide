@@ -1,25 +1,39 @@
-use reqwest::{multipart::Form, Client, Response};
+use std::time::Duration;
+
+use reqwest::{Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{requests::ResponseResult, RequestError};
-
-use super::{TelegramResponse, TELEGRAM_API_URL};
-use std::time::Duration;
+use crate::{
+    net::{TelegramResponse, TELEGRAM_API_URL},
+    requests::ResponseResult,
+    serde_multipart::to_form,
+    RequestError,
+};
 
 const DELAY_ON_SERVER_ERROR: Duration = Duration::from_secs(10);
 
-pub async fn request_multipart<T>(
+pub async fn request_multipart<P, R>(
     client: &Client,
     token: &str,
     method_name: &str,
-    params: Form,
-) -> ResponseResult<T>
+    params: &P, // I'll regret this
+) -> ResponseResult<R>
 where
-    T: DeserializeOwned,
+    P: Serialize,
+    R: DeserializeOwned,
 {
+    use crate::serde_multipart::Error;
+    let form = match to_form(params).await {
+        Ok(x) => x,
+        Err(Error::Io(ioerr)) => return Err(RequestError::Io(ioerr)),
+        Err(_) => unreachable!(
+            "we don't create requests those fail to serialize (if you see this, open an issue :|)"
+        ),
+    };
+
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-        .multipart(params)
+        .multipart(form)
         .send()
         .await
         .map_err(RequestError::NetworkError)?;
@@ -27,15 +41,15 @@ where
     process_response(response).await
 }
 
-pub async fn request_json<T, P>(
+pub async fn request_json<P, R>(
     client: &Client,
     token: &str,
     method_name: &str,
     params: &P,
-) -> ResponseResult<T>
+) -> ResponseResult<R>
 where
-    T: DeserializeOwned,
     P: Serialize,
+    R: DeserializeOwned,
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))

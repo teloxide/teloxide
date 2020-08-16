@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InputMedia, Message},
     Bot,
 };
@@ -8,8 +10,10 @@ use crate::{
 /// Use this method to send a group of photos or videos as an album.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sendmediagroup).
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct SendMediaGroup {
+    #[serde(skip_serializing)]
     bot: Bot,
     chat_id: ChatId,
     media: Vec<InputMedia>, // TODO: InputMediaPhoto and InputMediaVideo
@@ -22,18 +26,7 @@ impl Request for SendMediaGroup {
     type Output = Vec<Message>;
 
     async fn send(&self) -> ResponseResult<Vec<Message>> {
-        net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "sendMediaGroup",
-            FormBuilder::new()
-                .add_text("chat_id", &self.chat_id)
-                .add_text("media", &self.media)
-                .add_text("disable_notification", &self.disable_notification)
-                .add_text("reply_to_message_id", &self.reply_to_message_id)
-                .build(),
-        )
-        .await
+        net::request_multipart(self.bot.client(), self.bot.token(), "sendMediaGroup", self).await
     }
 }
 

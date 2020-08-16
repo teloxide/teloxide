@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -17,8 +19,10 @@ use crate::{
 ///
 /// [`Audio`]: crate::types::Audio
 /// [`Document`]: crate::types::Document
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct SendVoice {
+    #[serde(skip_serializing)]
     bot: Bot,
     chat_id: ChatId,
     voice: InputFile,
@@ -31,27 +35,11 @@ pub struct SendVoice {
 }
 
 #[async_trait::async_trait]
-impl RequestWithFile for SendVoice {
+impl Request for SendVoice {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
-        Ok(net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "sendVoice",
-            FormBuilder::new()
-                .add_text("chat_id", &self.chat_id)
-                .add_input_file("voice", &self.voice)
-                .await?
-                .add_text("caption", &self.caption)
-                .add_text("parse_mode", &self.parse_mode)
-                .add_text("duration", &self.duration)
-                .add_text("disable_notification", &self.disable_notification)
-                .add_text("reply_to_message_id", &self.reply_to_message_id)
-                .add_text("reply_markup", &self.reply_markup)
-                .build(),
-        )
-        .await)
+    async fn send(&self) -> ResponseResult<Message> {
+        net::request_multipart(self.bot.client(), self.bot.token(), "sendVoice", self).await
     }
 }
 

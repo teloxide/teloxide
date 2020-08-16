@@ -1,6 +1,8 @@
+use serde::Serialize;
+
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
+    requests::{Request, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -16,8 +18,10 @@ use crate::{
 /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
 ///
 /// [`Bot::send_voice`]: crate::Bot::send_voice
-#[derive(Debug, Clone)]
+#[serde_with_macros::skip_serializing_none]
+#[derive(Debug, Clone, Serialize)]
 pub struct SendAudio {
+    #[serde(skip_serializing)]
     bot: Bot,
     chat_id: ChatId,
     audio: InputFile,
@@ -33,32 +37,11 @@ pub struct SendAudio {
 }
 
 #[async_trait::async_trait]
-impl RequestWithFile for SendAudio {
+impl Request for SendAudio {
     type Output = Message;
 
-    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
-        let mut builder = FormBuilder::new()
-            .add_text("chat_id", &self.chat_id)
-            .add_input_file("audio", &self.audio)
-            .await?
-            .add_text("caption", &self.caption)
-            .add_text("parse_mode", &self.parse_mode)
-            .add_text("duration", &self.duration)
-            .add_text("performer", &self.performer)
-            .add_text("title", &self.title)
-            .add_text("disable_notification", &self.disable_notification)
-            .add_text("reply_to_message_id", &self.reply_to_message_id)
-            .add_text("reply_markup", &self.reply_markup);
-        if let Some(thumb) = self.thumb.as_ref() {
-            builder = builder.add_input_file("thumb", thumb).await?;
-        }
-        Ok(net::request_multipart(
-            self.bot.client(),
-            self.bot.token(),
-            "sendAudio",
-            builder.build(),
-        )
-        .await)
+    async fn send(&self) -> ResponseResult<Message> {
+        net::request_multipart(self.bot.client(), self.bot.token(), "sendAudio", self).await
     }
 }
 
