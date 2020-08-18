@@ -428,6 +428,7 @@ Feel free to push your own bot into our collection!
  - [_Rust subreddit reader_](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
  - [_vzmuinebot -- Telegram bot for food menu navigate_](https://github.com/ArtHome12/vzmuinebot)
  - [_Tepe -- A CLI to command a bot to send messages and files over Telegram_](https://lib.rs/crates/tepe)
+ - [_cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
