@@ -24,6 +24,14 @@ pub struct Bot {
 }
 
 impl Bot {
+    /// Creates new [`BotBuilder`] see it's [docs] for more
+    ///
+    /// [docs]: BotBuilder
+    #[must_use]
+    pub fn builder() -> BotBuilder {
+        BotBuilder::new()
+    }
+
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_PROXY`
     /// environmental variables (a bot's token & a proxy) and the default
     /// [`reqwest::Client`].
@@ -143,7 +151,7 @@ impl Bot {
 
 /// A builder of [`Bot`], supporting some extra settings.
 ///
-/// [`Bot`] crate::Bot
+/// [`Bot`]: crate::Bot
 #[derive(Debug, Default)]
 pub struct BotBuilder {
     token: Option<String>,
