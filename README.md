@@ -1,7 +1,7 @@
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
-  
+
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
@@ -20,7 +20,7 @@
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
   </a>
-  
+
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
 
@@ -110,7 +110,6 @@ async fn main() {
     })
     .await;
 }
-
 ```
 
 <div align="center">
@@ -428,6 +427,7 @@ Feel free to push your own bot into our collection!
  - [_Rust subreddit reader_](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
  - [_vzmuinebot -- Telegram bot for food menu navigate_](https://github.com/ArtHome12/vzmuinebot)
  - [_Tepe -- A CLI to command a bot to send messages and files over Telegram_](https://lib.rs/crates/tepe)
+ - [_cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
