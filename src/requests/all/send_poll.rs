@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, Message, ParseMode, PollType, ReplyMarkup},
     Bot,
 };
@@ -33,7 +33,7 @@ pub struct SendPoll {
 }
 
 #[async_trait::async_trait]
-impl Request for SendPoll {
+impl RequestOld for SendPoll {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {

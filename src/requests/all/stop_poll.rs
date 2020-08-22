@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, InlineKeyboardMarkup, Poll},
     Bot,
 };
@@ -21,7 +21,7 @@ pub struct StopPoll {
 }
 
 #[async_trait::async_trait]
-impl Request for StopPoll {
+impl RequestOld for StopPoll {
     type Output = Poll;
 
     /// On success, the stopped [`Poll`] with the final results is returned.

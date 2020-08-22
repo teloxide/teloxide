@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{Message, TargetMessage},
     Bot,
 };
@@ -32,7 +32,7 @@ pub struct SetGameScore {
 }
 
 #[async_trait::async_trait]
-impl Request for SetGameScore {
+impl RequestOld for SetGameScore {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {

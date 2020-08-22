@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::ChatId,
     Bot,
 };
@@ -19,7 +19,7 @@ pub struct GetChatMembersCount {
 }
 
 #[async_trait::async_trait]
-impl Request for GetChatMembersCount {
+impl RequestOld for GetChatMembersCount {
     type Output = i32;
 
     async fn send(&self) -> ResponseResult<i32> {

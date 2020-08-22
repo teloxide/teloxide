@@ -10,7 +10,7 @@ pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
 /// Designates an API request.
 #[async_trait::async_trait]
-pub trait Request {
+pub trait RequestOld {
     /// A data structure returned if success.
     type Output;
 

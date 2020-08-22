@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
@@ -26,7 +26,7 @@ pub struct DeleteChatStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteChatStickerSet {
+impl RequestOld for DeleteChatStickerSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

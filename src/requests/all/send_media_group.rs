@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, InputMedia, Message},
     Bot,
 };
@@ -22,7 +22,7 @@ pub struct SendMediaGroup {
 }
 
 #[async_trait::async_trait]
-impl Request for SendMediaGroup {
+impl RequestOld for SendMediaGroup {
     type Output = Vec<Message>;
 
     async fn send(&self) -> ResponseResult<Vec<Message>> {

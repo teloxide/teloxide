@@ -1,6 +1,6 @@
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::Me,
     Bot,
 };
@@ -16,7 +16,7 @@ pub struct GetMe {
 }
 
 #[async_trait::async_trait]
-impl Request for GetMe {
+impl RequestOld for GetMe {
     type Output = Me;
 
     /// Returns basic information about the bot.

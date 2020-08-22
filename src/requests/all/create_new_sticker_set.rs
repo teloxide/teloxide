@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{MaskPosition, StickerType, True},
     Bot,
 };
@@ -27,7 +27,7 @@ pub struct CreateNewStickerSet {
 }
 
 #[async_trait::async_trait]
-impl Request for CreateNewStickerSet {
+impl RequestOld for CreateNewStickerSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

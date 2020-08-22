@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{InlineKeyboardMarkup, LabeledPrice, Message},
     Bot,
 };
@@ -41,7 +41,7 @@ pub struct SendInvoice {
 }
 
 #[async_trait::async_trait]
-impl Request for SendInvoice {
+impl RequestOld for SendInvoice {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {

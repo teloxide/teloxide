@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
@@ -71,7 +71,7 @@ pub enum SendChatActionKind {
 }
 
 #[async_trait::async_trait]
-impl Request for SendChatAction {
+impl RequestOld for SendChatAction {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

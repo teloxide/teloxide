@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::File,
     Bot,
 };
@@ -35,7 +35,7 @@ pub struct GetFile {
 }
 
 #[async_trait::async_trait]
-impl Request for GetFile {
+impl RequestOld for GetFile {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {

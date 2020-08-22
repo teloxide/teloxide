@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, ChatPermissions, True},
     Bot,
 };
@@ -26,7 +26,7 @@ pub struct RestrictChatMember {
 }
 
 #[async_trait::async_trait]
-impl Request for RestrictChatMember {
+impl RequestOld for RestrictChatMember {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

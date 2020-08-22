@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{AllowedUpdate, Update},
     Bot,
 };
@@ -29,7 +29,7 @@ pub struct GetUpdates {
 }
 
 #[async_trait::async_trait]
-impl Request for GetUpdates {
+impl RequestOld for GetUpdates {
     type Output = Vec<Update>;
 
     async fn send(&self) -> ResponseResult<Self::Output> {

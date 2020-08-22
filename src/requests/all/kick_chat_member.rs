@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, True},
     Bot,
 };
@@ -28,7 +28,7 @@ pub struct KickChatMember {
 }
 
 #[async_trait::async_trait]
-impl Request for KickChatMember {
+impl RequestOld for KickChatMember {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

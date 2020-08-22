@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
@@ -27,7 +27,7 @@ pub struct EditInlineMessageText {
 }
 
 #[async_trait::async_trait]
-impl Request for EditInlineMessageText {
+impl RequestOld for EditInlineMessageText {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {

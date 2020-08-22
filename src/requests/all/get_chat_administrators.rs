@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, ChatMember},
     Bot,
 };
@@ -22,7 +22,7 @@ pub struct GetChatAdministrators {
 }
 
 #[async_trait::async_trait]
-impl Request for GetChatAdministrators {
+impl RequestOld for GetChatAdministrators {
     type Output = Vec<ChatMember>;
 
     /// On success, returns an array that contains information about all chat
