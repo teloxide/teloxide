@@ -7,7 +7,8 @@
 // ```console
 // $ RUSTDOCFLAGS="--cfg docsrs" cargo doc --open --all-features
 // ```
-#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
+#![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
 #![forbid(unsafe_code)]
 //#![deny(missing_docs)]
 
