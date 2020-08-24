@@ -18,7 +18,9 @@ use crate::requests::Payload;
 /// [`BorrowMut`]: std::borrow::BorrowMut
 /// [`Payload`]: crate::requests::Payload
 /// [output]: HasPayload::Payload
-pub trait HasPayload: AsMut<<Self as HasPayload>::Payload> + AsRef<<Self as HasPayload>::Payload> {
+pub trait HasPayload:
+    AsMut<<Self as HasPayload>::Payload> + AsRef<<Self as HasPayload>::Payload>
+{
     /// Type of the payload contained.
     type Payload: Payload;
 
