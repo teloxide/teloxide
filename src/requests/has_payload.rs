@@ -18,15 +18,19 @@ use crate::requests::Payload;
 /// [`BorrowMut`]: std::borrow::BorrowMut
 /// [`Payload`]: crate::requests::Payload
 /// [output]: HasPayload::Payload
-pub trait HasPayload {
+pub trait HasPayload: AsMut<<Self as HasPayload>::Payload> + AsRef<<Self as HasPayload>::Payload> {
     /// Type of the payload contained.
     type Payload: Payload;
 
     /// Gain mutable access to the underlying payload.
-    fn payload_mut(&mut self) -> &mut Self::Payload;
+    fn payload_mut(&mut self) -> &mut Self::Payload {
+        self.as_mut()
+    }
 
     /// Gain immutable access to the underlying payload.
-    fn payload_ref(&self) -> &Self::Payload;
+    fn payload_ref(&self) -> &Self::Payload {
+        self.as_ref()
+    }
 }
 
 impl<P> HasPayload for P
@@ -34,12 +38,4 @@ where
     P: Payload,
 {
     type Payload = Self;
-
-    fn payload_mut(&mut self) -> &mut Self::Payload {
-        self
-    }
-
-    fn payload_ref(&self) -> &Self::Payload {
-        self
-    }
 }
