@@ -3,13 +3,13 @@
   <h1>teloxide</h1>
   
   <a href="https://docs.rs/teloxide/">
-    <img src="https://img.shields.io/badge/docs.rs-v0.3.0-blue.svg">
+    <img src="https://docs.rs/teloxide/badge.svg">
   </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="https://crates.io/crates/teloxide">
-    <img src="https://img.shields.io/badge/crates.io-v0.3.0-orange.svg">
+    <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -76,7 +76,7 @@ $ rustup override set nightly
  5. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.3.0"
+teloxide = "0.3.1"
 teloxide-macros = "0.3.2"
 
 log = "0.4.8"
