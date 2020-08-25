@@ -64,7 +64,8 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options (notably default parse_mode)"]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn from_env_with_client(client: Client) -> Self {
         #[allow(deprecated)]
         Self::with_client(&get_env(TELOXIDE_TOKEN), client)
@@ -77,7 +78,8 @@ impl Bot {
     /// If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
-    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options (notably default parse_mode)"]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
@@ -95,7 +97,8 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options (notably default parse_mode)"]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn with_client<S>(token: S, client: Client) -> Self
     where
         S: Into<String>,
