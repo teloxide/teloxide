@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{InputFile, True},
     Bot,
 };
@@ -22,7 +22,7 @@ pub struct SetStickerSetThumb {
 }
 
 #[async_trait::async_trait]
-impl Request for SetStickerSetThumb {
+impl RequestOld for SetStickerSetThumb {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<Self::Output> {

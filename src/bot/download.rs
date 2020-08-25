@@ -20,7 +20,7 @@ impl Bot {
     /// use teloxide_core::types::File as TgFile;
     /// use tokio::fs::File;
     /// # use teloxide_core::RequestError;
-    /// use teloxide_core::{requests::Request, Bot};
+    /// use teloxide_core::{requests::RequestOld, Bot};
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");

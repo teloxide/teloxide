@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{File, InputFile},
     Bot,
 };
@@ -24,7 +24,7 @@ pub struct UploadStickerFile {
     pub png_sticker: InputFile,
 }
 #[async_trait::async_trait]
-impl Request for UploadStickerFile {
+impl RequestOld for UploadStickerFile {
     type Output = File;
 
     async fn send(&self) -> ResponseResult<File> {

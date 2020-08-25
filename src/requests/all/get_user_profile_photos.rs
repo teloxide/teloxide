@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::UserProfilePhotos,
     Bot,
 };
@@ -21,7 +21,7 @@ pub struct GetUserProfilePhotos {
 }
 
 #[async_trait::async_trait]
-impl Request for GetUserProfilePhotos {
+impl RequestOld for GetUserProfilePhotos {
     type Output = UserProfilePhotos;
 
     async fn send(&self) -> ResponseResult<UserProfilePhotos> {

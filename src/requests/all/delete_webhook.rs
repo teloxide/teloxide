@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::True,
     Bot,
 };
@@ -21,7 +21,7 @@ pub struct DeleteWebhook {
 }
 
 #[async_trait::async_trait]
-impl Request for DeleteWebhook {
+impl RequestOld for DeleteWebhook {
     type Output = True;
 
     #[allow(clippy::trivially_copy_pass_by_ref)]

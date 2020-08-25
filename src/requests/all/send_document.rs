@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup},
     Bot,
 };
@@ -29,7 +29,7 @@ pub struct SendDocument {
 }
 
 #[async_trait::async_trait]
-impl Request for SendDocument {
+impl RequestOld for SendDocument {
     type Output = Message;
 
     async fn send(&self) -> ResponseResult<Message> {

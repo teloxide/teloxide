@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{ShippingOption, True},
     Bot,
 };
@@ -27,7 +27,7 @@ pub struct AnswerShippingQuery {
 }
 
 #[async_trait::async_trait]
-impl Request for AnswerShippingQuery {
+impl RequestOld for AnswerShippingQuery {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

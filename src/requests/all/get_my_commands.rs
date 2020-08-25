@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::BotCommand,
     Bot,
 };
@@ -18,7 +18,7 @@ pub struct GetMyCommands {
 }
 
 #[async_trait::async_trait]
-impl Request for GetMyCommands {
+impl RequestOld for GetMyCommands {
     type Output = Vec<BotCommand>;
 
     async fn send(&self) -> ResponseResult<Self::Output> {

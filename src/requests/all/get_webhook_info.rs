@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::WebhookInfo,
     Bot,
 };
@@ -22,7 +22,7 @@ pub struct GetWebhookInfo {
 }
 
 #[async_trait::async_trait]
-impl Request for GetWebhookInfo {
+impl RequestOld for GetWebhookInfo {
     type Output = WebhookInfo;
 
     #[allow(clippy::trivially_copy_pass_by_ref)]

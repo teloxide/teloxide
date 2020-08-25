@@ -7,7 +7,7 @@ use crate::{
 };
 
 use crate::{
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::StickerType,
 };
 
@@ -28,7 +28,7 @@ pub struct AddStickerToSet {
 }
 
 #[async_trait::async_trait]
-impl Request for AddStickerToSet {
+impl RequestOld for AddStickerToSet {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {

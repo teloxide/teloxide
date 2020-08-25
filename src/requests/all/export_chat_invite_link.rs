@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::ChatId,
     Bot,
 };
@@ -35,7 +35,7 @@ pub struct ExportChatInviteLink {
 }
 
 #[async_trait::async_trait]
-impl Request for ExportChatInviteLink {
+impl RequestOld for ExportChatInviteLink {
     type Output = String;
 
     /// Returns the new invite link as `String` on success.

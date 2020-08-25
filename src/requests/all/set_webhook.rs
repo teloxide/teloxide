@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{RequestOld, ResponseResult},
     types::{AllowedUpdate, InputFile, True},
     Bot,
 };
@@ -35,7 +35,7 @@ pub struct SetWebhook {
 }
 
 #[async_trait::async_trait]
-impl Request for SetWebhook {
+impl RequestOld for SetWebhook {
     type Output = True;
 
     async fn send(&self) -> ResponseResult<True> {
