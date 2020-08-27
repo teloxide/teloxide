@@ -24,6 +24,14 @@ pub struct Bot {
 }
 
 impl Bot {
+    /// Creates new [`BotBuilder`] see it's [docs] for more
+    ///
+    /// [docs]: BotBuilder
+    #[must_use]
+    pub fn builder() -> BotBuilder {
+        BotBuilder::new()
+    }
+
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_PROXY`
     /// environmental variables (a bot's token & a proxy) and the default
     /// [`reqwest::Client`].
@@ -56,9 +64,10 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn from_env_with_client(client: Client) -> Self {
+        #[allow(deprecated)]
         Self::with_client(&get_env(TELOXIDE_TOKEN), client)
     }
 
@@ -69,12 +78,13 @@ impl Bot {
     /// If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
     {
+        #[allow(deprecated)]
         Self::with_client(token, build_sound_bot())
     }
 
@@ -87,8 +97,8 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn with_client<S>(token: S, client: Client) -> Self
     where
         S: Into<String>,
@@ -143,7 +153,7 @@ impl Bot {
 
 /// A builder of [`Bot`], supporting some extra settings.
 ///
-/// [`Bot`] crate::Bot
+/// [`Bot`]: crate::Bot
 #[derive(Debug, Default)]
 pub struct BotBuilder {
     token: Option<String>,
