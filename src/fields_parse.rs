@@ -67,15 +67,20 @@ pub fn impl_parse_args_named(
 
 fn create_parser<'a>(
     parser_type: &ParserType,
-    types: impl Iterator<Item = &'a Type>,
+    mut types: impl Iterator<Item = &'a Type>,
     count_args: usize,
 ) -> quote::__private::TokenStream {
     let function_to_parse = match parser_type {
-        ParserType::Default => match count_args {
-            1 => {
-                quote! { (|s: String| Ok((s,))) }
+        ParserType::Default => match types.next() {
+            Some(ty) => {
+                quote! { (|s: String| {
+                    let res = <#ty>::from_str(&s)
+                        .map_err(|e|ParseError::IncorrectFormat({ let e: Box<dyn std::error::Error + Send + Sync + 'static> = e.into(); e }))?;
+                    Ok((res, ))
+                 })
+                }
             }
-            _ => quote! { compile_error!("Expected 1 argument") },
+            None => quote! { compile_error!("Expected 1 argument") },
         },
         ParserType::Split { separator } => parser_with_separator(
             &separator.clone().unwrap_or_else(|| " ".to_owned()),
