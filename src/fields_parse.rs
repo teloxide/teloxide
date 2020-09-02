@@ -71,8 +71,9 @@ fn create_parser<'a>(
     count_args: usize,
 ) -> quote::__private::TokenStream {
     let function_to_parse = match parser_type {
-        ParserType::Default => match types.next() {
-            Some(ty) => {
+        ParserType::Default => match count_args {
+            1 => {
+                let ty = types.next().expect("count_args != types.len()");
                 quote! { (|s: String| {
                     let res = <#ty>::from_str(&s)
                         .map_err(|e|ParseError::IncorrectFormat({ let e: Box<dyn std::error::Error + Send + Sync + 'static> = e.into(); e }))?;
@@ -80,7 +81,7 @@ fn create_parser<'a>(
                  })
                 }
             }
-            None => quote! { compile_error!("Expected 1 argument") },
+            _ => quote! { compile_error!("Expected exactly 1 argument") },
         },
         ParserType::Split { separator } => parser_with_separator(
             &separator.clone().unwrap_or_else(|| " ".to_owned()),
