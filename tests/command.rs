@@ -33,7 +33,6 @@ fn parse_command_with_non_string_arg() {
     assert_eq!(actual, expected)
 }
 
-
 #[test]
 fn attribute_prefix() {
     #[command(rename = "lowercase")]
