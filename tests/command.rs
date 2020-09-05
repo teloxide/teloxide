@@ -19,6 +19,21 @@ fn parse_command_with_args() {
 }
 
 #[test]
+fn parse_command_with_non_string_arg() {
+    #[command(rename = "lowercase")]
+    #[derive(BotCommand, Debug, PartialEq)]
+    enum DefaultCommands {
+        Start(i32),
+        Help,
+    }
+
+    let data = "/start -50";
+    let expected = DefaultCommands::Start("-50".parse().unwrap());
+    let actual = DefaultCommands::parse(data, "").unwrap();
+    assert_eq!(actual, expected)
+}
+
+#[test]
 fn attribute_prefix() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
