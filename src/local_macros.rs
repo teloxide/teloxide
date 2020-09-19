@@ -36,3 +36,73 @@ macro_rules! forward_to_unsuported_ty {
         )+
     };
 }
+
+#[macro_use]
+macro_rules! req_future {
+    (
+        $v2:vis def: | $( $arg:ident: $ArgTy:ty ),* $(,)? | $body:block
+
+        $(#[$($meta:tt)*])*
+        $v:vis $i:ident<$T:ident> ($inner:ident) -> $Out:ty
+        $(where $($wh:tt)*)?
+    ) => {
+        #[pin_project::pin_project]
+        $v struct $i<$T>
+        $(where $($wh)*)?
+        {
+            #[pin]
+            inner: $inner::$i<$T>
+        }
+
+        impl<$T> $i<$T>
+        $(where $($wh)*)?
+        {
+            $v2 fn new($( $arg: $ArgTy ),*) -> Self {
+                Self { inner: $inner::def($( $arg ),*) }
+            }
+        }
+
+        // HACK(waffle): workaround for https://github.com/rust-lang/rust/issues/55997
+        mod $inner {
+            #![allow(type_alias_bounds)]
+
+            // Mostly to bring `use`s
+            #[allow(unused_imports)]
+            use super::{*, $i as _};
+
+            #[cfg(feature = "nightly")]
+            pub(crate) type $i<$T>
+            $(where $($wh)*)? = impl ::core::future::Future<Output = $Out>;
+
+            #[cfg(feature = "nightly")]
+            pub(crate) fn def<$T>($( $arg: $ArgTy ),*) -> $i<$T>
+            $(where $($wh)*)?
+            {
+                $body
+            }
+
+            #[cfg(not(feature = "nightly"))]
+            pub(crate) type $i<$T>
+            $(where $($wh)*)?  = ::core::pin::Pin<Box<dyn ::core::future::Future<Output = $Out>>>;
+
+            #[cfg(not(feature = "nightly"))]
+            pub(crate) fn def<$T>($( $arg: $ArgTy ),*) -> $i<$T>
+            $(where $($wh)*)?
+            {
+                Box::pin($body)
+            }
+        }
+
+        impl<$T> ::core::future::Future for $i<$T>
+        $(where $($wh)*)?
+        {
+            type Output = $Out;
+
+            fn poll(self: ::core::pin::Pin<&mut Self>, cx: &mut ::core::task::Context<'_>) -> ::core::task::Poll<Self::Output> {
+                let this = self.project();
+                this.inner.poll(cx)
+            }
+        }
+
+    };
+}

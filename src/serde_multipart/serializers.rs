@@ -1,6 +1,7 @@
 use crate::{
     serde_multipart::unserializers::{InputFileUnserializer, StringUnserializer},
     types::InputFile,
+    RequestError,
 };
 use futures::{
     future::{ready, BoxFuture},
@@ -50,6 +51,20 @@ impl Display for Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         None
+    }
+}
+
+impl From<Error> for RequestError {
+    fn from(err: Error) -> Self {
+        match err {
+            Error::Io(ioerr) => RequestError::Io(ioerr),
+            // this should be ok since we don't write request those may trigger errors and
+            // Error is internal.
+            _ => unreachable!(
+                "we don't create requests those fail to serialize (if you see this, open an issue \
+                 :|)"
+            ),
+        }
     }
 }
 

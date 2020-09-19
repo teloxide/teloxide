@@ -19,6 +19,7 @@ authors = [
 futures = "0.3.5"
 tokio = { version = "0.2.21", features = ["fs", "stream"] }
 tokio-util = "0.3.1"
+pin-project = "0.4.23"
 bytes = "0.5.5"
 async-trait = "0.1.36"
 reqwest = { version = "0.10.6", features = ["json", "stream"] }
