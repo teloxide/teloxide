@@ -50,7 +50,7 @@ pub trait Request: HasPayload {
     /// and then serializing it, this method should just serialize the data)
     ///
     /// ## Examples
-    // FIXME(waffle): ignored until full request redisign lands
+    // FIXME(waffle): ignored until full request redesign lands
     /// ```ignore
     /// # async {
     /// use teloxide_core::prelude::*;

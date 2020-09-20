@@ -1,9 +1,17 @@
-use crate::types::ParseMode;
+use std::{future::Future, sync::Arc, time::Duration};
+
 use reqwest::{
     header::{HeaderMap, CONNECTION},
     Client, ClientBuilder,
 };
-use std::{sync::Arc, time::Duration};
+use serde::{de::DeserializeOwned, Serialize};
+
+use crate::{
+    net,
+    requests::{Payload, ResponseResult},
+    serde_multipart,
+    types::ParseMode,
+};
 
 mod api;
 mod download;
@@ -96,6 +104,47 @@ impl Bot {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
             client,
             parse_mode: None,
+        }
+    }
+}
+
+impl Bot {
+    pub(crate) fn execute_json<P>(
+        &self,
+        payload: &P,
+    ) -> impl Future<Output = ResponseResult<P::Output>> + 'static
+    where
+        P: Payload + Serialize,
+        P::Output: DeserializeOwned,
+    {
+        let client = self.client.clone();
+        let token = Arc::clone(&self.token);
+
+        let params = serde_json::to_vec(payload)
+            // this `expect` should be ok since we don't write request those may trigger error here
+            .expect("serialization of request to be infallible");
+
+        // async move to capture client&token
+        async move { net::request_json2(&client, token.as_ref(), P::NAME, params).await }
+    }
+
+    pub(crate) fn execute_multipart<P>(
+        &self,
+        payload: &P,
+    ) -> impl Future<Output = ResponseResult<P::Output>>
+    where
+        P: Payload + Serialize,
+        P::Output: DeserializeOwned,
+    {
+        let client = self.client.clone();
+        let token = Arc::clone(&self.token);
+
+        let params = serde_multipart::to_form(payload);
+
+        // async move to capture client&token&params
+        async move {
+            let params = params.await?;
+            net::request_multipart2(&client, token.as_ref(), P::NAME, params).await
         }
     }
 }

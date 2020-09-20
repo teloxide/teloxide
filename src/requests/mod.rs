@@ -7,9 +7,13 @@ mod request;
 pub use self::{has_payload::HasPayload, payload::Payload, request::Request};
 
 mod all;
+mod json;
+mod multipart;
 mod utils;
 
 pub use all::*;
+pub use json::JsonRequest;
+pub use multipart::MultipartRequest;
 
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;

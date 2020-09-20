@@ -3,7 +3,7 @@ pub use download::download_file_stream;
 
 pub use self::{
     download::download_file,
-    request::{request_json, request_multipart},
+    request::{request_json, request_json2, request_multipart, request_multipart2},
     telegram_response::TelegramResponse,
 };
 
