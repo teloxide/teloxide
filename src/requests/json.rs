@@ -55,17 +55,13 @@ where
     P: Payload,
 {
     type Payload = P;
-}
 
-impl<P> AsRef<P> for JsonRequest<P> {
-    fn as_ref(&self) -> &P {
-        &self.payload
-    }
-}
-
-impl<P> AsMut<P> for JsonRequest<P> {
-    fn as_mut(&mut self) -> &mut P {
+    fn payload_mut(&mut self) -> &mut Self::Payload {
         &mut self.payload
+    }
+
+    fn payload_ref(&self) -> &Self::Payload {
+        &self.payload
     }
 }
 
@@ -73,13 +69,13 @@ impl<P: Payload + Serialize> core::ops::Deref for JsonRequest<P> {
     type Target = P;
 
     fn deref(&self) -> &Self::Target {
-        self.as_ref()
+        self.payload_ref()
     }
 }
 
 impl<P: Payload + Serialize> core::ops::DerefMut for JsonRequest<P> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.as_mut()
+        self.payload_mut()
     }
 }
 
