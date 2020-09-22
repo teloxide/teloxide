@@ -12,7 +12,7 @@ pub trait Request: HasPayload {
      */
 
     /// Type of error that may happen during sending the request to telegram.
-    type Err;
+    type Err: std::error::Error;
 
     /// Type of future returned by [`send`](Request::send) method.
     type Send: Future<Output = Result<Output<Self>, Self::Err>>;
