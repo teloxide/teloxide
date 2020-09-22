@@ -55,17 +55,13 @@ where
     P: Payload,
 {
     type Payload = P;
-}
 
-impl<P> AsRef<P> for MultipartRequest<P> {
-    fn as_ref(&self) -> &P {
-        &self.payload
-    }
-}
-
-impl<P> AsMut<P> for MultipartRequest<P> {
-    fn as_mut(&mut self) -> &mut P {
+    fn payload_mut(&mut self) -> &mut Self::Payload {
         &mut self.payload
+    }
+
+    fn payload_ref(&self) -> &Self::Payload {
+        &self.payload
     }
 }
 
@@ -78,7 +74,7 @@ where
     type Target = P;
 
     fn deref(&self) -> &Self::Target {
-        self.as_ref()
+        self.payload_ref()
     }
 }
 
@@ -89,7 +85,7 @@ where
     P::Output: DeserializeOwned,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.as_mut()
+        self.payload_mut()
     }
 }
 

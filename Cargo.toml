@@ -32,6 +32,7 @@ uuid = { version = "0.8.1", features = ["v4"] } # for attaching input files
 derive_more = "0.99.9"
 mime = "0.3.16"
 thiserror = "1.0.20"
+once_cell = "1.4.0"
 
 [features]
 # features those require nightly compiler

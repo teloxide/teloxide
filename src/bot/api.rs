@@ -1,4 +1,5 @@
 use crate::{
+    payloads,
     requests::{
         AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery, AnswerPreCheckoutQuery,
         AnswerShippingQuery, CreateNewStickerSet, DeleteChatPhoto, DeleteChatStickerSet,
@@ -8,14 +9,15 @@ use crate::{
         EditMessageReplyMarkup, EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
         GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile, GetGameHighScores,
         GetMe, GetMyCommands, GetStickerSet, GetUpdates, GetUpdatesNonStrict, GetUserProfilePhotos,
-        GetWebhookInfo, KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember,
-        RestrictChatMember, SendAnimation, SendAudio, SendChatAction, SendChatActionKind,
-        SendContact, SendDice, SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
-        SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo, SendVideoNote,
-        SendVoice, SetChatAdministratorCustomTitle, SetChatDescription, SetChatPermissions,
-        SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore, SetMyCommands,
-        SetStickerPositionInSet, SetStickerSetThumb, SetWebhook, StopInlineMessageLiveLocation,
-        StopMessageLiveLocation, StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        GetWebhookInfo, JsonRequest, KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember,
+        Requester, RestrictChatMember, SendAnimation, SendAudio, SendChatAction,
+        SendChatActionKind, SendContact, SendDice, SendDocument, SendGame, SendInvoice,
+        SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue,
+        SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle, SetChatDescription,
+        SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle, SetGameScore,
+        SetMyCommands, SetStickerPositionInSet, SetStickerSetThumb, SetWebhook,
+        StopInlineMessageLiveLocation, StopMessageLiveLocation, StopPoll, UnbanChatMember,
+        UnpinChatMessage, UploadStickerFile,
     },
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
@@ -1699,5 +1701,13 @@ impl Bot {
             None => builder,
             Some(parse_mode) => f(builder, parse_mode),
         }
+    }
+}
+
+impl Requester for Bot {
+    type GetMe = JsonRequest<payloads::GetMe>;
+
+    fn get_me(&self) -> JsonRequest<payloads::GetMe> {
+        Self::GetMe::new(self.clone(), payloads::GetMe::new())
     }
 }
