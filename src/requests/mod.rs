@@ -10,12 +10,14 @@ mod all;
 mod json;
 mod multipart;
 mod requester;
+mod requester_ext;
 mod utils;
 
 pub use all::*;
 pub use json::JsonRequest;
 pub use multipart::MultipartRequest;
 pub use requester::Requester;
+pub use requester_ext::RequesterExt;
 
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;

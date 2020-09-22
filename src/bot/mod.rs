@@ -14,7 +14,10 @@ use crate::{
 };
 
 mod api;
+mod cache_me;
 mod download;
+
+pub use cache_me::CacheMe;
 
 pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
