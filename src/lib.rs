@@ -20,6 +20,8 @@ pub use self::{
     errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError},
 };
 
+pub mod payloads;
+pub mod prelude;
 pub mod requests;
 pub mod types;
 
