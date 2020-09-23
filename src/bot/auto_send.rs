@@ -4,6 +4,8 @@ use std::{
     task::{Context, Poll},
 };
 
+use futures::future::FusedFuture;
+
 use crate::requests::{HasPayload, Output, Request, Requester};
 
 /// Send requests automatically.
@@ -74,19 +76,19 @@ impl<R: Request> AutoRequest<R> {
     }
 }
 
+/// Data of the `AutoRequest` used to not expose variants (I wish there were
+/// private enum variants).
 #[pin_project::pin_project(project = InnerProj, project_replace = InnerRepl)]
 enum Inner<R: Request> {
-    /// Unsent modifiable request
+    /// Unsent modifiable request.
     Request(R),
-    /// Sent request
+    /// Sent request.
     Future(#[pin] R::Send),
-    /// This is mostly redundant variant that is used only to take ownership
-    /// over `Request(R)` before creating `Future(R::Send)` in
-    /// `AutoRequest::poll`.
+    /// Done state. Set after `R::Send::poll` returned `Ready(_)`.
     ///
-    /// Practically we don't create this variant anywhere else and it can be
-    /// ignored.
-    Tmp,
+    /// Also used as a temporary replacement to turn pinned `Request(req)`
+    /// into `Future(req.send())` in `AutoRequest::poll`.
+    Done,
 }
 
 impl<R: Request> Request for AutoRequest<R> {
@@ -98,7 +100,7 @@ impl<R: Request> Request for AutoRequest<R> {
         match self.0 {
             Inner::Request(req) => req.send(),
             Inner::Future(fut) => fut,
-            Inner::Tmp => tmp_unreachable(),
+            Inner::Done => done_unreachable(),
         }
     }
 
@@ -106,7 +108,7 @@ impl<R: Request> Request for AutoRequest<R> {
         match &self.0 {
             Inner::Request(req) => req.send_ref(),
             Inner::Future(_) => already_polled(),
-            Inner::Tmp => tmp_unreachable(),
+            Inner::Done => done_unreachable(),
         }
     }
 }
@@ -118,7 +120,7 @@ impl<R: Request> HasPayload for AutoRequest<R> {
         match &mut self.0 {
             Inner::Request(req) => req.payload_mut(),
             Inner::Future(_) => already_polled(),
-            Inner::Tmp => tmp_unreachable(),
+            Inner::Done => done_unreachable(),
         }
     }
 
@@ -126,7 +128,7 @@ impl<R: Request> HasPayload for AutoRequest<R> {
         match &self.0 {
             Inner::Request(req) => req.payload_ref(),
             Inner::Future(_) => already_polled(),
-            Inner::Tmp => tmp_unreachable(),
+            Inner::Done => done_unreachable(),
         }
     }
 }
@@ -135,30 +137,54 @@ impl<R: Request> Future for AutoRequest<R> {
     type Output = Result<Output<R>, R::Err>;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let mut this = self.as_mut().project();
+        let mut this: Pin<&mut Inner<_>> = self.as_mut().project().0;
 
-        if let InnerProj::Future(fut) = this.0.as_mut().project() {
-            return fut.poll(cx);
+        match this.as_mut().project() {
+            // Poll underling future
+            InnerProj::Future(fut) => {
+                let res = futures::ready!(fut.poll(cx));
+                // We've got the result, so we set the state to done
+                this.set(Inner::Done);
+                Poll::Ready(res)
+            },
+            // This future is fused
+            InnerProj::Done => Poll::Pending,
+            // The `AutoRequest` future was polled for the first time after
+            // creation. We need to transform it into sent form by calling
+            // `R::send` and doing some magic around Pin.
+            InnerProj::Request(_) => {
+                // Replace `Request(_)` by `Done(_)` to obtain ownership over
+                // the request.
+                let inner = this.as_mut().project_replace(Inner::Done);
+                // Map Request(req) to `Future(req.send())`
+                let inner = match inner {
+                    InnerRepl::Request(req) => Inner::Future(req.send()),
+                    // Practically this is unreachable, because we've just checked for
+                    // both `Future(_)` and `Done` variants.
+                    InnerRepl::Future(_) | InnerRepl::Done => done_unreachable(),
+                };
+                // Set the resulting `Future(_)` back to pin
+                this.set(inner);
+
+                // poll self again, this time
+                self.poll(cx)
+            }
         }
+    }
+}
 
-        let inner = this.0.as_mut().project_replace(Inner::Tmp);
-        let inner = match inner {
-            InnerRepl::Request(req) => Inner::Future(req.send()),
-            // Practically this is unreachable
-            InnerRepl::Future(_) | InnerRepl::Tmp => tmp_unreachable(),
-        };
-        this.0.as_mut().project_replace(inner);
-
-        self.poll(cx)
+impl<R: Request> FusedFuture for AutoRequest<R> {
+    fn is_terminated(&self) -> bool {
+        matches!(&self.0, Inner::Done)
     }
 }
 
 #[inline(never)]
-fn tmp_unreachable() -> ! {
-    unreachable!("tmp is not created outside of AutoRequest::poll")
+fn done_unreachable() -> ! {
+    unreachable!("future is completed and as such doesn't provide any functionality")
 }
 
 #[inline(never)]
 fn already_polled() -> ! {
-    panic!("AutoRequest was already polled")
+    panic!("AutoRequest was already polled once")
 }
