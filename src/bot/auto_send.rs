@@ -146,7 +146,7 @@ impl<R: Request> Future for AutoRequest<R> {
                 // We've got the result, so we set the state to done
                 this.set(Inner::Done);
                 Poll::Ready(res)
-            },
+            }
             // This future is fused
             InnerProj::Done => Poll::Pending,
             // The `AutoRequest` future was polled for the first time after
