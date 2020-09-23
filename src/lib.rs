@@ -15,8 +15,9 @@
 #[macro_use]
 mod local_macros; // internal helper macros
 
+// FIXME(waffle): rethink modules, find a place for wrappers
 pub use self::{
-    bot::{Bot, BotBuilder},
+    bot::{AutoSend, Bot, BotBuilder, CacheMe},
     errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError},
 };
 
