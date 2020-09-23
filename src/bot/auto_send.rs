@@ -154,7 +154,7 @@ impl<R: Request> Future for AutoRequest<R> {
             // `R::send` and doing some magic around Pin.
             InnerProj::Request(_) => {
                 // Replace `Request(_)` by `Done(_)` to obtain ownership over
-                // the request.
+                // the former.
                 let inner = this.as_mut().project_replace(Inner::Done);
                 // Map Request(req) to `Future(req.send())`
                 let inner = match inner {
