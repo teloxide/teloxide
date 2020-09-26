@@ -50,7 +50,7 @@
 [finite-state machines]: https://en.wikipedia.org/wiki/Finite-state_machine
 [Redis]: https://redis.io/
 
- - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings -- just like JSON structures in [serde-json] and command-line arguments in [structopt].
+ - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
 
 [structopt]: https://github.com/TeXitoi/structopt
 [serde-json]: https://github.com/serde-rs/json
