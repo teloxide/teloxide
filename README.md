@@ -47,7 +47,6 @@
  - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be independent of how/where dialogues are stored. For example, you can just replace one line to achieve [persistence]. Out-of-the-box storages include [Redis].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
-[finite-state machines]: https://en.wikipedia.org/wiki/Finite-state_machine
 [Redis]: https://redis.io/
 
  - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
