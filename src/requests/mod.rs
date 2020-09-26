@@ -9,6 +9,11 @@ pub use all::*;
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
+/// A shortcut for `ResponseResult::Ok(val)`.
+pub fn respond<T>(val: T) -> ResponseResult<T> {
+    ResponseResult::Ok(val)
+}
+
 /// Designates an API request.
 #[async_trait::async_trait]
 pub trait Request {

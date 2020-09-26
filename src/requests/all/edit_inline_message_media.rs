@@ -1,71 +1,64 @@
 use crate::{
     net,
     requests::{form_builder::FormBuilder, Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, InputMedia, Message},
+    types::{InlineKeyboardMarkup, InputMedia, True},
     Bot,
 };
 
 /// Use this method to edit animation, audio, document, photo, or video
-/// messages.
+/// messages sent via the bot.
 ///
 /// If a message is a part of a message album, then it can be edited only to a
-/// photo or a video. Otherwise, message type can be changed arbitrarily. On
-/// success, the edited [`Message`] is returned.
+/// photo or a video. Otherwise, message type can be changed arbitrarily. When
+/// this method is used, new file can't be uploaded. Use previously
+/// uploaded file via its `file_id` or specify a URL. On success, [`True`] is
+/// returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#editmessagemedia).
 ///
-/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[derive(Debug, Clone)]
-pub struct EditMessageMedia {
+pub struct EditInlineMessageMedia {
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
+    inline_message_id: String,
     media: InputMedia,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageMedia {
-    type Output = Message;
+impl Request for EditInlineMessageMedia {
+    type Output = True;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(&self) -> ResponseResult<True> {
         net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "editMessageMedia",
             FormBuilder::new()
-                .add_text("chat_id", &self.chat_id)
-                .add_text("message_id", &self.message_id)
                 .add_text("media", &self.media)
                 .add_text("reply_markup", &self.reply_markup)
+                .add_text("inline_message_id", &self.inline_message_id)
                 .build(),
         )
         .await
     }
 }
 
-impl EditMessageMedia {
-    pub(crate) fn new<C>(bot: Bot, chat_id: C, message_id: i32, media: InputMedia) -> Self
+impl EditInlineMessageMedia {
+    pub(crate) fn new<I>(bot: Bot, inline_message_id: I, media: InputMedia) -> Self
     where
-        C: Into<ChatId>,
+        I: Into<String>,
     {
-        let chat_id = chat_id.into();
-        Self { bot, chat_id, message_id, media, reply_markup: None }
+        let inline_message_id = inline_message_id.into();
+        Self { bot, inline_message_id, media, reply_markup: None }
     }
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
-    pub fn chat_id<T>(mut self, val: T) -> Self
+    /// Identifier of the inline message.
+    pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<String>,
     {
-        self.chat_id = val.into();
-        self
-    }
-
-    /// Identifier of the message to edit
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+        self.inline_message_id = val.into();
         self
     }
 

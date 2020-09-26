@@ -3,69 +3,55 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatId, InlineKeyboardMarkup, Message},
+    types::{InlineKeyboardMarkup, True},
     Bot,
 };
 
-/// Use this method to edit live location messages.
+/// Use this method to edit live location messages sent via the bot.
 ///
 /// A location can be edited until its live_period expires or editing is
-/// explicitly disabled by a call to stopMessageLiveLocation. On success, the
-/// edited [`Message`] is returned.
+/// explicitly disabled by a call to stopMessageLiveLocation. On success,
+/// [`True`] is returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#editmessagelivelocation).
 ///
-/// [`Message`]: crate::types::Message
+/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
-pub struct EditMessageLiveLocation {
+pub struct EditInlineMessageLiveLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    chat_id: ChatId,
-    message_id: i32,
+    inline_message_id: String,
     latitude: f32,
     longitude: f32,
     reply_markup: Option<InlineKeyboardMarkup>,
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageLiveLocation {
-    type Output = Message;
+impl Request for EditInlineMessageLiveLocation {
+    type Output = True;
 
-    async fn send(&self) -> ResponseResult<Message> {
+    async fn send(&self) -> ResponseResult<True> {
         net::request_json(self.bot.client(), self.bot.token(), "editMessageLiveLocation", &self)
             .await
     }
 }
 
-impl EditMessageLiveLocation {
-    pub(crate) fn new<C>(
-        bot: Bot,
-        chat_id: C,
-        message_id: i32,
-        latitude: f32,
-        longitude: f32,
-    ) -> Self
+impl EditInlineMessageLiveLocation {
+    pub(crate) fn new<I>(bot: Bot, inline_message_id: I, latitude: f32, longitude: f32) -> Self
     where
-        C: Into<ChatId>,
+        I: Into<String>,
     {
-        let chat_id = chat_id.into();
-        Self { bot, chat_id, message_id, latitude, longitude, reply_markup: None }
+        let inline_message_id = inline_message_id.into();
+        Self { bot, inline_message_id, latitude, longitude, reply_markup: None }
     }
 
-    /// Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
-    pub fn chat_id<T>(mut self, val: T) -> Self
+    /// Identifier of the inline message.
+    pub fn inline_message_id<T>(mut self, val: T) -> Self
     where
-        T: Into<ChatId>,
+        T: Into<String>,
     {
-        self.chat_id = val.into();
-        self
-    }
-
-    /// Identifier of the message to edit
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
+        self.inline_message_id = val.into();
         self
     }
 

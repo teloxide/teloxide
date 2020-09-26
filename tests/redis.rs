@@ -1,5 +1,3 @@
-#![cfg(feature = "redis_storage")]
-
 use std::{
     fmt::{Debug, Display},
     future::Future,
@@ -8,7 +6,6 @@ use std::{
 use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
 
 #[tokio::test]
-#[cfg(feature = "redis_storage")]
 async fn test_redis_json() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7777",
@@ -19,7 +16,6 @@ async fn test_redis_json() {
     test_redis(storage).await;
 }
 
-#[cfg(feature = "bincode_serializer")]
 #[tokio::test]
 async fn test_redis_bincode() {
     let storage = RedisStorage::open(
@@ -31,7 +27,6 @@ async fn test_redis_bincode() {
     test_redis(storage).await;
 }
 
-#[cfg(feature = "cbor_serializer")]
 #[tokio::test]
 async fn test_redis_cbor() {
     let storage = RedisStorage::open(

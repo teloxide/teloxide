@@ -39,7 +39,7 @@
 //! struct _2State;
 //! struct _3State;
 //!
-//! type Out = TransitionOut<D>;
+//! type Out = TransitionOut<D, RequestError>;
 //!
 //! #[teloxide(subtransition)]
 //! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {

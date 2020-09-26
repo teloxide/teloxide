@@ -9,7 +9,7 @@ pub use crate::{
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    requests::{Request, ResponseResult},
+    requests::{respond, Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,
 };

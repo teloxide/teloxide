@@ -30,6 +30,8 @@ bincode-serializer = ["bincode"]
 
 frunk- = ["frunk"]
 
+nightly = [] # currently used only for `README.md` tests
+
 [dependencies]
 serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }
@@ -55,7 +57,7 @@ serde_cbor = { version = "0.11.1", optional = true }
 bincode = { version = "1.3.1", optional = true }
 frunk = { version = "0.3.1", optional = true }
 
-teloxide-macros = "0.3.2"
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
 
 [dev-dependencies]
 smart-default = "0.6.0"
@@ -63,3 +65,11 @@ rand = "0.7.3"
 pretty_env_logger = "0.4.0"
 lazy_static = "1.4.0"
 tokio = { version = "0.2.21", features = ["fs", "stream", "rt-threaded", "macros"] }
+
+[package.metadata."docs.rs"]
+all-features = true
+
+[[test]]
+name = "redis"
+path = "tests/redis.rs"
+required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
