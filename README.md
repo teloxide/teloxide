@@ -44,7 +44,7 @@
 [functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
 [other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
- - **Dialogues management subsystem.** Dialogues are represented as [finite-state machines] augmented with some syntax sugar, thanks to attribute macros. We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be independent of how/where dialogues are stored; for example, you can just replace one line to achieve [persistence]. Out-of-the-box storages include [Redis].
+ - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be independent of how/where dialogues are stored; for example, you can just replace one line to achieve [persistence]. Out-of-the-box storages include [Redis].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [finite-state machines]: https://en.wikipedia.org/wiki/Finite-state_machine
