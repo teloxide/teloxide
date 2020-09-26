@@ -39,17 +39,17 @@
 
 ## Highlights
 
- - **Functional reactive design.** teloxide has [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
+ - **Functional reactive design.** teloxide follows [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
 
 [functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
 [other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
- - **Persistence.** Dialogues management is independent of how/where dialogues are stored: you can just replace one line and make them [persistent]. Out-of-the-box storages include [Redis].
+ - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be independent of how/where dialogues are stored. For example, you can just replace one line to achieve [persistence]. Out-of-the-box storages include [Redis].
 
-[persistent]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
+[persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
 
- - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings. Just like you describe JSON structures in [serde-json] and command-line arguments in [structopt].
+ - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
 
 [structopt]: https://github.com/TeXitoi/structopt
 [serde-json]: https://github.com/serde-rs/json
