@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::dispatching::{DispatcherHandlerRx, UpdateWithCx};
-use futures::future::BoxFuture;
+use futures::{future::BoxFuture, FutureExt};
 
 /// An asynchronous handler of a stream of updates used in [`Dispatcher`].
 ///
@@ -25,6 +25,6 @@ where
     where
         UpdateWithCx<Upd>: Send + 'static,
     {
-        Box::pin(async move { self(updates).await })
+        async move { self(updates).await }.boxed()
     }
 }

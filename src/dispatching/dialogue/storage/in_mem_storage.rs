@@ -1,5 +1,5 @@
 use super::Storage;
-use futures::future::BoxFuture;
+use futures::{future::BoxFuture, FutureExt};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 
@@ -32,7 +32,7 @@ impl<D> Storage<D> for InMemStorage<D> {
     where
         D: Send + 'static,
     {
-        Box::pin(async move { Ok(self.map.lock().await.remove(&chat_id)) })
+        async move { Ok(self.map.lock().await.remove(&chat_id)) }.boxed()
     }
 
     fn update_dialogue(
@@ -43,6 +43,6 @@ impl<D> Storage<D> for InMemStorage<D> {
     where
         D: Send + 'static,
     {
-        Box::pin(async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) })
+        async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) }.boxed()
     }
 }

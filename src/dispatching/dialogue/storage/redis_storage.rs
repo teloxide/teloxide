@@ -1,5 +1,5 @@
 use super::{serializer::Serializer, Storage};
-use futures::future::BoxFuture;
+use futures::{future::BoxFuture, FutureExt};
 use redis::{AsyncCommands, FromRedisValue, IntoConnectionInfo};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{
@@ -57,7 +57,7 @@ where
         self: Arc<Self>,
         chat_id: i64,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
-        Box::pin(async move {
+        async move {
             let res = redis::pipe()
                 .atomic()
                 .get(chat_id)
@@ -80,7 +80,7 @@ where
                 }
                 _ => unreachable!(),
             }
-        })
+        }.boxed()
     }
 
     fn update_dialogue(
@@ -88,7 +88,7 @@ where
         chat_id: i64,
         dialogue: D,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
-        Box::pin(async move {
+        async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
             Ok(self
@@ -99,6 +99,7 @@ where
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()?)
-        })
+        }
+        .boxed()
     }
 }
