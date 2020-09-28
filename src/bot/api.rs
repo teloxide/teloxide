@@ -1710,4 +1710,14 @@ impl Requester for Bot {
     fn get_me(&self) -> JsonRequest<payloads::GetMe> {
         Self::GetMe::new(self.clone(), payloads::GetMe::new())
     }
+
+    type SendMessage = JsonRequest<payloads::SendMessage>;
+
+    fn send_message<C, T>(&self, chat_id: C, text: T) -> JsonRequest<payloads::SendMessage>
+    where
+        C: Into<ChatId>,
+        T: Into<String>
+    {
+        Self::SendMessage::new(self.clone(), payloads::SendMessage::new(chat_id, text))
+    }
 }

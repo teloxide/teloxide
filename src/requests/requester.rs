@@ -1,4 +1,11 @@
-use crate::{payloads::GetMe, requests::Request};
+use crate::{
+    payloads::{
+        GetMe,
+        SendMessage
+    },
+    requests::Request,
+    types::ChatId,
+};
 
 /// The trait implemented by all bots & bot wrappers.
 /// Essentially a request builder factory (?).
@@ -11,5 +18,13 @@ pub trait Requester {
     /// For telegram documentation of the method see [`GetMe`].
     fn get_me(&self) -> Self::GetMe;
 
-    // FIXME(waffle): add remaining 69 methods
+    type SendMessage: Request<Payload = SendMessage>;
+
+    /// For telegram documentation of the method see [`SendMessage`].
+    fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
+    where
+        C: Into<ChatId>,
+        T: Into<String>;
+
+    // FIXME(waffle): add remaining 68 methods
 }
