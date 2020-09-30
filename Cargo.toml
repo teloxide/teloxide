@@ -34,6 +34,9 @@ mime = "0.3.16"
 thiserror = "1.0.20"
 once_cell = "1.4.0"
 
+# FIXME(waffle): use crates.io once published
+vecrem = { git = "https://github.com/WaffleLapkin/vecrem" }
+
 [features]
 # features those require nightly compiler
 nightly = []

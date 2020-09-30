@@ -59,7 +59,7 @@ async fn worker(
     // FIXME: remove unnecessary ChatId clones
 
     // FIXME: struct with fast random remove and append-to-the-end
-    let mut queue: Vec<Option<(ChatId, Sender<()>)>> = Vec::new(); // FIXME: with_cap
+    let mut queue: Vec<(ChatId, Sender<()>)> = Vec::new(); // FIXME: with_cap
 
     let mut history: VecDeque<(ChatId, Instant)> = VecDeque::new();
     // hchats[chat] = history.iter().filter(|(c, _)| c == chat).count()
@@ -68,13 +68,13 @@ async fn worker(
     loop {
         // If there are no pending requests we are just waiting
         if queue.is_empty() {
-            queue.push(Some(queue_rx.recv().await.unwrap()));
+            queue.push(queue_rx.recv().await.unwrap());
         }
 
         // update local queue with latest requests
         while let Ok(e) = queue_rx.try_recv() {
             // FIXME: properly check for errors (stop when the bot's sender is dropped?)
-            queue.push(Some(e))
+            queue.push(e)
         }
 
         let now = Instant::now();
@@ -110,9 +110,9 @@ async fn worker(
                 .or_insert(0) += 1;
         }
 
-        let mut empty = 0;
-        for i in 0..queue.len() {
-            let chat = &queue[i].as_ref().unwrap().0;
+        let mut queue_rem = queue.removing();
+        while let Some(entry) = queue_rem.next() {
+            let chat = &entry.value().0;
             let cond = {
                 hchats_s
                     .get(chat)
@@ -130,25 +130,17 @@ async fn worker(
                     *hchats.entry(chat.clone()).or_insert(0) += 1;
                     history.push_back((chat.clone(), Instant::now()));
                 }
-                queue[i].take().unwrap().1.send(());
+                entry.remove().1.send(());
 
                 allowed -= 1;
                 if allowed == 0 {
-                    if empty != i {
-                        // FIXME: this could be more optimal
-                        for j in i..queue.len() {
-                            queue.swap(j, empty);
-                            empty += 1;
-                        }
-                    }
                     break;
                 }
             } else {
-                queue.swap(i, empty);
-                empty += 1;
+                entry.skip();
             }
         }
-        queue.truncate(empty);
+        drop(queue_rem);
 
         delay_for(DELAY).await;
     }
@@ -299,6 +291,7 @@ use chan_send::{ChanSend, SendTy as _};
 use crate::bot::limits::chan_send::SendTy;
 use std::collections::hash_map::Entry;
 use core::mem;
+use vecrem::VecExt;
 
 mod chan_send {
     use tokio::sync::mpsc;
