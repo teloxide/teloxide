@@ -27,8 +27,11 @@ pub mod prelude;
 pub mod requests;
 pub mod types;
 
+// FIXME(waffle): made `pub` to reexport bot wrappers, in future we may want to
+//                reexport them from elsewhere
+pub mod bot;
+
 // reexported
-mod bot;
 mod errors;
 
 // implementation details

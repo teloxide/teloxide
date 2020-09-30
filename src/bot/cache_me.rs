@@ -11,10 +11,8 @@ use once_cell::sync::OnceCell;
 use crate::{
     payloads::GetMe,
     requests::{HasPayload, Request, Requester},
-    types::User,
+    types::{ChatId, User},
 };
-use crate::payloads::SendMessage;
-use crate::types::ChatId;
 
 /// `get_me` cache.
 ///
@@ -74,7 +72,7 @@ impl<B: Requester> Requester for CacheMe<B> {
     fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
     where
         C: Into<ChatId>,
-        T: Into<String>
+        T: Into<String>,
     {
         self.bot.send_message(chat_id, text)
     }

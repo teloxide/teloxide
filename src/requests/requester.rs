@@ -1,8 +1,5 @@
 use crate::{
-    payloads::{
-        GetMe,
-        SendMessage
-    },
+    payloads::{GetMe, SendMessage},
     requests::Request,
     types::ChatId,
 };

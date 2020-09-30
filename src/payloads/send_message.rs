@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     requests::{HasPayload, Payload},
-    types::{ChatId, Message, ParseMode, ReplyMarkup}
+    types::{ChatId, Message, ParseMode, ReplyMarkup},
 };
 
 /// Use this method to send text messages.

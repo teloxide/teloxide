@@ -1716,7 +1716,7 @@ impl Requester for Bot {
     fn send_message<C, T>(&self, chat_id: C, text: T) -> JsonRequest<payloads::SendMessage>
     where
         C: Into<ChatId>,
-        T: Into<String>
+        T: Into<String>,
     {
         Self::SendMessage::new(self.clone(), payloads::SendMessage::new(chat_id, text))
     }
