@@ -58,12 +58,16 @@ async fn worker(
 
     // FIXME: remove unnecessary ChatId clones
 
-    // FIXME: struct with fast random remove and append-to-the-end
+    // FIXME: Make an research about data structures for this queue.
+    //        Currently this is O(n) removing (n = number of elements stayed),
+    //        amortized O(1) push (vec+vecrem).
     let mut queue: Vec<(ChatId, Sender<()>)> = Vec::new(); // FIXME: with_cap
 
     let mut history: VecDeque<(ChatId, Instant)> = VecDeque::new();
     // hchats[chat] = history.iter().filter(|(c, _)| c == chat).count()
     let mut hchats: HashMap<ChatId, u32> = HashMap::new();
+
+    let mut hchats_s = HashMap::new();
 
     loop {
         // If there are no pending requests we are just waiting
@@ -99,11 +103,11 @@ async fn worker(
         let mut allowed = limits.overall_s.saturating_sub(history.iter().take_while(|(_, time)| time > &sec_back).count() as u32);
 
         if allowed == 0 {
+            hchats_s.clear();
             delay_for(DELAY).await;
             continue;
         }
 
-        let mut hchats_s = HashMap::new();
         for (chat, _) in history.iter().take_while(|(_, time)| time > &sec_back) {
             *hchats_s
                 .entry(chat.clone())
@@ -142,6 +146,7 @@ async fn worker(
         }
         drop(queue_rem);
 
+        hchats_s.clear();
         delay_for(DELAY).await;
     }
 }
