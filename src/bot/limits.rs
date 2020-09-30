@@ -54,19 +54,19 @@ pub struct Throttle<B> {
 }
 
 async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(ChatId, Sender<()>)>) {
-    // FIXME: use spawn_blocking?
-
     // FIXME: remove unnecessary ChatId clones
 
-    // FIXME: Make an research about data structures for this queue.
-    //        Currently this is O(n) removing (n = number of elements stayed),
-    //        amortized O(1) push (vec+vecrem).
+    // FIXME(waffle): Make an research about data structures for this queue.
+    //                Currently this is O(n) removing (n = number of elements
+    //                stayed), amortized O(1) push (vec+vecrem).
     let mut queue: Vec<(ChatId, Sender<()>)> = Vec::new(); // FIXME: with_cap
 
+    // I wish there was special data structure for history which removed the
+    // need in 2 hashmaps
+    // (waffle)
     let mut history: VecDeque<(ChatId, Instant)> = VecDeque::new();
     // hchats[chat] = history.iter().filter(|(c, _)| c == chat).count()
     let mut hchats: HashMap<ChatId, u32> = HashMap::new();
-
     let mut hchats_s = HashMap::new();
 
     loop {
@@ -78,8 +78,41 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(ChatId, Sender<()>
         // update local queue with latest requests
         while let Ok(e) = queue_rx.try_recv() {
             // FIXME: properly check for errors (stop when the bot's sender is dropped?)
-            queue.push(e)
+            queue.push(e);
         }
+
+        // _Maybe_ we need to use `spawn_blocking` here, because there is
+        // decent amount of blocking work. However _for now_ I've decided not
+        // to use it here.
+        //
+        // Reasons (not to use `spawn_blocking`):
+        //
+        // 1. The work seems not very CPU-bound, it's not heavy computations,
+        //    it's more like light computations.
+        //
+        // 2. `spawn_blocking` is not zero-cost — it spawns a new system thread
+        //    + do so other work. This may actually be *worse* then current
+        //    "just do everything in this async fn" approach.
+        //
+        // 3. With `rt-threaded` feature, tokio uses [`num_cpus()`] threads
+        //    which should be enough to work fine with one a-bit-blocking task.
+        //    Crucially current behaviour will be problem mostly with
+        //    single-threaded runtimes (and in case you're using one, you
+        //    probably don't want to spawn unnecessary threads anyway).
+        //
+        // I think if we'll ever change this behaviour, we need to make it
+        // _configurable_.
+        //
+        // See also [discussion (ru)].
+        //
+        // NOTE: If you are reading this because you have any problems because
+        // of this worker, open an [issue on github]
+        //
+        // [`num_cpus()`]: https://vee.gg/JGwq2
+        // [discussion (ru)]: https://t.me/rust_async/27891
+        // [issue on github]: https://github.com/teloxide/teloxide/issues/new
+        //
+        // (waffle)
 
         let now = Instant::now();
         let min_back = now - MINUTE;
