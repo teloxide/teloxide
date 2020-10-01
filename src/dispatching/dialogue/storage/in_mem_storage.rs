@@ -32,7 +32,7 @@ impl<D> Storage<D> for InMemStorage<D> {
     where
         D: Send + 'static,
     {
-        async move { Ok(self.map.lock().await.remove(&chat_id)) }.boxed()
+        Box::pin(async move { Ok(self.map.lock().await.remove(&chat_id)) })
     }
 
     fn update_dialogue(
@@ -43,6 +43,6 @@ impl<D> Storage<D> for InMemStorage<D> {
     where
         D: Send + 'static,
     {
-        async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) }.boxed()
+        Box::pin(async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) })
     }
 }

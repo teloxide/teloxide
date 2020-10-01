@@ -27,6 +27,6 @@ where
     where
         DialogueWithCx<Upd, D, E>: Send + 'static,
     {
-        async move { self(cx).await }.boxed()
+        Box::pin(async move { self(cx).await })
     }
 }

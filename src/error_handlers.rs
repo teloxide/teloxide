@@ -19,7 +19,7 @@ where
     Fut: Future<Output = ()> + Send,
 {
     fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
-        async move { self(error).await }.boxed()
+        Box::pin(async move { self(error).await })
     }
 }
 
@@ -81,12 +81,11 @@ where
         Eh: ErrorHandler<E> + Send + Sync,
         Arc<Eh>: 'a,
     {
-        async move {
+        Box::pin(async move {
             if let Err(error) = self {
                 eh.handle_error(error).await;
             }
-        }
-        .boxed()
+        })
     }
 }
 
@@ -115,7 +114,7 @@ impl IgnoringErrorHandler {
 
 impl<E> ErrorHandler<E> for IgnoringErrorHandler {
     fn handle_error(self: Arc<Self>, _: E) -> BoxFuture<'static, ()> {
-        async {}.boxed()
+        Box::pin(async {})
     }
 }
 
@@ -161,7 +160,7 @@ impl IgnoringErrorHandlerSafe {
 #[allow(unreachable_code)]
 impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
     fn handle_error(self: Arc<Self>, _: Infallible) -> BoxFuture<'static, ()> {
-        async {}.boxed()
+        Box::pin(async {})
     }
 }
 
@@ -208,6 +207,6 @@ where
 {
     fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
         log::error!("{text}: {:?}", error, text = self.text);
-        async {}.boxed()
+        Box::pin(async {})
     }
 }

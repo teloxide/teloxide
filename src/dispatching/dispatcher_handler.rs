@@ -25,6 +25,6 @@ where
     where
         UpdateWithCx<Upd>: Send + 'static,
     {
-        async move { self(updates).await }.boxed()
+        Box::pin(async move { self(updates).await })
     }
 }

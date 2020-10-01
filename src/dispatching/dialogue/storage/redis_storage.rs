@@ -57,7 +57,7 @@ where
         self: Arc<Self>,
         chat_id: i64,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
-        async move {
+        Box::pin(async move {
             let res = redis::pipe()
                 .atomic()
                 .get(chat_id)
@@ -80,7 +80,7 @@ where
                 }
                 _ => unreachable!(),
             }
-        }.boxed()
+        })
     }
 
     fn update_dialogue(
@@ -88,7 +88,7 @@ where
         chat_id: i64,
         dialogue: D,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
-        async move {
+        Box::pin(async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
             Ok(self
@@ -99,7 +99,6 @@ where
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()?)
-        }
-        .boxed()
+        })
     }
 }
