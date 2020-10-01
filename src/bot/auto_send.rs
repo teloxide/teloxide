@@ -167,7 +167,7 @@ impl<R: Request> Future for AutoRequest<R> {
                 // Set the resulting `Future(_)` back to pin.
                 this.set(inner);
 
-                // poll self again, this time
+                // Poll `self`. This time another brunch will be executed, returning `Poll`.
                 self.poll(cx)
             }
         }
