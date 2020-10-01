@@ -1,5 +1,5 @@
 use super::{serializer::Serializer, Storage};
-use futures::{future::BoxFuture, FutureExt};
+use futures::future::BoxFuture;
 use redis::{AsyncCommands, FromRedisValue, IntoConnectionInfo};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{
