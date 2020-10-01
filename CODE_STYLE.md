@@ -123,3 +123,4 @@ C: Into<String>, { ... }
 ## Misc
  1. Use `Into<...>` only where there exists at least one conversion **and** it will be logically to use.
  2. Always mark a function as `#[must_use]` if its return value **must** be used.
+ 3. `Box::pin(async [move] { ... })` instead of `async [move] { ... }.boxed()`.

@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::dispatching::{DispatcherHandlerRx, UpdateWithCx};
-use futures::{future::BoxFuture, FutureExt};
+use futures::future::BoxFuture;
 
 /// An asynchronous handler of a stream of updates used in [`Dispatcher`].
 ///

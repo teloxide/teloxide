@@ -1,5 +1,5 @@
 use super::Storage;
-use futures::{future::BoxFuture, FutureExt};
+use futures::future::BoxFuture;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 

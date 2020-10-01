@@ -1,5 +1,5 @@
 use crate::prelude::{DialogueStage, DialogueWithCx};
-use futures::{future::BoxFuture, FutureExt};
+use futures::future::BoxFuture;
 use std::{future::Future, sync::Arc};
 
 /// An asynchronous handler of an update used in [`DialogueDispatcher`].

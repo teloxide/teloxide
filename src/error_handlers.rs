@@ -1,6 +1,6 @@
 //! Convenient error handling.
 
-use futures::{future::BoxFuture, FutureExt};
+use futures::future::BoxFuture;
 use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 
 /// An asynchronous handler of an error.
