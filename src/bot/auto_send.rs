@@ -18,7 +18,7 @@ use crate::requests::{HasPayload, Output, Request, Requester};
 /// 1. This wrapper should be the most outer i.e.: `AutoSend<CacheMe<Bot>>`
 ///    will automatically send requests, while `CacheMe<AutoSend<Bot>>` - won't.
 /// 2. After first call to `poll` on a request you will unable to access payload
-///    nor could you use [`send_ref`](Request::send_ref)
+///    nor could you use [`send_ref`](Request::send_ref).
 ///
 /// ## Examples
 ///
@@ -48,7 +48,7 @@ impl<B> AutoSend<B> {
         Self { bot: inner }
     }
 
-    /// Allows to access inner bot
+    /// Allows to access the inner bot.
     pub fn inner(&self) -> &B {
         &self.bot
     }
@@ -143,11 +143,12 @@ impl<R: Request> Future for AutoRequest<R> {
             // Poll underling future
             InnerProj::Future(fut) => {
                 let res = futures::ready!(fut.poll(cx));
-                // We've got the result, so we set the state to done
+                // We've got the result, so we set the state to done.
                 this.set(Inner::Done);
                 Poll::Ready(res)
             }
-            // This future is fused
+
+            // This future is fused.
             InnerProj::Done => Poll::Pending,
             // The `AutoRequest` future was polled for the first time after
             // creation. We need to transform it into sent form by calling
@@ -163,7 +164,7 @@ impl<R: Request> Future for AutoRequest<R> {
                     // both `Future(_)` and `Done` variants.
                     InnerRepl::Future(_) | InnerRepl::Done => done_unreachable(),
                 };
-                // Set the resulting `Future(_)` back to pin
+                // Set the resulting `Future(_)` back to pin.
                 this.set(inner);
 
                 // poll self again, this time
