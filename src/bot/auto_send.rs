@@ -53,7 +53,7 @@ impl<B> AutoSend<B> {
         &self.bot
     }
 
-    /// Unwraps inner bot
+    /// Unwraps the inner bot.
     pub fn into_inner(self) -> B {
         self.bot
     }
@@ -80,9 +80,9 @@ impl<R: Request> AutoRequest<R> {
 /// private enum variants).
 #[pin_project::pin_project(project = InnerProj, project_replace = InnerRepl)]
 enum Inner<R: Request> {
-    /// Unsent modifiable request.
+    /// An unsent modifiable request.
     Request(R),
-    /// Sent request.
+    /// A sent request.
     Future(#[pin] R::Send),
     /// Done state. Set after `R::Send::poll` returned `Ready(_)`.
     ///
@@ -140,7 +140,7 @@ impl<R: Request> Future for AutoRequest<R> {
         let mut this: Pin<&mut Inner<_>> = self.as_mut().project().0;
 
         match this.as_mut().project() {
-            // Poll underling future
+            // Poll the underling future.
             InnerProj::Future(fut) => {
                 let res = futures::ready!(fut.poll(cx));
                 // We've got the result, so we set the state to done.
@@ -157,7 +157,7 @@ impl<R: Request> Future for AutoRequest<R> {
                 // Replace `Request(_)` by `Done(_)` to obtain ownership over
                 // the former.
                 let inner = this.as_mut().project_replace(Inner::Done);
-                // Map Request(req) to `Future(req.send())`
+                // Map Request(req) to `Future(req.send())`.
                 let inner = match inner {
                     InnerRepl::Request(req) => Inner::Future(req.send()),
                     // Practically this is unreachable, because we've just checked for
