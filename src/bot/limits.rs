@@ -315,7 +315,7 @@ where
 {
     type Err = R::Err;
     type Send = ThrottlingSend<R>;
-    type SendRef = ThrottlingSend<R>;
+    type SendRef = ThrottlingSendRef<R>;
 
     fn send(self) -> Self::Send {
         let (tx, rx) = channel();
@@ -324,7 +324,18 @@ where
     }
 
     fn send_ref(&self) -> Self::SendRef {
-        unimplemented!()
+        let (tx, rx) = channel();
+        let send = self.1.clone().send_t((self.0.payload_ref().get_chat_id().clone(), tx));
+
+        // As we can't move self.0 (request) out, as we do in `send` we are
+        // forced to call `send_ref()`. This may have overhead and/or lead to
+        // wrong results because `R::send_ref` does the send.
+        //
+        // However `Request` documentation explicitly notes that `send{,_ref}`
+        // should **not** do any kind of work, so it's ok.
+        let request = self.0.send_ref();
+
+        ThrottlingSendRef::Registering { request, send, wait: rx }
     }
 }
 
@@ -390,6 +401,70 @@ impl<R: Request> Future for ThrottlingSend<R> {
         }
     }
 }
+
+#[pin_project::pin_project(project = SendRefProj, project_replace = SendRefRepl)]
+pub enum ThrottlingSendRef<R: Request> {
+    Registering {
+        request: R::SendRef,
+        #[pin]
+        send: ChanSend,
+        wait: Receiver<()>,
+    },
+    Pending {
+        request: R::SendRef,
+        #[pin]
+        wait: Receiver<()>,
+    },
+    Sent {
+        #[pin]
+        fut: R::SendRef,
+    },
+    Done,
+}
+
+impl<R: Request> Future for ThrottlingSendRef<R> {
+    type Output = Result<Output<R>, R::Err>;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        match self.as_mut().project() {
+            SendRefProj::Registering { request: _, send, wait: _ } => match send.poll(cx) {
+                Poll::Pending => Poll::Pending,
+                Poll::Ready(r) => {
+                    // FIXME(waffle): remove unwrap
+                    r.unwrap();
+                    if let SendRefRepl::Registering { request, send: _, wait } =
+                        self.as_mut().project_replace(ThrottlingSendRef::Done)
+                    {
+                        self.as_mut().project_replace(ThrottlingSendRef::Pending { request, wait });
+                    }
+
+                    self.poll(cx)
+                }
+            },
+            SendRefProj::Pending { request: _, wait } => match wait.poll(cx) {
+                Poll::Pending => Poll::Pending,
+                Poll::Ready(r) => {
+                    // FIXME(waffle): remove unwrap
+                    r.unwrap();
+                    if let SendRefRepl::Pending { request, wait: _ } =
+                        self.as_mut().project_replace(ThrottlingSendRef::Done)
+                    {
+                        self.as_mut().project_replace(ThrottlingSendRef::Sent { fut: request });
+                    }
+
+                    self.poll(cx)
+                }
+            },
+            SendRefProj::Sent { fut } => {
+                let res = futures::ready!(fut.poll(cx));
+                self.set(ThrottlingSendRef::Done);
+                Poll::Ready(res)
+            }
+            SendRefProj::Done => Poll::Pending,
+        }
+    }
+}
+
 
 mod chan_send {
     use std::{future::Future, pin::Pin};
