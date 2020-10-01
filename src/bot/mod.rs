@@ -14,9 +14,11 @@ use crate::{
 };
 
 mod api;
+mod auto_send;
 mod cache_me;
 mod download;
 
+pub use auto_send::AutoSend;
 pub use cache_me::CacheMe;
 
 pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";

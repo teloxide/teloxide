@@ -27,6 +27,8 @@ impl<B> CacheMe<B> {
     /// Creates new cache.
     ///
     /// Note: it's recommended to use [`RequesterExt::cache_me`] instead.
+    ///
+    /// [`RequesterExt::cache_me`]: crate::requests::RequesterExt::cache_me
     pub fn new(bot: B) -> CacheMe<B> {
         Self { bot, me: Arc::new(OnceCell::new()) }
     }
