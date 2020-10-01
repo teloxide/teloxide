@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
 
+## [0.3.1] - 2020-08-25
+
+### Added
+ - `Bot::builder` method ([PR 269](https://github.com/teloxide/teloxide/pull/269)).
+
 ## [0.3.0] - 2020-07-31
 ### Added
  - Support for typed bot commands ([issue 152](https://github.com/teloxide/teloxide/issues/152)).
