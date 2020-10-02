@@ -6,6 +6,7 @@
 //!
 //! # Using BotCommand
 //! ```
+//! # #[cfg(feature = "macros")] {
 //! use teloxide::utils::command::BotCommand;
 //!
 //! type UnitOfTime = u8;
@@ -19,6 +20,7 @@
 //!
 //! let command = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
 //! assert_eq!(command, AdminCommand::Ban(5, 'h'));
+//! # }
 //! ```
 //!
 //! # Using parse_command
@@ -46,12 +48,16 @@
 
 use serde::export::Formatter;
 use std::{error::Error, fmt::Display};
+
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.
 ///
 /// # Example
 /// ```
+/// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
 ///
 /// type UnitOfTime = u8;
@@ -65,6 +71,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// let command = AdminCommand::parse("/ban 5 h", "bot_name").unwrap();
 /// assert_eq!(command, AdminCommand::Ban(5, 'h'));
+/// # }
 /// ```
 ///
 /// ## Enum attributes
@@ -86,6 +93,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// ### Example
 /// ```
+/// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
@@ -96,6 +104,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// let command = Command::parse("/text hello my dear friend!", "").unwrap();
 /// assert_eq!(command, Command::Text("hello my dear friend!".to_string()));
+/// # }
 /// ```
 ///
 ///  - `split` - separates a messsage by a given separator (the default is the
@@ -104,6 +113,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// ### Example
 /// ```
+/// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
@@ -114,6 +124,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// let command = Command::parse("/nums 1 32 -5", "").unwrap();
 /// assert_eq!(command, Command::Nums(1, 32, -5));
+/// # }
 /// ```
 ///
 /// 5. `#[command(separator = "sep")]`
@@ -122,6 +133,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// ### Example
 /// ```
+/// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
 ///
 /// #[derive(BotCommand, PartialEq, Debug)]
@@ -132,6 +144,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// let command = Command::parse("/nums 1|32|5", "").unwrap();
 /// assert_eq!(command, Command::Nums(1, 32, 5));
+/// # }
 /// ```
 ///
 /// ## Variant attributes
@@ -149,6 +162,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// ### Example
 /// ```
+/// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::{BotCommand, ParseError};
 ///
 /// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
@@ -172,6 +186,7 @@ pub use teloxide_macros::BotCommand;
 /// assert_eq!(command, Command::Num(12));
 /// let command = Command::parse("/num 333", "");
 /// assert!(command.is_err());
+/// # }
 /// ```
 ///
 ///  3. `#[command(prefix = "prefix")]`
