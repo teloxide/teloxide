@@ -254,7 +254,7 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
         }
 
         for (chat, _) in history.iter().take_while(|(_, time)| time > &sec_back) {
-            *hchats_s.entry(chat.clone()).or_insert(0) += 1;
+            *hchats_s.entry(*chat).or_insert(0) += 1;
         }
 
         let mut queue_rem = queue.removing();
@@ -267,9 +267,9 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
 
             if cond {
                 {
-                    *hchats_s.entry(chat.clone()).or_insert(0) += 1;
-                    *hchats.entry(chat.clone()).or_insert(0) += 1;
-                    history.push_back((chat.clone(), Instant::now()));
+                    *hchats_s.entry(*chat).or_insert(0) += 1;
+                    *hchats.entry(*chat).or_insert(0) += 1;
+                    history.push_back((*chat, Instant::now()));
                 }
 
                 // This will close the channel unlocking associated request
@@ -495,13 +495,11 @@ impl<R: Request> Future for ThrottlingSend<R> {
             },
             SendProj::Pending { request: _, wait } => match wait.poll(cx) {
                 Poll::Pending => Poll::Pending,
-                Poll::Ready(r) => {
-                    // Worker pass "message" to unlock us by closing the channel
-                    match r {
-                        Ok(never) => match never {},
-                        Err(_) => {}
-                    }
-
+                // Worker pass "message" to unlock us by closing the channel,
+                // and thus we can safely ignore this result as we know it will
+                // always be `Err(_)` (because `Ok(Never)` is uninhibited)
+                // and that's what we want.
+                Poll::Ready(_) => {
                     if let SendRepl::Pending { request, wait: _ } =
                         this.as_mut().project_replace(ThrottlingSendInner::Done)
                     {
@@ -576,13 +574,11 @@ impl<R: Request> Future for ThrottlingSendRef<R> {
             },
             SendRefProj::Pending { request: _, wait } => match wait.poll(cx) {
                 Poll::Pending => Poll::Pending,
-                Poll::Ready(r) => {
-                    // Worker pass "message" to unlock us by closing the channel
-                    match r {
-                        Ok(never) => match never {},
-                        Err(_) => {}
-                    }
-
+                // Worker pass "message" to unlock us by closing the channel,
+                // and thus we can safely ignore this result as we know it will
+                // always be `Err(_)` (because `Ok(Never)` is uninhibited)
+                // and that's what we want.
+                Poll::Ready(_) => {
                     if let SendRefRepl::Pending { request, wait: _ } =
                         this.as_mut().project_replace(ThrottlingSendRefInner::Done)
                     {
@@ -625,7 +621,9 @@ mod chan_send {
     type Inner = impl Future<Output = Result<(), SendError<(Id, Sender<Never>)>>>;
 
     impl SendTy for mpsc::Sender<(Id, Sender<Never>)> {
-        fn send_t(mut self, val: (Id, Sender<Never>)) -> ChanSend {
+        // `return`s trick IDEA not to show errors
+        #[allow(clippy::needless_return)]
+        fn send_t(self, val: (Id, Sender<Never>)) -> ChanSend {
             #[cfg(feature = "nightly")]
             {
                 fn def(
@@ -637,7 +635,10 @@ mod chan_send {
                 return ChanSend(def(self, val));
             }
             #[cfg(not(feature = "nightly"))]
-            return ChanSend(Box::pin(async move { self.send(val).await }));
+            {
+                let mut this = self;
+                return ChanSend(Box::pin(async move { this.send(val).await }));
+            }
         }
     }
 
