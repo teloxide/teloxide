@@ -1,9 +1,11 @@
+#[cfg(feature = "macros")]
 use teloxide::utils::command::{BotCommand, ParseError};
 
 // We put tests here because macro expand in unit tests in module
 // teloxide::utils::command was a failure
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_command_with_args() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -19,6 +21,7 @@ fn parse_command_with_args() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_command_with_non_string_arg() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -34,6 +37,7 @@ fn parse_command_with_non_string_arg() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn attribute_prefix() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -50,6 +54,7 @@ fn attribute_prefix() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn many_attributes() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -64,6 +69,7 @@ fn many_attributes() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn global_attributes() {
     #[command(prefix = "!", rename = "lowercase", description = "Bot commands")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -79,6 +85,7 @@ fn global_attributes() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_command_with_bot_name() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
@@ -95,6 +102,7 @@ fn parse_command_with_bot_name() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_with_split() {
     #[command(rename = "lowercase")]
     #[command(parse_with = "split")]
@@ -111,6 +119,7 @@ fn parse_with_split() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_with_split2() {
     #[command(rename = "lowercase")]
     #[command(parse_with = "split", separator = "|")]
@@ -127,6 +136,7 @@ fn parse_with_split2() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_custom_parser() {
     fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
         let vec = s.split_whitespace().collect::<Vec<_>>();
@@ -154,6 +164,7 @@ fn parse_custom_parser() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn parse_named_fields() {
     #[command(rename = "lowercase")]
     #[command(parse_with = "split")]
@@ -170,6 +181,7 @@ fn parse_named_fields() {
 }
 
 #[test]
+#[cfg(feature = "macros")]
 fn descriptions_off() {
     #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]

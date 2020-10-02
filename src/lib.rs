@@ -41,6 +41,7 @@
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
 #![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
@@ -61,7 +62,12 @@ pub mod requests;
 pub mod types;
 pub mod utils;
 
+#[cfg(feature = "macros")]
 extern crate teloxide_macros;
+
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
 #[doc(include = "../README.md")]
