@@ -164,15 +164,16 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
     let mut hchats: HashMap<Id, u32> = HashMap::new();
     let mut hchats_s = HashMap::new();
 
-    loop {
+    // set to true when `queue_rx` is closed
+    let mut close = false;
+
+    while !close || !queue.is_empty() {
         // If there are no pending requests we are just waiting
         if queue.is_empty() {
-            let req = queue_rx
-                .recv()
-                .await
-                // FIXME(waffle): decide what should we do on channel close
-                .expect("Queue channel was closed");
-            queue.push(req);
+            match queue_rx.recv().await {
+                Some(req) => queue.push(req),
+                None => close = true,
+            }
         }
 
         // update local queue with latest requests
@@ -180,8 +181,7 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
             match queue_rx.try_recv() {
                 Ok(req) => queue.push(req),
                 Err(TryRecvError::Empty) => break,
-                // FIXME(waffle): decide what should we do on channel close
-                Err(TryRecvError::Closed) => unimplemented!("Queue channel was closed"),
+                Err(TryRecvError::Closed) => close = true,
             }
         }
 
