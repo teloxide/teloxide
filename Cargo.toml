@@ -17,7 +17,7 @@ authors = [
 
 [dependencies]
 futures = "0.3.5"
-tokio = { version = "0.2.21", features = ["fs", "stream", "full"] }
+tokio = { version = "0.2.21", features = ["fs", "stream"] }
 tokio-util = "0.3.1"
 pin-project = "0.4.23"
 bytes = "0.5.5"
@@ -33,6 +33,7 @@ derive_more = "0.99.9"
 mime = "0.3.16"
 thiserror = "1.0.20"
 once_cell = "1.4.0"
+never = "0.1.0"
 
 # FIXME(waffle): use crates.io once published
 vecrem = { git = "https://github.com/WaffleLapkin/vecrem", rev = "6b9b6f42342df8b75548c6ed387072ff235429b1" }

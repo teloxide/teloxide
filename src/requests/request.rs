@@ -3,7 +3,6 @@ use std::future::Future;
 use crate::requests::{HasPayload, Output};
 
 /// A ready-to-send telegram request.
-///
 // FIXME(waffle): Write better doc for the trait
 ///
 /// ## Implementation notes
