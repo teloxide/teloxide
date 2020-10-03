@@ -122,7 +122,7 @@ impl Default for Limits {
 ///
 /// ## Examples
 ///
-/// ```no_run (throttle fails to spawn task without tokio runtime) 
+/// ```no_run (throttle fails to spawn task without tokio runtime)
 /// use teloxide_core::{bot::Limits, requests::RequesterExt, Bot};
 ///
 /// # #[allow(deprecated)]
