@@ -156,16 +156,17 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `photo`: Photo to send.
+    ///   - `photo`: Pass [`InputFile::FileId`] to send a photo that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a photo from the Internet (5MB max.), pass
+    ///     [`InputFile::File`] to upload a picture from the file system or
+    ///     [`InputFile::Memory`] to upload a photo from memory (10MB max.
+    ///     each). [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a photo that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
@@ -184,11 +185,26 @@ impl Bot {
         )
     }
 
+    /// Use this method to send audio files
     ///
+    /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
+    ///   - `audio`: Pass [`InputFile::FileId`] to send an audio file that
+    ///     exists on the Telegram servers (recommended), pass an
+    ///     [`InputFile::Url`] for Telegram to get a file from the Internet
+    ///     (20MB max.), pass [`InputFile::File`] to upload a file from the file
+    ///     system or [`InputFile::Memory`] to upload a file from memory (50MB
+    ///     max. each). [More info on Sending Files »].
+    ///
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -207,20 +223,22 @@ impl Bot {
 
     /// Use this method to send general files.
     ///
-    /// Bots can currently send files of any type of up to 50 MB in size, this
-    /// limit may be changed in the future.
-    ///
     /// [The official docs](https://core.telegram.org/bots/api#senddocument).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `document`: File to send.
+    ///   - `document`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass a file_id as String to send a file that exists on the
-    /// Telegram servers (recommended), pass an HTTP URL as a String for
-    /// Telegram to get a file from the Internet, or upload a new one using
-    /// `multipart/form-data`. [More info on Sending Files »].
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
@@ -242,24 +260,24 @@ impl Bot {
     /// Use this method to send video files, Telegram clients support mp4 videos
     /// (other formats may be sent as Document).
     ///
-    /// Bots can currently send video files of up to 50 MB in size, this
-    /// limit may be changed in the future.
-    ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `video`: Video to sent.
+    ///   - `video`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -279,15 +297,24 @@ impl Bot {
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
     /// without sound).
     ///
-    /// Bots can currently send animation files of up to 50 MB in size, this
-    /// limit may be changed in the future.
-    ///
     /// [The official docs](https://core.telegram.org/bots/api#sendanimation).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `animation`: Animation to send.
+    ///   - `animation`: Pass [`InputFile::FileId`] to send a file that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
+    ///
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -308,9 +335,7 @@ impl Bot {
     /// display the file as a playable voice message.
     ///
     /// For this to work, your audio must be in an .ogg file encoded with OPUS
-    /// (other formats may be sent as [`Audio`] or [`Document`]). Bots can
-    /// currently send voice messages of up to 50 MB in size, this limit may
-    /// be changed in the future.
+    /// (other formats may be sent as [`Audio`] or [`Document`]).
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvoice).
     ///
@@ -320,16 +345,18 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `voice`: Audio file to send.
+    ///   - `voice`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
@@ -352,20 +379,23 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvideonote).
     ///
+    /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
+    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `video_note`: Video note to send.
+    ///   - `video_note`: Pass [`InputFile::FileId`] to send a file that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
 
     pub fn send_video_note<C>(&self, chat_id: C, video_note: InputFile) -> SendVideoNote
@@ -382,8 +412,8 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `media`: A JSON-serialized array describing photos and videos to be
-    ///     sent, must include 2–10 items.
+    ///   - `media`: A vector of photos and videos as [`InputMedia`] to be sent,
+    ///     must include 2–10 items.
     pub fn send_media_group<C, M>(&self, chat_id: C, media: M) -> SendMediaGroup
     where
         C: Into<ChatId>,
@@ -791,7 +821,14 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `photo`: New chat photo, uploaded using `multipart/form-data`.
+    ///   - `photo`: New chat photo, pass [`InputFile::File`] to upload a file
+    ///     from the file system or [`InputFile::Memory`] to upload a file from
+    ///     memory (10MB max. each). [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn set_chat_photo<C>(&self, chat_id: C, photo: InputFile) -> SetChatPhoto
     where
         C: Into<ChatId>,
@@ -1277,20 +1314,23 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendsticker).
     ///
+    /// [animated]: https://telegram.org/blog/animated-stickers
+    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target channel (in the format `@channelusername`).
-    ///   - `sticker`: Sticker to send.
+    ///   - `sticker`: Pass [`InputFile::FileId`] to send a sticker that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a sticker (.WEBP file) from the Internet, pass
+    ///     [`InputFile::File`] to upload a sticker from the file system or
+    ///     [`InputFile::Memory`] to upload a sticker from memory [More info on
+    ///     Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [animated]: https://telegram.org/blog/animated-stickers
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> SendSticker
     where
@@ -1322,12 +1362,14 @@ impl Bot {
     ///   - `user_id`: User identifier of sticker file owner.
     ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
     ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px. [More info on Sending Files
-    ///     »].
+    ///     width or height must be exactly 512px. Pass [`InputFile::File`] to
+    ///     upload a file from the file system or [`InputFile::Memory`] to
+    ///     upload a file from memory. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    /// [`Bot::create_new_sticker_set`]: crate::Bot::create_new_sticker_set
-    /// [`Bot::add_sticker_to_set`]: crate::Bot::add_sticker_to_set
     pub fn upload_sticker_file(&self, user_id: i32, png_sticker: InputFile) -> UploadStickerFile {
         UploadStickerFile::new(self.clone(), user_id, png_sticker)
     }

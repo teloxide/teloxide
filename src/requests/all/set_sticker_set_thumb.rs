@@ -58,11 +58,12 @@ impl SetStickerSetThumb {
     /// thumbnail up to 32 kilobytes in size; see https://core.telegram.org/animated_stickers#technical-requirements
     /// for animated sticker technical requirements.
     ///
-    /// Pass [`InputFile::FileId`] as a String to send a file that already
-    /// exists on the Telegram servers, pass [`InputFile::Url`] for Telegram
-    /// to get a file from the Internet, or upload a new one using
-    /// multipart/form-data. More info on Sending Files ». Animated sticker
-    /// set thumbnail can't be uploaded via HTTP URL.
+    /// Pass [`InputFile::FileId`] to send a file that exists on the Telegram
+    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
+    /// file from the Internet (20MB max.), pass [`InputFile::File`] to upload
+    /// a file from the file system or [`InputFile::Memory`] to upload a file
+    /// from memory (50MB max. each). [More info on Sending Files »]. Animated
+    /// sticker set thumbnail can't be uploaded via HTTP URL.
     ///
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [`InputFile::Url]: crate::types::InputFile::Url

@@ -95,14 +95,17 @@ impl SendAudio {
 
     /// Audio file to send.
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// Pass [`InputFile::FileId`] to send an audio file that exists on the
+    /// Telegram servers (recommended), pass an [`InputFile::Url`] for Telegram
+    /// to get a file from the Internet (20MB max.), pass [`InputFile::File`]
+    /// to upload a file from the file system or [`InputFile::Memory`] to
+    /// upload a file from memory (50MB max. each).
+    /// [More info on Sending Files »].
     ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn audio(mut self, val: InputFile) -> Self {
@@ -158,13 +161,16 @@ impl SendAudio {
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for
     /// the file is supported server-side.
     ///
-    /// The thumbnail should be in JPEG format and less than 200 kB in size. A
+    /// The thumbnail should be in JPEG format and less than 200kB in size. A
     /// thumbnail‘s width and height should not exceed 320. Ignored if the
-    /// file is not uploaded using `multipart/form-data`. Thumbnails can’t
-    /// be reused and can be only uploaded as a new file, so you can pass
-    /// `attach://<file_attach_name>` if the thumbnail was uploaded using
-    /// `multipart/form-data` under `<file_attach_name>`. [More info on
-    /// Sending Files »].
+    /// audio file is not uploaded using [`InputFile::File`] or
+    /// [`InputFile::Memory`]. Thumbnails can’t be reused and can be only
+    /// uploaded as a new file. Pass [`InputFile::File`] to upload a file from
+    /// the file system or [`InputFile::Memory`] to upload a file from memory.
+    /// [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn thumb(mut self, val: InputFile) -> Self {
