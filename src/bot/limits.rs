@@ -122,9 +122,10 @@ impl Default for Limits {
 ///
 /// ## Examples
 ///
-/// ```
+/// ```no_run (throttle fails to spawn task without tokio runtime) 
 /// use teloxide_core::{bot::Limits, requests::RequesterExt, Bot};
 ///
+/// # #[allow(deprecated)]
 /// let bot = Bot::new("TOKEN").throttle(Limits::default());
 ///
 /// /* send many requests here */
