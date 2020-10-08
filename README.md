@@ -43,7 +43,7 @@
 [functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
 [other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
- - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be independent of how/where dialogues are stored. For example, you can just replace one line to achieve [persistence]. Out-of-the-box storages include [Redis].
+ - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
@@ -64,7 +64,7 @@ $ export TELOXIDE_TOKEN=<Your token here>
 # Windows
 $ set TELOXIDE_TOKEN=<Your token here>
 ```
- 4. Be sure that you are up to date:
+ 4. Make sure that your Rust compiler is up to date:
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -75,7 +75,7 @@ $ rustup update nightly
 $ rustup override set nightly
 ```
 
- 5. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
+ 5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
 teloxide = "0.3.1"
@@ -90,7 +90,7 @@ tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 ## API overview
 
 ### The dices bot
-This bot throws a dice on each incoming message:
+This bot replies with a dice throw to each received message:
 
 ([Full](./examples/dices_bot/src/main.rs))
 ```rust,no_run
@@ -175,11 +175,11 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration, where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
+A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-Below is a bot, which asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
+Below is a bot that asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
 ([dialogue_bot/src/dialogue/mod.rs](./examples/dialogue_bot/src/dialogue/mod.rs))
 ```rust,ignore
@@ -200,7 +200,7 @@ impl Default for Dialogue {
 }
 ```
 
-When a user sends a message to our bot, and such a dialogue does not yet exist, `Dialogue::default()` is invoked, which is `Dialogue::Start`. Every time a message is received, an associated dialogue is extracted, and then passed to a corresponding subtransition function:
+When a user sends a message to our bot and such a dialogue does not exist yet, a `Dialogue::default()` is invoked, which is a `Dialogue::Start` in this case. Every time a message is received, an associated dialogue is extracted and then passed to a corresponding transition function:
 
 <details>
   <summary>Dialogue::Start</summary>
@@ -303,7 +303,7 @@ async fn receive_location(
 
 </details>
 
-All these subtransitions accept a corresponding state (one of the many variants of `Dialogue`), a context, and a textual message. They return `TransitionOut<Dialogue>`, e.g. a mapping from `<your state type>` to `Dialogue`.
+All these transition functions accept a corresponding state (one of the many variants of `Dialogue`), a context, and a textual message. They return `TransitionOut<Dialogue>`, e.g. a mapping from `<your state type>` to `Dialogue`.
 
 Finally, the `main` function looks like this:
 
@@ -366,7 +366,7 @@ async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> Transi
  }
  ```
 
-The second one produces very strange compiler messages because of the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
+The second one produces very strange compiler messages due to the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
 ## Cargo features
 
@@ -397,15 +397,15 @@ A: No, only the bots API.
 
 Q: Why Rust?
 
-A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides enough good ecosystem and the language itself to be suitable for writing bots.
+A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides a good enough ecosystem and the language for it to be suitable for writing bots.
 
-UPD: The current design spreads wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently. What is even more interesting is that [mux-stream] could make a library from teloxide, not a framework, since the design could be defined by just combining streams of updates.
+UPD: The current design relies on wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently. Furthermore, the [mux-stream] could help to make a library out of teloxide, not a framework, since the design in this case could be defined by just combining streams of updates.
 
 [mux-stream]: https://github.com/Hirrolot/mux-stream
 
 Q: Can I use webhooks?
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
+A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
