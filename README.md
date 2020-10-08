@@ -175,7 +175,7 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _transition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
+A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
