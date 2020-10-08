@@ -200,7 +200,7 @@ impl Default for Dialogue {
 }
 ```
 
-When a user sends a message to our bot and such a dialogue does not exist yet, a `Dialogue::default()` is invoked, which is a `Dialogue::Start` in this case. Every time a message is received, an associated dialogue is extracted and then passed to a corresponding transition function:
+When a user sends a message to our bot and such a dialogue does not exist yet, a `Dialogue::default()` is invoked, which is a `Dialogue::Start` in this case. Every time a message is received, an associated dialogue is extracted and then passed to a corresponding subtransition function:
 
 <details>
   <summary>Dialogue::Start</summary>
