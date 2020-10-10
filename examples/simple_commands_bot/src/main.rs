@@ -4,6 +4,8 @@ use teloxide::contrib::parser::{Parser, DataWithUWC};
 use teloxide::contrib::handler::Handler;
 use teloxide::contrib::callback::{Callback, Alternative};
 
+type ReqRes = Result<(), RequestError>;
+
 // ---------------- COMMAND help
 struct HelpCommandController {
     parser: StaticCommandParser
@@ -28,11 +30,13 @@ impl Parser for HelpCommandController {
 impl Handler for HelpCommandController {
     type Data = ();
     type Update = Message;
+    type Err = RequestError;
 
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
         let DataWithUWC { data: _, uwc } = data;
         /* TODO: generating description using proc-macro */
-        uwc.answer("help").send().await;
+        uwc.answer("help").send().await?;
+        Ok(())
     }
 }
 
@@ -63,10 +67,12 @@ impl Parser for UsernameCommandController {
 impl Handler for UsernameCommandController {
     type Data = Username;
     type Update = Message;
+    type Err = RequestError;
 
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
         let DataWithUWC { data: username, uwc } = data;
-        uwc.answer_str(format!("Your username is @{}.", username)).await;
+        uwc.answer_str(format!("Your username is @{}.", username)).await?;
+        Ok(())
     }
 }
 
@@ -97,10 +103,12 @@ impl Parser for UsernameAndAgeCommandController {
 impl Handler for UsernameAndAgeCommandController {
     type Data = UsernameAndAge;
     type Update = Message;
+    type Err = RequestError;
 
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
         let DataWithUWC { data, uwc } = data;
-        uwc.answer_str(format!("Your username is @{} and age is {}.", data.0, data.1)).await;
+        uwc.answer_str(format!("Your username is @{} and age is {}.", data.0, data.1)).await?;
+        Ok(())
     }
 }
 
@@ -134,8 +142,9 @@ impl CommandSchema {
 #[async_trait::async_trait]
 impl Callback for CommandSchema {
     type Update = Message;
+    type Err = RequestError;
 
-    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<(), UpdateWithCx<Self::Update>> {
+    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<ReqRes, UpdateWithCx<Self::Update>> {
         self.handler.try_handle(input).await
     }
 }
@@ -153,10 +162,13 @@ async fn run() {
     
     let schema = CommandSchema::init();
     // TODO: it's not work
-    teloxide::repl(bot, |upd| async move { handle(upd, &schema).await }).await;
-}
-
-async fn handle(upd: UpdateWithCx<Message>, schema: &CommandSchema) -> Result<(), ()> {
-    schema.try_handle(upd).await;
-    Ok(())
+    teloxide::repl(bot, |upd| async move { 
+        match schema.try_handle(upd).await {
+            Ok(res) => res,
+            Err(cx) => {
+                println!("Unhandled update: {:?}", cx);
+                Ok(())
+            }
+        }
+    }).await;
 }
