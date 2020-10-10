@@ -61,6 +61,7 @@ pub mod prelude;
 pub mod requests;
 pub mod types;
 pub mod utils;
+pub mod contrib;
 
 #[cfg(feature = "macros")]
 extern crate teloxide_macros;
