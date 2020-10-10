@@ -41,7 +41,7 @@ impl<D: Into<String>> ViewFactory for DynamicKeyboardButtonManager<D> {
         KeyboardButton::new(text)
     }
 }
-impl<D: TryFrom<String> + Send + Sync + 'static> Parser for DynamicKeyboardButtonManager<D> {
+impl<D: TryFrom<String>> Parser for DynamicKeyboardButtonManager<D> {
     type Update = Message;
     type Output = D;
 

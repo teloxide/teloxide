@@ -13,7 +13,9 @@ pub trait Callback {
 #[async_trait::async_trait]
 impl<T> Callback for T 
     where 
-        T: Parser + Handler<Data = <Self as Parser>::Output, Update = <Self as Parser>::Update> + Send + Sync + 'static,
+        T: Parser + Handler<Data = <Self as Parser>::Output, Update = <Self as Parser>::Update> + Sync,
+        <T as Parser>::Update: Send,
+        <T as Parser>::Output: Send,
 {
     type Update = <Self as Parser>::Update;
     type Err = <Self as Handler>::Err;
@@ -50,10 +52,10 @@ impl<C1, C2> Alternative<C1, C2>
 #[async_trait::async_trait]
 impl<C1, C2> Callback for Alternative<C1, C2>
     where
-        C1: Callback + Send + Sync + 'static,
-        C2: Callback<Update=C1::Update, Err=C1::Err> + Send + Sync + 'static,
-        <C1 as Callback>::Update: Send + Sync + 'static,
-        <C1 as Callback>::Err: Send + Sync + 'static
+        C1: Callback + Send + Sync,
+        C2: Callback<Update=C1::Update, Err=C1::Err> + Send + Sync,
+        <C1 as Callback>::Update: Send,
+        <C1 as Callback>::Err: Send
 {
     type Update = C1::Update;
     type Err = C1::Err;

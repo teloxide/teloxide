@@ -48,7 +48,7 @@ pub struct DynamicCommandParser<T: CommandDataParse> {
     phantom: PhantomData<T>,
 }
 
-impl<T: CommandDataParse + Send + Sync + 'static> Parser for DynamicCommandParser<T> {
+impl<T: CommandDataParse> Parser for DynamicCommandParser<T> {
     type Update = Message;
     type Output = T;
 

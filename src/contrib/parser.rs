@@ -19,8 +19,8 @@ impl<D, U> DataWithUWC<D, U> {
 /// `UpdateWithCx<Upd>` object.
 pub trait Parser {
     /// Update type that given from telegram. 
-    type Update : Send + Sync + 'static;
+    type Update;
     /// Data, parsed from `Update` object. If there are no need in parsed data, it may be `()`.
-    type Output : Send + Sync + 'static;
+    type Output;
     fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>>;
 }

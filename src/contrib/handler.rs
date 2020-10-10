@@ -36,7 +36,7 @@ impl<F, D, U, E> From<F> for HandlerWrapper<F, D, U, E>
 #[async_trait::async_trait]
 impl<F, D, U, E> Handler for HandlerWrapper<F, D, U, E>
     where
-        F: Fn(DataWithUWC<D, U>) -> Result<(), E> + Send + Sync + 'static,
+        F: Fn(DataWithUWC<D, U>) -> Result<(), E> + Sync,
         D: Send + Sync,
         U: Send + Sync,
         E: Sync,
