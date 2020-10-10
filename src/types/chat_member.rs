@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::User;
 
-// TODO: ChatMemberKind?...
 /// This object contains information about one member of the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
@@ -12,179 +11,309 @@ pub struct ChatMember {
     pub user: User,
 
     /// The member's status in the chat.
-    pub status: ChatMemberStatus,
+    #[serde(flatten)]
+    pub kind: ChatMemberKind,
+}
 
-    /// Owner and administrators only. Custom title for this user
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[serde(tag = "status")]
+pub enum ChatMemberKind {
+    Creator(Creator),
+    Administrator(Administrator),
+    Member,
+    Restricted(Restricted),
+    Left,
+    Kicked(Kicked),
+}
+
+/// Creator of the group. This struct is part of the [`ChatmemberKind`] enum.
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Creator {
+    /// Custom title for this user.
+    pub custom_title: Option<String>,
+}
+
+/// Administrator of the group. This struct is part of the [`ChatmemberKind`]
+/// enum.
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Administrator {
+    /// Custom title for this user.
     pub custom_title: Option<String>,
 
-    /// Restricted and kicked only. Date when restrictions will be lifted for
-    /// this user, unix time.
-    pub until_date: Option<i32>,
-
-    /// Administrators only. `true`, if the bot is allowed to edit
+    /// `true`, if the bot is allowed to edit
     /// administrator privileges of that user.
-    pub can_be_edited: Option<bool>,
+    pub can_be_edited: bool,
 
-    /// Administrators only. `true`, if the administrator can change the chat
+    /// `true`, if the administrator can change the chat
     /// title, photo and other settings.
-    pub can_change_info: Option<bool>,
+    pub can_change_info: bool,
 
-    /// Administrators only. `true`, if the administrator can post in the
+    /// `true`, if the administrator can post in the
     /// channel, channels only.
     pub can_post_messages: Option<bool>,
 
-    /// Administrators only. `true`, if the administrator can edit messages of
+    /// `true`, if the administrator can edit messages of
     /// other users and can pin messages, channels only.
     pub can_edit_messages: Option<bool>,
 
-    /// Administrators only. `true`, if the administrator can delete messages
+    /// `true`, if the administrator can delete messages
     /// of other users.
-    pub can_delete_messages: Option<bool>,
+    pub can_delete_messages: bool,
 
-    /// Administrators only. `true`, if the administrator can invite new users
+    /// `true`, if the administrator can invite new users
     /// to the chat.
-    pub can_invite_users: Option<bool>,
+    pub can_invite_users: bool,
 
-    /// Administrators only. `true`, if the administrator can restrict,
+    /// `true`, if the administrator can restrict,
     /// ban or unban chat members.
-    pub can_restrict_members: Option<bool>,
+    pub can_restrict_members: bool,
 
-    /// Administrators only. `true`, if the administrator can pin messages,
+    /// `true`, if the administrator can pin messages,
     /// supergroups only.
     pub can_pin_messages: Option<bool>,
 
-    /// Administrators only. `true`, if the administrator can add new
+    /// `true`, if the administrator can add new
     /// administrators with a subset of his own privileges or demote
-    /// administrators that he has promoted, directly or indirectly (promoted
-    /// by administrators that were appointed by the user).
-    pub can_promote_members: Option<bool>,
+    /// administrators that he has promoted, directly or indirectly
+    /// (promoted by administrators that were appointed by the
+    /// user).
+    pub can_promote_members: bool,
+}
+
+/// User, restricted in the group. This struct is part of the [`ChatmemberKind`]
+/// enum.
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Restricted {
+    /// Date when restrictions will be lifted for
+    /// this user, unix time.
+    pub until_date: i32,
 
     /// Restricted only. `true`, if the user can send text messages,
     /// contacts, locations and venues.
-    pub can_send_messages: Option<bool>,
+    pub can_send_messages: bool,
 
     /// Restricted only. `true`, if the user is allowed to send audios,
     /// documents, photos, videos, video notes and voice notes.
-    pub can_send_media_messages: Option<bool>,
+    pub can_send_media_messages: bool,
 
     /// Restricted only. `true`, if the user is allowed to send animations,
     /// games, stickers and use inline bots.
-    pub can_send_other_messages: Option<bool>,
+    pub can_send_other_messages: bool,
 
     /// Restricted only. `true`, if the user is allowed to add web page
     /// previews to their messages.
-    pub can_add_web_page_previews: Option<bool>,
+    pub can_add_web_page_previews: bool,
+}
+
+/// User kicked from the group. This struct is part of the [`ChatmemberKind`]
+/// enum.
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Kicked {
+    /// Date when restrictions will be lifted for
+    /// this user, unix time.
+    pub until_date: i32,
 }
 
 impl ChatMember {
-    pub fn new(user: User, status: ChatMemberStatus) -> Self {
-        Self {
-            user,
-            status,
-            custom_title: None,
-            until_date: None,
-            can_be_edited: None,
-            can_change_info: None,
-            can_post_messages: None,
-            can_edit_messages: None,
-            can_delete_messages: None,
-            can_invite_users: None,
-            can_restrict_members: None,
-            can_pin_messages: None,
-            can_promote_members: None,
-            can_send_messages: None,
-            can_send_media_messages: None,
-            can_send_other_messages: None,
-            can_add_web_page_previews: None,
+    pub fn status(&self) -> ChatMemberStatus {
+        match &self.kind {
+            ChatMemberKind::Creator(_) => ChatMemberStatus::Creator,
+            ChatMemberKind::Administrator(_) => ChatMemberStatus::Administrator,
+            ChatMemberKind::Member => ChatMemberStatus::Member,
+            ChatMemberKind::Restricted(_) => ChatMemberStatus::Restricted,
+            ChatMemberKind::Left => ChatMemberStatus::Left,
+            ChatMemberKind::Kicked(_) => ChatMemberStatus::Kicked,
+        }
+    }
+}
+
+impl ChatMemberKind {
+    /// Getter for [`Administrator::custom_title`] and [`Creator::custom_title`]
+    /// fields.
+    pub fn custom_title(&self) -> Option<&str> {
+        match &self {
+            Self::Administrator(Administrator { custom_title, .. })
+            | Self::Creator(Creator { custom_title, .. }) => custom_title.as_deref(),
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => None,
         }
     }
 
-    pub fn user(mut self, val: User) -> Self {
-        self.user = val;
-        self
+    /// Getter for [`Restricted::until_date`] and [`Kicked::until_date`] fields.
+    pub fn until_date(&self) -> Option<i32> {
+        match &self {
+            Self::Creator(_) | Self::Administrator(_) | Self::Member | Self::Left => None,
+            Self::Restricted(Restricted { until_date, .. })
+            | Self::Kicked(Kicked { until_date, .. }) => Some(*until_date),
+        }
     }
 
-    pub fn status(mut self, val: ChatMemberStatus) -> Self {
-        self.status = val;
-        self
+    /// Getter for [`Administrator::can_be_edited`] field.
+    pub fn can_be_edited(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_be_edited, .. }) => Some(*can_be_edited),
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn custom_title<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.custom_title = Some(val.into());
-        self
+    /// Getter for [`Administrator::can_change_info`] field.
+    pub fn can_change_info(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_change_info, .. }) => Some(*can_change_info),
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn until_date(mut self, val: i32) -> Self {
-        self.until_date = Some(val);
-        self
+    /// Getter for [`Administrator::can_post_messages`] field.
+    pub fn can_post_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_post_messages, .. }) => *can_post_messages,
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_be_edited(mut self, val: bool) -> Self {
-        self.can_be_edited = Some(val);
-        self
+    /// Getter for [`Administrator::can_edit_messages`] field.
+    pub fn can_edit_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_edit_messages, .. }) => *can_edit_messages,
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_change_info(mut self, val: bool) -> Self {
-        self.can_change_info = Some(val);
-        self
+    /// Getter for [`Administrator::can_delete_messages`] field.
+    pub fn can_delete_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_delete_messages, .. }) => {
+                Some(*can_delete_messages)
+            }
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_post_messages(mut self, val: bool) -> Self {
-        self.can_post_messages = Some(val);
-        self
+    /// Getter for [`Administrator::can_invite_users`] field.
+    pub fn can_invite_users(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_invite_users, .. }) => Some(*can_invite_users),
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_edit_messages(mut self, val: bool) -> Self {
-        self.can_edit_messages = Some(val);
-        self
+    /// Getter for [`Administrator::can_restrict_members`] field.
+    pub fn can_restrict_members(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_restrict_members, .. }) => {
+                Some(*can_restrict_members)
+            }
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_delete_messages(mut self, val: bool) -> Self {
-        self.can_delete_messages = Some(val);
-        self
+    /// Getter for [`Administrator::can_pin_messages`] field.
+    pub fn can_pin_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_pin_messages, .. }) => *can_pin_messages,
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_invite_users(mut self, val: bool) -> Self {
-        self.can_invite_users = Some(val);
-        self
+    /// Getter for [`Administrator::can_promote_members`] field.
+    pub fn can_promote_members(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator { can_promote_members, .. }) => {
+                Some(*can_promote_members)
+            }
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_restrict_members(mut self, val: bool) -> Self {
-        self.can_restrict_members = Some(val);
-        self
+    /// Getter for [`Restricted::can_send_messages`] field.
+    pub fn can_send_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Restricted(Restricted { can_send_messages, .. }) => Some(*can_send_messages),
+            Self::Creator(_)
+            | Self::Administrator(_)
+            | Self::Member
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_pin_messages(mut self, val: bool) -> Self {
-        self.can_pin_messages = Some(val);
-        self
+    /// Getter for [`Restricted::can_send_media_messages`] field.
+    pub fn can_send_media_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Restricted(Restricted { can_send_media_messages, .. }) => {
+                Some(*can_send_media_messages)
+            }
+            Self::Creator(_)
+            | Self::Administrator(_)
+            | Self::Member
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_promote_members(mut self, val: bool) -> Self {
-        self.can_promote_members = Some(val);
-        self
+    /// Getter for [`Restricted::can_send_other_messages`] field.
+    pub fn can_send_other_messages(&self) -> Option<bool> {
+        match &self {
+            Self::Restricted(Restricted { can_send_other_messages, .. }) => {
+                Some(*can_send_other_messages)
+            }
+            Self::Creator(_)
+            | Self::Administrator(_)
+            | Self::Member
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 
-    pub fn can_send_messages(mut self, val: bool) -> Self {
-        self.can_send_messages = Some(val);
-        self
-    }
-
-    pub fn can_send_media_messages(mut self, val: bool) -> Self {
-        self.can_send_media_messages = Some(val);
-        self
-    }
-
-    pub fn can_send_other_messages(mut self, val: bool) -> Self {
-        self.can_send_other_messages = Some(val);
-        self
-    }
-
-    pub fn can_add_web_page_previews(mut self, val: bool) -> Self {
-        self.can_add_web_page_previews = Some(val);
-        self
+    /// Getter for [`Restricted::can_add_web_page_previews`] field.
+    pub fn can_add_web_page_previews(&self) -> Option<bool> {
+        match &self {
+            Self::Restricted(Restricted { can_add_web_page_previews, .. }) => {
+                Some(*can_add_web_page_previews)
+            }
+            Self::Creator(_)
+            | Self::Administrator(_)
+            | Self::Member
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
     }
 }
 
@@ -207,53 +336,43 @@ mod tests {
     fn deserialize() {
         let json = r#"{
             "user":{
-                "id":12345,
+                "id":1029940401,
                 "is_bot":false,
-                "first_name":"firstName"
+                "first_name":"First",
+                "last_name":"Last",
+                "username":"fl",
+                "language_code":"en"
             },
-            "status":"creator",
-            "until_date":123456,
-            "can_be_edited":true,
-            "can_post_messages":true,
-            "can_edit_messages":true,
-            "can_delete_messages":true,
-            "can_restrict_members":true,
-            "can_promote_members":true,
+            "status":"administrator",
+            "can_be_edited":false,
             "can_change_info":true,
+            "can_delete_messages":true,
             "can_invite_users":true,
+            "can_restrict_members":true,
             "can_pin_messages":true,
-            "is_member":true,
-            "can_send_messages":true,
-            "can_send_media_messages":true,
-            "can_send_polls":true,
-            "can_send_other_messages":true,
-            "can_add_web_page_previews":true
+            "can_promote_members":true
         }"#;
         let expected = ChatMember {
             user: User {
-                id: 12345,
+                id: 1029940401,
                 is_bot: false,
-                first_name: "firstName".to_string(),
-                last_name: None,
-                username: None,
-                language_code: None,
+                first_name: "First".to_string(),
+                last_name: Some("Last".to_string()),
+                username: Some("fl".to_string()),
+                language_code: Some("en".to_string()),
             },
-            status: ChatMemberStatus::Creator,
-            custom_title: None,
-            until_date: Some(123_456),
-            can_be_edited: Some(true),
-            can_change_info: Some(true),
-            can_post_messages: Some(true),
-            can_edit_messages: Some(true),
-            can_delete_messages: Some(true),
-            can_invite_users: Some(true),
-            can_restrict_members: Some(true),
-            can_pin_messages: Some(true),
-            can_promote_members: Some(true),
-            can_send_messages: Some(true),
-            can_send_media_messages: Some(true),
-            can_send_other_messages: Some(true),
-            can_add_web_page_previews: Some(true),
+            kind: ChatMemberKind::Administrator(Administrator {
+                custom_title: None,
+                can_be_edited: false,
+                can_change_info: true,
+                can_post_messages: None,
+                can_edit_messages: None,
+                can_delete_messages: true,
+                can_invite_users: true,
+                can_restrict_members: true,
+                can_pin_messages: Some(true),
+                can_promote_members: true,
+            }),
         };
         let actual = serde_json::from_str::<ChatMember>(&json).unwrap();
         assert_eq!(actual, expected)
