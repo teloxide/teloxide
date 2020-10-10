@@ -2,10 +2,12 @@
 use crate::dispatching::UpdateWithCx;
 use crate::contrib::handler::Handler;
 
+
 #[async_trait::async_trait]
 pub trait Callback {
     type Update;
-    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<(), UpdateWithCx<Self::Update>>;
+    type Err;
+    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<Result<(), Self::Err>, UpdateWithCx<Self::Update>>;
 }
 
 #[async_trait::async_trait]
@@ -14,12 +16,12 @@ impl<T> Callback for T
         T: Parser + Handler<Data = <Self as Parser>::Output, Update = <Self as Parser>::Update> + Send + Sync + 'static,
 {
     type Update = <Self as Parser>::Update;
+    type Err = <Self as Handler>::Err;
 
-    async fn try_handle(&self, input: UpdateWithCx<<Self as Parser>::Update>) -> Result<(), UpdateWithCx<<Self as Parser>::Update>> {
+    async fn try_handle(&self, input: UpdateWithCx<<Self as Parser>::Update>) -> Result<Result<(), Self::Err>, UpdateWithCx<<Self as Parser>::Update>> {
         match self.parse(input) {
             Ok(d) => {
-                self.handle(d).await;
-                Ok(())
+                Ok(self.handle(d).await)
             }
             Err(e) => Err(e),
         }
@@ -29,7 +31,7 @@ impl<T> Callback for T
 pub struct Alternative<C1, C2> 
     where 
         C1: Callback,
-        C2: Callback<Update=C1::Update>,
+        C2: Callback<Update=C1::Update, Err=C1::Err>,
 {
     left: C1,
     right: C2,
@@ -38,7 +40,7 @@ pub struct Alternative<C1, C2>
 impl<C1, C2> Alternative<C1, C2> 
     where
         C1: Callback,
-        C2: Callback<Update=C1::Update>, 
+        C2: Callback<Update=C1::Update, Err=C1::Err>, 
 {
     pub fn new(left: C1, right: C2) -> Self {
         Alternative { left, right }
@@ -49,14 +51,16 @@ impl<C1, C2> Alternative<C1, C2>
 impl<C1, C2> Callback for Alternative<C1, C2>
     where
         C1: Callback + Send + Sync + 'static,
-        C2: Callback<Update=C1::Update> + Send + Sync + 'static,
-        <C1 as Callback>::Update: Send + Sync + 'static
+        C2: Callback<Update=C1::Update, Err=C1::Err> + Send + Sync + 'static,
+        <C1 as Callback>::Update: Send + Sync + 'static,
+        <C1 as Callback>::Err: Send + Sync + 'static
 {
     type Update = C1::Update;
+    type Err = C1::Err;
 
-    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<(), UpdateWithCx<Self::Update>> {
+    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<Result<(), Self::Err>, UpdateWithCx<Self::Update>> {
         match self.left.try_handle(input).await {
-            Ok(_) => Ok(()),
+            Ok(res) => Ok(res),
             Err(input) => self.right.try_handle(input).await
         }
     }
