@@ -3,6 +3,7 @@ use teloxide::contrib::managers::{StaticCommandParser, StaticCommandParserBuilde
 use teloxide::contrib::parser::{Parser, DataWithUWC};
 use teloxide::contrib::handler::Handler;
 use teloxide::contrib::callback::{Callback, Alternative};
+use std::sync::Arc;
 
 type ReqRes = Result<(), RequestError>;
 
@@ -160,14 +161,16 @@ async fn run() {
 
     let bot = Bot::from_env();
     
-    let schema = CommandSchema::init();
-    // TODO: it's not work
-    teloxide::repl(bot, |upd| async move { 
-        match schema.try_handle(upd).await {
-            Ok(res) => res,
-            Err(cx) => {
-                println!("Unhandled update: {:?}", cx);
-                Ok(())
+    let schema = Arc::new(CommandSchema::init());
+    teloxide::repl(bot, move |upd| {
+        let schema = schema.clone();
+        async move {
+            match schema.try_handle(upd).await {
+                Ok(res) => res,
+                Err(cx) => {
+                    println!("Unhandled update: {:?}", cx);
+                    Ok(())
+                }
             }
         }
     }).await;
