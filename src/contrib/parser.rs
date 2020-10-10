@@ -1,5 +1,9 @@
 ﻿use crate::dispatching::UpdateWithCx;
 
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::Parser;
+
 /// Struct that represent an parsed data and a raw `UpdateWithCx<Upd>`. After tests we noticed
 /// that in code we often need both the `UpdateWithCx<Upd>` and parsed data. This struct was returned
 /// form `Parser::parse` method.

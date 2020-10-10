@@ -8,7 +8,9 @@ use std::sync::Arc;
 type ReqRes = Result<(), RequestError>;
 
 // ---------------- COMMAND help
+#[derive(Parser)]
 struct HelpCommandController {
+    #[parser]
     parser: StaticCommandParser
 }
 impl HelpCommandController {
@@ -16,15 +18,6 @@ impl HelpCommandController {
         Self { 
             parser: StaticCommandParserBuilder::new("help").build()
         }
-    }
-}
-// TODO: proc-macro this
-impl Parser for HelpCommandController {
-    type Update = Message;
-    type Output = ();
-
-    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
-        self.parser.parse(data)
     }
 }
 #[async_trait::async_trait]
@@ -45,7 +38,9 @@ impl Handler for HelpCommandController {
 
 type Username = String;
 
+#[derive(Parser)]
 struct UsernameCommandController {
+    #[parser]
     parser: DynamicCommandParser<Username>
 }
 impl UsernameCommandController {
@@ -53,15 +48,6 @@ impl UsernameCommandController {
         Self {
             parser: DynamicCommandParserBuilder::new("username").build()
         }
-    }
-}
-// TODO: proc-macro this
-impl Parser for UsernameCommandController {
-    type Update = Message;
-    type Output = Username;
-
-    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
-        self.parser.parse(data)
     }
 }
 #[async_trait::async_trait]
@@ -81,7 +67,9 @@ impl Handler for UsernameCommandController {
 
 type UsernameAndAge = (String, u8);
 
+#[derive(Parser)]
 struct UsernameAndAgeCommandController {
+    #[parser]
     parser: DynamicCommandParser<UsernameAndAge>
 }
 impl UsernameAndAgeCommandController {
@@ -89,15 +77,6 @@ impl UsernameAndAgeCommandController {
         Self {
             parser: DynamicCommandParserBuilder::new("usernameandage").build()
         }
-    }
-}
-// TODO: proc-macro this
-impl Parser for UsernameAndAgeCommandController {
-    type Update = Message;
-    type Output = UsernameAndAge;
-
-    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
-        self.parser.parse(data)
     }
 }
 #[async_trait::async_trait]

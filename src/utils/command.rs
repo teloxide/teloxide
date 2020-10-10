@@ -49,10 +49,6 @@
 use serde::export::Formatter;
 use std::{error::Error, fmt::Display};
 
-#[cfg(feature = "macros")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
-pub use teloxide_macros::BotCommand;
-
 /// An enumeration of bot's commands.
 ///
 /// # Example
