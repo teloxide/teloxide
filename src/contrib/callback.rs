@@ -2,6 +2,9 @@
 use crate::dispatching::UpdateWithCx;
 use crate::contrib::handler::Handler;
 
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::Callback;
 
 #[async_trait::async_trait]
 pub trait Callback {

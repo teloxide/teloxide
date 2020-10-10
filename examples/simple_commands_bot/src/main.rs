@@ -93,7 +93,9 @@ impl Handler for UsernameAndAgeCommandController {
 }
 
 // ---------------- SCHEMA
+#[derive(Callback)]
 struct CommandSchema {
+    #[callback]
     handler: Alternative<
         HelpCommandController, 
         Alternative<
@@ -116,16 +118,6 @@ impl CommandSchema {
                 )
             )
         }
-    }
-}
-// TODO: proc-macro this
-#[async_trait::async_trait]
-impl Callback for CommandSchema {
-    type Update = Message;
-    type Err = RequestError;
-
-    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<ReqRes, UpdateWithCx<Self::Update>> {
-        self.handler.try_handle(input).await
     }
 }
 
