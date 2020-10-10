@@ -1,28 +1,143 @@
-use teloxide::{prelude::*, utils::command::BotCommand};
+use teloxide::{prelude::*};
+use teloxide::contrib::managers::{StaticCommandParser, StaticCommandParserBuilder, DynamicCommandParser, DynamicCommandParserBuilder};
+use teloxide::contrib::parser::{Parser, DataWithUWC};
+use teloxide::contrib::handler::Handler;
+use teloxide::contrib::callback::{Callback, Alternative};
 
-#[derive(BotCommand)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
-enum Command {
-    #[command(description = "display this text.")]
-    Help,
-    #[command(description = "handle a username.")]
-    Username(String),
-    #[command(description = "handle a username and an age.", parse_with = "split")]
-    UsernameAndAge { username: String, age: u8 },
+// ---------------- COMMAND help
+struct HelpCommandController {
+    parser: StaticCommandParser
+}
+impl HelpCommandController {
+    pub fn init() -> Self {
+        Self { 
+            parser: StaticCommandParserBuilder::new("help").build()
+        }
+    }
+}
+// TODO: proc-macro this
+impl Parser for HelpCommandController {
+    type Update = Message;
+    type Output = ();
+
+    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
+        self.parser.parse(data)
+    }
+}
+#[async_trait::async_trait]
+impl Handler for HelpCommandController {
+    type Data = ();
+    type Update = Message;
+
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+        let DataWithUWC { data: _, uwc } = data;
+        /* TODO: generating description using proc-macro */
+        uwc.answer("help").send().await;
+    }
 }
 
-async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
-    match command {
-        Command::Help => cx.answer(Command::descriptions()).send().await?,
-        Command::Username(username) => {
-            cx.answer_str(format!("Your username is @{}.", username)).await?
-        }
-        Command::UsernameAndAge { username, age } => {
-            cx.answer_str(format!("Your username is @{} and age is {}.", username, age)).await?
-        }
-    };
+// ---------------- COMMAND username
 
-    Ok(())
+type Username = String;
+
+struct UsernameCommandController {
+    parser: DynamicCommandParser<Username>
+}
+impl UsernameCommandController {
+    pub fn init() -> Self {
+        Self {
+            parser: DynamicCommandParserBuilder::new("username").build()
+        }
+    }
+}
+// TODO: proc-macro this
+impl Parser for UsernameCommandController {
+    type Update = Message;
+    type Output = Username;
+
+    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
+        self.parser.parse(data)
+    }
+}
+#[async_trait::async_trait]
+impl Handler for UsernameCommandController {
+    type Data = Username;
+    type Update = Message;
+
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+        let DataWithUWC { data: username, uwc } = data;
+        uwc.answer_str(format!("Your username is @{}.", username)).await;
+    }
+}
+
+// ---------------- COMMAND usernameandage
+
+type UsernameAndAge = (String, u8);
+
+struct UsernameAndAgeCommandController {
+    parser: DynamicCommandParser<UsernameAndAge>
+}
+impl UsernameAndAgeCommandController {
+    pub fn init() -> Self {
+        Self {
+            parser: DynamicCommandParserBuilder::new("usernameandage").build()
+        }
+    }
+}
+// TODO: proc-macro this
+impl Parser for UsernameAndAgeCommandController {
+    type Update = Message;
+    type Output = UsernameAndAge;
+
+    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>> {
+        self.parser.parse(data)
+    }
+}
+#[async_trait::async_trait]
+impl Handler for UsernameAndAgeCommandController {
+    type Data = UsernameAndAge;
+    type Update = Message;
+
+    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) {
+        let DataWithUWC { data, uwc } = data;
+        uwc.answer_str(format!("Your username is @{} and age is {}.", data.0, data.1)).await;
+    }
+}
+
+// ---------------- SCHEMA
+struct CommandSchema {
+    handler: Alternative<
+        HelpCommandController, 
+        Alternative<
+            UsernameCommandController, 
+            UsernameAndAgeCommandController
+        >
+    >
+}
+impl CommandSchema {
+    pub fn init() -> Self {
+        let help = HelpCommandController::init();
+        let username = UsernameCommandController::init();
+        let username_and_age = UsernameAndAgeCommandController::init();
+        Self {
+            handler: Alternative::new(
+                help,
+                Alternative::new(
+                    username,
+                    username_and_age,
+                )
+            )
+        }
+    }
+}
+// TODO: proc-macro this
+#[async_trait::async_trait]
+impl Callback for CommandSchema {
+    type Update = Message;
+
+    async fn try_handle(&self, input: UpdateWithCx<Self::Update>) -> Result<(), UpdateWithCx<Self::Update>> {
+        self.handler.try_handle(input).await
+    }
 }
 
 #[tokio::main]
@@ -35,7 +150,13 @@ async fn run() {
     log::info!("Starting simple_commands_bot...");
 
     let bot = Bot::from_env();
+    
+    let schema = CommandSchema::init();
+    // TODO: it's not work
+    teloxide::repl(bot, |upd| async move { handle(upd, &schema).await }).await;
+}
 
-    let bot_name: String = panic!("Your bot's name here");
-    teloxide::commands_repl(bot, bot_name, answer).await;
+async fn handle(upd: UpdateWithCx<Message>, schema: &CommandSchema) -> Result<(), ()> {
+    schema.try_handle(upd).await;
+    Ok(())
 }
