@@ -70,3 +70,13 @@ impl<C1, C2> Callback for Alternative<C1, C2>
         }
     }
 }
+
+#[macro_export]
+macro_rules! Cascade {
+    ($left:ty, $($rest:ty),+) => {
+        teloxide::contrib::callback::Alternative<$left, $crate::Cascade![$($rest),+]>
+    };
+    ($left:ty) => {
+        $left
+    };
+}

@@ -1,4 +1,4 @@
-use teloxide::{prelude::*};
+use teloxide::{prelude::*, Cascade};
 use teloxide::contrib::managers::{StaticCommandParser, StaticCommandParserBuilder, DynamicCommandParser, DynamicCommandParserBuilder};
 use teloxide::contrib::parser::{Parser, DataWithUWC};
 use teloxide::contrib::handler::Handler;
@@ -77,13 +77,11 @@ async fn handle(_this: &UsernameAndAgeCommandController, data: DataWithUWC<Usern
 #[derive(Callback)]
 struct CommandSchema {
     #[callback]
-    handler: Alternative<
+    handler: Cascade![
         HelpCommandController, 
-        Alternative<
-            UsernameCommandController, 
-            UsernameAndAgeCommandController
-        >
-    >
+        UsernameCommandController, 
+        UsernameAndAgeCommandController
+    ]
 }
 impl CommandSchema {
     pub fn init() -> Self {
