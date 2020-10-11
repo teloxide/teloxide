@@ -3,9 +3,8 @@ use teloxide::contrib::managers::{StaticCommandParser, StaticCommandParserBuilde
 use teloxide::contrib::parser::{Parser, DataWithUWC};
 use teloxide::contrib::handler::Handler;
 use teloxide::contrib::callback::{Callback, Alternative};
+use teloxide::teloxide as tlx;
 use std::sync::Arc;
-
-type ReqRes = Result<(), RequestError>;
 
 // ---------------- COMMAND help
 #[derive(Parser)]
@@ -20,18 +19,12 @@ impl HelpCommandController {
         }
     }
 }
-#[async_trait::async_trait]
-impl Handler for HelpCommandController {
-    type Data = ();
-    type Update = Message;
-    type Err = RequestError;
-
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
-        let DataWithUWC { data: _, uwc } = data;
-        /* TODO: generating description using proc-macro */
-        uwc.answer("help").send().await?;
-        Ok(())
-    }
+#[tlx(handler)]
+async fn handle_help(_this: &HelpCommandController, data: DataWithUWC<(), Message>) -> Result<(), RequestError> {
+    let DataWithUWC { data: _, uwc } = data;
+    /* TODO: generating description using proc-macro */
+    uwc.answer("help").send().await?;
+    Ok(())
 }
 
 // ---------------- COMMAND username
@@ -50,17 +43,11 @@ impl UsernameCommandController {
         }
     }
 }
-#[async_trait::async_trait]
-impl Handler for UsernameCommandController {
-    type Data = Username;
-    type Update = Message;
-    type Err = RequestError;
-
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
-        let DataWithUWC { data: username, uwc } = data;
-        uwc.answer_str(format!("Your username is @{}.", username)).await?;
-        Ok(())
-    }
+#[tlx(handler)]
+async fn handle_username(_this: &UsernameCommandController, data: DataWithUWC<Username, Message>) -> Result<(), RequestError> {
+    let DataWithUWC { data: username, uwc } = data;
+    uwc.answer_str(format!("Your username is @{}.", username)).await?;
+    Ok(())
 }
 
 // ---------------- COMMAND usernameandage
@@ -79,17 +66,11 @@ impl UsernameAndAgeCommandController {
         }
     }
 }
-#[async_trait::async_trait]
-impl Handler for UsernameAndAgeCommandController {
-    type Data = UsernameAndAge;
-    type Update = Message;
-    type Err = RequestError;
-
-    async fn handle(&self, data: DataWithUWC<Self::Data, Self::Update>) -> ReqRes {
-        let DataWithUWC { data, uwc } = data;
-        uwc.answer_str(format!("Your username is @{} and age is {}.", data.0, data.1)).await?;
-        Ok(())
-    }
+#[tlx(handler)]
+async fn handle(_this: &UsernameAndAgeCommandController, data: DataWithUWC<UsernameAndAge, Message>) -> Result<(), RequestError> {
+    let DataWithUWC { data, uwc } = data;
+    uwc.answer_str(format!("Your username is @{} and age is {}.", data.0, data.1)).await?;
+    Ok(())
 }
 
 // ---------------- SCHEMA
