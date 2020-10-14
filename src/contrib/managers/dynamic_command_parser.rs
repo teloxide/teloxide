@@ -48,6 +48,12 @@ pub struct DynamicCommandParser<T: CommandDataParse> {
     phantom: PhantomData<T>,
 }
 
+impl<T: CommandDataParse> DynamicCommandParser<T> {
+    pub fn init<A: Into<String>, B: Into<String>>(command: A, separator: B) -> Self {
+        DynamicCommandParser { command: command.into(), separator: separator.into() , phantom: PhantomData }
+    }
+}
+
 impl<T: CommandDataParse> Parser for DynamicCommandParser<T> {
     type Update = Message;
     type Output = T;

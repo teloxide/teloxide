@@ -1,6 +1,7 @@
 ﻿use crate::contrib::parser::{Parser};
 use crate::dispatching::UpdateWithCx;
 use crate::contrib::handler::Handler;
+use teloc::{Get, ContainerWrapper};
 
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
@@ -49,6 +50,17 @@ impl<C1, C2> Alternative<C1, C2>
 {
     pub fn new(left: C1, right: C2) -> Self {
         Alternative { left, right }
+    }
+}
+
+impl<C1, C2, T> Get<Alternative<C1, C2>> for ContainerWrapper<T> 
+    where
+        ContainerWrapper<T>: Get<C1> + Get<C2>,
+        C1: Callback,
+        C2: Callback<Update=C1::Update, Err=C1::Err>,
+{
+    fn get(&self) -> Alternative<C1, C2> {
+        Alternative::new(self.get(), self.get())
     }
 }
 

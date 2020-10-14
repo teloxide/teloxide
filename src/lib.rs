@@ -70,6 +70,8 @@ extern crate teloxide_macros;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::teloxide;
 
+pub use teloc;
+
 #[cfg(all(feature = "nightly", doctest))]
 #[doc(include = "../README.md")]
 enum ReadmeDocTests {}

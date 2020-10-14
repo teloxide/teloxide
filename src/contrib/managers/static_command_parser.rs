@@ -34,6 +34,12 @@ pub struct StaticCommandParser {
     command: String
 }
 
+impl StaticCommandParser {
+    pub fn init<T: Into<String>>(command: T) -> Self {
+        Self { command: command.into() }
+    }
+}
+
 impl Parser for StaticCommandParser {
     type Update = Message;
     type Output = ();
