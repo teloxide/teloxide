@@ -3,20 +3,27 @@ use crate::contrib::parser::{Parser, DataWithUWC};
 use crate::types::{KeyboardButton, Message};
 use crate::dispatching::UpdateWithCx;
 
+/// Represents a manager for static `KeyboardButton`s. Static means dynamic creation. It can create
+/// an button with selected text, and parse incoming text messages by this text.
 /// 
-/// 
-/// ```compile_fail
-/// use teloxide::contrib::StaticKeyboardButtonManager;
-/// use teloxide::types::{KeyboardButton, Message};
-/// use teloxide::prelude::UpdateWithCx;
+/// Example:
+/// ```
+/// use teloxide::contrib::{
+///     managers::StaticKeyboardButtonManager
+/// };
+/// use teloxide::dummies::{update_with_cx, text_message};
 /// 
 /// let manager = StaticKeyboardButtonManager::new("test");
 /// 
 /// assert_eq!(manager.construct(()), KeyboardButton::new("test"));
-/// assert!(manager.parse(UpdateWithCx { bot, update: message(text: "test")}).is_ok());
-/// assert!(manager.parse(UpdateWithCx { bot, update: message(text: "must fail")}).is_err());
-/// ```
 /// 
+/// let test = update_with_cx(text_message("test"));
+/// assert_eq!(manager.parse(test).is_ok());
+/// 
+/// let wrong = update_with_cx(text_message("wrong"));
+/// assert_eq!(manager.parse(wrong).is_err());
+/// ```
+#[derive(Debug)]
 pub struct StaticKeyboardButtonManager {
     name: String,
 }

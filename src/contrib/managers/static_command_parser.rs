@@ -30,6 +30,26 @@ impl StaticCommandParserBuilder {
     }
 }
 
+/// Represents a parser for static bot commands. Static means without args. It may be, for example,
+/// `/start`, `/help` commands.
+/// 
+/// Example:
+/// ```
+/// use teloxide::contrib::{
+///     managers::StaticCommandParser,
+///     parser::Parser
+/// };
+/// use teloxide::dummies::{update_with_cx, text_message};
+/// 
+/// let parser = StaticCommandParser::init("/start");
+/// 
+/// let start = update_with_cx(text_message("/start"));
+/// assert!(parser.parse(start).is_ok());
+/// 
+/// let help = update_with_cx(text_message("/help"));
+/// assert!(parser.parse(help).is_err());
+/// ```
+#[derive(Debug)]
 pub struct StaticCommandParser {
     command: String
 }

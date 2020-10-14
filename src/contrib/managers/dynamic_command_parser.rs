@@ -42,6 +42,7 @@ impl<T: CommandDataParse> DynamicCommandParserBuilder<T> {
     }
 }
 
+#[derive(Debug)]
 pub struct DynamicCommandParser<T: CommandDataParse> {
     command: String,
     separator: String,
