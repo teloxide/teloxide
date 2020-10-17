@@ -4,6 +4,16 @@ use crate::requests::{HasPayload, Output};
 
 /// A ready-to-send telegram request.
 // FIXME(waffle): Write better doc for the trait
+///
+/// ## Implementation notes
+///
+/// It is not recommended to do any kind of _work_ in `send` or `send_ref`.
+/// Instead it's recommended to do all the (possible) stuff in the returned
+/// future. In other words — keep it lazy.
+///
+/// This is crucial for request wrappers which may want to cancel and/or never
+/// send the underlying request. E.g.: [`Throttle<B>`]'s `send_ref` calls
+/// `B::send_ref` while _not_ meaning to really send the request right now.
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
 pub trait Request: HasPayload {
     /*

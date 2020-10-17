@@ -17,9 +17,11 @@ mod api;
 mod auto_send;
 mod cache_me;
 mod download;
+mod limits;
 
 pub use auto_send::AutoSend;
 pub use cache_me::CacheMe;
+pub use limits::{Limits, Throttle};
 
 pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";

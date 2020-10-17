@@ -1,1 +1,1 @@
-pub use crate::payloads::GetMeSetters as _;
+pub use crate::payloads::{GetMeSetters as _, SendMessageSetters as _};

@@ -6,7 +6,10 @@ use std::{
 
 use futures::future::FusedFuture;
 
-use crate::requests::{HasPayload, Output, Request, Requester};
+use crate::{
+    requests::{HasPayload, Output, Request, Requester},
+    types::ChatId,
+};
 
 /// Send requests automatically.
 ///
@@ -64,6 +67,16 @@ impl<B: Requester> Requester for AutoSend<B> {
 
     fn get_me(&self) -> Self::GetMe {
         AutoRequest::new(self.bot.get_me())
+    }
+
+    type SendMessage = AutoRequest<B::SendMessage>;
+
+    fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
+    where
+        C: Into<ChatId>,
+        T: Into<String>,
+    {
+        AutoRequest::new(self.bot.send_message(chat_id, text))
     }
 }
 

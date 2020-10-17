@@ -1,4 +1,8 @@
-use crate::{requests::Requester, AutoSend, CacheMe};
+use crate::{
+    bot::{CacheMe, Limits, Throttle},
+    requests::Requester,
+    AutoSend,
+};
 
 pub trait RequesterExt: Requester {
     /// Add `get_me` caching ability, see [`CacheMe`] for more.
@@ -15,6 +19,19 @@ pub trait RequesterExt: Requester {
         Self: Sized,
     {
         AutoSend::new(self)
+    }
+
+    /// Add throttling ability, see [`Throttle`] for more.
+    ///
+    /// Note: this spawns the worker, just as [`Throttle::new_spawn`].
+    fn throttle(self, limits: Limits) -> Throttle<Self>
+    where
+        Self: Sized,
+        // >:(
+        // (waffle)
+        Self: 'static,
+    {
+        Throttle::new_spawn(self, limits)
     }
 }
 
