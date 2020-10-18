@@ -35,7 +35,7 @@ impl<S> SqliteStorage<S> {
         serializer: S,
     ) -> Result<Arc<Self>, SqliteStorageError<Infallible>> {
         let mut conn =
-            SqliteConnectOptions::new().filename(path).create_if_missing(true).c§onnect().await?;
+            SqliteConnectOptions::new().filename(path).create_if_missing(true).connect().await?;
 
         // TODO: think about a schema migration mechanism.
         conn.execute(
