@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatOrInlineMessage, Message},
+    types::{Message, TargetMessage},
     Bot,
 };
 
@@ -24,7 +24,7 @@ pub struct SetGameScore {
     #[serde(skip_serializing)]
     bot: Bot,
     #[serde(flatten)]
-    chat_or_inline_message: ChatOrInlineMessage,
+    target: TargetMessage,
     user_id: i32,
     score: i32,
     force: Option<bool>,
@@ -41,24 +41,20 @@ impl Request for SetGameScore {
 }
 
 impl SetGameScore {
-    pub(crate) fn new(
-        bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-        score: i32,
-    ) -> Self {
-        Self {
-            bot,
-            chat_or_inline_message,
-            user_id,
-            score,
-            force: None,
-            disable_edit_message: None,
-        }
+    pub(crate) fn new<T>(bot: Bot, target: T, user_id: i32, score: i32) -> Self
+    where
+        T: Into<TargetMessage>,
+    {
+        let target = target.into();
+        Self { bot, target, user_id, score, force: None, disable_edit_message: None }
     }
 
-    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
-        self.chat_or_inline_message = val;
+    /// Target message, either chat id and message id or inline message id.
+    pub fn target<T>(mut self, val: T) -> Self
+    where
+        T: Into<TargetMessage>,
+    {
+        self.target = val.into();
         self
     }
 

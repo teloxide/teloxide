@@ -8,6 +8,9 @@ use std::{sync::Arc, time::Duration};
 mod api;
 mod download;
 
+pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
+pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
+
 /// A requests sender.
 ///
 /// No need to put it into [`Arc`], because it's already in.
@@ -17,21 +20,35 @@ mod download;
 pub struct Bot {
     token: Arc<str>,
     client: Client,
-    parse_mode: Arc<Option<ParseMode>>,
+    parse_mode: Option<ParseMode>,
 }
 
 impl Bot {
-    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
-    /// bot's token) and the default [`reqwest::Client`].
+    /// Creates new [`BotBuilder`] see it's [docs] for more
+    ///
+    /// [docs]: BotBuilder
+    #[must_use]
+    pub fn builder() -> BotBuilder {
+        BotBuilder::new()
+    }
+
+    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_PROXY`
+    /// environmental variables (a bot's token & a proxy) and the default
+    /// [`reqwest::Client`].
+    ///
+    /// This function passes the value of `TELOXIDE_PROXY` into
+    /// [`reqwest::Proxy::all`], if it exists, otherwise returns the default
+    /// client.
     ///
     /// # Panics
-    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If cannot get the `TELOXIDE_TOKEN`  environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
-    #[allow(deprecated)]
+    /// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
+    #[must_use]
     pub fn from_env() -> Self {
-        Self::from_env_with_client(build_sound_bot())
+        BotBuilder::new().build()
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -46,10 +63,11 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn from_env_with_client(client: Client) -> Self {
-        Self::with_client(&get_token_from_env(), client)
+        #[allow(deprecated)]
+        Self::with_client(&get_env(TELOXIDE_TOKEN), client)
     }
 
     /// Creates a new `Bot` with the specified token and the default
@@ -59,12 +77,13 @@ impl Bot {
     /// If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn new<S>(token: S) -> Self
     where
         S: Into<String>,
     {
+        #[allow(deprecated)]
         Self::with_client(token, build_sound_bot())
     }
 
@@ -77,8 +96,8 @@ impl Bot {
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/latest/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-    #[deprecated]
-    #[allow(deprecated)]
+    #[deprecated = "Deprecated in favour of BotBuilder because the later provides more options \
+                    (notably default parse_mode)"]
     pub fn with_client<S>(token: S, client: Client) -> Self
     where
         S: Into<String>,
@@ -86,7 +105,7 @@ impl Bot {
         Self {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
             client,
-            parse_mode: Arc::new(None),
+            parse_mode: None,
         }
     }
 }
@@ -115,8 +134,8 @@ pub(crate) fn build_sound_bot() -> Client {
     sound_bot().build().expect("creating reqwest::Client")
 }
 
-fn get_token_from_env() -> String {
-    std::env::var("TELOXIDE_TOKEN").expect("Cannot get the TELOXIDE_TOKEN env variable")
+fn get_env(env: &'static str) -> String {
+    std::env::var(env).unwrap_or_else(|_| panic!("Cannot get the {} env variable", env))
 }
 
 impl Bot {
@@ -133,7 +152,7 @@ impl Bot {
 
 /// A builder of [`Bot`], supporting some extra settings.
 ///
-/// [`Bot`] crate::Bot
+/// [`Bot`]: crate::Bot
 #[derive(Debug, Default)]
 pub struct BotBuilder {
     token: Option<String>,
@@ -150,10 +169,15 @@ impl BotBuilder {
     /// Specifies a custom HTTPS client. Otherwise, the default will be used.
     ///
     /// # Caution
-    /// Your custom client might not be configured correctly to be able to work
+    ///  - Your custom client might not be configured correctly to be able to
+    ///    work
     /// in long time durations, see [issue 223].
     ///
+    ///  - If this method is used, the `TELOXIDE_PROXY` environmental variable
+    ///    won't be extracted in [`BotBuilder::build`].
+    ///
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
+    /// [`BotBuilder::build`]: crate::BotBuilder::build
     #[must_use]
     pub fn client(mut self, client: Client) -> Self {
         self.client = Some(client);
@@ -204,6 +228,11 @@ impl BotBuilder {
 
     /// Builds [`Bot`].
     ///
+    /// This method will attempt to build a new client with a proxy, specified
+    /// in the `TELOXIDE_PROXY` (passed into [`reqwest::Proxy::all`])
+    /// environmental variable, if a client haven't been specified. If
+    /// `TELOXIDE_PROXY` is unspecified, it'll use no proxy.
+    ///
     /// # Panics
     ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
@@ -211,12 +240,13 @@ impl BotBuilder {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     ///
     /// [`Bot`]: crate::Bot
+    /// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
-            client: self.client.unwrap_or_else(build_sound_bot),
-            token: self.token.unwrap_or_else(get_token_from_env).into(),
-            parse_mode: Arc::new(self.parse_mode),
+            client: self.client.unwrap_or_else(crate::utils::client_from_env),
+            token: self.token.unwrap_or_else(|| get_env(TELOXIDE_TOKEN)).into(),
+            parse_mode: self.parse_mode,
         }
     }
 }

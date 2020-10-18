@@ -13,12 +13,9 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each(|message| async move {
-                message.send_dice().send().await.log_on_error().await;
-            })
-        })
-        .dispatch()
-        .await;
+    teloxide::repl(bot, |message| async move {
+        message.answer_dice().send().await?;
+        respond(())
+    })
+    .await;
 }

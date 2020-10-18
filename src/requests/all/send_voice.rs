@@ -85,14 +85,17 @@ impl SendVoice {
 
     /// Audio file to send.
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// Pass [`InputFile::FileId`] to send a file that exists on the Telegram
+    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
+    /// file from the Internet (20MB max.), pass [`InputFile::File`] to upload
+    /// a file from the file system or [`InputFile::Memory`] to upload a file
+    /// from memory (50MB max. each). [More info on Sending Files »].
     ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn voice(mut self, val: InputFile) -> Self {
         self.voice = val;

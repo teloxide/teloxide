@@ -30,16 +30,16 @@
 //! skeleton should look like:
 //!
 //! ```no_run
+//! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::prelude::*;
-//! use teloxide_macros::{teloxide, Transition};
+//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide};
 //!
 //! struct _1State;
 //! struct _2State;
 //! struct _3State;
 //!
-//! type Out = TransitionOut<D>;
+//! type Out = TransitionOut<D, RequestError>;
 //!
 //! #[teloxide(subtransition)]
 //! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
@@ -97,6 +97,7 @@
 //!         .dispatch()
 //!         .await;
 //! }
+//! # }
 //! ```
 //!
 //!  - `#[teloxide(subtransition)]` implements [`Subtransition`] for the first
@@ -155,6 +156,10 @@ pub use get_chat_id::GetChatId;
 pub use transition::{
     Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
+
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
 pub use storage::{RedisStorage, RedisStorageError};

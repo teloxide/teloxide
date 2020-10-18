@@ -4,19 +4,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] - ???
+## [unreleased]
+
 ### Added
+ - Allow arbitrary error types to be returned from (sub)transitions ([issue 242](https://github.com/teloxide/teloxide/issues/242)).
+ - The `respond` function, a shortcut for `ResponseResult::Ok(())`.
+
+### Changed
+ - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
+ - 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`, 
+   `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline 
+   versions (e.g.: `edit_message_text` and `edit_inline_message_text`). Instead of `ChatOrInlineMessage` common versions
+   accept `chat_id: impl Into<ChatId>` and `message_id: i32` whereas inline versions accept 
+   `inline_message_id: impl Into<String>`. Also note that return type of inline versions is `True` ([issue 253], [pr 257])
+ - `ChatOrInlineMessage` is renamed to `TargetMessage`, it's `::Chat`  variant is renamed to `::Common`, 
+   `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed 
+   `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use 
+   `Into<TargetMessage>` to accept `String`s. ([issue 253], [pr 257])
+
+[issue 253]: https://github.com/teloxide/teloxide/issues/253
+[pr 257]: https://github.com/teloxide/teloxide/pull/257
+
+## [0.3.1] - 2020-08-25
+
+### Added
+ - `Bot::builder` method ([PR 269](https://github.com/teloxide/teloxide/pull/269)).
+
+## [0.3.0] - 2020-07-31
+### Added
+ - Support for typed bot commands ([issue 152](https://github.com/teloxide/teloxide/issues/152)).
  - `BotBuilder`, which allows setting a default `ParseMode`.
  - The `Transition`, `Subtransition`, `SubtransitionOutputType` traits.
  - A nicer approach to manage dialogues via `#[derive(Transition)]` + `#[teloxide(subtransition)]` (see [`examples/dialogue_bot`](https://github.com/teloxide/teloxide/tree/af2aa218e7bfc442ab4475023a1c661834f576fc/examples/dialogue_bot)).
+ - The `redis-storage` feature -- enables the Redis support.
+ - The `cbor-serializer` feature -- enables the `CBOR` serializer for dialogues.
+ - The `bincode-serializer` feature -- enables the `Bincode` serializer for dialogues.
+ - The `frunk` feature -- enables `teloxide::utils::UpState`, which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
+ - Upgrade to v4.9 Telegram bots API.
+ - `teloxide::utils::client_from_env` -- constructs a client from the `TELOXIDE_TOKEN` environmental variable.
+ - Import `Transition`, `TransitionIn`, `TransitionOut`, `UpState` to `teloxide::prelude`.
+ - Import `repl`, `commands_repl` to `teloxide`.
+ - Let users inspect an unknown API error using `ApiErrorKind::Unknown(String)`. All the known API errors are placed into `KnownApiErrorKind`.
+ - Setters to all the API types.
+ - `teloxide::dispatching::dialogue::serializer` -- various serializers for memory storages. The `Serializer` trait, `Bincode`, `CBOR`, `JSON`.
+ - `teloxide::{repl, repl_with_listener, commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener}`
+ - `InputFile::Memory`
+ - Option to hide a command from description ([issue 217](https://github.com/teloxide/teloxide/issues/217)).
+ - Respect the `TELOXIDE_PROXY` environment variable in `Bot::from_env`.
 
 ### Deprecated
- - `Bot::{from_env_with_client, new, with_client}`.
+ - `Bot::{from_env_with_client, new, with_client}`
 
 ### Changed
- - Now methods which can send file to Telegram returns tokio::io::Result<T>. Early its could panic. ([issue 216](https://github.com/teloxide/teloxide/issues/216))
- - Now provided description of unknown telegram error, by splitting ApiErrorKind at `ApiErrorKind` and `ApiErrorKindKnown` enums. ([issue 199](https://github.com/teloxide/teloxide/issues/199))
+ - `DialogueDispatcherHandlerCx` -> `DialogueWithCx`.
+ - `DispatcherHandlerCx` -> `UpdateWithCx`.
+ - Now provided description of unknown telegram error, by splitting ApiErrorKind at `ApiErrorKind` and `ApiErrorKindKnown` enums ([issue 199](https://github.com/teloxide/teloxide/issues/199)).
  - Extract `Bot` from `Arc` ([issue 216](https://github.com/teloxide/teloxide/issues/230)).
+ - Mark all the API types as `#[non_exhaustive]`.
+ - Replace all `mime_type: String` with `MimeWrapper`.
+
+### Fixed
+ - Now methods which can send file to Telegram returns `tokio::io::Result<T>`. Early its could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
+ - If a bot wasn't triggered for several days, it stops responding ([issue 223](https://github.com/teloxide/teloxide/issues/223)).
 
 ## [0.2.0] - 2020-02-25
 ### Added

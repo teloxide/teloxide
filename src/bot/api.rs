@@ -2,26 +2,27 @@ use crate::{
     requests::{
         AddStickerToSet, AnswerCallbackQuery, AnswerInlineQuery, AnswerPreCheckoutQuery,
         AnswerShippingQuery, CreateNewStickerSet, DeleteChatPhoto, DeleteChatStickerSet,
-        DeleteMessage, DeleteStickerFromSet, DeleteWebhook, EditMessageCaption,
-        EditMessageLiveLocation, EditMessageMedia, EditMessageReplyMarkup, EditMessageText,
-        ExportChatInviteLink, ForwardMessage, GetChat, GetChatAdministrators, GetChatMember,
-        GetChatMembersCount, GetFile, GetGameHighScores, GetMe, GetMyCommands, GetStickerSet,
-        GetUpdates, GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
-        PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation, SendAudio,
-        SendChatAction, SendChatActionKind, SendContact, SendDice, SendDocument, SendGame,
-        SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto, SendPoll, SendSticker,
-        SendVenue, SendVideo, SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
-        SetChatDescription, SetChatPermissions, SetChatPhoto, SetChatStickerSet, SetChatTitle,
-        SetGameScore, SetMyCommands, SetStickerPositionInSet, SetStickerSetThumb, SetWebhook,
-        StopMessageLiveLocation, StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
+        DeleteMessage, DeleteStickerFromSet, DeleteWebhook, EditInlineMessageCaption,
+        EditInlineMessageLiveLocation, EditInlineMessageMedia, EditInlineMessageReplyMarkup,
+        EditInlineMessageText, EditMessageCaption, EditMessageLiveLocation, EditMessageMedia,
+        EditMessageReplyMarkup, EditMessageText, ExportChatInviteLink, ForwardMessage, GetChat,
+        GetChatAdministrators, GetChatMember, GetChatMembersCount, GetFile, GetGameHighScores,
+        GetMe, GetMyCommands, GetStickerSet, GetUpdates, GetUserProfilePhotos, GetWebhookInfo,
+        KickChatMember, LeaveChat, PinChatMessage, PromoteChatMember, RestrictChatMember,
+        SendAnimation, SendAudio, SendChatAction, SendChatActionKind, SendContact, SendDice,
+        SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup, SendMessage, SendPhoto,
+        SendPoll, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
+        SetChatAdministratorCustomTitle, SetChatDescription, SetChatPermissions, SetChatPhoto,
+        SetChatStickerSet, SetChatTitle, SetGameScore, SetMyCommands, SetStickerPositionInSet,
+        SetStickerSetThumb, SetWebhook, StopInlineMessageLiveLocation, StopMessageLiveLocation,
+        StopPoll, UnbanChatMember, UnpinChatMessage, UploadStickerFile,
     },
     types::{
-        BotCommand, ChatId, ChatOrInlineMessage, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, LabeledPrice, StickerType,
+        BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
+        LabeledPrice, ParseMode, StickerType, TargetMessage,
     },
     Bot,
 };
-use std::ops::Deref;
 
 impl Bot {
     /// Use this method to receive incoming updates using long polling ([wiki]).
@@ -115,12 +116,10 @@ impl Bot {
         C: Into<ChatId>,
         T: Into<String>,
     {
-        match self.parse_mode.deref() {
-            None => SendMessage::new(self.clone(), chat_id, text),
-            Some(parse_mode) => {
-                SendMessage::new(self.clone(), chat_id, text).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendMessage::new(self.clone(), chat_id, text),
+            SendMessage::parse_mode,
+        )
     }
 
     /// Use this method to forward messages of any kind.
@@ -157,16 +156,17 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `photo`: Photo to send.
+    ///   - `photo`: Pass [`InputFile::FileId`] to send a photo that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a photo from the Internet (5MB max.), pass
+    ///     [`InputFile::File`] to upload a picture from the file system or
+    ///     [`InputFile::Memory`] to upload a photo from memory (10MB max.
+    ///     each). [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a photo that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
@@ -179,19 +179,32 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendPhoto::new(self.clone(), chat_id, photo),
-            Some(parse_mode) => {
-                SendPhoto::new(self.clone(), chat_id, photo).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendPhoto::new(self.clone(), chat_id, photo),
+            SendPhoto::parse_mode,
+        )
     }
 
+    /// Use this method to send audio files
     ///
+    /// [The official docs](https://core.telegram.org/bots/api#sendaudio).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
+    ///   - `audio`: Pass [`InputFile::FileId`] to send an audio file that
+    ///     exists on the Telegram servers (recommended), pass an
+    ///     [`InputFile::Url`] for Telegram to get a file from the Internet
+    ///     (20MB max.), pass [`InputFile::File`] to upload a file from the file
+    ///     system or [`InputFile::Memory`] to upload a file from memory (50MB
+    ///     max. each). [More info on Sending Files »].
+    ///
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -202,30 +215,30 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendAudio::new(self.clone(), chat_id, audio),
-            Some(parse_mode) => {
-                SendAudio::new(self.clone(), chat_id, audio).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendAudio::new(self.clone(), chat_id, audio),
+            SendAudio::parse_mode,
+        )
     }
 
     /// Use this method to send general files.
-    ///
-    /// Bots can currently send files of any type of up to 50 MB in size, this
-    /// limit may be changed in the future.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#senddocument).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `document`: File to send.
+    ///   - `document`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass a file_id as String to send a file that exists on the
-    /// Telegram servers (recommended), pass an HTTP URL as a String for
-    /// Telegram to get a file from the Internet, or upload a new one using
-    /// `multipart/form-data`. [More info on Sending Files »].
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
@@ -238,35 +251,33 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendDocument::new(self.clone(), chat_id, document),
-            Some(parse_mode) => {
-                SendDocument::new(self.clone(), chat_id, document).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendDocument::new(self.clone(), chat_id, document),
+            SendDocument::parse_mode,
+        )
     }
 
     /// Use this method to send video files, Telegram clients support mp4 videos
     /// (other formats may be sent as Document).
-    ///
-    /// Bots can currently send video files of up to 50 MB in size, this
-    /// limit may be changed in the future.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvideo).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `video`: Video to sent.
+    ///   - `video`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -277,26 +288,33 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendVideo::new(self.clone(), chat_id, video),
-            Some(parse_mode) => {
-                SendVideo::new(self.clone(), chat_id, video).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendVideo::new(self.clone(), chat_id, video),
+            SendVideo::parse_mode,
+        )
     }
 
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
     /// without sound).
-    ///
-    /// Bots can currently send animation files of up to 50 MB in size, this
-    /// limit may be changed in the future.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendanimation).
     ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `animation`: Animation to send.
+    ///   - `animation`: Pass [`InputFile::FileId`] to send a file that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
+    ///
+    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
@@ -307,21 +325,17 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendAnimation::new(self.clone(), chat_id, animation),
-            Some(parse_mode) => {
-                SendAnimation::new(self.clone(), chat_id, animation).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendAnimation::new(self.clone(), chat_id, animation),
+            SendAnimation::parse_mode,
+        )
     }
 
     /// Use this method to send audio files, if you want Telegram clients to
     /// display the file as a playable voice message.
     ///
     /// For this to work, your audio must be in an .ogg file encoded with OPUS
-    /// (other formats may be sent as [`Audio`] or [`Document`]). Bots can
-    /// currently send voice messages of up to 50 MB in size, this limit may
-    /// be changed in the future.
+    /// (other formats may be sent as [`Audio`] or [`Document`]).
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvoice).
     ///
@@ -331,16 +345,18 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `voice`: Audio file to send.
+    ///   - `voice`: Pass [`InputFile::FileId`] to send a file that exists on
+    ///     the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    ///     Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     ///
     /// # Notes
@@ -352,12 +368,10 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode.deref() {
-            None => SendVoice::new(self.clone(), chat_id, voice),
-            Some(parse_mode) => {
-                SendVoice::new(self.clone(), chat_id, voice).parse_mode(*parse_mode.deref())
-            }
-        }
+        self.with_default_parse_mode_if_specified(
+            SendVoice::new(self.clone(), chat_id, voice),
+            SendVoice::parse_mode,
+        )
     }
 
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up
@@ -365,20 +379,23 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendvideonote).
     ///
+    /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
+    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `video_note`: Video note to send.
+    ///   - `video_note`: Pass [`InputFile::FileId`] to send a file that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a file from the Internet (20MB max.), pass
+    ///     [`InputFile::File`] to upload a file from the file system or
+    ///     [`InputFile::Memory`] to upload a file from memory (50MB max. each).
+    ///     [More info on Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [v.4.0]: https://telegram.org/blog/video-messages-and-telescope
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
 
     pub fn send_video_note<C>(&self, chat_id: C, video_note: InputFile) -> SendVideoNote
@@ -395,8 +412,8 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `media`: A JSON-serialized array describing photos and videos to be
-    ///     sent, must include 2–10 items.
+    ///   - `media`: A vector of photos and videos as [`InputMedia`] to be sent,
+    ///     must include 2–10 items.
     pub fn send_media_group<C, M>(&self, chat_id: C, media: M) -> SendMediaGroup
     where
         C: Into<ChatId>,
@@ -424,42 +441,89 @@ impl Bot {
     /// Use this method to edit live location messages.
     ///
     /// A location can be edited until its live_period expires or editing is
-    /// explicitly disabled by a call to stopMessageLiveLocation. On success, if
-    /// the edited message was sent by the bot, the edited [`Message`] is
-    /// returned, otherwise [`True`] is returned.
+    /// explicitly disabled by a call to stopMessageLiveLocation. On success,
+    /// the edited [`Message`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#editmessagelivelocation).
+    ///
+    /// [`Message`]: crate::types::Message
     ///
     /// # Params
     ///   - `latitude`: Latitude of new location.
     ///   - `longitude`: Longitude of new location.
-    ///
-    /// [`Message`]: crate::types::Message
-    /// [`True`]: crate::types::True
-    pub fn edit_message_live_location(
+    pub fn edit_message_live_location<C>(
         &self,
-        chat_or_inline_message: ChatOrInlineMessage,
+        chat_id: C,
+        message_id: i32,
         latitude: f32,
         longitude: f32,
-    ) -> EditMessageLiveLocation {
-        EditMessageLiveLocation::new(self.clone(), chat_or_inline_message, latitude, longitude)
+    ) -> EditMessageLiveLocation
+    where
+        C: Into<ChatId>,
+    {
+        EditMessageLiveLocation::new(self.clone(), chat_id, message_id, latitude, longitude)
+    }
+
+    /// Use this method to edit live location messages sent via the bot.
+    ///
+    /// A location can be edited until its live_period expires or editing is
+    /// explicitly disabled by a call to stopMessageLiveLocation. On success,
+    /// [`True`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#editmessagelivelocation).
+    ///
+    /// [`True`]: crate::types::True
+    ///
+    /// # Params
+    ///   - `latitude`: Latitude of new location.
+    ///   - `longitude`: Longitude of new location.
+    pub fn edit_inline_message_live_location<I>(
+        &self,
+        inline_message_id: I,
+        latitude: f32,
+        longitude: f32,
+    ) -> EditInlineMessageLiveLocation
+    where
+        I: Into<String>,
+    {
+        EditInlineMessageLiveLocation::new(self.clone(), inline_message_id, latitude, longitude)
     }
 
     /// Use this method to stop updating a live location message before
     /// `live_period` expires.
     ///
-    /// On success, if the message was sent by the bot, the sent [`Message`] is
-    /// returned, otherwise [`True`] is returned.
+    /// On success, the sent [`Message`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#stopmessagelivelocation).
     ///
     /// [`Message`]: crate::types::Message
-    /// [`True`]: crate::types::True
-    pub fn stop_message_live_location(
+    pub fn stop_message_live_location<C>(
         &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-    ) -> StopMessageLiveLocation {
-        StopMessageLiveLocation::new(self.clone(), chat_or_inline_message)
+        chat_id: C,
+        message_id: i32,
+    ) -> StopMessageLiveLocation
+    where
+        C: Into<ChatId>,
+    {
+        StopMessageLiveLocation::new(self.clone(), chat_id, message_id)
+    }
+
+    /// Use this method to stop updating a live location message (sent via the
+    /// bot) before `live_period` expires.
+    ///
+    /// On success, [`True`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#stopmessagelivelocation).
+    ///
+    /// [`True`]: crate::types::True
+    pub fn stop_inline_message_live_location<I>(
+        &self,
+        inline_message_id: I,
+    ) -> StopInlineMessageLiveLocation
+    where
+        I: Into<String>,
+    {
+        StopInlineMessageLiveLocation::new(self.clone(), inline_message_id)
     }
 
     /// Use this method to send information about a venue.
@@ -513,21 +577,32 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendpoll).
     ///
-    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `question`: Poll question, 1-255 characters.
     ///   - `options`: List of answer options, 2-10 strings 1-100 characters
     ///     each.
+    ///
+    /// # Notes
+    /// Uses [a default parse mode] ([`SendPoll::explanation_parse_mode`]) if
+    /// specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    /// [`SendPoll::explanation_parse_mode`]:
+    /// [`SendPoll::explanation_parse_mode`]:
+    /// crate::types::SendPoll::explanation_parse_mode
     pub fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
-        // FIXME: parse_mode
-        SendPoll::new(self.clone(), chat_id, question, options)
+        self.with_default_parse_mode_if_specified(
+            SendPoll::new(self.clone(), chat_id, question, options),
+            SendPoll::explanation_parse_mode,
+        )
     }
 
     /// Use this method when you need to tell the user that something is
@@ -746,7 +821,14 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///   - `photo`: New chat photo, uploaded using `multipart/form-data`.
+    ///   - `photo`: New chat photo, pass [`InputFile::File`] to upload a file
+    ///     from the file system or [`InputFile::Memory`] to upload a file from
+    ///     memory (10MB max. each). [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
+    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn set_chat_photo<C>(&self, chat_id: C, photo: InputFile) -> SetChatPhoto
     where
         C: Into<ChatId>,
@@ -986,45 +1068,105 @@ impl Bot {
 
     /// Use this method to edit text and game messages.
     ///
-    /// On success, if edited message is sent by the bot, the edited [`Message`]
-    /// is returned, otherwise [`True`] is returned.
+    /// On success, the edited [`Message`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#editmessagetext).
     ///
-    /// # Params
-    ///   - New text of the message.
-    ///
     /// [`Message`]: crate::types::Message
-    /// [`True`]: crate::types::True
+    ///
+    /// # Params
+    ///
+    ///  - `chat_id`: Unique identifier for the target chat or username of the
+    ///    target channel (in the format `@channelusername`).
+    ///  - `message_id`: Identifier of the message to edit.
+    ///  - `text`: New text of the message.
     ///
     /// # Notes
+    ///
     /// Uses [a default parse mode] if specified in [`BotBuilder`].
     ///
     /// [a default parse mode]: crate::BotBuilder::parse_mode
     /// [`BotBuilder`]: crate::BotBuilder
-    pub fn edit_message_text<T>(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-        text: T,
-    ) -> EditMessageText
+    pub fn edit_message_text<C, T>(&self, chat_id: C, message_id: i32, text: T) -> EditMessageText
     where
+        C: Into<ChatId>,
         T: Into<String>,
     {
-        match self.parse_mode.deref() {
-            None => EditMessageText::new(self.clone(), chat_or_inline_message, text),
-            Some(parse_mode) => EditMessageText::new(self.clone(), chat_or_inline_message, text)
-                .parse_mode(*parse_mode.deref()),
+        match self.parse_mode {
+            None => EditMessageText::new(self.clone(), chat_id, message_id, text),
+            Some(parse_mode) => {
+                EditMessageText::new(self.clone(), chat_id, message_id, text).parse_mode(parse_mode)
+            }
         }
     }
 
-    /// Use this method to edit captions of messages.
+    /// Use this method to edit text and game messages sent via the bot.
     ///
-    /// On success, if edited message is sent by the bot, the edited [`Message`]
-    /// is returned, otherwise [`True`] is returned.
+    /// On success, [`True`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#editmessagetext).
+    ///
+    /// [`True`]: crate::types::True
+    ///
+    /// # Params
+    ///
+    ///  - `inline_message_id`: Identifier of the inline message.
+    ///  - `text`: New text of the message.
+    ///
+    /// # Notes
+    ///
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn edit_inline_message_text<I, T>(
+        &self,
+        inline_message_id: I,
+        text: T,
+    ) -> EditInlineMessageText
+    where
+        I: Into<String>,
+        T: Into<String>,
+    {
+        match self.parse_mode {
+            None => EditInlineMessageText::new(self.clone(), inline_message_id, text),
+            Some(parse_mode) => EditInlineMessageText::new(self.clone(), inline_message_id, text)
+                .parse_mode(parse_mode),
+        }
+    }
+
+    /// Use this method to edit captions of messages sent via the bot.
+    ///
+    /// On success, [`True`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
     ///
-    /// [`Message`]: crate::types::Message
+    /// [`True`]: crate::types::True
+    ///
+    /// # Notes
+    ///
+    /// Uses [a default parse mode] if specified in [`BotBuilder`].
+    ///
+    /// [a default parse mode]: crate::BotBuilder::parse_mode
+    /// [`BotBuilder`]: crate::BotBuilder
+    pub fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> EditMessageCaption
+    where
+        C: Into<ChatId>,
+    {
+        match self.parse_mode {
+            None => EditMessageCaption::new(self.clone(), chat_id, message_id),
+            Some(parse_mode) => {
+                EditMessageCaption::new(self.clone(), chat_id, message_id).parse_mode(parse_mode)
+            }
+        }
+    }
+
+    /// Use this method to edit captions of messages sent via the bot.
+    ///
+    /// On success, [`True`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
+    ///
     /// [`True`]: crate::types::True
     ///
     /// # Notes
@@ -1032,14 +1174,14 @@ impl Bot {
     ///
     /// [a default parse mode]: crate::BotBuilder::parse_mode
     /// [`BotBuilder`]: crate::BotBuilder
-    pub fn edit_message_caption(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-    ) -> EditMessageCaption {
-        match self.parse_mode.deref() {
-            None => EditMessageCaption::new(self.clone(), chat_or_inline_message),
-            Some(parse_mode) => EditMessageCaption::new(self.clone(), chat_or_inline_message)
-                .parse_mode(*parse_mode.deref()),
+    pub fn edit_inline_message_caption<I>(&self, inline_message_id: I) -> EditInlineMessageCaption
+    where
+        I: Into<String>,
+    {
+        match self.parse_mode {
+            None => EditInlineMessageCaption::new(self.clone(), inline_message_id),
+            Some(parse_mode) => EditInlineMessageCaption::new(self.clone(), inline_message_id)
+                .parse_mode(parse_mode),
         }
     }
 
@@ -1048,37 +1190,81 @@ impl Bot {
     ///
     /// If a message is a part of a message album, then it can be edited only to
     /// a photo or a video. Otherwise, message type can be changed
-    /// arbitrarily. When inline message is edited, new file can't be
-    /// uploaded. Use previously uploaded file via its `file_id` or specify
-    /// a URL. On success, if the edited message was sent by the bot, the
-    /// edited [`Message`] is returned, otherwise [`True`] is returned.
+    /// arbitrarily. On success, the edited [`Message`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#editmessagemedia).
     ///
     /// [`Message`]: crate::types::Message
-    /// [`True`]: crate::types::True
-    pub fn edit_message_media(
+    pub fn edit_message_media<C>(
         &self,
-        chat_or_inline_message: ChatOrInlineMessage,
+        chat_id: C,
+        message_id: i32,
         media: InputMedia,
-    ) -> EditMessageMedia {
-        EditMessageMedia::new(self.clone(), chat_or_inline_message, media)
+    ) -> EditMessageMedia
+    where
+        C: Into<ChatId>,
+    {
+        EditMessageMedia::new(self.clone(), chat_id, message_id, media)
+    }
+
+    /// Use this method to edit animation, audio, document, photo, or video
+    /// messages sent via the bot.
+    ///
+    /// If a message is a part of a message album, then it can be edited only to
+    /// a photo or a video. Otherwise, message type can be changed
+    /// arbitrarily. When this method is used, new file can't be uploaded.
+    /// Use previously uploaded file via its `file_id` or specify a URL. On
+    /// success, [`True`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#editmessagemedia).
+    ///
+    /// [`True`]: crate::types::True
+    pub fn edit_inline_message_media<I>(
+        &self,
+        inline_message_id: I,
+        media: InputMedia,
+    ) -> EditInlineMessageMedia
+    where
+        I: Into<String>,
+    {
+        EditInlineMessageMedia::new(self.clone(), inline_message_id, media)
     }
 
     /// Use this method to edit only the reply markup of messages.
     ///
-    /// On success, if edited message is sent by the bot, the edited [`Message`]
-    /// is returned, otherwise [`True`] is returned.
+    /// On success, the edited [`Message`] is returned.
+    ///
+    /// [The official docs](https://core.telegram.org/bots/api#editmessagereplymarkup).
+    ///
+    /// [`Message`]: crate::types::Message
+    pub fn edit_message_reply_markup<C>(
+        &self,
+        chat_id: C,
+        message_id: i32,
+    ) -> EditMessageReplyMarkup
+    where
+        C: Into<ChatId>,
+    {
+        EditMessageReplyMarkup::new(self.clone(), chat_id, message_id)
+    }
+
+    /// Use this method to edit only the reply markup of messages sent via the
+    /// bot.
+    ///
+    /// On success, [`True`] is returned.
     ///
     /// [The official docs](https://core.telegram.org/bots/api#editmessagereplymarkup).
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
-    pub fn edit_message_reply_markup(
+    pub fn edit_inline_message_reply_markup<I>(
         &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-    ) -> EditMessageReplyMarkup {
-        EditMessageReplyMarkup::new(self.clone(), chat_or_inline_message)
+        inline_message_id: I,
+    ) -> EditInlineMessageReplyMarkup
+    where
+        I: Into<String>,
+    {
+        EditInlineMessageReplyMarkup::new(self.clone(), inline_message_id)
     }
 
     /// Use this method to stop a poll which was sent by the bot.
@@ -1128,20 +1314,23 @@ impl Bot {
     ///
     /// [The official docs](https://core.telegram.org/bots/api#sendsticker).
     ///
+    /// [animated]: https://telegram.org/blog/animated-stickers
+    ///
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target channel (in the format `@channelusername`).
-    ///   - `sticker`: Sticker to send.
+    ///   - `sticker`: Pass [`InputFile::FileId`] to send a sticker that exists
+    ///     on the Telegram servers (recommended), pass an [`InputFile::Url`]
+    ///     for Telegram to get a sticker (.WEBP file) from the Internet, pass
+    ///     [`InputFile::File`] to upload a sticker from the file system or
+    ///     [`InputFile::Memory`] to upload a sticker from memory [More info on
+    ///     Sending Files »].
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on the Telegram
-    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
-    /// .webp file from the Internet, or upload a new one using
-    /// [`InputFile::FileId`]. [More info on Sending Files »].
-    ///
-    /// [animated]: https://telegram.org/blog/animated-stickers
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
+    ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> SendSticker
     where
@@ -1173,12 +1362,14 @@ impl Bot {
     ///   - `user_id`: User identifier of sticker file owner.
     ///   - `png_sticker`: **Png** image with the sticker, must be up to 512
     ///     kilobytes in size, dimensions must not exceed 512px, and either
-    ///     width or height must be exactly 512px. [More info on Sending Files
-    ///     »].
+    ///     width or height must be exactly 512px. Pass [`InputFile::File`] to
+    ///     upload a file from the file system or [`InputFile::Memory`] to
+    ///     upload a file from memory. [More info on Sending Files »].
+    ///
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    /// [`Bot::create_new_sticker_set`]: crate::Bot::create_new_sticker_set
-    /// [`Bot::add_sticker_to_set`]: crate::Bot::add_sticker_to_set
     pub fn upload_sticker_file(&self, user_id: i32, png_sticker: InputFile) -> UploadStickerFile {
         UploadStickerFile::new(self.clone(), user_id, png_sticker)
     }
@@ -1416,18 +1607,18 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#setgamescore).
     ///
     /// # Params
+    ///   - `target`: Target message, either chat id and message id or inline
+    ///     message id.
     ///   - `user_id`: User identifier.
     ///   - `score`: New score, must be non-negative.
     ///
     /// [`Message`]: crate::types::Message
     /// [`True`]: crate::types::True
-    pub fn set_game_score(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-        score: i32,
-    ) -> SetGameScore {
-        SetGameScore::new(self.clone(), chat_or_inline_message, user_id, score)
+    pub fn set_game_score<T>(&self, target: T, user_id: i32, score: i32) -> SetGameScore
+    where
+        T: Into<TargetMessage>,
+    {
+        SetGameScore::new(self.clone(), target, user_id, score)
     }
 
     /// Use this method to get data for high score tables.
@@ -1444,13 +1635,14 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#getgamehighscores).
     ///
     /// # Params
+    ///   - `target`: Target message, either chat id and message id or inline
+    ///     message id.
     ///   - `user_id`: Target user id.
-    pub fn get_game_high_scores(
-        &self,
-        chat_or_inline_message: ChatOrInlineMessage,
-        user_id: i32,
-    ) -> GetGameHighScores {
-        GetGameHighScores::new(self.clone(), chat_or_inline_message, user_id)
+    pub fn get_game_high_scores<T>(&self, target: T, user_id: i32) -> GetGameHighScores
+    where
+        T: Into<TargetMessage>,
+    {
+        GetGameHighScores::new(self.clone(), target, user_id)
     }
 
     /// Use this method to set a custom title for an administrator in a
@@ -1526,5 +1718,16 @@ impl Bot {
         S: Into<String>,
     {
         SetStickerSetThumb::new(self.clone(), name, user_id)
+    }
+
+    fn with_default_parse_mode_if_specified<Builder>(
+        &self,
+        builder: Builder,
+        f: fn(Builder, ParseMode) -> Builder,
+    ) -> Builder {
+        match self.parse_mode {
+            None => builder,
+            Some(parse_mode) => f(builder, parse_mode),
+        }
     }
 }

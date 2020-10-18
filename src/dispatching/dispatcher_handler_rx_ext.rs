@@ -30,7 +30,7 @@ where
     where
         Self: Stream<Item = UpdateWithCx<Message>>,
     {
-        Box::pin(self.filter_map(|cx| async move { cx.update.text_owned().map(|text| (cx, text)) }))
+        self.filter_map(|cx| async move { cx.update.text_owned().map(|text| (cx, text)) }).boxed()
     }
 
     fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<Message>, C)>
@@ -41,10 +41,12 @@ where
     {
         let bot_name = bot_name.into();
 
-        Box::pin(self.text_messages().filter_map(move |(cx, text)| {
-            let bot_name = bot_name.clone();
+        self.text_messages()
+            .filter_map(move |(cx, text)| {
+                let bot_name = bot_name.clone();
 
-            async move { C::parse(&text, &bot_name).map(|command| (cx, command)).ok() }
-        }))
+                async move { C::parse(&text, &bot_name).map(|command| (cx, command)).ok() }
+            })
+            .boxed()
     }
 }

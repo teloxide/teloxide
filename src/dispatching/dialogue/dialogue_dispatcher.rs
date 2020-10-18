@@ -6,7 +6,7 @@ use crate::dispatching::{
 };
 use std::{convert::Infallible, marker::PhantomData};
 
-use futures::{future::BoxFuture, StreamExt};
+use futures::{future::BoxFuture, FutureExt, StreamExt};
 use tokio::sync::mpsc;
 
 use lockfree::map::Map;
@@ -137,28 +137,30 @@ where
     {
         let this = Arc::new(self);
 
-        Box::pin(updates.for_each(move |cx| {
-            let this = Arc::clone(&this);
-            let chat_id = cx.update.chat_id();
+        updates
+            .for_each(move |cx| {
+                let this = Arc::clone(&this);
+                let chat_id = cx.update.chat_id();
 
-            match this.senders.get(&chat_id) {
-                // An old dialogue
-                Some(tx) => {
-                    if tx.1.send(cx).is_err() {
-                        panic!("We are not dropping a receiver or call .close() on it",);
+                match this.senders.get(&chat_id) {
+                    // An old dialogue
+                    Some(tx) => {
+                        if tx.1.send(cx).is_err() {
+                            panic!("We are not dropping a receiver or call .close() on it",);
+                        }
+                    }
+                    None => {
+                        let tx = this.new_tx();
+                        if tx.send(cx).is_err() {
+                            panic!("We are not dropping a receiver or call .close() on it",);
+                        }
+                        this.senders.insert(chat_id, tx);
                     }
                 }
-                None => {
-                    let tx = this.new_tx();
-                    if tx.send(cx).is_err() {
-                        panic!("We are not dropping a receiver or call .close() on it",);
-                    }
-                    this.senders.insert(chat_id, tx);
-                }
-            }
 
-            async {}
-        }))
+                async {}
+            })
+            .boxed()
     }
 }
 

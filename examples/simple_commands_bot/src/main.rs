@@ -25,14 +25,6 @@ async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<(
     Ok(())
 }
 
-async fn handle_commands(rx: DispatcherHandlerRx<Message>) {
-    rx.commands::<Command, &str>(panic!("Insert here your bot's name"))
-        .for_each_concurrent(None, |(cx, command)| async move {
-            answer(cx, command).await.log_on_error().await;
-        })
-        .await;
-}
-
 #[tokio::main]
 async fn main() {
     run().await;
@@ -44,5 +36,6 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    Dispatcher::new(bot).messages_handler(handle_commands).dispatch().await;
+    let bot_name: String = panic!("Your bot's name here");
+    teloxide::commands_repl(bot, bot_name, answer).await;
 }

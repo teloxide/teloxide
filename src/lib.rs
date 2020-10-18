@@ -4,6 +4,31 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
+//! ```no_run
+//! use teloxide::prelude::*;
+//!
+//! # #[tokio::main]
+//! # async fn main_() {
+//! teloxide::enable_logging!();
+//! log::info!("Starting dices_bot...");
+//!
+//! let bot = Bot::from_env();
+//!
+//! teloxide::repl(bot, |message| async move {
+//!     message.answer_dice().send().await?;
+//!     ResponseResult::<()>::Ok(())
+//! })
+//! .await;
+//! # }
+//! ```
+//!
+//! <div align="center">
+//!   <kbd>
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
+//!   </kbd>
+//! </div>
+//!
 //! [Telegram bots]: https://telegram.org/blog/bot-revolution
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/
@@ -15,8 +40,14 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
+#![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
+pub use dispatching::repls::{
+    commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
+    repl_with_listener,
+};
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;
@@ -31,4 +62,13 @@ pub mod requests;
 pub mod types;
 pub mod utils;
 
+#[cfg(feature = "macros")]
 extern crate teloxide_macros;
+
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::teloxide;
+
+#[cfg(all(feature = "nightly", doctest))]
+#[doc(include = "../README.md")]
+enum ReadmeDocTests {}

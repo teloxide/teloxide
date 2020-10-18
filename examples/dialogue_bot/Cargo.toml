@@ -8,16 +8,18 @@ edition = "2018"
 
 [dependencies]
 log = "0.4.8"
-tokio = "0.2.9"
+pretty_env_logger = "0.4.0"
 
 frunk = "0.3.1"
 frunk_core = "0.3.1"
 
-pretty_env_logger = "0.4.0"
 futures = "0.3.5"
-derive_more = "0.99.9"
+tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
+
 teloxide = { path = "../../", features = ["frunk"] }
-teloxide-macros = "0.3.2"
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
+
+derive_more = "0.99.9"
 
 [profile.release]
 lto = true
