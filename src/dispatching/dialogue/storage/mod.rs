@@ -17,7 +17,7 @@ pub use serializer::Serializer;
 use std::sync::Arc;
 
 #[cfg(feature = "sqlite-storage")]
-pub use sqlite_storage::{SqliteStorage, SqliteStorageLocation, SqliteStorageError};
+pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 
 /// A storage of dialogues.
 ///

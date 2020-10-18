@@ -58,7 +58,7 @@ serde_with_macros = "1.1.0"
 sqlx = { version = "0.4.0-beta.1", optional = true, default-features = false, features = [
         "runtime-tokio",
         "macros",
-        "sqlite"
+        "sqlite",
 ] }
 redis = { version = "0.16.0", optional = true }
 serde_cbor = { version = "0.11.1", optional = true }
