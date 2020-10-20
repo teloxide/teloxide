@@ -22,11 +22,11 @@ pub enum DownloadError {
 pub enum RequestError {
     /// Telegram API error
     #[error("A Telegram's error #{status_code}: {kind:?}")]
-    ApiError { 
+    ApiError {
         /// Kind of api error
-        kind: ApiError,    
+        kind: ApiError,
         /// HTTP code returned by telegram, not very usefull in practice.
-        status_code: StatusCode ,
+        status_code: StatusCode,
     },
 
     /// The group has been migrated to a supergroup with the specified
