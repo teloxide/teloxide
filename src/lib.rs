@@ -19,7 +19,7 @@ mod local_macros;
 // FIXME(waffle): rethink modules, find a place for wrappers.
 pub use self::{
     bot::{AutoSend, Bot, BotBuilder, CacheMe},
-    errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError},
+    errors::{ApiError, DownloadError, RequestError},
 };
 
 pub mod payloads;
