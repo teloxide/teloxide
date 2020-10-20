@@ -18,7 +18,7 @@ use tokio::{
 use vecrem::VecExt;
 
 use crate::{
-    bot::limits::chan_send::{ChanSend, SendTy},
+    adaptors::throttle::chan_send::{ChanSend, SendTy},
     payloads::SendMessage,
     requests::{HasPayload, Output, Request, Requester},
     types::ChatId,
@@ -346,12 +346,7 @@ impl<B> Throttle<B> {
     }
 }
 
-impl<B: Requester> Requester for Throttle<B>
-where
-    B::SendMessage: Send,
-{
-    type Err = B::Err;
-
+impl<B: Requester> Requester for Throttle<B> {
     type GetMe = B::GetMe;
 
     fn get_me(&self) -> Self::GetMe {
@@ -417,9 +412,8 @@ impl<R: HasPayload> HasPayload for ThrottlingRequest<R> {
     }
 }
 
-impl<R> Request for ThrottlingRequest<R>
+impl<R: Request> Request for ThrottlingRequest<R>
 where
-    R: Request + Send,
     <R as HasPayload>::Payload: GetChatId,
 {
     type Err = R::Err;
@@ -613,7 +607,7 @@ mod chan_send {
     use never::Never;
     use tokio::sync::{mpsc, mpsc::error::SendError, oneshot::Sender};
 
-    use crate::bot::limits::Id;
+    use crate::adaptors::throttle::Id;
 
     pub(super) trait SendTy {
         fn send_t(self, val: (Id, Sender<Never>)) -> ChanSend;
@@ -623,7 +617,7 @@ mod chan_send {
     pub(super) struct ChanSend(#[pin] Inner);
 
     #[cfg(not(feature = "nightly"))]
-    type Inner = Pin<Box<dyn Future<Output = Result<(), SendError<(Id, Sender<Never>)>>> + Send>>;
+    type Inner = Pin<Box<dyn Future<Output = Result<(), SendError<(Id, Sender<Never>)>>>>>;
     #[cfg(feature = "nightly")]
     type Inner = impl Future<Output = Result<(), SendError<(Id, Sender<Never>)>>>;
 

@@ -18,7 +18,7 @@ mod local_macros;
 
 // FIXME(waffle): rethink modules, find a place for wrappers.
 pub use self::{
-    bot::{AutoSend, Bot, BotBuilder, CacheMe},
+    bot::{Bot, BotBuilder},
     errors::{ApiError, DownloadError, RequestError},
 };
 
@@ -26,13 +26,11 @@ pub mod payloads;
 pub mod prelude;
 pub mod requests;
 pub mod types;
-
-// FIXME(waffle): made `pub` to reexport bot wrappers, in future we may want to
-//                reexport them from elsewhere
-pub mod bot;
+pub mod adaptors;
 
 // reexported
 mod errors;
+mod bot;
 
 // implementation details
 mod net;

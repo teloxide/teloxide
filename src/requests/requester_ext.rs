@@ -1,7 +1,6 @@
 use crate::{
-    bot::{CacheMe, Limits, Throttle},
+    adaptors::{CacheMe, throttle::Limits, Throttle, AutoSend},
     requests::Requester,
-    AutoSend,
 };
 
 pub trait RequesterExt: Requester {
