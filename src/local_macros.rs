@@ -83,7 +83,7 @@ macro_rules! req_future {
 
             #[cfg(not(feature = "nightly"))]
             pub(crate) type $i<$T>
-            $(where $($wh)*)?  = ::core::pin::Pin<Box<dyn ::core::future::Future<Output = $Out>>>;
+            $(where $($wh)*)?  = ::core::pin::Pin<Box<dyn ::core::future::Future<Output = $Out> + ::core::marker::Send + 'static>>;
 
             #[cfg(not(feature = "nightly"))]
             pub(crate) fn def<$T>($( $arg: $ArgTy ),*) -> $i<$T>

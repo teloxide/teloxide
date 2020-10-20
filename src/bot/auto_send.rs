@@ -63,6 +63,8 @@ impl<B> AutoSend<B> {
 }
 
 impl<B: Requester> Requester for AutoSend<B> {
+    type Err = B::Err;
+
     type GetMe = AutoRequest<B::GetMe>;
 
     fn get_me(&self) -> Self::GetMe {
