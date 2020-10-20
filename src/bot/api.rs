@@ -1705,6 +1705,8 @@ impl Bot {
 }
 
 impl Requester for Bot {
+    type Err = crate::errors::RequestError;
+
     type GetMe = JsonRequest<payloads::GetMe>;
 
     fn get_me(&self) -> JsonRequest<payloads::GetMe> {

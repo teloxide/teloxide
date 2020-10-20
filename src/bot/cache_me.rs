@@ -54,7 +54,12 @@ impl<B> CacheMe<B> {
     }
 }
 
-impl<B: Requester> Requester for CacheMe<B> {
+impl<B> Requester for CacheMe<B>
+where
+    B: Requester,
+{
+    type Err = B::Err;
+
     type GetMe = CachedMeRequest<B::GetMe>;
 
     fn get_me(&self) -> Self::GetMe {
@@ -85,7 +90,10 @@ enum Inner<R: Request<Payload = GetMe>> {
     Pending(R, Arc<OnceCell<User>>),
 }
 
-impl<R: Request<Payload = GetMe>> Request for CachedMeRequest<R> {
+impl<R> Request for CachedMeRequest<R>
+where
+    R: Request<Payload = GetMe>,
+{
     type Err = R::Err;
     type Send = Send<R>;
     type SendRef = SendRef<R>;

@@ -22,16 +22,16 @@ pub trait Request: HasPayload {
      */
 
     /// Type of error that may happen during sending the request to telegram.
-    type Err: std::error::Error;
+    type Err: std::error::Error + Send;
 
     /// Type of future returned by [`send`](Request::send) method.
-    type Send: Future<Output = Result<Output<Self>, Self::Err>>;
+    type Send: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
     /// Type of future returned by [`send_ref`](Request::send_ref) method.
     ///
     /// NOTE: it intentionally forbids borrowing from self
     // though anyway we couldn't allow borrowing without GATs :sob:
-    type SendRef: Future<Output = Result<Output<Self>, Self::Err>>;
+    type SendRef: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
     /// Send the request.
     ///
