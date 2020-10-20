@@ -14,6 +14,8 @@ use crate::requests::{HasPayload, Output};
 /// This is crucial for request wrappers which may want to cancel and/or never
 /// send the underlying request. E.g.: [`Throttle<B>`]'s `send_ref` calls
 /// `B::send_ref` while _not_ meaning to really send the request right now.
+///
+/// [`Throttle<B>`]: crate::adaptors::Throttle
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
 pub trait Request: HasPayload {
     /*

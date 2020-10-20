@@ -10,6 +10,7 @@
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
 #![forbid(unsafe_code)]
+#![cfg_attr(feature = "full", deny(broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
 #[macro_use]
@@ -22,15 +23,15 @@ pub use self::{
     errors::{ApiError, DownloadError, RequestError},
 };
 
+pub mod adaptors;
 pub mod payloads;
 pub mod prelude;
 pub mod requests;
 pub mod types;
-pub mod adaptors;
 
 // reexported
-mod errors;
 mod bot;
+mod errors;
 
 // implementation details
 mod net;

@@ -1,4 +1,4 @@
-//! API types.
+//! Telergam API types.
 
 pub use allowed_update::*;
 pub use animation::*;
