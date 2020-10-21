@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `throttle`, `cache_me`, `auto_send` and `full` crate features
+- `payloads` module
+- `RequesterExt` trait which is implemented for all `Requester`s and allows easily wrapping them in adaptors
+- `adaptors` module
+  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10])
+  - Request auto sending - ability to `.await` requests without need to call `.send()` (opt-in feature represented by `AutoSend` bot adapter, [#8][pr8])
+  - `get_me` caching (opt-in feature represented by `CacheMe` bot adapter)
+- `Requester` trait which represents bot-clients ([#7][pr7])
+- `{Json,Multipart}Request` the `Bot` requests types ([#6][pr6])
+- `Output<T>` alias to `<<T as HasPayload>::Payload as Payload>::Output`
+- `Payload`, `HasPayload` and `Request` traits which represent different parts of the request ([#5][pr5])
+- `GetUpdatesNonStrict` - fail proof version of `GetUpdates`
 - Move core code here from the [`teloxide`] main repo, for older changes see it's [`CHANGELOG.md`].
   - Following modules were moved:
     - `bot`
@@ -22,16 +34,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GetUpdatesNonStrict` 'telegram' method, that behaves just like `GetUpdates` but doesn't 
   fail if one of updates fails to be deserialized 
 
+[pr5]: https://github.com/teloxide/teloxide-core/pull/5
+[pr6]: https://github.com/teloxide/teloxide-core/pull/6
+[pr7]: https://github.com/teloxide/teloxide-core/pull/7
+[pr8]: https://github.com/teloxide/teloxide-core/pull/8
+[pr10]: https://github.com/teloxide/teloxide-core/pull/10
+
 ### Changed
 
+- Merge `ApiErrorKind` and `KnownApiErrorKind` into `ApiError` ([#13][pr13])
+- Refactor ChatMember ([#9][pr9])
+  - Replace a bunch of `Option<_>` fields with `ChatMemberKind`
+  - Remove setters (users are not expected to create this struct)
+  - Add getters
 - Changed internal mechanism of sending multipart requests
 - Added `RequestError::Io(io::Error)` to wrap I/O error those can happen while sending files to telegram
 - Change `StickerType`: instead of newtypes (`Png(InputFile)`) use structs (`Png { png_sticker: InputFile }`), add 
   `StickerType::{png,tgs}` constructors
 - Make all fields of all methods `pub`
 
+[pr9]: https://github.com/teloxide/teloxide-core/pull/9
+[pr13]: https://github.com/teloxide/teloxide-core/pull/13
+
 ### Removed
 
+- `unstable-stream` feature (now `Bot::download_file_stream` is accesable by default)
+- old `Request` trait
 - `RequestWithFile`, now multipart requests use `Request`
 - Remove all `#[non_exhaustive]` annotations
   
