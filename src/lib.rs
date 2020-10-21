@@ -10,6 +10,7 @@
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
 #![forbid(unsafe_code)]
+#![cfg_attr(feature = "full", deny(broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
 #[macro_use]
@@ -18,20 +19,18 @@ mod local_macros;
 
 // FIXME(waffle): rethink modules, find a place for wrappers.
 pub use self::{
-    bot::{AutoSend, Bot, BotBuilder, CacheMe},
+    bot::{Bot, BotBuilder},
     errors::{ApiError, DownloadError, RequestError},
 };
 
+pub mod adaptors;
 pub mod payloads;
 pub mod prelude;
 pub mod requests;
 pub mod types;
 
-// FIXME(waffle): made `pub` to reexport bot wrappers, in future we may want to
-//                reexport them from elsewhere
-pub mod bot;
-
 // reexported
+mod bot;
 mod errors;
 
 // implementation details

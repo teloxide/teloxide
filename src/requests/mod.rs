@@ -1,4 +1,4 @@
-//! API requests.
+//! Telegram API requests.
 
 mod has_payload;
 mod payload;

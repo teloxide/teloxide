@@ -27,12 +27,11 @@ where
     Ok(())
 }
 
-#[cfg(feature = "unstable-stream")]
 pub async fn download_file_stream(
     client: &Client,
     token: &str,
     path: &str,
-) -> Result<impl Stream<Item = reqwest::Result<Bytes>>, reqwest::Error> {
+) -> Result<impl futures::Stream<Item = reqwest::Result<bytes::Bytes>>, reqwest::Error> {
     let res = client
         .get(&super::file_url(TELEGRAM_API_URL, token, path))
         .send()

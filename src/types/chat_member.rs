@@ -27,14 +27,14 @@ pub enum ChatMemberKind {
     Kicked(Kicked),
 }
 
-/// Creator of the group. This struct is part of the [`ChatmemberKind`] enum.
+/// Creator of the group. This struct is part of the [`ChatMemberKind`] enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Creator {
     /// Custom title for this user.
     pub custom_title: Option<String>,
 }
 
-/// Administrator of the group. This struct is part of the [`ChatmemberKind`]
+/// Administrator of the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Administrator {
@@ -81,7 +81,7 @@ pub struct Administrator {
     pub can_promote_members: bool,
 }
 
-/// User, restricted in the group. This struct is part of the [`ChatmemberKind`]
+/// User, restricted in the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Restricted {
@@ -106,7 +106,7 @@ pub struct Restricted {
     pub can_add_web_page_previews: bool,
 }
 
-/// User kicked from the group. This struct is part of the [`ChatmemberKind`]
+/// User kicked from the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Kicked {

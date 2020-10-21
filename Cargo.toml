@@ -39,8 +39,24 @@ never = "0.1.0"
 vecrem = { git = "https://github.com/WaffleLapkin/vecrem", rev = "6b9b6f42342df8b75548c6ed387072ff235429b1" }
 
 [features]
-# features those require nightly compiler
+default = []
+
+# Features which require nightly compiler.
+#
+# Currently the only used compiler feature is feature(type_alias_impl_trait)
+# which allow implementing `Future`s without boxing.
 nightly = []
+
+# Throttling bot adaptor
+throttle = []
+
+# CacheMe bot adaptor
+cache_me = []
+
+# AutoSend bot adaptor
+auto_send = []
+
+full = ["throttle", "cache_me", "auto_send"]
 
 [package.metadata."docs.rs"]
 all-features = true

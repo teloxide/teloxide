@@ -18,7 +18,7 @@ use tokio::{
 use vecrem::VecExt;
 
 use crate::{
-    bot::limits::chan_send::{ChanSend, SendTy},
+    adaptors::throttle::chan_send::{ChanSend, SendTy},
     payloads::SendMessage,
     requests::{HasPayload, Output, Request, Requester},
     types::ChatId,
@@ -123,7 +123,7 @@ impl Default for Limits {
 /// ## Examples
 ///
 /// ```no_run (throttle fails to spawn task without tokio runtime)
-/// use teloxide_core::{bot::Limits, requests::RequesterExt, Bot};
+/// use teloxide_core::{adaptors::throttle::Limits, requests::RequesterExt, Bot};
 ///
 /// # #[allow(deprecated)]
 /// let bot = Bot::new("TOKEN").throttle(Limits::default());
@@ -316,6 +316,8 @@ impl<B> Throttle<B> {
     /// Creates new [`Throttle`] spawning the worker with `tokio::spawn`
     ///
     /// Note: it's recommended to use [`RequesterExt::throttle`] instead.
+    ///
+    /// [`RequesterExt::throttle`]: crate::requests::RequesterExt::throttle
     pub fn new_spawn(bot: B, limits: Limits) -> Self
     where
         // Basically, I hate this bound.
@@ -613,7 +615,7 @@ mod chan_send {
     use never::Never;
     use tokio::sync::{mpsc, mpsc::error::SendError, oneshot::Sender};
 
-    use crate::bot::limits::Id;
+    use crate::adaptors::throttle::Id;
 
     pub(super) trait SendTy {
         fn send_t(self, val: (Id, Sender<Never>)) -> ChanSend;

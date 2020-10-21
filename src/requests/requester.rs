@@ -4,7 +4,7 @@ use crate::{
     types::ChatId,
 };
 
-/// The trait implemented by all bots & bot wrappers.
+/// The trait implemented by all bots & bot adaptors.
 /// Essentially a request builder factory (?).
 ///
 /// _This trait is included in the crate's [`prelude`](crate::prelude)_.
