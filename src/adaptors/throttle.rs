@@ -348,7 +348,12 @@ impl<B> Throttle<B> {
     }
 }
 
-impl<B: Requester> Requester for Throttle<B> {
+impl<B: Requester> Requester for Throttle<B>
+where	
+    B::SendMessage: Send,	
+{	
+    type Err = B::Err;
+    
     type GetMe = B::GetMe;
 
     fn get_me(&self) -> Self::GetMe {
@@ -414,8 +419,9 @@ impl<R: HasPayload> HasPayload for ThrottlingRequest<R> {
     }
 }
 
-impl<R: Request> Request for ThrottlingRequest<R>
+impl<R> Request for ThrottlingRequest<R>
 where
+    R: Request + Send,
     <R as HasPayload>::Payload: GetChatId,
 {
     type Err = R::Err;
@@ -619,7 +625,7 @@ mod chan_send {
     pub(super) struct ChanSend(#[pin] Inner);
 
     #[cfg(not(feature = "nightly"))]
-    type Inner = Pin<Box<dyn Future<Output = Result<(), SendError<(Id, Sender<Never>)>>>>>;
+    type Inner = Pin<Box<dyn Future<Output = Result<(), SendError<(Id, Sender<Never>)>>> + Send>>;
     #[cfg(feature = "nightly")]
     type Inner = impl Future<Output = Result<(), SendError<(Id, Sender<Never>)>>>;
 
