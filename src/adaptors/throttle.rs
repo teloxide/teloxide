@@ -349,11 +349,11 @@ impl<B> Throttle<B> {
 }
 
 impl<B: Requester> Requester for Throttle<B>
-where	
-    B::SendMessage: Send,	
-{	
+where
+    B::SendMessage: Send,
+{
     type Err = B::Err;
-    
+
     type GetMe = B::GetMe;
 
     fn get_me(&self) -> Self::GetMe {
