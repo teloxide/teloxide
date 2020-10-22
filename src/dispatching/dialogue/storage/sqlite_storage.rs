@@ -105,9 +105,14 @@ where
         dialogue: D,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
-            let serialized_dialogue =
+            let prev_dialogue = match get_dialogue(&self.pool, chat_id).await? {
+                Some(d) => {
+                    Some(self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError)?)
+                }
+                None => None,
+            };
+            let upd_dialogue =
                 self.serializer.serialize(&dialogue).map_err(SqliteStorageError::SerdeError)?;
-            let prev_dialogue = get_dialogue(&self.pool, chat_id).await?;
 
             self.pool
                 .acquire()
@@ -120,16 +125,10 @@ where
                                 "#,
                     )
                     .bind(chat_id)
-                    .bind(serialized_dialogue),
+                    .bind(upd_dialogue),
                 )
                 .await?;
-
-            Ok(match prev_dialogue {
-                None => None,
-                Some(d) => {
-                    Some(self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError)?)
-                }
-            })
+            Ok(prev_dialogue)
         })
     }
 }
