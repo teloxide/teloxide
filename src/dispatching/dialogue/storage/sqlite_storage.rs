@@ -1,8 +1,7 @@
 use super::{serializer::Serializer, Storage};
 use futures::future::BoxFuture;
 use serde::{de::DeserializeOwned, Serialize};
-use sqlx::sqlite::SqlitePool;
-use sqlx::Executor;
+use sqlx::{sqlite::SqlitePool, Executor};
 use std::{
     convert::Infallible,
     fmt::{Debug, Display},
@@ -59,16 +58,18 @@ async fn get_dialogue(
     pool: &SqlitePool,
     chat_id: i64,
 ) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
-    match sqlx::query_as::<_, DialogueDBRow>(
-        "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
+    Ok(
+        match sqlx::query_as::<_, DialogueDBRow>(
+            "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
+        )
+        .bind(chat_id)
+        .fetch_optional(pool)
+        .await?
+        {
+            Some(r) => Some(Box::new(r.dialogue)),
+            _ => None,
+        },
     )
-    .bind(chat_id)
-    .fetch_optional(pool)
-    .await?
-    {
-        Some(r) => Ok(Some(Box::new(r.dialogue))),
-        _ => Ok(None),
-    }
 }
 
 impl<S, D> Storage<D> for SqliteStorage<S>
@@ -84,8 +85,7 @@ where
         chat_id: i64,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
-            match get_dialogue(&self.pool, chat_id).await? {
-                None => Ok(None),
+            Ok(match get_dialogue(&self.pool, chat_id).await? {
                 Some(d) => {
                     let prev_dialogue =
                         self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError)?;
@@ -93,9 +93,10 @@ where
                         .bind(chat_id)
                         .execute(&self.pool)
                         .await?;
-                    Ok(Some(prev_dialogue))
+                    Some(prev_dialogue)
                 }
-            }
+                _ => None,
+            })
         })
     }
 
@@ -109,7 +110,7 @@ where
                 Some(d) => {
                     Some(self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError)?)
                 }
-                None => None,
+                _ => None,
             };
             let upd_dialogue =
                 self.serializer.serialize(&dialogue).map_err(SqliteStorageError::SerdeError)?;
