@@ -5,6 +5,7 @@ use sqlx::{sqlite::SqlitePool, Executor};
 use std::{
     convert::Infallible,
     fmt::{Debug, Display},
+    str,
     sync::Arc,
 };
 use thiserror::Error;
@@ -114,14 +115,13 @@ where
             };
             let upd_dialogue =
                 self.serializer.serialize(&dialogue).map_err(SqliteStorageError::SerdeError)?;
-
             self.pool
                 .acquire()
                 .await?
                 .execute(
                     sqlx::query(
                         r#"
-            INSERT INTO teloxide_dialogues VALUES (?, ?) WHERE chat_id = ?
+            INSERT INTO teloxide_dialogues VALUES (?, ?)
             ON CONFLICT(chat_id) DO UPDATE SET dialogue=excluded.dialogue
                                 "#,
                     )
