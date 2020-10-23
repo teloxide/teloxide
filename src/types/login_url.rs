@@ -23,6 +23,13 @@ pub struct LoginUrl {
 }
 
 impl LoginUrl {
+    pub fn new<S>(url: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self { url: url.into(), forward_text: None, bot_username: None, request_write_access: None }
+    }
+
     pub fn url<S>(mut self, val: S) -> Self
     where
         S: Into<String>,
