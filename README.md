@@ -76,8 +76,8 @@ $ rustup override set nightly
  5. Execute `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.3.1"
-teloxide-macros = "0.3.2"
+teloxide = "0.3"
+teloxide-macros = "0.3"
 
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
