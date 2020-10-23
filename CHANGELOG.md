@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Added
+ - Allow arbitrary error types to be returned from (sub)transitions ([issue 242](https://github.com/teloxide/teloxide/issues/242)).
+ - The `respond` function, a shortcut for `ResponseResult::Ok(())`.
+
+### Changed
+ - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
+ - 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`, 
+   `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline 
+   versions (e.g.: `edit_message_text` and `edit_inline_message_text`). Instead of `ChatOrInlineMessage` common versions
+   accept `chat_id: impl Into<ChatId>` and `message_id: i32` whereas inline versions accept 
+   `inline_message_id: impl Into<String>`. Also note that return type of inline versions is `True` ([issue 253], [pr 257])
+ - `ChatOrInlineMessage` is renamed to `TargetMessage`, it's `::Chat`  variant is renamed to `::Common`, 
+   `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed 
+   `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use 
+   `Into<TargetMessage>` to accept `String`s. ([issue 253], [pr 257])
+
+[issue 253]: https://github.com/teloxide/teloxide/issues/253
+[pr 257]: https://github.com/teloxide/teloxide/pull/257
+
+## [0.3.2] - 2020-10-23
+
+### Added
+ - `LoginUrl::new` ([issue 298](https://github.com/teloxide/teloxide/issues/298))
+
 ## [0.3.1] - 2020-08-25
 
 ### Added
