@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
 
+## [0.3.2] - 2020-10-23
+
+### Added
+ - `LoginUrl::new` ([issue 298](https://github.com/teloxide/teloxide/issues/298))
+
 ## [0.3.1] - 2020-08-25
 
 ### Added
