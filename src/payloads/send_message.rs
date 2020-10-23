@@ -1,112 +1,42 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    requests::{HasPayload, Payload},
-    types::{ChatId, Message, ParseMode, ReplyMarkup},
-};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 
-/// Use this method to send text messages.
-///
-/// On success, the sent [`Message`] is returned.
-///
-/// [`Message`]: crate::types::Message
-#[serde_with_macros::skip_serializing_none]
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
-pub struct SendMessage {
-    ///	Unique identifier for the target chat or username of the target channel
-    /// (in the format `@channelusername`)
-    pub chat_id: ChatId,
-    /// Text of the message to be sent
-    pub text: String,
-    /// Send [Markdown] or [HTML], if you want Telegram apps to show
-    /// [bold, italic, fixed-width text or inline URLs] in your bot's message.
+impl_payload! {
+    /// Use this method to send text messages.
     ///
-    /// [Markdown]: crate::types::ParseMode::Markdown
-    /// [HTML]: crate::types::ParseMode::HTML
-    /// [bold, italic, fixed-width text or inline URLs]:
-    /// crate::types::ParseMode
-    pub parse_mode: Option<ParseMode>,
-    /// Disables link previews for links in this message
-    pub disable_web_page_preview: Option<bool>,
-    /// Sends the message silently.
-    /// Users will receive a notification with no sound.
-    pub disable_notification: Option<bool>,
-    /// If the message is a reply, [id] of the original message
+    /// On success, the sent [`Message`] is returned.
     ///
-    /// [id]: crate::types::Message::id
-    pub reply_to_message_id: Option<i32>,
-    /// Additional interface options.
-    pub reply_markup: Option<ReplyMarkup>,
-}
-
-impl Payload for SendMessage {
-    type Output = Message;
-
-    const NAME: &'static str = "sendMessage";
-}
-
-impl SendMessage {
-    pub fn new<C, T>(chat_id: C, text: T) -> Self
-    where
-        C: Into<ChatId>,
-        T: Into<String>,
-    {
-        SendMessage {
-            chat_id: chat_id.into(),
-            text: text.into(),
-            parse_mode: None,
-            disable_web_page_preview: None,
-            disable_notification: None,
-            reply_to_message_id: None,
-            reply_markup: None,
+    /// [`Message`]: crate::types::Message
+    #[serde_with_macros::skip_serializing_none]
+    #[derive(Debug, PartialEq, Eq, Hash, Clone, Deserialize, Serialize)]
+    pub SendMessage (SendMessageSetters) => Message {
+        required {
+            ///	Unique identifier for the target chat or username of the target channel
+            /// (in the format `@channelusername`)
+            pub chat_id: ChatId [into],
+            /// Text of the message to be sent
+            pub text: String [into],
+        }
+        optional {
+            /// Send [Markdown] or [HTML], if you want Telegram apps to show
+            /// [bold, italic, fixed-width text or inline URLs] in your bot's message.
+            ///
+            /// [Markdown]: crate::types::ParseMode::Markdown
+            /// [HTML]: crate::types::ParseMode::HTML
+            /// [bold, italic, fixed-width text or inline URLs]: crate::types::ParseMode
+            pub parse_mode: ParseMode,
+            /// Disables link previews for links in this message
+            pub disable_web_page_preview: bool,
+            /// Sends the message silently.
+            /// Users will receive a notification with no sound.
+            pub disable_notification: bool,
+            /// If the message is a reply, [id] of the original message
+            ///
+            /// [id]: crate::types::Message::id
+            pub reply_to_message_id: i32,
+            /// Additional interface options.
+            pub reply_markup: ReplyMarkup,
         }
     }
 }
-
-pub trait SendMessageSetters: HasPayload<Payload = SendMessage> + Sized {
-    fn chat_id<T>(mut self, value: T) -> Self
-    where
-        T: Into<ChatId>,
-    {
-        self.payload_mut().chat_id = value.into();
-        self
-    }
-
-    fn text<T>(mut self, value: T) -> Self
-    where
-        T: Into<String>, // TODO: into?
-    {
-        self.payload_mut().text = value.into();
-        self
-    }
-
-    fn parse_mode(mut self, value: ParseMode) -> Self {
-        self.payload_mut().parse_mode = Some(value);
-        self
-    }
-
-    fn disable_web_page_preview(mut self, value: bool) -> Self {
-        self.payload_mut().disable_web_page_preview = Some(value);
-        self
-    }
-
-    fn disable_notification(mut self, value: bool) -> Self {
-        self.payload_mut().disable_notification = Some(value);
-        self
-    }
-
-    fn reply_to_message_id(mut self, value: i32) -> Self {
-        self.payload_mut().reply_to_message_id = Some(value);
-        self
-    }
-
-    fn reply_markup<T>(mut self, value: T) -> Self
-    where
-        T: Into<ReplyMarkup>,
-    {
-        self.payload_mut().reply_markup = Some(value.into());
-        self
-    }
-}
-
-impl<P> SendMessageSetters for P where P: HasPayload<Payload = SendMessage> {}

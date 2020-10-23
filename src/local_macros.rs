@@ -107,6 +107,207 @@ macro_rules! req_future {
     };
 }
 
+/// Declares an item with a doc attribute computed by some macro expression.
+/// This allows documentation to be dynamically generated based on input.
+/// Necessary to work around https://github.com/rust-lang/rust/issues/52607.
+#[macro_use]
+macro_rules! calculated_doc {
+    (
+        $(
+            #[doc = $doc:expr]
+            $thing:item
+        )*
+    ) => (
+        $(
+            #[doc = $doc]
+            $thing
+        )*
+    );
+}
+
+/// Declare payload type, implement `Payload` trait amd ::new method for it, 
+/// declare setters trait and implement it for all type which have payload.
+#[macro_use]
+macro_rules! impl_payload {
+    (
+        $(
+            #[ $($method_meta:tt)* ]
+        )*
+        $vi:vis $Method:ident ($Setters:ident) => $Ret:ty {
+            $(
+                required {
+                    $(
+                        $(
+                            #[ $($field_meta:tt)* ]
+                        )*
+                        $v:vis $fields:ident : $FTy:ty $([$into:ident])?
+                        ,
+                    )*
+                }
+            )?
+
+            $(
+                optional {
+                    $(
+                        $(
+                            #[ $($opt_field_meta:tt)* ]
+                        )*
+                        $opt_v:vis $opt_fields:ident : $OptFTy:ty $([$opt_into:ident])?
+                    ),*
+                    $(,)?
+                }
+            )?
+        }
+    ) => {
+        $(
+            #[ $($method_meta)* ]
+        )*
+        $vi struct $Method {
+            $(
+                $(
+                    $(
+                        #[ $($field_meta)* ]
+                    )*
+                    $v $fields : $FTy,
+                )*
+            )?
+            $(
+                $(
+                    $(
+                        #[ $($opt_field_meta)* ]
+                    )*
+                    $opt_v $opt_fields : core::option::Option<$OptFTy>,
+                )*
+            )?
+        }
+
+        impl $Method {
+            $vi fn new($($($fields : impl_payload!(@into? $FTy $([$into])?)),*)?) -> Self {
+                Self {
+                    $(
+                        $(
+                            $fields: $fields $(.$into())?,
+                        )*
+                    )?
+                    $(
+                        $(
+                            $opt_fields: None,
+                        )*
+                    )?
+                }
+            }
+        }
+
+        impl $crate::requests::Payload for $Method {
+            type Output = $Ret;
+
+            const NAME: &'static str = stringify!($Method);
+        }
+
+        calculated_doc! {
+            #[doc = concat!(
+                "Setters for fields of [`",
+                stringify!($Method),
+                "`]"
+            )]
+            $vi trait $Setters: $crate::requests::HasPayload<Payload = $Method> + ::core::marker::Sized {
+                $(
+                    $(
+                        impl_payload! { @setter $Method $fields : $FTy $([$into])? }
+                    )*
+                )?
+                $(
+                    $(
+                        impl_payload! { @setter_opt $Method $opt_fields : $OptFTy $([$opt_into])? }
+                    )*
+                )?
+            }
+        }
+
+        impl<P> $Setters for P where P: crate::requests::HasPayload<Payload = $Method> {}
+    };
+    (@setter_opt $Method:ident $field:ident : $FTy:ty [into]) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field<T>(mut self, value: T) -> Self
+            where
+                T: Into<$FTy>,
+            {
+                self.payload_mut().$field = Some(value.into());
+                self
+            }
+        }
+    };
+    (@setter_opt $Method:ident $field:ident : $FTy:ty) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field(mut self, value: $FTy) -> Self {
+                self.payload_mut().$field = Some(value);
+                self
+            }
+        }
+    };
+    (@setter $Method:ident $field:ident : $FTy:ty [into]) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field<T>(mut self, value: T) -> Self
+            where
+                T: Into<$FTy>,
+            {
+                self.payload_mut().$field = value.into();
+                self
+            }
+        }
+    };
+    (@setter $Method:ident $field:ident : $FTy:ty) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field(mut self, value: $FTy) -> Self {
+                self.payload_mut().$field = value;
+                self
+            }
+        }
+    };
+    (@into? $T:ty [into]) => {
+        impl ::core::convert::Into<$T>
+    };
+    (@into? $T:ty) => {
+        $T
+    };
+}
+
 #[macro_use]
 macro_rules! serde_or_unknown {
     (
