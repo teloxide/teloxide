@@ -24,9 +24,15 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 /// You can implement this trait for a structure that communicates with a DB and
 /// be sure that after you restart your bot, all the dialogues won't be lost.
 ///
-/// For a storage based on a simple hash map, see [`InMemStorage`].
+/// Currently we support the following storages out of the box:
+///
+/// - [`InMemStorage`] - a storage based on a simple hash map
+/// - [`RedisStorage`] - a Redis-based storage
+/// - [`SqliteStorage`] - an SQLite-based persistent storage
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
+/// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
+/// [`SqliteStorage`]: crate::dispatching::dialogue::SqliteStorage
 pub trait Storage<D> {
     type Error;
 

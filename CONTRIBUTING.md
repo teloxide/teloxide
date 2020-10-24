@@ -7,7 +7,7 @@ To change the source code, fork the `dev` branch of this repository and work ins
 ```
 cargo clippy --all --all-features --all-targets
 cargo test --all
-cargo doc --open
+cargo doc --open --all-features
 # Using nightly rustfmt
 cargo +nightly fmt --all -- --check
 ```

@@ -10,7 +10,9 @@ use std::{
 };
 use thiserror::Error;
 
-// An error returned from [`SqliteStorage`].
+/// An error returned from [`SqliteStorage`].
+///
+/// [`SqliteStorage`]: struct.SqliteStorage.html
 #[derive(Debug, Error)]
 pub enum SqliteStorageError<SE>
 where
@@ -22,6 +24,7 @@ where
     SqliteError(#[from] sqlx::Error),
 }
 
+/// A persistent storage based on [SQLite](https://www.sqlite.org/).
 pub struct SqliteStorage<S> {
     pool: SqlitePool,
     serializer: S,
