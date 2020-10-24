@@ -39,9 +39,9 @@ jobs:
 
         include:
           - rust: stable
-            features: "--features \"redis-storage cbor-serializer bincode-serializer frunk-\""
+            features: "--features \"redis-storage sqlite-storage cbor-serializer bincode-serializer frunk-\""
           - rust: beta
-            features: "--features \"redis-storage cbor-serializer bincode-serializer frunk-\""
+            features: "--features \"redis-storage sqlite-storage cbor-serializer bincode-serializer frunk-\""
           - rust: nightly
             features: "--all-features"
 

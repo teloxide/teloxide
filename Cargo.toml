@@ -81,3 +81,8 @@ all-features = true
 name = "redis"
 path = "tests/redis.rs"
 required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
+
+[[test]]
+name = "sqlite"
+path = "tests/sqlite.rs"
+required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
