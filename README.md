@@ -43,10 +43,11 @@
 [functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
 [other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
 
- - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis].
+ - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
+[Sqlite]: https://www.sqlite.org
 
  - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
 
@@ -371,6 +372,7 @@ The second one produces very strange compiler messages due to the `#[tokio::main
 ## Cargo features
 
  - `redis-storage` -- enables the [Redis] support.
+ - `sqlite-storage` -- enables the [Sqlite] support.
  - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
  - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
  - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.

@@ -43,7 +43,7 @@ async fn main() {
                 let dialogue = dialogue.expect("std::convert::Infallible");
                 handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
             },
-            SqliteStorage::open("sqlite.db", JSON).await.unwrap(),
+            SqliteStorage::open("db.sqlite", JSON).await.unwrap(),
         ))
         .dispatch()
         .await;
