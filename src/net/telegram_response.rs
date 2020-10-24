@@ -66,4 +66,14 @@ mod tests {
             matches!(val, TelegramResponse::Err { error: ApiError::TerminatedByOtherGetUpdates, .. })
         );
     }
+
+    #[test]
+    fn parse_unknown() {
+        let s = r#"{"ok":false,"error_code":111,"description":"Unknown description that won't match anything"}"#;
+        let val = serde_json::from_str::<TelegramResponse<Update>>(s).unwrap();
+
+        assert!(
+            matches!(val, TelegramResponse::Err { error: ApiError::Unknown(s), .. } if s == "Unknown description that won't match anything")
+        );
+    }
 }
