@@ -1,0 +1,20 @@
+[package]
+name = "sqlite_remember_bot"
+version = "0.1.0"
+authors = ["Sergey Levitin <selevit@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4.8"
+pretty_env_logger = "0.4.0"
+tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
+
+# You can also choose "cbor-serializer" or built-in JSON serializer
+teloxide = { path = "../../", features = ["sqlite-storage", "bincode-serializer", "redis-storage"] }
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
+
+serde = "1.0.104"
+futures = "0.3.5"
+
+thiserror = "1.0.15"
+derive_more = "0.99.9"
