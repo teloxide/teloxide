@@ -14,7 +14,7 @@ pub(crate) enum TelegramResponse<R> {
         /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
         ok: True,
-
+        #[serde(rename = "result")]
         response: R,
     },
     Err {
