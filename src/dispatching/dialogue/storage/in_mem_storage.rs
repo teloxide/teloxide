@@ -8,7 +8,7 @@ use tokio::sync::Mutex;
 ///
 /// ## Note
 /// All the dialogues will be lost after you restart your bot. If you need to
-/// store them somewhere on a drive, should should use [`SqliteStorage`],
+/// store them somewhere on a drive, you should use [`SqliteStorage`],
 /// [`RedisStorage`] or implement your own.
 ///
 /// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
