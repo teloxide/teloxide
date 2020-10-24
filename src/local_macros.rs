@@ -125,7 +125,7 @@ macro_rules! calculated_doc {
     );
 }
 
-/// Declare payload type, implement `Payload` trait amd ::new method for it, 
+/// Declare payload type, implement `Payload` trait amd ::new method for it,
 /// declare setters trait and implement it for all type which have payload.
 #[macro_use]
 macro_rules! impl_payload {
