@@ -22,7 +22,6 @@ where
     SqliteError(#[from] sqlx::Error),
 }
 
-// TODO: make JSON serializer to be default
 pub struct SqliteStorage<S> {
     pool: SqlitePool,
     serializer: S,
