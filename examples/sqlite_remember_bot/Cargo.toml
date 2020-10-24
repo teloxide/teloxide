@@ -1,7 +1,7 @@
 [package]
 name = "sqlite_remember_bot"
 version = "0.1.0"
-authors = ["Sergey Levitin <selevit@gmail.com>"]
+authors = ["Maximilian Siling <mouse-art@ya.ru>", "Sergey Levitin <selevit@gmail.com>"]
 edition = "2018"
 
 [dependencies]
