@@ -10,6 +10,12 @@ use std::{
 };
 use thiserror::Error;
 
+/// A persistent storage based on [SQLite](https://www.sqlite.org/).
+pub struct SqliteStorage<S> {
+    pool: SqlitePool,
+    serializer: S,
+}
+
 /// An error returned from [`SqliteStorage`].
 ///
 /// [`SqliteStorage`]: struct.SqliteStorage.html
@@ -22,17 +28,6 @@ where
     SerdeError(SE),
     #[error("sqlite error: {0}")]
     SqliteError(#[from] sqlx::Error),
-}
-
-/// A persistent storage based on [SQLite](https://www.sqlite.org/).
-pub struct SqliteStorage<S> {
-    pool: SqlitePool,
-    serializer: S,
-}
-
-#[derive(sqlx::FromRow)]
-struct DialogueDBRow {
-    dialogue: Vec<u8>,
 }
 
 impl<S> SqliteStorage<S> {
@@ -55,24 +50,6 @@ CREATE TABLE IF NOT EXISTS teloxide_dialogues (
 
         Ok(Arc::new(Self { pool, serializer }))
     }
-}
-
-async fn get_dialogue(
-    pool: &SqlitePool,
-    chat_id: i64,
-) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
-    Ok(
-        match sqlx::query_as::<_, DialogueDBRow>(
-            "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
-        )
-        .bind(chat_id)
-        .fetch_optional(pool)
-        .await?
-        {
-            Some(r) => Some(Box::new(r.dialogue)),
-            _ => None,
-        },
-    )
 }
 
 impl<S, D> Storage<D> for SqliteStorage<S>
@@ -134,4 +111,27 @@ where
             Ok(prev_dialogue)
         })
     }
+}
+
+#[derive(sqlx::FromRow)]
+struct DialogueDBRow {
+    dialogue: Vec<u8>,
+}
+
+async fn get_dialogue(
+    pool: &SqlitePool,
+    chat_id: i64,
+) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
+    Ok(
+        match sqlx::query_as::<_, DialogueDBRow>(
+            "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
+        )
+        .bind(chat_id)
+        .fetch_optional(pool)
+        .await?
+        {
+            Some(r) => Some(Box::new(r.dialogue)),
+            _ => None,
+        },
+    )
 }
