@@ -15,6 +15,7 @@ pub use crate::{
 };
 
 #[cfg(feature = "frunk")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
 pub use crate::utils::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;

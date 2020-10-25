@@ -32,9 +32,11 @@ where
 ///
 /// [CBOR]: https://en.wikipedia.org/wiki/CBOR
 #[cfg(feature = "cbor-serializer")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
 pub struct CBOR;
 
 #[cfg(feature = "cbor-serializer")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
 impl<D> Serializer<D> for CBOR
 where
     D: Serialize + DeserializeOwned,
@@ -54,9 +56,11 @@ where
 ///
 /// [Bincode]: https://github.com/servo/bincode
 #[cfg(feature = "bincode-serializer")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "bincode-serializer")))]
 pub struct Bincode;
 
 #[cfg(feature = "bincode-serializer")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "bincode-serializer")))]
 impl<D> Serializer<D> for Bincode
 where
     D: Serialize + DeserializeOwned,

@@ -56,6 +56,7 @@ impl Bot {
     /// [`tokio::fs::File`]: tokio::fs::File
     /// [`Bot::download_file`]: crate::Bot::download_file
     #[cfg(feature = "unstable-stream")]
+    #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "unstable-stream")))]
     pub async fn download_file_stream(
         &self,
         path: &str,

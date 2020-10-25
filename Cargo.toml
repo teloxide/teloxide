@@ -70,6 +70,7 @@ tokio = { version = "0.2.21", features = ["fs", "stream", "rt-threaded", "macros
 
 [package.metadata."docs.rs"]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [[test]]
 name = "redis"

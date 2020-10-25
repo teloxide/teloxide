@@ -162,6 +162,7 @@ pub use transition::{
 pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use storage::{RedisStorage, RedisStorageError};
 
 pub use storage::{serializer, InMemStorage, Serializer, Storage};

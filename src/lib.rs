@@ -41,6 +41,12 @@
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
 #![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
+// we pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
+//
+// To properly build docs of this crate run
+// ```console
+// $ RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --open --all-features
+// ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
@@ -61,9 +67,6 @@ pub mod prelude;
 pub mod requests;
 pub mod types;
 pub mod utils;
-
-#[cfg(feature = "macros")]
-extern crate teloxide_macros;
 
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
