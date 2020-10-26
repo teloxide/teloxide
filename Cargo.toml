@@ -32,7 +32,7 @@ frunk- = ["frunk"]
 
 macros = ["teloxide-macros"]
 
-nightly = [] # currently used only for `README.md` tests
+nightly = [] # currently used for `README.md` tests and building docs for `docsrs` to add `This is supported on feature="..." only.`
 
 [dependencies]
 serde_json = "1.0.55"
@@ -68,8 +68,9 @@ pretty_env_logger = "0.4.0"
 lazy_static = "1.4.0"
 tokio = { version = "0.2.21", features = ["fs", "stream", "rt-threaded", "macros"] }
 
-[package.metadata."docs.rs"]
+[package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [[test]]
 name = "redis"
