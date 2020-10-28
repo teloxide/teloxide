@@ -1023,7 +1023,7 @@ impl MediaVenue {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageDice {
     /// Message is a dice with random value from 1 to 6.
-    dice: Dice,
+    pub dice: Dice,
 }
 
 mod getters {
