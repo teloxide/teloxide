@@ -1061,7 +1061,7 @@ impl MediaVenue {
 #[non_exhaustive]
 pub struct MessageDice {
     /// Message is a dice with random value from 1 to 6.
-    dice: Dice,
+    pub dice: Dice,
 }
 
 mod getters {

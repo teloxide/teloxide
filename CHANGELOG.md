@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
 
+## [0.3.3] - 2020-10-30
+
+### Fixed
+ - The `dice` field from `MessageDice` is public now ([issue 306](https://github.com/teloxide/teloxide/issues/306))
+
 ## [0.3.2] - 2020-10-23
 
 ### Added
