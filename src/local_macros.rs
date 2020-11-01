@@ -159,6 +159,7 @@ macro_rules! impl_payload {
             )?
         }
     ) => {
+        #[serde_with_macros::skip_serializing_none]
         $(
             #[ $($method_meta)* ]
         )*
