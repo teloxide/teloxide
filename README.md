@@ -380,7 +380,7 @@ The second one produces very strange compiler messages due to the `#[tokio::main
 [`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
 
 ## FAQ
-Q: Where I can ask questions?
+**Q: Where I can ask questions?**
 
 A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about:
 
@@ -391,11 +391,11 @@ A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for wel
 
 If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
 
-Q: Do you support the Telegram API for clients?
+**Q: Do you support the Telegram API for clients?**
 
 A: No, only the bots API.
 
-Q: Why Rust?
+**Q: Why Rust?**
 
 A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides a good enough ecosystem and the language for it to be suitable for writing bots.
 
@@ -403,7 +403,7 @@ UPD: The current design relies on wide and deep trait bounds, thereby increasing
 
 [mux-stream]: https://github.com/Hirrolot/mux-stream
 
-Q: Can I use webhooks?
+**Q: Can I use webhooks?**
 
 A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
 
@@ -411,7 +411,7 @@ Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
 
-Q: Can I use different loggers?
+**Q: Can I use different loggers?**
 
 A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
 
