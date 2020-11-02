@@ -140,7 +140,7 @@ macro_rules! impl_payload {
                         $(
                             #[ $($field_meta:tt)* ]
                         )*
-                        $v:vis $fields:ident : $FTy:ty $([$into:ident])?
+                        $v:vis $fields:ident : $FTy:ty $([$conv:ident])?
                         ,
                     )*
                 }
@@ -152,13 +152,14 @@ macro_rules! impl_payload {
                         $(
                             #[ $($opt_field_meta:tt)* ]
                         )*
-                        $opt_v:vis $opt_fields:ident : $OptFTy:ty $([$opt_into:ident])?
+                        $opt_v:vis $opt_fields:ident : $OptFTy:ty $([$opt_conv:ident])?
                     ),*
                     $(,)?
                 }
             )?
         }
     ) => {
+        #[serde_with_macros::skip_serializing_none]
         $(
             #[ $($method_meta)* ]
         )*
@@ -182,11 +183,11 @@ macro_rules! impl_payload {
         }
 
         impl $Method {
-            $vi fn new($($($fields : impl_payload!(@into? $FTy $([$into])?)),*)?) -> Self {
+            $vi fn new($($($fields : impl_payload!(@convert? $FTy $([$conv])?)),*)?) -> Self {
                 Self {
                     $(
                         $(
-                            $fields: $fields $(.$into())?,
+                            $fields: impl_payload!(@convert_map ($fields) $([$conv])?),
                         )*
                     )?
                     $(
@@ -213,12 +214,12 @@ macro_rules! impl_payload {
             $vi trait $Setters: $crate::requests::HasPayload<Payload = $Method> + ::core::marker::Sized {
                 $(
                     $(
-                        impl_payload! { @setter $Method $fields : $FTy $([$into])? }
+                        impl_payload! { @setter $Method $fields : $FTy $([$conv])? }
                     )*
                 )?
                 $(
                     $(
-                        impl_payload! { @setter_opt $Method $opt_fields : $OptFTy $([$opt_into])? }
+                        impl_payload! { @setter_opt $Method $opt_fields : $OptFTy $([$opt_conv])? }
                     )*
                 )?
             }
@@ -242,6 +243,26 @@ macro_rules! impl_payload {
                 T: Into<$FTy>,
             {
                 self.payload_mut().$field = Some(value.into());
+                self
+            }
+        }
+    };
+    (@setter_opt $Method:ident $field:ident : $FTy:ty [collect]) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field<T>(mut self, value: T) -> Self
+            where
+                T: ::core::iter::IntoIterator<Item = <$FTy as ::core::iter::IntoIterator>::Item>,
+            {
+                self.payload_mut().$field = Some(value.into_iter().collect());
                 self
             }
         }
@@ -283,6 +304,26 @@ macro_rules! impl_payload {
             }
         }
     };
+    (@setter $Method:ident $field:ident : $FTy:ty [collect]) => {
+        calculated_doc! {
+            #[doc = concat!(
+                "Setter for [`",
+                stringify!($field),
+                "`](",
+                stringify!($Method),
+                "::",
+                stringify!($field),
+                ") field."
+            )]
+            fn $field<T>(mut self, value: T) -> Self
+            where
+                T: ::core::iter::IntoIterator<Item = <$FTy as ::core::iter::IntoIterator>::Item>,
+            {
+                self.payload_mut().$field = value.into_iter().collect();
+                self
+            }
+        }
+    };
     (@setter $Method:ident $field:ident : $FTy:ty) => {
         calculated_doc! {
             #[doc = concat!(
@@ -300,10 +341,22 @@ macro_rules! impl_payload {
             }
         }
     };
-    (@into? $T:ty [into]) => {
+    (@convert? $T:ty [into]) => {
         impl ::core::convert::Into<$T>
     };
-    (@into? $T:ty) => {
+    (@convert? $T:ty [collect]) => {
+        impl ::core::iter::IntoIterator<Item = <$T as ::core::iter::IntoIterator>::Item>
+    };
+    (@convert? $T:ty) => {
         $T
+    };
+    (@convert_map ($e:expr) [into]) => {
+        $e.into()
+    };
+    (@convert_map ($e:expr) [collect]) => {
+        $e.into_iter().collect()
+    };
+    (@convert_map ($e:expr)) => {
+        $e
     };
 }
