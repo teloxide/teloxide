@@ -2,9 +2,10 @@ use serde::Serialize;
 
 use crate::types::InputFile;
 
+/// Sticker file that may be uploaded to telegram.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize)]
 #[serde(untagged)]
-pub enum StickerType {
+pub enum InputSticker {
     /// PNG image with the sticker, must be up to 512 kilobytes in size,
     /// dimensions must not exceed 512px, and either width or height must be
     /// exactly 512px.
@@ -27,8 +28,8 @@ pub enum StickerType {
     Tgs { tgs_sticker: InputFile },
 }
 
-impl StickerType {
-    /// Create png-`StickerType`.
+impl InputSticker {
+    /// Create png-`InputSticker`.
     ///
     /// See [`StickerType::Png`] for more
     ///
@@ -37,7 +38,7 @@ impl StickerType {
         Self::Png { png_sticker }
     }
 
-    /// Create tgs-`StickerType`.
+    /// Create tgs-`InputSticker`.
     ///
     /// See [`StickerType::Tgs`] for more
     ///

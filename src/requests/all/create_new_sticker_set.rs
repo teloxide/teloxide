@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{RequestOld, ResponseResult},
-    types::{MaskPosition, StickerType, True},
+    types::{MaskPosition, InputSticker, True},
     Bot,
 };
 
@@ -20,7 +20,7 @@ pub struct CreateNewStickerSet {
     pub name: String,
     pub title: String,
     #[serde(flatten)]
-    pub sticker_type: StickerType,
+    pub sticker: InputSticker,
     pub emojis: String,
     pub contains_masks: Option<bool>,
     pub mask_position: Option<MaskPosition>,
@@ -42,7 +42,7 @@ impl CreateNewStickerSet {
         user_id: i32,
         name: N,
         title: T,
-        sticker_type: StickerType,
+        sticker_type: InputSticker,
         emojis: E,
     ) -> Self
     where
@@ -55,7 +55,7 @@ impl CreateNewStickerSet {
             user_id,
             name: name.into(),
             title: title.into(),
-            sticker_type,
+            sticker: sticker_type,
             emojis: emojis.into(),
             contains_masks: None,
             mask_position: None,
@@ -91,8 +91,8 @@ impl CreateNewStickerSet {
         self
     }
 
-    pub fn sticker_type(mut self, val: StickerType) -> Self {
-        self.sticker_type = val;
+    pub fn sticker_type(mut self, val: InputSticker) -> Self {
+        self.sticker = val;
         self
     }
 
