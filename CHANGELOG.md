@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - Allow arbitrary error types to be returned from (sub)transitions ([issue 242](https://github.com/teloxide/teloxide/issues/242)).
  - The `respond` function, a shortcut for `ResponseResult::Ok(())`.
+ - The `sqlite-storage` feature -- enables SQLite support.
 
 ### Changed
  - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
