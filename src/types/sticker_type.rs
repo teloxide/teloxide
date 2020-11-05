@@ -31,18 +31,18 @@ pub enum InputSticker {
 impl InputSticker {
     /// Create png-`InputSticker`.
     ///
-    /// See [`StickerType::Png`] for more
+    /// See [`InputSticker::Png`] for more
     ///
-    /// [`StickerType::Png`]: crate::types::StickerType::Png
+    /// [`InputSticker::Png`]: crate::types::InputSticker::Png
     pub fn png(png_sticker: InputFile) -> Self {
         Self::Png { png_sticker }
     }
 
     /// Create tgs-`InputSticker`.
     ///
-    /// See [`StickerType::Tgs`] for more
+    /// See [`InputSticker::Tgs`] for more
     ///
-    /// [`StickerType::Tgs`]: crate::types::StickerType::Tgs
+    /// [`InputSticker::Tgs`]: crate::types::InputSticker::Tgs
     pub fn tgs(tgs_sticker: InputFile) -> Self {
         Self::Tgs { tgs_sticker }
     }
