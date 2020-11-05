@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{RequestOld, ResponseResult},
-    types::{MaskPosition, InputSticker, True},
+    types::{InputSticker, MaskPosition, True},
     Bot,
 };
 

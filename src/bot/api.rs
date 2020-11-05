@@ -21,7 +21,7 @@ use crate::{
     },
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice, ParseMode, InputSticker, TargetMessage,
+        InputSticker, LabeledPrice, ParseMode, TargetMessage,
     },
     Bot,
 };
