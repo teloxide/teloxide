@@ -21,7 +21,7 @@ use crate::{
     },
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        LabeledPrice, ParseMode, StickerType, TargetMessage,
+        InputSticker, LabeledPrice, ParseMode, TargetMessage,
     },
     Bot,
 };
@@ -1366,7 +1366,7 @@ impl Bot {
         user_id: i32,
         name: N,
         title: T,
-        sticker_type: StickerType,
+        sticker_type: InputSticker,
         emojis: E,
     ) -> CreateNewStickerSet
     where
@@ -1389,7 +1389,7 @@ impl Bot {
         &self,
         user_id: i32,
         name: N,
-        sticker_type: StickerType,
+        sticker_type: InputSticker,
         emojis: E,
     ) -> AddStickerToSet
     where

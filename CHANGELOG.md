@@ -42,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Rename `StickerType` => `InputSticker`, `{CreateNewStickerSet,AddStickerToSet}::sticker_type}` => `sticker` ([#23][pr23])
+- Use `_: IntoIterator<Item = T>` bound instead of `_: Into<Vec<T>>` in telegram methods which accept collections ([#21][pr21])
+- Make `MessageDice::dice` pub ([#20][pr20])
 - Merge `ApiErrorKind` and `KnownApiErrorKind` into `ApiError` ([#13][pr13])
 - Refactor ChatMember ([#9][pr9])
   - Replace a bunch of `Option<_>` fields with `ChatMemberKind`
@@ -55,6 +58,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr9]: https://github.com/teloxide/teloxide-core/pull/9
 [pr13]: https://github.com/teloxide/teloxide-core/pull/13
+[pr20]: https://github.com/teloxide/teloxide-core/pull/20
+[pr21]: https://github.com/teloxide/teloxide-core/pull/21
+[pr23]: https://github.com/teloxide/teloxide-core/pull/23
 
 ### Removed
 

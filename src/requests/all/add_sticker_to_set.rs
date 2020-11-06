@@ -8,7 +8,7 @@ use crate::{
 
 use crate::{
     requests::{RequestOld, ResponseResult},
-    types::StickerType,
+    types::InputSticker,
 };
 
 /// Use this method to add a new sticker to a set created by the bot.
@@ -22,7 +22,7 @@ pub struct AddStickerToSet {
     pub user_id: i32,
     pub name: String,
     #[serde(flatten)]
-    pub sticker_type: StickerType,
+    pub sticker_type: InputSticker,
     pub emojis: String,
     pub mask_position: Option<MaskPosition>,
 }
@@ -41,7 +41,7 @@ impl AddStickerToSet {
         bot: Bot,
         user_id: i32,
         name: N,
-        sticker_type: StickerType,
+        sticker_type: InputSticker,
         emojis: E,
     ) -> Self
     where
@@ -73,7 +73,7 @@ impl AddStickerToSet {
         self
     }
 
-    pub fn sticker_type(mut self, val: StickerType) -> Self {
+    pub fn sticker_type(mut self, val: InputSticker) -> Self {
         self.sticker_type = val;
         self
     }
