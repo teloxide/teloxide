@@ -28,11 +28,13 @@ sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
-
+native-tls = ["reqwest/native-tls"]
+rustls = ["reqwest/rustls"]
 frunk- = ["frunk"]
 
 macros = ["teloxide-macros"]
 
+default = ["rustls"]
 nightly = [] # currently used for `README.md` tests and building docs for `docsrs` to add `This is supported on feature="..." only.`
 
 [dependencies]
@@ -42,7 +44,7 @@ serde = { version = "1.0.114", features = ["derive"] }
 tokio = { version = "0.2.21", features = ["fs", "stream"] }
 tokio-util = "0.3.1"
 
-reqwest = { version = "0.10.6", features = ["json", "stream"] }
+reqwest = { version = "0.10.6", features = ["json", "stream"], default-features = false }
 log = "0.4.8"
 lockfree = "0.5.1"
 bytes = "0.5.5"
