@@ -1,7 +1,5 @@
-﻿mod view_factory;
 mod view;
+mod view_factory;
 
-pub use {
-    view_factory::ViewFactory,
-    view::View,
-};
+pub use view::View;
+pub use view_factory::ViewFactory;

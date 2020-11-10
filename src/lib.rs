@@ -54,15 +54,15 @@ mod errors;
 mod net;
 
 mod bot;
+pub mod contrib;
 pub mod dispatching;
+pub mod dummies;
 pub mod error_handlers;
 mod logging;
 pub mod prelude;
 pub mod requests;
 pub mod types;
 pub mod utils;
-pub mod contrib;
-pub mod dummies;
 
 #[cfg(feature = "macros")]
 extern crate teloxide_macros;

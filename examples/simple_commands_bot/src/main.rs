@@ -4,13 +4,13 @@ use teloxide::contrib::parser::{Parser, DataWithUWC};
 use teloxide::contrib::handler::Handler;
 use teloxide::contrib::callback::Callback;
 use teloxide::teloxide as tlx;
-use teloxide::teloc::{Teloc, container};
+use teloxide::teloc::{Dependency, Resolver};
 use teloxide::teloc;
-use teloxide::teloc::Get;
 use std::sync::Arc;
+use teloc::ServiceProvider;
 
 // ---------------- COMMAND help
-#[derive(Parser, Teloc)]
+#[derive(Parser, Dependency)]
 struct HelpCommandController {
     #[parser]
     #[init("/help")]
@@ -28,7 +28,7 @@ async fn handle_help(_this: &HelpCommandController, data: DataWithUWC<(), Messag
 
 type Username = String;
 
-#[derive(Parser, Teloc)]
+#[derive(Parser, Dependency)]
 struct UsernameCommandController {
     #[parser]
     #[init("/username", " ")]
@@ -45,7 +45,7 @@ async fn handle_username(_this: &UsernameCommandController, data: DataWithUWC<Us
 
 type UsernameAndAge = (String, u8);
 
-#[derive(Parser, Teloc)]
+#[derive(Parser, Dependency)]
 struct UsernameAndAgeCommandController {
     #[parser]
     #[init("usernameandage", " ")]
@@ -59,7 +59,7 @@ async fn handle(_this: &UsernameAndAgeCommandController, data: DataWithUWC<Usern
 }
 
 // ---------------- SCHEMA
-#[derive(Callback, Teloc)]
+#[derive(Callback, Dependency)]
 struct CommandSchema {
     #[callback]
     handler: Cascade![
@@ -80,15 +80,15 @@ async fn run() {
 
     let bot = Bot::from_env();
     
-    let container = container! [
-        HelpCommandController,
-        UsernameCommandController,
-        UsernameAndAgeCommandController,
-        CommandSchema
-    ];
-    let schema: Arc<CommandSchema> = Arc::new(container.get());
+    let container = ServiceProvider::new()
+        .add_transient::<HelpCommandController>()
+        .add_transient::<UsernameCommandController>()
+        .add_transient::<UsernameAndAgeCommandController>()
+        .add_transient::<CommandSchema>();
+    let container = Arc::new(container);
+    
     teloxide::repl(bot, move |upd| {
-        let schema = schema.clone();
+        let schema: CommandSchema = container.scope_().resolve();
         async move {
             match schema.try_handle(upd).await {
                 Ok(res) => res,

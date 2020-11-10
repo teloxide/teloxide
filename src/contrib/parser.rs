@@ -1,12 +1,12 @@
-﻿use crate::dispatching::UpdateWithCx;
+use crate::dispatching::UpdateWithCx;
 
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::Parser;
 
-/// Struct that represent an parsed data and a raw `UpdateWithCx<Upd>`. After tests we noticed
-/// that in code we often need both the `UpdateWithCx<Upd>` and parsed data. This struct was returned
-/// form `Parser::parse` method.
+/// Struct that represent an parsed data and a raw `UpdateWithCx<Upd>`. After
+/// tests we noticed that in code we often need both the `UpdateWithCx<Upd>` and
+/// parsed data. This struct was returned form `Parser::parse` method.
 pub struct DataWithUWC<D, U> {
     pub data: D,
     pub uwc: UpdateWithCx<U>,
@@ -18,13 +18,17 @@ impl<D, U> DataWithUWC<D, U> {
     }
 }
 
-/// Parser is a trait that parses one type to another and if it fails returns input object. 
-/// If parsing is ok it must return `DataWithUWC` object that contains parsed data and input
-/// `UpdateWithCx<Upd>` object.
+/// Parser is a trait that parses one type to another and if it fails returns
+/// input object. If parsing is ok it must return `DataWithUWC` object that
+/// contains parsed data and input `UpdateWithCx<Upd>` object.
 pub trait Parser {
-    /// Update type that given from telegram. 
+    /// Update type that given from telegram.
     type Update;
-    /// Data, parsed from `Update` object. If there are no need in parsed data, it may be `()`.
+    /// Data, parsed from `Update` object. If there are no need in parsed data,
+    /// it may be `()`.
     type Output;
-    fn parse(&self, data: UpdateWithCx<Self::Update>) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>>;
+    fn parse(
+        &self,
+        data: UpdateWithCx<Self::Update>,
+    ) -> Result<DataWithUWC<Self::Output, Self::Update>, UpdateWithCx<Self::Update>>;
 }
