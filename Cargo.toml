@@ -59,7 +59,7 @@ serde_cbor = { version = "0.11.1", optional = true }
 bincode = { version = "1.3.1", optional = true }
 frunk = { version = "0.3.1", optional = true }
 
-teloxide-macros = { path="../teloxide-macros", optional = true }
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "rework", optional = true }
 teloc = { git = "https://github.com/p0lunin/teloc", package = "teloc", branch = "master" }
 
 [dev-dependencies]
