@@ -29,7 +29,7 @@ redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 native-tls = ["reqwest/native-tls"]
-rustls = ["reqwest/rustls"]
+rustls = ["reqwest/rustls-tls"]
 frunk- = ["frunk"]
 
 macros = ["teloxide-macros"]
