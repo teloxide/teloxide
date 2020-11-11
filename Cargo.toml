@@ -40,6 +40,9 @@ vecrem = { git = "https://github.com/WaffleLapkin/vecrem", rev = "6b9b6f42342df8
 [features]
 default = []
 
+rustls = ["reqwest/rustls"]
+native-tls = ["reqwest/native-tls"]
+
 # Features which require nightly compiler.
 #
 # Currently the only used compiler feature is feature(type_alias_impl_trait)
