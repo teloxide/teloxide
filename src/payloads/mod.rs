@@ -1,6 +1,7 @@
 //! Payloads - data types sended to relegram
 
-/// This module reexports all setters traits as `_`. When used with a glob import:
+/// This module reexports all setters traits as `_`. When used with a glob
+/// import:
 /// ```
 /// use teloxide_core::payloads::setters::*;
 /// ```
