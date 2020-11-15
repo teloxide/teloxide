@@ -13,7 +13,7 @@ impl_payload! {
     pub SendInvoice (SendInvoiceSetters) => Message {
         required {
             /// Unique identifier for the target private chat
-            pub chat_id: u32,
+            pub chat_id: i32,
             /// Product name, 1-32 characters
             pub title: String [into],
             /// Product description, 1-255 characters
