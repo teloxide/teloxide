@@ -184,9 +184,9 @@ macro_rules! impl_payload {
         }
 
         impl $Method {
-            // We mirror telegram API and can't do anything with too many arguments
+            // We mirror Telegram API and can't do anything with too many arguments.
             #[allow(clippy::too_many_arguments)]
-            // It's just easier for macros to generate such code
+            // It's just easier for macros to generate such code.
             #[allow(clippy::redundant_field_names)]
             $vi fn new($($($fields : impl_payload!(@convert? $FTy $([$conv])?)),*)?) -> Self {
                 Self {
