@@ -22,7 +22,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
             pub chat_id: ChatId [into],
             /// Identifier of the message to delete
-            pub message_id: i64,
+            pub message_id: i32,
         }
     }
 }

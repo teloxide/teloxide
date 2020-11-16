@@ -61,7 +61,7 @@ impl_payload! {
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i64,
+            pub reply_to_message_id: i32,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

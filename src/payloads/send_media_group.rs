@@ -23,7 +23,7 @@ impl_payload! {
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i64,
+            pub reply_to_message_id: i32,
         }
     }
 }

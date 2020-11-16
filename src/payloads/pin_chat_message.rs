@@ -13,7 +13,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
             /// Identifier of a message to pin
-            pub message_id: i64,
+            pub message_id: i32,
         }
         optional {
             /// Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels.

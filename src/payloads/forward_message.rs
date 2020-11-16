@@ -17,7 +17,7 @@ impl_payload! {
             /// Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)
             pub from_chat_id: ChatId [into],
             /// Message identifier in the chat specified in _from\_chat\_id_
-            pub message_id: i64,
+            pub message_id: i32,
         }
         optional {
             /// Sends the message [silently]. Users will receive a notification with no sound.

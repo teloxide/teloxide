@@ -25,7 +25,7 @@ impl_payload! {
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i64,
+            pub reply_to_message_id: i32,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
