@@ -27,6 +27,7 @@ pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
+    api_url: Option<Arc<str>>,
     client: Client,
     parse_mode: Option<ParseMode>,
 }
@@ -102,6 +103,7 @@ impl Bot {
     {
         Self {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
+            api_url: None,
             client,
             parse_mode: None,
         }
@@ -119,13 +121,16 @@ impl Bot {
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
+        let api_url = self.api_url.clone();
 
         let params = serde_json::to_vec(payload)
             // this `expect` should be ok since we don't write request those may trigger error here
             .expect("serialization of request to be infallible");
 
-        // async move to capture client&token
-        async move { net::request_json2(&client, token.as_ref(), P::NAME, params).await }
+        // async move to capture client&token&api_url&params
+        async move {
+            net::request_json2(&client, token.as_ref(), api_url.as_deref(), P::NAME, params).await
+        }
     }
 
     pub(crate) fn execute_multipart<P>(
@@ -138,13 +143,15 @@ impl Bot {
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
+        let api_url = self.api_url.clone();
 
         let params = serde_multipart::to_form(payload);
 
-        // async move to capture client&token&params
+        // async move to capture client&token&api_url&params
         async move {
             let params = params.await?;
-            net::request_multipart2(&client, token.as_ref(), P::NAME, params).await
+            net::request_multipart2(&client, token.as_ref(), api_url.as_deref(), P::NAME, params)
+                .await
         }
     }
 }
@@ -281,8 +288,9 @@ impl BotBuilder {
     #[must_use]
     pub fn build(self) -> Bot {
         Bot {
-            client: self.client.unwrap_or_else(crate::client_from_env),
             token: self.token.unwrap_or_else(|| get_env(TELOXIDE_TOKEN)).into(),
+            api_url: None,
+            client: self.client.unwrap_or_else(crate::client_from_env),
             parse_mode: self.parse_mode,
         }
     }
