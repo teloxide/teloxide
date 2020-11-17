@@ -3,27 +3,29 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
 
 impl_payload! {
-    /// Use this method to send text messages. On success, the sent [`Message`] is returned.
+    /// Use this method to send photos. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendMessage (SendMessageSetters) => Message {
+    pub SendPhoto (SendPhotoSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// Text of the message to be sent, 1-4096 characters after entities parsing
-            pub text: String [into],
+            /// Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]
+            ///
+            /// [More info on Sending Files »]: crate::types::InputFile
+            pub photo: InputFile,
+            /// Photo caption (may also be used when resending photos by _file\_id_), 0-1024 characters after entities parsing
+            pub caption: String [into],
         }
         optional {
-            /// Mode for parsing entities in the message text. See [formatting options] for more details.
+            /// Mode for parsing entities in the photo caption. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
-            /// Disables link previews for links in this message
-            pub disable_web_page_preview: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
@@ -32,8 +34,8 @@ impl_payload! {
             pub reply_to_message_id: i32,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
-            /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
+            /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             pub reply_markup: ReplyMarkup [into],
         }
     }

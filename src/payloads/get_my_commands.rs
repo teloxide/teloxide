@@ -3,14 +3,12 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::User;
-
 impl_payload! {
-    /// A simple method for testing your bot's auth token. Requires no parameters. Returns basic information about the bot in form of a [`User`] object.
+    /// Use this method to get the current list of the bot's commands. Requires no parameters. Returns Array of [`BotCommand`] on success.
     ///
-    /// [`User`]: crate::types::User
+    /// [`BotCommand`]: crate::types::BotCommand
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
-    pub GetMe (GetMeSetters) => User {
+    pub GetMyCommands (GetMyCommandsSetters) => u32 {
 
     }
 }

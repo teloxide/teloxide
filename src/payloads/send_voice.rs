@@ -3,27 +3,33 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
 
 impl_payload! {
-    /// Use this method to send text messages. On success, the sent [`Message`] is returned.
+    /// Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as [`Audio`] or [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
     ///
+    /// [`Audio`]: crate::types::Audio
     /// [`Message`]: crate::types::Message
+    /// [`Document`]: crate::types::Document
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendMessage (SendMessageSetters) => Message {
+    pub SendVoice (SendVoiceSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// Text of the message to be sent, 1-4096 characters after entities parsing
-            pub text: String [into],
+            /// Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]
+            ///
+            /// [More info on Sending Files »]: crate::types::InputFile
+            pub voice: InputFile,
+            /// Voice message caption, 0-1024 characters after entities parsing
+            pub caption: String [into],
         }
         optional {
-            /// Mode for parsing entities in the message text. See [formatting options] for more details.
+            /// Mode for parsing entities in the voice message caption. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
-            /// Disables link previews for links in this message
-            pub disable_web_page_preview: bool,
+            /// Duration of the voice message in seconds
+            pub duration: u32,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

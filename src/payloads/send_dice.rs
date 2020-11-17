@@ -3,27 +3,21 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, DiceEmoji, Message, ReplyMarkup};
 
 impl_payload! {
-    /// Use this method to send text messages. On success, the sent [`Message`] is returned.
+    /// Use this method to send an animated emoji that will display a random value. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendMessage (SendMessageSetters) => Message {
+    pub SendDice (SendDiceSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// Text of the message to be sent, 1-4096 characters after entities parsing
-            pub text: String [into],
+            /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, or “🏀”. Dice can have values 1-6 for “🎲” and “🎯”, and values 1-5 for “🏀”. Defaults to “🎲”
+            pub emoji: DiceEmoji,
         }
         optional {
-            /// Mode for parsing entities in the message text. See [formatting options] for more details.
-            ///
-            /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
-            pub parse_mode: ParseMode,
-            /// Disables link previews for links in this message
-            pub disable_web_page_preview: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
