@@ -1,6 +1,7 @@
 #[derive(Debug, Clone)]
 pub(crate) enum ApiUrl {
     Default,
+    // FIXME: remove #[allow] when we use this variant
     #[allow(dead_code)]
     Custom(reqwest::Url),
 }
