@@ -3,8 +3,6 @@ use tokio::io::{AsyncWrite, AsyncWriteExt};
 
 use crate::errors::DownloadError;
 
-use super::TELEGRAM_API_URL;
-
 pub async fn download_file<D>(
     client: &Client,
     token: &str,
@@ -15,7 +13,11 @@ where
     D: AsyncWrite + Unpin,
 {
     let mut res = client
-        .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .get(crate::net::file_url(
+            reqwest::Url::parse(crate::net::TELEGRAM_API_URL).expect("failed to parse default url"),
+            token,
+            path,
+        ))
         .send()
         .await?
         .error_for_status()?;
@@ -33,7 +35,11 @@ pub async fn download_file_stream(
     path: &str,
 ) -> Result<impl futures::Stream<Item = reqwest::Result<bytes::Bytes>>, reqwest::Error> {
     let res = client
-        .get(&super::file_url(TELEGRAM_API_URL, token, path))
+        .get(crate::net::file_url(
+            reqwest::Url::parse(crate::net::TELEGRAM_API_URL).expect("failed to parse default url"),
+            token,
+            path,
+        ))
         .send()
         .await?
         .error_for_status()?;

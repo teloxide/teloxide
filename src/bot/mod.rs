@@ -7,6 +7,7 @@ use reqwest::{
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
+    bot::api_url::ApiUrl,
     net,
     requests::{Payload, ResponseResult},
     serde_multipart,
@@ -14,6 +15,7 @@ use crate::{
 };
 
 mod api;
+mod api_url;
 mod download;
 
 pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
@@ -27,7 +29,7 @@ pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
-    api_url: Option<Arc<str>>,
+    api_url: ApiUrl,
     client: Client,
     parse_mode: Option<ParseMode>,
 }
@@ -103,7 +105,7 @@ impl Bot {
     {
         Self {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
-            api_url: None,
+            api_url: ApiUrl::Default,
             client,
             parse_mode: None,
         }
@@ -128,9 +130,7 @@ impl Bot {
             .expect("serialization of request to be infallible");
 
         // async move to capture client&token&api_url&params
-        async move {
-            net::request_json2(&client, token.as_ref(), api_url.as_deref(), P::NAME, params).await
-        }
+        async move { net::request_json2(&client, token.as_ref(), api_url.get(), P::NAME, params).await }
     }
 
     pub(crate) fn execute_multipart<P>(
@@ -150,8 +150,7 @@ impl Bot {
         // async move to capture client&token&api_url&params
         async move {
             let params = params.await?;
-            net::request_multipart2(&client, token.as_ref(), api_url.as_deref(), P::NAME, params)
-                .await
+            net::request_multipart2(&client, token.as_ref(), api_url.get(), P::NAME, params).await
         }
     }
 }
@@ -289,7 +288,7 @@ impl BotBuilder {
     pub fn build(self) -> Bot {
         Bot {
             token: self.token.unwrap_or_else(|| get_env(TELOXIDE_TOKEN)).into(),
-            api_url: None,
+            api_url: ApiUrl::Default,
             client: self.client.unwrap_or_else(crate::client_from_env),
             parse_mode: self.parse_mode,
         }
