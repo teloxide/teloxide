@@ -1,7 +1,6 @@
 pub mod serializer;
 
 mod in_mem_storage;
-
 mod trace_storage;
 
 #[cfg(feature = "redis-storage")]
@@ -12,8 +11,7 @@ mod sqlite_storage;
 
 use futures::future::BoxFuture;
 
-pub use in_mem_storage::InMemStorage;
-pub use trace_storage::TraceStorage;
+pub use self::{in_mem_storage::InMemStorage, trace_storage::TraceStorage};
 
 #[cfg(feature = "redis-storage")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
