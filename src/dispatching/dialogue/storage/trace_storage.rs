@@ -1,4 +1,8 @@
-use std::{fmt::Debug, marker::{Send, Sync}, sync::Arc};
+use std::{
+    fmt::Debug,
+    marker::{Send, Sync},
+    sync::Arc,
+};
 
 use futures::future::BoxFuture;
 use log::trace;
