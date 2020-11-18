@@ -8,6 +8,7 @@ use crate::dispatching::dialogue::Storage;
 /// Storage wrapper for logging purposes
 ///
 /// Reports about any dialogue update or removal action on `trace` level
+/// using `log` crate.
 pub struct TraceStorage<S> {
     inner: Arc<S>,
 }
