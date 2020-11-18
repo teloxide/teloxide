@@ -1,9 +1,9 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{fmt::Debug, marker::{Send, Sync}, sync::Arc};
 
 use futures::future::BoxFuture;
 use log::trace;
 
-use super::Storage;
+use crate::dispatching::dialogue::Storage;
 
 /// Storage wrapper for logging purposes
 ///
@@ -26,7 +26,7 @@ impl<S> TraceStorage<S> {
 impl<S, D> Storage<D> for TraceStorage<S>
 where
     D: Debug,
-    S: Storage<D>,
+    S: Storage<D> + Send + Sync + 'static,
 {
     type Error = <S as Storage<D>>::Error;
 
@@ -49,7 +49,12 @@ where
     where
         D: Send + 'static,
     {
-        trace!("Updating dialogue with {}: {:#?}", chat_id, dialogue);
-        <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue)
+        Box::pin(async move {
+            trace!("Updating dialogue with {}: {:#?}", chat_id, dialogue);
+            let from =
+                <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue).await?;
+            trace!("Updated dialogue with {}, previous state: {:#?}", chat_id, from);
+            Ok(from)
+        })
     }
 }
