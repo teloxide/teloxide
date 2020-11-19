@@ -5,7 +5,7 @@ use std::{
 };
 
 use futures::future::BoxFuture;
-use log::trace;
+use log::{log_enabled, trace, Level::Trace};
 
 use crate::dispatching::dialogue::Storage;
 
@@ -54,12 +54,17 @@ where
     where
         D: Send + 'static,
     {
-        Box::pin(async move {
-            let to = format!("{:#?}", dialogue);
-            let from =
-                <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue).await?;
-            trace!("Updated dialogue with {}, {:#?} -> {}", chat_id, from, to);
-            Ok(from)
-        })
+        if log_enabled!(Trace) {
+            Box::pin(async move {
+                let to = format!("{:#?}", dialogue);
+                let from =
+                    <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue)
+                        .await?;
+                trace!("Updated dialogue with {}, {:#?} -> {}", chat_id, from, to);
+                Ok(from)
+            })
+        } else {
+            <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue)
+        }
     }
 }
