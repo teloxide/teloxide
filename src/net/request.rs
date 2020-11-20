@@ -35,7 +35,11 @@ where
     };
 
     let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .post(crate::net::method_url(
+            reqwest::Url::parse(TELEGRAM_API_URL).expect("failed to parse default url"),
+            token,
+            method_name,
+        ))
         .multipart(form)
         .send()
         .await
@@ -55,7 +59,11 @@ where
     R: DeserializeOwned,
 {
     let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .post(crate::net::method_url(
+            reqwest::Url::parse(TELEGRAM_API_URL).expect("failed to parse default url"),
+            token,
+            method_name,
+        ))
         .json(params)
         .send()
         .await
@@ -72,6 +80,7 @@ where
 pub async fn request_multipart2<T>(
     client: &Client,
     token: &str,
+    api_url: reqwest::Url,
     method_name: &str,
     params: reqwest::multipart::Form,
 ) -> ResponseResult<T>
@@ -79,7 +88,7 @@ where
     T: DeserializeOwned,
 {
     let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .post(crate::net::method_url(api_url, token, method_name))
         .multipart(params)
         .send()
         .await
@@ -91,6 +100,7 @@ where
 pub async fn request_json2<T>(
     client: &Client,
     token: &str,
+    api_url: reqwest::Url,
     method_name: &str,
     params: Vec<u8>,
 ) -> ResponseResult<T>
@@ -98,7 +108,7 @@ where
     T: DeserializeOwned,
 {
     let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .post(crate::net::method_url(api_url, token, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
         .body(params)
         .send()
