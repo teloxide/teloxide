@@ -56,7 +56,7 @@ pin-project = "0.4.22"
 serde_with_macros = "1.1.0"
 
 sqlx = { version = "0.4.0-beta.1", optional = true, default-features = false, features = [
-        "runtime-tokio",
+        "runtime-tokio-native-tls",
         "macros",
         "sqlite",
 ] }
