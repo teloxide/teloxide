@@ -19,9 +19,8 @@ use vecrem::VecExt;
 
 use crate::{
     adaptors::throttle::chan_send::{ChanSend, SendTy},
-    payloads::SendMessage,
     requests::{HasPayload, Output, Request, Requester},
-    types::ChatId,
+    types::*,
 };
 
 // Throttling is quite complicated this comment describes the algorithm of
@@ -348,26 +347,113 @@ impl<B> Throttle<B> {
     }
 }
 
+macro_rules! f {
+    ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
+        ThrottlingRequest(
+            $this.inner().$m($($arg),*),
+            $this.queue.clone(),
+            |p| (&p.payload_ref().chat_id).into(),
+        )
+    };
+}
+
+macro_rules! fty {
+    ($T:ident) => {
+        ThrottlingRequest<B::$T>
+    };
+}
+
+macro_rules! fid {
+    ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
+        $this.inner().$m($($arg),*)
+    };
+}
+
+macro_rules! ftyid {
+    ($T:ident) => {
+        B::$T
+    };
+}
+
 impl<B: Requester> Requester for Throttle<B>
 where
     B::SendMessage: Send,
+    B::ForwardMessage: Send,
+    B::SendPhoto: Send,
+    B::SendAudio: Send,
+    B::SendDocument: Send,
+    B::SendVideo: Send,
+    B::SendAnimation: Send,
+    B::SendVoice: Send,
+    B::SendVideoNote: Send,
+    B::SendMediaGroup: Send,
+    B::SendLocation: Send,
+    B::SendVenue: Send,
+    B::SendContact: Send,
+    B::SendPoll: Send,
+    B::SendDice: Send,
+    B::SendSticker: Send,
+    B::SendInvoice: Send,
 {
     type Err = B::Err;
 
-    type GetMe = B::GetMe;
-
-    fn get_me(&self) -> Self::GetMe {
-        self.bot.get_me()
+    requester_forward! {
+        send_message,
+        forward_message, send_photo, send_audio, send_document, send_video,
+        send_animation, send_voice, send_video_note, send_media_group, send_location,
+        send_venue, send_contact, send_poll, send_dice, send_sticker,  => f, fty
     }
 
-    type SendMessage = ThrottlingRequest<B::SendMessage>;
+    type SendInvoice = ThrottlingRequest<B::SendInvoice>;
 
-    fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
+    fn send_invoice<T, D, Pa, P, S, C, Pri>(
+        &self,
+        chat_id: i32,
+        title: T,
+        description: D,
+        payload: Pa,
+        provider_token: P,
+        start_parameter: S,
+        currency: C,
+        prices: Pri,
+    ) -> Self::SendInvoice
     where
-        C: Into<ChatId>,
         T: Into<String>,
+        D: Into<String>,
+        Pa: Into<String>,
+        P: Into<String>,
+        S: Into<String>,
+        C: Into<String>,
+        Pri: IntoIterator<Item = LabeledPrice>,
     {
-        ThrottlingRequest(self.bot.send_message(chat_id, text), self.queue.clone())
+        ThrottlingRequest(
+            self.inner().send_invoice(
+                chat_id,
+                title,
+                description,
+                payload,
+                provider_token,
+                start_parameter,
+                currency,
+                prices,
+            ),
+            self.queue.clone(),
+            |p| Id::Id(p.payload_ref().chat_id as _),
+        )
+    }
+
+    requester_forward! {
+        get_me, get_updates, set_webhook, delete_webhook, get_webhook_info, edit_message_live_location, edit_message_live_location_inline, stop_message_live_location,
+        stop_message_live_location_inline, send_chat_action, get_user_profile_photos, get_file, kick_chat_member, unban_chat_member,
+        restrict_chat_member, promote_chat_member, set_chat_administrator_custom_title, set_chat_permissions,
+        export_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title, set_chat_description,
+        pin_chat_message, unpin_chat_message, leave_chat, get_chat, get_chat_administrators, get_chat_members_count,
+        get_chat_member, set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query, set_my_commands,
+        get_my_commands, answer_inline_query, edit_message_text, edit_message_text_inline, edit_message_caption,
+        edit_message_caption_inline, edit_message_media, edit_message_media_inline, edit_message_reply_markup,
+        edit_message_reply_markup_inline, stop_poll, delete_message, get_sticker_set, upload_sticker_file,
+        create_new_sticker_set, add_sticker_to_set, set_sticker_position_in_set, delete_sticker_from_set,
+        set_sticker_set_thumb, answer_shipping_query, answer_pre_checkout_query, set_passport_data_errors => fid, ftyid
     }
 }
 
@@ -395,17 +481,11 @@ impl From<&ChatId> for Id {
     }
 }
 
-pub trait GetChatId {
-    fn get_chat_id(&self) -> &ChatId;
-}
-
-impl GetChatId for SendMessage {
-    fn get_chat_id(&self) -> &ChatId {
-        &self.chat_id
-    }
-}
-
-pub struct ThrottlingRequest<R>(R, mpsc::Sender<(Id, Sender<Never>)>);
+pub struct ThrottlingRequest<R: HasPayload>(
+    R,
+    mpsc::Sender<(Id, Sender<Never>)>,
+    fn(&R::Payload) -> Id,
+);
 
 impl<R: HasPayload> HasPayload for ThrottlingRequest<R> {
     type Payload = R::Payload;
@@ -422,7 +502,6 @@ impl<R: HasPayload> HasPayload for ThrottlingRequest<R> {
 impl<R> Request for ThrottlingRequest<R>
 where
     R: Request + Send,
-    <R as HasPayload>::Payload: GetChatId,
 {
     type Err = R::Err;
     type Send = ThrottlingSend<R>;
@@ -430,13 +509,14 @@ where
 
     fn send(self) -> Self::Send {
         let (tx, rx) = channel();
-        let send = self.1.send_t((self.0.payload_ref().get_chat_id().into(), tx));
+        let id = self.2(self.payload_ref());
+        let send = self.1.send_t((id, tx));
         ThrottlingSend(ThrottlingSendInner::Registering { request: self.0, send, wait: rx })
     }
 
     fn send_ref(&self) -> Self::SendRef {
         let (tx, rx) = channel();
-        let send = self.1.clone().send_t((self.0.payload_ref().get_chat_id().into(), tx));
+        let send = self.1.clone().send_t((self.2(self.payload_ref()), tx));
 
         // As we can't move self.0 (request) out, as we do in `send` we are
         // forced to call `send_ref()`. This may have overhead and/or lead to
