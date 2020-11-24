@@ -1709,7 +1709,7 @@ impl Requester for Bot {
 
     type GetUpdates = JsonRequest<payloads::GetUpdates>;
 
-    fn get_updates(&self) -> Self::GetUpdates where {
+    fn get_updates(&self) -> Self::GetUpdates {
         Self::GetUpdates::new(self.clone(), payloads::GetUpdates::new())
     }
 
@@ -1725,19 +1725,19 @@ impl Requester for Bot {
 
     type DeleteWebhook = JsonRequest<payloads::DeleteWebhook>;
 
-    fn delete_webhook(&self) -> Self::DeleteWebhook where {
+    fn delete_webhook(&self) -> Self::DeleteWebhook {
         Self::DeleteWebhook::new(self.clone(), payloads::DeleteWebhook::new())
     }
 
     type GetWebhookInfo = JsonRequest<payloads::GetWebhookInfo>;
 
-    fn get_webhook_info(&self) -> Self::GetWebhookInfo where {
+    fn get_webhook_info(&self) -> Self::GetWebhookInfo {
         Self::GetWebhookInfo::new(self.clone(), payloads::GetWebhookInfo::new())
     }
 
     type GetMe = JsonRequest<payloads::GetMe>;
 
-    fn get_me(&self) -> Self::GetMe where {
+    fn get_me(&self) -> Self::GetMe {
         Self::GetMe::new(self.clone(), payloads::GetMe::new())
     }
 
@@ -2029,7 +2029,7 @@ impl Requester for Bot {
 
     type GetUserProfilePhotos = JsonRequest<payloads::GetUserProfilePhotos>;
 
-    fn get_user_profile_photos(&self, user_id: i32) -> Self::GetUserProfilePhotos where {
+    fn get_user_profile_photos(&self, user_id: i32) -> Self::GetUserProfilePhotos {
         Self::GetUserProfilePhotos::new(self.clone(), payloads::GetUserProfilePhotos::new(user_id))
     }
 
@@ -2280,7 +2280,7 @@ impl Requester for Bot {
 
     type GetMyCommands = JsonRequest<payloads::GetMyCommands>;
 
-    fn get_my_commands(&self) -> Self::GetMyCommands where {
+    fn get_my_commands(&self) -> Self::GetMyCommands {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
     }
 
