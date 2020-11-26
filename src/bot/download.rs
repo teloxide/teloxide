@@ -17,16 +17,18 @@ impl Bot {
     /// ## Examples
     ///
     /// ```no_run
-    /// use teloxide_core::types::File as TgFile;
+    /// use teloxide_core::{
+    ///     requests::{Request, Requester},
+    ///     types::File as TgFile,
+    ///     Bot,
+    /// };
     /// use tokio::fs::File;
-    /// # use teloxide_core::RequestError;
-    /// use teloxide_core::{requests::RequestOld, Bot};
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
-    /// let mut file = File::create("/home/waffle/Pictures/test.png").await?;
     ///
     /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
+    /// let mut file = File::create("/home/waffle/Pictures/test.png").await?;
     /// bot.download_file(&file_path, &mut file).await?;
     /// # Ok(()) }
     /// ```
