@@ -60,18 +60,21 @@ pub trait RequesterExt: Requester {
     ///  - [`edit_message_text`] (and [`edit_message_text_inline`])
     ///  - [`edit_message_caption`] (and [`edit_message_caption_inline`])
     ///
-    /// [`send_message`]: crate::Requester::send_message
-    /// [`send_photo`]: crate::Requester::send_photo
-    /// [`send_video`]: crate::Requester::send_video
-    /// [`send_audio`]: crate::Requester::send_audio
-    /// [`send_document`]: crate::Requester::send_document
-    /// [`send_animation`]: crate::Requester::send_animation
-    /// [`send_voice`]: crate::Requester::send_voice
-    /// [`send_poll`]: crate::Requester::send_poll
-    /// [`edit_message_text`]: crate::Requester::edit_message_text
-    /// [`edit_message_text`]: crate::Requester::edit_message_text_inline
-    /// [`edit_message_caption`]: crate::Requester::edit_message_caption
-    /// [`edit_message_caption`]: crate::Requester::edit_message_caption_inline
+    /// [`send_message`]: crate::requests::Requester::send_message
+    /// [`send_photo`]: crate::requests::Requester::send_photo
+    /// [`send_video`]: crate::requests::Requester::send_video
+    /// [`send_audio`]: crate::requests::Requester::send_audio
+    /// [`send_document`]: crate::requests::Requester::send_document
+    /// [`send_animation`]: crate::requests::Requester::send_animation
+    /// [`send_voice`]: crate::requests::Requester::send_voice
+    /// [`send_poll`]: crate::requests::Requester::send_poll
+    /// [`edit_message_text`]: crate::requests::Requester::edit_message_text
+    /// [`edit_message_text_inline`]:
+    /// crate::requests::Requester::edit_message_text_inline
+    /// [`edit_message_caption`]:
+    /// crate::requests::Requester::edit_message_caption
+    /// [`edit_message_caption_inline`]:
+    /// crate::requests::Requester::edit_message_caption_inline
     fn parse_mode(self, parse_mode: ParseMode) -> DefaultParseMode<Self>
     where
         Self: Sized,

@@ -119,12 +119,6 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `text`: Text of the message to be sent.
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_message<C, T>(&self, chat_id: C, text: T) -> SendMessage
     where
         C: Into<ChatId>,
@@ -179,12 +173,6 @@ impl Bot {
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> SendPhoto
     where
         C: Into<ChatId>,
@@ -197,12 +185,6 @@ impl Bot {
     /// # Params
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> SendAudio
     where
         C: Into<ChatId>,
@@ -228,12 +210,6 @@ impl Bot {
     /// `multipart/form-data`. [More info on Sending Files »].
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_document<C>(&self, chat_id: C, document: InputFile) -> SendDocument
     where
         C: Into<ChatId>,
@@ -262,12 +238,6 @@ impl Bot {
     /// [`InputFile::File`]: crate::types::InputFile::File
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_video<C>(&self, chat_id: C, video: InputFile) -> SendVideo
     where
         C: Into<ChatId>,
@@ -287,12 +257,6 @@ impl Bot {
     ///   - `chat_id`: Unique identifier for the target chat or username of the
     ///     target supergroup or channel (in the format `@channelusername`).
     ///   - `animation`: Animation to send.
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_animation<C>(&self, chat_id: C, animation: InputFile) -> SendAnimation
     where
         C: Into<ChatId>,
@@ -327,12 +291,6 @@ impl Bot {
     /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> SendVoice
     where
         C: Into<ChatId>,
@@ -546,16 +504,6 @@ impl Bot {
     ///   - `question`: Poll question, 1-255 characters.
     ///   - `options`: List of answer options, 2-10 strings 1-100 characters
     ///     each.
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] ([`SendPoll::explanation_parse_mode`]) if
-    /// specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
-    /// [`SendPoll::explanation_parse_mode`]:
-    /// [`SendPoll::explanation_parse_mode`]:
-    /// crate::types::SendPoll::explanation_parse_mode
     pub fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> SendPoll
     where
         C: Into<ChatId>,
@@ -1033,13 +981,6 @@ impl Bot {
     ///    target channel (in the format `@channelusername`).
     ///  - `message_id`: Identifier of the message to edit.
     ///  - `text`: New text of the message.
-    ///
-    /// # Notes
-    ///
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_text<C, T>(&self, chat_id: C, message_id: i32, text: T) -> EditMessageText
     where
         C: Into<ChatId>,
@@ -1060,13 +1001,6 @@ impl Bot {
     ///
     ///  - `inline_message_id`: Identifier of the inline message.
     ///  - `text`: New text of the message.
-    ///
-    /// # Notes
-    ///
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_inline_message_text<I, T>(
         &self,
         inline_message_id: I,
@@ -1086,13 +1020,6 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
     ///
     /// [`True`]: crate::types::True
-    ///
-    /// # Notes
-    ///
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> EditMessageCaption
     where
         C: Into<ChatId>,
@@ -1107,12 +1034,6 @@ impl Bot {
     /// [The official docs](https://core.telegram.org/bots/api#editmessagecaption).
     ///
     /// [`True`]: crate::types::True
-    ///
-    /// # Notes
-    /// Uses [a default parse mode] if specified in [`BotBuilder`].
-    ///
-    /// [a default parse mode]: crate::BotBuilder::parse_mode
-    /// [`BotBuilder`]: crate::BotBuilder
     pub fn edit_inline_message_caption<I>(&self, inline_message_id: I) -> EditInlineMessageCaption
     where
         I: Into<String>,
