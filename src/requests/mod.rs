@@ -1,23 +1,9 @@
 //! Telegram API requests.
 
-mod has_payload;
-mod payload;
-mod request;
-
-pub use self::{has_payload::HasPayload, payload::Payload, request::Request};
-
-mod all;
-mod json;
-mod multipart;
-mod requester;
-mod requester_ext;
-mod utils;
-
-pub use all::*;
-pub use json::JsonRequest;
-pub use multipart::MultipartRequest;
-pub use requester::Requester;
-pub use requester_ext::RequesterExt;
+pub use self::{
+    has_payload::HasPayload, json::JsonRequest, multipart::MultipartRequest, payload::Payload,
+    request::Request, requester::Requester, requester_ext::RequesterExt,
+};
 
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
@@ -26,12 +12,11 @@ pub type ResponseResult<T> = Result<T, crate::RequestError>;
 /// `<<T as HasPayload>::Payload as Payload>::Output`.
 pub type Output<T> = <<T as HasPayload>::Payload as Payload>::Output;
 
-/// Designates an API request.
-#[async_trait::async_trait]
-pub trait RequestOld {
-    /// A data structure returned if success.
-    type Output;
-
-    /// Asynchronously sends this request to Telegram and returns the result.
-    async fn send(&self) -> ResponseResult<Self::Output>;
-}
+mod has_payload;
+mod json;
+mod multipart;
+mod payload;
+mod request;
+mod requester;
+mod requester_ext;
+mod utils;
