@@ -19,6 +19,8 @@ pub mod cache_me;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
 pub mod throttle;
 
+mod parse_mode;
+
 #[cfg(feature = "auto_send")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "auto_send")))]
 pub use auto_send::AutoSend;
@@ -28,5 +30,7 @@ pub use cache_me::CacheMe;
 #[cfg(feature = "throttle")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
 pub use throttle::Throttle;
+
+pub use parse_mode::DefaultParseMode;
 
 // FIXME: move default `parse_mode` to adaptor

@@ -7,19 +7,19 @@
 // ```console
 // $ RUSTDOCFLAGS="--cfg docsrs" cargo doc --open --all-features
 // ```
+#![forbid(unsafe_code)]
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
-#![forbid(unsafe_code)]
 #![cfg_attr(feature = "full", deny(broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
-#[macro_use]
 // The internal helper macros.
+#[macro_use]
 mod local_macros;
 
 // FIXME(waffle): rethink modules, find a place for wrappers.
 pub use self::{
-    bot::{Bot, BotBuilder},
+    bot::Bot,
     errors::{ApiError, DownloadError, RequestError},
 };
 

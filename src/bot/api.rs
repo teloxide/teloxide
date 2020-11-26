@@ -21,7 +21,7 @@ use crate::{
     },
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, ParseMode, TargetMessage,
+        InputSticker, LabeledPrice, TargetMessage,
     },
     Bot,
 };
@@ -130,10 +130,7 @@ impl Bot {
         C: Into<ChatId>,
         T: Into<String>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendMessage::new(self.clone(), chat_id, text),
-            SendMessage::parse_mode,
-        )
+        SendMessage::new(self.clone(), chat_id, text)
     }
 
     /// Use this method to forward messages of any kind.
@@ -192,10 +189,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendPhoto::new(self.clone(), chat_id, photo),
-            SendPhoto::parse_mode,
-        )
+        SendPhoto::new(self.clone(), chat_id, photo)
     }
 
     ///
@@ -213,10 +207,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendAudio::new(self.clone(), chat_id, audio),
-            SendAudio::parse_mode,
-        )
+        SendAudio::new(self.clone(), chat_id, audio)
     }
 
     /// Use this method to send general files.
@@ -247,10 +238,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendDocument::new(self.clone(), chat_id, document),
-            SendDocument::parse_mode,
-        )
+        SendDocument::new(self.clone(), chat_id, document)
     }
 
     /// Use this method to send video files, Telegram clients support mp4 videos
@@ -284,10 +272,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendVideo::new(self.clone(), chat_id, video),
-            SendVideo::parse_mode,
-        )
+        SendVideo::new(self.clone(), chat_id, video)
     }
 
     /// Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
@@ -312,10 +297,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendAnimation::new(self.clone(), chat_id, animation),
-            SendAnimation::parse_mode,
-        )
+        SendAnimation::new(self.clone(), chat_id, animation)
     }
 
     /// Use this method to send audio files, if you want Telegram clients to
@@ -355,10 +337,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendVoice::new(self.clone(), chat_id, voice),
-            SendVoice::parse_mode,
-        )
+        SendVoice::new(self.clone(), chat_id, voice)
     }
 
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up
@@ -583,10 +562,7 @@ impl Bot {
         Q: Into<String>,
         O: Into<Vec<String>>,
     {
-        self.with_default_parse_mode_if_specified(
-            SendPoll::new(self.clone(), chat_id, question, options),
-            SendPoll::explanation_parse_mode,
-        )
+        SendPoll::new(self.clone(), chat_id, question, options)
     }
 
     /// Use this method when you need to tell the user that something is
@@ -1069,12 +1045,7 @@ impl Bot {
         C: Into<ChatId>,
         T: Into<String>,
     {
-        match self.parse_mode {
-            None => EditMessageText::new(self.clone(), chat_id, message_id, text),
-            Some(parse_mode) => {
-                EditMessageText::new(self.clone(), chat_id, message_id, text).parse_mode(parse_mode)
-            }
-        }
+        EditMessageText::new(self.clone(), chat_id, message_id, text)
     }
 
     /// Use this method to edit text and game messages sent via the bot.
@@ -1105,11 +1076,7 @@ impl Bot {
         I: Into<String>,
         T: Into<String>,
     {
-        match self.parse_mode {
-            None => EditInlineMessageText::new(self.clone(), inline_message_id, text),
-            Some(parse_mode) => EditInlineMessageText::new(self.clone(), inline_message_id, text)
-                .parse_mode(parse_mode),
-        }
+        EditInlineMessageText::new(self.clone(), inline_message_id, text)
     }
 
     /// Use this method to edit captions of messages sent via the bot.
@@ -1130,12 +1097,7 @@ impl Bot {
     where
         C: Into<ChatId>,
     {
-        match self.parse_mode {
-            None => EditMessageCaption::new(self.clone(), chat_id, message_id),
-            Some(parse_mode) => {
-                EditMessageCaption::new(self.clone(), chat_id, message_id).parse_mode(parse_mode)
-            }
-        }
+        EditMessageCaption::new(self.clone(), chat_id, message_id)
     }
 
     /// Use this method to edit captions of messages sent via the bot.
@@ -1155,11 +1117,7 @@ impl Bot {
     where
         I: Into<String>,
     {
-        match self.parse_mode {
-            None => EditInlineMessageCaption::new(self.clone(), inline_message_id),
-            Some(parse_mode) => EditInlineMessageCaption::new(self.clone(), inline_message_id)
-                .parse_mode(parse_mode),
-        }
+        EditInlineMessageCaption::new(self.clone(), inline_message_id)
     }
 
     /// Use this method to edit animation, audio, document, photo, or video
@@ -1690,17 +1648,6 @@ impl Bot {
         S: Into<String>,
     {
         SetStickerSetThumb::new(self.clone(), name, user_id)
-    }
-
-    fn with_default_parse_mode_if_specified<Builder>(
-        &self,
-        builder: Builder,
-        f: fn(Builder, ParseMode) -> Builder,
-    ) -> Builder {
-        match self.parse_mode {
-            None => builder,
-            Some(parse_mode) => f(builder, parse_mode),
-        }
     }
 }
 
