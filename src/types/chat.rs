@@ -18,9 +18,9 @@ pub struct Chat {
     #[serde(flatten)]
     pub kind: ChatKind,
 
-    /// A chat photo. Returned only in [`Bot::get_chat`].
+    /// A chat photo. Returned only in [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub photo: Option<ChatPhoto>,
 }
 
@@ -63,27 +63,27 @@ pub struct ChatPublic {
     pub kind: PublicChatKind,
 
     /// A description, for groups, supergroups and channel chats. Returned
-    /// only in [`Bot::get_chat`].
+    /// only in [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub description: Option<String>,
 
     /// A chat invite link, for groups, supergroups and channel chats. Each
     /// administrator in a chat generates their own invite links, so the
     /// bot must first generate the link using
-    /// [`Bot::export_chat_invite_link`]. Returned only in
-    /// [`Bot::get_chat`].
+    /// [`ExportChatInviteLink`]. Returned only in
+    /// [`GetChat`].
     ///
-    /// [`Bot::export_chat_invite_link`]:
-    /// crate::Bot::export_chat_invite_link
+    /// [`ExportChatInviteLink`]:
+    /// crate::payloads::ExportChatInviteLink
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub invite_link: Option<String>,
 
     /// Pinned message, for groups, supergroups and channels. Returned only
-    /// in [`Bot::get_chat`].
+    /// in [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub pinned_message: Option<Box<Message>>,
 }
 
@@ -199,9 +199,9 @@ impl PublicChatChannel {
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
-    /// only from [`Bot::get_chat`].
+    /// only from [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub permissions: Option<ChatPermissions>,
 }
 
@@ -219,27 +219,27 @@ pub struct PublicChatSupergroup {
     pub username: Option<String>,
 
     /// For supergroups, name of group sticker set. Returned only from
-    /// [`Bot::get_chat`].
+    /// [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub sticker_set_name: Option<String>,
 
     /// `true`, if the bot can change the group sticker set. Returned only
-    /// from [`Bot::get_chat`].
+    /// from [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub can_set_sticker_set: Option<bool>,
 
     /// A default chat member permissions, for groups and supergroups.
-    /// Returned only from [`Bot::get_chat`].
+    /// Returned only from [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub permissions: Option<ChatPermissions>,
 
     /// The minimum allowed delay between consecutive messages sent by each
-    /// unpriviledged user. Returned only from [`Bot::get_chat`].
+    /// unpriviledged user. Returned only from [`GetChat`].
     ///
-    /// [`Bot::get_chat`]: crate::Bot::get_chat
+    /// [`GetChat`]: crate::payloads::GetChat
     pub slow_mode_delay: Option<i32>,
 }
 

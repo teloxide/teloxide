@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 ///
 /// The file can be downloaded via the link `https://api.telegram.org/file/bot<token>/<file_path>`.
 /// It is guaranteed that the link will be valid for at least 1 hour. When the
-/// link expires, a new one can be requested by calling [`Bot::get_file`].
+/// link expires, a new one can be requested by calling [`GetFile`].
 ///
 /// [The official docs](https://core.telegram.org/bots/api#file).
 ///
-/// [`Bot::get_file`]: crate::Bot::get_file
+/// [`GetFile`]: crate::payloads::GetFile
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct File {
     /// Identifier for this file.

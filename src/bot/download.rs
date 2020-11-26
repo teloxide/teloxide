@@ -10,7 +10,7 @@ use crate::{
 impl Bot {
     /// Download a file from Telegram into `destination`.
     ///
-    /// `path` can be obtained from [`Bot::get_file`].
+    /// `path` can be obtained from [`GetFile`].
     ///
     /// To download as a stream of chunks, see [`Bot::download_file_stream`].
     ///
@@ -33,7 +33,7 @@ impl Bot {
     /// # Ok(()) }
     /// ```
     ///
-    /// [`Bot::get_file`]: crate::Bot::get_file
+    /// [`GetFile`]: crate::payloads::GetFile
     /// [`Bot::download_file_stream`]: crate::Bot::download_file_stream
     pub async fn download_file<D>(
         &self,
@@ -48,12 +48,12 @@ impl Bot {
 
     /// Download a file from Telegram.
     ///
-    /// `path` can be obtained from the [`Bot::get_file`].
+    /// `path` can be obtained from the [`GetFile`].
     ///
     /// To download into [`AsyncWrite`] (e.g. [`tokio::fs::File`]), see
     /// [`Bot::download_file`].
     ///
-    /// [`Bot::get_file`]: crate::bot::Bot::get_file
+    /// [`GetFile`]: crate::payloads::GetFile
     /// [`AsyncWrite`]: tokio::io::AsyncWrite
     /// [`tokio::fs::File`]: tokio::fs::File
     /// [`Bot::download_file`]: crate::Bot::download_file
