@@ -1,9 +1,9 @@
 use crate::types::User;
 use serde::{Deserialize, Serialize};
 
-/// Returned only in [`Bot::get_me`].
+/// Returned only in [`GetMe`].
 ///
-/// [`Bot::get_me`]: crate::Bot::get_me
+/// [`GetMe`]: crate::payloads::GetMe
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Me {
     #[serde(flatten)]

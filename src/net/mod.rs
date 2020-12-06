@@ -1,6 +1,6 @@
 pub(crate) use self::{
     download::{download_file, download_file_stream},
-    request::{request_json, request_json2, request_multipart, request_multipart2},
+    request::{request_json, request_multipart},
     telegram_response::TelegramResponse,
 };
 

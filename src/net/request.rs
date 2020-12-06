@@ -4,80 +4,13 @@ use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
     Client, Response,
 };
-use serde::{de::DeserializeOwned, Serialize};
+use serde::de::DeserializeOwned;
 
-use crate::{
-    net::{TelegramResponse, TELEGRAM_API_URL},
-    requests::ResponseResult,
-    serde_multipart::to_form,
-    RequestError,
-};
+use crate::{net::TelegramResponse, requests::ResponseResult, RequestError};
 
 const DELAY_ON_SERVER_ERROR: Duration = Duration::from_secs(10);
 
-pub async fn request_multipart<P, R>(
-    client: &Client,
-    token: &str,
-    method_name: &str,
-    params: &P, // I'll regret this
-) -> ResponseResult<R>
-where
-    P: Serialize,
-    R: DeserializeOwned,
-{
-    use crate::serde_multipart::Error;
-    let form = match to_form(params).await {
-        Ok(x) => x,
-        Err(Error::Io(ioerr)) => return Err(RequestError::Io(ioerr)),
-        Err(_) => unreachable!(
-            "we don't create requests those fail to serialize (if you see this, open an issue :|)"
-        ),
-    };
-
-    let response = client
-        .post(crate::net::method_url(
-            reqwest::Url::parse(TELEGRAM_API_URL).expect("failed to parse default url"),
-            token,
-            method_name,
-        ))
-        .multipart(form)
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    process_response(response).await
-}
-
-pub async fn request_json<P, R>(
-    client: &Client,
-    token: &str,
-    method_name: &str,
-    params: &P,
-) -> ResponseResult<R>
-where
-    P: Serialize,
-    R: DeserializeOwned,
-{
-    let response = client
-        .post(crate::net::method_url(
-            reqwest::Url::parse(TELEGRAM_API_URL).expect("failed to parse default url"),
-            token,
-            method_name,
-        ))
-        .json(params)
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    process_response(response).await
-}
-
-// FIXME(waffle):
-//   request_{json,mutipart} are currently used in old code, so we keep them
-//   for now when they will not be used anymore, we should remove them
-//   and rename request_{json,mutipart}2 => request_{json,mutipart}
-
-pub async fn request_multipart2<T>(
+pub async fn request_multipart<T>(
     client: &Client,
     token: &str,
     api_url: reqwest::Url,
@@ -97,7 +30,7 @@ where
     process_response(response).await
 }
 
-pub async fn request_json2<T>(
+pub async fn request_json<T>(
     client: &Client,
     token: &str,
     api_url: reqwest::Url,

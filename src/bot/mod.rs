@@ -129,7 +129,7 @@ impl Bot {
             .expect("serialization of request to be infallible");
 
         // async move to capture client&token&api_url&params
-        async move { net::request_json2(&client, token.as_ref(), api_url.get(), P::NAME, params).await }
+        async move { net::request_json(&client, token.as_ref(), api_url.get(), P::NAME, params).await }
     }
 
     pub(crate) fn execute_multipart<P>(
@@ -149,7 +149,7 @@ impl Bot {
         // async move to capture client&token&api_url&params
         async move {
             let params = params.await?;
-            net::request_multipart2(&client, token.as_ref(), api_url.get(), P::NAME, params).await
+            net::request_multipart(&client, token.as_ref(), api_url.get(), P::NAME, params).await
         }
     }
 }
