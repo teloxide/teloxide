@@ -995,3 +995,34 @@ macro_rules! requester_forward {
         }
     };
 }
+
+#[macro_use]
+macro_rules! download_forward {
+    ($l:lifetime $T:ident $S:ty {$this:ident => $inner:expr}) => {
+        impl<$l, $T: crate::net::Download<$l>> crate::net::Download<$l> for $S {
+            type Err = <$T as crate::net::Download<$l>>::Err;
+
+            type Fut = <$T as crate::net::Download<$l>>::Fut;
+
+            fn download_file(
+                &self,
+                path: &str,
+                destination: &'w mut (dyn tokio::io::AsyncWrite
+                             + core::marker::Unpin
+                             + core::marker::Send),
+            ) -> Self::Fut {
+                let $this = self;
+                ($inner).download_file(path, destination)
+            }
+
+            type StreamErr = <$T as crate::net::Download<$l>>::StreamErr;
+
+            type Stream = <$T as crate::net::Download<$l>>::Stream;
+
+            fn download_file_stream(&self, path: &str) -> Self::Stream {
+                let $this = self;
+                ($inner).download_file_stream(path)
+            }
+        }
+    };
+}

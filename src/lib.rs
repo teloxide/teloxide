@@ -24,6 +24,7 @@ pub use self::{
 };
 
 pub mod adaptors;
+pub mod net;
 pub mod payloads;
 pub mod prelude;
 pub mod requests;
@@ -34,7 +35,6 @@ mod bot;
 mod errors;
 
 // implementation details
-mod net;
 mod serde_multipart;
 
 /// Constructs a client from the `TELOXIDE_PROXY` environmental variable.

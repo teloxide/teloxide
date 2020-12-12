@@ -1,54 +1,131 @@
-use reqwest::Client;
+use std::future::Future;
+
+use bytes::Bytes;
+use futures::{
+    future::{ready, Either},
+    stream::{once, unfold},
+    FutureExt, Stream, StreamExt,
+};
+use reqwest::{Client, Response, Url};
 use tokio::io::{AsyncWrite, AsyncWriteExt};
 
-use crate::errors::DownloadError;
+use crate::{errors::DownloadError, net::file_url};
 
-pub async fn download_file<D>(
-    client: &Client,
-    token: &str,
-    path: &str,
-    destination: &mut D,
-) -> Result<(), DownloadError>
-where
-    D: AsyncWrite + Unpin,
+/// Download client.
+///
+/// This trait allows you to download files from telegram.
+pub trait Download<'w>
+/* FIXME(waffle): ideally, this lifetime ('w) shouldn't be here, but we can't help it without
+ * GATs */
 {
-    let mut res = client
-        .get(crate::net::file_url(
-            reqwest::Url::parse(crate::net::TELEGRAM_API_URL).expect("failed to parse default url"),
-            token,
-            path,
-        ))
-        .send()
-        .await?
-        .error_for_status()?;
+    /// Error returned by [`download_file`](Self::download_file)
+    type Err;
 
-    while let Some(chunk) = res.chunk().await? {
-        destination.write_all(&chunk).await?;
-    }
+    /// Future returned from [`download_file`](Self::download_file)
+    type Fut: Future<Output = Result<(), Self::Err>> + Send;
 
-    Ok(())
+    /// Download a file from Telegram into `destination`.
+    ///
+    /// `path` can be obtained from [`GetFile`].
+    ///
+    /// To download as a stream of chunks, see [`download_file_stream`].
+    ///
+    /// ## Examples
+    ///
+    /// ```no_run
+    /// use teloxide_core::{
+    ///     requests::{Download, Request, Requester},
+    ///     types::File as TgFile,
+    ///     Bot,
+    /// };
+    /// use tokio::fs::File;
+    ///
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// let bot = Bot::new("TOKEN");
+    ///
+    /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
+    /// let mut file = File::create("/tmp/test.png").await?;
+    /// bot.download_file(&file_path, &mut file).await?;
+    /// # Ok(()) }
+    /// ```
+    ///
+    /// [`GetFile`]: crate::payloads::GetFile
+    /// [`download_file_stream`]: Self::download_file_stream
+    fn download_file(
+        &self,
+        path: &str,
+        destination: &'w mut (dyn AsyncWrite + Unpin + Send),
+    ) -> Self::Fut;
+
+    /// Error returned by [`download_file_stream`](Self::download_file_stream)
+    type StreamErr;
+
+    /// Stream returned from [`download_file_stream`]
+    ///
+    ///[`download_file_stream`]: (Self::download_file_stream)
+    type Stream: Stream<Item = Result<Bytes, Self::StreamErr>> + Send;
+
+    /// Download a file from Telegram as a [`Stream`].
+    ///
+    /// `path` can be obtained from the [`GetFile`].
+    ///
+    /// To download into an [`AsyncWrite`] (e.g. [`tokio::fs::File`]), see
+    /// [`download_file`].
+    ///
+    /// [`GetFile`]: crate::payloads::GetFile
+    /// [`AsyncWrite`]: tokio::io::AsyncWrite
+    /// [`tokio::fs::File`]: tokio::fs::File
+    /// [`download_file`]: Self::download_file
+    fn download_file_stream(&self, path: &str) -> Self::Stream;
 }
 
-pub async fn download_file_stream(
+/// Download a file from Telegram into `dst`.
+///
+/// Note: if you don't need to use a different (from you're bot) client and
+/// don't need to get *all* performance (and you don't, c'mon it's very io-bound
+/// job), then it's recommended to use [`Download::download_file`]
+pub fn download_file<'o, D>(
     client: &Client,
+    api_url: Url,
     token: &str,
     path: &str,
-) -> Result<impl futures::Stream<Item = reqwest::Result<bytes::Bytes>>, reqwest::Error> {
-    let res = client
-        .get(crate::net::file_url(
-            reqwest::Url::parse(crate::net::TELEGRAM_API_URL).expect("failed to parse default url"),
-            token,
-            path,
-        ))
-        .send()
-        .await?
-        .error_for_status()?;
+    dst: &'o mut D,
+) -> impl Future<Output = Result<(), DownloadError>> + 'o
+where
+    D: ?Sized + AsyncWrite + Unpin,
+{
+    client.get(file_url(api_url, token, path)).send().then(move |r| async move {
+        let mut res = r?.error_for_status()?;
 
-    Ok(futures::stream::unfold(res, |mut res| async {
-        match res.chunk().await {
-            Err(err) => Some((Err(err), res)),
-            Ok(Some(c)) => Some((Ok(c), res)),
-            Ok(None) => None,
+        while let Some(chunk) = res.chunk().await? {
+            dst.write_all(&chunk).await?;
         }
-    }))
+
+        Ok(())
+    })
+}
+
+/// Download a file from Telegram as a [`Stream`].
+///
+/// Note: if you don't need to use a different (from you're bot) client and
+/// don't need to get *all* performance (and you don't, c'mon it's very io-bound
+/// job), then it's recommended to use [`Download::download_file_stream`]
+pub fn download_file_stream(
+    client: &Client,
+    api_url: Url,
+    token: &str,
+    path: &str,
+) -> impl Stream<Item = reqwest::Result<Bytes>> + 'static {
+    client.get(file_url(api_url, token, path)).send().into_stream().flat_map(|res| {
+        match res.and_then(Response::error_for_status) {
+            Ok(res) => Either::Left(unfold(res, |mut res| async {
+                match res.chunk().await {
+                    Err(err) => Some((Err(err), res)),
+                    Ok(Some(c)) => Some((Ok(c), res)),
+                    Ok(None) => None,
+                }
+            })),
+            Err(err) => Either::Right(once(ready(Err(err)))),
+        }
+    })
 }

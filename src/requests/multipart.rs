@@ -18,7 +18,7 @@ pub struct MultipartRequest<P> {
 }
 
 impl<P> MultipartRequest<P> {
-    pub fn new(bot: Bot, payload: P) -> Self {
+    pub const fn new(bot: Bot, payload: P) -> Self {
         Self { bot, payload }
     }
 }
