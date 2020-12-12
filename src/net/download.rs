@@ -34,7 +34,8 @@ pub trait Download<'w>
     ///
     /// ```no_run
     /// use teloxide_core::{
-    ///     requests::{Download, Request, Requester},
+    ///     net::Download,
+    ///     requests::{Request, Requester},
     ///     types::File as TgFile,
     ///     Bot,
     /// };
