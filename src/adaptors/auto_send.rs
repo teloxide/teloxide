@@ -96,6 +96,13 @@ impl<B: Requester> Requester for AutoSend<B> {
     }
 }
 
+download_forward! {
+    'w
+    B
+    AutoSend<B>
+    { this => this.inner() }
+}
+
 #[pin_project::pin_project]
 pub struct AutoRequest<R: Request>(#[pin] Inner<R>);
 

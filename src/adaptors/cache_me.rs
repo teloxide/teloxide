@@ -113,6 +113,13 @@ where
     }
 }
 
+download_forward! {
+    'w
+    B
+    CacheMe<B>
+    { this => this.inner() }
+}
+
 pub struct CachedMeRequest<R: Request<Payload = GetMe>>(Inner<R>, GetMe);
 
 enum Inner<R: Request<Payload = GetMe>> {

@@ -457,6 +457,13 @@ where
     }
 }
 
+download_forward! {
+    'w
+    B
+    Throttle<B>
+    { this => this.inner() }
+}
+
 /// Id used in worker.
 ///
 /// It is used instead of `ChatId` to make copying cheap even in case of

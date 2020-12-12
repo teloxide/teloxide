@@ -62,9 +62,10 @@ mod tests {
         let s = r#"{"ok":false,"error_code":409,"description":"Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"}"#;
         let val = serde_json::from_str::<TelegramResponse<Update>>(s).unwrap();
 
-        assert!(
-            matches!(val, TelegramResponse::Err { error: ApiError::TerminatedByOtherGetUpdates, .. })
-        );
+        assert!(matches!(
+            val,
+            TelegramResponse::Err { error: ApiError::TerminatedByOtherGetUpdates, .. }
+        ));
     }
 
     #[test]

@@ -106,3 +106,10 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         set_sticker_set_thumb, send_invoice, answer_shipping_query, answer_pre_checkout_query, set_passport_data_errors => fid, fty
     }
 }
+
+download_forward! {
+    'w
+    B
+    DefaultParseMode<B>
+    { this => this.inner() }
+}

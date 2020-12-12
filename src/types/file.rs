@@ -2,13 +2,15 @@ use serde::{Deserialize, Serialize};
 
 /// This object represents a file ready to be downloaded.
 ///
-/// The file can be downloaded via the link `https://api.telegram.org/file/bot<token>/<file_path>`.
-/// It is guaranteed that the link will be valid for at least 1 hour. When the
-/// link expires, a new one can be requested by calling [`GetFile`].
+/// The file can be downloaded via the [`Bot::download_file(file_path, dst)`]
+/// method. It is guaranteed that the path from [`GetFile`] will be valid for at
+/// least 1 hour. When the path expires, a new one can be requested by calling
+/// [`GetFile`].
 ///
 /// [The official docs](https://core.telegram.org/bots/api#file).
 ///
 /// [`GetFile`]: crate::payloads::GetFile
+/// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct File {
     /// Identifier for this file.
@@ -22,9 +24,10 @@ pub struct File {
     /// File size, if known.
     pub file_size: u32,
 
-    // TODO: chacge "Use ..." to use bot.download...
-    /// File path. Use `https://api.telegram.org/file/bot<token>/<file_path>`
-    /// to get the file.
+    /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
+    ///
+    /// [`Bot::download_file(file_path, dst)`]:
+    /// crate::net::Download::download_file
     pub file_path: String,
 }
 
