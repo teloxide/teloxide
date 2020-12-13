@@ -430,6 +430,7 @@ Feel free to push your own bot into our collection!
  - [_Hermitter/tepe -- A CLI to command a bot to send messages and files over Telegram_](https://github.com/Hermitter/tepe)
  - [_ArtHome12/cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
  - [_GoldsteinE/tg-vimhelpbot -- Link `:help` for Vim in Telegram_](https://github.com/GoldsteinE/tg-vimhelpbot)
+ - [_sschiz/janitor-bot_ --  A bot that removes users trying to join to a chat that is designed for comments](https://github.com/sschiz/janitor-bot)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
