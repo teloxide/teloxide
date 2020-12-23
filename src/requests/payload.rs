@@ -7,7 +7,7 @@
 /// request to Telegram.
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
 pub trait Payload {
-    /// A return type of a Telegram method.
+    /// The return type of a Telegram method.
     ///
     /// Note: it should not include `Result` wrappers (e.g. it should be simply
     /// [`Message`], [`True`] or something else).
