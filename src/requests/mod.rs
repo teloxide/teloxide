@@ -8,8 +8,7 @@ pub use self::{
 /// A type that is returned after making a request to Telegram.
 pub type ResponseResult<T> = Result<T, crate::RequestError>;
 
-/// Output of a [`Payload`] in [`HasPayload`]. Alias to
-/// `<<T as HasPayload>::Payload as Payload>::Output`.
+/// An output type of [`Payload`] in [`HasPayload`].
 pub type Output<T> = <<T as HasPayload>::Payload as Payload>::Output;
 
 mod has_payload;

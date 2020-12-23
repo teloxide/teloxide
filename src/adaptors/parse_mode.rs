@@ -5,14 +5,14 @@ use crate::{
 };
 
 /// Default parse mode adaptor, see
-/// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode)
+/// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode).
 pub struct DefaultParseMode<B> {
     bot: B,
     mode: ParseMode,
 }
 
 impl<B> DefaultParseMode<B> {
-    /// Creates new [`DefaultParseMode`]
+    /// Creates new [`DefaultParseMode`].
     ///
     /// Note: it's recommended to use [`RequesterExt::parse_mode`] instead.
     ///
@@ -21,12 +21,12 @@ impl<B> DefaultParseMode<B> {
         Self { bot, mode: parse_mode }
     }
 
-    /// Allows to access inner bot
+    /// Allows to access the inner bot.
     pub fn inner(&self) -> &B {
         &self.bot
     }
 
-    /// Unwraps inner bot
+    /// Unwraps the inner bot.
     pub fn into_inner(self) -> B {
         self.bot
     }

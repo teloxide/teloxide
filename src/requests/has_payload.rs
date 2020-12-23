@@ -1,15 +1,14 @@
 use crate::requests::Payload;
 
-/// Represent types that have payload inside it. E.g.: the payload itself or a
-/// `Request`.
+/// Represents types having payload inside.
 ///
 /// This trait is something between [`DerefMut`] and [`BorrowMut`] — it allows
-/// only one implementation per type (the [output] is associated type, not a
-/// generic), have implementations for all types `P` such `P: `[`Payload`], but
-/// have no magic compiler support like [`DerefMut`] does nor does it require
+/// only one implementation per type (the [output type] is associated, not
+/// generic), has implementations for all types `P` such `P: `[`Payload`], but
+/// has no magic compiler support like [`DerefMut`] does nor does it require
 /// any laws about `Eq`, `Ord` and `Hash` as [`BorrowMut`] does.
 ///
-/// Also [output] type is bounded by [`Payload`] trait.
+/// Also the [output type] is bounded by the [`Payload`] trait.
 ///
 /// This trait is mostly used to implement payload setters (on both payloads &
 /// requests), so you probably won't find yourself using it directly.
@@ -17,13 +16,13 @@ use crate::requests::Payload;
 /// [`DerefMut`]: std::ops::DerefMut
 /// [`BorrowMut`]: std::borrow::BorrowMut
 /// [`Payload`]: crate::requests::Payload
-/// [output]: HasPayload::Payload
+/// [output type]: HasPayload::Payload
 pub trait HasPayload
 // FIXME(waffle):
 //   we wanted to use As{Mut,Ref} here, but they doesn't work
 //   because of https://github.com/rust-lang/rust/issues/77010
 {
-    /// Type of the payload contained.
+    /// The type of the payload contained.
     type Payload: Payload;
 
     /// Gain mutable access to the underlying payload.

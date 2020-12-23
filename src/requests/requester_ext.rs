@@ -9,6 +9,7 @@ use crate::adaptors::AutoSend;
 #[cfg(feature = "throttle")]
 use crate::adaptors::throttle::{Limits, Throttle};
 
+/// Extensions methods for [`Requester`].
 pub trait RequesterExt: Requester {
     /// Add `get_me` caching ability, see [`CacheMe`] for more.
     ///

@@ -1,8 +1,4 @@
-//! Network specific items.
-//!
-//! Currently this module contains only the file download stuff and the default
-//! api url.
-// ... and some internal stuff :P
+//! Network-specific API.
 
 pub use self::download::{download_file, download_file_stream, Download};
 
@@ -15,7 +11,7 @@ mod download;
 mod request;
 mod telegram_response;
 
-/// Default telegram api url
+/// The default Telegram API URL.
 pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
