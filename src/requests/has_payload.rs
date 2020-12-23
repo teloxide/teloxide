@@ -22,7 +22,7 @@ pub trait HasPayload
 //   we wanted to use As{Mut,Ref} here, but they doesn't work
 //   because of https://github.com/rust-lang/rust/issues/77010
 {
-    /// A type of the payload contained.
+    /// The type of the payload contained.
     type Payload: Payload;
 
     /// Gain mutable access to the underlying payload.

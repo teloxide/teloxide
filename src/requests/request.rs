@@ -23,10 +23,10 @@ pub trait Request: HasPayload {
      * use it before it's integrated in async/await
      */
 
-    /// A type of an error that may happen while sending a request to Telegram.
+    /// The type of an error that may happen while sending a request to Telegram.
     type Err: std::error::Error + Send;
 
-    /// A type of the future returned by the [`send`](Request::send) method.
+    /// The type of the future returned by the [`send`](Request::send) method.
     type Send: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
     /// A type of the future returned by the [`send_ref`](Request::send_ref)
