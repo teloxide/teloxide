@@ -3,7 +3,7 @@
 //! Bot adaptors are very similar to the [`Iterator`] adaptors: they are bots
 //! wrapping other bots to alter existing or add new functionality.
 //!
-//! E.g. [`AutoSend`] allows `await`ing requests directly, no need to to use
+//! E.g. [`AutoSend`] allows `await`ing requests directly, no need to use
 //! `.send()`.
 //!
 //! [`Requester`]: crate::requests::Requester

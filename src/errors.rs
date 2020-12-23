@@ -8,7 +8,7 @@ use thiserror::Error;
 /// An error caused by downloading a file.
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
-    /// Network error while downloading a file from Telegram.
+    /// A network error while downloading a file from Telegram.
     #[error("A network error: {0}")]
     NetworkError(#[source] reqwest::Error),
 
@@ -20,10 +20,10 @@ pub enum DownloadError {
 /// An error caused by sending a request to Telegram.
 #[derive(Debug, Error)]
 pub enum RequestError {
-    /// Telegram API error.
+    /// A Telegram API error.
     #[error("A Telegram's error #{status_code}: {kind:?}")]
     ApiError {
-        /// Kind of an API error.
+        /// A kind of an API error.
         kind: ApiError,
 
         /// An HTTP code returned by Telegram, not very useful in practice.

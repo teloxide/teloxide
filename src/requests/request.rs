@@ -31,9 +31,8 @@ pub trait Request: HasPayload {
 
     /// A type of the future returned by the [`send_ref`](Request::send_ref)
     /// method.
-    ///
-    /// Note: it intentionally forbids borrowing from `self` though anyway we
-    /// couldn't allow borrowing without GATs.
+    // Note: it intentionally forbids borrowing from `self` though anyway we
+    // couldn't allow borrowing without GATs.
     type SendRef: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
     /// Send this request.
