@@ -6,11 +6,10 @@ use crate::{
     RequestError,
 };
 
-/// Ready-to-send telegram request.
+/// A ready-to-send Telegram request whose payload is sent using
+/// [multipart/form-data].
 ///
-/// Note: payload will be sent to telegram using [`multipart/form-data`]
-///
-/// [`multipart/form-data`]: https://core.telegram.org/bots/api#making-requests
+/// [multipart/form-data]: https://core.telegram.org/bots/api#making-requests
 #[must_use = "requests do nothing until sent"]
 pub struct MultipartRequest<P> {
     bot: Bot,

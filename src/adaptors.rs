@@ -1,11 +1,10 @@
-//! ## Bot adaptors
+//! Wrappers altering functionality of a bot.
 //!
-//! Bot adaptors are very similar to [`Iterator`] adaptors —
-//! they are bots (implement [`Requester`]) which wrap other bots
-//! adding new functionality.
+//! Bot adaptors are very similar to the [`Iterator`] adaptors: they are bots
+//! wrapping other bots to alter existing or add new functionality.
 //!
-//! E.g. [`AutoSend`] allows `await`ing requests directly,
-//! without need to use `.send()`.
+//! E.g. [`AutoSend`] allows `await`ing requests directly, no need to to use
+//! `.send()`.
 //!
 //! [`Requester`]: crate::requests::Requester
 

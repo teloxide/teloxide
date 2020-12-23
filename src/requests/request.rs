@@ -2,7 +2,7 @@ use std::future::Future;
 
 use crate::requests::{HasPayload, Output};
 
-/// A ready-to-send telegram request.
+/// A ready-to-send Telegram request.
 // FIXME(waffle): Write better doc for the trait
 ///
 /// ## Implementation notes
@@ -23,19 +23,20 @@ pub trait Request: HasPayload {
      * use it before it's integrated in async/await
      */
 
-    /// Type of error that may happen during sending the request to telegram.
+    /// A type of an error that may happen while sending a request to Telegram.
     type Err: std::error::Error + Send;
 
-    /// Type of future returned by [`send`](Request::send) method.
+    /// A type of the future returned by the [`send`](Request::send) method.
     type Send: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
-    /// Type of future returned by [`send_ref`](Request::send_ref) method.
+    /// A type of the future returned by the [`send_ref`](Request::send_ref)
+    /// method.
     ///
-    /// NOTE: it intentionally forbids borrowing from self
-    // though anyway we couldn't allow borrowing without GATs :sob:
+    /// Note: it intentionally forbids borrowing from `self` though anyway we
+    /// couldn't allow borrowing without GATs.
     type SendRef: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
-    /// Send the request.
+    /// Send this request.
     ///
     /// ## Examples
     // FIXME(waffle): ignored until full request redesign lands
@@ -51,15 +52,15 @@ pub trait Request: HasPayload {
     /// ```
     fn send(self) -> Self::Send;
 
-    /// Send the request.
+    /// Send this request by reference.
     ///
     /// This method is analogous to [`send`](Request::send), but it doesn't take
     /// the ownership of `self`. This allows to send the same (or slightly
     /// different) requests over and over.
     ///
-    /// _Also_ it is expected that calling this method is better than just
-    /// `clone`ing the requests. (because instead of copying all the data
-    /// and then serializing it, this method should just serialize the data)
+    /// Also, it is expected that calling this method is better than just
+    /// cloning requests. (Because instead of copying all the data
+    /// and then serializing it, this method should just serialize the data.)
     ///
     /// ## Examples
     // FIXME(waffle): ignored until full request redesign lands

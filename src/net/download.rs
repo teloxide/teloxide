@@ -11,17 +11,15 @@ use tokio::io::{AsyncWrite, AsyncWriteExt};
 
 use crate::{errors::DownloadError, net::file_url};
 
-/// Download client.
-///
-/// This trait allows you to download files from telegram.
+/// A trait for downloading files from Telegram.
 pub trait Download<'w>
 /* FIXME(waffle): ideally, this lifetime ('w) shouldn't be here, but we can't help it without
  * GATs */
 {
-    /// Error returned by [`download_file`](Self::download_file)
+    /// An error returned from [`download_file`](Self::download_file).
     type Err;
 
-    /// Future returned from [`download_file`](Self::download_file)
+    /// A future returned from [`download_file`](Self::download_file).
     type Fut: Future<Output = Result<(), Self::Err>> + Send;
 
     /// Download a file from Telegram into `destination`.
@@ -58,15 +56,16 @@ pub trait Download<'w>
         destination: &'w mut (dyn AsyncWrite + Unpin + Send),
     ) -> Self::Fut;
 
-    /// Error returned by [`download_file_stream`](Self::download_file_stream)
+    /// An error returned from
+    /// [`download_file_stream`](Self::download_file_stream).
     type StreamErr;
 
-    /// Stream returned from [`download_file_stream`]
+    /// A stream returned from [`download_file_stream`].
     ///
     ///[`download_file_stream`]: (Self::download_file_stream)
     type Stream: Stream<Item = Result<Bytes, Self::StreamErr>> + Send;
 
-    /// Download a file from Telegram as a [`Stream`].
+    /// Download a file from Telegram as [`Stream`].
     ///
     /// `path` can be obtained from the [`GetFile`].
     ///
@@ -84,7 +83,7 @@ pub trait Download<'w>
 ///
 /// Note: if you don't need to use a different (from you're bot) client and
 /// don't need to get *all* performance (and you don't, c'mon it's very io-bound
-/// job), then it's recommended to use [`Download::download_file`]
+/// job), then it's recommended to use [`Download::download_file`].
 pub fn download_file<'o, D>(
     client: &Client,
     api_url: Url,
@@ -106,11 +105,11 @@ where
     })
 }
 
-/// Download a file from Telegram as a [`Stream`].
+/// Download a file from Telegram as [`Stream`].
 ///
 /// Note: if you don't need to use a different (from you're bot) client and
 /// don't need to get *all* performance (and you don't, c'mon it's very io-bound
-/// job), then it's recommended to use [`Download::download_file_stream`]
+/// job), then it's recommended to use [`Download::download_file_stream`].
 pub fn download_file_stream(
     client: &Client,
     api_url: Url,

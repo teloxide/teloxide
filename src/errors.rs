@@ -8,11 +8,11 @@ use thiserror::Error;
 /// An error caused by downloading a file.
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
-    /// Network error while downloading file from telegram.
+    /// Network error while downloading a file from Telegram.
     #[error("A network error: {0}")]
     NetworkError(#[source] reqwest::Error),
 
-    /// I/O error while writing file to destination.
+    /// An I/O error while writing a file to destination.
     #[error("An I/O error: {0}")]
     Io(#[source] std::io::Error),
 }
@@ -20,12 +20,13 @@ pub enum DownloadError {
 /// An error caused by sending a request to Telegram.
 #[derive(Debug, Error)]
 pub enum RequestError {
-    /// Telegram API error
+    /// Telegram API error.
     #[error("A Telegram's error #{status_code}: {kind:?}")]
     ApiError {
-        /// Kind of api error
+        /// Kind of an API error.
         kind: ApiError,
-        /// HTTP code returned by telegram, not very usefull in practice.
+
+        /// An HTTP code returned by Telegram, not very useful in practice.
         status_code: StatusCode,
     },
 
@@ -39,11 +40,11 @@ pub enum RequestError {
     #[error("Retry after {0} seconds")]
     RetryAfter(i32),
 
-    /// Network error while sending request to telegram.
+    /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
     NetworkError(#[source] reqwest::Error),
 
-    /// Error while parsing response from telegram.
+    /// Error while parsing a response from Telegram.
     ///
     /// If you've received this error, please, [open an issue] with the
     /// description of the error.

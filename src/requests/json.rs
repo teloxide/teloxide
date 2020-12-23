@@ -6,11 +6,9 @@ use crate::{
     RequestError,
 };
 
-/// Ready-to-send telegram request.
+/// A ready-to-send Telegram request whose payload is sent using [JSON].
 ///
-/// Note: payload will be sent to telegram using [`json`]
-///
-/// [`json`]: https://core.telegram.org/bots/api#making-requests
+/// [JSON]: https://core.telegram.org/bots/api#making-requests
 #[must_use = "requests do nothing until sent"]
 pub struct JsonRequest<P> {
     bot: Bot,
