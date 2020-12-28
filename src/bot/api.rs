@@ -76,78 +76,56 @@ impl Requester for Bot {
 
     type SendPhoto = MultipartRequest<payloads::SendPhoto>;
 
-    fn send_photo<Ch, Ca>(&self, chat_id: Ch, photo: InputFile, caption: Ca) -> Self::SendPhoto
+    fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> Self::SendPhoto
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendPhoto::new(self.clone(), payloads::SendPhoto::new(chat_id, photo, caption))
+        Self::SendPhoto::new(self.clone(), payloads::SendPhoto::new(chat_id, photo))
     }
 
     type SendAudio = MultipartRequest<payloads::SendAudio>;
 
-    fn send_audio<Ch, Ca>(&self, chat_id: Ch, audio: InputFile, caption: Ca) -> Self::SendAudio
+    fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> Self::SendAudio
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendAudio::new(self.clone(), payloads::SendAudio::new(chat_id, audio, caption))
+        Self::SendAudio::new(self.clone(), payloads::SendAudio::new(chat_id, audio))
     }
 
     type SendDocument = MultipartRequest<payloads::SendDocument>;
 
-    fn send_document<Ch, Ca>(
-        &self,
-        chat_id: Ch,
-        document: InputFile,
-        caption: Ca,
-    ) -> Self::SendDocument
+    fn send_document<C>(&self, chat_id: C, document: InputFile) -> Self::SendDocument
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendDocument::new(
-            self.clone(),
-            payloads::SendDocument::new(chat_id, document, caption),
-        )
+        Self::SendDocument::new(self.clone(), payloads::SendDocument::new(chat_id, document))
     }
 
     type SendVideo = MultipartRequest<payloads::SendVideo>;
 
-    fn send_video<Ch, Ca>(&self, chat_id: Ch, video: InputFile, caption: Ca) -> Self::SendVideo
+    fn send_video<C>(&self, chat_id: C, video: InputFile) -> Self::SendVideo
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendVideo::new(self.clone(), payloads::SendVideo::new(chat_id, video, caption))
+        Self::SendVideo::new(self.clone(), payloads::SendVideo::new(chat_id, video))
     }
 
     type SendAnimation = MultipartRequest<payloads::SendAnimation>;
 
-    fn send_animation<Ch, Ca>(
-        &self,
-        chat_id: Ch,
-        animation: InputFile,
-        caption: Ca,
-    ) -> Self::SendAnimation
+    fn send_animation<C>(&self, chat_id: C, animation: InputFile) -> Self::SendAnimation
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendAnimation::new(
-            self.clone(),
-            payloads::SendAnimation::new(chat_id, animation, caption),
-        )
+        Self::SendAnimation::new(self.clone(), payloads::SendAnimation::new(chat_id, animation))
     }
 
     type SendVoice = MultipartRequest<payloads::SendVoice>;
 
-    fn send_voice<Ch, Ca>(&self, chat_id: Ch, voice: InputFile, caption: Ca) -> Self::SendVoice
+    fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> Self::SendVoice
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
-        Self::SendVoice::new(self.clone(), payloads::SendVoice::new(chat_id, voice, caption))
+        Self::SendVoice::new(self.clone(), payloads::SendVoice::new(chat_id, voice))
     }
 
     type SendVideoNote = MultipartRequest<payloads::SendVideoNote>;
@@ -634,36 +612,25 @@ impl Requester for Bot {
 
     type EditMessageCaption = JsonRequest<payloads::EditMessageCaption>;
 
-    fn edit_message_caption<Ch, Ca>(
-        &self,
-        chat_id: Ch,
-        message_id: i32,
-        caption: Ca,
-    ) -> Self::EditMessageCaption
+    fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> Self::EditMessageCaption
     where
-        Ch: Into<ChatId>,
-        Ca: Into<String>,
+        C: Into<ChatId>,
     {
         Self::EditMessageCaption::new(
             self.clone(),
-            payloads::EditMessageCaption::new(chat_id, message_id, caption),
+            payloads::EditMessageCaption::new(chat_id, message_id),
         )
     }
 
     type EditMessageCaptionInline = JsonRequest<payloads::EditMessageCaptionInline>;
 
-    fn edit_message_caption_inline<I, C>(
-        &self,
-        inline_message_id: I,
-        caption: C,
-    ) -> Self::EditMessageCaptionInline
+    fn edit_message_caption_inline<I>(&self, inline_message_id: I) -> Self::EditMessageCaptionInline
     where
         I: Into<String>,
-        C: Into<String>,
     {
         Self::EditMessageCaptionInline::new(
             self.clone(),
-            payloads::EditMessageCaptionInline::new(inline_message_id, caption),
+            payloads::EditMessageCaptionInline::new(inline_message_id),
         )
     }
 
@@ -927,6 +894,59 @@ impl Requester for Bot {
         Self::SetPassportDataErrors::new(
             self.clone(),
             payloads::SetPassportDataErrors::new(user_id, errors),
+        )
+    }
+
+    type SendGame = JsonRequest<payloads::SendGame>;
+
+    fn send_game<G>(&self, chat_id: u32, game_short_name: G) -> Self::SendGame
+    where
+        G: Into<String>,
+    {
+        Self::SendGame::new(self.clone(), payloads::SendGame::new(chat_id, game_short_name))
+    }
+
+    type SetGameScore = JsonRequest<payloads::SetGameScore>;
+
+    fn set_game_score(
+        &self,
+        user_id: u32,
+        score: u64,
+        chat_id: u32,
+        message_id: i64,
+    ) -> Self::SetGameScore {
+        Self::SetGameScore::new(
+            self.clone(),
+            payloads::SetGameScore::new(user_id, score, chat_id, message_id),
+        )
+    }
+
+    type SetGameScoreInline = JsonRequest<payloads::SetGameScoreInline>;
+
+    fn set_game_score_inline<I>(
+        &self,
+        user_id: u32,
+        score: u64,
+        inline_message_id: I,
+    ) -> Self::SetGameScoreInline
+    where
+        I: Into<String>,
+    {
+        Self::SetGameScoreInline::new(
+            self.clone(),
+            payloads::SetGameScoreInline::new(user_id, score, inline_message_id),
+        )
+    }
+
+    type GetGameHighScores = JsonRequest<payloads::GetGameHighScores>;
+
+    fn get_game_high_scores<T>(&self, user_id: u32, target: T) -> Self::GetGameHighScores
+    where
+        T: Into<crate::types::TargetMessage>,
+    {
+        Self::GetGameHighScores::new(
+            self.clone(),
+            payloads::GetGameHighScores::new(user_id, target),
         )
     }
 }
