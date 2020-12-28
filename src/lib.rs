@@ -17,7 +17,6 @@
 #[macro_use]
 mod local_macros;
 
-// FIXME(waffle): rethink modules, find a place for wrappers.
 pub use self::{
     bot::Bot,
     errors::{ApiError, DownloadError, RequestError},
