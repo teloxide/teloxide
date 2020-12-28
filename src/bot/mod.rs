@@ -100,14 +100,47 @@ impl Bot {
         Self::with_client(&get_env(TELOXIDE_TOKEN), client)
     }
 
-    /// Returns currently used token
+    /// Sets custom api url.
+    ///
+    /// For example you can run your own [Telegram bot API server][tbas] and set
+    /// it's url using this method.
+    ///
+    /// [tbas]: https://github.com/tdlib/telegram-bot-api
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// use teloxide_core::{
+    ///     requests::{Request, Requester},
+    ///     Bot,
+    /// };
+    ///
+    /// # async {
+    /// // Setup bot
+    /// let url = reqwest::Url::parse("https://localhost/tbas").unwrap();
+    /// let bot = Bot::new("TOKEN").set_api_url(url);
+    /// // All methods will use "https://localhost/tbas" as an api url
+    /// bot.get_me().send().await
+    /// # };
+    /// ```
+    pub fn set_api_url(mut self, url: reqwest::Url) -> Self {
+        self.api_url = ApiUrl::Custom(Arc::new(url));
+        self
+    }
+
+    /// Returns currently used token.
     pub fn token(&self) -> &str {
         &self.token
     }
 
-    /// Returns currently used http-client
+    /// Returns currently used http-client.
     pub fn client(&self) -> &Client {
         &self.client
+    }
+
+    /// Returns currently used token API url.
+    pub fn api_url(&self) -> reqwest::Url {
+        self.api_url.get()
     }
 }
 
