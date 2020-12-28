@@ -26,7 +26,11 @@ pub struct Chat {
 
 impl Chat {
     pub fn new(id: i64, kind: ChatKind) -> Self {
-        Self { id, kind, photo: None }
+        Self {
+            id,
+            kind,
+            photo: None,
+        }
     }
 
     pub fn id(mut self, val: i64) -> Self {
@@ -89,7 +93,13 @@ pub struct ChatPublic {
 
 impl ChatPublic {
     pub fn new(kind: PublicChatKind) -> Self {
-        Self { title: None, kind, description: None, invite_link: None, pinned_message: None }
+        Self {
+            title: None,
+            kind,
+            description: None,
+            invite_link: None,
+            pinned_message: None,
+        }
     }
 
     pub fn title<S>(mut self, val: S) -> Self
@@ -261,7 +271,10 @@ impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
     fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
         match v {
             "private" => Ok(()),
-            _ => Err(E::invalid_value(serde::de::Unexpected::Str(v), &r#""private""#)),
+            _ => Err(E::invalid_value(
+                serde::de::Unexpected::Str(v),
+                &r#""private""#,
+            )),
         }
     }
 }
@@ -278,16 +291,31 @@ impl Chat {
         matches!(self.kind, ChatKind::Private(_))
     }
     pub fn is_group(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
+        matches!(
+            self.kind,
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Group(_),
+                ..
+            })
+        )
     }
     pub fn is_supergroup(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Supergroup(_),
+                ..
+            })
         )
     }
     pub fn is_channel(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
+        matches!(
+            self.kind,
+            ChatKind::Public(ChatPublic {
+                kind: PublicChatKind::Channel(_),
+                ..
+            })
+        )
     }
 
     pub fn is_chat(&self) -> bool {

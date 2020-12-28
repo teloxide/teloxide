@@ -24,7 +24,11 @@ impl ShippingOption {
         S2: Into<String>,
         P: Into<Vec<LabeledPrice>>,
     {
-        Self { id: id.into(), title: title.into(), prices: prices.into() }
+        Self {
+            id: id.into(),
+            title: title.into(),
+            prices: prices.into(),
+        }
     }
 
     pub fn id<S>(mut self, val: S) -> Self
@@ -61,7 +65,10 @@ mod tests {
         let shipping_option = ShippingOption {
             id: "0".to_string(),
             title: "Option".to_string(),
-            prices: vec![LabeledPrice { label: "Label".to_string(), amount: 60 }],
+            prices: vec![LabeledPrice {
+                label: "Label".to_string(),
+                amount: 60,
+            }],
         };
         let expected = r#"{"id":"0","title":"Option","prices":[{"label":"Label","amount":60}]}"#;
         let actual = serde_json::to_string(&shipping_option).unwrap();

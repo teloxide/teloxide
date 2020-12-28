@@ -21,7 +21,11 @@ impl PollAnswer {
         S: Into<String>,
         O: Into<Vec<i32>>,
     {
-        Self { poll_id: poll_id.into(), user, option_ids: option_ids.into() }
+        Self {
+            poll_id: poll_id.into(),
+            user,
+            option_ids: option_ids.into(),
+        }
     }
 
     pub fn poll_id<S>(mut self, val: S) -> Self

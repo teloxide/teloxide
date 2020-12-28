@@ -19,7 +19,11 @@ pub struct GameHighScore {
 
 impl GameHighScore {
     pub fn new(position: u32, user: User, score: u32) -> Self {
-        Self { position, user, score }
+        Self {
+            position,
+            user,
+            score,
+        }
     }
 
     pub fn position(mut self, val: u32) -> Self {

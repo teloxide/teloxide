@@ -31,7 +31,12 @@ impl ShippingQuery {
         S1: Into<String>,
         S2: Into<String>,
     {
-        Self { id: id.into(), from, invoice_payload: invoice_payload.into(), shipping_address }
+        Self {
+            id: id.into(),
+            from,
+            invoice_payload: invoice_payload.into(),
+            shipping_address,
+        }
     }
 
     pub fn id<S>(mut self, val: S) -> Self

@@ -10,7 +10,11 @@ pub struct NonStrictVec<T>(pub Vec<Result<T, (serde_json::Value, serde_json::Err
 
 impl<T: DeserializeOwned> From<Vec<serde_json::Value>> for NonStrictVec<T> {
     fn from(vec: Vec<Value>) -> Self {
-        Self(vec.into_iter().map(|val| from_value(val.clone()).map_err(|e| (val, e))).collect())
+        Self(
+            vec.into_iter()
+                .map(|val| from_value(val.clone()).map_err(|e| (val, e)))
+                .collect(),
+        )
     }
 }
 

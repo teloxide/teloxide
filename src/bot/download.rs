@@ -20,7 +20,14 @@ impl<'w> Download<'w> for Bot {
         path: &str,
         destination: &'w mut (dyn AsyncWrite + Unpin + Send),
     ) -> Self::Fut {
-        net::download_file(&self.client, self.api_url.get(), &self.token, path, destination).boxed()
+        net::download_file(
+            &self.client,
+            self.api_url.get(),
+            &self.token,
+            path,
+            destination,
+        )
+        .boxed()
     }
 
     type StreamErr = reqwest::Error;

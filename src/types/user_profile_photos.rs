@@ -20,7 +20,10 @@ impl UserProfilePhotos {
         P1: Into<Vec<P2>>,
         P2: Into<Vec<PhotoSize>>,
     {
-        Self { total_count, photos: photos.into().into_iter().map(Into::into).collect() }
+        Self {
+            total_count,
+            photos: photos.into().into_iter().map(Into::into).collect(),
+        }
     }
 
     pub fn total_count(mut self, val: u32) -> Self {

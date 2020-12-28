@@ -12,10 +12,22 @@ use serde::ser;
 #[derive(Debug, PartialEq, Eq)]
 pub enum UnserializerError {
     Custom(String),
-    UnsupportedType { ty: &'static str, supported: &'static str },
-    UnexpectedField { name: &'static str, expected: &'static [&'static str] },
-    UnexpectedVariant { name: &'static str, expected: &'static [&'static str] },
-    WrongLen { len: usize, expected: usize },
+    UnsupportedType {
+        ty: &'static str,
+        supported: &'static str,
+    },
+    UnexpectedField {
+        name: &'static str,
+        expected: &'static [&'static str],
+    },
+    UnexpectedVariant {
+        name: &'static str,
+        expected: &'static [&'static str],
+    },
+    WrongLen {
+        len: usize,
+        expected: usize,
+    },
 }
 
 impl ser::Error for UnserializerError {
@@ -38,7 +50,11 @@ impl Display for UnserializerError {
             ),
             Self::Custom(s) => write!(f, "Custom serde error: {}", s),
             Self::UnsupportedType { ty, supported } => {
-                write!(f, "Unsupported type: `{}`, supported type(s): `{}`", ty, supported)
+                write!(
+                    f,
+                    "Unsupported type: `{}`, supported type(s): `{}`",
+                    ty, supported
+                )
             }
             Self::UnexpectedVariant { name, expected } => write!(
                 f,
@@ -74,8 +90,10 @@ fn test() {
     let value = InputFile::FileId(String::from("file_id"));
     assert_eq!(value.serialize(InputFileUnserializer::NotMem), Ok(value));
 
-    let value =
-        InputFile::Memory { file_name: String::from("name"), data: Cow::Owned(vec![1, 2, 3]) };
+    let value = InputFile::Memory {
+        file_name: String::from("name"),
+        data: Cow::Owned(vec![1, 2, 3]),
+    };
     assert_eq!(value.serialize(InputFileUnserializer::memory()), Ok(value));
 
     let value = InputFile::File("a/b/c".into());

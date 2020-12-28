@@ -175,7 +175,9 @@ mod test {
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(String::from("en")),
                     }),
-                    forward_kind: ForwardKind::Origin(ForwardOrigin { reply_to_message: None }),
+                    forward_kind: ForwardKind::Origin(ForwardOrigin {
+                        reply_to_message: None,
+                    }),
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),

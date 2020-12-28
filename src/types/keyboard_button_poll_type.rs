@@ -10,7 +10,9 @@ impl KeyboardButtonPollType {
     where
         S: Into<String>,
     {
-        Self { poll_type: poll_type.into() }
+        Self {
+            poll_type: poll_type.into(),
+        }
     }
 
     pub fn poll_type<S>(mut self, val: S) -> Self

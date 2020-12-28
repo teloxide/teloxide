@@ -20,8 +20,6 @@ pub struct Game {
     /// Photo that will be displayed in the game message in chats.
     pub photo: Vec<PhotoSize>,
 
-    // FIXME(waffle): SetGameScore method is missing for some reason O_o
-    #[allow(broken_intra_doc_links)]
     /// Brief description of the game or high scores included in the game
     /// message. Can be automatically edited to include current high scores
     /// for the game when the bot calls [`SetGameScore`], or manually

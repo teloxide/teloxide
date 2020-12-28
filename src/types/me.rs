@@ -28,7 +28,12 @@ impl Me {
         can_read_all_group_messages: bool,
         supports_inline_queries: bool,
     ) -> Self {
-        Self { user, can_join_groups, can_read_all_group_messages, supports_inline_queries }
+        Self {
+            user,
+            can_join_groups,
+            can_read_all_group_messages,
+            supports_inline_queries,
+        }
     }
 
     pub fn user(mut self, val: User) -> Self {

@@ -12,7 +12,10 @@ pub struct Location {
 
 impl Location {
     pub fn new(longitude: f64, latitude: f64) -> Self {
-        Self { longitude, latitude }
+        Self {
+            longitude,
+            latitude,
+        }
     }
 
     pub fn latitude(mut self, val: f64) -> Self {

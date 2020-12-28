@@ -39,10 +39,14 @@ pub trait Request: HasPayload {
     /// Send this request.
     ///
     /// ## Examples
-    // FIXME(waffle): ignored until full request redesign lands
-    /// ```ignore
+    /// ```
     /// # async {
-    /// use teloxide_core::{methods::GetMe, requests::{Request, RequestJson}, types::User, bot::Bot};
+    /// use teloxide_core::{
+    ///     bot::Bot,
+    ///     methods::GetMe,
+    ///     requests::{Request, RequestJson},
+    ///     types::User,
+    /// };
     ///
     /// let bot = Bot::new("TOKEN");
     /// let method = GetMe::new();
@@ -63,8 +67,7 @@ pub trait Request: HasPayload {
     /// and then serializing it, this method should just serialize the data.)
     ///
     /// ## Examples
-    // FIXME(waffle): ignored until full request redesign lands
-    /// ```ignore
+    /// ```
     /// # async {
     /// use teloxide_core::prelude::*;
     ///

@@ -29,7 +29,10 @@ impl KeyboardButton {
     where
         T: Into<String>,
     {
-        Self { text: text.into(), request: None }
+        Self {
+            text: text.into(),
+            request: None,
+        }
     }
 
     pub fn request<T>(mut self, val: T) -> Self
@@ -77,15 +80,24 @@ impl<'de> Deserialize<'de> for ButtonRequest {
     {
         let raw = RawRequest::deserialize(deserializer)?;
         match raw {
-            RawRequest { contact: Some(_), location: Some(_), poll: Some(_) } => {
-                Err(D::Error::custom(
-                    "`request_contact` and `request_location` fields are mutually exclusive, but \
-                     both were provided",
-                ))
-            }
-            RawRequest { contact: Some(_), .. } => Ok(Self::Contact),
-            RawRequest { location: Some(_), .. } => Ok(Self::Location),
-            RawRequest { poll: Some(poll_type), .. } => Ok(Self::KeyboardButtonPollType(poll_type)),
+            RawRequest {
+                contact: Some(_),
+                location: Some(_),
+                poll: Some(_),
+            } => Err(D::Error::custom(
+                "`request_contact` and `request_location` fields are mutually exclusive, but both \
+                 were provided",
+            )),
+            RawRequest {
+                contact: Some(_), ..
+            } => Ok(Self::Contact),
+            RawRequest {
+                location: Some(_), ..
+            } => Ok(Self::Location),
+            RawRequest {
+                poll: Some(poll_type),
+                ..
+            } => Ok(Self::KeyboardButtonPollType(poll_type)),
             _ => Err(D::Error::custom(
                 "Either one of `request_contact` and `request_location` fields is required",
             )),
@@ -99,16 +111,24 @@ impl Serialize for ButtonRequest {
         S: Serializer,
     {
         match self {
-            Self::Contact => {
-                RawRequest { contact: Some(True), location: None, poll: None }.serialize(serializer)
+            Self::Contact => RawRequest {
+                contact: Some(True),
+                location: None,
+                poll: None,
             }
-            Self::Location => {
-                RawRequest { contact: None, location: Some(True), poll: None }.serialize(serializer)
+            .serialize(serializer),
+            Self::Location => RawRequest {
+                contact: None,
+                location: Some(True),
+                poll: None,
             }
-            Self::KeyboardButtonPollType(poll_type) => {
-                RawRequest { contact: None, location: None, poll: Some(poll_type.clone()) }
-                    .serialize(serializer)
+            .serialize(serializer),
+            Self::KeyboardButtonPollType(poll_type) => RawRequest {
+                contact: None,
+                location: None,
+                poll: Some(poll_type.clone()),
             }
+            .serialize(serializer),
         }
     }
 }
@@ -119,7 +139,10 @@ mod tests {
 
     #[test]
     fn serialize_no_request() {
-        let button = KeyboardButton { text: String::from(""), request: None };
+        let button = KeyboardButton {
+            text: String::from(""),
+            request: None,
+        };
         let expected = r#"{"text":""}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -127,8 +150,10 @@ mod tests {
 
     #[test]
     fn serialize_request_contact() {
-        let button =
-            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
+        let button = KeyboardButton {
+            text: String::from(""),
+            request: Some(ButtonRequest::Contact),
+        };
         let expected = r#"{"text":"","request_contact":true}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -137,7 +162,10 @@ mod tests {
     #[test]
     fn deserialize_no_request() {
         let json = r#"{"text":""}"#;
-        let expected = KeyboardButton { text: String::from(""), request: None };
+        let expected = KeyboardButton {
+            text: String::from(""),
+            request: None,
+        };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
@@ -145,8 +173,10 @@ mod tests {
     #[test]
     fn deserialize_request_contact() {
         let json = r#"{"text":"","request_contact":true}"#;
-        let expected =
-            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
+        let expected = KeyboardButton {
+            text: String::from(""),
+            request: Some(ButtonRequest::Contact),
+        };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }

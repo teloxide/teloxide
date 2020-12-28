@@ -99,7 +99,11 @@ pub struct Limits {
 /// [tgdoc]: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
 impl Default for Limits {
     fn default() -> Self {
-        Self { chat_s: 1, overall_s: 30, chat_m: 20 }
+        Self {
+            chat_s: 1,
+            overall_s: 30,
+            chat_m: 20,
+        }
     }
 }
 
@@ -244,7 +248,10 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
 
         // as truncates which is ok since in case of truncation it would always be >=
         // limits.overall_s
-        let used = history.iter().take_while(|(_, time)| time > &sec_back).count() as u32;
+        let used = history
+            .iter()
+            .take_while(|(_, time)| time > &sec_back)
+            .count() as u32;
         let mut allowed = limits.overall_s.saturating_sub(used);
 
         if allowed == 0 {
@@ -307,7 +314,10 @@ impl<B> Throttle<B> {
         let (queue_tx, queue_rx) = mpsc::channel(buffer as usize);
 
         let worker = worker(limits, queue_rx);
-        let this = Self { bot, queue: queue_tx };
+        let this = Self {
+            bot,
+            queue: queue_tx,
+        };
 
         (this, worker)
     }
@@ -526,7 +536,11 @@ where
         let (tx, rx) = channel();
         let id = self.2(self.payload_ref());
         let send = self.1.send_t((id, tx));
-        ThrottlingSend(ThrottlingSendInner::Registering { request: self.0, send, wait: rx })
+        ThrottlingSend(ThrottlingSendInner::Registering {
+            request: self.0,
+            send,
+            wait: rx,
+        })
     }
 
     fn send_ref(&self) -> Self::SendRef {
@@ -541,7 +555,11 @@ where
         // should **not** do any kind of work, so it's ok.
         let request = self.0.send_ref();
 
-        ThrottlingSendRef(ThrottlingSendRefInner::Registering { request, send, wait: rx })
+        ThrottlingSendRef(ThrottlingSendRefInner::Registering {
+            request,
+            send,
+            wait: rx,
+        })
     }
 }
 
@@ -575,11 +593,18 @@ impl<R: Request> Future for ThrottlingSend<R> {
         let mut this = self.as_mut().project().0;
 
         match this.as_mut().project() {
-            SendProj::Registering { request: _, send, wait: _ } => match send.poll(cx) {
+            SendProj::Registering {
+                request: _,
+                send,
+                wait: _,
+            } => match send.poll(cx) {
                 Poll::Pending => Poll::Pending,
                 Poll::Ready(res) => {
-                    if let SendRepl::Registering { request, send: _, wait } =
-                        this.as_mut().project_replace(ThrottlingSendInner::Done)
+                    if let SendRepl::Registering {
+                        request,
+                        send: _,
+                        wait,
+                    } = this.as_mut().project_replace(ThrottlingSendInner::Done)
                     {
                         match res {
                             Ok(()) => this
@@ -588,9 +613,9 @@ impl<R: Request> Future for ThrottlingSend<R> {
                             // The worker is unlikely to drop queue before sending all requests,
                             // but just in case it has dropped the queue, we want to just send the
                             // request.
-                            Err(_) => this
-                                .as_mut()
-                                .project_replace(ThrottlingSendInner::Sent { fut: request.send() }),
+                            Err(_) => this.as_mut().project_replace(ThrottlingSendInner::Sent {
+                                fut: request.send(),
+                            }),
                         };
                     }
 
@@ -607,8 +632,9 @@ impl<R: Request> Future for ThrottlingSend<R> {
                     if let SendRepl::Pending { request, wait: _ } =
                         this.as_mut().project_replace(ThrottlingSendInner::Done)
                     {
-                        this.as_mut()
-                            .project_replace(ThrottlingSendInner::Sent { fut: request.send() });
+                        this.as_mut().project_replace(ThrottlingSendInner::Sent {
+                            fut: request.send(),
+                        });
                     }
 
                     self.poll(cx)
@@ -654,11 +680,18 @@ impl<R: Request> Future for ThrottlingSendRef<R> {
         let mut this = self.as_mut().project().0;
 
         match this.as_mut().project() {
-            SendRefProj::Registering { request: _, send, wait: _ } => match send.poll(cx) {
+            SendRefProj::Registering {
+                request: _,
+                send,
+                wait: _,
+            } => match send.poll(cx) {
                 Poll::Pending => Poll::Pending,
                 Poll::Ready(res) => {
-                    if let SendRefRepl::Registering { request, send: _, wait } =
-                        this.as_mut().project_replace(ThrottlingSendRefInner::Done)
+                    if let SendRefRepl::Registering {
+                        request,
+                        send: _,
+                        wait,
+                    } = this.as_mut().project_replace(ThrottlingSendRefInner::Done)
                     {
                         match res {
                             Ok(()) => this

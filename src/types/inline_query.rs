@@ -34,7 +34,13 @@ impl InlineQuery {
         S2: Into<String>,
         S3: Into<String>,
     {
-        Self { id: id.into(), from, location: None, query: query.into(), offset: offset.into() }
+        Self {
+            id: id.into(),
+            from,
+            location: None,
+            query: query.into(),
+            offset: offset.into(),
+        }
     }
 
     pub fn id<S>(mut self, val: S) -> Self

@@ -216,7 +216,11 @@ impl Serializer for MultipartTopLvlSerializer {
     }
 
     fn serialize_map(self, _: Option<usize>) -> Result<Self::SerializeMap, Self::Error> {
-        Ok(MultipartMapSerializer { parts: vec![], files: vec![], key: None })
+        Ok(MultipartMapSerializer {
+            parts: vec![],
+            files: vec![],
+            key: None,
+        })
     }
 
     fn serialize_struct(
@@ -245,7 +249,10 @@ pub(crate) struct MultipartSerializer {
 
 impl MultipartSerializer {
     fn new() -> Self {
-        Self { parts: Vec::new(), files: vec![] }
+        Self {
+            parts: Vec::new(),
+            files: vec![],
+        }
     }
 }
 
@@ -269,8 +276,10 @@ impl SerializeStruct for MultipartSerializer {
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
-        let form =
-            self.parts.into_iter().fold(Form::new(), |acc, (key, value)| acc.part(key, value));
+        let form = self
+            .parts
+            .into_iter()
+            .fold(Form::new(), |acc, (key, value)| acc.part(key, value));
 
         if self.files.is_empty() {
             //Ok(Either::Left(ready(Ok(form))))
@@ -322,8 +331,10 @@ impl SerializeMap for MultipartMapSerializer {
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
-        let form =
-            self.parts.into_iter().fold(Form::new(), |acc, (key, value)| acc.part(key, value));
+        let form = self
+            .parts
+            .into_iter()
+            .fold(Form::new(), |acc, (key, value)| acc.part(key, value));
 
         if self.files.is_empty() {
             //Ok(Either::Left(ready(Ok(form))))
@@ -479,7 +490,10 @@ impl Serializer for PartSerializer {
     }
 
     fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
-        Ok(Self::SerializeSeq { array_json_parts: vec![], files: vec![] })
+        Ok(Self::SerializeSeq {
+            array_json_parts: vec![],
+            files: vec![],
+        })
     }
 
     fn serialize_tuple(self, _: usize) -> Result<Self::SerializeTuple, Self::Error> {
@@ -556,7 +570,9 @@ impl SerializeStructVariant for PartFromFile {
     where
         T: Serialize,
     {
-        self.inner.serialize_field(key, value).map_err(Error::InputFileUnserializer)
+        self.inner
+            .serialize_field(key, value)
+            .map_err(Error::InputFileUnserializer)
     }
 
     fn end(self) -> Result<Self::Ok, Self::Error> {
@@ -638,7 +654,10 @@ impl SerializeStruct for PartSerializerStruct {
             serde_json::ser::State::First => serde_json::ser::State::First,
             serde_json::ser::State::Rest => serde_json::ser::State::Rest,
         };
-        let mut ser = serde_json::ser::Compound::Map { ser: &mut self.0, state };
+        let mut ser = serde_json::ser::Compound::Map {
+            ser: &mut self.0,
+            state,
+        };
 
         // special case media (required for `edit_message_media` to work)
         if key == "media" {
@@ -673,7 +692,10 @@ impl SerializeStruct for PartSerializerStruct {
             serde_json::ser::State::First => serde_json::ser::State::First,
             serde_json::ser::State::Rest => serde_json::ser::State::Rest,
         };
-        let ser = serde_json::ser::Compound::Map { ser: &mut self.0, state };
+        let ser = serde_json::ser::Compound::Map {
+            ser: &mut self.0,
+            state,
+        };
         SerializeStruct::end(ser)?;
 
         let json = self.0.into_inner();

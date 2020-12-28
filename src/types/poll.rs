@@ -187,7 +187,10 @@ impl PollOption {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), voter_count }
+        Self {
+            text: text.into(),
+            voter_count,
+        }
     }
 
     pub fn text<S>(mut self, val: S) -> Self
