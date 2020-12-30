@@ -100,10 +100,10 @@ impl Bot {
         Self::with_client(&get_env(TELOXIDE_TOKEN), client)
     }
 
-    /// Sets custom api url.
+    /// Sets a custom API URL.
     ///
-    /// For example you can run your own [Telegram bot API server][tbas] and set
-    /// it's url using this method.
+    /// For example, you can run your own [Telegram bot API server][tbas] and set
+    /// its URL using this method.
     ///
     /// [tbas]: https://github.com/tdlib/telegram-bot-api
     ///
@@ -116,10 +116,9 @@ impl Bot {
     /// };
     ///
     /// # async {
-    /// // Setup bot
     /// let url = reqwest::Url::parse("https://localhost/tbas").unwrap();
     /// let bot = Bot::new("TOKEN").set_api_url(url);
-    /// // All methods will use "https://localhost/tbas" as an api url
+    /// // From now all methods will use "https://localhost/tbas" as an API URL.
     /// bot.get_me().send().await
     /// # };
     /// ```
