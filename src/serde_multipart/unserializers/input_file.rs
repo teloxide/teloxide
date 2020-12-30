@@ -13,13 +13,19 @@ use crate::{
 };
 
 pub(crate) enum InputFileUnserializer {
-    Memory { file_name: String, data: Cow<'static, [u8]> },
+    Memory {
+        file_name: String,
+        data: Cow<'static, [u8]>,
+    },
     NotMem,
 }
 
 impl InputFileUnserializer {
     pub(crate) fn memory() -> Self {
-        Self::Memory { file_name: String::new(), data: Cow::Borrowed(&[]) }
+        Self::Memory {
+            file_name: String::new(),
+            data: Cow::Borrowed(&[]),
+        }
     }
 }
 
@@ -73,7 +79,10 @@ impl Serializer for InputFileUnserializer {
         len: usize,
     ) -> Result<Self::SerializeStructVariant, Self::Error> {
         if name != "InputFile" {
-            return Err(UnserializerError::UnsupportedType { ty: name, supported: "InputFile" });
+            return Err(UnserializerError::UnsupportedType {
+                ty: name,
+                supported: "InputFile",
+            });
         }
 
         if variant != "Memory" {

@@ -39,7 +39,11 @@ pub struct InputMediaPhoto {
 
 impl InputMediaPhoto {
     pub fn new(media: InputFile) -> Self {
-        Self { media, caption: None, parse_mode: None }
+        Self {
+            media,
+            caption: None,
+            parse_mode: None,
+        }
     }
 
     pub fn media(mut self, val: InputFile) -> Self {
@@ -374,7 +378,12 @@ pub struct InputMediaDocument {
 
 impl InputMediaDocument {
     pub fn new(media: InputFile) -> Self {
-        Self { media, thumb: None, caption: None, parse_mode: None }
+        Self {
+            media,
+            thumb: None,
+            caption: None,
+            parse_mode: None,
+        }
     }
 
     pub fn thumb(mut self, val: InputFile) -> Self {

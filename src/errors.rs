@@ -72,9 +72,10 @@ pub enum ApiError {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::payloads::EditMessageText
-    #[serde(rename = "Bad Request: message is not modified: specified new message content and \
-                      reply markup are exactly the same as a current content and reply markup \
-                      of the message")]
+    #[serde(
+        rename = "Bad Request: message is not modified: specified new message content and reply \
+                  markup are exactly the same as a current content and reply markup of the message"
+    )]
     MessageNotModified,
 
     /// Occurs when bot tries to forward or delete a message which was deleted.
@@ -294,8 +295,10 @@ pub enum ApiError {
     /// 1. [`AnswerCallbackQuery`]
     ///
     /// [`AnswerCallbackQuery`]: crate::payloads::AnswerCallbackQuery
-    #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is \
-                      invalid")]
+    #[serde(
+        rename = "Bad Request: query is too old and response timeout expired or query id is \
+                  invalid"
+    )]
     InvalidQueryID,
 
     /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button
@@ -323,8 +326,10 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are \
-                      unallowed in the inline keyboard")]
+    #[serde(
+        rename = "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in \
+                  the inline keyboard"
+    )]
     TextButtonsAreUnallowed,
 
     /// Occurs when bot tries to get file by wrong file id.
@@ -417,8 +422,10 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 \
-                      or 8443")]
+    #[serde(
+        rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or \
+                  8443"
+    )]
     BadWebhookPort,
 
     /// Occurs when bot tries to set webhook to unknown host.
@@ -427,7 +434,9 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
+    #[serde(
+        rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known"
+    )]
     UnknownHost,
 
     /// Occurs when bot tries to set webhook to invalid URL.
@@ -509,8 +518,10 @@ pub enum ApiError {
     /// 1. [`GetUpdates`]
     ///
     /// [`GetUpdates`]: crate::payloads::GetUpdates
-    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one \
-                      bot instance is running")]
+    #[serde(
+        rename = "Conflict: terminated by other getUpdates request; make sure that only one bot \
+                  instance is running"
+    )]
     TerminatedByOtherGetUpdates,
 
     /// Occurs when bot tries to get file by invalid file id.

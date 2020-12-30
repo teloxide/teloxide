@@ -33,7 +33,13 @@ pub struct Message {
 
 impl Message {
     pub fn new(id: i32, date: i32, chat: Chat, kind: MessageKind) -> Self {
-        Self { id, date, chat, kind, via_bot: None }
+        Self {
+            id,
+            date,
+            chat,
+            kind,
+            via_bot: None,
+        }
     }
 
     pub fn id(mut self, val: i32) -> Self {
@@ -105,7 +111,13 @@ pub struct MessageCommon {
 
 impl MessageCommon {
     pub fn new(forward_kind: ForwardKind, media_kind: MediaKind) -> Self {
-        Self { from: None, forward_kind, edit_date: None, media_kind, reply_markup: None }
+        Self {
+            from: None,
+            forward_kind,
+            edit_date: None,
+            media_kind,
+            reply_markup: None,
+        }
     }
 
     pub fn from(mut self, val: User) -> Self {
@@ -147,7 +159,9 @@ impl MessageNewChatMembers {
     where
         N: Into<Vec<User>>,
     {
-        Self { new_chat_members: new_chat_members.into() }
+        Self {
+            new_chat_members: new_chat_members.into(),
+        }
     }
 
     pub fn new_chat_members<N>(mut self, val: N) -> Self
@@ -171,7 +185,9 @@ impl MessageLeftChatMember {
     where
         N: Into<User>,
     {
-        Self { left_chat_member: left_chat_member.into() }
+        Self {
+            left_chat_member: left_chat_member.into(),
+        }
     }
 
     pub fn left_chat_member<N>(mut self, val: N) -> Self
@@ -194,7 +210,9 @@ impl MessageNewChatTitle {
     where
         N: Into<String>,
     {
-        Self { new_chat_title: new_chat_title.into() }
+        Self {
+            new_chat_title: new_chat_title.into(),
+        }
     }
 
     pub fn new_chat_title<N>(mut self, val: N) -> Self
@@ -217,7 +235,9 @@ impl MessageNewChatPhoto {
     where
         N: Into<Vec<PhotoSize>>,
     {
-        Self { new_chat_photo: new_chat_photo.into() }
+        Self {
+            new_chat_photo: new_chat_photo.into(),
+        }
     }
 
     pub fn new_chat_photo<N>(mut self, val: N) -> Self
@@ -306,7 +326,10 @@ pub struct MessageMigrate {
 
 impl MessageMigrate {
     pub fn new(migrate_to_chat_id: i64, migrate_from_chat_id: i64) -> Self {
-        Self { migrate_to_chat_id, migrate_from_chat_id }
+        Self {
+            migrate_to_chat_id,
+            migrate_from_chat_id,
+        }
     }
 
     pub fn migrate_to_chat_id(mut self, val: i64) -> Self {
@@ -331,7 +354,9 @@ pub struct MessagePinned {
 
 impl MessagePinned {
     pub fn new(pinned: Message) -> Self {
-        Self { pinned: Box::new(pinned) }
+        Self {
+            pinned: Box::new(pinned),
+        }
     }
 
     pub fn pinned(mut self, val: Message) -> Self {
@@ -395,7 +420,9 @@ impl MessageConnectedWebsite {
     where
         S: Into<String>,
     {
-        Self { connected_website: connected_website.into() }
+        Self {
+            connected_website: connected_website.into(),
+        }
     }
 
     pub fn connected_website<S>(mut self, val: S) -> Self
@@ -457,7 +484,12 @@ pub struct ForwardChannel {
 
 impl ForwardChannel {
     pub fn new(date: i32, chat: Chat, message_id: i32) -> Self {
-        Self { date, chat, message_id, signature: None }
+        Self {
+            date,
+            chat,
+            message_id,
+            signature: None,
+        }
     }
 
     pub fn date(mut self, val: i32) -> Self {
@@ -570,7 +602,12 @@ impl MediaAnimation {
     where
         CE: Into<Vec<MessageEntity>>,
     {
-        Self { animation, document: (), caption: None, caption_entities: caption_entities.into() }
+        Self {
+            animation,
+            document: (),
+            caption: None,
+            caption_entities: caption_entities.into(),
+        }
     }
 
     pub fn animation(mut self, val: Animation) -> Self {
@@ -615,7 +652,11 @@ impl MediaAudio {
     where
         CE: Into<Vec<MessageEntity>>,
     {
-        Self { audio, caption: None, caption_entities: caption_entities.into() }
+        Self {
+            audio,
+            caption: None,
+            caption_entities: caption_entities.into(),
+        }
     }
 
     pub fn audio(mut self, val: Audio) -> Self {
@@ -677,7 +718,11 @@ impl MediaDocument {
     where
         CE: Into<Vec<MessageEntity>>,
     {
-        Self { document, caption: None, caption_entities: caption_entities.into() }
+        Self {
+            document,
+            caption: None,
+            caption_entities: caption_entities.into(),
+        }
     }
 
     pub fn document(mut self, val: Document) -> Self {
@@ -857,7 +902,10 @@ impl MediaText {
         S: Into<String>,
         E: Into<Vec<MessageEntity>>,
     {
-        Self { text: text.into(), entities: entities.into() }
+        Self {
+            text: text.into(),
+            entities: entities.into(),
+        }
     }
 
     pub fn text<S>(mut self, val: S) -> Self
@@ -978,7 +1026,11 @@ impl MediaVoice {
     where
         CE: Into<Vec<MessageEntity>>,
     {
-        Self { voice, caption: None, caption_entities: caption_entities.into() }
+        Self {
+            voice,
+            caption: None,
+            caption_entities: caption_entities.into(),
+        }
     }
 
     pub fn voice(mut self, val: Voice) -> Self {
@@ -1125,7 +1177,10 @@ mod getters {
         pub fn reply_to_message(&self) -> Option<&Message> {
             match &self.kind {
                 Common(MessageCommon {
-                    forward_kind: ForwardKind::Origin(ForwardOrigin { reply_to_message, .. }),
+                    forward_kind:
+                        ForwardKind::Origin(ForwardOrigin {
+                            reply_to_message, ..
+                        }),
                     ..
                 }) => reply_to_message.as_ref().map(Deref::deref),
                 _ => None,
@@ -1180,27 +1235,45 @@ mod getters {
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind: MediaKind::Animation(MediaAnimation { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Animation(MediaAnimation {
+                            caption_entities, ..
+                        }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind: MediaKind::Audio(MediaAudio { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Audio(MediaAudio {
+                            caption_entities, ..
+                        }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind: MediaKind::Document(MediaDocument { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Document(MediaDocument {
+                            caption_entities, ..
+                        }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind: MediaKind::Photo(MediaPhoto { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Photo(MediaPhoto {
+                            caption_entities, ..
+                        }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind: MediaKind::Video(MediaVideo { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Video(MediaVideo {
+                            caption_entities, ..
+                        }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind: MediaKind::Voice(MediaVoice { caption_entities, .. }),
+                    media_kind:
+                        MediaKind::Voice(MediaVoice {
+                            caption_entities, ..
+                        }),
                     ..
                 }) => Some(caption_entities),
                 _ => None,
@@ -1408,32 +1481,37 @@ mod getters {
 
         pub fn super_group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                SupergroupChatCreated(MessageSupergroupChatCreated { supergroup_chat_created }) => {
-                    Some(*supergroup_chat_created)
-                }
+                SupergroupChatCreated(MessageSupergroupChatCreated {
+                    supergroup_chat_created,
+                }) => Some(*supergroup_chat_created),
                 _ => None,
             }
         }
 
         pub fn channel_chat_created(&self) -> Option<True> {
             match &self.kind {
-                ChannelChatCreated(MessageChannelChatCreated { channel_chat_created }) => {
-                    Some(*channel_chat_created)
-                }
+                ChannelChatCreated(MessageChannelChatCreated {
+                    channel_chat_created,
+                }) => Some(*channel_chat_created),
                 _ => None,
             }
         }
 
         pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_to_chat_id, .. }) => Some(*migrate_to_chat_id),
+                Migrate(MessageMigrate {
+                    migrate_to_chat_id, ..
+                }) => Some(*migrate_to_chat_id),
                 _ => None,
             }
         }
 
         pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_from_chat_id, .. }) => Some(*migrate_from_chat_id),
+                Migrate(MessageMigrate {
+                    migrate_from_chat_id,
+                    ..
+                }) => Some(*migrate_from_chat_id),
                 _ => None,
             }
         }
@@ -1490,13 +1568,17 @@ impl Message {
     pub fn url(&self) -> Option<reqwest::Url> {
         match &self.chat.kind {
             ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Channel(PublicChatChannel { username: Some(username) }),
+                kind:
+                    PublicChatKind::Channel(PublicChatChannel {
+                        username: Some(username),
+                    }),
                 ..
             })
             | ChatKind::Public(ChatPublic {
                 kind:
                     PublicChatKind::Supergroup(PublicChatSupergroup {
-                        username: Some(username), ..
+                        username: Some(username),
+                        ..
                     }),
                 ..
             }) => Some(

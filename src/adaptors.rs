@@ -31,5 +31,3 @@ pub use cache_me::CacheMe;
 pub use throttle::Throttle;
 
 pub use parse_mode::DefaultParseMode;
-
-// FIXME: move default `parse_mode` to adaptor

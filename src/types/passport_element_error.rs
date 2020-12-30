@@ -18,7 +18,10 @@ impl PassportElementError {
     where
         S: Into<String>,
     {
-        Self { message: message.into(), kind }
+        Self {
+            message: message.into(),
+            kind,
+        }
     }
 
     pub fn message<S>(mut self, val: S) -> Self
@@ -94,7 +97,11 @@ impl PassportElementErrorDataField {
         S1: Into<String>,
         S2: Into<String>,
     {
-        Self { r#type, field_name: field_name.into(), data_hash: data_hash.into() }
+        Self {
+            r#type,
+            field_name: field_name.into(),
+            data_hash: data_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorDataFieldType) -> Self {
@@ -140,7 +147,10 @@ impl PassportElementErrorFrontSide {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self {
+            r#type,
+            file_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorFrontSideType) -> Self {
@@ -178,7 +188,10 @@ impl PassportElementErrorReverseSide {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self {
+            r#type,
+            file_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorReverseSideType) -> Self {
@@ -214,7 +227,10 @@ impl PassportElementErrorSelfie {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self {
+            r#type,
+            file_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorSelfieType) -> Self {
@@ -251,7 +267,10 @@ impl PassportElementErrorFile {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self {
+            r#type,
+            file_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorFileType) -> Self {
@@ -288,7 +307,10 @@ impl PassportElementErrorFiles {
     where
         S: Into<Vec<String>>,
     {
-        Self { r#type, file_hashes: file_hashes.into() }
+        Self {
+            r#type,
+            file_hashes: file_hashes.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorFilesType) -> Self {
@@ -326,7 +348,10 @@ impl PassportElementErrorTranslationFile {
     where
         S: Into<String>,
     {
-        Self { r#type, file_hash: file_hash.into() }
+        Self {
+            r#type,
+            file_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorTranslationFileType) -> Self {
@@ -363,7 +388,10 @@ impl PassportElementErrorTranslationFiles {
     where
         S: Into<Vec<String>>,
     {
-        Self { r#type, file_hashes: file_hashes.into() }
+        Self {
+            r#type,
+            file_hashes: file_hashes.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorTranslationFilesType) -> Self {
@@ -400,7 +428,10 @@ impl PassportElementErrorUnspecified {
     where
         S: Into<String>,
     {
-        Self { r#type, element_hash: file_hash.into() }
+        Self {
+            r#type,
+            element_hash: file_hash.into(),
+        }
     }
 
     pub fn r#type(mut self, val: PassportElementErrorUnspecifiedType) -> Self {

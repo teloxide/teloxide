@@ -39,7 +39,11 @@ impl InputMessageContentText {
     where
         S: Into<String>,
     {
-        Self { message_text: message_text.into(), parse_mode: None, disable_web_page_preview: None }
+        Self {
+            message_text: message_text.into(),
+            parse_mode: None,
+            disable_web_page_preview: None,
+        }
     }
 
     pub fn message_text<S>(mut self, val: S) -> Self
@@ -79,7 +83,11 @@ pub struct InputMessageContentLocation {
 
 impl InputMessageContentLocation {
     pub fn new(latitude: f64, longitude: f64) -> Self {
-        Self { latitude, longitude, live_period: None }
+        Self {
+            latitude,
+            longitude,
+            live_period: None,
+        }
     }
 
     pub fn latitude(mut self, val: f64) -> Self {

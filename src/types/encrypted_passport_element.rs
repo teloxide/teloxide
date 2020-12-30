@@ -24,7 +24,10 @@ impl EncryptedPassportElement {
     where
         S: Into<String>,
     {
-        Self { hash: hash.into(), kind }
+        Self {
+            hash: hash.into(),
+            kind,
+        }
     }
 
     pub fn hash<S>(mut self, val: S) -> Self
@@ -140,7 +143,12 @@ impl EncryptedPassportElementPassport {
     where
         S: Into<String>,
     {
-        Self { data: data.into(), front_side, selfie, translation: None }
+        Self {
+            data: data.into(),
+            front_side,
+            selfie,
+            translation: None,
+        }
     }
 
     pub fn data<S>(mut self, val: S) -> Self
@@ -233,7 +241,13 @@ impl EncryptedPassportElementDriverLicense {
     where
         S: Into<String>,
     {
-        Self { data: data.into(), front_side, reverse_side, selfie, translation: None }
+        Self {
+            data: data.into(),
+            front_side,
+            reverse_side,
+            selfie,
+            translation: None,
+        }
     }
 
     pub fn data<S>(mut self, val: S) -> Self
@@ -330,7 +344,13 @@ impl EncryptedPassportElementIdentityCard {
     where
         S: Into<String>,
     {
-        Self { data: data.into(), front_side, reverse_side, selfie, translation: None }
+        Self {
+            data: data.into(),
+            front_side,
+            reverse_side,
+            selfie,
+            translation: None,
+        }
     }
 
     pub fn data<S>(mut self, val: S) -> Self
@@ -413,7 +433,12 @@ impl EncryptedPassportElementInternalPassport {
     where
         S: Into<String>,
     {
-        Self { data: data.into(), front_side, selfie, translation: None }
+        Self {
+            data: data.into(),
+            front_side,
+            selfie,
+            translation: None,
+        }
     }
 
     pub fn data<S>(mut self, val: S) -> Self
@@ -505,7 +530,10 @@ impl EncryptedPassportElementUtilityBill {
     where
         F: Into<Vec<PassportFile>>,
     {
-        Self { files: files.into(), translation: None }
+        Self {
+            files: files.into(),
+            translation: None,
+        }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
@@ -556,7 +584,10 @@ impl EncryptedPassportElementBankStatement {
     where
         F: Into<Vec<PassportFile>>,
     {
-        Self { files: files.into(), translation: None }
+        Self {
+            files: files.into(),
+            translation: None,
+        }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
@@ -607,7 +638,10 @@ impl EncryptedPassportElementRentalAgreement {
     where
         F: Into<Vec<PassportFile>>,
     {
-        Self { files: files.into(), translation: None }
+        Self {
+            files: files.into(),
+            translation: None,
+        }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
@@ -658,7 +692,10 @@ impl EncryptedPassportElementPassportRegistration {
     where
         F: Into<Vec<PassportFile>>,
     {
-        Self { files: files.into(), translation: None }
+        Self {
+            files: files.into(),
+            translation: None,
+        }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
@@ -709,7 +746,10 @@ impl EncryptedPassportElementTemporaryRegistration {
     where
         F: Into<Vec<PassportFile>>,
     {
-        Self { files: files.into(), translation: None }
+        Self {
+            files: files.into(),
+            translation: None,
+        }
     }
 
     pub fn files<P>(mut self, val: P) -> Self
@@ -742,7 +782,9 @@ impl EncryptedPassportElementPhoneNumber {
     where
         S: Into<String>,
     {
-        Self { phone_number: phone_number.into() }
+        Self {
+            phone_number: phone_number.into(),
+        }
     }
 
     pub fn phone_number<S>(mut self, val: S) -> Self
@@ -766,7 +808,9 @@ impl EncryptedPassportElementEmail {
     where
         S: Into<String>,
     {
-        Self { email: email.into() }
+        Self {
+            email: email.into(),
+        }
     }
 
     pub fn email<S>(mut self, val: S) -> Self

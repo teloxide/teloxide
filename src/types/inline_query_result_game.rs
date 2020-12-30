@@ -28,7 +28,11 @@ impl InlineQueryResultGame {
         S1: Into<String>,
         S2: Into<String>,
     {
-        Self { id: id.into(), game_short_name: game_short_name.into(), reply_markup: None }
+        Self {
+            id: id.into(),
+            game_short_name: game_short_name.into(),
+            reply_markup: None,
+        }
     }
 
     pub fn id<S>(mut self, val: S) -> Self

@@ -8,7 +8,10 @@ use std::{borrow::Cow, path::PathBuf};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum InputFile {
     File(PathBuf),
-    Memory { file_name: String, data: Cow<'static, [u8]> },
+    Memory {
+        file_name: String,
+        data: Cow<'static, [u8]>,
+    },
     Url(String),
     FileId(String),
 }
@@ -26,7 +29,10 @@ impl InputFile {
         S: Into<String>,
         D: Into<Cow<'static, [u8]>>,
     {
-        Self::Memory { file_name: file_name.into(), data: data.into() }
+        Self::Memory {
+            file_name: file_name.into(),
+            data: data.into(),
+        }
     }
 
     pub fn url<T>(url: T) -> Self
@@ -100,7 +106,11 @@ impl InputFile {
 
         match self {
             Self::File(path_to_file) => {
-                let file_name = path_to_file.file_name().unwrap().to_string_lossy().into_owned();
+                let file_name = path_to_file
+                    .file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned();
 
                 let file = FramedRead::new(tokio::fs::File::open(path_to_file).await?, FileDecoder);
 

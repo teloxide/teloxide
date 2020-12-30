@@ -18,7 +18,10 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self {
+            text: text.into(),
+            kind,
+        }
     }
 
     pub fn text<S>(mut self, val: S) -> Self
@@ -105,11 +108,17 @@ pub enum InlineKeyboardButtonKind {
 /// ```
 impl InlineKeyboardButton {
     pub fn url(text: String, url: String) -> InlineKeyboardButton {
-        InlineKeyboardButton { text, kind: InlineKeyboardButtonKind::Url(url) }
+        InlineKeyboardButton {
+            text,
+            kind: InlineKeyboardButtonKind::Url(url),
+        }
     }
 
     pub fn callback(text: String, callback_data: String) -> InlineKeyboardButton {
-        InlineKeyboardButton { text, kind: InlineKeyboardButtonKind::CallbackData(callback_data) }
+        InlineKeyboardButton {
+            text,
+            kind: InlineKeyboardButtonKind::CallbackData(callback_data),
+        }
     }
 
     pub fn switch_inline_query(text: String, switch_inline_query: String) -> InlineKeyboardButton {

@@ -33,7 +33,12 @@ impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
     fn into(self) -> Result<R, RequestError> {
         match self {
             TelegramResponse::Ok { response, .. } => Ok(response),
-            TelegramResponse::Err { error, error_code, response_parameters, .. } => {
+            TelegramResponse::Err {
+                error,
+                error_code,
+                response_parameters,
+                ..
+            } => {
                 if let Some(params) = response_parameters {
                     match params {
                         ResponseParameters::RetryAfter(i) => Err(RequestError::RetryAfter(i)),
@@ -64,7 +69,10 @@ mod tests {
 
         assert!(matches!(
             val,
-            TelegramResponse::Err { error: ApiError::TerminatedByOtherGetUpdates, .. }
+            TelegramResponse::Err {
+                error: ApiError::TerminatedByOtherGetUpdates,
+                ..
+            }
         ));
     }
 

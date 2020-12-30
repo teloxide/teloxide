@@ -163,7 +163,9 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_change_info`] field.
     pub fn can_change_info(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_change_info, .. }) => Some(*can_change_info),
+            Self::Administrator(Administrator {
+                can_change_info, ..
+            }) => Some(*can_change_info),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -175,7 +177,9 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_post_messages`] field.
     pub fn can_post_messages(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_post_messages, .. }) => *can_post_messages,
+            Self::Administrator(Administrator {
+                can_post_messages, ..
+            }) => *can_post_messages,
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -187,7 +191,9 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_edit_messages`] field.
     pub fn can_edit_messages(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_edit_messages, .. }) => *can_edit_messages,
+            Self::Administrator(Administrator {
+                can_edit_messages, ..
+            }) => *can_edit_messages,
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -199,9 +205,10 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_delete_messages`] field.
     pub fn can_delete_messages(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_delete_messages, .. }) => {
-                Some(*can_delete_messages)
-            }
+            Self::Administrator(Administrator {
+                can_delete_messages,
+                ..
+            }) => Some(*can_delete_messages),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -213,7 +220,9 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_invite_users`] field.
     pub fn can_invite_users(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_invite_users, .. }) => Some(*can_invite_users),
+            Self::Administrator(Administrator {
+                can_invite_users, ..
+            }) => Some(*can_invite_users),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -225,9 +234,10 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_restrict_members`] field.
     pub fn can_restrict_members(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_restrict_members, .. }) => {
-                Some(*can_restrict_members)
-            }
+            Self::Administrator(Administrator {
+                can_restrict_members,
+                ..
+            }) => Some(*can_restrict_members),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -239,7 +249,9 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_pin_messages`] field.
     pub fn can_pin_messages(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_pin_messages, .. }) => *can_pin_messages,
+            Self::Administrator(Administrator {
+                can_pin_messages, ..
+            }) => *can_pin_messages,
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -251,9 +263,10 @@ impl ChatMemberKind {
     /// Getter for [`Administrator::can_promote_members`] field.
     pub fn can_promote_members(&self) -> Option<bool> {
         match &self {
-            Self::Administrator(Administrator { can_promote_members, .. }) => {
-                Some(*can_promote_members)
-            }
+            Self::Administrator(Administrator {
+                can_promote_members,
+                ..
+            }) => Some(*can_promote_members),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -265,7 +278,9 @@ impl ChatMemberKind {
     /// Getter for [`Restricted::can_send_messages`] field.
     pub fn can_send_messages(&self) -> Option<bool> {
         match &self {
-            Self::Restricted(Restricted { can_send_messages, .. }) => Some(*can_send_messages),
+            Self::Restricted(Restricted {
+                can_send_messages, ..
+            }) => Some(*can_send_messages),
             Self::Creator(_)
             | Self::Administrator(_)
             | Self::Member
@@ -277,9 +292,10 @@ impl ChatMemberKind {
     /// Getter for [`Restricted::can_send_media_messages`] field.
     pub fn can_send_media_messages(&self) -> Option<bool> {
         match &self {
-            Self::Restricted(Restricted { can_send_media_messages, .. }) => {
-                Some(*can_send_media_messages)
-            }
+            Self::Restricted(Restricted {
+                can_send_media_messages,
+                ..
+            }) => Some(*can_send_media_messages),
             Self::Creator(_)
             | Self::Administrator(_)
             | Self::Member
@@ -291,9 +307,10 @@ impl ChatMemberKind {
     /// Getter for [`Restricted::can_send_other_messages`] field.
     pub fn can_send_other_messages(&self) -> Option<bool> {
         match &self {
-            Self::Restricted(Restricted { can_send_other_messages, .. }) => {
-                Some(*can_send_other_messages)
-            }
+            Self::Restricted(Restricted {
+                can_send_other_messages,
+                ..
+            }) => Some(*can_send_other_messages),
             Self::Creator(_)
             | Self::Administrator(_)
             | Self::Member
@@ -305,9 +322,10 @@ impl ChatMemberKind {
     /// Getter for [`Restricted::can_add_web_page_previews`] field.
     pub fn can_add_web_page_previews(&self) -> Option<bool> {
         match &self {
-            Self::Restricted(Restricted { can_add_web_page_previews, .. }) => {
-                Some(*can_add_web_page_previews)
-            }
+            Self::Restricted(Restricted {
+                can_add_web_page_previews,
+                ..
+            }) => Some(*can_add_web_page_previews),
             Self::Creator(_)
             | Self::Administrator(_)
             | Self::Member

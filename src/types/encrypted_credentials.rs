@@ -37,7 +37,11 @@ impl EncryptedCredentials {
         S2: Into<String>,
         S3: Into<String>,
     {
-        Self { data: data.into(), hash: hash.into(), secret: secret.into() }
+        Self {
+            data: data.into(),
+            hash: hash.into(),
+            secret: secret.into(),
+        }
     }
 
     pub fn data<S>(mut self, val: S) -> Self

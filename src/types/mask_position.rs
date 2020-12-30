@@ -29,7 +29,12 @@ impl MaskPosition {
     where
         S: Into<String>,
     {
-        Self { point: point.into(), x_shift, y_shift, scale }
+        Self {
+            point: point.into(),
+            x_shift,
+            y_shift,
+            scale,
+        }
     }
 
     pub fn point<S>(mut self, val: S) -> Self

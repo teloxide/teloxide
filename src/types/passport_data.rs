@@ -21,7 +21,10 @@ impl PassportData {
     where
         E: Into<Vec<EncryptedPassportElement>>,
     {
-        Self { data: data.into(), credentials }
+        Self {
+            data: data.into(),
+            credentials,
+        }
     }
 
     pub fn data<E>(mut self, val: E) -> Self

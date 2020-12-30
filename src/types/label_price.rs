@@ -24,7 +24,10 @@ impl LabeledPrice {
     where
         S: Into<String>,
     {
-        Self { label: label.into(), amount }
+        Self {
+            label: label.into(),
+            amount,
+        }
     }
 
     pub fn label<S>(mut self, val: S) -> Self
@@ -47,7 +50,10 @@ mod tests {
 
     #[test]
     fn serialize() {
-        let labeled_price = LabeledPrice { label: "Label".to_string(), amount: 60 };
+        let labeled_price = LabeledPrice {
+            label: "Label".to_string(),
+            amount: 60,
+        };
         let expected = r#"{"label":"Label","amount":60}"#;
         let actual = serde_json::to_string(&labeled_price).unwrap();
         assert_eq!(actual, expected);
