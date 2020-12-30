@@ -102,8 +102,8 @@ impl Bot {
 
     /// Sets a custom API URL.
     ///
-    /// For example, you can run your own [Telegram bot API server][tbas] and set
-    /// its URL using this method.
+    /// For example, you can run your own [Telegram bot API server][tbas] and
+    /// set its URL using this method.
     ///
     /// [tbas]: https://github.com/tdlib/telegram-bot-api
     ///
