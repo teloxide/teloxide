@@ -6,14 +6,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-use futures::task::{Context, Poll};
+use futures::{
+    task::{Context, Poll},
+    FutureExt,
+};
 use never::Never;
-use tokio::{
-    sync::{
-        mpsc::{self, error::TryRecvError},
-        oneshot::{channel, Receiver, Sender},
-    },
-    time::delay_for,
+use tokio::sync::{
+    mpsc,
+    oneshot::{channel, Receiver, Sender},
 };
 use vecrem::VecExt;
 
@@ -182,10 +182,13 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
 
         // update local queue with latest requests
         loop {
-            match queue_rx.try_recv() {
-                Ok(req) => queue.push(req),
-                Err(TryRecvError::Empty) => break,
-                Err(TryRecvError::Closed) => close = true,
+            // FIXME(waffle): https://github.com/tokio-rs/tokio/issues/3350
+            match queue_rx.recv().now_or_never() {
+                Some(Some(req)) => queue.push(req),
+                // There are no items in queue
+                None => break,
+                // The queue was closed
+                Some(None) => close = true,
             }
         }
 
@@ -256,7 +259,7 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
 
         if allowed == 0 {
             hchats_s.clear();
-            delay_for(DELAY).await;
+            tokio::time::sleep(DELAY).await;
             continue;
         }
 
@@ -296,7 +299,7 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
         // It's easier to just recompute last second stats, instead of keeping
         // track of it alongside with minute stats, so we just throw this away.
         hchats_s.clear();
-        delay_for(DELAY).await;
+        tokio::time::sleep(DELAY).await;
     }
 }
 
@@ -764,7 +767,7 @@ mod chan_send {
             #[cfg(feature = "nightly")]
             {
                 fn def(
-                    mut sender: mpsc::Sender<(Id, Sender<Never>)>,
+                    sender: mpsc::Sender<(Id, Sender<Never>)>,
                     val: (Id, Sender<Never>),
                 ) -> Inner {
                     async move { sender.send(val).await }
@@ -773,7 +776,7 @@ mod chan_send {
             }
             #[cfg(not(feature = "nightly"))]
             {
-                let mut this = self;
+                let this = self;
                 return ChanSend(Box::pin(async move { this.send(val).await }));
             }
         }

@@ -29,9 +29,9 @@ pub(crate) enum TelegramResponse<R> {
     },
 }
 
-impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
-    fn into(self) -> Result<R, RequestError> {
-        match self {
+impl<R> From<TelegramResponse<R>> for ResponseResult<R> {
+    fn from(this: TelegramResponse<R>) -> ResponseResult<R> {
+        match this {
             TelegramResponse::Ok { response, .. } => Ok(response),
             TelegramResponse::Err {
                 error,
