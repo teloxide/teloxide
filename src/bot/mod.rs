@@ -202,7 +202,7 @@ pub(crate) fn sound_bot() -> ClientBuilder {
     ClientBuilder::new()
         .connect_timeout(connect_timeout)
         .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
-        .tcp_nodelay_(true)
+        .tcp_nodelay(true)
         .default_headers(headers)
 }
 
