@@ -45,11 +45,9 @@
 //
 // To properly build docs of this crate run
 // ```console
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-// $ RUSTDOCFLAGS="--cfg teloxide_docsrs" cargo +nightly doc --open --all-features
+// $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo doc --open --all-features
 // ```
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
@@ -71,8 +69,7 @@ pub mod types;
 pub mod utils;
 
 #[cfg(feature = "macros")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
