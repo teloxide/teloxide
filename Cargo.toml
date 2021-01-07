@@ -59,4 +59,4 @@ full = ["throttle", "cache_me", "auto_send"]
 
 [package.metadata."docs.rs"]
 all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
+rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
