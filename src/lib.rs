@@ -5,7 +5,7 @@
 //
 // To properly build docs of this crate run
 // ```console
-// $ RUSTDOCFLAGS="--cfg docsrs" cargo doc --open --all-features
+// $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo doc --open --all-features
 // ```
 #![forbid(unsafe_code)]
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
