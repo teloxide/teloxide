@@ -299,11 +299,11 @@ impl Requester for Bot {
 
     type SendDice = JsonRequest<payloads::SendDice>;
 
-    fn send_dice<C>(&self, chat_id: C, emoji: crate::types::DiceEmoji) -> Self::SendDice
+    fn send_dice<C>(&self, chat_id: C) -> Self::SendDice
     where
         C: Into<ChatId>,
     {
-        Self::SendDice::new(self.clone(), payloads::SendDice::new(chat_id, emoji))
+        Self::SendDice::new(self.clone(), payloads::SendDice::new(chat_id))
     }
 
     type SendChatAction = JsonRequest<payloads::SendChatAction>;
