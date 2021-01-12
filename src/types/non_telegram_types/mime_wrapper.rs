@@ -1,6 +1,8 @@
+use std::fmt::Formatter;
+
 use derive_more::From;
 use mime::Mime;
-use serde::{de::Visitor, export::Formatter, Deserialize, Deserializer, Serialize, Serializer};
+use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 
 /// Serializable & deserializable `MIME` wrapper.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, From)]
