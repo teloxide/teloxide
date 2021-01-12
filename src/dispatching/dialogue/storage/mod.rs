@@ -28,6 +28,9 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 /// You can implement this trait for a structure that communicates with a DB and
 /// be sure that after you restart your bot, all the dialogues won't be lost.
 ///
+/// `Storage` is used only to store dialogue states, i.e. it can't be used as a
+/// generic database.
+///
 /// Currently we support the following storages out of the box:
 ///
 /// - [`InMemStorage`] - a storage based on a simple hash map
