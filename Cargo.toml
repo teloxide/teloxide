@@ -34,8 +34,7 @@ thiserror = "1.0.20"
 once_cell = "1.5.0"
 never = "0.1.0"
 
-# FIXME(waffle): use crates.io once published
-vecrem = { git = "https://github.com/WaffleLapkin/vecrem", rev = "6b9b6f42342df8b75548c6ed387072ff235429b1" }
+vecrem = { version = "0.1", optional = true }
 
 [features]
 default = []
@@ -47,7 +46,7 @@ default = []
 nightly = []
 
 # Throttling bot adaptor
-throttle = []
+throttle = ["vecrem"]
 
 # CacheMe bot adaptor
 cache_me = []
