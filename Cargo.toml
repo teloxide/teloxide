@@ -39,19 +39,20 @@ nightly = [] # currently used for `README.md` tests and building docs for `docsr
 serde_json = "1.0.55"
 serde = { version = "1.0.114", features = ["derive"] }
 
-tokio = { version = "0.2.21", features = ["fs", "stream"] }
-tokio-util = "0.3.1"
+tokio = { version = "1.0", features = ["fs"] }
+tokio-util = "0.6"
+tokio-stream = "0.1.1"
 
-reqwest = { version = "0.10.6", features = ["json", "stream"] }
+reqwest = { version = "0.11", features = ["json", "stream", "multipart"] }
 log = "0.4.8"
 lockfree = "0.5.1"
-bytes = "0.5.5"
+bytes = "1.0"
 mime = "0.3.16"
 
 derive_more = "0.99.9"
 thiserror = "1.0.20"
 async-trait = "0.1.36"
-futures = "0.3.5"
+futures = "0.3.9"
 pin-project = "0.4.22"
 serde_with_macros = "1.1.0"
 

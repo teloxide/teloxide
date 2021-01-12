@@ -52,7 +52,7 @@ where
     T: DeserializeOwned,
 {
     if response.status().is_server_error() {
-        tokio::time::delay_for(DELAY_ON_SERVER_ERROR).await;
+        tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
     }
 
     serde_json::from_str::<TelegramResponse<T>>(
