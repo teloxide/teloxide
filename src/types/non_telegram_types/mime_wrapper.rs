@@ -1,6 +1,8 @@
+use std::fmt::Formatter;
+
 use derive_more::From;
 use mime::Mime;
-use serde::{de::Visitor, export::Formatter, Deserialize, Deserializer, Serialize, Serializer};
+use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 
 /// Serializable & deserializable `MIME` wrapper.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, From)]
@@ -19,7 +21,7 @@ struct MimeVisitor;
 impl<'a> Visitor<'a> for MimeVisitor {
     type Value = MimeWrapper;
 
-    fn expecting(&self, formatter: &mut Formatter<'_>) -> Result<(), serde::export::fmt::Error> {
+    fn expecting(&self, formatter: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         formatter.write_str("mime type")
     }
 
