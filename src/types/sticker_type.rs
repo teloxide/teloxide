@@ -7,14 +7,16 @@ pub enum StickerType {
     /// dimensions must not exceed 512px, and either width or height must be
     /// exactly 512px.
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// Pass [`InputFile::FileId`] to send a sticker that exists on the Telegram
+    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
+    /// sticker (.WEBP file) from the Internet, pass [`InputFile::File`] to
+    /// upload a sticker from the file system or [`InputFile::Memory`] to upload
+    /// a sticker from memory [More info on Sending Files »].
     ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     Png(InputFile),

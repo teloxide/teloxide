@@ -32,9 +32,13 @@ where
 ///
 /// [CBOR]: https://en.wikipedia.org/wiki/CBOR
 #[cfg(feature = "cbor-serializer")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
 pub struct CBOR;
 
 #[cfg(feature = "cbor-serializer")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
 impl<D> Serializer<D> for CBOR
 where
     D: Serialize + DeserializeOwned,
@@ -54,9 +58,13 @@ where
 ///
 /// [Bincode]: https://github.com/servo/bincode
 #[cfg(feature = "bincode-serializer")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "bincode-serializer")))]
 pub struct Bincode;
 
 #[cfg(feature = "bincode-serializer")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "bincode-serializer")))]
 impl<D> Serializer<D> for Bincode
 where
     D: Serialize + DeserializeOwned,

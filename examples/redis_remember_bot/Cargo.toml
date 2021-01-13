@@ -11,7 +11,7 @@ tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
 
 # You can also choose "cbor-serializer" or built-in JSON serializer
 teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer"] }
-teloxide-macros = "0.3.2"
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
 
 serde = "1.0.104"
 futures = "0.3.5"

@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatOrInlineMessage, GameHighScore},
+    types::{GameHighScore, TargetMessage},
     Bot,
 };
 
@@ -18,14 +18,13 @@ use crate::{
 /// the user and his neighbors are not among them. Please note that this
 /// behavior is subject to change.
 ///
-/// [The official docs](https://core.telegram.org/bots/api#getgamehighscores).
-#[serde_with_macros::skip_serializing_none]
+/// [The official docs](https://core.telegram.org/bots/api#getgamehighscores)
 #[derive(Debug, Clone, Serialize)]
 pub struct GetGameHighScores {
     #[serde(skip_serializing)]
     bot: Bot,
     #[serde(flatten)]
-    chat_or_inline_message: ChatOrInlineMessage,
+    target: TargetMessage,
     user_id: i32,
 }
 
@@ -39,12 +38,20 @@ impl Request for GetGameHighScores {
 }
 
 impl GetGameHighScores {
-    pub(crate) fn new(bot: Bot, chat_or_inline_message: ChatOrInlineMessage, user_id: i32) -> Self {
-        Self { bot, chat_or_inline_message, user_id }
+    pub(crate) fn new<T>(bot: Bot, target: T, user_id: i32) -> Self
+    where
+        T: Into<TargetMessage>,
+    {
+        let target = target.into();
+        Self { bot, target, user_id }
     }
 
-    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
-        self.chat_or_inline_message = val;
+    /// Target message, either chat id and message id or inline message id.
+    pub fn target<T>(mut self, val: T) -> Self
+    where
+        T: Into<TargetMessage>,
+    {
+        self.target = val.into();
         self
     }
 

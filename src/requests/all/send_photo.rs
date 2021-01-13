@@ -73,14 +73,16 @@ impl SendPhoto {
 
     /// Photo to send.
     ///
-    /// Pass [`InputFile::File`] to send a photo that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// Pass [`InputFile::FileId`] to send a photo that exists on the Telegram
+    /// servers (recommended), pass an [`InputFile::Url`] for Telegram to get a
+    /// photo from the Internet (5MB max.), pass [`InputFile::File`] to upload
+    /// a picture from the file system or [`InputFile::Memory`] to upload a
+    /// photo from memory (10MB max. each). [More info on Sending Files »].
     ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
     /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::Url`]: crate::types::InputFile::Url
+    /// [`InputFile::File`]: crate::types::InputFile::File
+    /// [`InputFile::Memory`]: crate::types::InputFile::Memory
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub fn photo(mut self, val: InputFile) -> Self {

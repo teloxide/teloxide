@@ -56,6 +56,8 @@ impl Bot {
     /// [`tokio::fs::File`]: tokio::fs::File
     /// [`Bot::download_file`]: crate::Bot::download_file
     #[cfg(feature = "unstable-stream")]
+    // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+    #[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "unstable-stream")))]
     pub async fn download_file_stream(
         &self,
         path: &str,

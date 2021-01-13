@@ -3,26 +3,24 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message, ParseMode},
+    types::{ChatId, InlineKeyboardMarkup, Message, ParseMode},
     Bot,
 };
 
 /// Use this method to edit text and game messages.
 ///
-/// On success, if edited message is sent by the bot, the edited [`Message`] is
-/// returned, otherwise [`True`] is returned.
+/// On success, the edited [`Message`] is returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#editmessagetext).
 ///
 /// [`Message`]: crate::types::Message
-/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageText {
     #[serde(skip_serializing)]
     bot: Bot,
-    #[serde(flatten)]
-    chat_or_inline_message: ChatOrInlineMessage,
+    chat_id: ChatId,
+    message_id: i32,
     text: String,
     parse_mode: Option<ParseMode>,
     disable_web_page_preview: Option<bool>,
@@ -39,22 +37,37 @@ impl Request for EditMessageText {
 }
 
 impl EditMessageText {
-    pub(crate) fn new<T>(bot: Bot, chat_or_inline_message: ChatOrInlineMessage, text: T) -> Self
+    pub(crate) fn new<C, T>(bot: Bot, chat_id: C, message_id: i32, text: T) -> Self
     where
+        C: Into<ChatId>,
         T: Into<String>,
     {
+        let chat_id = chat_id.into();
+        let text = text.into();
         Self {
             bot,
-            chat_or_inline_message,
-            text: text.into(),
+            chat_id,
+            message_id,
+            text,
             parse_mode: None,
             disable_web_page_preview: None,
             reply_markup: None,
         }
     }
 
-    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
-        self.chat_or_inline_message = val;
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`)
+    pub fn chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = val.into();
+        self
+    }
+
+    /// Identifier of the message to edit
+    pub fn message_id(mut self, val: i32) -> Self {
+        self.message_id = val;
         self
     }
 

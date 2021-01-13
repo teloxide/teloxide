@@ -40,6 +40,16 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
+#![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
+// we pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
+//
+// To properly build docs of this crate run
+// ```console
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+// $ RUSTDOCFLAGS="--cfg teloxide_docsrs" cargo +nightly doc --open --all-features
+// ```
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
@@ -60,4 +70,11 @@ pub mod requests;
 pub mod types;
 pub mod utils;
 
-extern crate teloxide_macros;
+#[cfg(feature = "macros")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::teloxide;
+
+#[cfg(all(feature = "nightly", doctest))]
+#[doc(include = "../README.md")]
+enum ReadmeDocTests {}

@@ -3,28 +3,26 @@ use serde::Serialize;
 use crate::{
     net,
     requests::{Request, ResponseResult},
-    types::{ChatOrInlineMessage, InlineKeyboardMarkup, Message},
+    types::{ChatId, InlineKeyboardMarkup, Message},
     Bot,
 };
 
 /// Use this method to edit live location messages.
 ///
 /// A location can be edited until its live_period expires or editing is
-/// explicitly disabled by a call to stopMessageLiveLocation. On success, if the
-/// edited message was sent by the bot, the edited [`Message`] is returned,
-/// otherwise [`True`] is returned.
+/// explicitly disabled by a call to stopMessageLiveLocation. On success, the
+/// edited [`Message`] is returned.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#editmessagelivelocation).
 ///
 /// [`Message`]: crate::types::Message
-/// [`True`]: crate::types::True
 #[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct EditMessageLiveLocation {
     #[serde(skip_serializing)]
     bot: Bot,
-    #[serde(flatten)]
-    chat_or_inline_message: ChatOrInlineMessage,
+    chat_id: ChatId,
+    message_id: i32,
     latitude: f32,
     longitude: f32,
     reply_markup: Option<InlineKeyboardMarkup>,
@@ -41,17 +39,33 @@ impl Request for EditMessageLiveLocation {
 }
 
 impl EditMessageLiveLocation {
-    pub(crate) fn new(
+    pub(crate) fn new<C>(
         bot: Bot,
-        chat_or_inline_message: ChatOrInlineMessage,
+        chat_id: C,
+        message_id: i32,
         latitude: f32,
         longitude: f32,
-    ) -> Self {
-        Self { bot, chat_or_inline_message, latitude, longitude, reply_markup: None }
+    ) -> Self
+    where
+        C: Into<ChatId>,
+    {
+        let chat_id = chat_id.into();
+        Self { bot, chat_id, message_id, latitude, longitude, reply_markup: None }
     }
 
-    pub fn chat_or_inline_message(mut self, val: ChatOrInlineMessage) -> Self {
-        self.chat_or_inline_message = val;
+    /// Unique identifier for the target chat or username of the target channel
+    /// (in the format `@channelusername`)
+    pub fn chat_id<T>(mut self, val: T) -> Self
+    where
+        T: Into<ChatId>,
+    {
+        self.chat_id = val.into();
+        self
+    }
+
+    /// Identifier of the message to edit
+    pub fn message_id(mut self, val: i32) -> Self {
+        self.message_id = val;
         self
     }
 

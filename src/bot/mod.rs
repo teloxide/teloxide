@@ -20,7 +20,7 @@ pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
 pub struct Bot {
     token: Arc<str>,
     client: Client,
-    parse_mode: Arc<Option<ParseMode>>,
+    parse_mode: Option<ParseMode>,
 }
 
 impl Bot {
@@ -41,8 +41,7 @@ impl Bot {
     /// client.
     ///
     /// # Panics
-    ///  - If cannot get the `TELOXIDE_TOKEN` and `TELOXIDE_PROXY` environmental
-    ///    variables.
+    ///  - If cannot get the `TELOXIDE_TOKEN`  environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
@@ -106,7 +105,7 @@ impl Bot {
         Self {
             token: Into::<Arc<str>>::into(Into::<String>::into(token)),
             client,
-            parse_mode: Arc::new(None),
+            parse_mode: None,
         }
     }
 }
@@ -231,11 +230,11 @@ impl BotBuilder {
     ///
     /// This method will attempt to build a new client with a proxy, specified
     /// in the `TELOXIDE_PROXY` (passed into [`reqwest::Proxy::all`])
-    /// environmental variable, if a client haven't been specified.
+    /// environmental variable, if a client haven't been specified. If
+    /// `TELOXIDE_PROXY` is unspecified, it'll use no proxy.
     ///
     /// # Panics
-    ///  - If cannot get the `TELOXIDE_TOKEN` and `TELOXIDE_PROXY` environmental
-    ///    variables.
+    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
@@ -247,7 +246,7 @@ impl BotBuilder {
         Bot {
             client: self.client.unwrap_or_else(crate::utils::client_from_env),
             token: self.token.unwrap_or_else(|| get_env(TELOXIDE_TOKEN)).into(),
-            parse_mode: Arc::new(self.parse_mode),
+            parse_mode: self.parse_mode,
         }
     }
 }

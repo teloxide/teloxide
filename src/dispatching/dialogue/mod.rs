@@ -30,16 +30,16 @@
 //! skeleton should look like:
 //!
 //! ```no_run
+//! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::prelude::*;
-//! use teloxide_macros::{teloxide, Transition};
+//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide};
 //!
 //! struct _1State;
 //! struct _2State;
 //! struct _3State;
 //!
-//! type Out = TransitionOut<D>;
+//! type Out = TransitionOut<D, RequestError>;
 //!
 //! #[teloxide(subtransition)]
 //! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
@@ -97,6 +97,7 @@
 //!         .dispatch()
 //!         .await;
 //! }
+//! # }
 //! ```
 //!
 //!  - `#[teloxide(subtransition)]` implements [`Subtransition`] for the first
@@ -156,7 +157,17 @@ pub use transition::{
     Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
 
+#[cfg(feature = "macros")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::Transition;
+
 #[cfg(feature = "redis-storage")]
+// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
+#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use storage::{RedisStorage, RedisStorageError};
 
-pub use storage::{serializer, InMemStorage, Serializer, Storage};
+#[cfg(feature = "sqlite-storage")]
+pub use storage::{SqliteStorage, SqliteStorageError};
+
+pub use storage::{serializer, InMemStorage, Serializer, Storage, TraceStorage};
