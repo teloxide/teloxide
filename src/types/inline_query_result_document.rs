@@ -1,6 +1,7 @@
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 /// Represents a link to a file.
 ///
@@ -35,7 +36,8 @@ pub struct InlineQueryResultDocument {
 
     /// Mime type of the content of the file, either `application/pdf` or
     /// `application/zip`.
-    pub mime_type: MimeWrapper,
+    #[serde(with = "crate::types::non_telegram_types::mime::deser")]
+    pub mime_type: Mime,
 
     /// Short description of the result.
     pub description: Option<String>,
@@ -94,7 +96,7 @@ impl InlineQueryResultDocument {
         self
     }
 
-    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+    pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = val;
         self
     }

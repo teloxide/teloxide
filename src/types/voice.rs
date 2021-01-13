@@ -1,4 +1,4 @@
-use crate::types::MimeWrapper;
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 
 /// This object represents a voice note.
@@ -19,7 +19,8 @@ pub struct Voice {
     pub duration: u32,
 
     /// MIME type of the file as defined by sender.
-    pub mime_type: Option<MimeWrapper>,
+    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    pub mime_type: Option<Mime>,
 
     /// File size.
     pub file_size: Option<u64>,
@@ -61,7 +62,7 @@ impl Voice {
         self
     }
 
-    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+    pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = Some(val);
         self
     }

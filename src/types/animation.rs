@@ -1,6 +1,7 @@
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MimeWrapper, PhotoSize};
+use crate::types::PhotoSize;
 
 /// This object represents an animation file (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -33,7 +34,8 @@ pub struct Animation {
     pub file_name: Option<String>,
 
     /// A MIME type of the file as defined by a sender.
-    pub mime_type: Option<MimeWrapper>,
+    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    pub mime_type: Option<Mime>,
 
     /// A size of a file.
     pub file_size: Option<u32>,
@@ -108,7 +110,7 @@ impl Animation {
         self
     }
 
-    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+    pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = Some(val);
         self
     }
@@ -155,7 +157,7 @@ mod tests {
                 file_size: Some(3452),
             }),
             file_name: Some("some".to_string()),
-            mime_type: Some(MimeWrapper("video/gif".parse().unwrap())),
+            mime_type: Some("video/gif".parse().unwrap()),
             file_size: Some(6500),
         };
         let actual = serde_json::from_str::<Animation>(json).unwrap();

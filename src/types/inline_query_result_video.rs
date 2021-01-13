@@ -1,6 +1,7 @@
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MimeWrapper, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
 
 /// Represents a link to a page containing an embedded video player or a video
 /// file.
@@ -20,7 +21,8 @@ pub struct InlineQueryResultVideo {
     pub video_url: String,
 
     /// Mime type of the content of video url, `text/html` or `video/mp4`.
-    pub mime_type: MimeWrapper,
+    #[serde(with = "crate::types::non_telegram_types::mime::deser")]
+    pub mime_type: Mime,
 
     /// URL of the thumbnail (jpeg only) for the video.
     pub thumb_url: String,
@@ -69,7 +71,7 @@ impl InlineQueryResultVideo {
     pub fn new<S1, S2, S3, S4>(
         id: S1,
         video_url: S2,
-        mime_type: MimeWrapper,
+        mime_type: Mime,
         thumb_url: S3,
         title: S4,
     ) -> Self
@@ -112,7 +114,7 @@ impl InlineQueryResultVideo {
         self
     }
 
-    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+    pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = val;
         self
     }
