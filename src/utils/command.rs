@@ -46,8 +46,10 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
-use serde::export::Formatter;
-use std::{error::Error, fmt::Display};
+use std::{
+    error::Error,
+    fmt::{Display, Formatter},
+};
 
 #[cfg(feature = "macros")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
