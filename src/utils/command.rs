@@ -44,8 +44,10 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
-use serde::export::Formatter;
-use std::{error::Error, fmt::Display};
+use std::{
+    error::Error,
+    fmt::{Display, Formatter},
+};
 pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.

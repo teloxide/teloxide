@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
 
+## [0.3.4] - 2020-01-13
+
+### Fixed
+
+ - Failing compilation with `serde::export` ([issue 328](https://github.com/teloxide/teloxide/issues/328)).
+
 ## [0.3.3] - 2020-10-30
 
 ### Fixed
