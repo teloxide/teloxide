@@ -70,10 +70,7 @@ struct MimeVisitor;
 impl<'a> Visitor<'a> for MimeVisitor {
     type Value = MimeDe;
 
-    fn expecting(
-        &self,
-        formatter: &mut fmt::Formatter<'_>,
-    ) -> Result<(), serde::export::fmt::Error> {
+    fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         formatter.write_str("mime type")
     }
 
