@@ -20,8 +20,8 @@ use crate::{
 /// Notes:
 /// 1. This wrapper should be the most outer i.e.: `AutoSend<CacheMe<Bot>>`
 ///    will automatically send requests, while `CacheMe<AutoSend<Bot>>` - won't.
-/// 2. After first call to `poll` on a request you will unable to access payload
-///    nor could you use [`send_ref`](Request::send_ref).
+/// 2. After first call to `poll` on a request you will be unable to access
+///    payload nor could you use [`send_ref`](Request::send_ref).
 ///
 /// ## Examples
 ///
@@ -74,7 +74,10 @@ macro_rules! fty {
     };
 }
 
-impl<B: Requester> Requester for AutoSend<B> {
+impl<B> Requester for AutoSend<B>
+where
+    B: Requester,
+{
     type Err = B::Err;
 
     requester_forward! {
@@ -112,7 +115,10 @@ download_forward! {
 #[pin_project::pin_project]
 pub struct AutoRequest<R: Request>(#[pin] Inner<R>);
 
-impl<R: Request> AutoRequest<R> {
+impl<R> AutoRequest<R>
+where
+    R: Request,
+{
     pub fn new(inner: R) -> Self {
         Self(Inner::Request(inner))
     }
@@ -133,7 +139,10 @@ enum Inner<R: Request> {
     Done,
 }
 
-impl<R: Request> Request for AutoRequest<R> {
+impl<R> Request for AutoRequest<R>
+where
+    R: Request,
+{
     type Err = R::Err;
     type Send = R::Send;
     type SendRef = R::SendRef;

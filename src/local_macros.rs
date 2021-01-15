@@ -188,6 +188,8 @@ macro_rules! impl_payload {
             #[allow(clippy::too_many_arguments)]
             // It's just easier for macros to generate such code.
             #[allow(clippy::redundant_field_names)]
+            // It's obvious what this method does. (If you think it's not, feel free to open a PR)
+            #[allow(missing_docs)]
             $vi fn new($($($fields : impl_payload!(@convert? $FTy $([$conv])?)),*)?) -> Self {
                 Self {
                     $(

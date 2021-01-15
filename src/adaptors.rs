@@ -8,12 +8,27 @@
 //!
 //! [`Requester`]: crate::requests::Requester
 
+/// [`AutoSend`] bot adaptor which allows sending a request without calling
+/// [`send`].
+///
+/// [`AutoSend`]: auto_send::AutoSend
+/// [`send`]: crate::requests::Request::send
 #[cfg(feature = "auto_send")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "auto_send")))]
 pub mod auto_send;
+
+/// [`CacheMe`] bot adaptor which caches [`GetMe`] requests.
+///
+/// [`CacheMe`]: cache_me::CacheMe
+/// [`GetMe`]: crate::payloads::GetMe
 #[cfg(feature = "cache_me")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cache_me")))]
 pub mod cache_me;
+
+/// [`Throttle`] bot adaptor which allows automatically throttle when hitting
+/// API limits.
+///
+/// [`Throttle`]: throttle::Throttle
 #[cfg(feature = "throttle")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
 pub mod throttle;

@@ -13,7 +13,7 @@ use crate::requests::{HasPayload, Output};
 ///
 /// This is crucial for request wrappers which may want to cancel and/or never
 /// send the underlying request. E.g.: [`Throttle<B>`]'s `send_ref` calls
-/// `B::send_ref` while _not_ meaning to really send the request right now.
+/// `B::send_ref` while _not_ meaning to really send the request at the moment.
 ///
 /// [`Throttle<B>`]: crate::adaptors::Throttle
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
@@ -32,8 +32,8 @@ pub trait Request: HasPayload {
 
     /// A type of the future returned by the [`send_ref`](Request::send_ref)
     /// method.
-    // Note: it intentionally forbids borrowing from `self` though anyway we
-    // couldn't allow borrowing without GATs.
+    // Note: it intentionally forbids borrowing from `self` though we couldn't allow
+    // borrowing without GATs anyway.
     type SendRef: Future<Output = Result<Output<Self>, Self::Err>> + Send;
 
     /// Send this request.
@@ -49,6 +49,8 @@ pub trait Request: HasPayload {
     /// };
     ///
     /// let bot = Bot::new("TOKEN");
+    ///
+    /// // Note: it's recommended to `Requester` instead of creating requests directly
     /// let method = GetMe::new();
     /// let request = JsonRequest::new(bot, method);
     /// let _: User = request.send().await.unwrap();

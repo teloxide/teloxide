@@ -1,3 +1,7 @@
 //! Commonly used items.
 
-pub use crate::requests::Requester;
+pub use crate::{
+    payloads::setters::*,
+    requests::{Request, Requester, RequesterExt},
+    Bot,
+};

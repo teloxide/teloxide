@@ -1,7 +1,8 @@
 //! Request data sent to Telegram.
 
-/// This module re-exports all the setters traits as `_`. When used with a glob
-/// import:
+/// This module re-exports all the setters traits as `_`.
+///
+/// When used with a glob import:
 ///
 /// ```
 /// use teloxide_core::payloads::setters::*;
