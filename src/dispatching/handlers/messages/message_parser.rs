@@ -136,7 +136,7 @@ impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
         self
     }
 
-    pub fn or(mut self, guard: impl Guard<Message> + 'static) -> Self {
+    pub fn or_with_guard(mut self, guard: impl Guard<Message> + 'static) -> Self {
         let prev = self
             .last_guard
             .take()
