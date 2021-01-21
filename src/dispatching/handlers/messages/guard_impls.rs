@@ -1089,9 +1089,8 @@ impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
         self.with_guard(move |message: &Message| message.caption_entities().is_none())
     }
 
-    pub fn no_has_entities_or_caption_entities(self) -> Self {
-        self.no_has_entities()
-            .or_no_has_caption_entities()
+    pub fn no_has_entities_and_caption_entities(self) -> Self {
+        self.with_guard(move |message: &Message| message.caption_entities().is_none() && message.entities().is_none())
     }
 
     pub fn no_has_audio(self) -> Self {
@@ -1134,9 +1133,8 @@ impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
         self.with_guard(|message: &Message| message.caption().is_none())
     }
 
-    pub fn no_has_text_or_caption(self) -> Self {
-        self.no_has_text()
-            .or_no_has_caption()
+    pub fn no_has_text_and_caption(self) -> Self {
+        self.with_guard(|message: &Message| message.caption().is_none() && message.text().is_none())
     }
 
     pub fn no_has_contact(self) -> Self {
@@ -1269,9 +1267,8 @@ impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
         self.or_with_guard(move |message: &Message| message.caption_entities().is_none())
     }
 
-    pub fn or_no_has_entities_or_caption_entities(self) -> Self {
-        self.or_no_has_entities()
-            .or_no_has_caption_entities()
+    pub fn or_no_has_entities_and_caption_entities(self) -> Self {
+        self.or_with_guard(move |message: &Message| message.caption_entities().is_none() && message.entities().is_none())
     }
 
     pub fn or_no_has_audio(self) -> Self {
@@ -1314,9 +1311,8 @@ impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
         self.or_with_guard(|message: &Message| message.caption().is_none())
     }
 
-    pub fn or_no_has_text_or_caption(self) -> Self {
-        self.or_no_has_text()
-            .or_no_has_caption()
+    pub fn or_no_has_text_and_caption(self) -> Self {
+        self.or_with_guard(|message: &Message| message.caption().is_none() && message.text().is_none())
     }
 
     pub fn or_no_has_contact(self) -> Self {
