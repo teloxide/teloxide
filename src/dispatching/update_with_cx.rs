@@ -1,5 +1,4 @@
 use crate::{
-    dispatching::dialogue::GetChatId,
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage, PinChatMessage,
         Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDice, SendDocument,
@@ -21,7 +20,7 @@ pub struct UpdateWithCx<Upd> {
     pub bot: Bot,
     pub update: Upd,
 }
-
+/*
 impl<Upd> GetChatId for UpdateWithCx<Upd>
 where
     Upd: GetChatId,
@@ -30,7 +29,7 @@ where
         self.update.chat_id()
     }
 }
-
+*/
 impl UpdateWithCx<Message> {
     /// A shortcut for `.answer(text).send().await`.
     pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
@@ -44,14 +43,14 @@ impl UpdateWithCx<Message> {
     where
         T: Into<String>,
     {
-        self.bot.send_message(self.chat_id(), text)
+        self.bot.send_message(self.update.chat_id(), text)
     }
 
     pub fn reply_to<T>(&self, text: T) -> SendMessage
     where
         T: Into<String>,
     {
-        self.bot.send_message(self.chat_id(), text).reply_to_message_id(self.update.id)
+        self.bot.send_message(self.update.chat_id(), text).reply_to_message_id(self.update.id)
     }
 
     pub fn answer_photo(&self, photo: InputFile) -> SendPhoto {
@@ -112,7 +111,7 @@ impl UpdateWithCx<Message> {
         T: Into<String>,
         U: Into<String>,
     {
-        self.bot.send_contact(self.chat_id(), phone_number, first_name)
+        self.bot.send_contact(self.update.chat_id(), phone_number, first_name)
     }
 
     pub fn answer_sticker(&self, sticker: InputFile) -> SendSticker {

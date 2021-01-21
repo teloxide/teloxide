@@ -50,12 +50,13 @@
 // ```
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
 #![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
+#![recursion_limit = "20"]
 
 pub use bot::{Bot, BotBuilder};
-pub use dispatching::repls::{
+/*pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
-};
+};*/
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;
@@ -63,7 +64,6 @@ mod net;
 
 mod bot;
 pub mod dispatching;
-pub mod error_handlers;
 mod logging;
 pub mod prelude;
 pub mod requests;
