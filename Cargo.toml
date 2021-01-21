@@ -60,3 +60,7 @@ full = ["throttle", "cache_me", "auto_send"]
 [package.metadata."docs.rs"]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
+
+[[example]]
+name = "self_info"
+required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send"]

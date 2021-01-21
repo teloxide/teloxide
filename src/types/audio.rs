@@ -1,6 +1,7 @@
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MimeWrapper, PhotoSize};
+use crate::types::PhotoSize;
 
 /// This object represents an audio file to be treated as music by the Telegram
 /// clients.
@@ -27,7 +28,8 @@ pub struct Audio {
     pub title: Option<String>,
 
     /// A MIME type of the file as defined by a sender.
-    pub mime_type: Option<MimeWrapper>,
+    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    pub mime_type: Option<Mime>,
 
     /// A size of a file.
     pub file_size: Option<u32>,
@@ -91,7 +93,7 @@ impl Audio {
         self
     }
 
-    pub fn mime_type(mut self, val: MimeWrapper) -> Self {
+    pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = Some(val);
         self
     }
@@ -135,7 +137,7 @@ mod tests {
             duration: 60,
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
-            mime_type: Some(serde_json::from_str("\"application/zip\"").unwrap()),
+            mime_type: Some("application/zip".parse().unwrap()),
             file_size: Some(123_456),
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),

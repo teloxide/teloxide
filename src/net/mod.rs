@@ -14,6 +14,38 @@ mod telegram_response;
 /// The default Telegram API URL.
 pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 
+/// Constructs a network client from the `TELOXIDE_PROXY` environmental
+/// variable.
+///
+/// This function passes the value of `TELOXIDE_PROXY` into
+/// [`reqwest::Proxy::all`], if it exists, otherwise returns the default
+/// client.
+///
+/// ## Note
+///
+/// The created client will have safe settings, meaning that it will be able to
+/// work in long time durations, see the [issue 223].
+///
+/// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
+/// [issue 223]: https://github.com/teloxide/teloxide/issues/223
+///
+/// ## Panics
+///
+/// If `TELOXIDE_PROXY` exists, but isn't correct url.
+pub fn client_from_env() -> reqwest::Client {
+    use crate::bot::{sound_bot, TELOXIDE_PROXY};
+    use reqwest::Proxy;
+
+    let builder = sound_bot();
+
+    match std::env::var(TELOXIDE_PROXY).ok() {
+        Some(proxy) => builder.proxy(Proxy::all(&proxy).expect("creating reqwest::Proxy")),
+        None => builder,
+    }
+    .build()
+    .expect("creating reqwest::Client")
+}
+
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
 ///
 /// [Telegram documentation]: https://core.telegram.org/bots/api#making-requests

@@ -22,9 +22,41 @@ pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
 
 /// A requests sender.
 ///
-/// No need to put it into [`Arc`], because it's already in.
+/// This is the main type of the library, it allows to send requests to the
+/// [Telegram Bot API] and download files.
+///
+/// ## TBA methods
+///
+/// All TBA methods are located in the [`Requester`] [`impl for Bot`]. This
+/// allows for opt-in behaviours using requester [adaptors].
+///
+/// ```
+/// # async {
+/// use teloxide_core::prelude::*;
+///
+/// let bot = Bot::new("TOKEN");
+/// dbg!(bot.get_me().send().await?);
+/// # Ok::<_, teloxide_core::RequestError>(()) };
+/// ```
+///
+/// [`Requester`]: crate::requests::Requester
+/// [`impl for Bot`]: Bot#impl-Requester
+/// [adaptors]: crate::adaptors
+///
+/// ## File download
+///
+/// In the similar way as with TBA methods, file downloading methods are located
+/// in a trait — [`Download<'_>`]. See its documentation for more.
+///
+/// [`Download<'_>`]: crate::net::Download
+///
+/// ## Clone cost
+///
+/// `Bot::clone` is relatively cheap, so if you need to share `Bot`, it's
+/// recommended to clone it, instead of wrapping it in [`Arc<_>`].
 ///
 /// [`Arc`]: std::sync::Arc
+/// [Telegram Bot API]: https://core.telegram.org/bots/api
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
@@ -32,6 +64,7 @@ pub struct Bot {
     client: Client,
 }
 
+/// Constructors
 impl Bot {
     /// Creates a new `Bot` with the specified token and the default
     /// [http-client](reqwest::Client).
@@ -81,7 +114,7 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
     pub fn from_env() -> Self {
-        Self::from_env_with_client(crate::client_from_env())
+        Self::from_env_with_client(crate::net::client_from_env())
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
@@ -122,11 +155,31 @@ impl Bot {
     /// bot.get_me().send().await
     /// # };
     /// ```
+    ///
+    /// ## Multi-instance behaviour
+    ///
+    /// This method only sets the url for one bot instace, older clones are
+    /// unaffected.
+    ///
+    /// ```
+    /// use teloxide_core::Bot;
+    ///
+    /// let bot = Bot::new("TOKEN");
+    /// let bot2 = bot.clone();
+    /// let bot = bot.set_api_url(reqwest::Url::parse("https://example.com/").unwrap());
+    ///
+    /// assert_eq!(bot.api_url().as_str(), "https://example.com/");
+    /// assert_eq!(bot.clone().api_url().as_str(), "https://example.com/");
+    /// assert_ne!(bot2.api_url().as_str(), "https://example.com/");
+    /// ```
     pub fn set_api_url(mut self, url: reqwest::Url) -> Self {
         self.api_url = ApiUrl::Custom(Arc::new(url));
         self
     }
+}
 
+/// Getters
+impl Bot {
     /// Returns currently used token.
     pub fn token(&self) -> &str {
         &self.token
