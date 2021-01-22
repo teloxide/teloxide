@@ -83,6 +83,26 @@ async fn or() {
     assert!(handled.load(Ordering::SeqCst));
 }
 
+#[tokio::test]
+async fn async_guards() {
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+        .handle(
+            updates::message()
+                .common()
+                .with_chat_id(|id: &i64| {
+                    let id = id.clone();
+                    async move { id == 10 }
+                })
+                .by(|mes: Message| assert_eq!(mes.chat.id, 10)),
+        )
+        .error_handler(|_| async { })
+        .build();
+
+    let message = Update::new(0, UpdateKind::Message(text_message("text2")));
+
+    dispatcher.dispatch_one(message).await;
+}
+
 fn text_message<T: Into<String>>(text: T) -> Message {
     use crate::types::{
         ChatKind::Private, ForwardKind::Origin, MediaKind::Text, MessageKind::Common, *,
