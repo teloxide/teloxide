@@ -129,10 +129,7 @@ impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdatePars
         mut self,
         guard: impl IntoGuard<Message, G> + 'static,
     ) -> Self {
-        let prev = self.last_guard.take();
-        if let Some(prev) = prev {
-            self.guards.add_boxed_guard(prev);
-        }
+        self.add_last_to_guards();
         self.last_guard = Some(Box::new(guard.into_guard()) as _);
         self
     }
@@ -168,10 +165,19 @@ impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdatePars
     }
 
     fn create_guards_service(&mut self) {
+        self.add_last_to_guards();
+
         if !self.guards.is_empty() {
             let mut guards = Guards::new();
             std::mem::swap(&mut guards, &mut self.guards);
             self.demux.add_service(GuardsHandler::new(guards));
+        }
+    }
+
+    fn add_last_to_guards(&mut self) {
+        let prev = self.last_guard.take();
+        if let Some(prev) = prev {
+            self.guards.add_boxed_guard(prev);
         }
     }
 }
