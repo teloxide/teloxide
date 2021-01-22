@@ -63,6 +63,7 @@ mod net;
 
 mod bot;
 pub mod dispatching;
+pub mod dummies;
 mod logging;
 pub mod prelude;
 pub mod requests;

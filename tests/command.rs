@@ -193,3 +193,33 @@ fn descriptions_off() {
 
     assert_eq!(DefaultCommands::descriptions(), "/help\n".to_owned());
 }
+
+#[tokio::test]
+#[cfg(feature = "macros")]
+async fn handle_commands() {
+    use std::convert::Infallible;
+    use teloxide::{
+        dispatching::{updates, DispatcherBuilder},
+        dummies::text_message,
+        types::{Update, UpdateKind},
+        utils::command::BotCommand,
+    };
+
+    #[derive(Debug, PartialEq, BotCommand)]
+    #[command(rename = "lowercase")]
+    enum Command {
+        Start,
+        Help,
+    }
+
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+        .handle(
+            updates::message().common().by(|command: Command| assert_eq!(command, Command::Start)),
+        )
+        .error_handler(|_| async { unreachable!() })
+        .build();
+
+    let message = Update::new(0, UpdateKind::Message(text_message("/start")));
+
+    dispatcher.dispatch_one(message).await;
+}

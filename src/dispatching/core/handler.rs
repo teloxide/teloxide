@@ -55,6 +55,8 @@ where
 
 impl<F, Upd, A, Fut, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), Fut>
 where
+    Upd: Send + 'static,
+    Err: 'static,
     A: FromContext<Upd>,
     F: Fn(A) -> Fut,
     Fut: Future + Send + 'static,
@@ -62,9 +64,10 @@ where
 {
     fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
         let context = Context::new(&update);
-        Box::pin(
-            (self.f)(FromContext::from_context(&context)).then(|x| async move { Ok(x.into()) }),
-        ) as _
+        match FromContext::from_context(&context) {
+            Some(t) => Box::pin((self.f)(t).map(Into::into).map(Ok)) as _,
+            None => Box::pin(async move { Err(update) }),
+        }
     }
 }
 impl<F, Upd, A, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), private::Sealed>
@@ -76,8 +79,13 @@ where
 {
     fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
         let context = Context::new(&update);
-        (self.f)(FromContext::from_context(&context));
-        Box::pin(futures::future::ready(Ok(HandleResult::Ok))) as _
+        match FromContext::from_context(&context) {
+            Some(t) => {
+                (self.f)(t);
+                Box::pin(futures::future::ready(Ok(HandleResult::Ok))) as _
+            }
+            None => Box::pin(async move { Err(update) }),
+        }
     }
 }
 

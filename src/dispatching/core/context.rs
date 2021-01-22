@@ -10,15 +10,15 @@ impl<'a, Upd> Context<'a, Upd> {
     }
 }
 
-pub trait FromContext<Upd> {
-    fn from_context(context: &Context<Upd>) -> Self;
+pub trait FromContext<Upd>: Sized {
+    fn from_context(context: &Context<Upd>) -> Option<Self>;
 }
 
 impl<Upd, T> FromContext<Upd> for T
 where
     T: FromUpd<Upd>,
 {
-    fn from_context(context: &Context<Upd>) -> Self {
+    fn from_context(context: &Context<Upd>) -> Option<Self> {
         T::from_upd(context.update)
     }
 }
