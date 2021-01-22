@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         core::{
-            DemuxBuilder, Guard, Guards, HandleResult, Handler, IntoHandler, MapParser, OrGuard,
+            DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, MapParser, OrGuard,
             Parser, ParserOut, RecombineFrom,
         },
         handlers::messages::{
@@ -12,7 +12,6 @@ use crate::{
     },
     types::{Message, Update},
 };
-use std::future::Future;
 
 pub(crate) mod parser {
     pub struct Common;
@@ -85,7 +84,7 @@ pub struct MessageParser<UpdateParser, ParserT, Err> {
     parser: ParserT,
     demux: DemuxBuilder<Message, Err>,
     guards: Guards<Message>,
-    last_guard: Option<Box<dyn Guard<Message>>>,
+    last_guard: Option<Box<dyn Guard<Message> + Send + Sync>>,
 }
 
 impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err>
@@ -107,16 +106,15 @@ where
 
 impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err>
 where
+    Err: Send + Sync + 'static,
     UpdateParser: Parser<Update, Message, UpdateRest>,
     ParserT: Parser<Message, Message, ()> + 'static,
     Update: RecombineFrom<UpdateParser, From = Message, Rest = UpdateRest>,
 {
-    pub fn by<F, H, Fut>(mut self, f: F) -> MessageHandler<UpdateParser, ParserT, H, Err>
+    pub fn by<F, H>(mut self, f: F) -> MessageHandler<UpdateParser, ParserT, H, Err>
     where
-        H: Handler<Message, Err, Fut> + 'static,
+        H: Handler<Message, Err> + 'static,
         F: IntoHandler<H>,
-        Fut: Future + Send + 'static,
-        Fut::Output: Into<HandleResult<Err>>,
     {
         self.create_guards_service();
 
@@ -126,32 +124,36 @@ where
     }
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn with_guard(mut self, guard: impl Guard<Message> + 'static) -> Self {
+impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+    pub fn with_guard<G: Guard<Message> + Send + Sync + 'static>(
+        mut self,
+        guard: impl IntoGuard<Message, G> + 'static,
+    ) -> Self {
         let prev = self.last_guard.take();
         if let Some(prev) = prev {
             self.guards.add_boxed_guard(prev);
         }
-        self.last_guard = Some(Box::new(guard) as _);
+        self.last_guard = Some(Box::new(guard.into_guard()) as _);
         self
     }
 
-    pub fn or_with_guard(mut self, guard: impl Guard<Message> + 'static) -> Self {
+    pub fn or_with_guard<G: Guard<Message> + Send + Sync + 'static>(
+        mut self,
+        guard: impl IntoGuard<Message, G> + 'static,
+    ) -> Self {
         let prev = self
             .last_guard
             .take()
             .expect("or function must be called after using .with_* funtion!");
-        self.last_guard = Some(Box::new(OrGuard::new(prev, guard)) as _);
+        self.last_guard = Some(Box::new(OrGuard::new(prev, guard.into_guard())) as _);
         self
     }
 
-    pub fn or_else<F, H, HFut>(mut self, func: F) -> Self
+    pub fn or_else<F, H>(mut self, func: F) -> Self
     where
         F: IntoHandler<H>,
-        H: Handler<Message, Err, HFut> + 'static,
-        HFut: Future + Send + 'static,
-        HFut::Output: Into<HandleResult<Err>> + 'static,
-        Err: 'static,
+        H: Handler<Message, Err> + Send + Sync + 'static,
+        Err: Send + Sync + 'static,
     {
         let prev_guard = self
             .last_guard

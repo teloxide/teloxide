@@ -9,10 +9,10 @@ use crate::dispatching::core::{
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
 
-pub type HandleFuture<Err> = BoxFuture<'static, HandleResult<Err>>;
+pub type HandleFuture<Err, Data> = BoxFuture<'static, Result<HandleResult<Err>, Data>>;
 
-pub trait Handler<Data, Err, Fut: Future> {
-    fn handle(&self, data: Data) -> Result<Fut, Data>;
+pub trait Handler<Data, Err> {
+    fn handle(&self, data: Data) -> HandleFuture<Err, Data>;
 }
 
 pub trait IntoHandler<T> {
@@ -30,61 +30,56 @@ impl<F, P, Fut> FnHandlerWrapper<F, P, Fut> {
     }
 }
 
-impl<Upd, Err, F, Fut> Handler<Upd, Err, HandleFuture<Err>> for FnHandlerWrapper<F, (), Fut>
+impl<Upd, Err, F, Fut> Handler<Upd, Err> for FnHandlerWrapper<F, (), Fut>
 where
     F: Fn() -> Fut,
     Fut: Future + Send + 'static,
     Fut::Output: Into<HandleResult<Err>> + Send,
 {
-    fn handle(&self, _: Upd) -> Result<HandleFuture<Err>, Upd> {
-        Ok(Box::pin((self.f)().then(|x| async move { x.into() })) as _)
+    fn handle(&self, _: Upd) -> HandleFuture<Err, Upd> {
+        Box::pin((self.f)().then(|x| async move { Ok(x.into()) })) as _
     }
 }
 
-impl<Upd, Err, F> Handler<Upd, Err, HandleFuture<Err>> for FnHandlerWrapper<F, (), private::Sealed>
+impl<Upd, Err, F> Handler<Upd, Err> for FnHandlerWrapper<F, (), private::Sealed>
 where
+    Upd: Send + 'static,
+    Err: Send + 'static,
     F: Fn(),
 {
-    fn handle(&self, _: Upd) -> Result<HandleFuture<Err>, Upd> {
+    fn handle(&self, _: Upd) -> HandleFuture<Err, Upd> {
         (self.f)();
-        Ok(Box::pin(async { HandleResult::Ok }))
+        Box::pin(futures::future::ready(Ok(HandleResult::Ok))) as _
     }
 }
 
-impl<F, Upd, A, Fut, Err> Handler<Upd, Err, HandleFuture<Err>> for FnHandlerWrapper<F, (A,), Fut>
+impl<F, Upd, A, Fut, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), Fut>
 where
     A: FromContext<Upd>,
     F: Fn(A) -> Fut,
     Fut: Future + Send + 'static,
     Fut::Output: Into<HandleResult<Err>> + Send,
 {
-    fn handle(&self, update: Upd) -> Result<HandleFuture<Err>, Upd> {
+    fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
         let context = Context::new(&update);
-        Ok(
-            Box::pin(
-                (self.f)(FromContext::from_context(&context)).then(|x| async move { x.into() }),
-            ) as _,
-        )
+        Box::pin(
+            (self.f)(FromContext::from_context(&context)).then(|x| async move { Ok(x.into()) }),
+        ) as _
     }
 }
-impl<F, Upd, A, Err> Handler<Upd, Err, HandleFuture<Err>>
-    for FnHandlerWrapper<F, (A,), private::Sealed>
+impl<F, Upd, A, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), private::Sealed>
 where
+    Upd: Send + 'static,
+    Err: Send + 'static,
     A: FromContext<Upd>,
     F: Fn(A),
 {
-    fn handle(&self, update: Upd) -> Result<HandleFuture<Err>, Upd> {
+    fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
         let context = Context::new(&update);
         (self.f)(FromContext::from_context(&context));
-        Ok(Box::pin(async { HandleResult::Ok }))
+        Box::pin(futures::future::ready(Ok(HandleResult::Ok))) as _
     }
 }
-/*
-impl<F> HandlerInto<F> for F {
-    fn into_handler(self) -> F {
-        self
-    }
-}*/
 
 mod private {
     pub struct Sealed;

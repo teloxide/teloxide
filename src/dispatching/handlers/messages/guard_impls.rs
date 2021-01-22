@@ -1,1393 +1,2250 @@
 use crate::{
-    dispatching::{core::Guard, handlers::messages::message_parser::MessageParser},
+    dispatching::{
+        core::{Guard, IntoGuard},
+        handlers::messages::message_parser::MessageParser,
+    },
     types,
     types::Message,
 };
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn with_id(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.with_guard(move |message: &Message| guard.check(&message.id))
+impl Message {
+    fn get_id(&self) -> Option<&i32> {
+        Some(&self.id)
     }
-
-    pub fn with_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.with_guard(move |message: &Message| guard.check(&message.date))
+    fn get_chat(&self) -> Option<&types::Chat> {
+        Some(&self.chat)
     }
-
-    pub fn with_chat(self, guard: impl Guard<types::Chat> + 'static) -> Self {
-        self.with_guard(move |message: &Message| guard.check(&message.chat))
+    fn get_date(&self) -> Option<&i32> {
+        Some(&self.date)
     }
-
-    pub fn with_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.with_guard(move |message: &Message| guard.check(&message.chat.id))
+    fn get_chat_id(&self) -> Option<&i64> {
+        Some(&self.chat.id)
     }
-
-    pub fn with_via_bot(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match &message.via_bot {
-            Some(bot) => guard.check(bot),
-            None => false,
-        })
-    }
-
-    pub fn with_from(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.from() {
-            Some(user) => guard.check(user),
-            None => false,
-        })
-    }
-
-    pub fn with_forward_from(self, guard: impl Guard<types::ForwardedFrom> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.forward_from() {
-            Some(user) => guard.check(user),
-            None => false,
-        })
-    }
-
-    pub fn with_forward_from_chat(self, guard: impl Guard<types::Chat> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.forward_from_chat() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn with_forward_from_message_id(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.forward_from_message_id() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn with_forward_signature(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.forward_signature() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn with_forward_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.forward_date() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn with_reply_to_message(self, guard: impl Guard<Message> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.reply_to_message() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_edit_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.edit_date() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_media_group_id(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.media_group_id() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_text(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.text() {
-            Some(text) => guard.check(text),
-            None => false,
-        })
-    }
-
-    pub fn with_entities(self, guard: impl Guard<[types::MessageEntity]> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.entities() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_any_entity(self, guard: impl Guard<types::MessageEntity> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.entities() {
-            Some(x) => x.iter().any(|ent| guard.check(ent)),
-            None => false,
-        })
-    }
-
-    pub fn with_caption_entities(self, guard: impl Guard<[types::MessageEntity]> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.caption_entities() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_any_caption_entity(self, guard: impl Guard<types::MessageEntity> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.caption_entities() {
-            Some(x) => x.iter().any(|ent| guard.check(ent)),
-            None => false,
-        })
-    }
-
-    pub fn with_any_entity_or_caption_entity(self, guard: impl Guard<types::MessageEntity> + Clone + 'static) -> Self {
-        self.with_any_entity(guard.clone())
-            .or_with_any_caption_entity(guard)
-    }
-
-    pub fn with_audio(self, guard: impl Guard<types::Audio> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.audio() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_document(self, guard: impl Guard<types::Document> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.document() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_animation(self, guard: impl Guard<types::Animation> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.animation() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_game(self, guard: impl Guard<types::Game> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.game() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_photo(self, guard: impl Guard<[types::PhotoSize]> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.photo() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_sticker(self, guard: impl Guard<types::Sticker> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.sticker() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_video(self, guard: impl Guard<types::Video> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.video() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_voice(self, guard: impl Guard<types::Voice> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.voice() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_video_note(self, guard: impl Guard<types::VideoNote> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.video_note() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_caption(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.caption() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_text_or_caption(self, guard: impl Guard<str> + Clone + 'static) -> Self {
-        self.with_text(guard.clone())
-            .or_with_caption(guard)
-    }
-
-    pub fn with_contact(self, guard: impl Guard<types::Contact> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.contact() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_location(self, guard: impl Guard<types::Location> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.location() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_venue(self, guard: impl Guard<types::Venue> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.venue() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_poll(self, guard: impl Guard<types::Poll> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.poll() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_new_chat_members(self, guard: impl Guard<[types::User]> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.new_chat_members() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_left_chat_member(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.left_chat_member() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_new_chat_title(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.new_chat_title() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_new_chat_photo(self, guard: impl Guard<[types::PhotoSize]> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.new_chat_photo() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_delete_chat_photo(self, is_deleted: bool) -> Self {
-        self.with_guard(move |message: &Message| match message.delete_chat_photo() {
-            Some(_) => is_deleted == true,
-            None => is_deleted == false,
-        })
-    }
-
-    pub fn with_group_chat_created(self, is_created: bool) -> Self {
-        self.with_guard(move |message: &Message| match message.group_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn with_super_group_chat_created(self, is_created: bool) -> Self {
-        self.with_guard(move |message: &Message| match message.super_group_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn with_channel_chat_created(self, is_created: bool) -> Self {
-        self.with_guard(move |message: &Message| match message.channel_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn with_migrate_to_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.migrate_to_chat_id() {
-            Some(x) => guard.check(&x),
-            None => false,
-        })
-    }
-
-    pub fn with_migrate_from_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.migrate_from_chat_id() {
-            Some(x) => guard.check(&x),
-            None => false,
-        })
-    }
-
-    pub fn with_pinned_message(self, guard: impl Guard<Message> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.pinned_message() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_invoice(self, guard: impl Guard<types::Invoice> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.invoice() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_successful_payment(self, guard: impl Guard<types::SuccessfulPayment> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.successful_payment() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_connected_website(self, guard: impl Guard<str> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.connected_website() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn with_passport_data(self, guard: impl Guard<types::PassportData> + 'static) -> Self {
-        self.with_guard(move |message: &Message| match message.passport_data() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
+    fn get_via_bot(&self) -> Option<&types::User> {
+        self.via_bot.as_ref()
     }
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn or_with_id(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| guard.check(&message.id))
-    }
+mod generated {
+    use crate::dispatching::core::IntoGuard;
+    /// This mod will generated by macros
+    /*
+        macro_rules! impl_with_and_or {
+        ($(($ident:ident, $item:ty, $get_field:expr),)*) => {$(const _: () = {
+            struct Checker<G> {
+                guard: G,
+            }
 
-    pub fn or_with_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| guard.check(&message.date))
-    }
+            impl<G: Guard<$item>> Guard<Message> for Checker<G> {
+                fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                    match $get_field(update) {
+                        Some(x) => self.guard.check(x),
+                        None => Box::pin(futures::future::ready(false)) as _,
+                    }
+                }
+            }
 
-    pub fn or_with_chat(self, guard: impl Guard<types::Chat> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| guard.check(&message.chat))
+            impl<G: Guard<$item>> IntoGuard<Message, Checker<G>> for Checker<G> {
+                fn into_guard(self) -> Self {
+                    self
+                }
+            }
+            paste::paste! {
+            impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+                pub fn [<with_ $ident>]<G: Guard<$item> + Send + Sync + 'static>(self, guard: impl IntoGuard<$item, G> + 'static) -> Self {
+                    let checker = Checker { guard: guard.into_guard() };
+                    self.with_guard(checker)
+                }
+                pub fn [<or_with_ $ident>]<G: Guard<$item> + Send + Sync + 'static>(self, guard: impl IntoGuard<$item, G> + 'static) -> Self {
+                    let checker = Checker { guard: guard.into_guard() };
+                    self.or_with_guard(checker)
+                }
+            }
+            }
+        };)*}
     }
+        macro_rules! impl_has_and_no_has {
+        ($(($ident:ident, $get_field:expr),)*) => {
+            $(const _: () = {
+                paste::paste! {
+                impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+                    pub fn [<has_ $ident>](self) -> Self {
+                        self.with_guard(|mes: &Message| $get_field(mes).is_some())
+                    }
+                    pub fn [<or_has_ $ident>](self) -> Self {
+                        self.or_with_guard(|mes: &Message| $get_field(mes).is_some())
+                    }
+                    pub fn [<no_has_ $ident>](self) -> Self {
+                        self.with_guard(|mes: &Message| $get_field(mes).is_none())
+                    }
+                    pub fn [<or_no_has_ $ident>](self) -> Self {
+                        self.or_with_guard(|mes: &Message| $get_field(mes).is_none())
+                    }
+                }
+                }
+            };)*
+        };
+        }
+        macro_rules! impl_both_with_and_has {
+        ($(($ident:ident, $item:ty, $get_field:expr),)*) => {
+            impl_with_and_or!($(($ident, $item, $get_field),)*);
+            impl_has_and_no_has!($(($ident, $get_field),)*);
+        };
+        }*/
+        /*
+        impl_with_and_or! {
+        (id, i32, Message::get_id),
+        (chat, types::Chat, Message::get_chat),
+        (date, i32, Message::get_date),
+        (chat_id, i64, Message::get_chat_id),
+        (via_bot, types::User, Message::get_via_bot),
+        }
+        impl_both_with_and_has! {
+        (from, types::User, Message::from),
+        (forward_from, types::ForwardedFrom, Message::forward_from),
+        (forward_from_chat, types::Chat, Message::forward_from_chat),
+        (forward_from_message_id, i32, Message::forward_from_message_id),
+        (forward_signature, str, Message::forward_signature),
+        (forward_date, i32, Message::forward_date),
+        (reply_to_message, Message, Message::reply_to_message),
+        (edit_date, i32, Message::edit_date),
+        (media_group_id, str, Message::media_group_id),
+        (text, str, Message::text),
+        (entities, [types::MessageEntity], Message::entities),
+        (caption_entities, [types::MessageEntity], Message::caption_entities),
+        (audio, types::Audio, Message::audio),
+        (document, types::Document, Message::document),
+        (animation, types::Animation, Message::animation),
+        (game, types::Game, Message::game),
+        (photo, [types::PhotoSize], Message::photo),
+        (sticker, types::Sticker, Message::sticker),
+        (video, types::Video, Message::video),
+        (voice, types::Voice, Message::voice),
+        (video_note, types::VideoNote, Message::video_note),
+        (caption, str, Message::caption),
+        (contact, types::Contact, Message::contact),
+        (venue, types::Venue, Message::venue),
+        (poll, types::Poll, Message::poll),
+        (new_chat_members, [types::User], Message::new_chat_members),
+        (left_chat_member, types::User, Message::left_chat_member),
+        (new_chat_title, str, Message::new_chat_title),
+        (new_chat_photo, [types::PhotoSize], Message::new_chat_photo),
+        (migrate_to_chat_id, i64, Message::migrate_to_chat_id),
+        (migrate_from_chat_id, i64, Message::migrate_from_chat_id),
+        (pinned_message, Message, Message::pinned_message),
+        (invoice, types::Invoice, Message::invoice),
+        (successful_payment, types::SuccessfulPayment, Message::successful_payment),
+        (connected_website, str, Message::connected_website),
+        (passport_data, types::PassportData, Message::passport_data),
+        }
+        impl_has_and_no_has! {
+        (delete_chat_photo, Message::delete_chat_photo),
+        (group_chat_created, Message::group_chat_created),
+        (super_group_chat_created, Message::super_group_chat_created),
+        (channel_chat_created, Message::channel_chat_created),
+        }
+        */
+    use crate::{
+        dispatching::{core::Guard, handlers::messages::message_parser::MessageParser},
+        types,
+        types::Message,
+    };
+    use futures::future::BoxFuture;
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i32>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::get_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i32>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_id<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_id<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Chat>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::get_chat(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Chat>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_chat<G: Guard<types::Chat> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Chat, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_chat<G: Guard<types::Chat> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Chat, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i32>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::get_date(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i32>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i64>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::get_chat_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i64>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::User>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::get_via_bot(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::User>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_via_bot<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_via_bot<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::User>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::from(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::User>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_from<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_from<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::ForwardedFrom>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::forward_from(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::ForwardedFrom>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_forward_from<G: Guard<types::ForwardedFrom> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::ForwardedFrom, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_forward_from<G: Guard<types::ForwardedFrom> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::ForwardedFrom, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Chat>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::forward_from_chat(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Chat>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_forward_from_chat<G: Guard<types::Chat> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Chat, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_forward_from_chat<G: Guard<types::Chat> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Chat, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i32>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::forward_from_message_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i32>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_forward_from_message_id<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_forward_from_message_id<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::forward_signature(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_forward_signature<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_forward_signature<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i32>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::forward_date(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i32>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_forward_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_forward_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<Message>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::reply_to_message(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<Message>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_reply_to_message<G: Guard<Message> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<Message, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_reply_to_message<G: Guard<Message> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<Message, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i32>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::edit_date(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i32>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_edit_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_edit_date<G: Guard<i32> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i32, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::media_group_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_media_group_id<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_media_group_id<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::text(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_text<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_text<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<[types::MessageEntity]>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::entities(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<[types::MessageEntity]>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_entities<G: Guard<[types::MessageEntity]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::MessageEntity], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_entities<G: Guard<[types::MessageEntity]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::MessageEntity], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<[types::MessageEntity]>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::caption_entities(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<[types::MessageEntity]>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_caption_entities<
+                G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
+            >(
+                self,
+                guard: impl IntoGuard<[types::MessageEntity], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_caption_entities<
+                G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
+            >(
+                self,
+                guard: impl IntoGuard<[types::MessageEntity], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Audio>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::audio(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Audio>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_audio<G: Guard<types::Audio> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Audio, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_audio<G: Guard<types::Audio> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Audio, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Document>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::document(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Document>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_document<G: Guard<types::Document> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Document, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_document<G: Guard<types::Document> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Document, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Animation>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::animation(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Animation>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_animation<G: Guard<types::Animation> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Animation, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_animation<G: Guard<types::Animation> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Animation, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Game>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::game(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Game>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_game<G: Guard<types::Game> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Game, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_game<G: Guard<types::Game> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Game, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<[types::PhotoSize]>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::photo(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<[types::PhotoSize]>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_photo<G: Guard<[types::PhotoSize]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::PhotoSize], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_photo<G: Guard<[types::PhotoSize]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::PhotoSize], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Sticker>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::sticker(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Sticker>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_sticker<G: Guard<types::Sticker> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Sticker, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_sticker<G: Guard<types::Sticker> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Sticker, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Video>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::video(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Video>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_video<G: Guard<types::Video> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Video, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_video<G: Guard<types::Video> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Video, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Voice>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::voice(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Voice>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_voice<G: Guard<types::Voice> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Voice, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_voice<G: Guard<types::Voice> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Voice, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::VideoNote>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::video_note(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::VideoNote>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_video_note<G: Guard<types::VideoNote> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::VideoNote, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_video_note<G: Guard<types::VideoNote> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::VideoNote, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::caption(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_caption<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_caption<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Contact>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::contact(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Contact>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_contact<G: Guard<types::Contact> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Contact, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_contact<G: Guard<types::Contact> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Contact, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Venue>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::venue(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Venue>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_venue<G: Guard<types::Venue> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Venue, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_venue<G: Guard<types::Venue> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Venue, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Poll>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::poll(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Poll>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_poll<G: Guard<types::Poll> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Poll, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_poll<G: Guard<types::Poll> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Poll, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<[types::User]>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::new_chat_members(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<[types::User]>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_new_chat_members<G: Guard<[types::User]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::User], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_new_chat_members<G: Guard<[types::User]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::User], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::User>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::left_chat_member(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::User>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_left_chat_member<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_left_chat_member<G: Guard<types::User> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::User, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::new_chat_title(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_new_chat_title<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_new_chat_title<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<[types::PhotoSize]>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::new_chat_photo(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<[types::PhotoSize]>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_new_chat_photo<G: Guard<[types::PhotoSize]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::PhotoSize], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_new_chat_photo<G: Guard<[types::PhotoSize]> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<[types::PhotoSize], G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i64>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::migrate_to_chat_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i64>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_migrate_to_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_migrate_to_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<i64>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::migrate_from_chat_id(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<i64>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_migrate_from_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_migrate_from_chat_id<G: Guard<i64> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<i64, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<Message>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::pinned_message(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<Message>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_pinned_message<G: Guard<Message> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<Message, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_pinned_message<G: Guard<Message> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<Message, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::Invoice>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::invoice(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::Invoice>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_invoice<G: Guard<types::Invoice> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Invoice, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_invoice<G: Guard<types::Invoice> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::Invoice, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::SuccessfulPayment>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::successful_payment(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::SuccessfulPayment>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_successful_payment<
+                G: Guard<types::SuccessfulPayment> + Send + Sync + 'static,
+            >(
+                self,
+                guard: impl IntoGuard<types::SuccessfulPayment, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_successful_payment<
+                G: Guard<types::SuccessfulPayment> + Send + Sync + 'static,
+            >(
+                self,
+                guard: impl IntoGuard<types::SuccessfulPayment, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<str>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::connected_website(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<str>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_connected_website<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_connected_website<G: Guard<str> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<str, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        struct Checker<G> {
+            guard: G,
+        }
+        impl<G: Guard<types::PassportData>> Guard<Message> for Checker<G> {
+            fn check<'a>(&self, update: &'a Message) -> BoxFuture<'a, bool> {
+                match Message::passport_data(update) {
+                    Some(x) => self.guard.check(x),
+                    None => Box::pin(futures::future::ready(false)) as _,
+                }
+            }
+        }
+        impl<G: Guard<types::PassportData>> IntoGuard<Message, Checker<G>> for Checker<G> {
+            fn into_guard(self) -> Self {
+                self
+            }
+        }
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn with_passport_data<G: Guard<types::PassportData> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::PassportData, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.with_guard(checker)
+            }
+            pub fn or_with_passport_data<G: Guard<types::PassportData> + Send + Sync + 'static>(
+                self,
+                guard: impl IntoGuard<types::PassportData, G> + 'static,
+            ) -> Self {
+                let checker = Checker { guard: guard.into_guard() };
+                self.or_with_guard(checker)
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_from(self) -> Self {
+                self.with_guard(|mes: &Message| Message::from(mes).is_some())
+            }
+            pub fn or_has_from(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::from(mes).is_some())
+            }
+            pub fn no_has_from(self) -> Self {
+                self.with_guard(|mes: &Message| Message::from(mes).is_none())
+            }
+            pub fn or_no_has_from(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::from(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_forward_from(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from(mes).is_some())
+            }
+            pub fn or_has_forward_from(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from(mes).is_some())
+            }
+            pub fn no_has_forward_from(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from(mes).is_none())
+            }
+            pub fn or_no_has_forward_from(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_forward_from_chat(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from_chat(mes).is_some())
+            }
+            pub fn or_has_forward_from_chat(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from_chat(mes).is_some())
+            }
+            pub fn no_has_forward_from_chat(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from_chat(mes).is_none())
+            }
+            pub fn or_no_has_forward_from_chat(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from_chat(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_forward_from_message_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from_message_id(mes).is_some())
+            }
+            pub fn or_has_forward_from_message_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from_message_id(mes).is_some())
+            }
+            pub fn no_has_forward_from_message_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_from_message_id(mes).is_none())
+            }
+            pub fn or_no_has_forward_from_message_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_from_message_id(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_forward_signature(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_signature(mes).is_some())
+            }
+            pub fn or_has_forward_signature(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_signature(mes).is_some())
+            }
+            pub fn no_has_forward_signature(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_signature(mes).is_none())
+            }
+            pub fn or_no_has_forward_signature(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_signature(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_forward_date(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_date(mes).is_some())
+            }
+            pub fn or_has_forward_date(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_date(mes).is_some())
+            }
+            pub fn no_has_forward_date(self) -> Self {
+                self.with_guard(|mes: &Message| Message::forward_date(mes).is_none())
+            }
+            pub fn or_no_has_forward_date(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::forward_date(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_reply_to_message(self) -> Self {
+                self.with_guard(|mes: &Message| Message::reply_to_message(mes).is_some())
+            }
+            pub fn or_has_reply_to_message(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::reply_to_message(mes).is_some())
+            }
+            pub fn no_has_reply_to_message(self) -> Self {
+                self.with_guard(|mes: &Message| Message::reply_to_message(mes).is_none())
+            }
+            pub fn or_no_has_reply_to_message(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::reply_to_message(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_edit_date(self) -> Self {
+                self.with_guard(|mes: &Message| Message::edit_date(mes).is_some())
+            }
+            pub fn or_has_edit_date(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::edit_date(mes).is_some())
+            }
+            pub fn no_has_edit_date(self) -> Self {
+                self.with_guard(|mes: &Message| Message::edit_date(mes).is_none())
+            }
+            pub fn or_no_has_edit_date(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::edit_date(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_media_group_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::media_group_id(mes).is_some())
+            }
+            pub fn or_has_media_group_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::media_group_id(mes).is_some())
+            }
+            pub fn no_has_media_group_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::media_group_id(mes).is_none())
+            }
+            pub fn or_no_has_media_group_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::media_group_id(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_text(self) -> Self {
+                self.with_guard(|mes: &Message| Message::text(mes).is_some())
+            }
+            pub fn or_has_text(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::text(mes).is_some())
+            }
+            pub fn no_has_text(self) -> Self {
+                self.with_guard(|mes: &Message| Message::text(mes).is_none())
+            }
+            pub fn or_no_has_text(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::text(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_entities(self) -> Self {
+                self.with_guard(|mes: &Message| Message::entities(mes).is_some())
+            }
+            pub fn or_has_entities(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::entities(mes).is_some())
+            }
+            pub fn no_has_entities(self) -> Self {
+                self.with_guard(|mes: &Message| Message::entities(mes).is_none())
+            }
+            pub fn or_no_has_entities(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::entities(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_caption_entities(self) -> Self {
+                self.with_guard(|mes: &Message| Message::caption_entities(mes).is_some())
+            }
+            pub fn or_has_caption_entities(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::caption_entities(mes).is_some())
+            }
+            pub fn no_has_caption_entities(self) -> Self {
+                self.with_guard(|mes: &Message| Message::caption_entities(mes).is_none())
+            }
+            pub fn or_no_has_caption_entities(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::caption_entities(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_audio(self) -> Self {
+                self.with_guard(|mes: &Message| Message::audio(mes).is_some())
+            }
+            pub fn or_has_audio(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::audio(mes).is_some())
+            }
+            pub fn no_has_audio(self) -> Self {
+                self.with_guard(|mes: &Message| Message::audio(mes).is_none())
+            }
+            pub fn or_no_has_audio(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::audio(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_document(self) -> Self {
+                self.with_guard(|mes: &Message| Message::document(mes).is_some())
+            }
+            pub fn or_has_document(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::document(mes).is_some())
+            }
+            pub fn no_has_document(self) -> Self {
+                self.with_guard(|mes: &Message| Message::document(mes).is_none())
+            }
+            pub fn or_no_has_document(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::document(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_animation(self) -> Self {
+                self.with_guard(|mes: &Message| Message::animation(mes).is_some())
+            }
+            pub fn or_has_animation(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::animation(mes).is_some())
+            }
+            pub fn no_has_animation(self) -> Self {
+                self.with_guard(|mes: &Message| Message::animation(mes).is_none())
+            }
+            pub fn or_no_has_animation(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::animation(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_game(self) -> Self {
+                self.with_guard(|mes: &Message| Message::game(mes).is_some())
+            }
+            pub fn or_has_game(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::game(mes).is_some())
+            }
+            pub fn no_has_game(self) -> Self {
+                self.with_guard(|mes: &Message| Message::game(mes).is_none())
+            }
+            pub fn or_no_has_game(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::game(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::photo(mes).is_some())
+            }
+            pub fn or_has_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::photo(mes).is_some())
+            }
+            pub fn no_has_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::photo(mes).is_none())
+            }
+            pub fn or_no_has_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::photo(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_sticker(self) -> Self {
+                self.with_guard(|mes: &Message| Message::sticker(mes).is_some())
+            }
+            pub fn or_has_sticker(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::sticker(mes).is_some())
+            }
+            pub fn no_has_sticker(self) -> Self {
+                self.with_guard(|mes: &Message| Message::sticker(mes).is_none())
+            }
+            pub fn or_no_has_sticker(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::sticker(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_video(self) -> Self {
+                self.with_guard(|mes: &Message| Message::video(mes).is_some())
+            }
+            pub fn or_has_video(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::video(mes).is_some())
+            }
+            pub fn no_has_video(self) -> Self {
+                self.with_guard(|mes: &Message| Message::video(mes).is_none())
+            }
+            pub fn or_no_has_video(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::video(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_voice(self) -> Self {
+                self.with_guard(|mes: &Message| Message::voice(mes).is_some())
+            }
+            pub fn or_has_voice(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::voice(mes).is_some())
+            }
+            pub fn no_has_voice(self) -> Self {
+                self.with_guard(|mes: &Message| Message::voice(mes).is_none())
+            }
+            pub fn or_no_has_voice(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::voice(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_video_note(self) -> Self {
+                self.with_guard(|mes: &Message| Message::video_note(mes).is_some())
+            }
+            pub fn or_has_video_note(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::video_note(mes).is_some())
+            }
+            pub fn no_has_video_note(self) -> Self {
+                self.with_guard(|mes: &Message| Message::video_note(mes).is_none())
+            }
+            pub fn or_no_has_video_note(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::video_note(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_caption(self) -> Self {
+                self.with_guard(|mes: &Message| Message::caption(mes).is_some())
+            }
+            pub fn or_has_caption(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::caption(mes).is_some())
+            }
+            pub fn no_has_caption(self) -> Self {
+                self.with_guard(|mes: &Message| Message::caption(mes).is_none())
+            }
+            pub fn or_no_has_caption(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::caption(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_contact(self) -> Self {
+                self.with_guard(|mes: &Message| Message::contact(mes).is_some())
+            }
+            pub fn or_has_contact(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::contact(mes).is_some())
+            }
+            pub fn no_has_contact(self) -> Self {
+                self.with_guard(|mes: &Message| Message::contact(mes).is_none())
+            }
+            pub fn or_no_has_contact(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::contact(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_venue(self) -> Self {
+                self.with_guard(|mes: &Message| Message::venue(mes).is_some())
+            }
+            pub fn or_has_venue(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::venue(mes).is_some())
+            }
+            pub fn no_has_venue(self) -> Self {
+                self.with_guard(|mes: &Message| Message::venue(mes).is_none())
+            }
+            pub fn or_no_has_venue(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::venue(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_poll(self) -> Self {
+                self.with_guard(|mes: &Message| Message::poll(mes).is_some())
+            }
+            pub fn or_has_poll(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::poll(mes).is_some())
+            }
+            pub fn no_has_poll(self) -> Self {
+                self.with_guard(|mes: &Message| Message::poll(mes).is_none())
+            }
+            pub fn or_no_has_poll(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::poll(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_new_chat_members(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_members(mes).is_some())
+            }
+            pub fn or_has_new_chat_members(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_members(mes).is_some())
+            }
+            pub fn no_has_new_chat_members(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_members(mes).is_none())
+            }
+            pub fn or_no_has_new_chat_members(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_members(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_left_chat_member(self) -> Self {
+                self.with_guard(|mes: &Message| Message::left_chat_member(mes).is_some())
+            }
+            pub fn or_has_left_chat_member(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::left_chat_member(mes).is_some())
+            }
+            pub fn no_has_left_chat_member(self) -> Self {
+                self.with_guard(|mes: &Message| Message::left_chat_member(mes).is_none())
+            }
+            pub fn or_no_has_left_chat_member(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::left_chat_member(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_new_chat_title(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_title(mes).is_some())
+            }
+            pub fn or_has_new_chat_title(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_title(mes).is_some())
+            }
+            pub fn no_has_new_chat_title(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_title(mes).is_none())
+            }
+            pub fn or_no_has_new_chat_title(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_title(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_new_chat_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_photo(mes).is_some())
+            }
+            pub fn or_has_new_chat_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_photo(mes).is_some())
+            }
+            pub fn no_has_new_chat_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::new_chat_photo(mes).is_none())
+            }
+            pub fn or_no_has_new_chat_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::new_chat_photo(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_migrate_to_chat_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::migrate_to_chat_id(mes).is_some())
+            }
+            pub fn or_has_migrate_to_chat_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::migrate_to_chat_id(mes).is_some())
+            }
+            pub fn no_has_migrate_to_chat_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::migrate_to_chat_id(mes).is_none())
+            }
+            pub fn or_no_has_migrate_to_chat_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::migrate_to_chat_id(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_migrate_from_chat_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::migrate_from_chat_id(mes).is_some())
+            }
+            pub fn or_has_migrate_from_chat_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::migrate_from_chat_id(mes).is_some())
+            }
+            pub fn no_has_migrate_from_chat_id(self) -> Self {
+                self.with_guard(|mes: &Message| Message::migrate_from_chat_id(mes).is_none())
+            }
+            pub fn or_no_has_migrate_from_chat_id(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::migrate_from_chat_id(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_pinned_message(self) -> Self {
+                self.with_guard(|mes: &Message| Message::pinned_message(mes).is_some())
+            }
+            pub fn or_has_pinned_message(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::pinned_message(mes).is_some())
+            }
+            pub fn no_has_pinned_message(self) -> Self {
+                self.with_guard(|mes: &Message| Message::pinned_message(mes).is_none())
+            }
+            pub fn or_no_has_pinned_message(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::pinned_message(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_invoice(self) -> Self {
+                self.with_guard(|mes: &Message| Message::invoice(mes).is_some())
+            }
+            pub fn or_has_invoice(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::invoice(mes).is_some())
+            }
+            pub fn no_has_invoice(self) -> Self {
+                self.with_guard(|mes: &Message| Message::invoice(mes).is_none())
+            }
+            pub fn or_no_has_invoice(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::invoice(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_successful_payment(self) -> Self {
+                self.with_guard(|mes: &Message| Message::successful_payment(mes).is_some())
+            }
+            pub fn or_has_successful_payment(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::successful_payment(mes).is_some())
+            }
+            pub fn no_has_successful_payment(self) -> Self {
+                self.with_guard(|mes: &Message| Message::successful_payment(mes).is_none())
+            }
+            pub fn or_no_has_successful_payment(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::successful_payment(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_connected_website(self) -> Self {
+                self.with_guard(|mes: &Message| Message::connected_website(mes).is_some())
+            }
+            pub fn or_has_connected_website(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::connected_website(mes).is_some())
+            }
+            pub fn no_has_connected_website(self) -> Self {
+                self.with_guard(|mes: &Message| Message::connected_website(mes).is_none())
+            }
+            pub fn or_no_has_connected_website(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::connected_website(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_passport_data(self) -> Self {
+                self.with_guard(|mes: &Message| Message::passport_data(mes).is_some())
+            }
+            pub fn or_has_passport_data(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::passport_data(mes).is_some())
+            }
+            pub fn no_has_passport_data(self) -> Self {
+                self.with_guard(|mes: &Message| Message::passport_data(mes).is_none())
+            }
+            pub fn or_no_has_passport_data(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::passport_data(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_delete_chat_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::delete_chat_photo(mes).is_some())
+            }
+            pub fn or_has_delete_chat_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::delete_chat_photo(mes).is_some())
+            }
+            pub fn no_has_delete_chat_photo(self) -> Self {
+                self.with_guard(|mes: &Message| Message::delete_chat_photo(mes).is_none())
+            }
+            pub fn or_no_has_delete_chat_photo(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::delete_chat_photo(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_group_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::group_chat_created(mes).is_some())
+            }
+            pub fn or_has_group_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::group_chat_created(mes).is_some())
+            }
+            pub fn no_has_group_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::group_chat_created(mes).is_none())
+            }
+            pub fn or_no_has_group_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::group_chat_created(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_super_group_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::super_group_chat_created(mes).is_some())
+            }
+            pub fn or_has_super_group_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::super_group_chat_created(mes).is_some())
+            }
+            pub fn no_has_super_group_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::super_group_chat_created(mes).is_none())
+            }
+            pub fn or_no_has_super_group_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::super_group_chat_created(mes).is_none())
+            }
+        }
+    };
+    const _: () = {
+        impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+            pub fn has_channel_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::channel_chat_created(mes).is_some())
+            }
+            pub fn or_has_channel_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::channel_chat_created(mes).is_some())
+            }
+            pub fn no_has_channel_chat_created(self) -> Self {
+                self.with_guard(|mes: &Message| Message::channel_chat_created(mes).is_none())
+            }
+            pub fn or_no_has_channel_chat_created(self) -> Self {
+                self.or_with_guard(|mes: &Message| Message::channel_chat_created(mes).is_none())
+            }
+        }
+    };
+}
 
-    pub fn or_with_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| guard.check(&message.chat.id))
+impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+    pub fn with_entities_or_caption_entities<
+        G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
+    >(
+        self,
+        guard: impl IntoGuard<[types::MessageEntity], G> + Clone + 'static,
+    ) -> Self {
+        self.with_entities(guard.clone()).or_with_caption_entities(guard)
     }
-
-    pub fn or_with_via_bot(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match &message.via_bot {
-            Some(bot) => guard.check(bot),
-            None => false,
-        })
-    }
-
-    pub fn or_with_from(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.from() {
-            Some(user) => guard.check(user),
-            None => false,
-        })
-    }
-
-    pub fn or_with_forward_from(self, guard: impl Guard<types::ForwardedFrom> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.forward_from() {
-            Some(user) => guard.check(user),
-            None => false,
-        })
-    }
-
-    pub fn or_with_forward_from_chat(self, guard: impl Guard<types::Chat> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.forward_from_chat() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn or_with_forward_from_message_id(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.forward_from_message_id() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn or_with_forward_signature(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.forward_signature() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn or_with_forward_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.forward_date() {
-            Some(chat) => guard.check(chat),
-            None => false,
-        })
-    }
-
-    pub fn or_with_reply_to_message(self, guard: impl Guard<Message> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.reply_to_message() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_edit_date(self, guard: impl Guard<i32> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.edit_date() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_media_group_id(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.media_group_id() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_text(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.text() {
-            Some(text) => guard.check(text),
-            None => false,
-        })
-    }
-
-    pub fn or_with_entities(self, guard: impl Guard<[types::MessageEntity]> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.entities() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_any_entity(self, guard: impl Guard<types::MessageEntity> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.entities() {
-            Some(x) => x.iter().any(|ent| guard.check(ent)),
-            None => false,
-        })
-    }
-
-    pub fn or_with_caption_entities(self, guard: impl Guard<[types::MessageEntity]> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.caption_entities() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_any_caption_entity(self, guard: impl Guard<types::MessageEntity> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.caption_entities() {
-            Some(x) => x.iter().any(|ent| guard.check(ent)),
-            None => false,
-        })
-    }
-
-    pub fn or_with_any_entity_or_caption_entity(self, guard: impl Guard<types::MessageEntity> + Clone + 'static) -> Self {
-        self.or_with_any_entity(guard.clone())
-            .or_with_any_caption_entity(guard)
-    }
-
-    pub fn or_with_audio(self, guard: impl Guard<types::Audio> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.audio() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_document(self, guard: impl Guard<types::Document> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.document() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_animation(self, guard: impl Guard<types::Animation> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.animation() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_game(self, guard: impl Guard<types::Game> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.game() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_photo(self, guard: impl Guard<[types::PhotoSize]> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.photo() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_sticker(self, guard: impl Guard<types::Sticker> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.sticker() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_video(self, guard: impl Guard<types::Video> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.video() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_voice(self, guard: impl Guard<types::Voice> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.voice() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_video_note(self, guard: impl Guard<types::VideoNote> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.video_note() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_caption(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.caption() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_text_or_caption(self, guard: impl Guard<str> + Clone + 'static) -> Self {
-        self.or_with_text(guard.clone())
-            .or_with_caption(guard)
-    }
-
-    pub fn or_with_contact(self, guard: impl Guard<types::Contact> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.contact() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_location(self, guard: impl Guard<types::Location> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.location() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_venue(self, guard: impl Guard<types::Venue> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.venue() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_poll(self, guard: impl Guard<types::Poll> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.poll() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_new_chat_members(self, guard: impl Guard<[types::User]> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.new_chat_members() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_left_chat_member(self, guard: impl Guard<types::User> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.left_chat_member() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_new_chat_title(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.new_chat_title() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_new_chat_photo(self, guard: impl Guard<[types::PhotoSize]> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.new_chat_photo() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_delete_chat_photo(self, is_deleted: bool) -> Self {
-        self.or_with_guard(move |message: &Message| match message.delete_chat_photo() {
-            Some(_) => is_deleted == true,
-            None => is_deleted == false,
-        })
-    }
-
-    pub fn or_with_group_chat_created(self, is_created: bool) -> Self {
-        self.or_with_guard(move |message: &Message| match message.group_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn or_with_super_group_chat_created(self, is_created: bool) -> Self {
-        self.or_with_guard(move |message: &Message| match message.super_group_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn or_with_channel_chat_created(self, is_created: bool) -> Self {
-        self.or_with_guard(move |message: &Message| match message.channel_chat_created() {
-            Some(_) => is_created == true,
-            None => is_created == false,
-        })
-    }
-
-    pub fn or_with_migrate_to_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.migrate_to_chat_id() {
-            Some(x) => guard.check(&x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_migrate_from_chat_id(self, guard: impl Guard<i64> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.migrate_from_chat_id() {
-            Some(x) => guard.check(&x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_pinned_message(self, guard: impl Guard<Message> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.pinned_message() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_invoice(self, guard: impl Guard<types::Invoice> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.invoice() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_successful_payment(self, guard: impl Guard<types::SuccessfulPayment> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.successful_payment() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_connected_website(self, guard: impl Guard<str> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.connected_website() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
-    }
-
-    pub fn or_with_passport_data(self, guard: impl Guard<types::PassportData> + 'static) -> Self {
-        self.or_with_guard(move |message: &Message| match message.passport_data() {
-            Some(x) => guard.check(x),
-            None => false,
-        })
+    pub fn with_text_or_caption<G: Guard<str> + Send + Sync + 'static>(
+        self,
+        guard: impl IntoGuard<str, G> + Clone + 'static,
+    ) -> Self {
+        self.with_text(guard.clone()).or_with_caption(guard)
     }
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn has_via_bot(self) -> Self {
-        self.with_guard(move |message: &Message| message.via_bot.is_some())
+impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+    pub fn or_with_entities_or_caption_entities<
+        G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
+    >(
+        self,
+        guard: impl IntoGuard<[types::MessageEntity], G> + Clone + 'static,
+    ) -> Self {
+        self.or_with_entities(guard.clone()).or_with_caption_entities(guard)
     }
 
-    pub fn has_from(self) -> Self {
-        self.with_guard(|message: &Message| message.from().is_some())
+    pub fn or_with_text_or_caption<G: Guard<str> + Send + Sync + 'static>(
+        self,
+        guard: impl IntoGuard<str, G> + Clone + 'static,
+    ) -> Self {
+        self.or_with_text(guard.clone()).or_with_caption(guard)
     }
+}
 
-    pub fn has_forward_from(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_from().is_some())
-    }
-
-    pub fn has_forward_from_chat(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_from_chat().is_some())
-    }
-
-    pub fn has_forward_from_message_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.forward_from_message_id().is_some())
-    }
-
-    pub fn has_forward_signature(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_signature().is_some())
-    }
-
-    pub fn has_forward_date(self) -> Self {
-        self.with_guard(move |message: &Message| message.forward_date().is_some())
-    }
-
-    pub fn has_reply_to_message(self) -> Self {
-        self.with_guard(|message: &Message| message.reply_to_message().is_some())
-    }
-
-    pub fn has_edit_date(self) -> Self {
-        self.with_guard(move |message: &Message| message.edit_date().is_some())
-    }
-
-    pub fn has_media_group_id(self) -> Self {
-        self.with_guard(|message: &Message| message.media_group_id().is_some())
-    }
-
-    pub fn has_text(self) -> Self {
-        self.with_guard(|message: &Message| message.text().is_some())
-    }
-
-    pub fn has_entities(self) -> Self {
-        self.with_guard(move |message: &Message| message.entities().is_some())
-    }
-
-    pub fn has_caption_entities(self) -> Self {
-        self.with_guard(move |message: &Message| message.caption_entities().is_some())
-    }
-
+impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
     pub fn has_entities_or_caption_entities(self) -> Self {
-        self.has_entities()
-            .or_has_caption_entities()
-    }
-
-    pub fn has_audio(self) -> Self {
-        self.with_guard(|message: &Message| message.audio().is_some())
-    }
-
-    pub fn has_document(self) -> Self {
-        self.with_guard(|message: &Message| message.document().is_some())
-    }
-
-    pub fn has_animation(self) -> Self {
-        self.with_guard(|message: &Message| message.animation().is_some())
-    }
-
-    pub fn has_game(self) -> Self {
-        self.with_guard(|message: &Message| message.game().is_some())
-    }
-
-    pub fn has_photo(self) -> Self {
-        self.with_guard(move |message: &Message| message.photo().is_some())
-    }
-
-    pub fn has_sticker(self) -> Self {
-        self.with_guard(|message: &Message| message.sticker().is_some())
-    }
-
-    pub fn has_video(self) -> Self {
-        self.with_guard(|message: &Message| message.video().is_some())
-    }
-
-    pub fn has_voice(self) -> Self {
-        self.with_guard(|message: &Message| message.voice().is_some())
-    }
-
-    pub fn has_video_note(self) -> Self {
-        self.with_guard(|message: &Message| message.video_note().is_some())
-    }
-
-    pub fn has_caption(self) -> Self {
-        self.with_guard(|message: &Message| message.caption().is_some())
+        self.has_entities().or_has_caption_entities()
     }
 
     pub fn has_text_or_caption(self) -> Self {
-        self.has_text()
-            .or_has_caption()
-    }
-
-    pub fn has_contact(self) -> Self {
-        self.with_guard(|message: &Message| message.contact().is_some())
-    }
-
-    pub fn has_location(self) -> Self {
-        self.with_guard(|message: &Message| message.location().is_some())
-    }
-
-    pub fn has_venue(self) -> Self {
-        self.with_guard(|message: &Message| message.venue().is_some())
-    }
-
-    pub fn has_poll(self) -> Self {
-        self.with_guard(|message: &Message| message.poll().is_some())
-    }
-
-    pub fn has_new_chat_members(self) -> Self {
-        self.with_guard(move |message: &Message| message.new_chat_members().is_some())
-    }
-
-    pub fn has_left_chat_member(self) -> Self {
-        self.with_guard(|message: &Message| message.left_chat_member().is_some())
-    }
-
-    pub fn has_new_chat_title(self) -> Self {
-        self.with_guard(|message: &Message| message.new_chat_title().is_some())
-    }
-
-    pub fn has_new_chat_photo(self) -> Self {
-        self.with_guard(move |message: &Message| message.new_chat_photo().is_some())
-    }
-
-    pub fn has_delete_chat_photo(self) -> Self {
-        self.with_guard(|message: &Message| message.delete_chat_photo().is_some())
-    }
-
-    pub fn has_group_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.group_chat_created().is_some())
-    }
-
-    pub fn has_super_group_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.super_group_chat_created().is_some())
-    }
-
-    pub fn has_channel_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.channel_chat_created().is_some())
-    }
-
-    pub fn has_migrate_to_chat_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.migrate_to_chat_id().is_some())
-    }
-
-    pub fn has_migrate_from_chat_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.migrate_from_chat_id().is_some())
-    }
-
-    pub fn has_pinned_message(self) -> Self {
-        self.with_guard(|message: &Message| message.pinned_message().is_some())
-    }
-
-    pub fn has_invoice(self) -> Self {
-        self.with_guard(|message: &Message| message.invoice().is_some())
-    }
-
-    pub fn has_successful_payment(self) -> Self {
-        self.with_guard(|message: &Message| message.successful_payment().is_some())
-    }
-
-    pub fn has_connected_website(self) -> Self {
-        self.with_guard(|message: &Message| message.connected_website().is_some())
-    }
-
-    pub fn has_passport_data(self) -> Self {
-        self.with_guard(|message: &Message| message.passport_data().is_some())
+        self.has_text().or_has_caption()
     }
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn or_has_via_bot(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.via_bot.is_some())
-    }
-
-    pub fn or_has_from(self) -> Self {
-        self.or_with_guard(|message: &Message| message.from().is_some())
-    }
-
-    pub fn or_has_forward_from(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_from().is_some())
-    }
-
-    pub fn or_has_forward_from_chat(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_from_chat().is_some())
-    }
-
-    pub fn or_has_forward_from_message_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.forward_from_message_id().is_some())
-    }
-
-    pub fn or_has_forward_signature(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_signature().is_some())
-    }
-
-    pub fn or_has_forward_date(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.forward_date().is_some())
-    }
-
-    pub fn or_has_reply_to_message(self) -> Self {
-        self.or_with_guard(|message: &Message| message.reply_to_message().is_some())
-    }
-
-    pub fn or_has_edit_date(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.edit_date().is_some())
-    }
-
-    pub fn or_has_media_group_id(self) -> Self {
-        self.or_with_guard(|message: &Message| message.media_group_id().is_some())
-    }
-
-    pub fn or_has_text(self) -> Self {
-        self.or_with_guard(|message: &Message| message.text().is_some())
-    }
-
-    pub fn or_has_entities(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.entities().is_some())
-    }
-
-    pub fn or_has_caption_entities(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.caption_entities().is_some())
-    }
-
+impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
     pub fn or_has_entities_or_caption_entities(self) -> Self {
-        self.or_has_entities()
-            .or_has_caption_entities()
-    }
-
-    pub fn or_has_audio(self) -> Self {
-        self.or_with_guard(|message: &Message| message.audio().is_some())
-    }
-
-    pub fn or_has_document(self) -> Self {
-        self.or_with_guard(|message: &Message| message.document().is_some())
-    }
-
-    pub fn or_has_animation(self) -> Self {
-        self.or_with_guard(|message: &Message| message.animation().is_some())
-    }
-
-    pub fn or_has_game(self) -> Self {
-        self.or_with_guard(|message: &Message| message.game().is_some())
-    }
-
-    pub fn or_has_photo(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.photo().is_some())
-    }
-
-    pub fn or_has_sticker(self) -> Self {
-        self.or_with_guard(|message: &Message| message.sticker().is_some())
-    }
-
-    pub fn or_has_video(self) -> Self {
-        self.or_with_guard(|message: &Message| message.video().is_some())
-    }
-
-    pub fn or_has_voice(self) -> Self {
-        self.or_with_guard(|message: &Message| message.voice().is_some())
-    }
-
-    pub fn or_has_video_note(self) -> Self {
-        self.or_with_guard(|message: &Message| message.video_note().is_some())
-    }
-
-    pub fn or_has_caption(self) -> Self {
-        self.or_with_guard(|message: &Message| message.caption().is_some())
+        self.or_has_entities().or_has_caption_entities()
     }
 
     pub fn or_has_text_or_caption(self) -> Self {
-        self.or_has_text()
-            .or_has_caption()
-    }
-
-    pub fn or_has_contact(self) -> Self {
-        self.or_with_guard(|message: &Message| message.contact().is_some())
-    }
-
-    pub fn or_has_location(self) -> Self {
-        self.or_with_guard(|message: &Message| message.location().is_some())
-    }
-
-    pub fn or_has_venue(self) -> Self {
-        self.or_with_guard(|message: &Message| message.venue().is_some())
-    }
-
-    pub fn or_has_poll(self) -> Self {
-        self.or_with_guard(|message: &Message| message.poll().is_some())
-    }
-
-    pub fn or_has_new_chat_members(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.new_chat_members().is_some())
-    }
-
-    pub fn or_has_left_chat_member(self) -> Self {
-        self.or_with_guard(|message: &Message| message.left_chat_member().is_some())
-    }
-
-    pub fn or_has_new_chat_title(self) -> Self {
-        self.or_with_guard(|message: &Message| message.new_chat_title().is_some())
-    }
-
-    pub fn or_has_new_chat_photo(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.new_chat_photo().is_some())
-    }
-
-    pub fn or_has_delete_chat_photo(self) -> Self {
-        self.or_with_guard(|message: &Message| message.delete_chat_photo().is_some())
-    }
-
-    pub fn or_has_group_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.group_chat_created().is_some())
-    }
-
-    pub fn or_has_super_group_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.super_group_chat_created().is_some())
-    }
-
-    pub fn or_has_channel_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.channel_chat_created().is_some())
-    }
-
-    pub fn or_has_migrate_to_chat_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.migrate_to_chat_id().is_some())
-    }
-
-    pub fn or_has_migrate_from_chat_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.migrate_from_chat_id().is_some())
-    }
-
-    pub fn or_has_pinned_message(self) -> Self {
-        self.or_with_guard(|message: &Message| message.pinned_message().is_some())
-    }
-
-    pub fn or_has_invoice(self) -> Self {
-        self.or_with_guard(|message: &Message| message.invoice().is_some())
-    }
-
-    pub fn or_has_successful_payment(self) -> Self {
-        self.or_with_guard(|message: &Message| message.successful_payment().is_some())
-    }
-
-    pub fn or_has_connected_website(self) -> Self {
-        self.or_with_guard(|message: &Message| message.connected_website().is_some())
-    }
-
-    pub fn or_has_passport_data(self) -> Self {
-        self.or_with_guard(|message: &Message| message.passport_data().is_some())
-    }
-}
-
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn no_has_via_bot(self) -> Self {
-        self.with_guard(move |message: &Message| message.via_bot.is_none())
-    }
-
-    pub fn no_has_from(self) -> Self {
-        self.with_guard(|message: &Message| message.from().is_none())
-    }
-
-    pub fn no_has_forward_from(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_from().is_none())
-    }
-
-    pub fn no_has_forward_from_chat(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_from_chat().is_none())
-    }
-
-    pub fn no_has_forward_from_message_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.forward_from_message_id().is_none())
-    }
-
-    pub fn no_has_forward_signature(self) -> Self {
-        self.with_guard(|message: &Message| message.forward_signature().is_none())
-    }
-
-    pub fn no_has_forward_date(self) -> Self {
-        self.with_guard(move |message: &Message| message.forward_date().is_none())
-    }
-
-    pub fn no_has_reply_to_message(self) -> Self {
-        self.with_guard(|message: &Message| message.reply_to_message().is_none())
-    }
-
-    pub fn no_has_edit_date(self) -> Self {
-        self.with_guard(move |message: &Message| message.edit_date().is_none())
-    }
-
-    pub fn no_has_media_group_id(self) -> Self {
-        self.with_guard(|message: &Message| message.media_group_id().is_none())
-    }
-
-    pub fn no_has_text(self) -> Self {
-        self.with_guard(|message: &Message| message.text().is_none())
-    }
-
-    pub fn no_has_entities(self) -> Self {
-        self.with_guard(move |message: &Message| message.entities().is_none())
-    }
-
-    pub fn no_has_caption_entities(self) -> Self {
-        self.with_guard(move |message: &Message| message.caption_entities().is_none())
-    }
-
-    pub fn no_has_entities_and_caption_entities(self) -> Self {
-        self.with_guard(move |message: &Message| message.caption_entities().is_none() && message.entities().is_none())
-    }
-
-    pub fn no_has_audio(self) -> Self {
-        self.with_guard(|message: &Message| message.audio().is_none())
-    }
-
-    pub fn no_has_document(self) -> Self {
-        self.with_guard(|message: &Message| message.document().is_none())
-    }
-
-    pub fn no_has_animation(self) -> Self {
-        self.with_guard(|message: &Message| message.animation().is_none())
-    }
-
-    pub fn no_has_game(self) -> Self {
-        self.with_guard(|message: &Message| message.game().is_none())
-    }
-
-    pub fn no_has_photo(self) -> Self {
-        self.with_guard(move |message: &Message| message.photo().is_none())
-    }
-
-    pub fn no_has_sticker(self) -> Self {
-        self.with_guard(|message: &Message| message.sticker().is_none())
-    }
-
-    pub fn no_has_video(self) -> Self {
-        self.with_guard(|message: &Message| message.video().is_none())
-    }
-
-    pub fn no_has_voice(self) -> Self {
-        self.with_guard(|message: &Message| message.voice().is_none())
-    }
-
-    pub fn no_has_video_note(self) -> Self {
-        self.with_guard(|message: &Message| message.video_note().is_none())
-    }
-
-    pub fn no_has_caption(self) -> Self {
-        self.with_guard(|message: &Message| message.caption().is_none())
-    }
-
-    pub fn no_has_text_and_caption(self) -> Self {
-        self.with_guard(|message: &Message| message.caption().is_none() && message.text().is_none())
-    }
-
-    pub fn no_has_contact(self) -> Self {
-        self.with_guard(|message: &Message| message.contact().is_none())
-    }
-
-    pub fn no_has_location(self) -> Self {
-        self.with_guard(|message: &Message| message.location().is_none())
-    }
-
-    pub fn no_has_venue(self) -> Self {
-        self.with_guard(|message: &Message| message.venue().is_none())
-    }
-
-    pub fn no_has_poll(self) -> Self {
-        self.with_guard(|message: &Message| message.poll().is_none())
-    }
-
-    pub fn no_has_new_chat_members(self) -> Self {
-        self.with_guard(move |message: &Message| message.new_chat_members().is_none())
-    }
-
-    pub fn no_has_left_chat_member(self) -> Self {
-        self.with_guard(|message: &Message| message.left_chat_member().is_none())
-    }
-
-    pub fn no_has_new_chat_title(self) -> Self {
-        self.with_guard(|message: &Message| message.new_chat_title().is_none())
-    }
-
-    pub fn no_has_new_chat_photo(self) -> Self {
-        self.with_guard(move |message: &Message| message.new_chat_photo().is_none())
-    }
-
-    pub fn no_has_delete_chat_photo(self) -> Self {
-        self.with_guard(|message: &Message| message.delete_chat_photo().is_none())
-    }
-
-    pub fn no_has_group_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.group_chat_created().is_none())
-    }
-
-    pub fn no_has_super_group_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.super_group_chat_created().is_none())
-    }
-
-    pub fn no_has_channel_chat_created(self) -> Self {
-        self.with_guard(|message: &Message| message.channel_chat_created().is_none())
-    }
-
-    pub fn no_has_migrate_to_chat_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.migrate_to_chat_id().is_none())
-    }
-
-    pub fn no_has_migrate_from_chat_id(self) -> Self {
-        self.with_guard(move |message: &Message| message.migrate_from_chat_id().is_none())
-    }
-
-    pub fn no_has_pinned_message(self) -> Self {
-        self.with_guard(|message: &Message| message.pinned_message().is_none())
-    }
-
-    pub fn no_has_invoice(self) -> Self {
-        self.with_guard(|message: &Message| message.invoice().is_none())
-    }
-
-    pub fn no_has_successful_payment(self) -> Self {
-        self.with_guard(|message: &Message| message.successful_payment().is_none())
-    }
-
-    pub fn no_has_connected_website(self) -> Self {
-        self.with_guard(|message: &Message| message.connected_website().is_none())
-    }
-
-    pub fn no_has_passport_data(self) -> Self {
-        self.with_guard(|message: &Message| message.passport_data().is_none())
-    }
-}
-
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn or_no_has_via_bot(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.via_bot.is_none())
-    }
-
-    pub fn or_no_has_from(self) -> Self {
-        self.or_with_guard(|message: &Message| message.from().is_none())
-    }
-
-    pub fn or_no_has_forward_from(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_from().is_none())
-    }
-
-    pub fn or_no_has_forward_from_chat(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_from_chat().is_none())
-    }
-
-    pub fn or_no_has_forward_from_message_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.forward_from_message_id().is_none())
-    }
-
-    pub fn or_no_has_forward_signature(self) -> Self {
-        self.or_with_guard(|message: &Message| message.forward_signature().is_none())
-    }
-
-    pub fn or_no_has_forward_date(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.forward_date().is_none())
-    }
-
-    pub fn or_no_has_reply_to_message(self) -> Self {
-        self.or_with_guard(|message: &Message| message.reply_to_message().is_none())
-    }
-
-    pub fn or_no_has_edit_date(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.edit_date().is_none())
-    }
-
-    pub fn or_no_has_media_group_id(self) -> Self {
-        self.or_with_guard(|message: &Message| message.media_group_id().is_none())
-    }
-
-    pub fn or_no_has_text(self) -> Self {
-        self.or_with_guard(|message: &Message| message.text().is_none())
-    }
-
-    pub fn or_no_has_entities(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.entities().is_none())
-    }
-
-    pub fn or_no_has_caption_entities(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.caption_entities().is_none())
-    }
-
-    pub fn or_no_has_entities_and_caption_entities(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.caption_entities().is_none() && message.entities().is_none())
-    }
-
-    pub fn or_no_has_audio(self) -> Self {
-        self.or_with_guard(|message: &Message| message.audio().is_none())
-    }
-
-    pub fn or_no_has_document(self) -> Self {
-        self.or_with_guard(|message: &Message| message.document().is_none())
-    }
-
-    pub fn or_no_has_animation(self) -> Self {
-        self.or_with_guard(|message: &Message| message.animation().is_none())
-    }
-
-    pub fn or_no_has_game(self) -> Self {
-        self.or_with_guard(|message: &Message| message.game().is_none())
-    }
-
-    pub fn or_no_has_photo(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.photo().is_none())
-    }
-
-    pub fn or_no_has_sticker(self) -> Self {
-        self.or_with_guard(|message: &Message| message.sticker().is_none())
-    }
-
-    pub fn or_no_has_video(self) -> Self {
-        self.or_with_guard(|message: &Message| message.video().is_none())
-    }
-
-    pub fn or_no_has_voice(self) -> Self {
-        self.or_with_guard(|message: &Message| message.voice().is_none())
-    }
-
-    pub fn or_no_has_video_note(self) -> Self {
-        self.or_with_guard(|message: &Message| message.video_note().is_none())
-    }
-
-    pub fn or_no_has_caption(self) -> Self {
-        self.or_with_guard(|message: &Message| message.caption().is_none())
-    }
-
-    pub fn or_no_has_text_and_caption(self) -> Self {
-        self.or_with_guard(|message: &Message| message.caption().is_none() && message.text().is_none())
-    }
-
-    pub fn or_no_has_contact(self) -> Self {
-        self.or_with_guard(|message: &Message| message.contact().is_none())
-    }
-
-    pub fn or_no_has_location(self) -> Self {
-        self.or_with_guard(|message: &Message| message.location().is_none())
-    }
-
-    pub fn or_no_has_venue(self) -> Self {
-        self.or_with_guard(|message: &Message| message.venue().is_none())
-    }
-
-    pub fn or_no_has_poll(self) -> Self {
-        self.or_with_guard(|message: &Message| message.poll().is_none())
-    }
-
-    pub fn or_no_has_new_chat_members(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.new_chat_members().is_none())
-    }
-
-    pub fn or_no_has_left_chat_member(self) -> Self {
-        self.or_with_guard(|message: &Message| message.left_chat_member().is_none())
-    }
-
-    pub fn or_no_has_new_chat_title(self) -> Self {
-        self.or_with_guard(|message: &Message| message.new_chat_title().is_none())
-    }
-
-    pub fn or_no_has_new_chat_photo(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.new_chat_photo().is_none())
-    }
-
-    pub fn or_no_has_delete_chat_photo(self) -> Self {
-        self.or_with_guard(|message: &Message| message.delete_chat_photo().is_none())
-    }
-
-    pub fn or_no_has_group_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.group_chat_created().is_none())
-    }
-
-    pub fn or_no_has_super_group_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.super_group_chat_created().is_none())
-    }
-
-    pub fn or_no_has_channel_chat_created(self) -> Self {
-        self.or_with_guard(|message: &Message| message.channel_chat_created().is_none())
-    }
-
-    pub fn or_no_has_migrate_to_chat_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.migrate_to_chat_id().is_none())
-    }
-
-    pub fn or_no_has_migrate_from_chat_id(self) -> Self {
-        self.or_with_guard(move |message: &Message| message.migrate_from_chat_id().is_none())
-    }
-
-    pub fn or_no_has_pinned_message(self) -> Self {
-        self.or_with_guard(|message: &Message| message.pinned_message().is_none())
-    }
-
-    pub fn or_no_has_invoice(self) -> Self {
-        self.or_with_guard(|message: &Message| message.invoice().is_none())
-    }
-
-    pub fn or_no_has_successful_payment(self) -> Self {
-        self.or_with_guard(|message: &Message| message.successful_payment().is_none())
-    }
-
-    pub fn or_no_has_connected_website(self) -> Self {
-        self.or_with_guard(|message: &Message| message.connected_website().is_none())
-    }
-
-    pub fn or_no_has_passport_data(self) -> Self {
-        self.or_with_guard(|message: &Message| message.passport_data().is_none())
+        self.or_has_text().or_has_caption()
     }
 }

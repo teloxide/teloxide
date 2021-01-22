@@ -1,51 +1,56 @@
-use crate::dispatching::core::{HandleFuture, HandleResult, Handler, IntoHandler};
-use futures::FutureExt;
-use std::marker::PhantomData;
-use tokio::macros::support::Future;
+use crate::dispatching::core::{HandleFuture, Handler, IntoHandler};
+use std::{marker::PhantomData, sync::Arc};
 
-pub struct ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT, HandlerFut> {
-    parser: ParserT,
-    handler: HandlerT,
-    phantom: PhantomData<(Upd, NextUpd, Rest, Err, HandlerFut)>,
+pub struct ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT> {
+    parser: Arc<ParserT>,
+    handler: Arc<HandlerT>,
+    phantom: PhantomData<(Upd, NextUpd, Rest, Err)>,
 }
 
-impl<ParserT, Upd, NextUpd, Rest, Err, HandlerT, HandlerFut>
-    ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT, HandlerFut>
+impl<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
+    ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
 where
     ParserT: Parser<Upd, NextUpd, Rest>,
-    HandlerT: Handler<NextUpd, Err, HandlerFut>,
-    HandlerFut: Future,
-    HandlerFut::Output: Into<HandleResult<Err>>,
+    HandlerT: Handler<NextUpd, Err>,
 {
     pub fn new<H>(parser: ParserT, handler: H) -> Self
     where
         H: IntoHandler<HandlerT>,
     {
-        ParserHandler { parser, handler: handler.into_handler(), phantom: PhantomData }
+        ParserHandler {
+            parser: Arc::new(parser),
+            handler: Arc::new(handler.into_handler()),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<ParserT, Upd, Err, NextUpd, Rest, HandlerT, HandlerFut> Handler<Upd, Err, HandleFuture<Err>>
-    for ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT, HandlerFut>
+impl<ParserT, Upd, Err, NextUpd, Rest, HandlerT> Handler<Upd, Err>
+    for ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
 where
     Err: 'static,
-    ParserT: Parser<Upd, NextUpd, Rest>,
-    Upd: RecombineFrom<ParserT, From = NextUpd, Rest = Rest>,
-    HandlerT: Handler<NextUpd, Err, HandlerFut>,
-    HandlerFut: Future + Send + 'static,
-    HandlerFut::Output: Into<HandleResult<Err>>,
+    NextUpd: Send,
+    Rest: Send,
+    ParserT: Parser<Upd, NextUpd, Rest> + Send + Sync + 'static,
+    Upd: RecombineFrom<ParserT, From = NextUpd, Rest = Rest> + Send + 'static,
+    HandlerT: Handler<NextUpd, Err> + Send + Sync + 'static,
 {
-    fn handle(&self, data: Upd) -> Result<HandleFuture<Err>, Upd> {
-        match self.parser.parse(data) {
-            Ok(ParserOut { data: next, rest }) => match self.handler.handle(next) {
-                Ok(fut) => Ok(Box::pin(fut.map(Into::into)) as _),
-                Err(next) => {
-                    let upd = Upd::recombine(ParserOut::new(next, rest));
-                    Err(upd)
-                }
-            },
-            Err(upd) => Err(upd),
-        }
+    fn handle(&self, data: Upd) -> HandleFuture<Err, Upd> {
+        let parser = self.parser.clone();
+        let handler = self.handler.clone();
+
+        Box::pin(async move {
+            match parser.parse(data) {
+                Ok(ParserOut { data: next, rest }) => match handler.handle(next).await {
+                    Ok(res) => Ok(res),
+                    Err(next) => {
+                        let upd = Upd::recombine(ParserOut::new(next, rest));
+                        Err(upd)
+                    }
+                },
+                Err(upd) => Err(upd),
+            }
+        })
     }
 }
 

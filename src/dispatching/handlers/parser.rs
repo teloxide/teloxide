@@ -1,7 +1,5 @@
-use crate::dispatching::core::{
-    HandleResult, Handler, IntoHandler, Parser, ParserHandler, RecombineFrom,
-};
-use std::{future::Future, marker::PhantomData};
+use crate::dispatching::core::{Handler, IntoHandler, Parser, ParserHandler, RecombineFrom};
+use std::marker::PhantomData;
 
 pub struct UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT> {
     parser: ParserT,
@@ -24,12 +22,10 @@ where
         UpdateParser { parser, phantom: PhantomData }
     }
 
-    pub fn by<F, H, Fut>(self, f: F) -> ParserHandler<ParserT, GenUpd, NextUpd, Rest, Err, H, Fut>
+    pub fn by<F, H>(self, f: F) -> ParserHandler<ParserT, GenUpd, NextUpd, Rest, Err, H>
     where
-        H: Handler<NextUpd, Err, Fut> + 'static,
+        H: Handler<NextUpd, Err> + 'static,
         F: IntoHandler<H>,
-        Fut: Future + Send + 'static,
-        Fut::Output: Into<HandleResult<Err>>,
     {
         let UpdateParser { parser, .. } = self;
         ParserHandler::new(parser, f)

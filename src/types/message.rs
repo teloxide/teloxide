@@ -1462,16 +1462,16 @@ mod getters {
             }
         }
 
-        pub fn migrate_to_chat_id(&self) -> Option<i64> {
+        pub fn migrate_to_chat_id(&self) -> Option<&i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_to_chat_id, .. }) => Some(*migrate_to_chat_id),
+                Migrate(MessageMigrate { migrate_to_chat_id, .. }) => Some(migrate_to_chat_id),
                 _ => None,
             }
         }
 
-        pub fn migrate_from_chat_id(&self) -> Option<i64> {
+        pub fn migrate_from_chat_id(&self) -> Option<&i64> {
             match &self.kind {
-                Migrate(MessageMigrate { migrate_from_chat_id, .. }) => Some(*migrate_from_chat_id),
+                Migrate(MessageMigrate { migrate_from_chat_id, .. }) => Some(migrate_from_chat_id),
                 _ => None,
             }
         }

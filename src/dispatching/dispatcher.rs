@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{
-        core::{Demux, DemuxBuilder, DispatchError, HandleFuture, HandleResult, Handler},
+        core::{Demux, DemuxBuilder, DispatchError, HandleResult, Handler},
         error_handlers::ErrorHandler,
         update_listeners::UpdateListener,
     },
@@ -15,19 +15,17 @@ pub struct Dispatcher<Err, ErrHandler> {
 
 impl<Err, ErrHandler> Dispatcher<Err, ErrHandler>
 where
+    Err: 'static,
     ErrHandler: ErrorHandler<DispatchError<Update, Err>>,
 {
     pub async fn dispatch_one(&self, upd: Update) {
-        match self.demux.handle(upd) {
-            Ok(fut) => {
-                let res = fut.await;
-                match res {
-                    HandleResult::Ok => {}
-                    HandleResult::Err(e) => {
-                        self.error_handler.handle_error(DispatchError::HandlerError(e)).await
-                    }
+        match self.demux.handle(upd).await {
+            Ok(res) => match res {
+                HandleResult::Ok => {}
+                HandleResult::Err(e) => {
+                    self.error_handler.handle_error(DispatchError::HandlerError(e)).await
                 }
-            }
+            },
             Err(e) => self.error_handler.handle_error(DispatchError::NoHandler(e)).await,
         }
     }
@@ -43,6 +41,7 @@ where
                 match res {
                     Ok(upd) => self.dispatch_one(upd).await,
                     Err(e) => {
+                        // TODO: UpdateListenerError
                         self.error_handler.handle_error(DispatchError::HandlerError(e.into())).await
                     }
                 };
@@ -71,10 +70,7 @@ impl<Err> DispatcherBuilder<Err, ()> {
 }
 
 impl<Err, ErrHandler> DispatcherBuilder<Err, ErrHandler> {
-    pub fn handle(
-        mut self,
-        handler: impl Handler<Update, Err, HandleFuture<Err>> + 'static,
-    ) -> Self {
+    pub fn handle(mut self, handler: impl Handler<Update, Err> + Send + Sync + 'static) -> Self {
         self.demux.add_service(handler);
         self
     }
