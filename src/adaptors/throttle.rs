@@ -267,34 +267,33 @@ async fn worker(limits: Limits, mut queue_rx: mpsc::Receiver<(Id, Sender<Never>)
             *hchats_s.entry(*chat).or_insert(0) += 1;
         }
 
-        let mut queue_rem = queue.removing();
-        while let Some(entry) = queue_rem.next() {
-            let chat = &entry.value().0;
-            let cond = {
-                hchats_s.get(chat).copied().unwrap_or(0) < limits.chat_s
-                    && hchats.get(chat).copied().unwrap_or(0) < limits.chat_m
-            };
+        {
+            let mut queue_rem = queue.removing();
+            while let Some(entry) = queue_rem.next() {
+                let chat = &entry.value().0;
+                let cond = {
+                    hchats_s.get(chat).copied().unwrap_or(0) < limits.chat_s
+                        && hchats.get(chat).copied().unwrap_or(0) < limits.chat_m
+                };
 
-            if cond {
-                {
-                    *hchats_s.entry(*chat).or_insert(0) += 1;
-                    *hchats.entry(*chat).or_insert(0) += 1;
-                    history.push_back((*chat, Instant::now()));
+                if cond {
+                    {
+                        *hchats_s.entry(*chat).or_insert(0) += 1;
+                        *hchats.entry(*chat).or_insert(0) += 1;
+                        history.push_back((*chat, Instant::now()));
+                    }
+
+                    // This will close the channel unlocking associated request
+                    drop(entry.remove());
+
+                    // We've "sent" 1 request, so now we can send 1 less
+                    allowed -= 1;
+                    if allowed == 0 {
+                        break;
+                    }
                 }
-
-                // This will close the channel unlocking associated request
-                drop(entry.remove());
-
-                // We've "sent" 1 request, so now we can send 1 less
-                allowed -= 1;
-                if allowed == 0 {
-                    break;
-                }
-            } else {
-                entry.skip();
             }
         }
-        drop(queue_rem);
 
         // It's easier to just recompute last second stats, instead of keeping
         // track of it alongside with minute stats, so we just throw this away.
