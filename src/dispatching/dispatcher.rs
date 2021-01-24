@@ -6,11 +6,13 @@ use crate::{
         update_listeners::UpdateListener,
     },
     types::Update,
+    Bot,
 };
 use futures::StreamExt;
 use std::sync::Arc;
 
 pub struct Dispatcher<Err, ErrHandler> {
+    bot: Bot,
     bot_name: Arc<str>,
     demux: Demux<DispatcherContext<Update>, Err>,
     error_handler: ErrHandler,
@@ -22,7 +24,11 @@ where
     ErrHandler: ErrorHandler<DispatchError<Update, Err>>,
 {
     pub async fn dispatch_one(&self, upd: Update) {
-        match self.demux.handle(DispatcherContext::new(upd, self.bot_name.clone())).await {
+        match self
+            .demux
+            .handle(DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone()))
+            .await
+        {
             Ok(res) => match res {
                 HandleResult::Ok => {}
                 HandleResult::Err(e) => {
@@ -54,14 +60,16 @@ where
 }
 
 pub struct DispatcherBuilder<Err, Handler> {
+    bot: Bot,
     bot_name: Arc<str>,
     demux: DemuxBuilder<DispatcherContext<Update>, Err>,
     error_handler: Handler,
 }
 
 impl<Err> DispatcherBuilder<Err, ()> {
-    pub fn new(bot_name: impl Into<Arc<str>>) -> Self {
+    pub fn new(bot: Bot, bot_name: impl Into<Arc<str>>) -> Self {
         DispatcherBuilder {
+            bot,
             bot_name: bot_name.into(),
             demux: DemuxBuilder::new(),
             error_handler: (),
@@ -72,8 +80,8 @@ impl<Err> DispatcherBuilder<Err, ()> {
     where
         H: ErrorHandler<DispatchError<Update, Err>>,
     {
-        let DispatcherBuilder { bot_name, demux, .. } = self;
-        DispatcherBuilder { bot_name, demux, error_handler }
+        let DispatcherBuilder { bot, bot_name, demux, .. } = self;
+        DispatcherBuilder { bot, bot_name, demux, error_handler }
     }
 }
 
@@ -92,7 +100,7 @@ where
     ErrHandler: ErrorHandler<DispatchError<Update, Err>>,
 {
     pub fn build(self) -> Dispatcher<Err, ErrHandler> {
-        let DispatcherBuilder { bot_name, demux, error_handler } = self;
-        Dispatcher { bot_name, demux: demux.build(), error_handler }
+        let DispatcherBuilder { bot, bot_name, demux, error_handler } = self;
+        Dispatcher { bot, bot_name, demux: demux.build(), error_handler }
     }
 }

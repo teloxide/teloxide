@@ -2,6 +2,7 @@ use crate::{
     dispatching::{updates, DispatcherBuilder},
     dummies::text_message,
     types::{Message, Update, UpdateKind},
+    Bot,
 };
 use std::{
     convert::Infallible,
@@ -16,7 +17,7 @@ async fn test() {
     let handled = Arc::new(AtomicBool::new(false));
     let handled2 = handled.clone();
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(updates::message().common().by(move |message: Message| {
             assert_eq!(message.text().unwrap(), "text");
             handled2.store(true, Ordering::SeqCst);
@@ -36,7 +37,7 @@ async fn test() {
 async fn or_else() {
     let in_or_else = Arc::new(AtomicBool::new(false));
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
                 .common()
@@ -63,7 +64,7 @@ async fn or_else() {
 async fn or() {
     let handled = Arc::new(AtomicBool::new(false));
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
                 .common()
@@ -86,7 +87,7 @@ async fn or() {
 
 #[tokio::test]
 async fn async_guards() {
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
                 .common()
@@ -102,4 +103,8 @@ async fn async_guards() {
     let message = Update::new(0, UpdateKind::Message(text_message("text2")));
 
     dispatcher.dispatch_one(message).await;
+}
+
+fn dummy_bot() -> Bot {
+    Bot::builder().token("").build()
 }
