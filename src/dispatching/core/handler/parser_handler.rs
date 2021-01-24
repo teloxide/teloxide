@@ -1,4 +1,7 @@
-use crate::dispatching::core::{HandleFuture, Handler, IntoHandler};
+use crate::dispatching::{
+    core::{HandleFuture, Handler, IntoHandler},
+    dispatcher_context::DispatcherContext,
+};
 use std::{marker::PhantomData, sync::Arc};
 
 pub struct ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT> {
@@ -11,7 +14,7 @@ impl<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
     ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
 where
     ParserT: Parser<Upd, NextUpd, Rest>,
-    HandlerT: Handler<NextUpd, Err>,
+    HandlerT: Handler<DispatcherContext<NextUpd>, Err>,
 {
     pub fn new<H>(parser: ParserT, handler: H) -> Self
     where
@@ -25,27 +28,28 @@ where
     }
 }
 
-impl<ParserT, Upd, Err, NextUpd, Rest, HandlerT> Handler<Upd, Err>
+impl<ParserT, Upd, Err, NextUpd, Rest, HandlerT> Handler<DispatcherContext<Upd>, Err>
     for ParserHandler<ParserT, Upd, NextUpd, Rest, Err, HandlerT>
 where
     Err: 'static,
     NextUpd: Send,
     Rest: Send,
     ParserT: Parser<Upd, NextUpd, Rest> + Send + Sync + 'static,
-    Upd: RecombineFrom<ParserT, From = NextUpd, Rest = Rest> + Send + 'static,
-    HandlerT: Handler<NextUpd, Err> + Send + Sync + 'static,
+    Upd: RecombineFrom<ParserT, NextUpd, Rest> + Send + 'static,
+    DispatcherContext<Upd>: RecombineFrom<ParserT, DispatcherContext<NextUpd>, Rest>,
+    HandlerT: Handler<DispatcherContext<NextUpd>, Err> + Send + Sync + 'static,
 {
-    fn handle(&self, data: Upd) -> HandleFuture<Err, Upd> {
+    fn handle(&self, cx: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
         let parser = self.parser.clone();
         let handler = self.handler.clone();
 
         Box::pin(async move {
-            match parser.parse(data) {
-                Ok(ParserOut { data: next, rest }) => match handler.handle(next).await {
+            match cx.parse_upd(parser.as_ref()) {
+                Ok(ParserOut { data: cx, rest }) => match handler.handle(cx).await {
                     Ok(res) => Ok(res),
                     Err(next) => {
-                        let upd = Upd::recombine(ParserOut::new(next, rest));
-                        Err(upd)
+                        let cx = <DispatcherContext<Upd>>::recombine(ParserOut::new(next, rest));
+                        Err(cx)
                     }
                 },
                 Err(upd) => Err(upd),
@@ -76,18 +80,15 @@ pub trait Parser<From, To, Rest> {
 impl<F, From, To, Rest> Parser<From, To, Rest> for F
 where
     F: Fn(From) -> Result<ParserOut<To, Rest>, From>,
-    From: RecombineFrom<F, From = To, Rest = Rest>,
+    From: RecombineFrom<F, To, Rest>,
 {
     fn parse(&self, from: From) -> Result<ParserOut<To, Rest>, From> {
         self(from)
     }
 }
 
-pub trait RecombineFrom<Parser> {
-    type From;
-    type Rest;
-
-    fn recombine(info: ParserOut<Self::From, Self::Rest>) -> Self;
+pub trait RecombineFrom<Parser, From, Rest> {
+    fn recombine(info: ParserOut<From, Rest>) -> Self;
 }
 
 pub struct MapParser<Parser1, Parser2, Parser1Out, Rest1, Rest2, Out>(
@@ -109,7 +110,7 @@ impl<From, Intermediate, To, Parser1, Parser2, Rest1, Rest2, Out> Parser<From, T
 where
     Parser1: Parser<From, Intermediate, Rest1>,
     Parser2: Parser<Intermediate, To, Rest2>,
-    From: RecombineFrom<Parser1, From = Intermediate, Rest = Rest1>,
+    From: RecombineFrom<Parser1, Intermediate, Rest1>,
 {
     fn parse(&self, from: From) -> Result<ParserOut<To, (Rest1, Rest2)>, From> {
         self.0.parse(from).and_then(|ParserOut { data: intermediate, rest: rest1 }| {

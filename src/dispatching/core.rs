@@ -7,7 +7,7 @@ mod handler;
 #[allow(dead_code)]
 mod store;
 
-pub use context::{Context, FromContext};
+pub use context::FromContext;
 pub use demux::{Demux, DemuxBuilder};
 pub use dispatch_error::{DispatchError, HandleResult};
 pub use from_upd::FromUpd;

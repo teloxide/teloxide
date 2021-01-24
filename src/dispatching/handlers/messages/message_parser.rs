@@ -4,6 +4,7 @@ use crate::{
             DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, MapParser, OrGuard,
             Parser, ParserOut, RecombineFrom,
         },
+        dispatcher_context::DispatcherContext,
         handlers::messages::{
             guard_handlers::{GuardHandler, GuardsHandler},
             message_handler::MessageHandler,
@@ -65,33 +66,36 @@ impl_parser!(
     PassportData,
     Dice,
 );
-impl<Parser1, Parser2> RecombineFrom<MapParser<Parser1, Parser2, Message, UpdateRest, (), Message>>
-    for Update
+impl<Parser1, Parser2>
+    RecombineFrom<
+        MapParser<Parser1, Parser2, Message, UpdateRest, (), Message>,
+        Message,
+        (UpdateRest, ()),
+    > for Update
 where
-    Update: RecombineFrom<Parser1, From = Message, Rest = UpdateRest>,
+    Update: RecombineFrom<Parser1, Message, UpdateRest>,
 {
-    type From = Message;
-    type Rest = (UpdateRest, ());
-
-    fn recombine(info: ParserOut<Self::From, Self::Rest>) -> Self {
+    fn recombine(info: ParserOut<Message, (UpdateRest, ())>) -> Self {
         let (out, (rest1, _)) = info.into_inner();
-        <Update as RecombineFrom<Parser1>>::recombine(ParserOut::new(out, rest1))
+        <Update as RecombineFrom<Parser1, Message, UpdateRest>>::recombine(ParserOut::new(
+            out, rest1,
+        ))
     }
 }
 
 pub struct MessageParser<UpdateParser, ParserT, Err> {
     update_parser: UpdateParser,
     parser: ParserT,
-    demux: DemuxBuilder<Message, Err>,
-    guards: Guards<Message>,
-    last_guard: Option<Box<dyn Guard<Message> + Send + Sync>>,
+    demux: DemuxBuilder<DispatcherContext<Message>, Err>,
+    guards: Guards<DispatcherContext<Message>>,
+    last_guard: Option<Box<dyn Guard<DispatcherContext<Message>> + Send + Sync>>,
 }
 
 impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err>
 where
     UpdateParser: Parser<Update, Message, UpdateRest>,
     ParserT: Parser<Message, Message, ()> + 'static,
-    Update: RecombineFrom<UpdateParser, From = Message, Rest = UpdateRest>,
+    Update: RecombineFrom<UpdateParser, Message, UpdateRest>,
 {
     pub fn new(update_parser: UpdateParser, parser: ParserT) -> Self {
         MessageParser {
@@ -109,11 +113,11 @@ where
     Err: Send + Sync + 'static,
     UpdateParser: Parser<Update, Message, UpdateRest>,
     ParserT: Parser<Message, Message, ()> + 'static,
-    Update: RecombineFrom<UpdateParser, From = Message, Rest = UpdateRest>,
+    Update: RecombineFrom<UpdateParser, Message, UpdateRest>,
 {
     pub fn by<F, H>(mut self, f: F) -> MessageHandler<UpdateParser, ParserT, H, Err>
     where
-        H: Handler<Message, Err> + 'static,
+        H: Handler<DispatcherContext<Message>, Err> + 'static,
         F: IntoHandler<H>,
     {
         self.create_guards_service();
@@ -125,18 +129,18 @@ where
 }
 
 impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
-    pub fn with_guard<G: Guard<Message> + Send + Sync + 'static>(
+    pub fn with_guard<G: Guard<DispatcherContext<Message>> + Send + Sync + 'static>(
         mut self,
-        guard: impl IntoGuard<Message, G> + 'static,
+        guard: impl IntoGuard<DispatcherContext<Message>, G> + 'static,
     ) -> Self {
         self.add_last_to_guards();
         self.last_guard = Some(Box::new(guard.into_guard()) as _);
         self
     }
 
-    pub fn or_with_guard<G: Guard<Message> + Send + Sync + 'static>(
+    pub fn or_with_guard<G: Guard<DispatcherContext<Message>> + Send + Sync + 'static>(
         mut self,
-        guard: impl IntoGuard<Message, G> + 'static,
+        guard: impl IntoGuard<DispatcherContext<Message>, G> + 'static,
     ) -> Self {
         let prev = self
             .last_guard
@@ -149,7 +153,7 @@ impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdatePars
     pub fn or_else<F, H>(mut self, func: F) -> Self
     where
         F: IntoHandler<H>,
-        H: Handler<Message, Err> + Send + Sync + 'static,
+        H: Handler<DispatcherContext<Message>, Err> + Send + Sync + 'static,
         Err: Send + Sync + 'static,
     {
         let prev_guard = self

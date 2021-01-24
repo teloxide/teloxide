@@ -1,3 +1,4 @@
+use crate::dispatching::dispatcher_context::DispatcherContext;
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
 
@@ -37,8 +38,8 @@ where
     Upd: ?Sized + 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
-    fn check<'a>(&self, update: &'a Upd) -> BoxFuture<'a, bool> {
-        Box::pin((self.0)(update))
+    fn check<'a>(&self, cx: &'a Upd) -> BoxFuture<'a, bool> {
+        Box::pin((self.0)(&cx))
     }
 }
 
@@ -47,8 +48,46 @@ where
     Upd: ?Sized,
     F: Fn(&Upd) -> bool,
 {
-    fn check<'a>(&self, update: &'a Upd) -> BoxFuture<'a, bool> {
-        Box::pin(futures::future::ready((self.0)(update))) as _
+    fn check<'a>(&self, cx: &'a Upd) -> BoxFuture<'a, bool> {
+        Box::pin(futures::future::ready((self.0)(&cx))) as _
+    }
+}
+
+impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, ((), ())>
+where
+    Upd: 'static,
+    F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
+{
+    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
+        Box::pin((self.0)(&cx.upd))
+    }
+}
+
+impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, (bool, (), ())>
+where
+    F: Fn(&Upd) -> bool,
+{
+    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
+        Box::pin(futures::future::ready((self.0)(&cx.upd))) as _
+    }
+}
+
+impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, ((),)>
+where
+    Upd: 'static,
+    F: for<'a> AsyncBorrowSendFn<'a, DispatcherContext<Upd>, Out = bool>,
+{
+    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
+        Box::pin((self.0)(&cx))
+    }
+}
+
+impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, (bool, ())>
+where
+    F: Fn(&DispatcherContext<Upd>) -> bool,
+{
+    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
+        Box::pin(futures::future::ready((self.0)(&cx))) as _
     }
 }
 
@@ -82,6 +121,44 @@ where
     F: Fn(&Upd) -> bool,
 {
     fn into_guard(self) -> GuardFnWrapper<F, bool> {
+        GuardFnWrapper::new(self)
+    }
+}
+
+impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, ((), ())>> for F
+where
+    Upd: 'static,
+    F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
+{
+    fn into_guard(self) -> GuardFnWrapper<F, ((), ())> {
+        GuardFnWrapper::new(self)
+    }
+}
+
+impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, (bool, (), ())>> for F
+where
+    F: Fn(&Upd) -> bool,
+{
+    fn into_guard(self) -> GuardFnWrapper<F, (bool, (), ())> {
+        GuardFnWrapper::new(self)
+    }
+}
+
+impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, ((),)>> for F
+where
+    Upd: 'static,
+    F: for<'a> AsyncBorrowSendFn<'a, DispatcherContext<Upd>, Out = bool>,
+{
+    fn into_guard(self) -> GuardFnWrapper<F, ((),)> {
+        GuardFnWrapper::new(self)
+    }
+}
+
+impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, (bool, ())>> for F
+where
+    F: Fn(&DispatcherContext<Upd>) -> bool,
+{
+    fn into_guard(self) -> GuardFnWrapper<F, (bool, ())> {
         GuardFnWrapper::new(self)
     }
 }

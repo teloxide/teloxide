@@ -13,7 +13,7 @@ use crate::{
 impl<ParserT, Err> UpdateParser<Update, Message, UpdateRest, Err, ParserT>
 where
     ParserT: Parser<Update, Message, UpdateRest>,
-    Update: RecombineFrom<ParserT, From = Message, Rest = UpdateRest>,
+    Update: RecombineFrom<ParserT, Message, UpdateRest>,
 {
     pub fn common(self) -> MessageParser<ParserT, parser::Common, Err> {
         MessageParser::new(self.into_inner(), parser::Common)

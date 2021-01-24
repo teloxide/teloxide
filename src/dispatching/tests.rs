@@ -16,7 +16,7 @@ async fn test() {
     let handled = Arc::new(AtomicBool::new(false));
     let handled2 = handled.clone();
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
         .handle(updates::message().common().by(move |message: Message| {
             assert_eq!(message.text().unwrap(), "text");
             handled2.store(true, Ordering::SeqCst);
@@ -36,7 +36,7 @@ async fn test() {
 async fn or_else() {
     let in_or_else = Arc::new(AtomicBool::new(false));
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
         .handle(
             updates::message()
                 .common()
@@ -63,7 +63,7 @@ async fn or_else() {
 async fn or() {
     let handled = Arc::new(AtomicBool::new(false));
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
         .handle(
             updates::message()
                 .common()
@@ -86,7 +86,7 @@ async fn or() {
 
 #[tokio::test]
 async fn async_guards() {
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new("bot_name")
         .handle(
             updates::message()
                 .common()

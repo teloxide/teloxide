@@ -2,9 +2,9 @@ mod parser_handler;
 
 pub use parser_handler::{MapParser, Parser, ParserHandler, ParserOut, RecombineFrom};
 
-use crate::dispatching::core::{
-    context::{Context, FromContext},
-    HandleResult,
+use crate::dispatching::{
+    core::{context::FromContext, HandleResult},
+    dispatcher_context::DispatcherContext,
 };
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<F, Upd, A, Fut, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), Fut>
+impl<F, Upd, A, Fut, Err> Handler<DispatcherContext<Upd>, Err> for FnHandlerWrapper<F, (A,), Fut>
 where
     Upd: Send + 'static,
     Err: 'static,
@@ -62,29 +62,28 @@ where
     Fut: Future + Send + 'static,
     Fut::Output: Into<HandleResult<Err>> + Send,
 {
-    fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
-        let context = Context::new(&update);
+    fn handle(&self, context: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
         match FromContext::from_context(&context) {
             Some(t) => Box::pin((self.f)(t).map(Into::into).map(Ok)) as _,
-            None => Box::pin(async move { Err(update) }),
+            None => Box::pin(async move { Err(context) }),
         }
     }
 }
-impl<F, Upd, A, Err> Handler<Upd, Err> for FnHandlerWrapper<F, (A,), private::Sealed>
+impl<F, Upd, A, Err> Handler<DispatcherContext<Upd>, Err>
+    for FnHandlerWrapper<F, (A,), private::Sealed>
 where
     Upd: Send + 'static,
     Err: Send + 'static,
     A: FromContext<Upd>,
     F: Fn(A),
 {
-    fn handle(&self, update: Upd) -> HandleFuture<Err, Upd> {
-        let context = Context::new(&update);
+    fn handle(&self, context: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
         match FromContext::from_context(&context) {
             Some(t) => {
                 (self.f)(t);
                 Box::pin(futures::future::ready(Ok(HandleResult::Ok))) as _
             }
-            None => Box::pin(async move { Err(update) }),
+            None => Box::pin(async move { Err(context) }),
         }
     }
 }

@@ -85,10 +85,7 @@ mod impls {
     macro_rules! impl_parser {
         ($(($ty:ident, $teloxide_ty:ident),)*) => {
             $(
-                impl RecombineFrom<parser::$ty> for Update {
-                    type From = crate::types::$teloxide_ty;
-                    type Rest = UpdateRest;
-
+                impl RecombineFrom<parser::$ty, crate::types::$teloxide_ty, UpdateRest> for Update {
                     fn recombine(data: ParserOut<crate::types::$teloxide_ty, UpdateRest>) -> Update {
                         let (kind, UpdateRest(id)) = data.into_inner();
                         Update {
@@ -103,7 +100,7 @@ mod impls {
                         let rest = UpdateRest(id);
                         match kind {
                             UpdateKind::$ty(message) => Ok(ParserOut::new(message, rest)),
-                            _ => Err(<Update as RecombineFrom<UpdateKind>>::recombine(ParserOut::new(kind, rest))),
+                            _ => Err(<Update as RecombineFrom<UpdateKind, UpdateKind, UpdateRest>>::recombine(ParserOut::new(kind, rest))),
                         }
                     }
                 }
@@ -111,20 +108,14 @@ mod impls {
         };
     }
 
-    impl RecombineFrom<UpdateKind> for Update {
-        type From = UpdateKind;
-        type Rest = UpdateRest;
-
+    impl RecombineFrom<UpdateKind, UpdateKind, UpdateRest> for Update {
         fn recombine(data: ParserOut<UpdateKind, UpdateRest>) -> Update {
             let (kind, UpdateRest(id)) = data.into_inner();
             Update { id, kind }
         }
     }
 
-    impl RecombineFrom<parser::Update> for Update {
-        type From = Update;
-        type Rest = ();
-
+    impl RecombineFrom<parser::Update, Update, ()> for Update {
         fn recombine(data: ParserOut<Update, ()>) -> Update {
             let (update, _) = data.into_inner();
             update

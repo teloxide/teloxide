@@ -1,21 +1,24 @@
-use crate::{
-    dispatching::core::{Guard, Guards, HandleFuture, HandleResult, Handler},
-    types::Message,
+use crate::dispatching::{
+    core::{Guard, Guards, HandleFuture, HandleResult, Handler},
+    dispatcher_context::DispatcherContext,
 };
 use std::{marker::PhantomData, sync::Arc};
 
-pub struct GuardsHandler {
-    guards: Arc<Guards<Message>>,
+pub struct GuardsHandler<Upd> {
+    guards: Arc<Guards<DispatcherContext<Upd>>>,
 }
 
-impl GuardsHandler {
-    pub fn new(guards: Guards<Message>) -> Self {
+impl<Upd> GuardsHandler<Upd> {
+    pub fn new(guards: Guards<DispatcherContext<Upd>>) -> Self {
         GuardsHandler { guards: Arc::new(guards) }
     }
 }
 
-impl<Err> Handler<Message, Err> for GuardsHandler {
-    fn handle(&self, data: Message) -> HandleFuture<Err, Message> {
+impl<Upd, Err> Handler<DispatcherContext<Upd>, Err> for GuardsHandler<Upd>
+where
+    Upd: Send + Sync + 'static,
+{
+    fn handle(&self, data: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
         let guards = self.guards.clone();
 
         Box::pin(async move {
@@ -43,13 +46,15 @@ impl<Guard, Handler, Err> GuardHandler<Guard, Handler, Err> {
     }
 }
 
-impl<GuardT, HandlerT, Err> Handler<Message, Err> for GuardHandler<GuardT, HandlerT, Err>
+impl<Upd, GuardT, HandlerT, Err> Handler<DispatcherContext<Upd>, Err>
+    for GuardHandler<GuardT, HandlerT, Err>
 where
-    GuardT: Guard<Message> + Send + Sync + 'static,
-    HandlerT: Handler<Message, Err> + Send + Sync + 'static,
+    Upd: Send + Sync + 'static,
+    GuardT: Guard<DispatcherContext<Upd>> + Send + Sync + 'static,
+    HandlerT: Handler<DispatcherContext<Upd>, Err> + Send + Sync + 'static,
     Err: 'static,
 {
-    fn handle(&self, data: Message) -> HandleFuture<Err, Message> {
+    fn handle(&self, data: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
         let guard = self.guard.clone();
         let wrong_handler = self.wrong_handler.clone();
 

@@ -1,5 +1,6 @@
-pub mod core;
+pub(crate) mod core;
 mod dispatcher;
+mod dispatcher_context;
 pub mod error_handlers;
 mod handlers;
 #[cfg(test)]
@@ -12,3 +13,7 @@ pub mod update_with_cx;
 pub use dispatcher::{Dispatcher, DispatcherBuilder};
 pub use handlers::updates;
 pub use update_with_cx::UpdateWithCx;
+
+pub mod tel {
+    pub use super::handlers::commands::Command;
+}

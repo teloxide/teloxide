@@ -199,7 +199,7 @@ fn descriptions_off() {
 async fn handle_commands() {
     use std::convert::Infallible;
     use teloxide::{
-        dispatching::{updates, DispatcherBuilder},
+        dispatching::{tel, updates, DispatcherBuilder},
         dummies::text_message,
         types::{Update, UpdateKind},
         utils::command::BotCommand,
@@ -207,17 +207,18 @@ async fn handle_commands() {
 
     #[derive(Debug, PartialEq, BotCommand)]
     #[command(rename = "lowercase")]
-    enum Command {
+    enum MyCommand {
         Start,
         Help,
     }
 
-    let dispatcher = DispatcherBuilder::<Infallible, _>::new()
-        .handle(
-            updates::message().common().by(|command: Command| assert_eq!(command, Command::Start)),
-        )
-        .error_handler(|_| async { unreachable!() })
-        .build();
+    let dispatcher =
+        DispatcherBuilder::<Infallible, _>::new("bot_name")
+            .handle(updates::message().common().by(|command: tel::Command<MyCommand>| {
+                assert_eq!(command.command, MyCommand::Start)
+            }))
+            .error_handler(|_| async { unreachable!() })
+            .build();
 
     let message = Update::new(0, UpdateKind::Message(text_message("/start")));
 

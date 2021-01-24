@@ -47,6 +47,7 @@ log = "0.4.8"
 lockfree = "0.5.1"
 bytes = "0.5.5"
 mime = "0.3.16"
+paste = "1.0.4"
 
 derive_more = "0.99.9"
 thiserror = "1.0.20"
