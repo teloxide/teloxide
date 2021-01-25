@@ -214,7 +214,7 @@ async fn handle_commands() {
 
     let dispatcher =
         DispatcherBuilder::<Infallible, _>::new("bot_name")
-            .handle(updates::message().common().by(|command: tel::Command<MyCommand>| {
+            .handle(updates::message().by(|command: tel::Command<MyCommand>| {
                 assert_eq!(command.command, MyCommand::Start)
             }))
             .error_handler(|_| async { unreachable!() })

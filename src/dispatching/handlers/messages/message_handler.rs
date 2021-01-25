@@ -8,17 +8,15 @@ use crate::{
 };
 use std::sync::Arc;
 
-type UpdMesParser<Parser1, Parser2> = MapParser<Parser1, Parser2, Message, UpdateRest, (), Message>;
-
-pub struct MessageHandler<Parser1, Parser2, HandlerT, Err> {
-    parser: Arc<UpdMesParser<Parser1, Parser2>>,
+pub struct MessageHandler<ParserT, HandlerT, Err> {
+    parser: Arc<ParserT>,
     handler: Arc<HandlerT>,
     demux: Arc<Demux<DispatcherContext<Message>, Err>>,
 }
 
-impl<Parser1, Parser2, HandlerT, Err> MessageHandler<Parser1, Parser2, HandlerT, Err> {
+impl<ParserT, HandlerT, Err> MessageHandler<ParserT, HandlerT, Err> {
     pub fn new(
-        parser: UpdMesParser<Parser1, Parser2>,
+        parser: ParserT,
         handler: HandlerT,
         demux: Demux<DispatcherContext<Message>, Err>,
     ) -> Self {
@@ -30,14 +28,13 @@ impl<Parser1, Parser2, HandlerT, Err> MessageHandler<Parser1, Parser2, HandlerT,
     }
 }
 
-impl<Parser1, Parser2, Err, HandlerT> Handler<DispatcherContext<Update>, Err>
-    for MessageHandler<Parser1, Parser2, HandlerT, Err>
+impl<ParserT, Err, HandlerT> Handler<DispatcherContext<Update>, Err>
+    for MessageHandler<ParserT, HandlerT, Err>
 where
     Err: Send + 'static,
-    Parser1: Parser<Update, Message, UpdateRest> + Send + Sync + 'static,
-    Parser2: Parser<Message, Message, ()> + Send + Sync + 'static,
+    ParserT: Parser<Update, Message, UpdateRest> + Send + Sync + 'static,
     HandlerT: Handler<DispatcherContext<Message>, Err> + Send + Sync + 'static,
-    Update: RecombineFrom<Parser1, Message, UpdateRest>,
+    Update: RecombineFrom<ParserT, Message, UpdateRest>,
 {
     fn handle(
         &self,
@@ -54,7 +51,7 @@ where
                 Err(upd) => handler
                     .handle(upd)
                     .await
-                    .map_err(|e| <DispatcherContext<Update>>::recombine(ParserOut::new(e, rest.0))),
+                    .map_err(|e| <DispatcherContext<Update>>::recombine(ParserOut::new(e, rest))),
             }
         })
     }

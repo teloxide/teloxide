@@ -1,13 +1,14 @@
 pub(crate) use impls::{parser, UpdateRest};
 
 use crate::{dispatching::handlers::parser::UpdateParser, types, types::Update};
+use crate::dispatching::handlers::messages::MessageParser;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
 }
 
-pub fn message<Err>() -> UpdateParser<Update, types::Message, UpdateRest, Err, parser::Message> {
-    UpdateParser::new(parser::Message)
+pub fn message<Err>() -> MessageParser<parser::Message, Err> {
+    MessageParser::new(parser::Message)
 }
 
 pub fn edited_message<Err>(

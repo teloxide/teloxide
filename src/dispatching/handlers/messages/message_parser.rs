@@ -83,24 +83,21 @@ where
     }
 }
 
-pub struct MessageParser<UpdateParser, ParserT, Err> {
+pub struct MessageParser<UpdateParser, Err> {
     update_parser: UpdateParser,
-    parser: ParserT,
     demux: DemuxBuilder<DispatcherContext<Message>, Err>,
     guards: Guards<DispatcherContext<Message>>,
     last_guard: Option<Box<dyn Guard<DispatcherContext<Message>> + Send + Sync>>,
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err>
+impl<UpdateParser, Err> MessageParser<UpdateParser, Err>
 where
     UpdateParser: Parser<Update, Message, UpdateRest>,
-    ParserT: Parser<Message, Message, ()> + 'static,
     Update: RecombineFrom<UpdateParser, Message, UpdateRest>,
 {
-    pub fn new(update_parser: UpdateParser, parser: ParserT) -> Self {
+    pub fn new(update_parser: UpdateParser) -> Self {
         MessageParser {
             update_parser,
-            parser,
             demux: DemuxBuilder::new(),
             guards: Guards::new(),
             last_guard: None,
@@ -108,27 +105,25 @@ where
     }
 }
 
-impl<UpdateParser, ParserT, Err> MessageParser<UpdateParser, ParserT, Err>
+impl<UpdateParser, Err> MessageParser<UpdateParser, Err>
 where
     Err: Send + Sync + 'static,
     UpdateParser: Parser<Update, Message, UpdateRest>,
-    ParserT: Parser<Message, Message, ()> + 'static,
     Update: RecombineFrom<UpdateParser, Message, UpdateRest>,
 {
-    pub fn by<F, H>(mut self, f: F) -> MessageHandler<UpdateParser, ParserT, H, Err>
+    pub fn by<F, H>(mut self, f: F) -> MessageHandler<UpdateParser, H, Err>
     where
         H: Handler<DispatcherContext<Message>, Err> + 'static,
         F: IntoHandler<H>,
     {
         self.create_guards_service();
 
-        let MessageParser { update_parser: parent, parser, demux, .. } = self;
-        let parser = MapParser::new(parent, parser);
-        MessageHandler::new(parser, f.into_handler(), demux.build())
+        let MessageParser { update_parser, demux, .. } = self;
+        MessageHandler::new(update_parser, f.into_handler(), demux.build())
     }
 }
 
-impl<UpdateParser, ParserT, Err: Send + Sync + 'static> MessageParser<UpdateParser, ParserT, Err> {
+impl<UpdateParser, Err: Send + Sync + 'static> MessageParser<UpdateParser, Err> {
     pub fn with_guard<G: Guard<DispatcherContext<Message>> + Send + Sync + 'static>(
         mut self,
         guard: impl IntoGuard<DispatcherContext<Message>, G> + 'static,

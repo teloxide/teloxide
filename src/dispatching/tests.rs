@@ -1,5 +1,5 @@
 use crate::{
-    dispatching::{tel, updates, DispatcherBuilder, UpdateWithCx},
+    dispatching::{updates, DispatcherBuilder, UpdateWithCx},
     dummies::text_message,
     types::{Message, Update, UpdateKind},
     Bot,
@@ -18,7 +18,7 @@ async fn test() {
     let handled2 = handled.clone();
 
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
-        .handle(updates::message().common().by(move |message: Message| {
+        .handle(updates::message().by(move |message: Message| {
             assert_eq!(message.text().unwrap(), "text");
             handled2.store(true, Ordering::SeqCst);
         }))
@@ -40,7 +40,6 @@ async fn or_else() {
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
-                .common()
                 .with_text(|text: &str| text == "text")
                 .or_else({
                     let in_or_else = in_or_else.clone();
@@ -67,7 +66,6 @@ async fn or() {
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
-                .common()
                 .with_text(|text: &str| text == "text")
                 .or_with_text(|text: &str| text == "text2")
                 .by({
@@ -90,7 +88,6 @@ async fn async_guards() {
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
-                .common()
                 .with_chat_id(|id: &i64| {
                     let id = id.clone();
                     async move { id == 10 }
@@ -110,7 +107,6 @@ async fn update_with_cx() {
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
         .handle(
             updates::message()
-                .common()
                 .by(|cx: UpdateWithCx<Message>| assert_eq!(cx.update.text().unwrap(), "text2")),
         )
         .error_handler(|_| async {})
