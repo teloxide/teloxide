@@ -1,9 +1,18 @@
-use crate::dispatching::dispatcher_context::DispatcherContext;
-use crate::dispatching::core::{DemuxBuilder, Guards, Guard, Parser, RecombineFrom, Handler, IntoHandler, IntoGuard, OrGuard};
-use crate::types::{Update};
-use crate::dispatching::updates::UpdateRest;
-use crate::dispatching::handlers::update_kind_handler::UpdateKindHandler;
-use crate::dispatching::handlers::guard_handlers::{GuardsHandler, GuardHandler};
+use crate::{
+    dispatching::{
+        core::{
+            DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, OrGuard, Parser,
+            RecombineFrom,
+        },
+        dispatcher_context::DispatcherContext,
+        handlers::{
+            guard_handlers::{GuardHandler, GuardsHandler},
+            update_kind_handler::UpdateKindHandler,
+        },
+        updates::UpdateRest,
+    },
+    types::Update,
+};
 
 pub struct UpdateKindHandlerBuilder<Upd, UpdateParser, Err> {
     update_parser: UpdateParser,
@@ -45,7 +54,9 @@ where
     }
 }
 
-impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + Sync + 'static> UpdateKindHandlerBuilder<Upd, UpdateParser, Err> {
+impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + Sync + 'static>
+    UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
+{
     pub fn with_guard<G: Guard<DispatcherContext<Upd>> + Send + Sync + 'static>(
         mut self,
         guard: impl IntoGuard<DispatcherContext<Upd>, G> + 'static,

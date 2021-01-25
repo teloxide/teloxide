@@ -1,7 +1,10 @@
 pub(crate) use impls::{parser, UpdateRest};
 
-use crate::{dispatching::handlers::parser::UpdateParser, types, types::Update};
-use crate::dispatching::handlers::messages::MessageHandlerBuilder;
+use crate::{
+    dispatching::handlers::{messages::MessageHandlerBuilder, parser::UpdateParser},
+    types,
+    types::Update,
+};
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)

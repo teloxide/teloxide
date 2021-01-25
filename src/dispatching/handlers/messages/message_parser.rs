@@ -1,18 +1,10 @@
 use crate::{
     dispatching::{
-        core::{
-            DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, MapParser, OrGuard,
-            Parser, ParserOut, RecombineFrom,
-        },
-        dispatcher_context::DispatcherContext,
-        handlers::messages::{
-            message_handler::MessageHandler,
-        },
-        updates::UpdateRest,
+        core::{Parser, ParserOut},
+        handlers::update_kind_handler_builder::UpdateKindHandlerBuilder,
     },
-    types::{Message, Update},
+    types::Message,
 };
-use crate::dispatching::handlers::update_kind_handler_builder::UpdateKindHandlerBuilder;
 
 pub(crate) mod parser {
     pub struct Common;
@@ -66,21 +58,5 @@ impl_parser!(
     PassportData,
     Dice,
 );
-impl<Parser1, Parser2>
-    RecombineFrom<
-        MapParser<Parser1, Parser2, Message, UpdateRest, (), Message>,
-        Message,
-        (UpdateRest, ()),
-    > for Update
-where
-    Update: RecombineFrom<Parser1, Message, UpdateRest>,
-{
-    fn recombine(info: ParserOut<Message, (UpdateRest, ())>) -> Self {
-        let (out, (rest1, _)) = info.into_inner();
-        <Update as RecombineFrom<Parser1, Message, UpdateRest>>::recombine(ParserOut::new(
-            out, rest1,
-        ))
-    }
-}
 
 pub type MessageHandlerBuilder<Parser, Err> = UpdateKindHandlerBuilder<Message, Parser, Err>;

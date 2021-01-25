@@ -1,10 +1,10 @@
 use crate::{
     dispatching::{
-        core::{Demux, HandleFuture, Handler, MapParser, Parser, ParserOut, RecombineFrom},
+        core::{Demux, HandleFuture, Handler, Parser, ParserOut, RecombineFrom},
         dispatcher_context::DispatcherContext,
         updates::UpdateRest,
     },
-    types::{Update},
+    types::Update,
 };
 use std::sync::Arc;
 
