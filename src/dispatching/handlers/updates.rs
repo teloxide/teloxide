@@ -15,18 +15,18 @@ pub fn message<Err>() -> MessageHandlerBuilder<parser::Message, Err> {
 }
 
 pub fn edited_message<Err>(
-) -> UpdateParser<Update, types::Message, UpdateRest, Err, parser::EditedMessage> {
-    UpdateParser::new(parser::EditedMessage)
+) -> MessageHandlerBuilder<parser::EditedMessage, Err> {
+    MessageHandlerBuilder::new(parser::EditedMessage)
 }
 
 pub fn channel_post<Err>(
-) -> UpdateParser<Update, types::Message, UpdateRest, Err, parser::ChannelPost> {
-    UpdateParser::new(parser::ChannelPost)
+) -> MessageHandlerBuilder<parser::ChannelPost, Err> {
+    MessageHandlerBuilder::new(parser::ChannelPost)
 }
 
 pub fn edited_channel_post<Err>(
-) -> UpdateParser<Update, types::Message, UpdateRest, Err, parser::EditedChannelPost> {
-    UpdateParser::new(parser::EditedChannelPost)
+) -> MessageHandlerBuilder<parser::EditedChannelPost, Err> {
+    MessageHandlerBuilder::new(parser::EditedChannelPost)
 }
 
 pub fn inline_query<Err>(
