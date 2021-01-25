@@ -1,5 +1,5 @@
 use crate::{
-    dispatching::{updates, DispatcherBuilder},
+    dispatching::{tel, updates, DispatcherBuilder, UpdateWithCx},
     dummies::text_message,
     types::{Message, Update, UpdateKind},
     Bot,
@@ -96,6 +96,22 @@ async fn async_guards() {
                     async move { id == 10 }
                 })
                 .by(|mes: Message| assert_eq!(mes.chat.id, 10)),
+        )
+        .error_handler(|_| async {})
+        .build();
+
+    let message = Update::new(0, UpdateKind::Message(text_message("text2")));
+
+    dispatcher.dispatch_one(message).await;
+}
+
+#[tokio::test]
+async fn update_with_cx() {
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
+        .handle(
+            updates::message()
+                .common()
+                .by(|cx: UpdateWithCx<Message>| assert_eq!(cx.update.text().unwrap(), "text2")),
         )
         .error_handler(|_| async {})
         .build();

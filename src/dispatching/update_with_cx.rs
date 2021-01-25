@@ -1,4 +1,5 @@
 use crate::{
+    dispatching::{core::FromContextOwn, dispatcher_context::DispatcherContext},
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage, PinChatMessage,
         Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDice, SendDocument,
@@ -20,16 +21,13 @@ pub struct UpdateWithCx<Upd> {
     pub bot: Bot,
     pub update: Upd,
 }
-/*
-impl<Upd> GetChatId for UpdateWithCx<Upd>
-where
-    Upd: GetChatId,
-{
-    fn chat_id(&self) -> i64 {
-        self.update.chat_id()
+
+impl<Upd> FromContextOwn<Upd> for UpdateWithCx<Upd> {
+    fn from_context(context: DispatcherContext<Upd>) -> Self {
+        Self { bot: context.bot, update: context.upd }
     }
 }
-*/
+
 impl UpdateWithCx<Message> {
     /// A shortcut for `.answer(text).send().await`.
     pub async fn answer_str<T>(&self, text: T) -> ResponseResult<Message>
