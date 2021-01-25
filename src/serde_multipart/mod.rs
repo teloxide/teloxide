@@ -6,6 +6,9 @@
 //! ## How it works
 //!
 //! You better not know...
+//!
+//! This whole module is an awful hack and we'll probably stop using it in next
+//! versions (in favor of something less automatic, but more simple).
 
 mod serializers;
 mod unserializers;

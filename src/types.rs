@@ -190,5 +190,10 @@ mod passport_data;
 mod passport_element_error;
 mod passport_file;
 
-pub use non_telegram_types::*;
-mod non_telegram_types;
+pub use non_telegram_types::{country_code::*, currency::*, non_strict_vec::*};
+mod non_telegram_types {
+    pub(super) mod country_code;
+    pub(super) mod currency;
+    pub(crate) mod mime;
+    pub(super) mod non_strict_vec;
+}
