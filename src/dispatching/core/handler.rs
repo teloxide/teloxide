@@ -157,6 +157,12 @@ impl_handler_and_into! {
     (),
     (A),
     (A, B),
+    (A, B, C),
+    (A, B, C, D),
+    (A, B, C, D, E),
+    (A, B, C, D, E, F1),
+    (A, B, C, D, E, F1, G),
+    (A, B, C, D, E, F1, G, H),
 }
 
 mod private {
