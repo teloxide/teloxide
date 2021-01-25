@@ -83,20 +83,20 @@ where
     }
 }
 
-pub struct MessageParser<UpdateParser, Err> {
+pub struct MessageHandlerBuilder<UpdateParser, Err> {
     update_parser: UpdateParser,
     demux: DemuxBuilder<DispatcherContext<Message>, Err>,
     guards: Guards<DispatcherContext<Message>>,
     last_guard: Option<Box<dyn Guard<DispatcherContext<Message>> + Send + Sync>>,
 }
 
-impl<UpdateParser, Err> MessageParser<UpdateParser, Err>
+impl<UpdateParser, Err> MessageHandlerBuilder<UpdateParser, Err>
 where
     UpdateParser: Parser<Update, Message, UpdateRest>,
     Update: RecombineFrom<UpdateParser, Message, UpdateRest>,
 {
     pub fn new(update_parser: UpdateParser) -> Self {
-        MessageParser {
+        MessageHandlerBuilder {
             update_parser,
             demux: DemuxBuilder::new(),
             guards: Guards::new(),
@@ -105,7 +105,7 @@ where
     }
 }
 
-impl<UpdateParser, Err> MessageParser<UpdateParser, Err>
+impl<UpdateParser, Err> MessageHandlerBuilder<UpdateParser, Err>
 where
     Err: Send + Sync + 'static,
     UpdateParser: Parser<Update, Message, UpdateRest>,
@@ -118,12 +118,12 @@ where
     {
         self.create_guards_service();
 
-        let MessageParser { update_parser, demux, .. } = self;
+        let MessageHandlerBuilder { update_parser, demux, .. } = self;
         MessageHandler::new(update_parser, f.into_handler(), demux.build())
     }
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> MessageParser<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
     pub fn with_guard<G: Guard<DispatcherContext<Message>> + Send + Sync + 'static>(
         mut self,
         guard: impl IntoGuard<DispatcherContext<Message>, G> + 'static,
