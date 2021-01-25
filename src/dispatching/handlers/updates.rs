@@ -5,6 +5,7 @@ use crate::{
     types,
     types::Update,
 };
+use crate::dispatching::handlers::inline_queries::InlineQueriesHandlerBuilder;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
@@ -30,8 +31,8 @@ pub fn edited_channel_post<Err>(
 }
 
 pub fn inline_query<Err>(
-) -> UpdateParser<Update, types::InlineQuery, UpdateRest, Err, parser::InlineQuery> {
-    UpdateParser::new(parser::InlineQuery)
+) -> InlineQueriesHandlerBuilder<parser::InlineQuery, Err> {
+    InlineQueriesHandlerBuilder::new(parser::InlineQuery)
 }
 
 pub fn chosen_inline_result<Err>(
