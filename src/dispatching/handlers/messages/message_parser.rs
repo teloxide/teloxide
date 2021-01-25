@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         core::{Parser, ParserOut},
-        handlers::update_kind_handler_builder::UpdateKindHandlerBuilder,
+        handlers::common::UpdateKindHandlerBuilder,
     },
     types::Message,
 };

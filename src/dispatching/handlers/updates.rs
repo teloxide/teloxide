@@ -1,7 +1,7 @@
 pub(crate) use impls::{parser, UpdateRest};
 
 use crate::{
-    dispatching::handlers::{messages::MessageHandlerBuilder, parser::UpdateParser},
+    dispatching::handlers::{common::UpdateParser, messages::MessageHandlerBuilder},
     types,
     types::Update,
 };

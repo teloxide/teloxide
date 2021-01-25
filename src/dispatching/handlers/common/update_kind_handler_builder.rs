@@ -5,10 +5,7 @@ use crate::{
             RecombineFrom,
         },
         dispatcher_context::DispatcherContext,
-        handlers::{
-            guard_handlers::{GuardHandler, GuardsHandler},
-            update_kind_handler::UpdateKindHandler,
-        },
+        handlers::common::{GuardHandler, GuardsHandler, UpdateKindHandler},
         updates::UpdateRest,
     },
     types::Update,
