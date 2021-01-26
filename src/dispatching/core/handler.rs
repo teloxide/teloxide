@@ -35,16 +35,16 @@ impl<F, Upd, P, Fut> FnHandlerWrapper<F, Upd, P, Fut> {
 
 macro_rules! impl_handler_and_into {
     ($(($($gen:ident),*),)*) => {$(
-        impl<$($gen,)* Upd, Err, F, Fut> Handler<DispatcherContext<Upd>, Err> for FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, )>
+        impl<$($gen,)* Ctx, Err, F, Fut> Handler<Ctx, Err> for FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, )>
         where
-            Upd: Send + 'static,
+            Ctx: Send + 'static,
             Err: Send + 'static,
-            $($gen: FromContext<Upd>,)*
+            $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*) -> Fut,
             Fut: Future + Send + 'static,
             Fut::Output: Into<HandleResult<Err>> + Send,
         {
-            fn handle(&self, cx: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+            fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
                 $(let $gen = match <$gen>::from_context(&cx) {
                     Some(t) => t,
                     None => return Box::pin(futures::future::ready(Err(cx))) as _
@@ -53,24 +53,24 @@ macro_rules! impl_handler_and_into {
                 Box::pin(fut.map(Into::into).map(Ok)) as _
             }
         }
-        impl<$($gen,)* F, Upd, Fut: Future> IntoHandler<FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, )>> for F
+        impl<$($gen,)* F, Ctx, Fut: Future> IntoHandler<FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, )>> for F
         where
-            $($gen: FromContext<Upd>,)*
+            $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*) -> Fut,
         {
-            fn into_handler(self) -> FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, )> {
+            fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, )> {
                 FnHandlerWrapper::new(self)
             }
         }
 
-        impl<$($gen,)* Upd, Err, F> Handler<DispatcherContext<Upd>, Err> for FnHandlerWrapper<F, Upd, ($($gen,)*), private::Sealed>
+        impl<$($gen,)* Ctx, Err, F> Handler<Ctx, Err> for FnHandlerWrapper<F, Ctx, ($($gen,)*), private::Sealed>
         where
-            Upd: Send + 'static,
+            Ctx: Send + 'static,
             Err: Send + 'static,
-            $($gen: FromContext<Upd>,)*
+            $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*),
         {
-            fn handle(&self, cx: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+            fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
                 $(let $gen = match <$gen>::from_context(&cx) {
                     Some(t) => t,
                     None => return Box::pin(futures::future::ready(Err(cx))) as _
@@ -80,29 +80,29 @@ macro_rules! impl_handler_and_into {
             }
         }
 
-        impl<$($gen,)* F, Upd> IntoHandler<FnHandlerWrapper<F, Upd, ($($gen,)*), private::Sealed>> for F
+        impl<$($gen,)* F, Ctx> IntoHandler<FnHandlerWrapper<F, Ctx, ($($gen,)*), private::Sealed>> for F
         where
-            $($gen: FromContext<Upd>,)*
+            $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*),
         {
-            fn into_handler(self) -> FnHandlerWrapper<F, Upd, ($($gen,)*), private::Sealed> {
+            fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), private::Sealed> {
                 FnHandlerWrapper::new(self)
             }
         }
 
         //------------------ 2
 
-        impl<OwnTy, $($gen,)* Upd, Err, F, Fut> Handler<DispatcherContext<Upd>, Err> for FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, OwnTy)>
+        impl<OwnTy, $($gen,)* Ctx, Err, F, Fut> Handler<Ctx, Err> for FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, OwnTy)>
         where
-            Upd: Send + 'static,
+            Ctx: Send + 'static,
             Err: Send + 'static,
-            $($gen: FromContext<Upd>,)*
-            OwnTy: FromContextOwn<Upd>,
+            $($gen: FromContext<Ctx>,)*
+            OwnTy: FromContextOwn<Ctx>,
             F: Fn(OwnTy, $($gen),*) -> Fut,
             Fut: Future + Send + 'static,
             Fut::Output: Into<HandleResult<Err>> + Send,
         {
-            fn handle(&self, cx: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+            fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
                 $(let $gen = match <$gen>::from_context(&cx) {
                     Some(t) => t,
                     None => return Box::pin(futures::future::ready(Err(cx))) as _
@@ -111,26 +111,26 @@ macro_rules! impl_handler_and_into {
                 Box::pin(fut.map(Into::into).map(Ok)) as _
             }
         }
-        impl<OwnTy, Upd, $($gen,)* F, Fut: Future> IntoHandler<FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, OwnTy)>> for F
+        impl<OwnTy, Ctx, $($gen,)* F, Fut: Future> IntoHandler<FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, OwnTy)>> for F
         where
-            OwnTy: FromContextOwn<Upd>,
-            $($gen: FromContext<Upd>,)*
+            OwnTy: FromContextOwn<Ctx>,
+            $($gen: FromContext<Ctx>,)*
             F: Fn(OwnTy, $($gen),*) -> Fut,
         {
-            fn into_handler(self) -> FnHandlerWrapper<F, Upd, ($($gen,)*), (Fut, OwnTy)> {
+            fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, OwnTy)> {
                 FnHandlerWrapper::new(self)
             }
         }
 
-        impl<$($gen,)* OwnTy, Upd, Err, F> Handler<DispatcherContext<Upd>, Err> for FnHandlerWrapper<F, Upd, ($($gen,)*), (private::Sealed, OwnTy)>
+        impl<$($gen,)* OwnTy, Ctx, Err, F> Handler<Ctx, Err> for FnHandlerWrapper<F, Ctx, ($($gen,)*), (private::Sealed, OwnTy)>
         where
-            Upd: Send + 'static,
+            Ctx: Send + 'static,
             Err: Send + 'static,
-            OwnTy: FromContextOwn<Upd>,
-            $($gen: FromContext<Upd>,)*
+            OwnTy: FromContextOwn<Ctx>,
+            $($gen: FromContext<Ctx>,)*
             F: Fn(OwnTy, $($gen),*),
         {
-            fn handle(&self, cx: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+            fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
                 $(let $gen = match <$gen>::from_context(&cx) {
                     Some(t) => t,
                     None => return Box::pin(futures::future::ready(Err(cx))) as _
@@ -140,13 +140,13 @@ macro_rules! impl_handler_and_into {
             }
         }
 
-        impl<OwnTy, Upd, $($gen,)* F> IntoHandler<FnHandlerWrapper<F, Upd, ($($gen,)*), (private::Sealed, OwnTy)>> for F
+        impl<OwnTy, Ctx, $($gen,)* F> IntoHandler<FnHandlerWrapper<F, Ctx, ($($gen,)*), (private::Sealed, OwnTy)>> for F
         where
-            $($gen: FromContext<Upd>,)*
-            OwnTy: FromContextOwn<Upd>,
+            $($gen: FromContext<Ctx>,)*
+            OwnTy: FromContextOwn<Ctx>,
             F: Fn(OwnTy, $($gen),*),
         {
-            fn into_handler(self) -> FnHandlerWrapper<F, Upd, ($($gen,)*), (private::Sealed, OwnTy)> {
+            fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (private::Sealed, OwnTy)> {
                 FnHandlerWrapper::new(self)
             }
         }

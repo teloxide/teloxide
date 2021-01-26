@@ -3,6 +3,7 @@ use crate::{
     Bot,
 };
 use std::sync::Arc;
+use crate::dispatching::core::GetCtx;
 
 pub struct DispatcherContext<Upd> {
     pub upd: Upd,
@@ -25,6 +26,16 @@ impl<Upd> DispatcherContext<Upd> {
             Err(upd) => return Err(DispatcherContext { upd, bot, bot_name }),
         };
         Ok(ParserOut::new(DispatcherContext::new(data, bot, bot_name), rest))
+    }
+}
+
+impl<Upd> GetCtx<DispatcherContext<Upd>> for DispatcherContext<Upd> {
+    fn get(&self) -> &DispatcherContext<Upd> {
+        self
+    }
+
+    fn get_own(self) -> DispatcherContext<Upd> {
+        self
     }
 }
 
