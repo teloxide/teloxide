@@ -28,13 +28,13 @@ use crate::{
 /// ```rust
 /// use teloxide_core::{
 ///     requests::{Requester, RequesterExt},
-///     types::User,
+///     types::Me,
 ///     Bot,
 /// };
 ///
 /// # async {
 /// let bot = Bot::new("TOKEN").auto_send();
-/// let myself: User = bot.get_me().await?; // No .send()!
+/// let myself: Me = bot.get_me().await?; // No .send()!
 /// # Ok::<_, teloxide_core::RequestError>(()) };
 /// ```
 pub struct AutoSend<B> {
