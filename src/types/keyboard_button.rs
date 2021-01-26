@@ -49,7 +49,7 @@ impl KeyboardButton {
 pub enum ButtonRequest {
     Location,
     Contact,
-    KeyboardButtonPollType(KeyboardButtonPollType),
+    Poll(KeyboardButtonPollType),
 }
 
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
@@ -97,7 +97,7 @@ impl<'de> Deserialize<'de> for ButtonRequest {
             RawRequest {
                 poll: Some(poll_type),
                 ..
-            } => Ok(Self::KeyboardButtonPollType(poll_type)),
+            } => Ok(Self::Poll(poll_type)),
             _ => Err(D::Error::custom(
                 "Either one of `request_contact` and `request_location` fields is required",
             )),
@@ -123,7 +123,7 @@ impl Serialize for ButtonRequest {
                 poll: None,
             }
             .serialize(serializer),
-            Self::KeyboardButtonPollType(poll_type) => RawRequest {
+            Self::Poll(poll_type) => RawRequest {
                 contact: None,
                 location: None,
                 poll: Some(poll_type.clone()),
