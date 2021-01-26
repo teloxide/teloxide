@@ -617,6 +617,7 @@ pub trait Requester {
         user_id: i32,
         name: N,
         title: T,
+        sticker: InputSticker,
         emojis: E,
     ) -> Self::CreateNewStickerSet
     where

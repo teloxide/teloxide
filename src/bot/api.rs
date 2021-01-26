@@ -765,13 +765,14 @@ impl Requester for Bot {
         )
     }
 
-    type CreateNewStickerSet = JsonRequest<payloads::CreateNewStickerSet>;
+    type CreateNewStickerSet = MultipartRequest<payloads::CreateNewStickerSet>;
 
     fn create_new_sticker_set<N, T, E>(
         &self,
         user_id: i32,
         name: N,
         title: T,
+        sticker: InputSticker,
         emojis: E,
     ) -> Self::CreateNewStickerSet
     where
@@ -781,7 +782,7 @@ impl Requester for Bot {
     {
         Self::CreateNewStickerSet::new(
             self.clone(),
-            payloads::CreateNewStickerSet::new(user_id, name, title, emojis),
+            payloads::CreateNewStickerSet::new(user_id, name, title, sticker, emojis),
         )
     }
 
