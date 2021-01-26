@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Message, User};
+use crate::types::User;
 
 /// This object represents one special entity in a text message.
 ///

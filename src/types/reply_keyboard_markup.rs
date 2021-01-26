@@ -47,11 +47,15 @@ pub struct ReplyKeyboardMarkup {
 impl ReplyKeyboardMarkup {
     pub fn new<K1, K2>(keyboard: K1) -> Self
     where
-        K1: Into<Vec<K2>>,
-        K2: Into<Vec<KeyboardButton>>,
+        K1: IntoIterator<Item = K2>,
+        K2: IntoIterator<Item = KeyboardButton>,
     {
         Self {
-            keyboard: keyboard.into().into_iter().map(Into::into).collect(),
+            keyboard: keyboard
+                .into_iter()
+                .map(<_>::into_iter)
+                .map(<_>::collect)
+                .collect(),
             resize_keyboard: None,
             one_time_keyboard: None,
             selective: None,

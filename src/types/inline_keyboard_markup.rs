@@ -32,25 +32,36 @@ pub struct InlineKeyboardMarkup {
 impl InlineKeyboardMarkup {
     pub fn new<I1, I2>(inline_keyboard: I1) -> Self
     where
-        I1: Into<Vec<I2>>,
-        I2: Into<Vec<InlineKeyboardButton>>,
+        I1: IntoIterator<Item = I2>,
+        I2: IntoIterator<Item = InlineKeyboardButton>,
     {
         Self {
-            inline_keyboard: inline_keyboard.into().into_iter().map(Into::into).collect(),
+            inline_keyboard: inline_keyboard
+                .into_iter()
+                .map(<_>::into_iter)
+                .map(<_>::collect)
+                .collect(),
         }
     }
 
     pub fn inline_keyboard<I1, I2>(mut self, val: I1) -> Self
     where
-        I1: Into<Vec<I2>>,
-        I2: Into<Vec<InlineKeyboardButton>>,
+        I1: IntoIterator<Item = I2>,
+        I2: IntoIterator<Item = InlineKeyboardButton>,
     {
-        self.inline_keyboard = val.into().into_iter().map(Into::into).collect();
+        self.inline_keyboard = val
+            .into_iter()
+            .map(<_>::into_iter)
+            .map(<_>::collect)
+            .collect();
         self
     }
 
-    pub fn append_row(mut self, buttons: Vec<InlineKeyboardButton>) -> Self {
-        self.inline_keyboard.push(buttons);
+    pub fn append_row<R>(mut self, buttons: R) -> Self
+    where
+        R: IntoIterator<Item = InlineKeyboardButton>,
+    {
+        self.inline_keyboard.push(buttons.into_iter().collect());
         self
     }
 
