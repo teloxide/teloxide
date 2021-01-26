@@ -11,7 +11,7 @@ use once_cell::sync::OnceCell;
 use crate::{
     payloads::GetMe,
     requests::{HasPayload, Request, Requester},
-    types::{ChatId, User, *},
+    types::{ChatId, Me, *},
 };
 
 /// `get_me` cache.
@@ -20,7 +20,7 @@ use crate::{
 /// response from `get_me` method.
 pub struct CacheMe<B> {
     bot: B,
-    me: Arc<OnceCell<User>>,
+    me: Arc<OnceCell<Me>>,
 }
 
 impl<B> CacheMe<B> {
@@ -52,7 +52,7 @@ impl<B> CacheMe<B> {
     ///
     /// Note: internally this uses [`Arc::make_mut`] so this will **not**
     /// clear cache of clones of self.
-    pub fn clear(&mut self) -> Option<User> {
+    pub fn clear(&mut self) -> Option<Me> {
         Arc::make_mut(&mut self.me).take()
     }
 }
@@ -79,7 +79,7 @@ where
 
     fn get_me(&self) -> Self::GetMe {
         match self.me.get() {
-            Some(user) => CachedMeRequest(Inner::Ready(user.clone()), GetMe::new()),
+            Some(me) => CachedMeRequest(Inner::Ready(me.clone()), GetMe::new()),
             None => CachedMeRequest(
                 Inner::Pending(self.bot.get_me(), Arc::clone(&self.me)),
                 GetMe::new(),
@@ -132,8 +132,8 @@ download_forward! {
 pub struct CachedMeRequest<R: Request<Payload = GetMe>>(Inner<R>, GetMe);
 
 enum Inner<R: Request<Payload = GetMe>> {
-    Ready(User),
-    Pending(R, Arc<OnceCell<User>>),
+    Ready(Me),
+    Pending(R, Arc<OnceCell<Me>>),
 }
 
 impl<R> Request for CachedMeRequest<R>
@@ -146,7 +146,7 @@ where
 
     fn send(self) -> Self::Send {
         let fut = match self.0 {
-            Inner::Ready(user) => future::Either::Left(ok(user)),
+            Inner::Ready(me) => future::Either::Left(ok(me)),
             Inner::Pending(req, cell) => future::Either::Right(Init(req.send(), cell)),
         };
         Send(fut)
@@ -154,7 +154,7 @@ where
 
     fn send_ref(&self) -> Self::SendRef {
         let fut = match &self.0 {
-            Inner::Ready(user) => future::Either::Left(ok(user.clone())),
+            Inner::Ready(me) => future::Either::Left(ok(me.clone())),
             Inner::Pending(req, cell) => {
                 future::Either::Right(Init(req.send_ref(), Arc::clone(cell)))
             }
@@ -175,15 +175,15 @@ impl<R: Request<Payload = GetMe>> HasPayload for CachedMeRequest<R> {
     }
 }
 
-type ReadyUser<Err> = Ready<Result<User, Err>>;
+type ReadyMe<Err> = Ready<Result<Me, Err>>;
 
 #[pin_project::pin_project]
 pub struct Send<R: Request<Payload = GetMe>>(
-    #[pin] future::Either<ReadyUser<R::Err>, Init<R::Send, User>>,
+    #[pin] future::Either<ReadyMe<R::Err>, Init<R::Send, Me>>,
 );
 
 impl<R: Request<Payload = GetMe>> Future for Send<R> {
-    type Output = Result<User, R::Err>;
+    type Output = Result<Me, R::Err>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.project();
@@ -193,11 +193,11 @@ impl<R: Request<Payload = GetMe>> Future for Send<R> {
 
 #[pin_project::pin_project]
 pub struct SendRef<R: Request<Payload = GetMe>>(
-    #[pin] future::Either<ReadyUser<R::Err>, Init<R::SendRef, User>>,
+    #[pin] future::Either<ReadyMe<R::Err>, Init<R::SendRef, Me>>,
 );
 
 impl<R: Request<Payload = GetMe>> Future for SendRef<R> {
-    type Output = Result<User, R::Err>;
+    type Output = Result<Me, R::Err>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.project();
