@@ -44,7 +44,7 @@ pub trait Request: HasPayload {
     /// use teloxide_core::{
     ///     payloads::GetMe,
     ///     requests::{JsonRequest, Request},
-    ///     types::User,
+    ///     types::Me,
     ///     Bot,
     /// };
     ///
@@ -53,7 +53,7 @@ pub trait Request: HasPayload {
     /// // Note: it's recommended to `Requester` instead of creating requests directly
     /// let method = GetMe::new();
     /// let request = JsonRequest::new(bot, method);
-    /// let _: User = request.send().await.unwrap();
+    /// let _: Me = request.send().await.unwrap();
     /// # };
     /// ```
     fn send(self) -> Self::Send;

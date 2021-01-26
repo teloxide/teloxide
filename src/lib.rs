@@ -25,8 +25,11 @@
 //! let me = bot.get_me().await?;
 //!
 //! bot.send_dice(chat_id).emoji(DiceEmoji::Dice).await?;
-//! bot.send_message(chat_id, format!("Hi, my name is **{}** 👋", me.first_name))
-//!     .await?;
+//! bot.send_message(
+//!     chat_id,
+//!     format!("Hi, my name is **{}** 👋", me.user.first_name),
+//! )
+//! .await?;
 //! # Ok::<_, Box<dyn std::error::Error>>(()) };
 //! ```
 //!
