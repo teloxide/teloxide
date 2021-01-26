@@ -29,11 +29,14 @@ pub struct ForceReply {
 }
 
 impl ForceReply {
-    pub fn new() -> Self {
-        Self::default()
+    pub const fn new() -> Self {
+        Self {
+            force_reply: True,
+            selective: None,
+        }
     }
 
-    pub fn selective(mut self, val: bool) -> Self {
+    pub const fn selective(mut self, val: bool) -> Self {
         self.selective = Some(val);
         self
     }

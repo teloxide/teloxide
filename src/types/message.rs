@@ -31,43 +31,6 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
-impl Message {
-    pub fn new(id: i32, date: i32, chat: Chat, kind: MessageKind) -> Self {
-        Self {
-            id,
-            date,
-            chat,
-            kind,
-            via_bot: None,
-        }
-    }
-
-    pub fn id(mut self, val: i32) -> Self {
-        self.id = val;
-        self
-    }
-
-    pub fn date(mut self, val: i32) -> Self {
-        self.date = val;
-        self
-    }
-
-    pub fn chat(mut self, val: Chat) -> Self {
-        self.chat = val;
-        self
-    }
-
-    pub fn kind(mut self, val: MessageKind) -> Self {
-        self.kind = val;
-        self
-    }
-
-    pub fn via_bot(mut self, val: User) -> Self {
-        self.via_bot = Some(val);
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MessageKind {
@@ -109,68 +72,12 @@ pub struct MessageCommon {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 }
 
-impl MessageCommon {
-    pub fn new(forward_kind: ForwardKind, media_kind: MediaKind) -> Self {
-        Self {
-            from: None,
-            forward_kind,
-            edit_date: None,
-            media_kind,
-            reply_markup: None,
-        }
-    }
-
-    pub fn from(mut self, val: User) -> Self {
-        self.from = Some(val);
-        self
-    }
-
-    pub fn forward_kind(mut self, val: ForwardKind) -> Self {
-        self.forward_kind = val;
-        self
-    }
-
-    pub fn edit_date(mut self, val: i32) -> Self {
-        self.edit_date = Some(val);
-        self
-    }
-
-    pub fn media_kind(mut self, val: MediaKind) -> Self {
-        self.media_kind = val;
-        self
-    }
-
-    pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
-        self.reply_markup = Some(val);
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageNewChatMembers {
     /// New members that were added to the group or supergroup and
     /// information about them (the bot itself may be one of these
     /// members).
     pub new_chat_members: Vec<User>,
-}
-
-impl MessageNewChatMembers {
-    pub fn new<N>(new_chat_members: N) -> Self
-    where
-        N: Into<Vec<User>>,
-    {
-        Self {
-            new_chat_members: new_chat_members.into(),
-        }
-    }
-
-    pub fn new_chat_members<N>(mut self, val: N) -> Self
-    where
-        N: Into<Vec<User>>,
-    {
-        self.new_chat_members = val.into();
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -180,48 +87,10 @@ pub struct MessageLeftChatMember {
     pub left_chat_member: User,
 }
 
-impl MessageLeftChatMember {
-    pub fn new<N>(left_chat_member: N) -> Self
-    where
-        N: Into<User>,
-    {
-        Self {
-            left_chat_member: left_chat_member.into(),
-        }
-    }
-
-    pub fn left_chat_member<N>(mut self, val: N) -> Self
-    where
-        N: Into<User>,
-    {
-        self.left_chat_member = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageNewChatTitle {
     /// A chat title was changed to this value.
     pub new_chat_title: String,
-}
-
-impl MessageNewChatTitle {
-    pub fn new<N>(new_chat_title: N) -> Self
-    where
-        N: Into<String>,
-    {
-        Self {
-            new_chat_title: new_chat_title.into(),
-        }
-    }
-
-    pub fn new_chat_title<N>(mut self, val: N) -> Self
-    where
-        N: Into<String>,
-    {
-        self.new_chat_title = val.into();
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -230,47 +99,16 @@ pub struct MessageNewChatPhoto {
     pub new_chat_photo: Vec<PhotoSize>,
 }
 
-impl MessageNewChatPhoto {
-    pub fn new<N>(new_chat_photo: N) -> Self
-    where
-        N: Into<Vec<PhotoSize>>,
-    {
-        Self {
-            new_chat_photo: new_chat_photo.into(),
-        }
-    }
-
-    pub fn new_chat_photo<N>(mut self, val: N) -> Self
-    where
-        N: Into<Vec<PhotoSize>>,
-    {
-        self.new_chat_photo = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageDeleteChatPhoto {
     /// Service message: the chat photo was deleted.
     pub delete_chat_photo: True,
 }
 
-impl MessageDeleteChatPhoto {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageGroupChatCreated {
     /// Service message: the group has been created.
     pub group_chat_created: True,
-}
-
-impl MessageGroupChatCreated {
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -283,12 +121,6 @@ pub struct MessageSupergroupChatCreated {
     pub supergroup_chat_created: True,
 }
 
-impl MessageSupergroupChatCreated {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageChannelChatCreated {
     /// Service message: the channel has been created. This field can‘t be
@@ -297,12 +129,6 @@ pub struct MessageChannelChatCreated {
     /// `reply_to_message` if someone replies to a very first message in a
     /// channel.
     pub channel_chat_created: True,
-}
-
-impl MessageChannelChatCreated {
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -324,25 +150,6 @@ pub struct MessageMigrate {
     pub migrate_from_chat_id: i64,
 }
 
-impl MessageMigrate {
-    pub fn new(migrate_to_chat_id: i64, migrate_from_chat_id: i64) -> Self {
-        Self {
-            migrate_to_chat_id,
-            migrate_from_chat_id,
-        }
-    }
-
-    pub fn migrate_to_chat_id(mut self, val: i64) -> Self {
-        self.migrate_to_chat_id = val;
-        self
-    }
-
-    pub fn migrate_from_chat_id(mut self, val: i64) -> Self {
-        self.migrate_from_chat_id = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessagePinned {
     /// Specified message was pinned. Note that the Message object in this
@@ -350,19 +157,6 @@ pub struct MessagePinned {
     /// is itself a reply.
     #[serde(rename = "pinned_message")]
     pub pinned: Box<Message>,
-}
-
-impl MessagePinned {
-    pub fn new(pinned: Message) -> Self {
-        Self {
-            pinned: Box::new(pinned),
-        }
-    }
-
-    pub fn pinned(mut self, val: Message) -> Self {
-        self.pinned = Box::new(val);
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -375,17 +169,6 @@ pub struct MessageInvoice {
     pub invoice: Invoice,
 }
 
-impl MessageInvoice {
-    pub fn new(invoice: Invoice) -> Self {
-        Self { invoice }
-    }
-
-    pub fn invoice(mut self, val: Invoice) -> Self {
-        self.invoice = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageSuccessfulPayment {
     /// Message is a service message about a successful payment,
@@ -393,17 +176,6 @@ pub struct MessageSuccessfulPayment {
     ///
     /// [More about payments »]: https://core.telegram.org/bots/api#payments
     pub successful_payment: SuccessfulPayment,
-}
-
-impl MessageSuccessfulPayment {
-    pub fn new(successful_payment: SuccessfulPayment) -> Self {
-        Self { successful_payment }
-    }
-
-    pub fn successful_payment(mut self, val: SuccessfulPayment) -> Self {
-        self.successful_payment = val;
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -415,40 +187,10 @@ pub struct MessageConnectedWebsite {
     pub connected_website: String,
 }
 
-impl MessageConnectedWebsite {
-    pub fn new<S>(connected_website: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            connected_website: connected_website.into(),
-        }
-    }
-
-    pub fn connected_website<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.connected_website = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessagePassportData {
     /// Telegram Passport data.
     pub passport_data: PassportData,
-}
-
-impl MessagePassportData {
-    pub fn new(passport_data: PassportData) -> Self {
-        Self { passport_data }
-    }
-
-    pub fn passport_data(mut self, val: PassportData) -> Self {
-        self.passport_data = val;
-        self
-    }
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -482,40 +224,6 @@ pub struct ForwardChannel {
     pub signature: Option<String>,
 }
 
-impl ForwardChannel {
-    pub fn new(date: i32, chat: Chat, message_id: i32) -> Self {
-        Self {
-            date,
-            chat,
-            message_id,
-            signature: None,
-        }
-    }
-
-    pub fn date(mut self, val: i32) -> Self {
-        self.date = val;
-        self
-    }
-
-    pub fn chat(mut self, val: Chat) -> Self {
-        self.chat = val;
-        self
-    }
-
-    pub fn message_id(mut self, val: i32) -> Self {
-        self.message_id = val;
-        self
-    }
-
-    pub fn signature<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.signature = Some(val.into());
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ForwardNonChannel {
     #[serde(rename = "forward_date")]
@@ -525,36 +233,9 @@ pub struct ForwardNonChannel {
     pub from: ForwardedFrom,
 }
 
-impl ForwardNonChannel {
-    pub fn new(date: i32, from: ForwardedFrom) -> Self {
-        Self { date, from }
-    }
-
-    pub fn date(mut self, val: i32) -> Self {
-        self.date = val;
-        self
-    }
-
-    pub fn from(mut self, val: ForwardedFrom) -> Self {
-        self.from = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct ForwardOrigin {
     pub reply_to_message: Option<Box<Message>>,
-}
-
-impl ForwardOrigin {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn reply_to_message(mut self, val: Message) -> Self {
-        self.reply_to_message = Some(Box::new(val));
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -597,41 +278,6 @@ pub struct MediaAnimation {
     pub caption_entities: Vec<MessageEntity>,
 }
 
-impl MediaAnimation {
-    pub fn new<CE>(animation: Animation, caption_entities: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            animation,
-            document: (),
-            caption: None,
-            caption_entities: caption_entities.into(),
-        }
-    }
-
-    pub fn animation(mut self, val: Animation) -> Self {
-        self.animation = val;
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaAudio {
@@ -647,55 +293,10 @@ pub struct MediaAudio {
     pub caption_entities: Vec<MessageEntity>,
 }
 
-impl MediaAudio {
-    pub fn new<CE>(audio: Audio, caption_entities: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            audio,
-            caption: None,
-            caption_entities: caption_entities.into(),
-        }
-    }
-
-    pub fn audio(mut self, val: Audio) -> Self {
-        self.audio = val;
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
     contact: Contact,
-}
-
-impl MediaContact {
-    pub fn new(contact: Contact) -> Self {
-        Self { contact }
-    }
-
-    pub fn contact(mut self, val: Contact) -> Self {
-        self.contact = val;
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -713,40 +314,6 @@ pub struct MediaDocument {
     pub caption_entities: Vec<MessageEntity>,
 }
 
-impl MediaDocument {
-    pub fn new<CE>(document: Document, caption_entities: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            document,
-            caption: None,
-            caption_entities: caption_entities.into(),
-        }
-    }
-
-    pub fn document(mut self, val: Document) -> Self {
-        self.document = val;
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaGame {
     /// Message is a game, information about the game. [More
@@ -756,32 +323,10 @@ pub struct MediaGame {
     pub game: Game,
 }
 
-impl MediaGame {
-    pub fn new(game: Game) -> Self {
-        Self { game }
-    }
-
-    pub fn game(mut self, val: Game) -> Self {
-        self.game = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaLocation {
     /// Message is a shared location, information about the location.
     pub location: Location,
-}
-
-impl MediaLocation {
-    pub fn new(location: Location) -> Self {
-        Self { location }
-    }
-
-    pub fn location(mut self, val: Location) -> Self {
-        self.location = val;
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -803,85 +348,16 @@ pub struct MediaPhoto {
     pub media_group_id: Option<String>,
 }
 
-impl MediaPhoto {
-    pub fn new<P, CE>(photo: P, caption_entities: CE) -> Self
-    where
-        P: Into<Vec<PhotoSize>>,
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            photo: photo.into(),
-            caption: None,
-            caption_entities: caption_entities.into(),
-            media_group_id: None,
-        }
-    }
-
-    pub fn photo<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PhotoSize>>,
-    {
-        self.photo = val.into();
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-
-    pub fn media_group_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.media_group_id = Some(val.into());
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaPoll {
     /// Message is a native poll, information about the poll.
     pub poll: Poll,
 }
 
-impl MediaPoll {
-    pub fn new(poll: Poll) -> Self {
-        Self { poll }
-    }
-
-    pub fn poll(mut self, val: Poll) -> Self {
-        self.poll = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
-}
-
-impl MediaSticker {
-    pub fn new(sticker: Sticker) -> Self {
-        Self { sticker }
-    }
-
-    pub fn poll(mut self, val: Sticker) -> Self {
-        self.sticker = val;
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -894,35 +370,6 @@ pub struct MediaText {
     /// commands, etc. that appear in the text.
     #[serde(default = "Vec::new")]
     pub entities: Vec<MessageEntity>,
-}
-
-impl MediaText {
-    pub fn new<S, E>(text: S, entities: E) -> Self
-    where
-        S: Into<String>,
-        E: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            text: text.into(),
-            entities: entities.into(),
-        }
-    }
-
-    pub fn text<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.text = val.into();
-        self
-    }
-
-    pub fn entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.entities = val.into();
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -944,66 +391,12 @@ pub struct MediaVideo {
     pub media_group_id: Option<String>,
 }
 
-impl MediaVideo {
-    pub fn new<CE>(video: Video, caption_entities: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            video,
-            caption: None,
-            caption_entities: caption_entities.into(),
-            media_group_id: None,
-        }
-    }
-
-    pub fn video(mut self, val: Video) -> Self {
-        self.video = val;
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-
-    pub fn media_group_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.media_group_id = Some(val.into());
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaVideoNote {
     /// Message is a [video note], information about the video message.
     ///
     /// [video note]: https://telegram.org/blog/video-messages-and-telescope
     pub video_note: VideoNote,
-}
-
-impl MediaVideoNote {
-    pub fn new(video_note: VideoNote) -> Self {
-        Self { video_note }
-    }
-
-    pub fn video_note(mut self, val: VideoNote) -> Self {
-        self.video_note = val;
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -1021,55 +414,10 @@ pub struct MediaVoice {
     pub caption_entities: Vec<MessageEntity>,
 }
 
-impl MediaVoice {
-    pub fn new<CE>(voice: Voice, caption_entities: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        Self {
-            voice,
-            caption: None,
-            caption_entities: caption_entities.into(),
-        }
-    }
-
-    pub fn voice(mut self, val: Voice) -> Self {
-        self.voice = val;
-        self
-    }
-
-    pub fn caption<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.caption = Some(val.into());
-        self
-    }
-
-    pub fn caption_entities<CE>(mut self, val: CE) -> Self
-    where
-        CE: Into<Vec<MessageEntity>>,
-    {
-        self.caption_entities = val.into();
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,
-}
-
-impl MediaVenue {
-    pub fn new(venue: Venue) -> Self {
-        Self { venue }
-    }
-
-    pub fn venue(mut self, val: Venue) -> Self {
-        self.venue = val;
-        self
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

@@ -37,9 +37,9 @@ impl KeyboardButton {
 
     pub fn request<T>(mut self, val: T) -> Self
     where
-        T: Into<Option<ButtonRequest>>,
+        T: Into<ButtonRequest>,
     {
-        self.request = val.into();
+        self.request = Some(val.into());
         self
     }
 }

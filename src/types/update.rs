@@ -28,22 +28,6 @@ pub struct Update {
     pub kind: UpdateKind,
 }
 
-impl Update {
-    pub fn new(id: i32, kind: UpdateKind) -> Self {
-        Self { id, kind }
-    }
-
-    pub fn id<S>(mut self, val: i32) -> Self {
-        self.id = val;
-        self
-    }
-
-    pub fn kind<S>(mut self, val: UpdateKind) -> Self {
-        self.kind = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UpdateKind {

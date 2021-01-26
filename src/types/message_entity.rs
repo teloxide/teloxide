@@ -20,7 +20,7 @@ pub struct MessageEntity {
 }
 
 impl MessageEntity {
-    pub fn new(kind: MessageEntityKind, offset: usize, length: usize) -> Self {
+    pub const fn new(kind: MessageEntityKind, offset: usize, length: usize) -> Self {
         Self {
             kind,
             offset,
@@ -33,12 +33,12 @@ impl MessageEntity {
         self
     }
 
-    pub fn offset(mut self, val: usize) -> Self {
+    pub const fn offset(mut self, val: usize) -> Self {
         self.offset = val;
         self
     }
 
-    pub fn length(mut self, val: usize) -> Self {
+    pub const fn length(mut self, val: usize) -> Self {
         self.length = val;
         self
     }

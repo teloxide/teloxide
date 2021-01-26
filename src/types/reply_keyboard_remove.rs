@@ -37,15 +37,15 @@ pub struct ReplyKeyboardRemove {
 }
 
 impl ReplyKeyboardRemove {
-    pub fn new() -> Self {
-        Self::default()
+    pub const fn new() -> Self {
+        Self {
+            remove_keyboard: True,
+            selective: None,
+        }
     }
 
-    pub fn selective<T>(mut self, val: T) -> Self
-    where
-        T: Into<bool>,
-    {
-        self.selective = Some(val.into());
+    pub const fn selective(mut self, val: bool) -> Self {
+        self.selective = Some(val);
         self
     }
 }
