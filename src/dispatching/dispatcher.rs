@@ -10,11 +10,12 @@ use crate::{
 };
 use futures::StreamExt;
 use std::sync::Arc;
+use crate::dispatching::core::FromContextOwn;
 
-pub struct Dispatcher<Err, ErrHandler> {
+pub struct Dispatcher<Err, ErrHandler, Ctx=DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
-    demux: Demux<DispatcherContext<Update>, Err>,
+    demux: Demux<Ctx, Err>,
     error_handler: ErrHandler,
 }
 
@@ -24,9 +25,33 @@ where
     ErrHandler: ErrorHandler<DispatchError<Update, Err>>,
 {
     pub async fn dispatch_one(&self, upd: Update) {
+        self.dispatch_one_with_cx(self.make_cx(upd)).await;
+    }
+
+    pub async fn dispatch_with_listener<ListenerErr>(
+        &self,
+        listener: impl UpdateListener<ListenerErr>,
+        listener_error_handler: &impl ErrorHandler<ListenerErr>,
+    ) {
+        self.dispatch_with_listener_and_cx_factory(
+            listener,
+            listener_error_handler,
+            &|upd| self.make_cx(upd)
+        ).await;
+    }
+}
+
+impl<Err, ErrHandler, Ctx> Dispatcher<Err, ErrHandler, Ctx>
+where
+    Ctx: Send + 'static,
+    Err: 'static,
+    ErrHandler: ErrorHandler<DispatchError<Update, Err>>,
+    Update: FromContextOwn<Ctx>,
+{
+    pub async fn dispatch_one_with_cx(&self, cx: Ctx) {
         match self
             .demux
-            .handle(DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone()))
+            .handle(cx)
             .await
         {
             Ok(res) => match res {
@@ -35,25 +60,30 @@ where
                     self.error_handler.handle_error(DispatchError::HandlerError(e)).await
                 }
             },
-            Err(e) => self.error_handler.handle_error(DispatchError::NoHandler(e.upd)).await,
+            Err(e) => self.error_handler.handle_error(DispatchError::NoHandler(Update::from_context(e))).await,
         }
     }
 
-    pub async fn dispatch_with_listener<ListenerErr>(
+    pub async fn dispatch_with_listener_and_cx_factory<ListenerErr>(
         &self,
         listener: impl UpdateListener<ListenerErr>,
         listener_error_handler: &impl ErrorHandler<ListenerErr>,
+        cx_factory: &impl Fn(Update) -> Ctx,
     ) {
         listener
             .for_each_concurrent(None, |res| async move {
                 match res {
-                    Ok(upd) => self.dispatch_one(upd).await,
+                    Ok(upd) => self.dispatch_one_with_cx(cx_factory(upd)).await,
                     Err(e) => {
                         listener_error_handler.handle_error(e).await
                     }
                 };
             })
             .await;
+    }
+
+    pub fn make_cx(&self, upd: Update) -> DispatcherContext<Update> {
+        DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone())
     }
 }
 
