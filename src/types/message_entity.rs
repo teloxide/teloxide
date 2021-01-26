@@ -68,10 +68,6 @@ pub enum MessageEntityKind {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{
-        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText, Message,
-        MessageCommon, MessageKind,
-    };
 
     #[test]
     fn recursive_kind() {
