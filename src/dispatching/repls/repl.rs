@@ -1,14 +1,15 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener, Dispatcher, DispatcherHandlerRx,
+        update_listeners, update_listeners::UpdateListener, DispatcherBuilder,
         UpdateWithCx,
     },
-    error_handlers::{LoggingErrorHandler, OnError},
     types::Message,
     Bot,
 };
-use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
+use crate::dispatching::error_handlers::{OnError, LoggingErrorHandler};
+use crate::requests::Request;
+use crate::dispatching::updates;
 
 /// A [REPL] for messages.
 ///
@@ -55,19 +56,28 @@ where
 {
     let handler = Arc::new(handler);
 
-    Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each_concurrent(None, move |message| {
-                let handler = Arc::clone(&handler);
+    let username = bot.get_me().send().await.unwrap().user.username.unwrap();
 
-                async move {
-                    handler(message).await.log_on_error().await;
-                }
-            })
-        })
+    DispatcherBuilder::new(
+        bot,
+        username,
+    )
+        .handle(
+            updates::message()
+                .by(
+            move |cx: UpdateWithCx<Message>| {
+            let handler = Arc::clone(&handler);
+
+            async move {
+                handler(cx).await.log_on_error().await;
+            }
+
+        }))
+        .error_handler(LoggingErrorHandler::with_custom_text("An error from the handler"))
+        .build()
         .dispatch_with_listener(
             listener,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
+            &LoggingErrorHandler::with_custom_text("An error from the update listener")
         )
         .await;
 }

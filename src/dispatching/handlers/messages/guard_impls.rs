@@ -50,7 +50,7 @@ mod generated {
             }
         }
         paste::paste! {
-        impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+        impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
             pub fn [<with_ $ident>]<G: Guard<$item> + Send + Sync + 'static>(self, guard: impl IntoGuard<$item, G> + 'static) -> Self {
                 let checker = Checker { guard: guard.into_guard() };
                 self.with_guard(checker)
@@ -67,7 +67,7 @@ mod generated {
     ($(($ident:ident, $get_field:expr),)*) => {
         $(const _: () = {
             paste::paste! {
-            impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+            impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
                 pub fn [<has_ $ident>](self) -> Self {
                     self.with_guard(|mes: &Message| $get_field(mes).is_some())
                 }
@@ -152,7 +152,7 @@ mod generated {
     use futures::future::BoxFuture;
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
     pub fn with_entities_or_caption_entities<
         G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
     >(
@@ -169,7 +169,7 @@ impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParse
     }
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
     pub fn or_with_entities_or_caption_entities<
         G: Guard<[types::MessageEntity]> + Send + Sync + 'static,
     >(
@@ -187,7 +187,7 @@ impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParse
     }
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
     pub fn has_entities_or_caption_entities(self) -> Self {
         self.has_entities().or_has_caption_entities()
     }
@@ -197,7 +197,7 @@ impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParse
     }
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> MessageHandlerBuilder<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + 'static> MessageHandlerBuilder<UpdateParser, Err> {
     pub fn or_has_entities_or_caption_entities(self) -> Self {
         self.or_has_entities().or_has_caption_entities()
     }

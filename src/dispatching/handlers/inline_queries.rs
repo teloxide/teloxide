@@ -45,7 +45,7 @@ macro_rules! impl_with_and_or {
             }
         }
         paste::paste! {
-        impl<UpdateParser, Err: Send + Sync + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
+        impl<UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
             pub fn [<with_ $ident>]<G: Guard<$item> + Send + Sync + 'static>(self, guard: impl IntoGuard<$item, G> + 'static) -> Self {
                 let checker = Checker { guard: guard.into_guard() };
                 self.with_guard(checker)
@@ -67,7 +67,7 @@ impl_with_and_or! {
     (get_offset, str, InlineQuery::get_offset),
 }
 
-impl<UpdateParser, Err: Send + Sync + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
+impl<UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
     pub fn has_location(self) -> Self {
         self.with_guard(|query: &InlineQuery| query.location.is_some())
     }

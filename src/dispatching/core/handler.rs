@@ -3,7 +3,7 @@
 
 mod parser_handler;
 
-pub use parser_handler::{MapParser, Parser, ParserHandler, ParserOut, RecombineFrom};
+pub use parser_handler::{Parser, ParserHandler, ParserOut, RecombineFrom};
 
 use crate::dispatching::{
     core::{FromContext, FromContextOwn, HandleResult},
@@ -24,7 +24,7 @@ pub trait IntoHandler<T> {
 
 pub struct FnHandlerWrapper<F, Upd, P, Fut> {
     f: F,
-    phantom: PhantomData<(P, Upd, Fut)>,
+    phantom: PhantomData<tokio::sync::Mutex<(P, Upd, Fut)>>,
 }
 
 impl<F, Upd, P, Fut> FnHandlerWrapper<F, Upd, P, Fut> {

@@ -52,10 +52,10 @@
 #![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use bot::{Bot, BotBuilder};
-/*pub use dispatching::repls::{
-    commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
+pub use dispatching::repls::{
+    commands_repl, commands_repl_with_listener, /*dialogues_repl, dialogues_repl_with_listener,*/ repl,
     repl_with_listener,
-};*/
+};
 pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
 mod errors;

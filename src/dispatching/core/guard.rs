@@ -25,7 +25,7 @@ pub trait Guard<Upd: ?Sized> {
     fn check<'a>(&self, update: &'a Upd) -> BoxFuture<'a, bool>;
 }
 
-pub struct GuardFnWrapper<F, Infer>(F, PhantomData<Infer>);
+pub struct GuardFnWrapper<F, Infer>(F, PhantomData<tokio::sync::Mutex<Infer>>);
 
 impl<F, Infer> GuardFnWrapper<F, Infer> {
     pub fn new(func: F) -> Self {

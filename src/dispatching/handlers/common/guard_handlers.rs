@@ -33,7 +33,7 @@ where
 pub struct GuardHandler<Guard, Handler, Err> {
     guard: Arc<Guard>,
     wrong_handler: Arc<Handler>,
-    phantom: PhantomData<Err>,
+    phantom: PhantomData<tokio::sync::Mutex<Err>>,
 }
 
 impl<Guard, Handler, Err> GuardHandler<Guard, Handler, Err> {

@@ -6,7 +6,7 @@ use std::marker::PhantomData;
 
 pub struct UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT> {
     parser: ParserT,
-    phantom: PhantomData<(GenUpd, NextUpd, Rest, Err)>,
+    phantom: PhantomData<tokio::sync::Mutex<(GenUpd, NextUpd, Rest, Err)>>,
 }
 
 impl<GenUpd, NextUpd, Rest, Err, ParserT> UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT> {

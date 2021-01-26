@@ -66,7 +66,7 @@ pub trait OnError<E> {
         Self: Sized + 'a,
         E: Debug,
     {
-        self.on_error(LoggingErrorHandler::new())
+        self.on_error(Arc::new(LoggingErrorHandler::new()))
     }
 }
 
@@ -186,17 +186,17 @@ impl LoggingErrorHandler {
     ///
     /// The logs will be printed in this format: `{text}: {:?}`.
     #[must_use]
-    pub fn with_custom_text<T>(text: T) -> Arc<Self>
+    pub fn with_custom_text<T>(text: T) -> Self
     where
         T: Into<String>,
     {
-        Arc::new(Self { text: text.into() })
+        Self { text: text.into() }
     }
 
     /// A shortcut for
     /// `LoggingErrorHandler::with_custom_text("Error".to_owned())`.
     #[must_use]
-    pub fn new() -> Arc<Self> {
+    pub fn new() -> Self {
         Self::with_custom_text("Error".to_owned())
     }
 }

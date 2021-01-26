@@ -33,9 +33,10 @@ where
     }
 }
 
-impl<Upd: Send + Sync + 'static, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
+impl<Upd, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
 where
-    Err: Send + Sync + 'static,
+    Upd: Send + Sync + 'static,
+    Err: Send + 'static,
     UpdateParser: Parser<Update, Upd, UpdateRest>,
     Update: RecombineFrom<UpdateParser, Upd, UpdateRest>,
 {
@@ -51,7 +52,7 @@ where
     }
 }
 
-impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + Sync + 'static>
+impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + 'static>
     UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
 {
     pub fn with_guard<G: Guard<DispatcherContext<Upd>> + Send + Sync + 'static>(
@@ -79,7 +80,6 @@ impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + Sync + 'static>
     where
         F: IntoHandler<H>,
         H: Handler<DispatcherContext<Upd>, Err> + Send + Sync + 'static,
-        Err: Send + Sync + 'static,
     {
         let prev_guard = self
             .last_guard

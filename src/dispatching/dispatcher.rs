@@ -42,16 +42,14 @@ where
     pub async fn dispatch_with_listener<ListenerErr>(
         &self,
         listener: impl UpdateListener<ListenerErr>,
-    ) where
-        ListenerErr: Into<Err>,
-    {
+        listener_error_handler: &impl ErrorHandler<ListenerErr>,
+    ) {
         listener
             .for_each_concurrent(None, |res| async move {
                 match res {
                     Ok(upd) => self.dispatch_one(upd).await,
                     Err(e) => {
-                        // TODO: UpdateListenerError
-                        self.error_handler.handle_error(DispatchError::HandlerError(e.into())).await
+                        listener_error_handler.handle_error(e).await
                     }
                 };
             })

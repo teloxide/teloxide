@@ -20,6 +20,7 @@ impl From<()> for HandleResult<Infallible> {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub enum DispatchError<Upd, Err> {
     NoHandler(Upd),
     HandlerError(Err),
