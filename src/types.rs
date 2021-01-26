@@ -75,7 +75,6 @@ pub use reply_keyboard_markup::*;
 pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
 pub use response_parameters::*;
-pub use send_invoice::*;
 pub use shipping_address::*;
 pub use shipping_option::*;
 pub use shipping_query::*;
