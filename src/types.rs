@@ -142,7 +142,6 @@ mod reply_keyboard_markup;
 mod reply_keyboard_remove;
 mod reply_markup;
 mod response_parameters;
-mod send_invoice;
 mod shipping_address;
 mod shipping_option;
 mod shipping_query;

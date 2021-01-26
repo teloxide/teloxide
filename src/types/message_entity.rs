@@ -69,7 +69,7 @@ pub enum MessageEntityKind {
 mod tests {
     use super::*;
     use crate::types::{
-        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText,
+        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText, Message,
         MessageCommon, MessageKind,
     };
 
@@ -109,15 +109,6 @@ mod tests {
             )
             .unwrap()
         );
-    }
-
-    #[test]
-    fn text_from() {
-        let message = message();
-        let expected = Some("yes".to_string());
-        let entity = message.entities().unwrap()[0].clone();
-        let actual = entity.text_from(&message);
-        assert_eq!(actual, expected);
     }
 
     fn message() -> Message {
