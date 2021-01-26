@@ -65,13 +65,6 @@ pub enum MessageEntityKind {
     Strikethrough,
 }
 
-impl MessageEntity {
-    pub fn text_from(&self, message: &Message) -> Option<String> {
-        let text = message.text();
-        Some(String::from(&text?[self.offset..self.offset + self.length]))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
