@@ -178,14 +178,7 @@ impl<Upd> Guards<Upd> {
         Guards { guards: Vec::new() }
     }
 
-    pub fn add<T>(mut self, data: T) -> Self
-    where
-        T: Guard<Upd> + Send + Sync + 'static,
-    {
-        self.guards.push(Box::new(data));
-        self
-    }
-
+    #[allow(dead_code)]
     pub fn add_guard<T>(&mut self, data: T)
     where
         T: Guard<Upd> + Send + Sync + 'static,
@@ -199,11 +192,6 @@ impl<Upd> Guards<Upd> {
 
     pub async fn check(&self, update: &Upd) -> bool {
         Guard::check(self, update).await
-    }
-
-    pub fn with(mut self, other: Self) -> Self {
-        self.guards.extend(other.guards.into_iter());
-        self
     }
 
     pub fn is_empty(&self) -> bool {
