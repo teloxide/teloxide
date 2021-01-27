@@ -13,6 +13,7 @@ use crate::{
 };
 use crate::dispatching::handlers::chosen_inline_result::ChosenInlineResultsHandlerBuilder;
 use crate::dispatching::handlers::callback_queries::CallbackQueriesHandlerBuilder;
+use crate::dispatching::handlers::polls::PollsHandlerBuilder;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
@@ -63,8 +64,8 @@ pub fn pre_checkout_query<Err>(
     UpdateParser::new(parser::PreCheckoutQuery)
 }
 
-pub fn poll<Err>() -> UpdateParser<Update, types::Poll, UpdateRest, Err, parser::Poll> {
-    UpdateParser::new(parser::Poll)
+pub fn poll<Ctx: Context<Upd = types::Poll>, Err>() -> PollsHandlerBuilder<Ctx, parser::Poll, Err> {
+    PollsHandlerBuilder::new(parser::Poll)
 }
 
 pub fn poll_answer<Err>(
