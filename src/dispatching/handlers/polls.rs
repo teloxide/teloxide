@@ -4,12 +4,11 @@ use crate::{
         dispatcher_context::DispatcherContext,
         handlers::common::UpdateKindHandlerBuilder,
     },
+    types::{MessageEntity, Poll, PollOption, PollType},
 };
 use futures::future::BoxFuture;
-use crate::types::{Poll, PollOption, PollType, MessageEntity};
 
-pub type PollsHandlerBuilder<Ctx, Parser, Err> =
-    UpdateKindHandlerBuilder<Poll, Ctx, Parser, Err>;
+pub type PollsHandlerBuilder<Ctx, Parser, Err> = UpdateKindHandlerBuilder<Poll, Ctx, Parser, Err>;
 
 // TODO: add open_period and close_date guards after they become public
 

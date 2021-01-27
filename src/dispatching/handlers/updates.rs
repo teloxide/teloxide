@@ -4,17 +4,15 @@ use crate::{
     dispatching::{
         core::Context,
         handlers::{
-            common::UpdateParser, inline_queries::InlineQueriesHandlerBuilder,
-            messages::MessageHandlerBuilder,
+            callback_queries::CallbackQueriesHandlerBuilder,
+            chosen_inline_result::ChosenInlineResultsHandlerBuilder, common::UpdateParser,
+            inline_queries::InlineQueriesHandlerBuilder, messages::MessageHandlerBuilder,
+            poll_answers::PollAnswersHandlerBuilder, polls::PollsHandlerBuilder,
         },
     },
     types,
     types::Update,
 };
-use crate::dispatching::handlers::chosen_inline_result::ChosenInlineResultsHandlerBuilder;
-use crate::dispatching::handlers::callback_queries::CallbackQueriesHandlerBuilder;
-use crate::dispatching::handlers::polls::PollsHandlerBuilder;
-use crate::dispatching::handlers::poll_answers::PollAnswersHandlerBuilder;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)

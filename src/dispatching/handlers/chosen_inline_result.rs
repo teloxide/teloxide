@@ -82,7 +82,8 @@ impl_with_and_or! {
     (inline_message_id, str, ChosenInlineResult::get_inline_message_id),
 }
 
-impl<Ctx, UpdateParser, Err: Send + 'static> ChosenInlineResultsHandlerBuilder<Ctx, UpdateParser, Err>
+impl<Ctx, UpdateParser, Err: Send + 'static>
+    ChosenInlineResultsHandlerBuilder<Ctx, UpdateParser, Err>
 where
     Ctx: Context<Upd = ChosenInlineResult> + Send + Sync + 'static,
 {

@@ -4,10 +4,9 @@ use crate::{
         dispatcher_context::DispatcherContext,
         handlers::common::UpdateKindHandlerBuilder,
     },
-    types::{User},
+    types::{CallbackQuery, Message, User},
 };
 use futures::future::BoxFuture;
-use crate::types::{CallbackQuery, Message};
 
 pub type CallbackQueriesHandlerBuilder<Ctx, Parser, Err> =
     UpdateKindHandlerBuilder<CallbackQuery, Ctx, Parser, Err>;

@@ -4,9 +4,9 @@ use crate::{
         dispatcher_context::DispatcherContext,
         handlers::common::UpdateKindHandlerBuilder,
     },
+    types::{PollAnswer, User},
 };
 use futures::future::BoxFuture;
-use crate::types::{PollAnswer, User};
 
 pub type PollAnswersHandlerBuilder<Ctx, Parser, Err> =
     UpdateKindHandlerBuilder<PollAnswer, Ctx, Parser, Err>;
@@ -78,7 +78,8 @@ impl<Ctx, UpdateParser, Err: Send + 'static> PollAnswersHandlerBuilder<Ctx, Upda
 where
     Ctx: Context<Upd = PollAnswer> + Send + Sync + 'static,
 {
-    /// Guard that return `true` if the user restrict vote (`option_ids` is empty).
+    /// Guard that return `true` if the user restrict vote (`option_ids` is
+    /// empty).
     pub fn when_user_restrict_vote(self) -> Self {
         self.with_guard(|a: &PollAnswer| a.option_ids.is_empty())
     }
