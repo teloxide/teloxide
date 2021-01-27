@@ -70,7 +70,7 @@ impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err, ()>
 where
     S: Storage<D> + Send + Sync + 'static,
     D: Default + Clone + Send + Sync + 'static,
-    Err: Send + Sync + 'static,
+    Err: Send + 'static,
 {
     pub fn error_handler<H>(
         self,
