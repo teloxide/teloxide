@@ -201,8 +201,9 @@ async fn handle_commands() {
     use teloxide::{
         dispatching::{tel, updates, DispatcherBuilder},
         dummies::text_message,
-        types::{Update, UpdateKind},
+        types::{Message, Update, UpdateKind},
         utils::command::BotCommand,
+        Bot,
     };
 
     #[derive(Debug, PartialEq, BotCommand)]
@@ -212,13 +213,14 @@ async fn handle_commands() {
         Help,
     }
 
-    let dispatcher =
-        DispatcherBuilder::<Infallible, _>::new("bot_name")
-            .handle(updates::message().by(|command: tel::Command<MyCommand>| {
-                assert_eq!(command.command, MyCommand::Start)
-            }))
-            .error_handler(|_| async { unreachable!() })
-            .build();
+    #[allow(deprecated)]
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(Bot::new(""), "bot_name")
+        // FIXME(p0lunin): if _: Message will be removed we get an `type annotations needed` error
+        .handle(updates::message().by(|_: Message, command: tel::Command<MyCommand>| {
+            assert_eq!(command.command, MyCommand::Start);
+        }))
+        .error_handler(|_| async { unreachable!() })
+        .build();
 
     let message = Update::new(0, UpdateKind::Message(text_message("/start")));
 
