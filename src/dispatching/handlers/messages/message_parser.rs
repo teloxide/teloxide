@@ -1,4 +1,4 @@
-use crate::dispatching::handlers::common::UpdateKindHandlerBuilder;
-use crate::types::Message;
+use crate::{dispatching::handlers::common::UpdateKindHandlerBuilder, types::Message};
 
-pub type MessageHandlerBuilder<Ctx, Parser, Err> = UpdateKindHandlerBuilder<Message, Ctx, Parser, Err>;
+pub type MessageHandlerBuilder<Ctx, Parser, Err> =
+    UpdateKindHandlerBuilder<Message, Ctx, Parser, Err>;

@@ -1,11 +1,14 @@
-use crate::dispatching::dispatcher_context::DispatcherContext;
-use crate::dispatching::core::{GetCtx, Context, ContextWith, ParseContext, ParserOut, RecombineFrom};
-use std::sync::Arc;
+use crate::{
+    dispatching::{
+        core::{Context, ContextWith, GetCtx, ParseContext, ParserOut, RecombineFrom},
+        dispatcher_context::DispatcherContext,
+    },
+    types::Update,
+};
 use lockfree::map::Map;
-use tokio::sync::mpsc;
-use std::fmt::Debug;
 use serde::__private::Formatter;
-use crate::types::Update;
+use std::{fmt::Debug, sync::Arc};
+use tokio::sync::mpsc;
 
 pub struct DialogueContext<Upd, D, S> {
     pub dispatcher_ctx: DispatcherContext<Upd>,
@@ -16,7 +19,13 @@ pub struct DialogueContext<Upd, D, S> {
 }
 
 impl<Upd, D, S> DialogueContext<Upd, D, S> {
-    pub fn new(dispatcher_ctx: DispatcherContext<Upd>, storage: Arc<S>, dialogue: Option<D>, senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>, chat_id: Option<i64>) -> Self {
+    pub fn new(
+        dispatcher_ctx: DispatcherContext<Upd>,
+        storage: Arc<S>,
+        dialogue: Option<D>,
+        senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
+        chat_id: Option<i64>,
+    ) -> Self {
         DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id }
     }
 }
@@ -43,24 +52,38 @@ impl<Upd1, Upd2, D, S> ContextWith<Upd2> for DialogueContext<Upd1, D, S> {
 }
 
 impl<Upd1, Upd2, D, S> ParseContext<Upd2> for DialogueContext<Upd1, D, S> {
-    fn parse<Rest>(self, f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>) -> Result<(Self::Context, Rest), Self> {
+    fn parse<Rest>(
+        self,
+        f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>,
+    ) -> Result<(Self::Context, Rest), Self> {
         let DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id } = self;
         match dispatcher_ctx.parse(f) {
-            Ok((cx, rest)) => Ok((DialogueContext { dispatcher_ctx: cx, storage, dialogue, senders, chat_id }, rest)),
-            Err(cx) => Err(DialogueContext { dispatcher_ctx: cx, storage, dialogue, senders, chat_id })
+            Ok((cx, rest)) => Ok((
+                DialogueContext { dispatcher_ctx: cx, storage, dialogue, senders, chat_id },
+                rest,
+            )),
+            Err(cx) => {
+                Err(DialogueContext { dispatcher_ctx: cx, storage, dialogue, senders, chat_id })
+            }
         }
     }
 
-    fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self where
-        Upd1: RecombineFrom<Parser, Upd2, Rest>
+    fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self
+    where
+        Upd1: RecombineFrom<Parser, Upd2, Rest>,
     {
-        let ParserOut { data: DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id }, rest } = info;
+        let ParserOut {
+            data: DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id },
+            rest,
+        } = info;
         DialogueContext {
-            dispatcher_ctx: <DispatcherContext<Upd1> as ParseContext<Upd2>>::recombine(ParserOut::new(dispatcher_ctx, rest)),
+            dispatcher_ctx: <DispatcherContext<Upd1> as ParseContext<Upd2>>::recombine(
+                ParserOut::new(dispatcher_ctx, rest),
+            ),
             storage,
             dialogue,
             senders,
-            chat_id
+            chat_id,
         }
     }
 }

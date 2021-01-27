@@ -1,11 +1,14 @@
-use crate::dispatching::{dialogue::GetChatId, UpdateWithCx};
-use crate::dispatching::core::{GetCtx, FromContextOwn};
-use crate::dispatching::dialogue::dialogue_ctx::DialogueContext;
-use std::sync::Arc;
-use crate::dispatching::dialogue::{Storage, DialogueStage};
+use crate::{
+    dispatching::{
+        core::{FromContextOwn, GetCtx},
+        dialogue::{dialogue_ctx::DialogueContext, DialogueStage, GetChatId, Storage},
+        UpdateWithCx,
+    },
+    types::Update,
+};
 use lockfree::map::Map;
+use std::sync::Arc;
 use tokio::sync::mpsc;
-use crate::types::Update;
 
 /// A context of a [`DialogueDispatcher`]'s message handler.
 ///
@@ -20,7 +23,8 @@ pub struct DialogueWithCx<Upd, D, E> {
     senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
 }
 
-impl<Upd, D, S, E, Ctx> FromContextOwn<Ctx, DialogueContext<Upd, D, S>> for DialogueWithCx<Upd, D, E>
+impl<Upd, D, S, E, Ctx> FromContextOwn<Ctx, DialogueContext<Upd, D, S>>
+    for DialogueWithCx<Upd, D, E>
 where
     Ctx: GetCtx<DialogueContext<Upd, D, S>>,
     S: Storage<D, Error = E> + Send + Sync + 'static,
@@ -51,8 +55,8 @@ where
             DialogueStage::Next(new_dialogue) => {
                 if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
                     panic!(
-                        "Oops, you have an bug in your Storage: update_dialogue returns \
-                         Some after remove_dialogue"
+                        "Oops, you have an bug in your Storage: update_dialogue returns Some \
+                         after remove_dialogue"
                     );
                 }
             }

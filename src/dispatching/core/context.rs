@@ -1,5 +1,7 @@
-use crate::dispatching::dispatcher_context::DispatcherContext;
-use crate::dispatching::core::{ParserOut, RecombineFrom};
+use crate::dispatching::{
+    core::{ParserOut, RecombineFrom},
+    dispatcher_context::DispatcherContext,
+};
 
 pub trait Context {
     type Upd;
@@ -12,7 +14,10 @@ pub trait ContextWith<Elem>: Context {
 }
 
 pub trait ParseContext<To>: ContextWith<To> + Sized {
-    fn parse<Rest>(self, f: impl Fn(Self::Upd) -> Result<ParserOut<To, Rest>, Self::Upd>) -> Result<(Self::Context, Rest), Self>;
+    fn parse<Rest>(
+        self,
+        f: impl Fn(Self::Upd) -> Result<ParserOut<To, Rest>, Self::Upd>,
+    ) -> Result<(Self::Context, Rest), Self>;
     fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self
     where
         Self::Upd: RecombineFrom<Parser, To, Rest>;
@@ -22,7 +27,7 @@ pub trait FromContext<Ctx>: Sized {
     fn from_context(context: &Ctx) -> Option<Self>;
 }
 
-pub trait FromContextOwn<Ctx, RequireCtx=Ctx>: Sized {
+pub trait FromContextOwn<Ctx, RequireCtx = Ctx>: Sized {
     fn from_context(context: Ctx) -> Self;
 }
 

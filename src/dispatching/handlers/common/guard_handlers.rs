@@ -1,8 +1,5 @@
-use crate::dispatching::{
-    core::{Guard, Guards, HandleFuture, HandleResult, Handler},
-};
+use crate::dispatching::core::{Context, Guard, Guards, HandleFuture, HandleResult, Handler};
 use std::{marker::PhantomData, sync::Arc};
-use crate::dispatching::core::Context;
 
 pub struct GuardsHandler<Upd, Ctx: Context<Upd = Upd>> {
     guards: Arc<Guards<Ctx>>,
@@ -17,7 +14,7 @@ impl<Upd, Ctx: Context<Upd = Upd>> GuardsHandler<Upd, Ctx> {
 impl<Upd, Ctx, Err> Handler<Ctx, Err> for GuardsHandler<Upd, Ctx>
 where
     Upd: Send + Sync + 'static,
-    Ctx: Context<Upd = Upd> + Send + Sync+ 'static,
+    Ctx: Context<Upd = Upd> + Send + Sync + 'static,
 {
     fn handle(&self, ctx: Ctx) -> HandleFuture<Err, Ctx> {
         let guards = self.guards.clone();
@@ -47,8 +44,7 @@ impl<Guard, Handler, Err> GuardHandler<Guard, Handler, Err> {
     }
 }
 
-impl<Ctx, Upd, GuardT, HandlerT, Err> Handler<Ctx, Err>
-    for GuardHandler<GuardT, HandlerT, Err>
+impl<Ctx, Upd, GuardT, HandlerT, Err> Handler<Ctx, Err> for GuardHandler<GuardT, HandlerT, Err>
 where
     Ctx: Context<Upd = Upd> + Send + Sync + 'static,
     Upd: Send + Sync + 'static,

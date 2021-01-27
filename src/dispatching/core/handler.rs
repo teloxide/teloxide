@@ -5,9 +5,7 @@ mod parser_handler;
 
 pub use parser_handler::{Parser, ParserHandler, ParserOut, RecombineFrom};
 
-use crate::dispatching::{
-    core::{FromContext, FromContextOwn, HandleResult},
-};
+use crate::dispatching::core::{FromContext, FromContextOwn, HandleResult};
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
 

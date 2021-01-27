@@ -1,16 +1,16 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener,
-        UpdateWithCx,
+        error_handlers::{LoggingErrorHandler, OnError},
+        tel, update_listeners,
+        update_listeners::UpdateListener,
+        updates, DispatcherBuilder, UpdateWithCx,
     },
+    prelude::Request,
     types::Message,
     utils::command::BotCommand,
     Bot,
 };
 use std::{fmt::Debug, future::Future, sync::Arc};
-use crate::dispatching::error_handlers::{OnError, LoggingErrorHandler};
-use crate::dispatching::{DispatcherBuilder, updates, tel};
-use crate::prelude::Request;
 
 /// A [REPL] for commands.
 ///
@@ -33,12 +33,7 @@ where
 {
     let cloned_bot = bot.clone();
 
-    commands_repl_with_listener(
-        bot,
-        handler,
-        update_listeners::polling_default(cloned_bot),
-    )
-    .await;
+    commands_repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
 }
 
 /// Like [`commands_repl`], but with a custom [`UpdateListener`].
@@ -69,19 +64,13 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
     let handler = Arc::new(handler);
     let username = bot.get_me().send().await.unwrap().user.username.unwrap();
 
-    DispatcherBuilder::new(
-        bot,
-        username,
-    )
-        .handle(
-            updates::message()
-                .by(move |cx: UpdateWithCx<Message>, cmd: tel::Command<Cmd>| {
-                    let handler = handler.clone();
-                    async move {
-                        handler(cx, cmd).await.log_on_error().await;
-                    }
-                })
-        )
+    DispatcherBuilder::new(bot, username)
+        .handle(updates::message().by(move |cx: UpdateWithCx<Message>, cmd: tel::Command<Cmd>| {
+            let handler = handler.clone();
+            async move {
+                handler(cx, cmd).await.log_on_error().await;
+            }
+        }))
         .error_handler(LoggingErrorHandler::with_custom_text("An error from the dispatcher"))
         .build()
         .dispatch_with_listener(

@@ -1,10 +1,12 @@
 use crate::{
-    dispatching::{core::FromContext, dispatcher_context::DispatcherContext},
+    dispatching::{
+        core::{FromContext, GetCtx},
+        dispatcher_context::DispatcherContext,
+    },
     types::Message,
     utils::command::BotCommand,
 };
 use std::ops::Deref;
-use crate::dispatching::core::GetCtx;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Command<C> {

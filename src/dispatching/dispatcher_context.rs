@@ -1,9 +1,10 @@
 use crate::{
-    dispatching::core::{Parser, ParserOut, RecombineFrom},
+    dispatching::core::{
+        Context, ContextWith, GetCtx, ParseContext, Parser, ParserOut, RecombineFrom,
+    },
     Bot,
 };
 use std::sync::Arc;
-use crate::dispatching::core::{GetCtx, Context, ParseContext, ContextWith};
 
 #[derive(Debug)]
 pub struct DispatcherContext<Upd> {
@@ -25,7 +26,10 @@ impl<Upd1, Upd2> ContextWith<Upd2> for DispatcherContext<Upd1> {
 }
 
 impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
-    fn parse<Rest>(self, f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>) -> Result<(DispatcherContext<Upd2>, Rest), Self> {
+    fn parse<Rest>(
+        self,
+        f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>,
+    ) -> Result<(DispatcherContext<Upd2>, Rest), Self> {
         let Self { upd, bot, bot_name } = self;
         let ParserOut { data: upd, rest } = match f(upd) {
             Ok(t) => t,
@@ -34,15 +38,12 @@ impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
         Ok((DispatcherContext { upd, bot, bot_name }, rest))
     }
 
-    fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self where
-        Upd1: RecombineFrom<Parser, Upd2, Rest>
+    fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self
+    where
+        Upd1: RecombineFrom<Parser, Upd2, Rest>,
     {
         let ParserOut { data: DispatcherContext { upd, bot, bot_name }, rest } = info;
-        DispatcherContext {
-            upd: Upd1::recombine(ParserOut::new(upd, rest)),
-            bot,
-            bot_name
-        }
+        DispatcherContext { upd: Upd1::recombine(ParserOut::new(upd, rest)), bot, bot_name }
     }
 }
 

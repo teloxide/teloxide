@@ -1,14 +1,16 @@
 use crate::{
     dispatching::{
-        core::{Demux, HandleFuture, Handler, Parser, ParserOut, RecombineFrom},
+        core::{
+            Context, ContextWith, Demux, HandleFuture, Handler, ParseContext, Parser, ParserOut,
+            RecombineFrom,
+        },
         updates::UpdateRest,
     },
     types::Update,
 };
 use std::sync::Arc;
-use crate::dispatching::core::{ContextWith, ParseContext, Context};
 
-pub struct UpdateKindHandler<Upd, Ctx: Context<Upd=Upd>, ParserT, HandlerT, Err> {
+pub struct UpdateKindHandler<Upd, Ctx: Context<Upd = Upd>, ParserT, HandlerT, Err> {
     parser: Arc<ParserT>,
     handler: Arc<HandlerT>,
     demux: Arc<Demux<Ctx, Err>>,
@@ -16,13 +18,9 @@ pub struct UpdateKindHandler<Upd, Ctx: Context<Upd=Upd>, ParserT, HandlerT, Err>
 
 impl<Upd, Ctx, ParserT, HandlerT, Err> UpdateKindHandler<Upd, Ctx, ParserT, HandlerT, Err>
 where
-    Ctx: Context<Upd = Upd>
+    Ctx: Context<Upd = Upd>,
 {
-    pub fn new(
-        parser: ParserT,
-        handler: HandlerT,
-        demux: Demux<Ctx, Err>,
-    ) -> Self {
+    pub fn new(parser: ParserT, handler: HandlerT, demux: Demux<Ctx, Err>) -> Self {
         UpdateKindHandler {
             parser: Arc::new(parser),
             handler: Arc::new(handler),
@@ -42,10 +40,7 @@ where
     HandlerT: Handler<Ctx::Context, Err> + Send + Sync + 'static,
     Update: RecombineFrom<ParserT, Upd, UpdateRest>,
 {
-    fn handle(
-        &self,
-        cx: Ctx,
-    ) -> HandleFuture<Err, Ctx> {
+    fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
         let parser = self.parser.clone();
         let demux = self.demux.clone();
         let handler = self.handler.clone();
@@ -54,10 +49,9 @@ where
             let (cx, rest) = cx.parse(|upd| parser.as_ref().parse(upd))?;
             match demux.handle(cx).await {
                 Ok(res) => Ok(res),
-                Err(upd) => handler
-                    .handle(upd)
-                    .await
-                    .map_err(|e| Ctx::recombine(ParserOut::new(e, rest))),
+                Err(upd) => {
+                    handler.handle(upd).await.map_err(|e| Ctx::recombine(ParserOut::new(e, rest)))
+                }
             }
         })
     }

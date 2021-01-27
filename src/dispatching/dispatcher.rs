@@ -9,10 +9,9 @@ use crate::{
     Bot,
 };
 use futures::StreamExt;
-use std::sync::Arc;
-use std::future::Future;
+use std::{future::Future, sync::Arc};
 
-pub struct Dispatcher<Err, ErrHandler, Ctx=DispatcherContext<Update>> {
+pub struct Dispatcher<Err, ErrHandler, Ctx = DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
     demux: Demux<Ctx, Err>,
@@ -33,11 +32,10 @@ where
         listener: impl UpdateListener<ListenerErr>,
         listener_error_handler: &impl ErrorHandler<ListenerErr>,
     ) {
-        self.dispatch_with_listener_and_cx_factory(
-            listener,
-            listener_error_handler,
-            &|upd| futures::future::ready(self.make_cx(upd))
-        ).await;
+        self.dispatch_with_listener_and_cx_factory(listener, listener_error_handler, &|upd| {
+            futures::future::ready(self.make_cx(upd))
+        })
+        .await;
     }
 }
 
@@ -48,11 +46,7 @@ where
     ErrHandler: ErrorHandler<DispatchError<Ctx, Err>>,
 {
     pub async fn dispatch_one_with_cx(&self, cx: Ctx) {
-        match self
-            .demux
-            .handle(cx)
-            .await
-        {
+        match self.demux.handle(cx).await {
             Ok(res) => match res {
                 HandleResult::Ok => {}
                 HandleResult::Err(e) => {
@@ -68,17 +62,14 @@ where
         listener: impl UpdateListener<ListenerErr>,
         listener_error_handler: &impl ErrorHandler<ListenerErr>,
         cx_factory: &impl Fn(Update) -> Fut,
-    )
-    where
+    ) where
         Fut: Future<Output = Ctx>,
     {
         listener
             .for_each_concurrent(None, |res| async move {
                 match res {
                     Ok(upd) => self.dispatch_one_with_cx(cx_factory(upd).await).await,
-                    Err(e) => {
-                        listener_error_handler.handle_error(e).await
-                    }
+                    Err(e) => listener_error_handler.handle_error(e).await,
                 };
             })
             .await;
@@ -89,7 +80,7 @@ where
     }
 }
 
-pub struct DispatcherBuilder<Err, Handler, Ctx=DispatcherContext<Update>> {
+pub struct DispatcherBuilder<Err, Handler, Ctx = DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
     demux: DemuxBuilder<Ctx, Err>,
@@ -111,23 +102,17 @@ impl<Err, Ctx> DispatcherBuilder<Err, (), Ctx> {
         H: ErrorHandler<DispatchError<Ctx, Err>>,
     {
         let DispatcherBuilder { bot, bot_name, demux, .. } = self;
-        DispatcherBuilder { bot, bot_name, demux, error_handler, }
+        DispatcherBuilder { bot, bot_name, demux, error_handler }
     }
 }
 
 impl<Err, ErrHandler, Ctx> DispatcherBuilder<Err, ErrHandler, Ctx> {
-    pub fn handle(
-        mut self,
-        handler: impl Handler<Ctx, Err> + Send + Sync + 'static,
-    ) -> Self {
+    pub fn handle(mut self, handler: impl Handler<Ctx, Err> + Send + Sync + 'static) -> Self {
         self._add_handler(handler);
         self
     }
 
-    pub fn _add_handler(
-        &mut self,
-        handler: impl Handler<Ctx, Err> + Send + Sync + 'static,
-    ) {
+    pub fn _add_handler(&mut self, handler: impl Handler<Ctx, Err> + Send + Sync + 'static) {
         self.demux.add_service(handler);
     }
 }

@@ -1,14 +1,19 @@
-use crate::dispatching::handlers::common::UpdateKindHandlerBuilder;
-use crate::types::{InlineQuery, Location, User};
-use crate::dispatching::core::{Guard, IntoGuard, GetCtx, Context};
-use crate::dispatching::dispatcher_context::DispatcherContext;
+use crate::{
+    dispatching::{
+        core::{Context, GetCtx, Guard, IntoGuard},
+        dispatcher_context::DispatcherContext,
+        handlers::common::UpdateKindHandlerBuilder,
+    },
+    types::{InlineQuery, Location, User},
+};
 use futures::future::BoxFuture;
 
-pub type InlineQueriesHandlerBuilder<Ctx, Parser, Err> = UpdateKindHandlerBuilder<InlineQuery, Ctx, Parser, Err>;
+pub type InlineQueriesHandlerBuilder<Ctx, Parser, Err> =
+    UpdateKindHandlerBuilder<InlineQuery, Ctx, Parser, Err>;
 
 impl InlineQuery {
     fn get_id(&self) -> Option<&str> {
-       Some(&self.id)
+        Some(&self.id)
     }
     fn get_from(&self) -> Option<&User> {
         Some(&self.from)

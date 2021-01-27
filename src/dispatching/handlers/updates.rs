@@ -1,18 +1,23 @@
 pub(crate) use impls::{parser, UpdateRest};
 
 use crate::{
-    dispatching::handlers::{common::UpdateParser, messages::MessageHandlerBuilder},
+    dispatching::{
+        core::Context,
+        handlers::{
+            common::UpdateParser, inline_queries::InlineQueriesHandlerBuilder,
+            messages::MessageHandlerBuilder,
+        },
+    },
     types,
     types::Update,
 };
-use crate::dispatching::handlers::inline_queries::InlineQueriesHandlerBuilder;
-use crate::dispatching::core::Context;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
 }
 
-pub fn message<Ctx: Context<Upd = types::Message>, Err>() -> MessageHandlerBuilder<Ctx, parser::Message, Err> {
+pub fn message<Ctx: Context<Upd = types::Message>, Err>(
+) -> MessageHandlerBuilder<Ctx, parser::Message, Err> {
     MessageHandlerBuilder::new(parser::Message)
 }
 

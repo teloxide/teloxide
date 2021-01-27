@@ -1,19 +1,21 @@
-use crate::dispatching::{dialogue::{
-    Storage,
-}, Dispatcher, DispatcherBuilder};
-use std::{marker::PhantomData};
+use crate::dispatching::{dialogue::Storage, Dispatcher, DispatcherBuilder};
+use std::marker::PhantomData;
 
-use futures::{StreamExt};
+use futures::StreamExt;
 use tokio::sync::mpsc;
 
-use lockfree::map::{Map};
+use crate::{
+    dispatching::{
+        core::{DispatchError, Handler},
+        dialogue::dialogue_ctx::DialogueContext,
+        error_handlers::ErrorHandler,
+        update_listeners::UpdateListener,
+    },
+    types::{Update, UpdateKind},
+    Bot,
+};
+use lockfree::map::Map;
 use std::sync::{Arc, Mutex};
-use crate::dispatching::dialogue::dialogue_ctx::DialogueContext;
-use crate::Bot;
-use crate::dispatching::error_handlers::ErrorHandler;
-use crate::dispatching::core::{DispatchError, Handler};
-use crate::types::{Update, UpdateKind};
-use crate::dispatching::update_listeners::UpdateListener;
 
 /// A dispatcher of dialogues.
 ///
@@ -70,9 +72,20 @@ where
     D: Default + Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
-    pub fn error_handler<H>(self, error_handler: H) -> DialogueDispatcherBuilder<D, S, Err, impl ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>>
-        where
-            H: for<'a> ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    pub fn error_handler<H>(
+        self,
+        error_handler: H,
+    ) -> DialogueDispatcherBuilder<
+        D,
+        S,
+        Err,
+        impl ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
+    >
+    where
+        H: for<'a> ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>
+            + Send
+            + Sync
+            + 'static,
     {
         let handler = Arc::new(error_handler);
         let DialogueDispatcherBuilder { storage, dispatcher, _phantom } = self;
@@ -107,7 +120,11 @@ where
             }
         };
 
-        DialogueDispatcherBuilder { storage, dispatcher: dispatcher.error_handler(handler), _phantom: PhantomData }
+        DialogueDispatcherBuilder {
+            storage,
+            dispatcher: dispatcher.error_handler(handler),
+            _phantom: PhantomData,
+        }
     }
 }
 
@@ -135,7 +152,7 @@ where
             storage,
             dispatcher: Arc::new(dispatcher.build()),
             _phantom: PhantomData,
-            senders: Arc::new(Map::new())
+            senders: Arc::new(Map::new()),
         }
     }
 }
@@ -145,28 +162,27 @@ where
     D: Default + Send + Sync + 'static,
     S: Storage<D> + Send + Sync + 'static,
     <S as Storage<D>>::Error: Send,
-    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    ErrHandler:
+        ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
     Err: Send + 'static,
 {
     pub async fn dispatch_one(&self, upd: Update) {
         let chat_id = upd.try_get_chat_id();
         match chat_id {
-            Some(chat_id) => {
-                match self.senders.get(&chat_id) {
-                    Some(tx) => {
-                        if tx.1.send(upd).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
-                    }
-                    None => {
-                        let tx = self.new_tx();
-                        if tx.send(upd).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
-                        self.senders.insert(chat_id, tx);
+            Some(chat_id) => match self.senders.get(&chat_id) {
+                Some(tx) => {
+                    if tx.1.send(upd).is_err() {
+                        panic!("We are not dropping a receiver or call .close() on it",);
                     }
                 }
-            }
+                None => {
+                    let tx = self.new_tx();
+                    if tx.send(upd).is_err() {
+                        panic!("We are not dropping a receiver or call .close() on it",);
+                    }
+                    self.senders.insert(chat_id, tx);
+                }
+            },
             None => {
                 let cx = self._make_cx(upd).await;
                 self.dispatcher.dispatch_one_with_cx(cx).await;
@@ -180,15 +196,11 @@ where
         listener_error_handler: &impl ErrorHandler<ListenerErr>,
     ) {
         listener
-            .for_each_concurrent(None, move |res| {
-                async move {
-                    match res {
-                        Ok(upd) => self.dispatch_one(upd).await,
-                        Err(e) => {
-                            listener_error_handler.handle_error(e).await
-                        }
-                    };
-                }
+            .for_each_concurrent(None, move |res| async move {
+                match res {
+                    Ok(upd) => self.dispatch_one(upd).await,
+                    Err(e) => listener_error_handler.handle_error(e).await,
+                };
             })
             .await;
     }
@@ -200,24 +212,20 @@ where
         let chat_id = upd.try_get_chat_id();
         let dialogue = match chat_id {
             Some(id) => {
-                Some(self
-                    .storage
-                    .clone() // TODO: not move in remove_dialogue self
-                    .remove_dialogue(id)
-                    .await
-                    .map(Option::unwrap_or_default)
-                    .unwrap_or_else(|_| panic!("TODO: StorageError")))
+                Some(
+                    self.storage
+                        .clone() // TODO: not move in remove_dialogue self
+                        .remove_dialogue(id)
+                        .await
+                        .map(Option::unwrap_or_default)
+                        .unwrap_or_else(|_| panic!("TODO: StorageError")),
+                )
             }
             None => None,
         };
 
-        let cx = DialogueContext::new(
-            self.dispatcher.make_cx(upd),
-            storage,
-            dialogue,
-            senders,
-            chat_id,
-        );
+        let cx =
+            DialogueContext::new(self.dispatcher.make_cx(upd), storage, dialogue, senders, chat_id);
         cx
     }
 }
@@ -238,7 +246,8 @@ where
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
-    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    ErrHandler:
+        ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
     Err: Send + 'static,
 {
     #[must_use]
@@ -250,12 +259,7 @@ where
         let storage = self.storage.clone();
 
         tokio::spawn(rx.for_each(move |upd: Update| {
-            let cx = make_cx(
-                dispatcher.clone(),
-                storage.clone(),
-                senders.clone(),
-                upd
-            );
+            let cx = make_cx(dispatcher.clone(), storage.clone(), senders.clone(), upd);
             let dispatcher = dispatcher.clone();
             async move {
                 let cx = cx.await;
@@ -271,7 +275,7 @@ async fn make_cx<Err, ErrHandler, S, D>(
     dispatcher: Arc<Dispatcher<Err, ErrHandler, DialogueContext<Update, D, S>>>,
     storage: Arc<S>,
     senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
-    upd: Update
+    upd: Update,
 ) -> DialogueContext<Update, D, S>
 where
     S: Storage<D> + Send + Sync + 'static,
@@ -281,24 +285,18 @@ where
 {
     let chat_id = upd.try_get_chat_id();
     let dialogue = match chat_id {
-        Some(id) => {
-            Some(storage
+        Some(id) => Some(
+            storage
                 .clone()
                 .remove_dialogue(id)
                 .await
                 .map(Option::unwrap_or_default)
-                .unwrap_or_else(|_| panic!("TODO: StorageError")))
-        }
+                .unwrap_or_else(|_| panic!("TODO: StorageError")),
+        ),
         None => None,
     };
 
-    let cx = DialogueContext::new(
-        dispatcher.make_cx(upd),
-        storage,
-        dialogue,
-        senders,
-        chat_id,
-    );
+    let cx = DialogueContext::new(dispatcher.make_cx(upd), storage, dialogue, senders, chat_id);
     cx
 }
 
@@ -306,17 +304,21 @@ where
 mod tests {
     use super::*;
 
-    use crate::Bot;
+    use crate::{
+        dispatching::{
+            dialogue::{DialogueStage, DialogueWithCx, InMemStorage},
+            updates,
+        },
+        types::Message,
+        Bot,
+    };
     use futures::{stream, StreamExt};
     use lazy_static::lazy_static;
+    use std::convert::Infallible;
     use tokio::{
-        sync::{Mutex},
+        sync::Mutex,
         time::{delay_for, Duration},
     };
-    use crate::dispatching::updates;
-    use crate::types::Message;
-    use crate::dispatching::dialogue::{InMemStorage, DialogueWithCx, DialogueStage};
-    use std::convert::Infallible;
 
     #[tokio::test]
     #[allow(deprecated)]
@@ -327,65 +329,58 @@ mod tests {
             static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
         }
 
-        let dispatcher =
-            DialogueDispatcherBuilder::new(
-                Bot::new(""),
-                "",
-                InMemStorage::new(),
-            )
-                .handle(
-                    updates::message()
-                        .by(|cx: DialogueWithCx<Message, (), Infallible>| async move {
-                            delay_for(Duration::from_millis(300)).await;
+        let dispatcher = DialogueDispatcherBuilder::new(Bot::new(""), "", InMemStorage::new())
+            .handle(updates::message().by(
+                |cx: DialogueWithCx<Message, (), Infallible>| async move {
+                    delay_for(Duration::from_millis(300)).await;
 
-                            match (cx.cx.update.chat_id(), cx.cx.update.text().unwrap()) {
-                                (1, s) => {
-                                    SEQ1.lock().await.push(s.parse().unwrap());
-                                }
-                                (2, s) => {
-                                    SEQ2.lock().await.push(s.parse().unwrap());
-                                }
-                                (3, s) => {
-                                    SEQ3.lock().await.push(s.parse().unwrap());
-                                }
-                                _ => unreachable!(),
-                            }
-                            cx.next(|()| DialogueStage::Next(())).await;
-                        })
-                )
-                .error_handler(|_| async move { unreachable!() })
-                .build();
+                    match (cx.cx.update.chat_id(), cx.cx.update.text().unwrap()) {
+                        (1, s) => {
+                            SEQ1.lock().await.push(s.parse().unwrap());
+                        }
+                        (2, s) => {
+                            SEQ2.lock().await.push(s.parse().unwrap());
+                        }
+                        (3, s) => {
+                            SEQ3.lock().await.push(s.parse().unwrap());
+                        }
+                        _ => unreachable!(),
+                    }
+                    cx.next(|()| DialogueStage::Next(())).await;
+                },
+            ))
+            .error_handler(|_| async move { unreachable!() })
+            .build();
 
-        let updates = stream::iter(
-            vec![
-                mes(1, "174"),
-                mes(1, "125"),
-                mes(2, "411"),
-                mes(1, "2"),
-                mes(2, "515"),
-                mes(2, "623"),
-                mes(1, "193"),
-                mes(1, "104"),
-                mes(2, "2222"),
-                mes(2, "737"),
-                mes(3, "72782"),
-                mes(3, "2737"),
-                mes(1, "7"),
-                mes(1, "7778"),
-                mes(3, "5475"),
-                mes(3, "1096"),
-                mes(3, "872"),
-                mes(2, "10"),
-                mes(2, "55456"),
-                mes(3, "5665"),
-                mes(3, "1611"),
-            ]
-        );
+        let updates = stream::iter(vec![
+            mes(1, "174"),
+            mes(1, "125"),
+            mes(2, "411"),
+            mes(1, "2"),
+            mes(2, "515"),
+            mes(2, "623"),
+            mes(1, "193"),
+            mes(1, "104"),
+            mes(2, "2222"),
+            mes(2, "737"),
+            mes(3, "72782"),
+            mes(3, "2737"),
+            mes(1, "7"),
+            mes(1, "7778"),
+            mes(3, "5475"),
+            mes(3, "1096"),
+            mes(3, "872"),
+            mes(2, "10"),
+            mes(2, "55456"),
+            mes(3, "5665"),
+            mes(3, "1611"),
+        ]);
 
-        dispatcher.dispatch_with_listener(
-            updates.map::<Result<_, Infallible>, _>(Ok),
-            &|_| async { panic!("error with listener") },
-        ).await;
+        dispatcher
+            .dispatch_with_listener(updates.map::<Result<_, Infallible>, _>(Ok), &|_| async {
+                panic!("error with listener")
+            })
+            .await;
 
         // Wait until our futures to be finished.
         delay_for(Duration::from_millis(3000)).await;
@@ -400,34 +395,37 @@ mod tests {
             ChatKind::Private, ForwardKind::Origin, MediaKind::Text, MessageKind::Common, *,
         };
 
-        Update::new(0, UpdateKind::Message(Message {
-            id: 199785,
-            date: 1568289890,
-            chat: Chat {
-                id: chat_id,
-                kind: Private(ChatPrivate {
-                    type_: (),
-                    username: Some("aka_dude".into()),
-                    first_name: Some("Андрей".into()),
-                    last_name: Some("Власов".into()),
+        Update::new(
+            0,
+            UpdateKind::Message(Message {
+                id: 199785,
+                date: 1568289890,
+                chat: Chat {
+                    id: chat_id,
+                    kind: Private(ChatPrivate {
+                        type_: (),
+                        username: Some("aka_dude".into()),
+                        first_name: Some("Андрей".into()),
+                        last_name: Some("Власов".into()),
+                    }),
+                    photo: None,
+                },
+                via_bot: None,
+                kind: Common(MessageCommon {
+                    from: Some(User {
+                        id: 250918540,
+                        is_bot: false,
+                        first_name: "Андрей".into(),
+                        last_name: Some("Власов".into()),
+                        username: Some("aka_dude".into()),
+                        language_code: Some("en".into()),
+                    }),
+                    forward_kind: Origin(ForwardOrigin { reply_to_message: None }),
+                    edit_date: None,
+                    media_kind: Text(MediaText { text: text.into(), entities: vec![] }),
+                    reply_markup: None,
                 }),
-                photo: None,
-            },
-            via_bot: None,
-            kind: Common(MessageCommon {
-                from: Some(User {
-                    id: 250918540,
-                    is_bot: false,
-                    first_name: "Андрей".into(),
-                    last_name: Some("Власов".into()),
-                    username: Some("aka_dude".into()),
-                    language_code: Some("en".into()),
-                }),
-                forward_kind: Origin(ForwardOrigin { reply_to_message: None }),
-                edit_date: None,
-                media_kind: Text(MediaText { text: text.into(), entities: vec![] }),
-                reply_markup: None,
             }),
-        }))
+        )
     }
 }

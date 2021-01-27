@@ -1,5 +1,8 @@
 use crate::{
-    dispatching::{core::FromContextOwn, dispatcher_context::DispatcherContext},
+    dispatching::{
+        core::{FromContextOwn, GetCtx},
+        dispatcher_context::DispatcherContext,
+    },
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage, PinChatMessage,
         Request, ResponseResult, SendAnimation, SendAudio, SendContact, SendDice, SendDocument,
@@ -9,7 +12,6 @@ use crate::{
     types::{ChatId, InputFile, InputMedia, Message},
     Bot,
 };
-use crate::dispatching::core::GetCtx;
 
 /// A [`Dispatcher`]'s handler's context of a bot and an update.
 ///
@@ -25,7 +27,7 @@ pub struct UpdateWithCx<Upd> {
 
 impl<Upd, Ctx> FromContextOwn<Ctx> for UpdateWithCx<Upd>
 where
-    Ctx: GetCtx<DispatcherContext<Upd>>
+    Ctx: GetCtx<DispatcherContext<Upd>>,
 {
     fn from_context(cx: Ctx) -> Self {
         let context = cx.get_own();
