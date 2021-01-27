@@ -88,6 +88,7 @@ where
     Upd: ?Sized,
     GuardFnWrapper<F, T>: Guard<Upd>,
 {
+    #[inline]
     fn into_guard(self) -> GuardFnWrapper<F, T> {
         self
     }
@@ -98,6 +99,7 @@ where
     Upd: ?Sized + 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
+    #[inline]
     fn into_guard(self) -> GuardFnWrapper<F, GiveSomeReturnFuture> {
         GuardFnWrapper::new(self)
     }
@@ -108,6 +110,7 @@ where
     Upd: ?Sized,
     F: Fn(&Upd) -> bool,
 {
+    #[inline]
     fn into_guard(self) -> GuardFnWrapper<F, GiveSomeReturnBool> {
         GuardFnWrapper::new(self)
     }
@@ -119,6 +122,7 @@ where
     Upd: 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
+    #[inline]
     fn into_guard(self) -> GuardFnWrapper<F, GiveCtxToUpdReturnFuture> {
         GuardFnWrapper::new(self)
     }
@@ -129,6 +133,7 @@ where
     Ctx: Context<Upd = Upd>,
     F: Fn(&Upd) -> bool,
 {
+    #[inline]
     fn into_guard(self) -> GuardFnWrapper<F, GiveCtxToUpdReturnBool> {
         GuardFnWrapper::new(self)
     }

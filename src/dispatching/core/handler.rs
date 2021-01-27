@@ -55,6 +55,7 @@ macro_rules! impl_handler_and_into {
             $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*) -> Fut,
         {
+            #[inline]
             fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, )> {
                 FnHandlerWrapper::new(self)
             }
@@ -82,6 +83,7 @@ macro_rules! impl_handler_and_into {
             $($gen: FromContext<Ctx>,)*
             F: Fn($($gen),*),
         {
+            #[inline]
             fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), private::Sealed> {
                 FnHandlerWrapper::new(self)
             }
@@ -114,6 +116,7 @@ macro_rules! impl_handler_and_into {
             $($gen: FromContext<Ctx>,)*
             F: Fn(OwnTy, $($gen),*) -> Fut,
         {
+            #[inline]
             fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (Fut, OwnTy)> {
                 FnHandlerWrapper::new(self)
             }
@@ -143,6 +146,7 @@ macro_rules! impl_handler_and_into {
             OwnTy: FromContextOwn<Ctx>,
             F: Fn(OwnTy, $($gen),*),
         {
+            #[inline]
             fn into_handler(self) -> FnHandlerWrapper<F, Ctx, ($($gen,)*), (private::Sealed, OwnTy)> {
                 FnHandlerWrapper::new(self)
             }

@@ -56,6 +56,7 @@ mod generated {
          where
             Ctx: GetCtx<DispatcherContext<Message>>
          {
+            #[inline]
             fn into_guard(self) -> Self {
                 self
             }
