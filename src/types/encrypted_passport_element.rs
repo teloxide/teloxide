@@ -19,31 +19,6 @@ pub struct EncryptedPassportElement {
     pub kind: EncryptedPassportElementKind,
 }
 
-impl EncryptedPassportElement {
-    pub fn new<S>(hash: S, kind: EncryptedPassportElementKind) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            hash: hash.into(),
-            kind,
-        }
-    }
-
-    pub fn hash<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.hash = val.into();
-        self
-    }
-
-    pub fn kind(mut self, val: EncryptedPassportElementKind) -> Self {
-        self.kind = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[allow(clippy::large_enum_variant)]
@@ -75,23 +50,6 @@ pub struct EncryptedPassportElementPersonalDetails {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub data: String,
-}
-
-impl EncryptedPassportElementPersonalDetails {
-    pub fn new<S>(data: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self { data: data.into() }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -136,46 +94,6 @@ pub struct EncryptedPassportElementPassport {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub translation: Option<Vec<PassportFile>>,
-}
-
-impl EncryptedPassportElementPassport {
-    pub fn new<S>(data: S, front_side: PassportFile, selfie: PassportFile) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            data: data.into(),
-            front_side,
-            selfie,
-            translation: None,
-        }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
-
-    pub fn front_side(mut self, val: PassportFile) -> Self {
-        self.front_side = val;
-        self
-    }
-
-    pub fn selfie(mut self, val: PassportFile) -> Self {
-        self.selfie = val;
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -231,56 +149,6 @@ pub struct EncryptedPassportElementDriverLicense {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementDriverLicense {
-    pub fn new<S>(
-        data: S,
-        front_side: PassportFile,
-        reverse_side: PassportFile,
-        selfie: PassportFile,
-    ) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            data: data.into(),
-            front_side,
-            reverse_side,
-            selfie,
-            translation: None,
-        }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
-
-    pub fn front_side(mut self, val: PassportFile) -> Self {
-        self.front_side = val;
-        self
-    }
-
-    pub fn reverse_side(mut self, val: PassportFile) -> Self {
-        self.reverse_side = val;
-        self
-    }
-
-    pub fn selfie(mut self, val: PassportFile) -> Self {
-        self.selfie = val;
-        self
-    }
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementIdentityCard {
@@ -334,56 +202,6 @@ pub struct EncryptedPassportElementIdentityCard {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementIdentityCard {
-    pub fn new<S>(
-        data: S,
-        front_side: PassportFile,
-        reverse_side: PassportFile,
-        selfie: PassportFile,
-    ) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            data: data.into(),
-            front_side,
-            reverse_side,
-            selfie,
-            translation: None,
-        }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
-
-    pub fn front_side(mut self, val: PassportFile) -> Self {
-        self.front_side = val;
-        self
-    }
-
-    pub fn reverse_side(mut self, val: PassportFile) -> Self {
-        self.reverse_side = val;
-        self
-    }
-
-    pub fn selfie(mut self, val: PassportFile) -> Self {
-        self.selfie = val;
-        self
-    }
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementInternalPassport {
@@ -428,46 +246,6 @@ pub struct EncryptedPassportElementInternalPassport {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementInternalPassport {
-    pub fn new<S>(data: S, front_side: PassportFile, selfie: PassportFile) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            data: data.into(),
-            front_side,
-            selfie,
-            translation: None,
-        }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
-
-    pub fn front_side(mut self, val: PassportFile) -> Self {
-        self.front_side = val;
-        self
-    }
-
-    pub fn selfie(mut self, val: PassportFile) -> Self {
-        self.selfie = val;
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementAddress {
@@ -480,23 +258,6 @@ pub struct EncryptedPassportElementAddress {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub data: String,
-}
-
-impl EncryptedPassportElementAddress {
-    pub fn new<S>(data: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self { data: data.into() }
-    }
-
-    pub fn data<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.data = val.into();
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -525,34 +286,6 @@ pub struct EncryptedPassportElementUtilityBill {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementUtilityBill {
-    pub fn new<F>(files: F) -> Self
-    where
-        F: Into<Vec<PassportFile>>,
-    {
-        Self {
-            files: files.into(),
-            translation: None,
-        }
-    }
-
-    pub fn files<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.files = val.into();
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementBankStatement {
@@ -577,34 +310,6 @@ pub struct EncryptedPassportElementBankStatement {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub translation: Option<Vec<PassportFile>>,
-}
-
-impl EncryptedPassportElementBankStatement {
-    pub fn new<F>(files: F) -> Self
-    where
-        F: Into<Vec<PassportFile>>,
-    {
-        Self {
-            files: files.into(),
-            translation: None,
-        }
-    }
-
-    pub fn files<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.files = val.into();
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -633,34 +338,6 @@ pub struct EncryptedPassportElementRentalAgreement {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementRentalAgreement {
-    pub fn new<F>(files: F) -> Self
-    where
-        F: Into<Vec<PassportFile>>,
-    {
-        Self {
-            files: files.into(),
-            translation: None,
-        }
-    }
-
-    pub fn files<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.files = val.into();
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementPassportRegistration {
@@ -685,34 +362,6 @@ pub struct EncryptedPassportElementPassportRegistration {
     /// [`EncryptedCredentials`]:
     /// crate::types::EncryptedCredentials
     pub translation: Option<Vec<PassportFile>>,
-}
-
-impl EncryptedPassportElementPassportRegistration {
-    pub fn new<F>(files: F) -> Self
-    where
-        F: Into<Vec<PassportFile>>,
-    {
-        Self {
-            files: files.into(),
-            translation: None,
-        }
-    }
-
-    pub fn files<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.files = val.into();
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -741,34 +390,6 @@ pub struct EncryptedPassportElementTemporaryRegistration {
     pub translation: Option<Vec<PassportFile>>,
 }
 
-impl EncryptedPassportElementTemporaryRegistration {
-    pub fn new<F>(files: F) -> Self
-    where
-        F: Into<Vec<PassportFile>>,
-    {
-        Self {
-            files: files.into(),
-            translation: None,
-        }
-    }
-
-    pub fn files<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.files = val.into();
-        self
-    }
-
-    pub fn translation<P>(mut self, val: P) -> Self
-    where
-        P: Into<Vec<PassportFile>>,
-    {
-        self.translation = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementPhoneNumber {
@@ -777,47 +398,9 @@ pub struct EncryptedPassportElementPhoneNumber {
     pub phone_number: String,
 }
 
-impl EncryptedPassportElementPhoneNumber {
-    pub fn new<S>(phone_number: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            phone_number: phone_number.into(),
-        }
-    }
-
-    pub fn phone_number<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.phone_number = val.into();
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElementEmail {
     /// User's verified email address, available only for `email` type.
     pub email: String,
-}
-
-impl EncryptedPassportElementEmail {
-    pub fn new<S>(email: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            email: email.into(),
-        }
-    }
-
-    pub fn email<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.email = val.into();
-        self
-    }
 }

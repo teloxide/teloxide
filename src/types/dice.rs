@@ -19,19 +19,3 @@ pub struct Dice {
     /// [`DiceEmoji::Basketball`]:crate::types::DiceEmoji::Basketball
     value: i32,
 }
-
-impl Dice {
-    pub fn new(emoji: DiceEmoji, value: i32) -> Self {
-        Self { emoji, value }
-    }
-
-    pub fn emoji(mut self, val: DiceEmoji) -> Self {
-        self.emoji = val;
-        self
-    }
-
-    pub fn value<S>(mut self, val: i32) -> Self {
-        self.value = val;
-        self
-    }
-}

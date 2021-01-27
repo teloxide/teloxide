@@ -305,11 +305,11 @@ pub struct PassportElementErrorFiles {
 impl PassportElementErrorFiles {
     pub fn new<S>(r#type: PassportElementErrorFilesType, file_hashes: S) -> Self
     where
-        S: Into<Vec<String>>,
+        S: IntoIterator<Item = String>,
     {
         Self {
             r#type,
-            file_hashes: file_hashes.into(),
+            file_hashes: file_hashes.into_iter().collect(),
         }
     }
 
@@ -320,9 +320,9 @@ impl PassportElementErrorFiles {
 
     pub fn file_hashes<S>(mut self, val: S) -> Self
     where
-        S: Into<Vec<String>>,
+        S: IntoIterator<Item = String>,
     {
-        self.file_hashes = val.into();
+        self.file_hashes = val.into_iter().collect();
         self
     }
 }
@@ -386,11 +386,11 @@ pub struct PassportElementErrorTranslationFiles {
 impl PassportElementErrorTranslationFiles {
     pub fn new<S>(r#type: PassportElementErrorTranslationFilesType, file_hashes: S) -> Self
     where
-        S: Into<Vec<String>>,
+        S: IntoIterator<Item = String>,
     {
         Self {
             r#type,
-            file_hashes: file_hashes.into(),
+            file_hashes: file_hashes.into_iter().collect(),
         }
     }
 
@@ -401,9 +401,9 @@ impl PassportElementErrorTranslationFiles {
 
     pub fn file_hashes<S>(mut self, val: S) -> Self
     where
-        S: Into<Vec<String>>,
+        S: IntoIterator<Item = String>,
     {
-        self.file_hashes = val.into();
+        self.file_hashes = val.into_iter().collect();
         self
     }
 }

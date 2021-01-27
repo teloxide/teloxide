@@ -41,7 +41,56 @@ pub struct ChatPermissions {
 }
 
 impl ChatPermissions {
-    pub fn new() -> Self {
-        Self::default()
+    pub const fn new() -> Self {
+        Self {
+            can_send_messages: None,
+            can_send_media_messages: None,
+            can_send_polls: None,
+            can_send_other_messages: None,
+            can_add_web_page_previews: None,
+            can_change_info: None,
+            can_invite_users: None,
+            can_pin_messages: None,
+        }
+    }
+
+    pub const fn can_send_messages(mut self, val: bool) -> Self {
+        self.can_send_messages = Some(val);
+        self
+    }
+
+    pub const fn can_send_media_messages(mut self, val: bool) -> Self {
+        self.can_send_media_messages = Some(val);
+        self
+    }
+
+    pub const fn can_send_polls(mut self, val: bool) -> Self {
+        self.can_send_polls = Some(val);
+        self
+    }
+
+    pub const fn can_send_other_messages(mut self, val: bool) -> Self {
+        self.can_send_other_messages = Some(val);
+        self
+    }
+
+    pub const fn can_add_web_page_previews(mut self, val: bool) -> Self {
+        self.can_add_web_page_previews = Some(val);
+        self
+    }
+
+    pub const fn can_change_info(mut self, val: bool) -> Self {
+        self.can_change_info = Some(val);
+        self
+    }
+
+    pub const fn can_invite_users(mut self, val: bool) -> Self {
+        self.can_invite_users = Some(val);
+        self
+    }
+
+    pub const fn can_pin_messages(mut self, val: bool) -> Self {
+        self.can_pin_messages = Some(val);
+        self
     }
 }

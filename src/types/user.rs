@@ -28,65 +28,6 @@ pub struct User {
 }
 
 impl User {
-    pub fn new<S>(id: i32, is_bot: bool, first_name: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            id,
-            is_bot,
-            first_name: first_name.into(),
-            last_name: None,
-            username: None,
-            language_code: None,
-        }
-    }
-
-    pub fn id<S>(mut self, val: i32) -> Self {
-        self.id = val;
-        self
-    }
-
-    #[allow(clippy::wrong_self_convention)]
-    pub fn is_bot<S>(mut self, val: bool) -> Self {
-        self.is_bot = val;
-        self
-    }
-
-    pub fn first_name<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.first_name = val.into();
-        self
-    }
-
-    pub fn last_name<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.last_name = Some(val.into());
-        self
-    }
-
-    pub fn username<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.username = Some(val.into());
-        self
-    }
-
-    pub fn language_code<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.language_code = Some(val.into());
-        self
-    }
-}
-
-impl User {
     pub fn full_name(&self) -> String {
         match &self.last_name {
             Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),

@@ -38,7 +38,7 @@ pub struct InputMediaPhoto {
 }
 
 impl InputMediaPhoto {
-    pub fn new(media: InputFile) -> Self {
+    pub const fn new(media: InputFile) -> Self {
         Self {
             media,
             caption: None,
@@ -59,7 +59,7 @@ impl InputMediaPhoto {
         self
     }
 
-    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
@@ -106,7 +106,7 @@ pub struct InputMediaVideo {
 }
 
 impl InputMediaVideo {
-    pub fn new(media: InputFile) -> Self {
+    pub const fn new(media: InputFile) -> Self {
         Self {
             media,
             thumb: None,
@@ -137,27 +137,27 @@ impl InputMediaVideo {
         self
     }
 
-    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
-    pub fn width(mut self, val: u16) -> Self {
+    pub const fn width(mut self, val: u16) -> Self {
         self.width = Some(val);
         self
     }
 
-    pub fn height(mut self, val: u16) -> Self {
+    pub const fn height(mut self, val: u16) -> Self {
         self.height = Some(val);
         self
     }
 
-    pub fn duration(mut self, val: u16) -> Self {
+    pub const fn duration(mut self, val: u16) -> Self {
         self.duration = Some(val);
         self
     }
 
-    pub fn supports_streaming(mut self, val: bool) -> Self {
+    pub const fn supports_streaming(mut self, val: bool) -> Self {
         self.supports_streaming = Some(val);
         self
     }
@@ -202,7 +202,7 @@ pub struct InputMediaAnimation {
 }
 
 impl InputMediaAnimation {
-    pub fn new(media: InputFile) -> Self {
+    pub const fn new(media: InputFile) -> Self {
         Self {
             media,
             thumb: None,
@@ -232,22 +232,22 @@ impl InputMediaAnimation {
         self
     }
 
-    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
-    pub fn width(mut self, val: u16) -> Self {
+    pub const fn width(mut self, val: u16) -> Self {
         self.width = Some(val);
         self
     }
 
-    pub fn height(mut self, val: u16) -> Self {
+    pub const fn height(mut self, val: u16) -> Self {
         self.height = Some(val);
         self
     }
 
-    pub fn duration(mut self, val: u16) -> Self {
+    pub const fn duration(mut self, val: u16) -> Self {
         self.duration = Some(val);
         self
     }
@@ -291,7 +291,7 @@ pub struct InputMediaAudio {
 }
 
 impl InputMediaAudio {
-    pub fn new(media: InputFile) -> Self {
+    pub const fn new(media: InputFile) -> Self {
         Self {
             media,
             thumb: None,
@@ -321,12 +321,12 @@ impl InputMediaAudio {
         self
     }
 
-    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }
 
-    pub fn duration(mut self, val: u16) -> Self {
+    pub const fn duration(mut self, val: u16) -> Self {
         self.duration = Some(val);
         self
     }
@@ -377,13 +377,18 @@ pub struct InputMediaDocument {
 }
 
 impl InputMediaDocument {
-    pub fn new(media: InputFile) -> Self {
+    pub const fn new(media: InputFile) -> Self {
         Self {
             media,
             thumb: None,
             caption: None,
             parse_mode: None,
         }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
     }
 
     pub fn thumb(mut self, val: InputFile) -> Self {
@@ -399,7 +404,7 @@ impl InputMediaDocument {
         self
     }
 
-    pub fn parse_mode(mut self, val: ParseMode) -> Self {
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }

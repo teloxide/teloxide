@@ -22,12 +22,12 @@ impl ShippingOption {
     where
         S1: Into<String>,
         S2: Into<String>,
-        P: Into<Vec<LabeledPrice>>,
+        P: IntoIterator<Item = LabeledPrice>,
     {
         Self {
             id: id.into(),
             title: title.into(),
-            prices: prices.into(),
+            prices: prices.into_iter().collect(),
         }
     }
 
@@ -49,9 +49,9 @@ impl ShippingOption {
 
     pub fn prices<P>(mut self, val: P) -> Self
     where
-        P: Into<Vec<LabeledPrice>>,
+        P: IntoIterator<Item = LabeledPrice>,
     {
-        self.prices = val.into();
+        self.prices = val.into_iter().collect();
         self
     }
 }

@@ -82,7 +82,7 @@ pub struct InputMessageContentLocation {
 }
 
 impl InputMessageContentLocation {
-    pub fn new(latitude: f64, longitude: f64) -> Self {
+    pub const fn new(latitude: f64, longitude: f64) -> Self {
         Self {
             latitude,
             longitude,
@@ -90,17 +90,17 @@ impl InputMessageContentLocation {
         }
     }
 
-    pub fn latitude(mut self, val: f64) -> Self {
+    pub const fn latitude(mut self, val: f64) -> Self {
         self.latitude = val;
         self
     }
 
-    pub fn longitude(mut self, val: f64) -> Self {
+    pub const fn longitude(mut self, val: f64) -> Self {
         self.longitude = val;
         self
     }
 
-    pub fn live_period(mut self, val: u32) -> Self {
+    pub const fn live_period(mut self, val: u32) -> Self {
         self.live_period = Some(val);
         self
     }

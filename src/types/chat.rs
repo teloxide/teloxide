@@ -24,31 +24,6 @@ pub struct Chat {
     pub photo: Option<ChatPhoto>,
 }
 
-impl Chat {
-    pub fn new(id: i64, kind: ChatKind) -> Self {
-        Self {
-            id,
-            kind,
-            photo: None,
-        }
-    }
-
-    pub fn id(mut self, val: i64) -> Self {
-        self.id = val;
-        self
-    }
-
-    pub fn kind(mut self, val: ChatKind) -> Self {
-        self.kind = val;
-        self
-    }
-
-    pub fn photo(mut self, val: ChatPhoto) -> Self {
-        self.photo = Some(val);
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -91,47 +66,6 @@ pub struct ChatPublic {
     pub pinned_message: Option<Box<Message>>,
 }
 
-impl ChatPublic {
-    pub fn new(kind: PublicChatKind) -> Self {
-        Self {
-            title: None,
-            kind,
-            description: None,
-            invite_link: None,
-            pinned_message: None,
-        }
-    }
-
-    pub fn title<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.title = Some(val.into());
-        self
-    }
-
-    pub fn description<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.description = Some(val.into());
-        self
-    }
-
-    pub fn invite_link<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.invite_link = Some(val.into());
-        self
-    }
-
-    pub fn pinned_message(mut self, val: Message) -> Self {
-        self.pinned_message = Some(Box::new(val));
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatPrivate {
@@ -152,36 +86,6 @@ pub struct ChatPrivate {
     pub last_name: Option<String>,
 }
 
-impl ChatPrivate {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn username<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.username = Some(val.into());
-        self
-    }
-
-    pub fn first_name<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.first_name = Some(val.into());
-        self
-    }
-
-    pub fn last_name<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.last_name = Some(val.into());
-        self
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -199,12 +103,6 @@ pub struct PublicChatChannel {
     pub username: Option<String>,
 }
 
-impl PublicChatChannel {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatGroup {
@@ -213,12 +111,6 @@ pub struct PublicChatGroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub permissions: Option<ChatPermissions>,
-}
-
-impl PublicChatGroup {
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -251,12 +143,6 @@ pub struct PublicChatSupergroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub slow_mode_delay: Option<i32>,
-}
-
-impl PublicChatSupergroup {
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 struct PrivateChatKindVisitor;
