@@ -14,6 +14,7 @@ use crate::{
 use crate::dispatching::handlers::chosen_inline_result::ChosenInlineResultsHandlerBuilder;
 use crate::dispatching::handlers::callback_queries::CallbackQueriesHandlerBuilder;
 use crate::dispatching::handlers::polls::PollsHandlerBuilder;
+use crate::dispatching::handlers::poll_answers::PollAnswersHandlerBuilder;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
@@ -68,9 +69,9 @@ pub fn poll<Ctx: Context<Upd = types::Poll>, Err>() -> PollsHandlerBuilder<Ctx, 
     PollsHandlerBuilder::new(parser::Poll)
 }
 
-pub fn poll_answer<Err>(
-) -> UpdateParser<Update, types::PollAnswer, UpdateRest, Err, parser::PollAnswer> {
-    UpdateParser::new(parser::PollAnswer)
+pub fn poll_answer<Ctx: Context<Upd = types::PollAnswer>, Err>(
+) -> PollAnswersHandlerBuilder<Ctx, parser::PollAnswer, Err> {
+    PollAnswersHandlerBuilder::new(parser::PollAnswer)
 }
 
 mod impls {

@@ -6,3 +6,4 @@ pub mod updates;
 pub mod chosen_inline_result;
 pub mod callback_queries;
 pub mod polls;
+pub mod poll_answers;
