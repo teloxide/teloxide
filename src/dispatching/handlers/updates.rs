@@ -12,6 +12,7 @@ use crate::{
     types::Update,
 };
 use crate::dispatching::handlers::chosen_inline_result::ChosenInlineResultsHandlerBuilder;
+use crate::dispatching::handlers::callback_queries::CallbackQueriesHandlerBuilder;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
@@ -47,9 +48,9 @@ pub fn chosen_inline_result<Ctx: Context<Upd = types::ChosenInlineResult>, Err>(
     ChosenInlineResultsHandlerBuilder::new(parser::ChosenInlineResult)
 }
 
-pub fn callback_query<Err>(
-) -> UpdateParser<Update, types::CallbackQuery, UpdateRest, Err, parser::CallbackQuery> {
-    UpdateParser::new(parser::CallbackQuery)
+pub fn callback_query<Ctx: Context<Upd = types::CallbackQuery>, Err>(
+) -> CallbackQueriesHandlerBuilder<Ctx, parser::CallbackQuery, Err> {
+    CallbackQueriesHandlerBuilder::new(parser::CallbackQuery)
 }
 
 pub fn shipping_query<Err>(
