@@ -26,7 +26,7 @@ use std::{fmt::Debug, future::Future, sync::Arc};
 pub async fn commands_repl<Cmd, H, Fut, HandlerE>(bot: Bot, handler: H)
 where
     Cmd: BotCommand + Send + 'static,
-    H: Fn(UpdateWithCx<Message>, tel::Command<Cmd>) -> Fut + Send + Sync + 'static,
+    H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     Result<(), HandlerE>: OnError<HandlerE>,
     HandlerE: Debug + Send,
@@ -54,7 +54,7 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
     listener: L,
 ) where
     Cmd: BotCommand + Send + 'static,
-    H: Fn(UpdateWithCx<Message>, tel::Command<Cmd>) -> Fut + Send + Sync + 'static,
+    H: Fn(UpdateWithCx<Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
@@ -68,7 +68,7 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
         .handle(updates::message().by(move |cx: UpdateWithCx<Message>, cmd: tel::Command<Cmd>| {
             let handler = handler.clone();
             async move {
-                handler(cx, cmd).await.log_on_error().await;
+                handler(cx, cmd.command).await.log_on_error().await;
             }
         }))
         .error_handler(LoggingErrorHandler::with_custom_text("An error from the dispatcher"))
