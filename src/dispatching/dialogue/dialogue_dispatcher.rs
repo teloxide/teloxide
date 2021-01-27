@@ -1,16 +1,19 @@
-use crate::dispatching::{
-    dialogue::{
-        DialogueDispatcherHandler, DialogueStage, DialogueWithCx, GetChatId, InMemStorage, Storage,
-    },
-    DispatcherHandler, UpdateWithCx,
-};
-use std::{convert::Infallible, marker::PhantomData};
+use crate::dispatching::{dialogue::{
+    Storage,
+}, Dispatcher, DispatcherBuilder};
+use std::{marker::PhantomData};
 
-use futures::{future::BoxFuture, FutureExt, StreamExt};
+use futures::{StreamExt};
 use tokio::sync::mpsc;
 
-use lockfree::map::Map;
+use lockfree::map::{Map};
 use std::sync::{Arc, Mutex};
+use crate::dispatching::dialogue::dialogue_ctx::DialogueContext;
+use crate::Bot;
+use crate::dispatching::error_handlers::ErrorHandler;
+use crate::dispatching::core::{DispatchError, Handler};
+use crate::types::{Update, UpdateKind};
+use crate::dispatching::update_listeners::UpdateListener;
 
 /// A dispatcher of dialogues.
 ///
@@ -22,9 +25,9 @@ use std::sync::{Arc, Mutex};
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, H, Upd> {
+pub struct DialogueDispatcher<D, S, Err, ErrHandler> {
     storage: Arc<S>,
-    handler: Arc<H>,
+    dispatcher: Arc<Dispatcher<Err, ErrHandler, DialogueContext<Update, D, S>>>,
     _phantom: PhantomData<Mutex<D>>,
 
     /// A lock-free map to handle updates from the same chat sequentially, but
@@ -33,13 +36,18 @@ pub struct DialogueDispatcher<D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
 }
 
-impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
+pub struct DialogueDispatcherBuilder<D, S, Err, ErrHandler> {
+    storage: Arc<S>,
+    dispatcher: DispatcherBuilder<Err, ErrHandler, DialogueContext<Update, D, S>>,
+    _phantom: PhantomData<Mutex<D>>,
+}
+
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err, ()>
 where
-    H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
-    Upd: GetChatId + Send + 'static,
+    S: Storage<D>,
     D: Default + Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
@@ -47,75 +55,211 @@ where
     ///
     /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
     #[must_use]
-    pub fn new(handler: H) -> Self {
+    pub fn new(bot: Bot, bot_name: impl Into<Arc<str>>, storage: S) -> Self {
         Self {
-            storage: InMemStorage::new(),
-            handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            storage: Arc::new(storage),
+            dispatcher: DispatcherBuilder::new(bot, bot_name),
             _phantom: PhantomData,
         }
     }
 }
 
-impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err, ()>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
-    Upd: GetChatId + Send + 'static,
-    D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    D: Default + Clone + Send + Sync + 'static,
+    Err: Send + Sync + 'static,
 {
-    /// Creates a dispatcher with the specified `handler` and `storage`.
-    #[must_use]
-    pub fn with_storage(handler: H, storage: Arc<S>) -> Self {
-        Self {
+    pub fn error_handler<H>(self, error_handler: H) -> DialogueDispatcherBuilder<D, S, Err, impl ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>>
+        where
+            H: for<'a> ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    {
+        let handler = Arc::new(error_handler);
+        let DialogueDispatcherBuilder { storage, dispatcher, _phantom } = self;
+        let s = storage.clone();
+        let handler = move |err: DispatchError<DialogueContext<Update, D, S>, Err>| {
+            let error_handler = handler.clone();
+            let storage = s.clone();
+
+            async move {
+                let err = err;
+                match err {
+                    DispatchError::NoHandler(ref cx) => {
+                        let dialogue = cx.dialogue.clone();
+                        match dialogue {
+                            Some(d) => {
+                                // TODO: rework storage api and remove this call
+                                storage
+                                    .update_dialogue(cx.chat_id.unwrap(), d)
+                                    .await
+                                    .ok()
+                                    .unwrap()
+                                    .unwrap();
+                            }
+                            None => {}
+                        }
+                        error_handler.handle_error(err).await;
+                    }
+                    _ => {
+                        error_handler.handle_error(err).await;
+                    }
+                }
+            }
+        };
+
+        DialogueDispatcherBuilder { storage, dispatcher: dispatcher.error_handler(handler), _phantom: PhantomData }
+    }
+}
+
+impl<D, S, Err, ErrHandler> DialogueDispatcherBuilder<D, S, Err, ErrHandler>
+where
+    D: Default + Send + 'static,
+{
+    pub fn handle(
+        mut self,
+        handler: impl Handler<DialogueContext<Update, D, S>, Err> + Send + Sync + 'static,
+    ) -> Self {
+        self.dispatcher._add_handler(handler);
+        self
+    }
+}
+
+impl<D, S, Err, ErrHandler> DialogueDispatcherBuilder<D, S, Err, ErrHandler>
+where
+    S: Storage<D>,
+    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
+{
+    pub fn build(self) -> DialogueDispatcher<D, S, Err, ErrHandler> {
+        let DialogueDispatcherBuilder { storage, dispatcher, .. } = self;
+        DialogueDispatcher {
             storage,
-            handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            dispatcher: Arc::new(dispatcher.build()),
             _phantom: PhantomData,
+            senders: Arc::new(Map::new())
+        }
+    }
+}
+
+impl<D, S, Err, ErrHandler> DialogueDispatcher<D, S, Err, ErrHandler>
+where
+    D: Default + Send + Sync + 'static,
+    S: Storage<D> + Send + Sync + 'static,
+    <S as Storage<D>>::Error: Send,
+    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    Err: Send + 'static,
+{
+    pub async fn dispatch_one(&self, upd: Update) {
+        let chat_id = upd.try_get_chat_id();
+        match chat_id {
+            Some(chat_id) => {
+                match self.senders.get(&chat_id) {
+                    Some(tx) => {
+                        if tx.1.send(upd).is_err() {
+                            panic!("We are not dropping a receiver or call .close() on it",);
+                        }
+                    }
+                    None => {
+                        let tx = self.new_tx();
+                        if tx.send(upd).is_err() {
+                            panic!("We are not dropping a receiver or call .close() on it",);
+                        }
+                        self.senders.insert(chat_id, tx);
+                    }
+                }
+            }
+            None => {
+                let cx = self._make_cx(upd).await;
+                self.dispatcher.dispatch_one_with_cx(cx).await;
+            }
         }
     }
 
+    pub async fn dispatch_with_listener<ListenerErr>(
+        &self,
+        listener: impl UpdateListener<ListenerErr>,
+        listener_error_handler: &impl ErrorHandler<ListenerErr>,
+    ) {
+        listener
+            .for_each_concurrent(None, move |res| {
+                async move {
+                    match res {
+                        Ok(upd) => self.dispatch_one(upd).await,
+                        Err(e) => {
+                            listener_error_handler.handle_error(e).await
+                        }
+                    };
+                }
+            })
+            .await;
+    }
+
+    pub async fn _make_cx(&self, upd: Update) -> DialogueContext<Update, D, S> {
+        let storage = self.storage.clone();
+        let senders = self.senders.clone();
+
+        let chat_id = upd.try_get_chat_id();
+        let dialogue = match chat_id {
+            Some(id) => {
+                Some(self
+                    .storage
+                    .clone() // TODO: not move in remove_dialogue self
+                    .remove_dialogue(id)
+                    .await
+                    .map(Option::unwrap_or_default)
+                    .unwrap_or_else(|_| panic!("TODO: StorageError")))
+            }
+            None => None,
+        };
+
+        let cx = DialogueContext::new(
+            self.dispatcher.make_cx(upd),
+            storage,
+            dialogue,
+            senders,
+            chat_id,
+        );
+        cx
+    }
+}
+
+impl Update {
+    fn try_get_chat_id(&self) -> Option<i64> {
+        match &self.kind {
+            UpdateKind::Message(m) => Some(m.chat_id()),
+            UpdateKind::EditedMessage(m) => Some(m.chat_id()),
+            UpdateKind::CallbackQuery(q) => q.message.as_ref().map(|mes| mes.chat_id()),
+            _ => None,
+        }
+    }
+}
+
+impl<D, S, Err, ErrHandler> DialogueDispatcher<D, S, Err, ErrHandler>
+where
+    D: Default + Send + 'static,
+    S: Storage<D> + Send + Sync + 'static,
+    S::Error: Send + 'static,
+    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
+    Err: Send + 'static,
+{
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<Update> {
         let (tx, rx) = mpsc::unbounded_channel();
 
-        let storage = Arc::clone(&self.storage);
-        let handler = Arc::clone(&self.handler);
-        let senders = Arc::clone(&self.senders);
+        let dispatcher = Arc::clone(&self.dispatcher);
+        let senders = self.senders.clone();
+        let storage = self.storage.clone();
 
-        tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
-            let storage = Arc::clone(&storage);
-            let handler = Arc::clone(&handler);
-            let senders = Arc::clone(&senders);
-
+        tokio::spawn(rx.for_each(move |upd: Update| {
+            let cx = make_cx(
+                dispatcher.clone(),
+                storage.clone(),
+                senders.clone(),
+                upd
+            );
+            let dispatcher = dispatcher.clone();
             async move {
-                let chat_id = cx.update.chat_id();
-
-                let dialogue = Arc::clone(&storage)
-                    .remove_dialogue(chat_id)
-                    .await
-                    .map(Option::unwrap_or_default);
-
-                match handler.handle(DialogueWithCx { cx, dialogue }).await {
-                    DialogueStage::Next(new_dialogue) => {
-                        if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
-                            panic!(
-                                "Oops, you have an bug in your Storage: update_dialogue returns \
-                                 Some after remove_dialogue"
-                            );
-                        }
-                    }
-                    DialogueStage::Exit => {
-                        // On the next .poll() call, the spawned future will
-                        // return Poll::Ready, because we are dropping the
-                        // sender right here:
-                        senders.remove(&chat_id);
-
-                        // We already removed a dialogue from `storage` (see
-                        // the beginning of this async block).
-                    }
-                }
+                let cx = cx.await;
+                dispatcher.dispatch_one_with_cx(cx).await;
             }
         }));
 
@@ -123,45 +267,39 @@ where
     }
 }
 
-impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
+async fn make_cx<Err, ErrHandler, S, D>(
+    dispatcher: Arc<Dispatcher<Err, ErrHandler, DialogueContext<Update, D, S>>>,
+    storage: Arc<S>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
+    upd: Update
+) -> DialogueContext<Update, D, S>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
-    Upd: GetChatId + Send + 'static,
-    D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    D: Default + Send + 'static,
+    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
+    Err: Send + 'static,
 {
-    fn handle(self, updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>) -> BoxFuture<'static, ()>
-    where
-        UpdateWithCx<Upd>: 'static,
-    {
-        let this = Arc::new(self);
+    let chat_id = upd.try_get_chat_id();
+    let dialogue = match chat_id {
+        Some(id) => {
+            Some(storage
+                .clone()
+                .remove_dialogue(id)
+                .await
+                .map(Option::unwrap_or_default)
+                .unwrap_or_else(|_| panic!("TODO: StorageError")))
+        }
+        None => None,
+    };
 
-        updates
-            .for_each(move |cx| {
-                let this = Arc::clone(&this);
-                let chat_id = cx.update.chat_id();
-
-                match this.senders.get(&chat_id) {
-                    // An old dialogue
-                    Some(tx) => {
-                        if tx.1.send(cx).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
-                    }
-                    None => {
-                        let tx = this.new_tx();
-                        if tx.send(cx).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
-                        this.senders.insert(chat_id, tx);
-                    }
-                }
-
-                async {}
-            })
-            .boxed()
-    }
+    let cx = DialogueContext::new(
+        dispatcher.make_cx(upd),
+        storage,
+        dialogue,
+        senders,
+        chat_id,
+    );
+    cx
 }
 
 #[cfg(test)]
@@ -172,31 +310,17 @@ mod tests {
     use futures::{stream, StreamExt};
     use lazy_static::lazy_static;
     use tokio::{
-        sync::{mpsc, Mutex},
+        sync::{Mutex},
         time::{delay_for, Duration},
     };
+    use crate::dispatching::updates;
+    use crate::types::Message;
+    use crate::dispatching::dialogue::{InMemStorage, DialogueWithCx, DialogueStage};
+    use std::convert::Infallible;
 
     #[tokio::test]
     #[allow(deprecated)]
     async fn updates_from_same_chat_executed_sequentially() {
-        #[derive(Debug)]
-        struct MyUpdate {
-            chat_id: i64,
-            unique_number: u32,
-        };
-
-        impl MyUpdate {
-            fn new(chat_id: i64, unique_number: u32) -> Self {
-                Self { chat_id, unique_number }
-            }
-        }
-
-        impl GetChatId for MyUpdate {
-            fn chat_id(&self) -> i64 {
-                self.chat_id
-            }
-        }
-
         lazy_static! {
             static ref SEQ1: Mutex<Vec<u32>> = Mutex::new(Vec::new());
             static ref SEQ2: Mutex<Vec<u32>> = Mutex::new(Vec::new());
@@ -204,69 +328,64 @@ mod tests {
         }
 
         let dispatcher =
-            DialogueDispatcher::new(|cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
-                delay_for(Duration::from_millis(300)).await;
+            DialogueDispatcherBuilder::new(
+                Bot::new(""),
+                "",
+                InMemStorage::new(),
+            )
+                .handle(
+                    updates::message()
+                        .by(|cx: DialogueWithCx<Message, (), Infallible>| async move {
+                            delay_for(Duration::from_millis(300)).await;
 
-                match cx.cx.update {
-                    MyUpdate { chat_id: 1, unique_number } => {
-                        SEQ1.lock().await.push(unique_number);
-                    }
-                    MyUpdate { chat_id: 2, unique_number } => {
-                        SEQ2.lock().await.push(unique_number);
-                    }
-                    MyUpdate { chat_id: 3, unique_number } => {
-                        SEQ3.lock().await.push(unique_number);
-                    }
-                    _ => unreachable!(),
-                }
-
-                DialogueStage::Next(())
-            });
+                            match (cx.cx.update.chat_id(), cx.cx.update.text().unwrap()) {
+                                (1, s) => {
+                                    SEQ1.lock().await.push(s.parse().unwrap());
+                                }
+                                (2, s) => {
+                                    SEQ2.lock().await.push(s.parse().unwrap());
+                                }
+                                (3, s) => {
+                                    SEQ3.lock().await.push(s.parse().unwrap());
+                                }
+                                _ => unreachable!(),
+                            }
+                            cx.next(|()| DialogueStage::Next(())).await;
+                        })
+                )
+                .error_handler(|_| async move { unreachable!() })
+                .build();
 
         let updates = stream::iter(
             vec![
-                MyUpdate::new(1, 174),
-                MyUpdate::new(1, 125),
-                MyUpdate::new(2, 411),
-                MyUpdate::new(1, 2),
-                MyUpdate::new(2, 515),
-                MyUpdate::new(2, 623),
-                MyUpdate::new(1, 193),
-                MyUpdate::new(1, 104),
-                MyUpdate::new(2, 2222),
-                MyUpdate::new(2, 737),
-                MyUpdate::new(3, 72782),
-                MyUpdate::new(3, 2737),
-                MyUpdate::new(1, 7),
-                MyUpdate::new(1, 7778),
-                MyUpdate::new(3, 5475),
-                MyUpdate::new(3, 1096),
-                MyUpdate::new(3, 872),
-                MyUpdate::new(2, 10),
-                MyUpdate::new(2, 55456),
-                MyUpdate::new(3, 5665),
-                MyUpdate::new(3, 1611),
+                mes(1, "174"),
+                mes(1, "125"),
+                mes(2, "411"),
+                mes(1, "2"),
+                mes(2, "515"),
+                mes(2, "623"),
+                mes(1, "193"),
+                mes(1, "104"),
+                mes(2, "2222"),
+                mes(2, "737"),
+                mes(3, "72782"),
+                mes(3, "2737"),
+                mes(1, "7"),
+                mes(1, "7778"),
+                mes(3, "5475"),
+                mes(3, "1096"),
+                mes(3, "872"),
+                mes(2, "10"),
+                mes(2, "55456"),
+                mes(3, "5665"),
+                mes(3, "1611"),
             ]
-            .into_iter()
-            .map(|update| UpdateWithCx { update, bot: Bot::new("Doesn't matter here") })
-            .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
         );
 
-        let (tx, rx) = mpsc::unbounded_channel();
-
-        updates
-            .for_each(move |update| {
-                let tx = tx.clone();
-
-                async move {
-                    if tx.send(update).is_err() {
-                        panic!("tx.send(update) failed");
-                    }
-                }
-            })
-            .await;
-
-        dispatcher.handle(rx).await;
+        dispatcher.dispatch_with_listener(
+            updates.map::<Result<_, Infallible>, _>(Ok),
+            &|_| async { panic!("error with listener") },
+        ).await;
 
         // Wait until our futures to be finished.
         delay_for(Duration::from_millis(3000)).await;
@@ -274,5 +393,41 @@ mod tests {
         assert_eq!(*SEQ1.lock().await, vec![174, 125, 2, 193, 104, 7, 7778]);
         assert_eq!(*SEQ2.lock().await, vec![411, 515, 623, 2222, 737, 10, 55456]);
         assert_eq!(*SEQ3.lock().await, vec![72782, 2737, 5475, 1096, 872, 5665, 1611]);
+    }
+
+    fn mes(chat_id: i64, text: impl Into<String>) -> Update {
+        use crate::types::{
+            ChatKind::Private, ForwardKind::Origin, MediaKind::Text, MessageKind::Common, *,
+        };
+
+        Update::new(0, UpdateKind::Message(Message {
+            id: 199785,
+            date: 1568289890,
+            chat: Chat {
+                id: chat_id,
+                kind: Private(ChatPrivate {
+                    type_: (),
+                    username: Some("aka_dude".into()),
+                    first_name: Some("Андрей".into()),
+                    last_name: Some("Власов".into()),
+                }),
+                photo: None,
+            },
+            via_bot: None,
+            kind: Common(MessageCommon {
+                from: Some(User {
+                    id: 250918540,
+                    is_bot: false,
+                    first_name: "Андрей".into(),
+                    last_name: Some("Власов".into()),
+                    username: Some("aka_dude".into()),
+                    language_code: Some("en".into()),
+                }),
+                forward_kind: Origin(ForwardOrigin { reply_to_message: None }),
+                edit_date: None,
+                media_kind: Text(MediaText { text: text.into(), entities: vec![] }),
+                reply_markup: None,
+            }),
+        }))
     }
 }

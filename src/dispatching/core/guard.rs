@@ -1,6 +1,6 @@
-use crate::dispatching::dispatcher_context::DispatcherContext;
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
+use crate::dispatching::core::Context;
 
 pub trait AsyncBorrowSendFn<'a, T>
 where
@@ -33,7 +33,12 @@ impl<F, Infer> GuardFnWrapper<F, Infer> {
     }
 }
 
-impl<F, Upd> Guard<Upd> for GuardFnWrapper<F, ()>
+pub struct GiveSomeReturnFuture;
+pub struct GiveSomeReturnBool;
+pub struct GiveCtxToUpdReturnFuture;
+pub struct GiveCtxToUpdReturnBool;
+
+impl<F, Upd> Guard<Upd> for GuardFnWrapper<F, GiveSomeReturnFuture>
 where
     Upd: ?Sized + 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
@@ -43,7 +48,7 @@ where
     }
 }
 
-impl<F, Upd> Guard<Upd> for GuardFnWrapper<F, bool>
+impl<F, Upd> Guard<Upd> for GuardFnWrapper<F, GiveSomeReturnBool>
 where
     Upd: ?Sized,
     F: Fn(&Upd) -> bool,
@@ -53,41 +58,24 @@ where
     }
 }
 
-impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, ((), ())>
+impl<Ctx, F, Upd> Guard<Ctx> for GuardFnWrapper<F, GiveCtxToUpdReturnFuture>
 where
+    Ctx: Context<Upd = Upd>,
     Upd: 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
-    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
-        Box::pin((self.0)(&cx.upd))
+    fn check<'a>(&self, cx: &'a Ctx) -> BoxFuture<'a, bool> {
+        Box::pin((self.0)(cx.get_upd()))
     }
 }
 
-impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, (bool, (), ())>
+impl<Ctx, F, Upd> Guard<Ctx> for GuardFnWrapper<F, GiveCtxToUpdReturnBool>
 where
+    Ctx: Context<Upd = Upd>,
     F: Fn(&Upd) -> bool,
 {
-    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
-        Box::pin(futures::future::ready((self.0)(&cx.upd))) as _
-    }
-}
-
-impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, ((),)>
-where
-    Upd: 'static,
-    F: for<'a> AsyncBorrowSendFn<'a, DispatcherContext<Upd>, Out = bool>,
-{
-    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
-        Box::pin((self.0)(&cx))
-    }
-}
-
-impl<F, Upd> Guard<DispatcherContext<Upd>> for GuardFnWrapper<F, (bool, ())>
-where
-    F: Fn(&DispatcherContext<Upd>) -> bool,
-{
-    fn check<'a>(&self, cx: &'a DispatcherContext<Upd>) -> BoxFuture<'a, bool> {
-        Box::pin(futures::future::ready((self.0)(&cx))) as _
+    fn check<'a>(&self, cx: &'a Ctx) -> BoxFuture<'a, bool> {
+        Box::pin(futures::future::ready((self.0)(cx.get_upd()))) as _
     }
 }
 
@@ -105,60 +93,43 @@ where
     }
 }
 
-impl<F, Upd> IntoGuard<Upd, GuardFnWrapper<F, ()>> for F
+impl<F, Upd> IntoGuard<Upd, GuardFnWrapper<F, GiveSomeReturnFuture>> for F
 where
     Upd: ?Sized + 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
-    fn into_guard(self) -> GuardFnWrapper<F, ()> {
+    fn into_guard(self) -> GuardFnWrapper<F, GiveSomeReturnFuture> {
         GuardFnWrapper::new(self)
     }
 }
 
-impl<F, Upd> IntoGuard<Upd, GuardFnWrapper<F, bool>> for F
+impl<F, Upd> IntoGuard<Upd, GuardFnWrapper<F, GiveSomeReturnBool>> for F
 where
     Upd: ?Sized,
     F: Fn(&Upd) -> bool,
 {
-    fn into_guard(self) -> GuardFnWrapper<F, bool> {
+    fn into_guard(self) -> GuardFnWrapper<F, GiveSomeReturnBool> {
         GuardFnWrapper::new(self)
     }
 }
 
-impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, ((), ())>> for F
+impl<Ctx, F, Upd> IntoGuard<Ctx, GuardFnWrapper<F, GiveCtxToUpdReturnFuture>> for F
 where
+    Ctx: Context<Upd = Upd>,
     Upd: 'static,
     F: for<'a> AsyncBorrowSendFn<'a, Upd, Out = bool>,
 {
-    fn into_guard(self) -> GuardFnWrapper<F, ((), ())> {
+    fn into_guard(self) -> GuardFnWrapper<F, GiveCtxToUpdReturnFuture> {
         GuardFnWrapper::new(self)
     }
 }
 
-impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, (bool, (), ())>> for F
+impl<Ctx, F, Upd> IntoGuard<Ctx, GuardFnWrapper<F, GiveCtxToUpdReturnBool>> for F
 where
+    Ctx: Context<Upd = Upd>,
     F: Fn(&Upd) -> bool,
 {
-    fn into_guard(self) -> GuardFnWrapper<F, (bool, (), ())> {
-        GuardFnWrapper::new(self)
-    }
-}
-
-impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, ((),)>> for F
-where
-    Upd: 'static,
-    F: for<'a> AsyncBorrowSendFn<'a, DispatcherContext<Upd>, Out = bool>,
-{
-    fn into_guard(self) -> GuardFnWrapper<F, ((),)> {
-        GuardFnWrapper::new(self)
-    }
-}
-
-impl<F, Upd> IntoGuard<DispatcherContext<Upd>, GuardFnWrapper<F, (bool, ())>> for F
-where
-    F: Fn(&DispatcherContext<Upd>) -> bool,
-{
-    fn into_guard(self) -> GuardFnWrapper<F, (bool, ())> {
+    fn into_guard(self) -> GuardFnWrapper<F, GiveCtxToUpdReturnBool> {
         GuardFnWrapper::new(self)
     }
 }

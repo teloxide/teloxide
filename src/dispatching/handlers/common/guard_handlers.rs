@@ -1,29 +1,30 @@
 use crate::dispatching::{
     core::{Guard, Guards, HandleFuture, HandleResult, Handler},
-    dispatcher_context::DispatcherContext,
 };
 use std::{marker::PhantomData, sync::Arc};
+use crate::dispatching::core::Context;
 
-pub struct GuardsHandler<Upd> {
-    guards: Arc<Guards<DispatcherContext<Upd>>>,
+pub struct GuardsHandler<Upd, Ctx: Context<Upd = Upd>> {
+    guards: Arc<Guards<Ctx>>,
 }
 
-impl<Upd> GuardsHandler<Upd> {
-    pub fn new(guards: Guards<DispatcherContext<Upd>>) -> Self {
+impl<Upd, Ctx: Context<Upd = Upd>> GuardsHandler<Upd, Ctx> {
+    pub fn new(guards: Guards<Ctx>) -> Self {
         GuardsHandler { guards: Arc::new(guards) }
     }
 }
 
-impl<Upd, Err> Handler<DispatcherContext<Upd>, Err> for GuardsHandler<Upd>
+impl<Upd, Ctx, Err> Handler<Ctx, Err> for GuardsHandler<Upd, Ctx>
 where
     Upd: Send + Sync + 'static,
+    Ctx: Context<Upd = Upd> + Send + Sync+ 'static,
 {
-    fn handle(&self, data: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+    fn handle(&self, ctx: Ctx) -> HandleFuture<Err, Ctx> {
         let guards = self.guards.clone();
 
         Box::pin(async move {
-            match guards.check(&data).await {
-                true => Err(data),
+            match guards.check(&ctx).await {
+                true => Err(ctx),
                 false => Ok(HandleResult::Ok),
             }
         })
@@ -46,15 +47,16 @@ impl<Guard, Handler, Err> GuardHandler<Guard, Handler, Err> {
     }
 }
 
-impl<Upd, GuardT, HandlerT, Err> Handler<DispatcherContext<Upd>, Err>
+impl<Ctx, Upd, GuardT, HandlerT, Err> Handler<Ctx, Err>
     for GuardHandler<GuardT, HandlerT, Err>
 where
+    Ctx: Context<Upd = Upd> + Send + Sync + 'static,
     Upd: Send + Sync + 'static,
-    GuardT: Guard<DispatcherContext<Upd>> + Send + Sync + 'static,
-    HandlerT: Handler<DispatcherContext<Upd>, Err> + Send + Sync + 'static,
+    GuardT: Guard<Ctx> + Send + Sync + 'static,
+    HandlerT: Handler<Ctx, Err> + Send + Sync + 'static,
     Err: 'static,
 {
-    fn handle(&self, data: DispatcherContext<Upd>) -> HandleFuture<Err, DispatcherContext<Upd>> {
+    fn handle(&self, data: Ctx) -> HandleFuture<Err, Ctx> {
         let guard = self.guard.clone();
         let wrong_handler = self.wrong_handler.clone();
 

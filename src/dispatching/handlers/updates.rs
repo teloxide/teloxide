@@ -6,32 +6,33 @@ use crate::{
     types::Update,
 };
 use crate::dispatching::handlers::inline_queries::InlineQueriesHandlerBuilder;
+use crate::dispatching::core::Context;
 
 pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
     UpdateParser::new(parser::Update)
 }
 
-pub fn message<Err>() -> MessageHandlerBuilder<parser::Message, Err> {
+pub fn message<Ctx: Context<Upd = types::Message>, Err>() -> MessageHandlerBuilder<Ctx, parser::Message, Err> {
     MessageHandlerBuilder::new(parser::Message)
 }
 
-pub fn edited_message<Err>(
-) -> MessageHandlerBuilder<parser::EditedMessage, Err> {
+pub fn edited_message<Ctx: Context<Upd = types::Message>, Err>(
+) -> MessageHandlerBuilder<Ctx, parser::EditedMessage, Err> {
     MessageHandlerBuilder::new(parser::EditedMessage)
 }
 
-pub fn channel_post<Err>(
-) -> MessageHandlerBuilder<parser::ChannelPost, Err> {
+pub fn channel_post<Ctx: Context<Upd = types::Message>, Err>(
+) -> MessageHandlerBuilder<Ctx, parser::ChannelPost, Err> {
     MessageHandlerBuilder::new(parser::ChannelPost)
 }
 
-pub fn edited_channel_post<Err>(
-) -> MessageHandlerBuilder<parser::EditedChannelPost, Err> {
+pub fn edited_channel_post<Ctx: Context<Upd = types::Message>, Err>(
+) -> MessageHandlerBuilder<Ctx, parser::EditedChannelPost, Err> {
     MessageHandlerBuilder::new(parser::EditedChannelPost)
 }
 
-pub fn inline_query<Err>(
-) -> InlineQueriesHandlerBuilder<parser::InlineQuery, Err> {
+pub fn inline_query<Ctx: Context<Upd = types::InlineQuery>, Err>(
+) -> InlineQueriesHandlerBuilder<Ctx, parser::InlineQuery, Err> {
     InlineQueriesHandlerBuilder::new(parser::InlineQuery)
 }
 

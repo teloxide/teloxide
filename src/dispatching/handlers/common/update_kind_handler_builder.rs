@@ -4,22 +4,23 @@ use crate::{
             DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, OrGuard, Parser,
             RecombineFrom,
         },
-        dispatcher_context::DispatcherContext,
         handlers::common::{GuardHandler, GuardsHandler, UpdateKindHandler},
         updates::UpdateRest,
     },
     types::Update,
 };
+use crate::dispatching::core::{Context};
 
-pub struct UpdateKindHandlerBuilder<Upd, UpdateParser, Err> {
+pub struct UpdateKindHandlerBuilder<Upd, Ctx: Context<Upd = Upd>, UpdateParser, Err> {
     update_parser: UpdateParser,
-    demux: DemuxBuilder<DispatcherContext<Upd>, Err>,
-    guards: Guards<DispatcherContext<Upd>>,
-    last_guard: Option<Box<dyn Guard<DispatcherContext<Upd>> + Send + Sync>>,
+    demux: DemuxBuilder<Ctx, Err>,
+    guards: Guards<Ctx>,
+    last_guard: Option<Box<dyn Guard<Ctx> + Send + Sync>>,
 }
 
-impl<Upd, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
+impl<Upd, Ctx, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
 where
+    Ctx: Context<Upd = Upd>,
     UpdateParser: Parser<Update, Upd, UpdateRest>,
     Update: RecombineFrom<UpdateParser, Upd, UpdateRest>,
 {
@@ -33,16 +34,17 @@ where
     }
 }
 
-impl<Upd, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
+impl<Upd, Ctx, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
 where
+    Ctx: Context<Upd = Upd> + Send + Sync + 'static,
     Upd: Send + Sync + 'static,
     Err: Send + 'static,
     UpdateParser: Parser<Update, Upd, UpdateRest>,
     Update: RecombineFrom<UpdateParser, Upd, UpdateRest>,
 {
-    pub fn by<F, H>(mut self, f: F) -> UpdateKindHandler<Upd, UpdateParser, H, Err>
+    pub fn by<F, H>(mut self, f: F) -> UpdateKindHandler<Upd, Ctx, UpdateParser, H, Err>
     where
-        H: Handler<DispatcherContext<Upd>, Err> + 'static,
+        H: Handler<Ctx, Err> + 'static,
         F: IntoHandler<H>,
     {
         self.create_guards_service();
@@ -52,21 +54,25 @@ where
     }
 }
 
-impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + 'static>
-    UpdateKindHandlerBuilder<Upd, UpdateParser, Err>
+impl<Upd, Ctx, UpdateParser, Err>
+    UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
+where
+    Ctx: Context<Upd = Upd> + Send + Sync + 'static,
+    Upd: Send + Sync + 'static,
+    Err: Send + 'static,
 {
-    pub fn with_guard<G: Guard<DispatcherContext<Upd>> + Send + Sync + 'static>(
+    pub fn with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
         mut self,
-        guard: impl IntoGuard<DispatcherContext<Upd>, G> + 'static,
+        guard: impl IntoGuard<Ctx, G> + 'static,
     ) -> Self {
         self.add_last_to_guards();
         self.last_guard = Some(Box::new(guard.into_guard()) as _);
         self
     }
 
-    pub fn or_with_guard<G: Guard<DispatcherContext<Upd>> + Send + Sync + 'static>(
+    pub fn or_with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
         mut self,
-        guard: impl IntoGuard<DispatcherContext<Upd>, G> + 'static,
+        guard: impl IntoGuard<Ctx, G> + 'static,
     ) -> Self {
         let prev = self
             .last_guard
@@ -79,7 +85,7 @@ impl<Upd: Send + Sync + 'static, UpdateParser, Err: Send + 'static>
     pub fn or_else<F, H>(mut self, func: F) -> Self
     where
         F: IntoHandler<H>,
-        H: Handler<DispatcherContext<Upd>, Err> + Send + Sync + 'static,
+        H: Handler<Ctx, Err> + Send + Sync + 'static,
     {
         let prev_guard = self
             .last_guard

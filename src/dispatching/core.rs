@@ -6,7 +6,7 @@ mod handler;
 #[allow(dead_code)]
 mod store;
 
-pub use context::{FromContext, FromContextOwn, GetCtx};
+pub use context::{FromContext, FromContextOwn, GetCtx, Context, ParseContext, ContextWith};
 pub use demux::{Demux, DemuxBuilder};
 pub use dispatch_error::{DispatchError, HandleResult};
 pub use guard::{AsyncBorrowSendFn, Guard, GuardFnWrapper, Guards, IntoGuard, OrGuard};

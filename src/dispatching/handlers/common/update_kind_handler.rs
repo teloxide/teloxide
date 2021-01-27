@@ -1,24 +1,27 @@
 use crate::{
     dispatching::{
         core::{Demux, HandleFuture, Handler, Parser, ParserOut, RecombineFrom},
-        dispatcher_context::DispatcherContext,
         updates::UpdateRest,
     },
     types::Update,
 };
 use std::sync::Arc;
+use crate::dispatching::core::{ContextWith, ParseContext, Context};
 
-pub struct UpdateKindHandler<Upd, ParserT, HandlerT, Err> {
+pub struct UpdateKindHandler<Upd, Ctx: Context<Upd=Upd>, ParserT, HandlerT, Err> {
     parser: Arc<ParserT>,
     handler: Arc<HandlerT>,
-    demux: Arc<Demux<DispatcherContext<Upd>, Err>>,
+    demux: Arc<Demux<Ctx, Err>>,
 }
 
-impl<Upd, ParserT, HandlerT, Err> UpdateKindHandler<Upd, ParserT, HandlerT, Err> {
+impl<Upd, Ctx, ParserT, HandlerT, Err> UpdateKindHandler<Upd, Ctx, ParserT, HandlerT, Err>
+where
+    Ctx: Context<Upd = Upd>
+{
     pub fn new(
         parser: ParserT,
         handler: HandlerT,
-        demux: Demux<DispatcherContext<Upd>, Err>,
+        demux: Demux<Ctx, Err>,
     ) -> Self {
         UpdateKindHandler {
             parser: Arc::new(parser),
@@ -28,31 +31,33 @@ impl<Upd, ParserT, HandlerT, Err> UpdateKindHandler<Upd, ParserT, HandlerT, Err>
     }
 }
 
-impl<Upd, ParserT, Err, HandlerT> Handler<DispatcherContext<Update>, Err>
-    for UpdateKindHandler<Upd, ParserT, HandlerT, Err>
+impl<Upd, Ctx, ParserT, Err, HandlerT> Handler<Ctx, Err>
+    for UpdateKindHandler<Upd, Ctx::Context, ParserT, HandlerT, Err>
 where
     Upd: Send + Sync + 'static,
     Err: Send + 'static,
+    Ctx: Context<Upd = Update> + ParseContext<Upd> + Send + 'static,
+    <Ctx as ContextWith<Upd>>::Context: Send,
     ParserT: Parser<Update, Upd, UpdateRest> + Send + Sync + 'static,
-    HandlerT: Handler<DispatcherContext<Upd>, Err> + Send + Sync + 'static,
+    HandlerT: Handler<Ctx::Context, Err> + Send + Sync + 'static,
     Update: RecombineFrom<ParserT, Upd, UpdateRest>,
 {
     fn handle(
         &self,
-        cx: DispatcherContext<Update>,
-    ) -> HandleFuture<Err, DispatcherContext<Update>> {
+        cx: Ctx,
+    ) -> HandleFuture<Err, Ctx> {
         let parser = self.parser.clone();
         let demux = self.demux.clone();
         let handler = self.handler.clone();
 
         Box::pin(async move {
-            let ParserOut { data: cx, rest } = cx.parse_upd(parser.as_ref())?;
+            let (cx, rest) = cx.parse(|upd| parser.as_ref().parse(upd))?;
             match demux.handle(cx).await {
                 Ok(res) => Ok(res),
                 Err(upd) => handler
                     .handle(upd)
                     .await
-                    .map_err(|e| <DispatcherContext<Update>>::recombine(ParserOut::new(e, rest))),
+                    .map_err(|e| Ctx::recombine(ParserOut::new(e, rest))),
             }
         })
     }

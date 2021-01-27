@@ -1,10 +1,10 @@
 use crate::dispatching::handlers::common::UpdateKindHandlerBuilder;
 use crate::types::{InlineQuery, Location, User};
-use crate::dispatching::core::{Guard, IntoGuard};
+use crate::dispatching::core::{Guard, IntoGuard, GetCtx, Context};
 use crate::dispatching::dispatcher_context::DispatcherContext;
 use futures::future::BoxFuture;
 
-pub type InlineQueriesHandlerBuilder<Parser, Err> = UpdateKindHandlerBuilder<InlineQuery, Parser, Err>;
+pub type InlineQueriesHandlerBuilder<Ctx, Parser, Err> = UpdateKindHandlerBuilder<InlineQuery, Ctx, Parser, Err>;
 
 impl InlineQuery {
     fn get_id(&self) -> Option<&str> {
@@ -30,8 +30,12 @@ macro_rules! impl_with_and_or {
             guard: G,
         }
 
-        impl<G: Guard<$item>> Guard<DispatcherContext<InlineQuery>> for Checker<G> {
-            fn check<'a>(&self, cx: &'a DispatcherContext<InlineQuery>) -> BoxFuture<'a, bool> {
+        impl<Ctx, G: Guard<$item>> Guard<Ctx> for Checker<G>
+        where
+            Ctx: GetCtx<DispatcherContext<InlineQuery>>
+        {
+            fn check<'a>(&self, cx: &'a Ctx) -> BoxFuture<'a, bool> {
+                let cx = cx.get();
                 match $get_field(&cx.upd) {
                     Some(x) => self.guard.check(x),
                     None => Box::pin(futures::future::ready(false)) as _,
@@ -39,13 +43,19 @@ macro_rules! impl_with_and_or {
             }
         }
 
-        impl<G: Guard<$item>> IntoGuard<DispatcherContext<InlineQuery>, Checker<G>> for Checker<G> {
+        impl<Ctx, G: Guard<$item>> IntoGuard<Ctx, Checker<G>> for Checker<G>
+        where
+            Ctx: GetCtx<DispatcherContext<InlineQuery>>
+        {
             fn into_guard(self) -> Self {
                 self
             }
         }
         paste::paste! {
-        impl<UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
+        impl<Ctx, UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<Ctx, UpdateParser, Err>
+         where
+            Ctx: Context<Upd = InlineQuery> + GetCtx<DispatcherContext<InlineQuery>> + Send + Sync + 'static,
+         {
             pub fn [<with_ $ident>]<G: Guard<$item> + Send + Sync + 'static>(self, guard: impl IntoGuard<$item, G> + 'static) -> Self {
                 let checker = Checker { guard: guard.into_guard() };
                 self.with_guard(checker)
@@ -67,7 +77,10 @@ impl_with_and_or! {
     (get_offset, str, InlineQuery::get_offset),
 }
 
-impl<UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<UpdateParser, Err> {
+impl<Ctx, UpdateParser, Err: Send + 'static> InlineQueriesHandlerBuilder<Ctx, UpdateParser, Err>
+where
+    Ctx: Context<Upd = InlineQuery> + Send + Sync + 'static,
+{
     pub fn has_location(self) -> Self {
         self.with_guard(|query: &InlineQuery| query.location.is_some())
     }

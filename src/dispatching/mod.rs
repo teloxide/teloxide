@@ -7,7 +7,7 @@ mod handlers;
 mod tests;
 mod update_listeners;
 pub mod update_with_cx;
-//pub mod dialogue;
+pub mod dialogue;
 pub(crate) mod repls;
 
 pub use dispatcher::{Dispatcher, DispatcherBuilder};

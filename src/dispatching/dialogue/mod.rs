@@ -141,15 +141,14 @@
 #![allow(clippy::type_complexity)]
 
 mod dialogue_dispatcher;
-mod dialogue_dispatcher_handler;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 mod transition;
+mod dialogue_ctx;
 
-pub use dialogue_dispatcher::DialogueDispatcher;
-pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
+pub use dialogue_dispatcher::{DialogueDispatcher, DialogueDispatcherBuilder};
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;

@@ -20,8 +20,8 @@ pub struct InMemStorage<D> {
 
 impl<S> InMemStorage<S> {
     #[must_use]
-    pub fn new() -> Arc<Self> {
-        Arc::new(Self { map: Mutex::new(HashMap::new()) })
+    pub fn new() -> Self {
+        Self { map: Mutex::new(HashMap::new()) }
     }
 }
 

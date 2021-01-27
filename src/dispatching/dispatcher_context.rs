@@ -3,12 +3,47 @@ use crate::{
     Bot,
 };
 use std::sync::Arc;
-use crate::dispatching::core::GetCtx;
+use crate::dispatching::core::{GetCtx, Context, ParseContext, ContextWith};
 
+#[derive(Debug)]
 pub struct DispatcherContext<Upd> {
     pub upd: Upd,
     pub bot: Bot,
     pub bot_name: Arc<str>,
+}
+
+impl<Upd> Context for DispatcherContext<Upd> {
+    type Upd = Upd;
+
+    fn get_upd(&self) -> &Self::Upd {
+        &self.upd
+    }
+}
+
+impl<Upd1, Upd2> ContextWith<Upd2> for DispatcherContext<Upd1> {
+    type Context = DispatcherContext<Upd2>;
+}
+
+impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
+    fn parse<Rest>(self, f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>) -> Result<(DispatcherContext<Upd2>, Rest), Self> {
+        let Self { upd, bot, bot_name } = self;
+        let ParserOut { data: upd, rest } = match f(upd) {
+            Ok(t) => t,
+            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name }),
+        };
+        Ok((DispatcherContext { upd, bot, bot_name }, rest))
+    }
+
+    fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self where
+        Upd1: RecombineFrom<Parser, Upd2, Rest>
+    {
+        let ParserOut { data: DispatcherContext { upd, bot, bot_name }, rest } = info;
+        DispatcherContext {
+            upd: Upd1::recombine(ParserOut::new(upd, rest)),
+            bot,
+            bot_name
+        }
+    }
 }
 
 impl<Upd> DispatcherContext<Upd> {
