@@ -1,6 +1,7 @@
 //! Commonly used items.
 
 pub use crate::{
+    dispatching::UpdateWithCx,
     requests::{respond, Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,
