@@ -18,7 +18,12 @@ use tokio::sync::mpsc;
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 pub struct DialogueWithCx<Upd, D, E> {
     pub cx: UpdateWithCx<Upd>,
-    pub dialogue: Option<D>,
+    pub dialogue: Dialogue<D, E>
+}
+
+pub struct Dialogue<D, E> {
+    pub data: Option<D>,
+    pub chat_id: Option<i64>,
     storage: Arc<dyn Storage<D, Error = E> + Send + Sync>,
     senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
 }
@@ -31,25 +36,27 @@ where
 {
     fn from_context(context: Ctx) -> Self {
         let cx = context.get_own();
-        let DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id: _ } = cx;
+        let DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id } = cx;
         DialogueWithCx {
             cx: UpdateWithCx::from_context(dispatcher_ctx),
-            storage,
-            dialogue,
-            senders,
+            dialogue: Dialogue {
+                data: dialogue,
+                storage,
+                senders,
+                chat_id,
+            }
         }
     }
 }
 
-impl<Upd, D, E> DialogueWithCx<Upd, D, E>
+impl<D, E> Dialogue<D, E>
 where
-    Upd: GetChatId,
     D: Default + Send + 'static,
 {
-    pub async fn next(self, factory: impl Fn(D) -> DialogueStage<D>) -> UpdateWithCx<Upd> {
-        let chat_id = self.cx.update.chat_id();
-        let DialogueWithCx { cx, dialogue, storage, senders } = self;
-        let next = factory(dialogue.unwrap_or_default());
+    pub async fn next(self, factory: impl Fn(D) -> DialogueStage<D>) -> Result<(), ()> {
+        let Dialogue { data, chat_id, storage, senders } = self;
+        let chat_id = chat_id.ok_or(())?;
+        let next = factory(data.unwrap_or_default());
 
         match next {
             DialogueStage::Next(new_dialogue) => {
@@ -69,9 +76,9 @@ where
                 // We already removed a dialogue from `storage` (see
                 // the beginning of this async block).
             }
-        }
+        };
 
-        cx
+        Ok(())
     }
 }
 

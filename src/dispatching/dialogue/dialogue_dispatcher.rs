@@ -331,10 +331,10 @@ mod tests {
 
         let dispatcher = DialogueDispatcherBuilder::new(Bot::new(""), "", InMemStorage::new())
             .handle(updates::message().by(
-                |cx: DialogueWithCx<Message, (), Infallible>| async move {
+                |DialogueWithCx { cx, dialogue }: DialogueWithCx<Message, (), Infallible>| async move {
                     delay_for(Duration::from_millis(300)).await;
 
-                    match (cx.cx.update.chat_id(), cx.cx.update.text().unwrap()) {
+                    match (cx.update.chat_id(), cx.update.text().unwrap()) {
                         (1, s) => {
                             SEQ1.lock().await.push(s.parse().unwrap());
                         }
@@ -346,7 +346,7 @@ mod tests {
                         }
                         _ => unreachable!(),
                     }
-                    cx.next(|()| DialogueStage::Next(())).await;
+                    dialogue.next(|()| DialogueStage::Next(())).await.unwrap();
                 },
             ))
             .error_handler(|_| async move { unreachable!() })
