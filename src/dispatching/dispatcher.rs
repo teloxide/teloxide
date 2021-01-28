@@ -10,12 +10,14 @@ use crate::{
 };
 use futures::StreamExt;
 use std::{future::Future, sync::Arc};
+use crate::dispatching::core::Store;
 
 pub struct Dispatcher<Err, ErrHandler, Ctx = DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
     demux: Demux<Ctx, Err>,
     error_handler: ErrHandler,
+    global_data: Arc<Store>,
 }
 
 impl<Err, ErrHandler> Dispatcher<Err, ErrHandler>
@@ -76,7 +78,7 @@ where
     }
 
     pub fn make_cx(&self, upd: Update) -> DispatcherContext<Update> {
-        DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone())
+        DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone(), self.global_data.clone())
     }
 }
 
@@ -85,6 +87,7 @@ pub struct DispatcherBuilder<Err, Handler, Ctx = DispatcherContext<Update>> {
     bot_name: Arc<str>,
     demux: DemuxBuilder<Ctx, Err>,
     error_handler: Handler,
+    global_data: Store,
 }
 
 impl<Err, Ctx> DispatcherBuilder<Err, (), Ctx> {
@@ -94,6 +97,7 @@ impl<Err, Ctx> DispatcherBuilder<Err, (), Ctx> {
             bot_name: bot_name.into(),
             demux: DemuxBuilder::new(),
             error_handler: (),
+            global_data: Store::new()
         }
     }
 
@@ -101,12 +105,17 @@ impl<Err, Ctx> DispatcherBuilder<Err, (), Ctx> {
     where
         H: ErrorHandler<DispatchError<Ctx, Err>>,
     {
-        let DispatcherBuilder { bot, bot_name, demux, .. } = self;
-        DispatcherBuilder { bot, bot_name, demux, error_handler }
+        let DispatcherBuilder { bot, bot_name, demux, global_data, .. } = self;
+        DispatcherBuilder { bot, bot_name, demux, error_handler, global_data }
     }
 }
 
 impl<Err, ErrHandler, Ctx> DispatcherBuilder<Err, ErrHandler, Ctx> {
+    pub fn data<T: Send + Sync + 'static>(mut self, data: T) -> Self {
+        self.global_data.insert(data);
+        self
+    }
+
     pub fn handle(mut self, handler: impl Handler<Ctx, Err> + Send + Sync + 'static) -> Self {
         self._add_handler(handler);
         self
@@ -122,7 +131,7 @@ where
     ErrHandler: ErrorHandler<DispatchError<Ctx, Err>>,
 {
     pub fn build(self) -> Dispatcher<Err, ErrHandler, Ctx> {
-        let DispatcherBuilder { bot, bot_name, demux, error_handler, .. } = self;
-        Dispatcher { bot, bot_name, demux: demux.build(), error_handler }
+        let DispatcherBuilder { bot, bot_name, demux, error_handler, global_data } = self;
+        Dispatcher { bot, bot_name, demux: demux.build(), error_handler, global_data: Arc::new(global_data) }
     }
 }

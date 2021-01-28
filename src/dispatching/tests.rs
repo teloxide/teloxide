@@ -11,6 +11,7 @@ use std::{
         Arc,
     },
 };
+use crate::dispatching::tel;
 
 #[tokio::test]
 async fn test() {
@@ -110,6 +111,24 @@ async fn update_with_cx() {
                 .by(|cx: UpdateWithCx<Message>| assert_eq!(cx.update.text().unwrap(), "text2")),
         )
         .error_handler(|_| async {})
+        .build();
+
+    let message = Update::new(0, UpdateKind::Message(text_message("text2")));
+
+    dispatcher.dispatch_one(message).await;
+}
+
+#[tokio::test]
+async fn global_data() {
+    struct SomeData(u8);
+
+    let dispatcher = DispatcherBuilder::<Infallible, _>::new(dummy_bot(), "bot_name")
+        .data(SomeData(1))
+        .handle(
+            updates::message()
+                .by(|_: Message, data: tel::Data<SomeData>| assert_eq!((data.0).0, 1)),
+        )
+        .error_handler(|_| async { unreachable!() })
         .build();
 
     let message = Update::new(0, UpdateKind::Message(text_message("text2")));

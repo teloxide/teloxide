@@ -2,9 +2,10 @@ use std::{
     any::{Any, TypeId},
     collections::HashMap,
 };
+use std::sync::Arc;
 
 pub struct Store {
-    map: HashMap<TypeId, Box<dyn Any>>,
+    map: HashMap<TypeId, Arc<dyn Any + Send + Sync>>,
 }
 
 impl Store {
@@ -14,19 +15,20 @@ impl Store {
 
     pub fn insert<T>(&mut self, data: T)
     where
-        T: 'static,
+        T: Send + Sync + 'static,
     {
-        self.map.insert(TypeId::of::<T>(), Box::new(data));
+        self.map.insert(TypeId::of::<T>(), Arc::new(data));
     }
 
-    pub fn get<T>(&self) -> Option<&T>
+    pub fn get<T>(&self) -> Option<Arc<T>>
     where
-        T: 'static,
+        T: Send + Sync + 'static,
     {
         let item = self.map.get(&TypeId::of::<T>());
         item.map(|b| {
-            b.as_ref()
-                .downcast_ref()
+            b
+                .clone()
+                .downcast()
                 .expect("We add items by TypeId, so if we get the item it must be expected type")
         })
     }

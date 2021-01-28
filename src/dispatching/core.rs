@@ -3,7 +3,6 @@ mod demux;
 mod dispatch_error;
 mod guard;
 mod handler;
-#[allow(dead_code)]
 mod store;
 
 pub use context::{Context, ContextWith, FromContext, FromContextOwn, GetCtx, ParseContext};
@@ -14,3 +13,4 @@ pub use handler::{
     FnHandlerWrapper, HandleFuture, Handler, IntoHandler, Parser, ParserHandler, ParserOut,
     RecombineFrom,
 };
+pub use store::Store;

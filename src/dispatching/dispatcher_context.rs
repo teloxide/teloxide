@@ -5,12 +5,25 @@ use crate::{
     Bot,
 };
 use std::sync::Arc;
+use crate::dispatching::core::Store;
+use std::fmt::Debug;
+use serde::__private::Formatter;
 
-#[derive(Debug)]
 pub struct DispatcherContext<Upd> {
     pub upd: Upd,
     pub bot: Bot,
     pub bot_name: Arc<str>,
+    pub global_data: Arc<Store>,
+}
+
+impl<Upd: Debug> Debug for DispatcherContext<Upd> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        f.debug_struct("DispatcherContext")
+            .field("upd", &self.upd)
+            .field("bot", &self.bot)
+            .field("bot_name", &self.bot_name)
+            .finish()
+    }
 }
 
 impl<Upd> Context for DispatcherContext<Upd> {
@@ -30,38 +43,38 @@ impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
         self,
         f: impl Fn(Upd1) -> Result<ParserOut<Upd2, Rest>, Upd1>,
     ) -> Result<(DispatcherContext<Upd2>, Rest), Self> {
-        let Self { upd, bot, bot_name } = self;
+        let Self { upd, bot, bot_name, global_data } = self;
         let ParserOut { data: upd, rest } = match f(upd) {
             Ok(t) => t,
-            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name }),
+            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name, global_data }),
         };
-        Ok((DispatcherContext { upd, bot, bot_name }, rest))
+        Ok((DispatcherContext { upd, bot, bot_name, global_data }, rest))
     }
 
     fn recombine<Parser, Rest>(info: ParserOut<Self::Context, Rest>) -> Self
     where
         Upd1: RecombineFrom<Parser, Upd2, Rest>,
     {
-        let ParserOut { data: DispatcherContext { upd, bot, bot_name }, rest } = info;
-        DispatcherContext { upd: Upd1::recombine(ParserOut::new(upd, rest)), bot, bot_name }
+        let ParserOut { data: DispatcherContext { upd, bot, bot_name, global_data }, rest } = info;
+        DispatcherContext { upd: Upd1::recombine(ParserOut::new(upd, rest)), bot, bot_name, global_data }
     }
 }
 
 impl<Upd> DispatcherContext<Upd> {
-    pub fn new(upd: Upd, bot: Bot, bot_name: impl Into<Arc<str>>) -> Self {
-        DispatcherContext { upd, bot, bot_name: bot_name.into() }
+    pub fn new(upd: Upd, bot: Bot, bot_name: impl Into<Arc<str>>, global_data: Arc<Store>) -> Self {
+        DispatcherContext { upd, bot, bot_name: bot_name.into(), global_data }
     }
 
     pub fn parse_upd<OtherUpd, Rest>(
         self,
         f: &impl Parser<Upd, OtherUpd, Rest>,
     ) -> Result<ParserOut<DispatcherContext<OtherUpd>, Rest>, Self> {
-        let DispatcherContext { upd, bot, bot_name } = self;
+        let DispatcherContext { upd, bot, bot_name, global_data } = self;
         let ParserOut { data, rest } = match f.parse(upd) {
             Ok(out) => out,
-            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name }),
+            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name, global_data }),
         };
-        Ok(ParserOut::new(DispatcherContext::new(data, bot, bot_name), rest))
+        Ok(ParserOut::new(DispatcherContext::new(data, bot, bot_name, global_data), rest))
     }
 }
 
@@ -81,8 +94,8 @@ where
     UpdTo: RecombineFrom<ParserT, UpdFrom, Rest>,
 {
     fn recombine(info: ParserOut<DispatcherContext<UpdFrom>, Rest>) -> Self {
-        let (DispatcherContext { upd, bot, bot_name }, rest) = info.into_inner();
+        let (DispatcherContext { upd, bot, bot_name, global_data }, rest) = info.into_inner();
         let new_upd = UpdTo::recombine(ParserOut::new(upd, rest));
-        DispatcherContext { upd: new_upd, bot, bot_name }
+        DispatcherContext { upd: new_upd, bot, bot_name, global_data }
     }
 }
