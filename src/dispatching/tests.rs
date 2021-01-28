@@ -12,6 +12,7 @@ use std::{
     },
 };
 use crate::dispatching::tel;
+use crate::dispatching::dialogue::{DialogueDispatcherBuilder, InMemStorage, DialogueWithCx, DialogueStage, DialogueHandlerBuilderExt};
 
 #[tokio::test]
 async fn test() {
@@ -134,6 +135,55 @@ async fn global_data() {
     let message = Update::new(0, UpdateKind::Message(text_message("text2")));
 
     dispatcher.dispatch_one(message).await;
+}
+
+#[tokio::test]
+async fn with_dialogue() {
+    #[derive(Debug, PartialEq, Clone)]
+    enum Dialogue {
+        Start,
+        HaveData(u8),
+    }
+    impl Default for Dialogue {
+        fn default() -> Self {
+            Self::Start
+        }
+    }
+
+    let dispatcher = DialogueDispatcherBuilder::new(
+        dummy_bot(),
+        "bot_name",
+        InMemStorage::new()
+    )
+        .handle(
+            updates::message()
+                .with_dialogue(|d: &Dialogue| matches!(d, Dialogue::Start))
+                .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
+                    assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::Start);
+                    async move {
+                        dialogue.next(|_| DialogueStage::Next(Dialogue::HaveData(10))).await.unwrap();
+                    }
+                }),
+        )
+        .handle(
+            updates::message()
+                .with_dialogue(|d: &Dialogue| matches!(d, Dialogue::HaveData(_)))
+                .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
+                    assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::HaveData(10));
+                    async move {
+                        dialogue.next(|_| DialogueStage::Exit).await.unwrap();
+                    }
+                }),
+        )
+        .error_handler(|_| async { unreachable!() })
+        .build();
+
+    let message = Update::new(0, UpdateKind::Message(text_message("text2")));
+
+    dispatcher.dispatch_one(message.clone()).await;
+    dispatcher.dispatch_one(message.clone()).await;
+    dispatcher.dispatch_one(message.clone()).await;
+    dispatcher.dispatch_one(message.clone()).await;
 }
 
 fn dummy_bot() -> Bot {
