@@ -9,6 +9,7 @@ use crate::{
     },
     types::Update,
 };
+use crate::dispatching::core::HandlerBuilderWithGuards;
 
 pub struct UpdateKindHandlerBuilder<Upd, Ctx: Context<Upd = Upd>, UpdateParser, Err> {
     update_parser: UpdateParser,
@@ -53,13 +54,13 @@ where
     }
 }
 
-impl<Upd, Ctx, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
+impl<Upd, Ctx, UpdateParser, Err> HandlerBuilderWithGuards<Ctx, Err> for UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
 where
     Ctx: Context<Upd = Upd> + Send + Sync + 'static,
     Upd: Send + Sync + 'static,
     Err: Send + 'static,
 {
-    pub fn with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
+    fn with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
         mut self,
         guard: impl IntoGuard<Ctx, G> + 'static,
     ) -> Self {
@@ -68,7 +69,7 @@ where
         self
     }
 
-    pub fn or_with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
+    fn or_with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
         mut self,
         guard: impl IntoGuard<Ctx, G> + 'static,
     ) -> Self {
@@ -80,7 +81,7 @@ where
         self
     }
 
-    pub fn or_else<F, H>(mut self, func: F) -> Self
+    fn or_else<F, H>(mut self, func: F) -> Self
     where
         F: IntoHandler<H>,
         H: Handler<Ctx, Err> + Send + Sync + 'static,
@@ -95,6 +96,35 @@ where
         self.demux.add_service(GuardHandler::new(prev_guard, wrong_handler));
 
         self
+    }
+}
+
+impl<Upd, Ctx, UpdateParser, Err> UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
+where
+    Ctx: Context<Upd = Upd> + Send + Sync + 'static,
+    Upd: Send + Sync + 'static,
+    Err: Send + 'static,
+{
+    pub fn with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
+        self,
+        guard: impl IntoGuard<Ctx, G> + 'static,
+    ) -> Self {
+        HandlerBuilderWithGuards::with_guard(self, guard)
+    }
+
+    pub fn or_with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
+        self,
+        guard: impl IntoGuard<Ctx, G> + 'static,
+    ) -> Self {
+        HandlerBuilderWithGuards::or_with_guard(self, guard)
+    }
+
+    pub fn or_else<F, H>(self, func: F) -> Self
+    where
+        F: IntoHandler<H>,
+        H: Handler<Ctx, Err> + Send + Sync + 'static,
+    {
+        HandlerBuilderWithGuards::or_else(self, func)
     }
 
     fn create_guards_service(&mut self) {
