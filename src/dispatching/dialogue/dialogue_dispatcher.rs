@@ -306,7 +306,7 @@ mod tests {
 
     use crate::{
         dispatching::{
-            dialogue::{DialogueStage, DialogueWithCx, InMemStorage},
+            dialogue::{DialogueWithCx, InMemStorage},
             updates,
         },
         types::Message,
@@ -346,7 +346,7 @@ mod tests {
                         }
                         _ => unreachable!(),
                     }
-                    dialogue.next(|()| DialogueStage::Next(())).await.unwrap();
+                    dialogue.next(|()| ()).await.unwrap();
                 },
             ))
             .error_handler(|_| async move { unreachable!() })

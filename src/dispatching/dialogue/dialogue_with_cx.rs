@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         core::{FromContextOwn, GetCtx},
-        dialogue::{dialogue_ctx::DialogueContext, DialogueStage, GetChatId, Storage},
+        dialogue::{dialogue_ctx::DialogueContext, GetChatId, Storage},
         UpdateWithCx,
     },
     types::Update,
@@ -53,30 +53,32 @@ impl<D, E> Dialogue<D, E>
 where
     D: Default + Send + 'static,
 {
-    pub async fn next(self, factory: impl Fn(D) -> DialogueStage<D>) -> Result<(), ()> {
-        let Dialogue { data, chat_id, storage, senders } = self;
+    pub async fn next(self, factory: impl Fn(D) -> D) -> Result<(), ()> {
+        let Dialogue { data, chat_id, storage, .. } = self;
         let chat_id = chat_id.ok_or(())?;
         let next = factory(data.unwrap_or_default());
 
-        match next {
-            DialogueStage::Next(new_dialogue) => {
-                if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
-                    panic!(
-                        "Oops, you have an bug in your Storage: update_dialogue returns Some \
-                         after remove_dialogue"
-                    );
-                }
-            }
-            DialogueStage::Exit => {
-                // On the next .poll() call, the spawned future will
-                // return Poll::Ready, because we are dropping the
-                // sender right here:
-                senders.remove(&chat_id);
+        if let Ok(Some(_)) = storage.update_dialogue(chat_id, next).await {
+            panic!(
+                "Oops, you have an bug in your Storage: update_dialogue returns Some \
+                 after remove_dialogue"
+            );
+        }
 
-                // We already removed a dialogue from `storage` (see
-                // the beginning of this async block).
-            }
-        };
+        Ok(())
+    }
+
+    pub async fn exit(self) -> Result<(), ()> {
+        let Dialogue { chat_id, senders, .. } = self;
+        let chat_id = chat_id.ok_or(())?;
+
+        // On the next .poll() call, the spawned future will
+        // return Poll::Ready, because we are dropping the
+        // sender right here:
+        senders.remove(&chat_id);
+
+        // We already removed a dialogue from `storage` (see
+        // the beginning of this async block).
 
         Ok(())
     }

@@ -12,7 +12,7 @@ use std::{
     },
 };
 use crate::dispatching::tel;
-use crate::dispatching::dialogue::{DialogueDispatcherBuilder, InMemStorage, DialogueWithCx, DialogueStage, DialogueHandlerBuilderExt};
+use crate::dispatching::dialogue::{DialogueDispatcherBuilder, InMemStorage, DialogueWithCx, DialogueHandlerBuilderExt};
 
 #[tokio::test]
 async fn test() {
@@ -161,7 +161,7 @@ async fn with_dialogue() {
                 .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
                     assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::Start);
                     async move {
-                        dialogue.next(|_| DialogueStage::Next(Dialogue::HaveData(10))).await.unwrap();
+                        dialogue.next(|_| Dialogue::HaveData(10)).await.unwrap();
                     }
                 }),
         )
@@ -171,7 +171,7 @@ async fn with_dialogue() {
                 .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
                     assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::HaveData(10));
                     async move {
-                        dialogue.next(|_| DialogueStage::Exit).await.unwrap();
+                        dialogue.exit().await.unwrap();
                     }
                 }),
         )
