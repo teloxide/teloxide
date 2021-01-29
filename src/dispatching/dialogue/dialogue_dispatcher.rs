@@ -329,28 +329,35 @@ mod tests {
             static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
         }
 
-        let dispatcher = DialogueDispatcherBuilder::new(Bot::new(""), "", InMemStorage::new())
-            .handle(updates::message().by(
-                |DialogueWithCx { cx, dialogue }: DialogueWithCx<Message, (), Infallible>| async move {
-                    delay_for(Duration::from_millis(300)).await;
+        let dispatcher =
+            DialogueDispatcherBuilder::new(Bot::new(""), "", InMemStorage::new())
+                .handle(
+                    updates::message().by(
+                        |DialogueWithCx { cx, dialogue }: DialogueWithCx<
+                            Message,
+                            (),
+                            Infallible,
+                        >| async move {
+                            delay_for(Duration::from_millis(300)).await;
 
-                    match (cx.update.chat_id(), cx.update.text().unwrap()) {
-                        (1, s) => {
-                            SEQ1.lock().await.push(s.parse().unwrap());
-                        }
-                        (2, s) => {
-                            SEQ2.lock().await.push(s.parse().unwrap());
-                        }
-                        (3, s) => {
-                            SEQ3.lock().await.push(s.parse().unwrap());
-                        }
-                        _ => unreachable!(),
-                    }
-                    dialogue.next(|()| ()).await.unwrap();
-                },
-            ))
-            .error_handler(|_| async move { unreachable!() })
-            .build();
+                            match (cx.update.chat_id(), cx.update.text().unwrap()) {
+                                (1, s) => {
+                                    SEQ1.lock().await.push(s.parse().unwrap());
+                                }
+                                (2, s) => {
+                                    SEQ2.lock().await.push(s.parse().unwrap());
+                                }
+                                (3, s) => {
+                                    SEQ3.lock().await.push(s.parse().unwrap());
+                                }
+                                _ => unreachable!(),
+                            }
+                            dialogue.next(|()| ()).await.unwrap();
+                        },
+                    ),
+                )
+                .error_handler(|_| async move { unreachable!() })
+                .build();
 
         let updates = stream::iter(vec![
             mes(1, "174"),

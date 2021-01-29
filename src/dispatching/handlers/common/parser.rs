@@ -1,11 +1,11 @@
-use crate::dispatching::{
-    core::{Handler, IntoHandler},
+use crate::{
+    dispatching::{
+        core::{HandleFuture, Handler, IntoHandler},
+        dev::Context,
+    },
+    types::Update,
 };
-use std::marker::PhantomData;
-use std::sync::Arc;
-use crate::dispatching::dev::Context;
-use crate::types::Update;
-use crate::dispatching::core::HandleFuture;
+use std::{marker::PhantomData, sync::Arc};
 
 pub struct UpdateHandlerBuilder<Ctx, Err> {
     phantom: PhantomData<tokio::sync::Mutex<(Ctx, Err)>>,
@@ -13,7 +13,7 @@ pub struct UpdateHandlerBuilder<Ctx, Err> {
 
 impl<Ctx, Err> UpdateHandlerBuilder<Ctx, Err>
 where
-    Ctx: Context<Upd = Update>
+    Ctx: Context<Upd = Update>,
 {
     pub fn new() -> Self {
         UpdateHandlerBuilder { phantom: PhantomData }
@@ -33,25 +33,20 @@ pub struct UpdateHandler<Ctx, Err, HandlerT> {
     phantom: PhantomData<tokio::sync::Mutex<(Ctx, Err)>>,
 }
 
-impl<Ctx, Err, HandlerT>
-    UpdateHandler<Ctx, Err, HandlerT>
+impl<Ctx, Err, HandlerT> UpdateHandler<Ctx, Err, HandlerT>
 where
     HandlerT: Handler<Ctx, Err>,
-    Ctx: Context<Upd = Update>
+    Ctx: Context<Upd = Update>,
 {
     pub fn new<H>(handler: H) -> Self
     where
         H: IntoHandler<HandlerT>,
     {
-        UpdateHandler {
-            handler: Arc::new(handler.into_handler()),
-            phantom: PhantomData,
-        }
+        UpdateHandler { handler: Arc::new(handler.into_handler()), phantom: PhantomData }
     }
 }
 
-impl<Ctx, Err, HandlerT> Handler<Ctx, Err>
-    for UpdateHandler<Ctx, Err, HandlerT>
+impl<Ctx, Err, HandlerT> Handler<Ctx, Err> for UpdateHandler<Ctx, Err, HandlerT>
 where
     Err: 'static,
     Ctx: Context<Upd = Update>,

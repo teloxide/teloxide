@@ -5,15 +5,17 @@ use crate::{
         core::Context,
         handlers::{
             callback_queries::CallbackQueriesHandlerBuilder,
-            chosen_inline_result::ChosenInlineResultsHandlerBuilder, common::UpdateHandlerBuilder,
-            inline_queries::InlineQueriesHandlerBuilder, messages::MessageHandlerBuilder,
-            poll_answers::PollAnswersHandlerBuilder, polls::PollsHandlerBuilder,
+            chosen_inline_result::ChosenInlineResultsHandlerBuilder,
+            common::{UpdateHandlerBuilder, UpdateKindHandlerBuilder},
+            inline_queries::InlineQueriesHandlerBuilder,
+            messages::MessageHandlerBuilder,
+            poll_answers::PollAnswersHandlerBuilder,
+            polls::PollsHandlerBuilder,
         },
     },
     types,
     types::Update,
 };
-use crate::dispatching::handlers::common::UpdateKindHandlerBuilder;
 
 pub fn any<Ctx: Context<Upd = Update>, Err>() -> UpdateHandlerBuilder<Ctx, Err> {
     UpdateHandlerBuilder::new()

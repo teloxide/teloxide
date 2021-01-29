@@ -142,21 +142,21 @@
 
 mod dialogue_ctx;
 mod dialogue_dispatcher;
+mod dialogue_handler_builder_ext;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 mod transition;
-mod dialogue_handler_builder_ext;
 
 pub use dialogue_dispatcher::{DialogueDispatcher, DialogueDispatcherBuilder};
+pub use dialogue_handler_builder_ext::DialogueHandlerBuilderExt;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use get_chat_id::GetChatId;
 pub use transition::{
     Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
-pub use dialogue_handler_builder_ext::DialogueHandlerBuilderExt;
 
 #[cfg(feature = "macros")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>

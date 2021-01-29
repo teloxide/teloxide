@@ -1,16 +1,17 @@
 //! The module for the `Demux` and `DemuxBuilder` structs.
 //!
-//! The `Demux` struct try to handle the input update by the vector of handlers and return the update if no
-//! handler had handle it.
+//! The `Demux` struct try to handle the input update by the vector of handlers
+//! and return the update if no handler had handle it.
 //!
 //! The `DemuxBuilder` struct is the builder for the `Demux`.
 //!
 //! Usage:
 //! ```
-//! use teloxide::dispatching::dev::*;
 //! use std::convert::Infallible;
-//! use teloxide::dispatching::updates;
-//! use teloxide::types::Update;
+//! use teloxide::{
+//!     dispatching::{dev::*, updates},
+//!     types::Update,
+//! };
 //!
 //! let mut builder = DemuxBuilder::<Update, Infallible>::new();
 //! builder.add_service(updates::any());
@@ -20,8 +21,8 @@
 use crate::dispatching::core::{HandleFuture, Handler};
 use std::sync::Arc;
 
-/// The `Demux` struct try to handle the input update by the vector of handlers and return the update if no
-/// handler had handle it.
+/// The `Demux` struct try to handle the input update by the vector of handlers
+/// and return the update if no handler had handle it.
 pub struct Demux<Upd, Err> {
     handlers: Arc<[Box<dyn Handler<Upd, Err> + Send + Sync>]>,
 }

@@ -10,17 +10,20 @@ use std::{future::Future, marker::PhantomData};
 /// [`Handler::handle`]: TODO
 pub type HandleFuture<Err, Data> = BoxFuture<'static, Result<HandleResult<Err>, Data>>;
 
-/// The trait is used for the handlers that tries to handle some data and return it if handling fail.
+/// The trait is used for the handlers that tries to handle some data and return
+/// it if handling fail.
 pub trait Handler<Data, Err> {
     fn handle(&self, data: Data) -> HandleFuture<Err, Data>;
 }
 
-/// The trait is used in the `with_*` functions to convert the different types of functions into
-/// `FnHandlerWrapper` to simulate specialization.
+/// The trait is used in the `with_*` functions to convert the different types
+/// of functions into `FnHandlerWrapper` to simulate specialization.
 ///
-/// `IntoHandler` **must** be unique for concrete type otherwise we get type inference error in `with_*` functions.
+/// `IntoHandler` **must** be unique for concrete type otherwise we get type
+/// inference error in `with_*` functions.
 ///
-/// If you create your own [`Handler`], you must implement `IntoHandler<Upd, Self> for YourHandler`.
+/// If you create your own [`Handler`], you must implement `IntoHandler<Upd,
+/// Self> for YourHandler`.
 ///
 /// [`Handler`]: TODO
 pub trait IntoHandler<T> {

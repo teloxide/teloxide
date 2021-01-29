@@ -22,10 +22,11 @@ pub mod dev {
 
 pub mod tel {
     pub use super::handlers::commands::Command;
-    use crate::dispatching::core::{FromContext, GetCtx, Context};
-    use crate::dispatching::dispatcher_context::DispatcherContext;
-    use std::sync::Arc;
-    use std::ops::Deref;
+    use crate::dispatching::{
+        core::{Context, FromContext, GetCtx},
+        dispatcher_context::DispatcherContext,
+    };
+    use std::{ops::Deref, sync::Arc};
 
     #[derive(Debug, PartialEq)]
     pub struct Data<T>(pub Arc<T>);
@@ -41,14 +42,17 @@ pub mod tel {
     impl<Upd, Ctx, T> FromContext<Ctx> for Data<T>
     where
         T: Send + Sync + 'static,
-        Ctx: Context<Upd = Upd> + GetCtx<DispatcherContext<Upd>>
+        Ctx: Context<Upd = Upd> + GetCtx<DispatcherContext<Upd>>,
     {
         fn from_context(context: &Ctx) -> Option<Self> {
             let t = context.get().global_data.get::<T>();
             match t {
                 Some(data) => Some(Data(data.clone())),
                 None => {
-                    log::warn!("There are no {} dependency in global data!", std::any::type_name::<T>());
+                    log::warn!(
+                        "There are no {} dependency in global data!",
+                        std::any::type_name::<T>()
+                    );
                     None
                 }
             }

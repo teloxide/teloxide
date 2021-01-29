@@ -2,7 +2,8 @@ use std::convert::Infallible;
 
 /// The result of the handling by the user function.
 ///
-/// We use our enum isntead of `std::result::Result` due to restrictions of the orphan rules.
+/// We use our enum isntead of `std::result::Result` due to restrictions of the
+/// orphan rules.
 pub enum HandleResult<Err> {
     Ok,
     Err(Err),
@@ -33,6 +34,7 @@ impl From<()> for HandleResult<Infallible> {
 pub enum DispatchError<Upd, Err> {
     /// There are no handler to handle the incoming update.
     NoHandler(Upd),
-    /// There are handler which try to handle the update but it return the error.
+    /// There are handler which try to handle the update but it return the
+    /// error.
     HandlerError(Err),
 }

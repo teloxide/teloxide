@@ -1,5 +1,10 @@
 use crate::{
-    dispatching::{updates, DispatcherBuilder, UpdateWithCx},
+    dispatching::{
+        dialogue::{
+            DialogueDispatcherBuilder, DialogueHandlerBuilderExt, DialogueWithCx, InMemStorage,
+        },
+        tel, updates, DispatcherBuilder, UpdateWithCx,
+    },
     dummies::text_message,
     types::{Message, Update, UpdateKind},
     Bot,
@@ -11,8 +16,6 @@ use std::{
         Arc,
     },
 };
-use crate::dispatching::tel;
-use crate::dispatching::dialogue::{DialogueDispatcherBuilder, InMemStorage, DialogueWithCx, DialogueHandlerBuilderExt};
 
 #[tokio::test]
 async fn test() {
@@ -150,30 +153,24 @@ async fn with_dialogue() {
         }
     }
 
-    let dispatcher = DialogueDispatcherBuilder::new(
-        dummy_bot(),
-        "bot_name",
-        InMemStorage::new()
-    )
+    let dispatcher = DialogueDispatcherBuilder::new(dummy_bot(), "bot_name", InMemStorage::new())
+        .handle(updates::message().with_dialogue(|d: &Dialogue| matches!(d, Dialogue::Start)).by(
+            |DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
+                assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::Start);
+                async move {
+                    dialogue.next(|_| Dialogue::HaveData(10)).await.unwrap();
+                }
+            },
+        ))
         .handle(
-            updates::message()
-                .with_dialogue(|d: &Dialogue| matches!(d, Dialogue::Start))
-                .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
-                    assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::Start);
-                    async move {
-                        dialogue.next(|_| Dialogue::HaveData(10)).await.unwrap();
-                    }
-                }),
-        )
-        .handle(
-            updates::message()
-                .with_dialogue(|d: &Dialogue| matches!(d, Dialogue::HaveData(_)))
-                .by(|DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
+            updates::message().with_dialogue(|d: &Dialogue| matches!(d, Dialogue::HaveData(_))).by(
+                |DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
                     assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::HaveData(10));
                     async move {
                         dialogue.exit().await.unwrap();
                     }
-                }),
+                },
+            ),
         )
         .error_handler(|_| async { unreachable!() })
         .build();

@@ -18,7 +18,7 @@ use tokio::sync::mpsc;
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 pub struct DialogueWithCx<Upd, D, E> {
     pub cx: UpdateWithCx<Upd>,
-    pub dialogue: Dialogue<D, E>
+    pub dialogue: Dialogue<D, E>,
 }
 
 pub struct Dialogue<D, E> {
@@ -39,12 +39,7 @@ where
         let DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id } = cx;
         DialogueWithCx {
             cx: UpdateWithCx::from_context(dispatcher_ctx),
-            dialogue: Dialogue {
-                data: dialogue,
-                storage,
-                senders,
-                chat_id,
-            }
+            dialogue: Dialogue { data: dialogue, storage, senders, chat_id },
         }
     }
 }
@@ -60,8 +55,8 @@ where
 
         if let Ok(Some(_)) = storage.update_dialogue(chat_id, next).await {
             panic!(
-                "Oops, you have an bug in your Storage: update_dialogue returns Some \
-                 after remove_dialogue"
+                "Oops, you have an bug in your Storage: update_dialogue returns Some after \
+                 remove_dialogue"
             );
         }
 

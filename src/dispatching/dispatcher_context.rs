@@ -1,13 +1,11 @@
 use crate::{
     dispatching::core::{
-        Context, ContextWith, GetCtx, ParseContext, Parser, ParserOut, RecombineFrom,
+        Context, ContextWith, GetCtx, ParseContext, Parser, ParserOut, RecombineFrom, Store,
     },
     Bot,
 };
-use std::sync::Arc;
-use crate::dispatching::core::Store;
-use std::fmt::Debug;
 use serde::__private::Formatter;
+use std::{fmt::Debug, sync::Arc};
 
 pub struct DispatcherContext<Upd> {
     pub upd: Upd,
@@ -56,7 +54,12 @@ impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
         Upd1: RecombineFrom<Parser, Upd2, Rest>,
     {
         let ParserOut { data: DispatcherContext { upd, bot, bot_name, global_data }, rest } = info;
-        DispatcherContext { upd: Upd1::recombine(ParserOut::new(upd, rest)), bot, bot_name, global_data }
+        DispatcherContext {
+            upd: Upd1::recombine(ParserOut::new(upd, rest)),
+            bot,
+            bot_name,
+            global_data,
+        }
     }
 }
 

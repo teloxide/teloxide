@@ -1,4 +1,3 @@
-
 pub struct ParserOut<T, Rest> {
     pub data: T,
     pub rest: Rest,

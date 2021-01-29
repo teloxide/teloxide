@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{
-        core::{Demux, DemuxBuilder, DispatchError, HandleResult, Handler},
+        core::{Demux, DemuxBuilder, DispatchError, HandleResult, Handler, Store},
         dispatcher_context::DispatcherContext,
         error_handlers::ErrorHandler,
         update_listeners::UpdateListener,
@@ -10,7 +10,6 @@ use crate::{
 };
 use futures::StreamExt;
 use std::{future::Future, sync::Arc};
-use crate::dispatching::core::Store;
 
 pub struct Dispatcher<Err, ErrHandler, Ctx = DispatcherContext<Update>> {
     bot: Bot,
@@ -78,7 +77,12 @@ where
     }
 
     pub fn make_cx(&self, upd: Update) -> DispatcherContext<Update> {
-        DispatcherContext::new(upd, self.bot.clone(), self.bot_name.clone(), self.global_data.clone())
+        DispatcherContext::new(
+            upd,
+            self.bot.clone(),
+            self.bot_name.clone(),
+            self.global_data.clone(),
+        )
     }
 }
 
@@ -97,7 +101,7 @@ impl<Err, Ctx> DispatcherBuilder<Err, (), Ctx> {
             bot_name: bot_name.into(),
             demux: DemuxBuilder::new(),
             error_handler: (),
-            global_data: Store::new()
+            global_data: Store::new(),
         }
     }
 
@@ -132,6 +136,12 @@ where
 {
     pub fn build(self) -> Dispatcher<Err, ErrHandler, Ctx> {
         let DispatcherBuilder { bot, bot_name, demux, error_handler, global_data } = self;
-        Dispatcher { bot, bot_name, demux: demux.build(), error_handler, global_data: Arc::new(global_data) }
+        Dispatcher {
+            bot,
+            bot_name,
+            demux: demux.build(),
+            error_handler,
+            global_data: Arc::new(global_data),
+        }
     }
 }

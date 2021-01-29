@@ -1,15 +1,14 @@
 use crate::{
     dispatching::{
         core::{
-            Context, DemuxBuilder, Guard, Guards, Handler, IntoGuard, IntoHandler, OrGuard, Parser,
-            RecombineFrom,
+            Context, DemuxBuilder, Guard, Guards, Handler, HandlerBuilderWithGuards, IntoGuard,
+            IntoHandler, OrGuard, Parser, RecombineFrom,
         },
         handlers::common::{GuardHandler, GuardsHandler, UpdateKindHandler},
         updates::UpdateRest,
     },
     types::Update,
 };
-use crate::dispatching::core::HandlerBuilderWithGuards;
 
 pub struct UpdateKindHandlerBuilder<Upd, Ctx: Context<Upd = Upd>, UpdateParser, Err> {
     update_parser: UpdateParser,
@@ -54,7 +53,8 @@ where
     }
 }
 
-impl<Upd, Ctx, UpdateParser, Err> HandlerBuilderWithGuards<Ctx, Err> for UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
+impl<Upd, Ctx, UpdateParser, Err> HandlerBuilderWithGuards<Ctx, Err>
+    for UpdateKindHandlerBuilder<Upd, Ctx, UpdateParser, Err>
 where
     Ctx: Context<Upd = Upd> + Send + Sync + 'static,
     Upd: Send + Sync + 'static,
