@@ -1,36 +1,63 @@
 use crate::dispatching::{
-    core::{Handler, IntoHandler, Parser, ParserHandler, RecombineFrom},
-    dispatcher_context::DispatcherContext,
+    core::{Handler, IntoHandler},
 };
 use std::marker::PhantomData;
+use std::sync::Arc;
+use crate::dispatching::dev::Context;
+use crate::types::Update;
+use crate::dispatching::core::HandleFuture;
 
-pub struct UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT> {
-    parser: ParserT,
-    phantom: PhantomData<tokio::sync::Mutex<(GenUpd, NextUpd, Rest, Err)>>,
+pub struct UpdateHandlerBuilder<Ctx, Err> {
+    phantom: PhantomData<tokio::sync::Mutex<(Ctx, Err)>>,
 }
 
-impl<GenUpd, NextUpd, Rest, Err, ParserT> UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT> {
-    pub fn into_inner(self) -> ParserT {
-        self.parser
-    }
-}
-
-impl<GenUpd, NextUpd, Rest, Err, ParserT> UpdateParser<GenUpd, NextUpd, Rest, Err, ParserT>
+impl<Ctx, Err> UpdateHandlerBuilder<Ctx, Err>
 where
-    GenUpd: 'static,
-    ParserT: Parser<GenUpd, NextUpd, Rest> + 'static,
-    GenUpd: RecombineFrom<ParserT, NextUpd, Rest>,
+    Ctx: Context<Upd = Update>
 {
-    pub fn new(parser: ParserT) -> Self {
-        UpdateParser { parser, phantom: PhantomData }
+    pub fn new() -> Self {
+        UpdateHandlerBuilder { phantom: PhantomData }
     }
 
-    pub fn by<F, H>(self, f: F) -> ParserHandler<ParserT, GenUpd, NextUpd, Rest, Err, H>
+    pub fn by<F, H>(self, f: F) -> UpdateHandler<Ctx, Err, H>
     where
-        H: Handler<DispatcherContext<NextUpd>, Err> + 'static,
+        H: Handler<Ctx, Err> + 'static,
         F: IntoHandler<H>,
     {
-        let UpdateParser { parser, .. } = self;
-        ParserHandler::new(parser, f)
+        UpdateHandler::new(f)
+    }
+}
+
+pub struct UpdateHandler<Ctx, Err, HandlerT> {
+    handler: Arc<HandlerT>,
+    phantom: PhantomData<tokio::sync::Mutex<(Ctx, Err)>>,
+}
+
+impl<Ctx, Err, HandlerT>
+    UpdateHandler<Ctx, Err, HandlerT>
+where
+    HandlerT: Handler<Ctx, Err>,
+    Ctx: Context<Upd = Update>
+{
+    pub fn new<H>(handler: H) -> Self
+    where
+        H: IntoHandler<HandlerT>,
+    {
+        UpdateHandler {
+            handler: Arc::new(handler.into_handler()),
+            phantom: PhantomData,
+        }
+    }
+}
+
+impl<Ctx, Err, HandlerT> Handler<Ctx, Err>
+    for UpdateHandler<Ctx, Err, HandlerT>
+where
+    Err: 'static,
+    Ctx: Context<Upd = Update>,
+    HandlerT: Handler<Ctx, Err> + Send + Sync + 'static,
+{
+    fn handle(&self, cx: Ctx) -> HandleFuture<Err, Ctx> {
+        self.handler.handle(cx)
     }
 }

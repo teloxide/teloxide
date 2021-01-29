@@ -1,9 +1,9 @@
 //! The module contains all the traits needed to work with dispatchers contexts.
 
 use crate::dispatching::{
-    core::{ParserOut, RecombineFrom},
     dispatcher_context::DispatcherContext,
 };
+use crate::dispatching::core::{ParserOut, RecombineFrom};
 
 /// The trait is used to recognize which update store the `Context`. It is implemented for
 /// [DispatcherContext] and [DialogueContext]. If you create your own dispatcher with your own

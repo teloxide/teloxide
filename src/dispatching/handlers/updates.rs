@@ -5,7 +5,7 @@ use crate::{
         core::Context,
         handlers::{
             callback_queries::CallbackQueriesHandlerBuilder,
-            chosen_inline_result::ChosenInlineResultsHandlerBuilder, common::UpdateParser,
+            chosen_inline_result::ChosenInlineResultsHandlerBuilder, common::UpdateHandlerBuilder,
             inline_queries::InlineQueriesHandlerBuilder, messages::MessageHandlerBuilder,
             poll_answers::PollAnswersHandlerBuilder, polls::PollsHandlerBuilder,
         },
@@ -13,9 +13,10 @@ use crate::{
     types,
     types::Update,
 };
+use crate::dispatching::handlers::common::UpdateKindHandlerBuilder;
 
-pub fn any<Err>() -> UpdateParser<Update, Update, (), Err, parser::Update> {
-    UpdateParser::new(parser::Update)
+pub fn any<Ctx: Context<Upd = Update>, Err>() -> UpdateHandlerBuilder<Ctx, Err> {
+    UpdateHandlerBuilder::new()
 }
 
 pub fn message<Ctx: Context<Upd = types::Message>, Err>(
@@ -53,14 +54,14 @@ pub fn callback_query<Ctx: Context<Upd = types::CallbackQuery>, Err>(
     CallbackQueriesHandlerBuilder::new(parser::CallbackQuery)
 }
 
-pub fn shipping_query<Err>(
-) -> UpdateParser<Update, types::ShippingQuery, UpdateRest, Err, parser::ShippingQuery> {
-    UpdateParser::new(parser::ShippingQuery)
+pub fn shipping_query<Ctx: Context<Upd = types::ShippingQuery>, Err>(
+) -> UpdateKindHandlerBuilder<types::ShippingQuery, Ctx, parser::ShippingQuery, Err> {
+    UpdateKindHandlerBuilder::new(parser::ShippingQuery)
 }
 
-pub fn pre_checkout_query<Err>(
-) -> UpdateParser<Update, types::PreCheckoutQuery, UpdateRest, Err, parser::PreCheckoutQuery> {
-    UpdateParser::new(parser::PreCheckoutQuery)
+pub fn pre_checkout_query<Ctx: Context<Upd = types::PreCheckoutQuery>, Err>(
+) -> UpdateKindHandlerBuilder<types::PreCheckoutQuery, Ctx, parser::PreCheckoutQuery, Err> {
+    UpdateKindHandlerBuilder::new(parser::PreCheckoutQuery)
 }
 
 pub fn poll<Ctx: Context<Upd = types::Poll>, Err>() -> PollsHandlerBuilder<Ctx, parser::Poll, Err> {
