@@ -4,6 +4,16 @@ use std::{
 };
 use std::sync::Arc;
 
+/// The struct is used to store the array of any type.
+///
+/// Example:
+/// ```
+/// use teloxide::dispatching::dev::Store;
+/// use std::sync::Arc;
+/// let mut store = Store::new();
+/// store.insert(0_i32);
+/// assert_eq!(store.get::<i32>(), Some(Arc::new(0)));
+/// ```
 pub struct Store {
     map: HashMap<TypeId, Arc<dyn Any + Send + Sync>>,
 }
