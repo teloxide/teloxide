@@ -2,11 +2,19 @@ use crate::dispatching::core::Context;
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
 
+/// The trait is used to simulate GAT for the functions that returns [`Future`]. It used for the
+/// [`Guard`] impls.
+///
+/// When GAT will stabilized we remove this trait and add `type Fut<'a>: Future + 'a` to the [`Guard`].
+///
+/// [`Future`]: std::future::Future
+/// [`Guard`]: TODO
 pub trait AsyncBorrowSendFn<'a, T>
 where
     T: ?Sized + 'static,
     Self: Fn(&'a T) -> <Self as AsyncBorrowSendFn<'a, T>>::Fut,
 {
+    /// Future output.
     type Out;
     type Fut: Future<Output = Self::Out> + Send + 'a;
 }
@@ -21,10 +29,17 @@ where
     type Fut = Fut;
 }
 
+/// The trait is used to recognize when we want to handle the update. It returns the `BoxFuture` so
+/// you can call async functions in it. For example you can ask your database or something similar.
+///
+/// Guards **must not** mutate the foreign state. In that case behaviour is unspecified.
 pub trait Guard<Upd: ?Sized> {
     fn check<'a>(&self, update: &'a Upd) -> BoxFuture<'a, bool>;
 }
 
+/// The struct is used to wrap the functions that is used as an guard.
+///
+/// In the `Infer` generic you must point the unique type that will be inferred for the unique function.
 pub struct GuardFnWrapper<F, Infer>(F, PhantomData<tokio::sync::Mutex<Infer>>);
 
 impl<F, Infer> GuardFnWrapper<F, Infer> {
@@ -33,6 +48,7 @@ impl<F, Infer> GuardFnWrapper<F, Infer> {
     }
 }
 
+// These structs are public only to participate in type inference.
 pub struct GiveSomeReturnFuture;
 pub struct GiveSomeReturnBool;
 pub struct GiveCtxToUpdReturnFuture;
@@ -79,6 +95,14 @@ where
     }
 }
 
+/// The trait is used in the `with_*` functions to convert the different types of functions into
+/// `GuardFnWrapper` to simulate specialization.
+///
+/// `IntoGuard` **must** be unique for concrete type otherwise we get type inference error in `with_*` functions.
+///
+/// If you create your own [`Guard`], you must implement `IntoGuard<Upd, Self> for YourGuard`.
+///
+/// [`Guard`]: TODO
 pub trait IntoGuard<Upd: ?Sized, T: Guard<Upd>> {
     fn into_guard(self) -> T;
 }
@@ -145,6 +169,9 @@ impl<Upd> Guard<Upd> for Box<dyn Guard<Upd> + Send + Sync> {
     }
 }
 
+/// The struct contains list of the guards and return true as guard only when containing guards return true.
+///
+/// The execution queue is not determined.
 pub struct Guards<Upd> {
     guards: Vec<Box<dyn Guard<Upd> + Send + Sync>>,
 }
@@ -154,7 +181,7 @@ impl<Upd> Guards<Upd> {
         Guards { guards: Vec::new() }
     }
 
-    #[allow(dead_code)]
+    /// Add the guard to the list of guards.
     pub fn add_guard<T>(&mut self, data: T)
     where
         T: Guard<Upd> + Send + Sync + 'static,
@@ -162,10 +189,12 @@ impl<Upd> Guards<Upd> {
         self.add_boxed_guard(Box::new(data));
     }
 
+    /// Add the `Box<dyn Guard<Upd> + Send + Sync>` to the list of the guards.
     pub fn add_boxed_guard(&mut self, data: Box<dyn Guard<Upd> + Send + Sync>) {
         self.guards.push(data);
     }
 
+    /// It will return `true` only when all the containing guards return `true`.
     pub async fn check(&self, update: &Upd) -> bool {
         Guard::check(self, update).await
     }
@@ -184,6 +213,9 @@ impl<Upd> Guard<Upd> for Guards<Upd> {
     }
 }
 
+/// The struct return `true` as guard when at least one guard return `true`.
+///
+/// The execution queue is not determined.
 pub struct OrGuard<Left, Right>(Left, Right);
 
 impl<Left, Right> OrGuard<Left, Right> {
