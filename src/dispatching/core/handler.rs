@@ -9,16 +9,29 @@ use crate::dispatching::core::{FromContext, FromContextOwn, HandleResult};
 use futures::{future::BoxFuture, FutureExt};
 use std::{future::Future, marker::PhantomData};
 
+/// The future returned from the [`Handler::handle`] method.
+///
+/// [`Handler::handle`]: TODO
 pub type HandleFuture<Err, Data> = BoxFuture<'static, Result<HandleResult<Err>, Data>>;
 
+/// The trait is used for the handlers that tries to handle some data and return it if handling fail.
 pub trait Handler<Data, Err> {
     fn handle(&self, data: Data) -> HandleFuture<Err, Data>;
 }
 
+/// The trait is used in the `with_*` functions to convert the different types of functions into
+/// `FnHandlerWrapper` to simulate specialization.
+///
+/// `IntoHandler` **must** be unique for concrete type otherwise we get type inference error in `with_*` functions.
+///
+/// If you create your own [`Handler`], you must implement `IntoHandler<Upd, Self> for YourHandler`.
+///
+/// [`Handler`]: TODO
 pub trait IntoHandler<T> {
     fn into_handler(self) -> T;
 }
 
+/// The struct is used to wrap the functions that is used as an handler.
 pub struct FnHandlerWrapper<F, Upd, P, Fut> {
     f: F,
     phantom: PhantomData<tokio::sync::Mutex<(P, Upd, Fut)>>,
