@@ -14,6 +14,12 @@ pub use dispatcher::{Dispatcher, DispatcherBuilder};
 pub use handlers::updates;
 pub use update_with_cx::UpdateWithCx;
 
+pub mod dev {
+    pub use super::core::*;
+
+    pub use super::dispatcher_context::DispatcherContext;
+}
+
 pub mod tel {
     pub use super::handlers::commands::Command;
     use crate::dispatching::core::{FromContext, GetCtx, Context};
