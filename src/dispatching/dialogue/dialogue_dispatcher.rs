@@ -27,9 +27,9 @@ use std::sync::{Arc, Mutex};
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, Err, ErrHandler> {
+pub struct DialogueDispatcher<D, S, Err> {
     storage: Arc<S>,
-    dispatcher: Arc<Dispatcher<Err, ErrHandler, DialogueContext<Update, D, S>>>,
+    dispatcher: Arc<Dispatcher<Err, DialogueContext<Update, D, S>>>,
     _phantom: PhantomData<Mutex<D>>,
 
     /// A lock-free map to handle updates from the same chat sequentially, but
@@ -41,15 +41,16 @@ pub struct DialogueDispatcher<D, S, Err, ErrHandler> {
     senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
 }
 
-pub struct DialogueDispatcherBuilder<D, S, Err, ErrHandler> {
+pub struct DialogueDispatcherBuilder<D, S, Err> {
     storage: Arc<S>,
-    dispatcher: DispatcherBuilder<Err, ErrHandler, DialogueContext<Update, D, S>>,
+    dispatcher: DispatcherBuilder<Err, DialogueContext<Update, D, S>>,
     _phantom: PhantomData<Mutex<D>>,
 }
 
-impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err, ()>
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err>
 where
-    S: Storage<D>,
+    Err: Send,
+    S: Storage<D> + Send + Sync,
     D: Default + Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and [`InMemStorage`]
@@ -66,7 +67,7 @@ where
     }
 }
 
-impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err, ()>
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err>
 where
     S: Storage<D> + Send + Sync + 'static,
     D: Default + Clone + Send + Sync + 'static,
@@ -79,7 +80,6 @@ where
         D,
         S,
         Err,
-        impl ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
     >
     where
         H: for<'a> ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>
@@ -128,7 +128,7 @@ where
     }
 }
 
-impl<D, S, Err, ErrHandler> DialogueDispatcherBuilder<D, S, Err, ErrHandler>
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err>
 where
     D: Default + Send + 'static,
 {
@@ -141,12 +141,11 @@ where
     }
 }
 
-impl<D, S, Err, ErrHandler> DialogueDispatcherBuilder<D, S, Err, ErrHandler>
+impl<D, S, Err> DialogueDispatcherBuilder<D, S, Err>
 where
     S: Storage<D>,
-    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
 {
-    pub fn build(self) -> DialogueDispatcher<D, S, Err, ErrHandler> {
+    pub fn build(self) -> DialogueDispatcher<D, S, Err> {
         let DialogueDispatcherBuilder { storage, dispatcher, .. } = self;
         DialogueDispatcher {
             storage,
@@ -157,13 +156,11 @@ where
     }
 }
 
-impl<D, S, Err, ErrHandler> DialogueDispatcher<D, S, Err, ErrHandler>
+impl<D, S, Err> DialogueDispatcher<D, S, Err>
 where
     D: Default + Send + Sync + 'static,
     S: Storage<D> + Send + Sync + 'static,
     <S as Storage<D>>::Error: Send,
-    ErrHandler:
-        ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
     Err: Send + 'static,
 {
     pub async fn dispatch_one(&self, upd: Update) {
@@ -241,13 +238,11 @@ impl Update {
     }
 }
 
-impl<D, S, Err, ErrHandler> DialogueDispatcher<D, S, Err, ErrHandler>
+impl<D, S, Err> DialogueDispatcher<D, S, Err>
 where
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
-    ErrHandler:
-        ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>> + Send + Sync + 'static,
     Err: Send + 'static,
 {
     #[must_use]
@@ -271,8 +266,8 @@ where
     }
 }
 
-async fn make_cx<Err, ErrHandler, S, D>(
-    dispatcher: Arc<Dispatcher<Err, ErrHandler, DialogueContext<Update, D, S>>>,
+async fn make_cx<Err, S, D>(
+    dispatcher: Arc<Dispatcher<Err, DialogueContext<Update, D, S>>>,
     storage: Arc<S>,
     senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
     upd: Update,
@@ -280,7 +275,6 @@ async fn make_cx<Err, ErrHandler, S, D>(
 where
     S: Storage<D> + Send + Sync + 'static,
     D: Default + Send + 'static,
-    ErrHandler: ErrorHandler<DispatchError<DialogueContext<Update, D, S>, Err>>,
     Err: Send + 'static,
 {
     let chat_id = upd.try_get_chat_id();
