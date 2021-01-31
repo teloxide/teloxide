@@ -1,3 +1,5 @@
+/// Core part of dispatching. For advanced usage.
+
 mod context;
 mod demux;
 mod dispatch_error;
