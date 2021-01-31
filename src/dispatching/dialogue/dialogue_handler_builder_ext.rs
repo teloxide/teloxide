@@ -10,6 +10,8 @@ pub trait DialogueHandlerBuilderExt<Ctx, D, S, Err> {
         self,
         guard: impl IntoGuard<D, G> + 'static,
     ) -> Self;
+
+    fn has_dialogue(self) -> Self;
 }
 
 impl<Upd, Ctx, D, S, Err, T> DialogueHandlerBuilderExt<Ctx, D, S, Err> for T
@@ -26,6 +28,10 @@ where
     ) -> Self {
         let guard = guard.into_guard();
         self.with_guard(Checker(guard, PhantomData))
+    }
+
+    fn has_dialogue(self) -> Self {
+        self.with_dialogue(|_| true)
     }
 }
 
