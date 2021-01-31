@@ -31,7 +31,7 @@ where
     }
 
     fn has_dialogue(self) -> Self {
-        self.with_dialogue(|_| true)
+        self.with_dialogue(|_: &D| true)
     }
 }
 
