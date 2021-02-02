@@ -1,3 +1,14 @@
+//! Methods for the handling the incoming updates.
+//!
+//! All methods except `any` returns `UpdateKindHandlerBuilder` which allow you to build the handler for specified update kind.
+//! using guards and other things. After you are ready for build the handler you must call `by` function
+//! and pass to it handler for the incoming update.
+//!
+//! All types except `PreCheckoutQuery` and `ShippingQuery` has custom methods for guards.
+//!
+//! [`UpdateHandlerBuilder`]: TODO
+//! [`Update`]: TODO
+
 pub(crate) use impls::{parser, UpdateRest};
 
 use crate::{
@@ -17,6 +28,7 @@ use crate::{
     types::Update,
 };
 
+/// Handle the `Update` struct.
 pub fn any<Ctx: Context<Upd = Update>, Err>() -> UpdateHandlerBuilder<Ctx, Err> {
     UpdateHandlerBuilder::new()
 }

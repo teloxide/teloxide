@@ -1,16 +1,23 @@
 use crate::{
     dispatching::core::{
-        Context, ContextWith, GetCtx, ParseContext, Parser, ParserOut, RecombineFrom, Store,
+        Context, ContextWith, GetCtx, ParseContext, ParserOut, RecombineFrom, Store,
     },
     Bot,
 };
 use serde::__private::Formatter;
 use std::{fmt::Debug, sync::Arc};
 
+/// The struct represent a context for the [`Dispatcher`]'s handlers.
+///
+/// [`Dispatcher`]: TODO
 pub struct DispatcherContext<Upd> {
+    /// An incoming update.
     pub upd: Upd,
     pub bot: Bot,
     pub bot_name: Arc<str>,
+    /// Global data that you can add using `DispatcherBuilder::data` method.
+    ///
+    /// For more information see [`Data`](TODO) struct.
     pub global_data: Arc<Store>,
 }
 
@@ -66,18 +73,6 @@ impl<Upd1, Upd2> ParseContext<Upd2> for DispatcherContext<Upd1> {
 impl<Upd> DispatcherContext<Upd> {
     pub fn new(upd: Upd, bot: Bot, bot_name: impl Into<Arc<str>>, global_data: Arc<Store>) -> Self {
         DispatcherContext { upd, bot, bot_name: bot_name.into(), global_data }
-    }
-
-    pub fn parse_upd<OtherUpd, Rest>(
-        self,
-        f: &impl Parser<Upd, OtherUpd, Rest>,
-    ) -> Result<ParserOut<DispatcherContext<OtherUpd>, Rest>, Self> {
-        let DispatcherContext { upd, bot, bot_name, global_data } = self;
-        let ParserOut { data, rest } = match f.parse(upd) {
-            Ok(out) => out,
-            Err(upd) => return Err(DispatcherContext { upd, bot, bot_name, global_data }),
-        };
-        Ok(ParserOut::new(DispatcherContext::new(data, bot, bot_name, global_data), rest))
     }
 }
 

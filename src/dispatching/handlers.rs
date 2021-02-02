@@ -7,3 +7,5 @@ pub mod messages;
 pub mod poll_answers;
 pub mod polls;
 pub mod updates;
+
+pub use common::*;
