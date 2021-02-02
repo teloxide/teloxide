@@ -9,7 +9,7 @@ use std::{future::Future, marker::PhantomData};
 /// + 'a` to the [`Guard`].
 ///
 /// [`Future`]: std::future::Future
-/// [`Guard`]: TODO
+/// [`Guard`]: crate::dispatching::dev::Guard
 pub trait AsyncBorrowSendFn<'a, T>
 where
     T: ?Sized + 'static,
@@ -108,7 +108,7 @@ where
 /// If you create your own [`Guard`], you must implement `IntoGuard<Upd, Self>
 /// for YourGuard`.
 ///
-/// [`Guard`]: TODO
+/// [`Guard`]: crate::dispatching::dev::Guard
 pub trait IntoGuard<Upd: ?Sized, T: Guard<Upd>> {
     fn into_guard(self) -> T;
 }

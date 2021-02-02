@@ -40,14 +40,14 @@ impl<Upd, Err> DemuxBuilder<Upd, Err> {
 
     /// Add the handler. [`Demux`] has no methods for adding handlers.
     ///
-    /// [`Demux`]: TODO
+    /// [`Demux`]: crate::dispatching::dev::Demux
     pub fn add_service(&mut self, service: impl Handler<Upd, Err> + Send + Sync + 'static) {
         self.handlers.push(Box::new(service) as _);
     }
 
     /// Build the [`Demux`].
     ///
-    /// [`Demux`]: TODO
+    /// [`Demux`]: crate::dispatching::dev::Demux
     pub fn build(self) -> Demux<Upd, Err> {
         Demux { handlers: self.handlers.into() }
     }

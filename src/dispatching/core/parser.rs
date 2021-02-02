@@ -1,6 +1,6 @@
 /// Output of the [`Parser::parse`] method.
 ///
-/// [`Parser::parse`]: TODO
+/// [`Parser::parse`]: crate::dispatching::dev::Parser
 pub struct ParserOut<T, Rest> {
     /// Result of parsing.
     pub data: T,
@@ -40,7 +40,7 @@ where
 /// `RecombineFrom` require it by first parameter (except in cases when
 /// `RecombineFrom` is unique for the type).
 ///
-/// [`Parser`]: TODO
+/// [`Parser`]: crate::dispatching::dev::Parser
 pub trait RecombineFrom<Parser, From, Rest> {
     fn recombine(info: ParserOut<From, Rest>) -> Self;
 }

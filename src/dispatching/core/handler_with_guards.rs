@@ -2,7 +2,7 @@ use crate::dispatching::core::{Guard, Handler, IntoGuard, IntoHandler};
 
 /// The trait is used for handler builders that can use [`Guard`]s.
 ///
-/// [`Guard`]: TODO
+/// [`Guard`]: crate::dispatching::dev::Guard
 pub trait HandlerBuilderWithGuards<Ctx, Err> {
     /// The method add the specified guard to handler.
     fn with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
@@ -13,7 +13,7 @@ pub trait HandlerBuilderWithGuards<Ctx, Err> {
     /// The method add the specified guard to the previous added guard using
     /// [`OrGuard`] or panics.
     ///
-    /// [`OrGuard`]: TODO
+    /// [`OrGuard`]: crate::dispatching::dev::OrGuard
     fn or_with_guard<G: Guard<Ctx> + Send + Sync + 'static>(
         self,
         guard: impl IntoGuard<Ctx, G> + 'static,

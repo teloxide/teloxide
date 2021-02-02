@@ -9,7 +9,7 @@ use std::{fmt::Debug, sync::Arc};
 
 /// The struct represent a context for the [`Dispatcher`]'s handlers.
 ///
-/// [`Dispatcher`]: TODO
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct DispatcherContext<Upd> {
     /// An incoming update.
     pub upd: Upd,
@@ -17,7 +17,7 @@ pub struct DispatcherContext<Upd> {
     pub bot_name: Arc<str>,
     /// Global data that you can add using `DispatcherBuilder::data` method.
     ///
-    /// For more information see [`Data`](TODO) struct.
+    /// For more information see [`Data`](crate::dispatching::tel::Data) struct.
     pub global_data: Arc<Store>,
 }
 

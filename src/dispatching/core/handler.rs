@@ -7,7 +7,7 @@ use std::{future::Future, marker::PhantomData};
 
 /// The future returned from the [`Handler::handle`] method.
 ///
-/// [`Handler::handle`]: TODO
+/// [`Handler::handle`]: crate::dispatching::dev::Handler::handle
 pub type HandleFuture<Err, Data> = BoxFuture<'static, Result<HandleResult<Err>, Data>>;
 
 /// The trait is used for the handlers that tries to handle some data and return
@@ -25,7 +25,7 @@ pub trait Handler<Data, Err> {
 /// If you create your own [`Handler`], you must implement `IntoHandler<Upd,
 /// Self> for YourHandler`.
 ///
-/// [`Handler`]: TODO
+/// [`Handler`]: crate::dispatching::dev::Handler
 pub trait IntoHandler<T> {
     fn into_handler(self) -> T;
 }

@@ -153,6 +153,7 @@ pub use dialogue_dispatcher::{DialogueDispatcher, DialogueDispatcherBuilder};
 pub use dialogue_handler_builder_ext::DialogueHandlerBuilderExt;
 pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
+pub use dialogue_ctx::DialogueContext;
 pub use get_chat_id::GetChatId;
 pub use transition::{
     Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,

@@ -6,8 +6,8 @@
 //!
 //! All types except `PreCheckoutQuery` and `ShippingQuery` has custom methods for guards.
 //!
-//! [`UpdateHandlerBuilder`]: TODO
-//! [`Update`]: TODO
+//! [`UpdateHandlerBuilder`]: crate::dispatching::handlers::UpdateHandlerBuilder
+//! [`Update`]: crate::types::Update
 
 pub(crate) use impls::{parser, UpdateRest};
 

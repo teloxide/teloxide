@@ -10,8 +10,8 @@ use crate::dispatching::{
 /// your own dispatcher with your own context, you must implement the trait for
 /// it.
 ///
-/// [DispatcherContext]: TODO
-/// [DialogueContext]: TODO
+/// [DispatcherContext]: crate::dispatching::dev::DispatcherContext
+/// [DialogueContext]: crate::dispatching::dialogue::DialogueContext
 pub trait Context {
     type Upd;
 
@@ -23,8 +23,8 @@ pub trait Context {
 /// and [DialogueContext]. If you create your own dispatcher with your own
 /// context, you must implement the trait for it.
 ///
-/// [DispatcherContext]: TODO
-/// [DialogueContext]: TODO
+/// [DispatcherContext]: crate::dispatching::dev::DispatcherContext
+/// [DialogueContext]: crate::dispatching::dialogue::DialogueContext
 pub trait ContextWith<Elem>: Context {
     type Context: Context<Upd = Elem>;
 }
@@ -34,8 +34,8 @@ pub trait ContextWith<Elem>: Context {
 /// your own dispatcher with your own context, you must implement the trait for
 /// it.
 ///
-/// [DispatcherContext]: TODO
-/// [DialogueContext]: TODO
+/// [DispatcherContext]: crate::dispatching::dev::DispatcherContext
+/// [DialogueContext]: crate::dispatching::dialogue::DialogueContext
 pub trait ParseContext<To>: ContextWith<To> + Sized {
     fn parse<Rest>(
         self,
@@ -117,8 +117,8 @@ impl<Upd> FromContextOwn<DispatcherContext<Upd>> for Upd {
 /// It is used to implement [`FromContext`] and [`FromContextOwn`] for different
 /// kinds of `Context`.
 ///
-/// [`FromContext`]: TODO
-/// [`FromContextOwn`]: TODO
+/// [`FromContext`]: crate::dispatching::dev::FromContext
+/// [`FromContextOwn`]: crate::dispatching::dev::FromContextOwn
 pub trait GetCtx<Ctx> {
     fn get(&self) -> &Ctx;
     fn get_own(self) -> Ctx;

@@ -28,8 +28,8 @@ impl From<()> for HandleResult<Infallible> {
 ///
 /// It must be returned from the [`Handler`] (see [`HandleFuture`] type).
 ///
-/// [`Handler`]: TODO
-/// [`HandleFuture`]: TODO
+/// [`Handler`]: crate::dispatching::dev::Handler
+/// [`HandleFuture`]: crate::dispatching::dev::HandleFuture
 #[derive(Debug, PartialEq)]
 pub enum DispatchError<Upd, Err> {
     /// There are no handler to handle the incoming update.

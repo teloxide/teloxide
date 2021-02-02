@@ -124,23 +124,22 @@
 //! You can define extensions methods and reuse these 3 kind of methods. There are example in the
 //! [`DialogueHandlerBuilderExt`].
 //!
-//! [`DispatcherBuilder::error_handler`]: TODO
-//! [`DispatchError::NoHandler`]: TODO
-//! [`DispatchError::HandlerError`]: TODO
-//! [`Dispatcher`]: TODO
-//! [`DialogueDispatcher`]: TODO
-//! [`DispatcherBuilder::new`]: TODO
-//! [`DispatcherBuilder::data`]: TODO
-//! [`tel::Data`]: TODO
-//! [`DispatcherBuilder::data`]: TODO
-//! [`Handler`]: TODO
-//! [`handlers::update`]: TODO
-//! [`predefined error handlers`]: TODO
-//! [`LoggingErrorHandler`]: TODO
-//! [`DispatcherBuilder::build`]: TODO
-//! [`Dispatcher::dispatch_with_listener`]: TODO
-//! [`polling_default`]: TODO
-//! [`DialogueHandlerBuilderExt`]: TODO
+//! [`DispatcherBuilder::error_handler`]: crate::dispatching::DispatcherBuilder::error_handler
+//! [`DispatchError::NoHandler`]: crate::dispatching::DispatchError::NoHandler
+//! [`DispatchError::HandlerError`]: crate::dispatching::DispatchError::HandlerError
+//! [`Dispatcher`]: crate::dispatching::Dispatcher
+//! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
+//! [`DispatcherBuilder::new`]: crate::dispatching::DispatcherBuilder::new
+//! [`DispatcherBuilder::data`]: crate::dispatching::DispatcherBuilder::data
+//! [`tel::Data`]: crate::dispatching::tel::Data
+//! [`Handler`]: crate::dispatching::dev::Handler
+//! [`handlers::update`]: crate::dispatching::handlers::update
+//! [`predefined error handlers`]: crate::dispatching::error_handlers
+//! [`LoggingErrorHandler`]: crate::dispatching::error_handlers::LoggingErrorHandler
+//! [`DispatcherBuilder::build`]: crate::dispatching::DispatcherBuilder::build
+//! [`Dispatcher::dispatch_with_listener`]: crate::dispatching::Dispatcher::dispatch_with_listener
+//! [`polling_default`]: crate::dispatching::update_listeners::polling_default
+//! [`DialogueHandlerBuilderExt`]: crate::dispatching::dialogue::DialogueHandlerBuilderExt
 
 pub(crate) mod core;
 pub mod dialogue;
@@ -151,12 +150,13 @@ pub mod handlers;
 pub(crate) mod repls;
 #[cfg(test)]
 mod tests;
-mod update_listeners;
+pub mod update_listeners;
 pub mod update_with_cx;
 
 pub use dispatcher::{Dispatcher, DispatcherBuilder};
 pub use handlers::updates;
 pub use update_with_cx::UpdateWithCx;
+pub use dev::DispatchError;
 
 pub mod dev {
     pub use super::core::*;
