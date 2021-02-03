@@ -1,4 +1,8 @@
-use crate::types::Message;
+use crate::types::{Message, Update, UpdateKind};
+
+pub fn message_update(mes: Message) -> Update {
+    Update::new(0, UpdateKind::Message(mes))
+}
 
 pub fn text_message<T: Into<String>>(text: T) -> Message {
     use crate::types::{
