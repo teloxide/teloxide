@@ -3,7 +3,7 @@ use crate::{
         dialogue::{
             DialogueDispatcherBuilder, DialogueHandlerBuilderExt, DialogueWithCx, InMemStorage,
         },
-        tel, updates, DispatcherBuilder, UpdateWithCx,
+        ext, updates, DispatcherBuilder, UpdateWithCx,
     },
     dummies::text_message,
     types::{Message, Update, UpdateKind},
@@ -130,7 +130,7 @@ async fn global_data() {
         .data(SomeData(1))
         .handle(
             updates::message()
-                .by(|_: Message, data: tel::Data<SomeData>| assert_eq!((data.0).0, 1)),
+                .by(|_: Message, data: ext::Data<SomeData>| assert_eq!((data.0).0, 1)),
         )
         .error_handler(|_| async { unreachable!() })
         .build();

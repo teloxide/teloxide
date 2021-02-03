@@ -28,7 +28,7 @@
 //!
 //! Than you can add some global data which you want to pass to the many handlers: it can be configs, database pool of
 //! connectors, or some kind of services. It adds using [`DispatcherBuilder::data`] method. In handlers you can
-//! get access to this data using [`tel::Data`] struct.
+//! get access to this data using [`ext::Data`] struct.
 //!
 //! The next stage is define the handlers. Its defines using [`DispatcherBuilder::handle`] method. Due to internal
 //! architecture, functions does not implement [`Handler`] trait, so you must choose one of predefined functions
@@ -124,6 +124,62 @@
 //! You can define extensions methods and reuse these 3 kind of methods. There are example in the
 //! [`DialogueHandlerBuilderExt`].
 //!
+//! ## Extractors
+//!
+//! In handlers you can use extractors. Extractor is a struct that exctract some value from the incoming
+//! context, which include an global data and the incoming update. Some dispatchers can ovveride the context,
+//! and in the, for example, [`DialogueDispatcher`] context include an dialogue.
+//!
+//! There are some [`predefined extractors`] in the framework:
+//! 1. [`ext::Command`] - extracts some `Command` which implement [`BotCommand`] trait. If parser of command
+//! returns `Err` then update will be passes to the next handler in the list.
+//!
+//! ```
+//! use teloxide::prelude::*;
+//! use teloxide::dispatching::{updates, ext};
+//! # use teloxide::dispatching::dev::Handler;
+//! use teloxide::dummies;
+//!
+//! #[derive(BotCommand)]
+//! enum Command {
+//!     Start,
+//!     Data(u8),
+//! }
+//!
+//! let handler = updates::message()
+//!     .by(|_: UpdateWithCx<Message>, command: ext::Command<Command>| {
+//!         assert_eq!(command.command, Command::Start)
+//!     });
+//!
+//! let upd = dummies::message_update(dummies::text_message("/start"));
+//! handler.handle(upd).await;
+//! ```
+//!
+//! 2. [`ext::Data`] - extracts data with the specified type from the global data which you add using
+//! [`DispatcherBuilder::data`]. If there are no specified type in the global store, extractor call
+//! [`log::warn`](log::warn).
+//!
+//! ```
+//! use teloxide::prelude::*;
+//! use teloxide::dispatching::{updates, ext, DispatcherBuilder};
+//! use teloxide::dummies;
+//!
+//! let bot = Bot::new("token");
+//! let bot_name = "bot_name";
+//! let dispatcher = DispatcherBuilder::new(bot, bot_name)
+//!     .data(1u8)
+//!     .handle(
+//!         updates::message()
+//!             .by(|_: UpdateWithCx<Message>, data: ext::Data<u8>| {
+//!                assert_eq!(data.0, 1u8);
+//!             })
+//!     )
+//!     .build();
+//!
+//! let upd = dummies::message_update(dummies::text_message(""));;
+//! dispatcher.dispatch_one(upd).await;
+//! ```
+//!
 //! [`DispatcherBuilder::error_handler`]: crate::dispatching::DispatcherBuilder::error_handler
 //! [`DispatchError::NoHandler`]: crate::dispatching::DispatchError::NoHandler
 //! [`DispatchError::HandlerError`]: crate::dispatching::DispatchError::HandlerError
@@ -131,7 +187,7 @@
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 //! [`DispatcherBuilder::new`]: crate::dispatching::DispatcherBuilder::new
 //! [`DispatcherBuilder::data`]: crate::dispatching::DispatcherBuilder::data
-//! [`tel::Data`]: crate::dispatching::tel::Data
+//! [`ext::Data`]: crate::dispatching::ext::Data
 //! [`Handler`]: crate::dispatching::dev::Handler
 //! [`handlers::update`]: crate::dispatching::handlers::update
 //! [`predefined error handlers`]: crate::dispatching::error_handlers
@@ -140,6 +196,9 @@
 //! [`Dispatcher::dispatch_with_listener`]: crate::dispatching::Dispatcher::dispatch_with_listener
 //! [`polling_default`]: crate::dispatching::update_listeners::polling_default
 //! [`DialogueHandlerBuilderExt`]: crate::dispatching::dialogue::DialogueHandlerBuilderExt
+//! [`predefined extractors`]: crate::dispatching::ext
+//! [`ext::Command`]: crate::dispatching::ext::Command
+//! [`BotCommand`]: crate::utils::command::BotCommand
 
 pub(crate) mod core;
 pub mod dialogue;
@@ -164,7 +223,7 @@ pub mod dev {
     pub use super::dispatcher_context::DispatcherContext;
 }
 
-pub mod tel {
+pub mod ext {
     pub use super::handlers::commands::Command;
     use crate::dispatching::{
         core::{Context, FromContext, GetCtx},

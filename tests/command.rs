@@ -199,7 +199,7 @@ fn descriptions_off() {
 async fn handle_commands() {
     use std::convert::Infallible;
     use teloxide::{
-        dispatching::{tel, updates, DispatcherBuilder},
+        dispatching::{ext, updates, DispatcherBuilder},
         dummies::text_message,
         types::{Message, Update, UpdateKind},
         utils::command::BotCommand,
@@ -216,7 +216,7 @@ async fn handle_commands() {
     #[allow(deprecated)]
     let dispatcher = DispatcherBuilder::<Infallible, _>::new(Bot::new(""), "bot_name")
         // FIXME(p0lunin): if _: Message will be removed we get an `type annotations needed` error
-        .handle(updates::message().by(|_: Message, command: tel::Command<MyCommand>| {
+        .handle(updates::message().by(|_: Message, command: ext::Command<MyCommand>| {
             assert_eq!(command.command, MyCommand::Start);
         }))
         .error_handler(|_| async { unreachable!() })

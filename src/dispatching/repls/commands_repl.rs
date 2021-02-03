@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         error_handlers::{LoggingErrorHandler, OnError},
-        tel, update_listeners,
+        ext, update_listeners,
         update_listeners::UpdateListener,
         updates, DispatcherBuilder, UpdateWithCx,
     },
@@ -65,7 +65,7 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
     let username = bot.get_me().send().await.unwrap().user.username.unwrap();
 
     DispatcherBuilder::new(bot, username)
-        .handle(updates::message().by(move |cx: UpdateWithCx<Message>, cmd: tel::Command<Cmd>| {
+        .handle(updates::message().by(move |cx: UpdateWithCx<Message>, cmd: ext::Command<Cmd>| {
             let handler = handler.clone();
             async move {
                 handler(cx, cmd.command).await.log_on_error().await;
