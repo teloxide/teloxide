@@ -135,7 +135,7 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 ///     Err(inf) => IgnoringErrorHandlerSafe::new().handle_error(inf).await,
 /// }
 ///
-/// IgnoringErrorHandlerSafe::new().handle_error(return;).await; // return type of `return` is `!` (aka never)
+/// IgnoringErrorHandlerSafe::new().handle_error(return).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///

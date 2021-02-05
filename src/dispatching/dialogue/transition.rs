@@ -1,8 +1,9 @@
 use crate::{
-    dispatching::{dialogue::DialogueStage, UpdateWithCx},
+    dispatching::UpdateWithCx,
     types::Message,
 };
 use futures::future::BoxFuture;
+use crate::dispatching::dialogue::Dialogue;
 
 /// Represents a transition function of a dialogue FSM.
 pub trait Transition: Sized {
@@ -16,18 +17,14 @@ pub trait Transition: Sized {
         self,
         cx: TransitionIn,
         aux: Self::Aux,
-    ) -> BoxFuture<'static, TransitionOut<Self, Self::Error>>;
+    ) -> BoxFuture<'static, TransitionOut<Self::Error>>;
 }
 
 /// Like [`Transition`], but from `StateN` -> `Dialogue`.
 ///
 /// [`Transition`]: crate::dispatching::dialogue::Transition
-pub trait Subtransition
-where
-    Self::Dialogue: Transition<Aux = Self::Aux>,
-{
+pub trait Subtransition<S>: Sized {
     type Aux;
-    type Dialogue;
     type Error;
 
     /// Turns itself into another state, depending on the input message.
@@ -38,24 +35,33 @@ where
         self,
         cx: TransitionIn,
         aux: Self::Aux,
-    ) -> BoxFuture<'static, TransitionOut<Self::Dialogue, Self::Error>>;
+    ) -> BoxFuture<'static, TransitionOut<Self::Error>>;
+}
+
+pub trait SubtransitionState {
+    type State;
+    type StorageError;
+    type Dialogue;
+}
+
+impl<D, E, Cur> SubtransitionState for Dialogue<D, E, Cur> {
+    type State = Cur;
+    type StorageError = E;
+    type Dialogue = D;
 }
 
 /// A type returned from a FSM subtransition function.
 ///
 /// Now it is used only inside `#[teloxide(subtransition)]` for type inference.
 pub trait SubtransitionOutputType {
-    type Output;
     type Error;
 }
 
-impl<D, E> SubtransitionOutputType for TransitionOut<D, E> {
-    type Output = D;
+impl<E> SubtransitionOutputType for TransitionOut<E> {
     type Error = E;
 }
 
 /// An input passed into a FSM (sub)transition function.
 pub type TransitionIn = UpdateWithCx<Message>;
 
-/// A type returned from a FSM (sub)transition function.
-pub type TransitionOut<D, E = crate::RequestError> = Result<DialogueStage<D>, E>;
+pub type TransitionOut<E = crate::RequestError> = Result<(), E>;

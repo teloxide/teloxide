@@ -79,7 +79,7 @@ macro_rules! impl_with_and_or {
 
 impl_with_and_or! {
     (id, str, CallbackQuery::get_id),
-    (from, User, CallbackQuery::get_from),
+    (from_u, User, CallbackQuery::get_from),
     (message, Message, CallbackQuery::get_message),
     (inline_message_id, str, CallbackQuery::get_inline_message_id),
     (chat_instance, str, CallbackQuery::get_chat_instance),

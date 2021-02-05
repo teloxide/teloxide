@@ -156,18 +156,20 @@ async fn with_dialogue() {
     let dispatcher = DialogueDispatcherBuilder::new(dummy_bot(), "bot_name", InMemStorage::new())
         .handle(updates::message().with_dialogue(|d: &Dialogue| matches!(d, Dialogue::Start)).by(
             |DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
-                assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::Start);
+                let dialogue = dialogue.unwrap();
+                assert_eq!(&dialogue.data, &Dialogue::Start);
                 async move {
-                    dialogue.next(|_| Dialogue::HaveData(10)).await.unwrap();
+                    dialogue.next(|_| Dialogue::HaveData(10)).await;
                 }
             },
         ))
         .handle(
             updates::message().with_dialogue(|d: &Dialogue| matches!(d, Dialogue::HaveData(_))).by(
                 |DialogueWithCx { dialogue, .. }: DialogueWithCx<Message, Dialogue, Infallible>| {
-                    assert_eq!(dialogue.data.as_ref().unwrap(), &Dialogue::HaveData(10));
+                    let dialogue = dialogue.unwrap();
+                    assert_eq!(&dialogue.data, &Dialogue::HaveData(10));
                     async move {
-                        dialogue.exit().await.unwrap();
+                        dialogue.exit().await;
                     }
                 },
             ),

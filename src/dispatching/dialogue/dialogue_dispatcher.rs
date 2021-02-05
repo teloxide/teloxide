@@ -332,6 +332,7 @@ mod tests {
                             (),
                             Infallible,
                         >| async move {
+                            let dialogue = dialogue.unwrap();
                             delay_for(Duration::from_millis(300)).await;
 
                             match (cx.update.chat_id(), cx.update.text().unwrap()) {
@@ -346,7 +347,7 @@ mod tests {
                                 }
                                 _ => unreachable!(),
                             }
-                            dialogue.next(|()| ()).await.unwrap();
+                            dialogue.next(|()| ()).await;
                         },
                     ),
                 )

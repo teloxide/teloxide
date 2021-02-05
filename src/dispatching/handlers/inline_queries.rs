@@ -76,7 +76,7 @@ macro_rules! impl_with_and_or {
 
 impl_with_and_or! {
     (id, str, InlineQuery::get_id),
-    (from, User, InlineQuery::get_from),
+    (from_us, User, InlineQuery::get_from),
     (location, Location, InlineQuery::get_location),
     (query, str, InlineQuery::get_query),
     (get_offset, str, InlineQuery::get_offset),

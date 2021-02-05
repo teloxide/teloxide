@@ -1,7 +1,15 @@
 //! Commonly used items.
 
 pub use crate::{
-    dispatching::UpdateWithCx,
+    dispatching::{
+        UpdateWithCx, DispatcherBuilder,
+        dialogue::{
+            DialogueDispatcherBuilder,
+            DialogueWithCx, Transition,
+            TransitionIn, TransitionOut,
+            Dialogue
+        }
+    },
     requests::{respond, Request, ResponseResult},
     types::{Message, Update},
     Bot, RequestError,

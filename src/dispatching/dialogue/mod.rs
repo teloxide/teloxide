@@ -1,6 +1,8 @@
 //! Dealing with dialogues.
 //!
-//! There are three main components:
+//! Dialogues - mechanism allows you to have state for the dialogues like FSM and store it consistently.
+//!
+//! There are four main components:
 //!
 //!  1. Your type `D` (typically an enumeration), implementing [`Transition`].
 //! It is essentially a [FSM]: its variants are possible dialogue states and
@@ -8,24 +10,21 @@
 //!
 //!  2. State types, forming `D`. They implement [`Subtransition`].
 //!
-//!  2. [`Storage<D>`], which encapsulates all the dialogues.
+//!  3. [`Storage<D>`], which encapsulates all the dialogues.
 //!
-//!  3. [`DialogueDispatcher`], which encapsulates your handler, [`Storage<D>`],
-//! and implements [`DispatcherHandler`].
+//!  4. [`DialogueDispatcher`], which encapsulates your handlers, [`Storage<D>`] and [`Dispatcher`]
 //!
-//! You pass [`DialogueDispatcher`] into [`Dispatcher`]. Every time
-//! [`Dispatcher`] sees an incoming input, it is transferred into
-//! [`DialogueDispatcher`], and the following steps are executed:
-//!
-//!  1. If a storage doesn't contain a dialogue from this chat, supply
-//! `D::default()` into you handler, otherwise, supply the saved dialogue
+//! You build [`DialogueDispatcher`] using [`DialogueDispatcherBuilder`] which incapsulate
+//! [`Dispatcher`] and has it's methods like `handle` and `data`. Every time
+//! [`DialogueDispatcher`] give an update, it tries to get chat_id of the update. If dispatcher get it,
+//! it request [`Storage`] for a state of the chat with this chat_id. If a storage doesn't contain a dialogue
+//! from this chat, supply `D::default()` into you handler, otherwise, supply the saved dialogue
 //! from this chat.
-//!  2. If a handler has returned [`DialogueStage::Exit`], remove the dialogue
-//! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
-//! update the dialogue.
 //!
-//! To avoid boilerplate, teloxide exports these convenient things: the [`next`]
-//! and [`exit`] functions, and `#[derive(BotDialogue)]` with
+//! After you get a dialogue in the handler, you must to change state using [`Dialogue::next`](crate::dispatching::dialogue::Dialogue::next) or
+//! [`Dialogue::exit`](crate::dispatching::dialogue::Dialogue::exit) methods.
+//!
+//! To avoid boilerplate, teloxide exports these convenient things: `#[derive(BotDialogue)]` with
 //! `#[teloxide(subtransition)]`. Here's how your dialogues management code
 //! skeleton should look like:
 //!
@@ -33,26 +32,26 @@
 //! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide};
+//! use teloxide::{dispatching::dialogue::{Transition, Dialogue, TransitionOut, DialoguewWithCx}, prelude::*, teloxide};
 //!
 //! struct _1State;
 //! struct _2State;
 //! struct _3State;
 //!
-//! type Out = TransitionOut<D, RequestError>;
+//! type SubIn<T> = Dialogue<D, Infallible, T>;
 //!
-//! #[teloxide(subtransition)]
-//! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
+//! #[teloxide(subtransition(_1State -> D))]
+//! async fn _1_transition(_state: SubIn<_1State>, _cx: TransitionIn) -> TransitionOut {
 //!     todo!()
 //! }
 //!
-//! #[teloxide(subtransition)]
-//! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
+//! #[teloxide(subtransition(_2State -> D))]
+//! async fn _2_transition(_state: SubIn<_2State>, _cx: TransitionIn) -> TransitionOut {
 //!     todo!()
 //! }
 //!
-//! #[teloxide(subtransition)]
-//! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
+//! #[teloxide(subtransition(_3State -> D))]
+//! async fn _3_transition(_state: SubIn<_3State>, _cx: TransitionIn) -> TransitionOut {
 //!     todo!()
 //! }
 //!
@@ -85,7 +84,6 @@
 //!     Dispatcher::new(bot)
 //!         .messages_handler(DialogueDispatcher::new(
 //!             |DialogueWithCx { cx, dialogue }: In| async move {
-//!                 // No panic because of std::convert::Infallible.
 //!                 let dialogue = dialogue.unwrap();
 //!                 dialogue
 //!                     // Instead of () you can pass an arbitrary value, see below.
@@ -118,6 +116,7 @@
 //! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 //!
 //! [`Storage<D>`]: crate::dispatching::dialogue::Storage
+//! [`Dispatcher`]: crate::dispatching::Dispatcher
 //!
 //! [`DialogueStage<D>`]: crate::dispatching::dialogue::DialogueStage
 //! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
@@ -143,21 +142,21 @@
 mod dialogue_ctx;
 mod dialogue_dispatcher;
 mod dialogue_handler_builder_ext;
-mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
 mod storage;
 mod transition;
+mod dialogue;
 
 pub use dialogue_dispatcher::{DialogueDispatcher, DialogueDispatcherBuilder};
 pub use dialogue_handler_builder_ext::DialogueHandlerBuilderExt;
-pub use dialogue_stage::{exit, next, DialogueStage};
 pub use dialogue_with_cx::DialogueWithCx;
 pub use dialogue_ctx::DialogueContext;
 pub use get_chat_id::GetChatId;
 pub use transition::{
-    Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
+    Subtransition, Transition, TransitionIn, TransitionOut, SubtransitionOutputType, SubtransitionState, SubtransitionHack
 };
+pub use dialogue::Dialogue;
 
 #[cfg(feature = "macros")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>

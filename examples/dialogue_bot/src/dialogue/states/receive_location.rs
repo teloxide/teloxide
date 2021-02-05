@@ -1,8 +1,8 @@
-use crate::dialogue::Dialogue;
+use crate::dialogue::{SubIn, MyDialogue};
 use teloxide::prelude::*;
 use teloxide_macros::teloxide;
 
-#[derive(Generic)]
+#[derive(Debug, Clone, Generic)]
 pub struct ReceiveLocationState {
     pub full_name: String,
     pub age: u8,
@@ -10,11 +10,12 @@ pub struct ReceiveLocationState {
 
 #[teloxide(subtransition)]
 async fn receive_location(
-    state: ReceiveLocationState,
+    state: SubIn<ReceiveLocationState>,
     cx: TransitionIn,
     ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
+) -> TransitionOut {
+    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.data.full_name, state.data.age, ans))
         .await?;
-    exit()
+    state.exit().await;
+    Ok(())
 }

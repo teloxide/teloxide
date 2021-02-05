@@ -66,6 +66,7 @@ pub trait ParseContext<To>: ContextWith<To> + Sized {
 ///     types::*,
 ///     Bot,
 /// };
+/// use std::convert::Infallible;
 ///
 /// struct ChatId(i64);
 /// impl<Ctx> FromContext<Ctx> for ChatId
@@ -81,7 +82,7 @@ pub trait ParseContext<To>: ContextWith<To> + Sized {
 ///     }
 /// }
 ///
-/// let dispatcher = DispatcherBuilder::new(Bot::new(""), "bot_name")
+/// let dispatcher = DispatcherBuilder::<Infallible>::new(Bot::builder().token("").build(), "bot_name")
 ///     .handle(updates::any().by(|_: Update, chat_id: ChatId| {
 ///         assert_ne!(chat_id.0, 0);
 ///     }))

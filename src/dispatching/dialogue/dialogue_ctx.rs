@@ -10,8 +10,10 @@ use serde::__private::Formatter;
 use std::{fmt::Debug, sync::Arc};
 use tokio::sync::mpsc;
 
+/// An context of the [`DialogueDispatcher`].
 pub struct DialogueContext<Upd, D, S> {
     pub dispatcher_ctx: DispatcherContext<Upd>,
+    /// Storage of the dialogues.
     pub storage: Arc<S>,
     pub dialogue: Option<D>,
     pub senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,

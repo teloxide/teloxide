@@ -9,12 +9,12 @@
 //! ```
 //! use std::convert::Infallible;
 //! use teloxide::{
-//!     dispatching::{dev::*, updates},
+//!     dispatching::{dev::*, updates, UpdateWithCx},
 //!     types::Update,
 //! };
 //!
-//! let mut builder = DemuxBuilder::<Update, Infallible>::new();
-//! builder.add_service(updates::any());
+//! let mut builder = DemuxBuilder::<DispatcherContext<Update>, Infallible>::new();
+//! builder.add_service(updates::any().by(|_: UpdateWithCx<Update>| unimplemented!()));
 //! let demux = builder.build();
 //! ```
 

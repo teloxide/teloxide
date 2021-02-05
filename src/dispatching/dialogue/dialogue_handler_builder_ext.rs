@@ -5,12 +5,17 @@ use crate::dispatching::{
 use futures::future::BoxFuture;
 use pin_project::__private::PhantomData;
 
+/// Dialogue extensions for [`HandlerBuilderWithGuards`](crate::dispatching::HandlerBuilderWithGuards) trait.
+///
+/// For more information see [`top-level module`](crate::dispatching::dialogue).
 pub trait DialogueHandlerBuilderExt<Ctx, D, S, Err> {
+    /// Accepts an `Guard<D>` where `D` is a dialogue type.
     fn with_dialogue<G: Guard<D> + Send + Sync + 'static>(
         self,
         guard: impl IntoGuard<D, G> + 'static,
     ) -> Self;
 
+    /// Guard satisfies when we can get a dialogue for the incoming update (update has `chat_id`).
     fn has_dialogue(self) -> Self;
 }
 

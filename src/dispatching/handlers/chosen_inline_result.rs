@@ -76,7 +76,7 @@ macro_rules! impl_with_and_or {
 
 impl_with_and_or! {
     (result_id, str, ChosenInlineResult::get_result_id),
-    (from, User, ChosenInlineResult::get_from),
+    (from_user, User, ChosenInlineResult::get_from),
     (location, Location, ChosenInlineResult::get_location),
     (query, str, ChosenInlineResult::get_query),
     (inline_message_id, str, ChosenInlineResult::get_inline_message_id),

@@ -1,5 +1,7 @@
 //! Tidy dispatching for the incoming updates.
 //!
+//! # Dispatching overview
+//!
 //! Dispatching in teloxide is a distribution of incoming updates got by polling or using webhooks
 //! into user-defined handler functions. The way of distribution base on matching and guards.
 //!
@@ -50,22 +52,26 @@
 //! but you can see an example in the repository).
 //!
 //! Example:
-//! ```no_compile
+//! ```no_run
 //! use teloxide::dispatching::*;
 //! use teloxide::prelude::*;
 //! use teloxide::types;
 //! use teloxide::dispatching::error_handlers::LoggingErrorHandler;
+//! use teloxide::dispatching::update_listeners::polling_default;
 //!
+//! # #[tokio::main]
+//! # async fn main() {
 //! let admin_id = 202040960;
-//! let bot = Bot::new("token");
+//! let bot = Bot::builder().token("token").build();
 //! let bot_name = "bot_name";
 //!
-//! let dispatcher = DispatcherBuilder::new(bot.clone(), bot_name)
+//! let dispatcher = DispatcherBuilder::<teloxide::RequestError>::new(bot.clone(), bot_name)
 //!     .handle(
 //!         updates::message()
-//!             .with_from(|user: &types::User| user.id == admin_id)
+//!             .with_from(move |user: &types::User| user.id == admin_id)
 //!             .by(|cx: UpdateWithCx<types::Message>| async move {
 //!                 cx.answer_str("You are admin").await?;
+//!                 Ok(())
 //!             })
 //!     )
 //!     .handle(
@@ -73,19 +79,21 @@
 //!             .with_chat(|chat: &types::Chat| matches!(chat.kind, types::ChatKind::Public(_)))
 //!             .or_else(|cx: UpdateWithCx<types::Message>| async move {
 //!                 cx.answer_str("Bot works only in the public chats!").await?;
+//!                 Ok(())
 //!             })
 //!             .by(|cx: UpdateWithCx<types::Message>| async move {
 //!                 cx.answer_str("I'm work!").await?;
+//!                 Ok(())
 //!             })
 //!     )
 //!     .error_handler(LoggingErrorHandler::with_custom_text("An error from the dispatcher"))
 //!     .build();
 //!
-//! dispatcher.dispatch_with_listener(polling(bot), &LoggingErrorHandler::with_custom_text("An error from the listener")).await;
-//!
+//! dispatcher.dispatch_with_listener(polling_default(bot), &LoggingErrorHandler::with_custom_text("An error from the listener")).await;
+//! # }
 //! ```
 //!
-//! ## Handlers methods
+//! ## Handler builders methods
 //!
 //! `with_guard` function is used to define a custom guard with signature `Fn(&Upd) -> Out` where `Out`
 //! can be both `bool` and `impl Future<Output = bool>`.
@@ -94,13 +102,14 @@
 //! use teloxide::dispatching::*;
 //! use teloxide::prelude::*;
 //! use teloxide::types;
+//! use teloxide::dispatching::dev::DispatcherContext;
 //!
-//! let handler = updates::message()
+//! let handler = updates::message::<DispatcherContext<_>, teloxide::RequestError>()
 //!         .with_guard(|mes: &Message| mes.via_bot.is_none())
 //!         // Some builders have `with_*` function that allows you to avoid excess `match`.
 //!         // These guards will be called only if update has that field. Guard below will be called
 //!         // only when `Message::via_bot` field is `Some`. If it `None`, guard return false.
-//!         .with_via_bot(|via: &str| via == "some_bot")
+//!         .with_via_bot(|via: &types::User| via.is_bot)
 //!         // Same as above but add `or` rule between this and previous guard. So, guard return `true`
 //!         // if `with_via_bot` return true OR `or_with_document` return true.
 //!         .or_with_document(|doc: &types::Document| doc.file_size.unwrap() < 20)
@@ -115,6 +124,8 @@
 //!         .or_no_has_audio()
 //!         .by(|cx: UpdateWithCx<types::Message>| async move {
 //!             cx.answer_str("I'm work!").await?;
+//!
+//!             Ok(())
 //!         });
 //! ```
 //!
@@ -135,24 +146,33 @@
 //! returns `Err` then update will be passes to the next handler in the list.
 //!
 //! ```
+//! # #[cfg(feature = "macros")] {
 //! use teloxide::prelude::*;
-//! use teloxide::dispatching::{updates, ext};
+//! use teloxide::dispatching::{DispatcherBuilder, updates, ext};
+//! use teloxide::utils::command::BotCommand;
 //! # use teloxide::dispatching::dev::Handler;
 //! use teloxide::dummies;
 //!
-//! #[derive(BotCommand)]
+//! #[derive(Debug, PartialEq, BotCommand)]
 //! enum Command {
 //!     Start,
 //!     Data(u8),
 //! }
-//!
+//! # #[tokio::main]
+//! # async fn main() {
 //! let handler = updates::message()
 //!     .by(|_: UpdateWithCx<Message>, command: ext::Command<Command>| {
 //!         assert_eq!(command.command, Command::Start)
 //!     });
 //!
+//! let bot = Bot::builder().token("").build();
+//! let dispatcher = DispatcherBuilder::<std::convert::Infallible>::new(bot, "")
+//!     .handle(handler)
+//!     .build();
+//!
 //! let upd = dummies::message_update(dummies::text_message("/start"));
-//! handler.handle(upd).await;
+//! dispatcher.dispatch_one(upd).await;
+//! # } }
 //! ```
 //!
 //! 2. [`ext::Data`] - extracts data with the specified type from the global data which you add using
@@ -163,22 +183,33 @@
 //! use teloxide::prelude::*;
 //! use teloxide::dispatching::{updates, ext, DispatcherBuilder};
 //! use teloxide::dummies;
+//! use std::convert::Infallible;
 //!
-//! let bot = Bot::new("token");
+//! # #[tokio::main]
+//! # async fn main() {
+//! let bot = Bot::builder().token("token").build();
 //! let bot_name = "bot_name";
-//! let dispatcher = DispatcherBuilder::new(bot, bot_name)
+//! let dispatcher = DispatcherBuilder::<Infallible>::new(bot, bot_name)
 //!     .data(1u8)
 //!     .handle(
 //!         updates::message()
 //!             .by(|_: UpdateWithCx<Message>, data: ext::Data<u8>| {
-//!                assert_eq!(data.0, 1u8);
+//!                assert_eq!(data.0.as_ref(), &1u8);
 //!             })
 //!     )
+//!     .error_handler(|_| async { unreachable!() })
 //!     .build();
 //!
 //! let upd = dummies::message_update(dummies::text_message(""));;
 //! dispatcher.dispatch_one(upd).await;
+//! # }
 //! ```
+//!
+//! ## Dialogues
+//!
+//! There are support of dialogue system which is kind of FSM (final-state machine). It allows to
+//! represent a dialogue as FSM with consistent storing it. More about dialogues see in the
+//! [`dialogue module`].
 //!
 //! [`DispatcherBuilder::error_handler`]: crate::dispatching::DispatcherBuilder::error_handler
 //! [`DispatchError::NoHandler`]: crate::dispatching::DispatchError::NoHandler
@@ -199,6 +230,7 @@
 //! [`predefined extractors`]: crate::dispatching::ext
 //! [`ext::Command`]: crate::dispatching::ext::Command
 //! [`BotCommand`]: crate::utils::command::BotCommand
+//! [`dialogue module`]: crate::dispatching::dialogue
 
 pub(crate) mod core;
 pub mod dialogue;

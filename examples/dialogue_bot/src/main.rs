@@ -22,8 +22,9 @@ extern crate frunk;
 
 mod dialogue;
 
-use crate::dialogue::Dialogue;
+use crate::dialogue::{MyDialogue};
 use teloxide::prelude::*;
+use std::convert::Infallible;
 
 #[tokio::main]
 async fn main() {
@@ -36,18 +37,21 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    teloxide::dialogues_repl(bot, |message, dialogue| async move {
-        handle_message(message, dialogue).await.expect("Something wrong with the bot!")
+    teloxide::dialogues_repl(bot, |DialogueWithCx { cx, dialogue }: _| async move {
+        let dialogue = dialogue.unwrap();
+        handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
     })
     .await;
 }
 
-async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
+async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue<MyDialogue, Infallible>) -> TransitionOut {
     match cx.update.text_owned() {
         None => {
             cx.answer_str("Send me a text message.").await?;
-            next(dialogue)
+            dialogue.stay().await;
+
+            Ok(())
         }
-        Some(ans) => dialogue.react(cx, ans).await,
+        Some(ans) => Transition::react(dialogue, cx, ans).await,
     }
 }

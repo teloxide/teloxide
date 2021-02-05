@@ -1,16 +1,17 @@
-use crate::dialogue::{states::receive_age::ReceiveAgeState, Dialogue};
+use crate::dialogue::{states::receive_age::ReceiveAgeState, Dialogue, SubIn, MyDialogue};
 use teloxide::prelude::*;
 use teloxide_macros::teloxide;
 
-#[derive(Generic)]
+#[derive(Debug, Clone, Generic)]
 pub struct ReceiveFullNameState;
 
 #[teloxide(subtransition)]
 async fn receive_full_name(
-    state: ReceiveFullNameState,
+    state: SubIn<ReceiveFullNameState>,
     cx: TransitionIn,
     ans: String,
-) -> TransitionOut<Dialogue> {
+) -> TransitionOut {
     cx.answer_str("How old are you?").await?;
-    next(ReceiveAgeState::up(state, ans))
+    state.next(move |prev| ReceiveAgeState::up(prev, ans)).await;
+    Ok(())
 }

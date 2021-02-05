@@ -4,11 +4,8 @@ use crate::{
         dialogue::{dialogue_ctx::DialogueContext, GetChatId, Storage},
         UpdateWithCx,
     },
-    types::Update,
 };
-use lockfree::map::Map;
-use std::sync::Arc;
-use tokio::sync::mpsc;
+use crate::dispatching::dialogue::Dialogue;
 
 /// A context of a [`DialogueDispatcher`]'s message handler.
 ///
@@ -18,14 +15,7 @@ use tokio::sync::mpsc;
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 pub struct DialogueWithCx<Upd, D, E> {
     pub cx: UpdateWithCx<Upd>,
-    pub dialogue: Dialogue<D, E>,
-}
-
-pub struct Dialogue<D, E> {
-    pub data: Option<D>,
-    pub chat_id: Option<i64>,
-    storage: Arc<dyn Storage<D, Error = E> + Send + Sync>,
-    senders: Arc<Map<i64, mpsc::UnboundedSender<Update>>>,
+    pub dialogue: Option<Dialogue<D, E>>,
 }
 
 impl<Upd, D, S, E, Ctx> FromContextOwn<Ctx, DialogueContext<Upd, D, S>>
@@ -39,43 +29,15 @@ where
         let DialogueContext { dispatcher_ctx, storage, dialogue, senders, chat_id } = cx;
         DialogueWithCx {
             cx: UpdateWithCx::from_context(dispatcher_ctx),
-            dialogue: Dialogue { data: dialogue, storage, senders, chat_id },
+            dialogue: {
+                match (dialogue, chat_id) {
+                    (Some(d), Some(chat_id)) => {
+                        Some(Dialogue { data: d, storage, senders, chat_id })
+                    }
+                    _ => None,
+                }
+            },
         }
-    }
-}
-
-impl<D, E> Dialogue<D, E>
-where
-    D: Default + Send + 'static,
-{
-    pub async fn next(self, factory: impl Fn(D) -> D) -> Result<(), ()> {
-        let Dialogue { data, chat_id, storage, .. } = self;
-        let chat_id = chat_id.ok_or(())?;
-        let next = factory(data.unwrap_or_default());
-
-        if let Ok(Some(_)) = storage.update_dialogue(chat_id, next).await {
-            panic!(
-                "Oops, you have an bug in your Storage: update_dialogue returns Some after \
-                 remove_dialogue"
-            );
-        }
-
-        Ok(())
-    }
-
-    pub async fn exit(self) -> Result<(), ()> {
-        let Dialogue { chat_id, senders, .. } = self;
-        let chat_id = chat_id.ok_or(())?;
-
-        // On the next .poll() call, the spawned future will
-        // return Poll::Ready, because we are dropping the
-        // sender right here:
-        senders.remove(&chat_id);
-
-        // We already removed a dialogue from `storage` (see
-        // the beginning of this async block).
-
-        Ok(())
     }
 }
 

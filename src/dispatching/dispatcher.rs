@@ -12,6 +12,9 @@ use futures::StreamExt;
 use std::{future::Future, sync::Arc};
 use crate::dispatching::error_handlers::{IgnoringErrorHandler};
 
+/// Struct that used to dispatching updates from the telegram.
+///
+/// For more information see [`top-level module documentation`](crate::dispatching).
 pub struct Dispatcher<Err, Ctx = DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
@@ -24,10 +27,12 @@ impl<Err> Dispatcher<Err>
 where
     Err: 'static,
 {
+    /// Dispatches a single update.
     pub async fn dispatch_one(&self, upd: Update) {
         self.dispatch_one_with_cx(self.make_cx(upd)).await;
     }
 
+    /// Starts a dispatching loop. Dispatching proceed until `UpdateListener` returns an `Some`.
     pub async fn dispatch_with_listener<ListenerErr>(
         &self,
         listener: impl UpdateListener<ListenerErr>,
@@ -45,6 +50,10 @@ where
     Ctx: Send + 'static,
     Err: 'static,
 {
+    /// Dispatches a single context.
+    ///
+    /// It is used to reuse `Dispatcher` in custom dispatchers. In that case you must override the
+    /// `Ctx` generic in the `Dispatcher` and use this method to proceed a single context.
     pub async fn dispatch_one_with_cx(&self, cx: Ctx) {
         match self.demux.handle(cx).await {
             Ok(res) => match res {
@@ -57,6 +66,11 @@ where
         }
     }
 
+    /// Starts a dispatching loop. Dispatching proceed until `UpdateListener` returns an `Some`.
+    ///
+    /// It is used to reuse `Dispatcher` in custom dispatchers. In that case you must override the
+    /// `Ctx` generic in the `Dispatcher` and use this method to proceed a event loop with custom
+    /// context factory.
     pub async fn dispatch_with_listener_and_cx_factory<ListenerErr, Fut>(
         &self,
         listener: impl UpdateListener<ListenerErr>,
@@ -75,6 +89,7 @@ where
             .await;
     }
 
+    /// Creates a context which include global data and incoming `Update`.
     pub fn make_cx(&self, upd: Update) -> DispatcherContext<Update> {
         DispatcherContext::new(
             upd,
@@ -85,6 +100,9 @@ where
     }
 }
 
+/// `DispatcherBuilder` is used to build a [`Dispatcher`](crate::dispatching::Dispatcher) struct.
+///
+/// For more information see [`top-level module documentation`](crate::dispatching).
 pub struct DispatcherBuilder<Err, Ctx = DispatcherContext<Update>> {
     bot: Bot,
     bot_name: Arc<str>,
@@ -98,6 +116,10 @@ where
     Err: Send,
     Ctx: Send,
 {
+    /// Creates a builder.
+    ///
+    /// Bot is used to provide it via context in the handlers. Bot username is used primarily in the
+    /// [`ext::Command`](crate::dispatching::ext::Command) extractor.
     pub fn new(bot: Bot, bot_name: impl Into<Arc<str>>) -> Self {
         DispatcherBuilder {
             bot,
@@ -108,6 +130,11 @@ where
         }
     }
 
+    /// Provide an error handler for the handlers.
+    ///
+    /// If you do not provide an error handler, [`IgnoringErrorHandler`] will be chosen.
+    ///
+    /// [`IgnoringErrorHandler`]: crate::dispatching::error_handlers::IgnoringErrorHandler
     pub fn error_handler<H>(self, error_handler: H) -> DispatcherBuilder<Err, Ctx>
     where
         H: ErrorHandler<DispatchError<Ctx, Err>> + Send + Sync + 'static,
@@ -119,11 +146,17 @@ where
 }
 
 impl<Err, Ctx> DispatcherBuilder<Err, Ctx> {
+    /// Adds a global data to the dispatcher.
+    ///
+    /// For more information see [`Data`](crate::dispatching::ext::Data) extractor
     pub fn data<T: Send + Sync + 'static>(mut self, data: T) -> Self {
         self.global_data.insert(data);
         self
     }
 
+    /// Adds a handler to the dispatcher.
+    ///
+    /// For more information see [`top-level module documentation`](crate::dispatching).
     pub fn handle(mut self, handler: impl Handler<Ctx, Err> + Send + Sync + 'static) -> Self {
         self._add_handler(handler);
         self
