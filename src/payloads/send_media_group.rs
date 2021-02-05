@@ -10,7 +10,7 @@ impl_payload! {
     ///
     /// [`Message`]: crate::types::Message
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendMediaGroup (SendMediaGroupSetters) => Message {
+    pub SendMediaGroup (SendMediaGroupSetters) => Vec<Message> {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
