@@ -82,7 +82,7 @@ mod tests {
             id: String::from("id"),
             audio_file_id: String::from("audio_file_id"),
             caption: Some(String::from("caption")),
-            parse_mode: Some(ParseMode::HTML),
+            parse_mode: Some(ParseMode::Html),
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),

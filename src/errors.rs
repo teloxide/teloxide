@@ -299,7 +299,7 @@ pub enum ApiError {
         rename = "Bad Request: query is too old and response timeout expired or query id is \
                   invalid"
     )]
-    InvalidQueryID,
+    InvalidQueryId,
 
     /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button
     /// url.
@@ -309,7 +309,7 @@ pub enum ApiError {
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
     #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
-    ButtonURLInvalid,
+    ButtonUrlInvalid,
 
     /// Occurs when bot tries to send button with data size more than 64 bytes.
     ///
@@ -339,7 +339,7 @@ pub enum ApiError {
     ///
     /// [`GetFile`]: crate::payloads::GetFile
     #[serde(rename = "Bad Request: wrong file id")]
-    WrongFileID,
+    WrongFileId,
 
     /// Occurs when bot tries to do some with group which was deactivated.
     #[serde(rename = "Bad Request: group is deactivated")]
@@ -413,7 +413,7 @@ pub enum ApiError {
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
     #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
-    WebhookRequireHTTPS,
+    WebhookRequireHttps,
 
     /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or
     /// 8443.
@@ -509,7 +509,7 @@ pub enum ApiError {
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
     #[serde(rename = "Bad Request: wrong HTTP URL")]
-    WrongHTTPurl,
+    WrongHttpUrl,
 
     /// Occurs when bot tries GetUpdate before the timeout. Make sure that only
     /// one Updater is running.
