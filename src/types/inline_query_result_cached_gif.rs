@@ -24,12 +24,12 @@ pub struct InlineQueryResultCachedGif {
     /// Caption of the GIF file to be sent, 0-1024 characters.
     pub caption: Option<String>,
 
-    /// Send [`ParseMode::Markdown`] or [`ParseMode::HTML`], if you want
+    /// Send [`ParseMode::Markdown`] or [`ParseMode::Html`], if you want
     /// Telegram apps to show [bold, italic, fixed-width text or inline
     /// URLs] in the media caption.
     ///
     /// [`ParseMode::Markdown`]: crate::types::ParseMode::Markdown
-    /// [`ParseMode::HTML`]: crate::types::ParseMode::HTML
+    /// [`ParseMode::Html`]: crate::types::ParseMode::Html
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 

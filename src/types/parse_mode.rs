@@ -69,7 +69,7 @@ use serde::{Deserialize, Serialize};
 ///   ignored.
 ///
 /// ## HTML style
-/// To use this mode, pass [`HTML`] in the `parse_mode` field.
+/// To use this mode, pass [`Html`] in the `parse_mode` field.
 /// The following tags are currently supported:
 /// ````text
 /// <b>bold</b>, <strong>bold</strong>
@@ -123,7 +123,7 @@ use serde::{Deserialize, Serialize};
 ///   `*2*\**2=4*` for bold `2*2=4`.
 ///
 /// [`MarkdownV2`]: ParseMode::MarkdownV2
-/// [`HTML`]: ParseMode::HTML
+/// [`Html`]: ParseMode::Html
 /// [`Markdown`]: ParseMode::Markdown
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum ParseMode {
