@@ -29,7 +29,7 @@ use crate::{
 /// // Required parameters are supplied to the `Requester` methods:
 /// bot.send_message(0, "<b>Text</b>")
 ///     // Optional parameters can be supplied by calling setters
-///     .parse_mode(ParseMode::HTML)
+///     .parse_mode(ParseMode::Html)
 ///     // To send request to telegram you need to call `.send()` and await the resulting future
 ///     .send()
 ///     .await?;
