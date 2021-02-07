@@ -69,7 +69,7 @@ use serde::{Deserialize, Serialize};
 ///   ignored.
 ///
 /// ## HTML style
-/// To use this mode, pass [`HTML`] in the `parse_mode` field.
+/// To use this mode, pass [`Html`] in the `parse_mode` field.
 /// The following tags are currently supported:
 /// ````text
 /// <b>bold</b>, <strong>bold</strong>
@@ -123,12 +123,13 @@ use serde::{Deserialize, Serialize};
 ///   `*2*\**2=4*` for bold `2*2=4`.
 ///
 /// [`MarkdownV2`]: ParseMode::MarkdownV2
-/// [`HTML`]: ParseMode::HTML
+/// [`Html`]: ParseMode::Html
 /// [`Markdown`]: ParseMode::Markdown
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum ParseMode {
     MarkdownV2,
-    HTML,
+    #[serde(rename = "HTML")]
+    Html,
     #[deprecated = "This is a legacy mode, retained for backward compatibility. Use `MarkdownV2` \
                     instead."]
     Markdown,
@@ -140,7 +141,7 @@ impl TryFrom<&str> for ParseMode {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let normalized = value.to_lowercase();
         match normalized.as_ref() {
-            "html" => Ok(ParseMode::HTML),
+            "html" => Ok(ParseMode::Html),
             "markdown" => Ok(ParseMode::Markdown),
             "markdownv2" => Ok(ParseMode::MarkdownV2),
             _ => Err(()),
@@ -173,7 +174,7 @@ mod tests {
     #[test]
     fn html_serialization() {
         let expected_json = String::from(r#""HTML""#);
-        let actual_json = serde_json::to_string(&ParseMode::HTML).unwrap();
+        let actual_json = serde_json::to_string(&ParseMode::Html).unwrap();
 
         assert_eq!(expected_json, actual_json)
     }
