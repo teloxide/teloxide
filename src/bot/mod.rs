@@ -184,7 +184,7 @@ impl BotBuilder {
         self
     }
 
-    /// Specified a custom token.
+    /// Specifies a custom token.
     ///
     /// Otherwise, a token will be extracted from the `TELOXIDE_TOKEN`
     /// environmental variable.
