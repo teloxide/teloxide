@@ -9,18 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `throttle`, `cache_me`, `auto_send` and `full` crate features
+- Support for `rustls` ([#24][pr24])
+- `#[must_use]` attr to payloads implemented by macro ([#22][pr22])
+- forward-to-deref `Requester` impls ([#39][pr39])
+- `Bot::{set_,}api_url` methods ([#26][pr26], [#35][pr35])
 - `payloads` module
 - `RequesterExt` trait which is implemented for all `Requester`s and allows easily wrapping them in adaptors
-- `adaptors` module
-  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10])
+- `adaptors` module ([#14][pr14])
+  - `throttle`, `cache_me`, `auto_send` and `full` crate features
+  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10], [#46][pr46])
   - Request auto sending - ability to `.await` requests without need to call `.send()` (opt-in feature represented by `AutoSend` bot adapter, [#8][pr8])
   - `get_me` caching (opt-in feature represented by `CacheMe` bot adapter)
-- `Requester` trait which represents bot-clients ([#7][pr7])
+- `Requester` trait which represents bot-clients ([#7][pr7], [#12][pr12], [#27][pr27])
 - `{Json,Multipart}Request` the `Bot` requests types ([#6][pr6])
 - `Output<T>` alias to `<<T as HasPayload>::Payload as Payload>::Output`
 - `Payload`, `HasPayload` and `Request` traits which represent different parts of the request ([#5][pr5])
-- `GetUpdatesNonStrict` - fail proof version of `GetUpdates`
+- `GetUpdatesNonStrict` 'telegram' method, that behaves just like `GetUpdates` but doesn't [#2][pr2]
+  fail if one of updates fails to be deserialized 
 - Move core code here from the [`teloxide`] main repo, for older changes see it's [`CHANGELOG.md`].
   - Following modules were moved:
     - `bot`
@@ -31,18 +36,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `client_from_env` was moved from `teloxide::utils` to crate root of `teloxide-core`
   - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>` 
     (instead of `Vec<Result<Update, (Value, serde_json::Error)>>`)
-- `GetUpdatesNonStrict` 'telegram' method, that behaves just like `GetUpdates` but doesn't 
-  fail if one of updates fails to be deserialized 
 
+[pr2]: https://github.com/teloxide/teloxide-core/pull/2
 [pr5]: https://github.com/teloxide/teloxide-core/pull/5
 [pr6]: https://github.com/teloxide/teloxide-core/pull/6
 [pr7]: https://github.com/teloxide/teloxide-core/pull/7
 [pr8]: https://github.com/teloxide/teloxide-core/pull/8
 [pr10]: https://github.com/teloxide/teloxide-core/pull/10
+[pr12]: https://github.com/teloxide/teloxide-core/pull/10
+[pr14]: https://github.com/teloxide/teloxide-core/pull/10
+[pr22]: https://github.com/teloxide/teloxide-core/pull/22
+[pr24]: https://github.com/teloxide/teloxide-core/pull/24
+[pr26]: https://github.com/teloxide/teloxide-core/pull/26
+[pr27]: https://github.com/teloxide/teloxide-core/pull/27
+[pr35]: https://github.com/teloxide/teloxide-core/pull/35
+[pr39]: https://github.com/teloxide/teloxide-core/pull/39
+[pr46]: https://github.com/teloxide/teloxide-core/pull/46
 
 ### Changed
 
-- Rename `StickerType` => `InputSticker`, `{CreateNewStickerSet,AddStickerToSet}::sticker_type}` => `sticker` ([#23][pr23])
+- Cleanup setters in `types::*` (remove most of them) ([#44][pr44])
+- Refactor `KeyboardButtonPollType` ([#44][pr44])
+- Replace `Into<Vec<_>>` by `IntoIterator<Item = _>` in function arguments ([#44][pr44])
+- Update dependencies (including tokio 1.0) ([#37][pr37])
+- Refactor file downloading ([#30][pr30]):
+  - Make `net` module public
+  - Move `Bot::download_file{,_stream}` methods to a new `Download` trait
+    - Impl `Download` for all bot adaptors & the `Bot` itself
+  - Change return type of `download_file_stream` — return `Stream<Result<Bytes>>``,
+    instead of `Future<Result<Stream<Result<Bytes>>>>``
+  - Add `api_url` param to standalone versions of `download_file{,_stream}`
+  - Make `net::{TELEGRAM_API_URL, download_file{,_stream}}` pub
+- Refactor `Bot` ([#29][pr29]):
+  - Move default parse mode to an adaptor (`DefaultParseMode`)
+  - Remove bot builder (it's not usefull anymore, since parse_mode is moved away)
+  - Undeprecate bot constructors (`Bot::{new, with_client, from_env_with_client}`)
+- Rename `StickerType` => `InputSticker`, `{CreateNewStickerSet,AddStickerToSet}::sticker_type}` => `sticker` ([#23][pr23], [#43][pr43])
 - Use `_: IntoIterator<Item = T>` bound instead of `_: Into<Vec<T>>` in telegram methods which accept collections ([#21][pr21])
 - Make `MessageDice::dice` pub ([#20][pr20])
 - Merge `ApiErrorKind` and `KnownApiErrorKind` into `ApiError` ([#13][pr13])
@@ -50,24 +79,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replace a bunch of `Option<_>` fields with `ChatMemberKind`
   - Remove setters (users are not expected to create this struct)
   - Add getters
-- Changed internal mechanism of sending multipart requests
+- Changed internal mechanism of sending multipart requests ([#1][pr1])
 - Added `RequestError::Io(io::Error)` to wrap I/O error those can happen while sending files to telegram
-- Change `StickerType`: instead of newtypes (`Png(InputFile)`) use structs (`Png { png_sticker: InputFile }`), add 
-  `StickerType::{png,tgs}` constructors
-- Make all fields of all methods `pub`
+- Make all fields of all methods `pub` ([#3][pr3])
 
+[pr1]: https://github.com/teloxide/teloxide-core/pull/1
+[pr3]: https://github.com/teloxide/teloxide-core/pull/3
 [pr9]: https://github.com/teloxide/teloxide-core/pull/9
 [pr13]: https://github.com/teloxide/teloxide-core/pull/13
 [pr20]: https://github.com/teloxide/teloxide-core/pull/20
 [pr21]: https://github.com/teloxide/teloxide-core/pull/21
 [pr23]: https://github.com/teloxide/teloxide-core/pull/23
+[pr29]: https://github.com/teloxide/teloxide-core/pull/29
+[pr30]: https://github.com/teloxide/teloxide-core/pull/30
+[pr37]: https://github.com/teloxide/teloxide-core/pull/37
+[pr43]: https://github.com/teloxide/teloxide-core/pull/43
 
 ### Removed
 
 - `unstable-stream` feature (now `Bot::download_file_stream` is accesable by default)
 - old `Request` trait
 - `RequestWithFile`, now multipart requests use `Request`
-- Remove all `#[non_exhaustive]` annotations
+- Remove all `#[non_exhaustive]` annotations ([#4][pr4])
+- Remove `MessageEntity::text_from` because it's wrong ([#44][pr44])
+
+[pr4]: https://github.com/teloxide/teloxide-core/pull/4
+[pr44]: https://github.com/teloxide/teloxide-core/pull/44
   
 
 [`teloxide`]: https://github.com/teloxide/teloxide
