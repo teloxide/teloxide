@@ -259,9 +259,9 @@ async fn worker(limits: Limits, mut rx: mpsc::Receiver<(ChatIdHash, Sender<Never
 
         while let Some(entry) = queue_removing.next() {
             let chat = &entry.value().0;
-            let requests_sent = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
-            let limits_not_exceeded = requests_sent < limits.messages_per_sec_chat
-                && requests_sent < limits.messages_per_min_chat;
+            let requests_sent_count = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
+            let limits_not_exceeded = requests_sent_count < limits.messages_per_sec_chat
+                && requests_sent_count < limits.messages_per_min_chat;
 
             if limits_not_exceeded {
                 *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
