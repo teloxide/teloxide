@@ -43,6 +43,9 @@
 //!
 //! ## Cargo features
 //!
+//! - `native-tls` = use [`native-tls`] tls implementation (**enabled by
+//!   default**)
+//! - `rustls` — use [`rustls`] tls implementation
 //! - `auto_send` — enables [`AutoSend`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
@@ -54,6 +57,8 @@
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Throttle`]: adaptors::Throttle
 //! [`CacheMe`]: adaptors::CacheMe
+//! [`native-tls`]: https://docs.rs/native-tls
+//! [`rustls`]: https://docs.rs/rustls
 
 #![doc(
     // FIXME(waffle): use github

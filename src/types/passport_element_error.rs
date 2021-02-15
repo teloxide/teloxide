@@ -38,8 +38,8 @@ impl PassportElementError {
     }
 }
 
-#[serde(tag = "source")]
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "source")]
 pub enum PassportElementErrorKind {
     #[serde(rename = "data")]
     DataField(PassportElementErrorDataField),
