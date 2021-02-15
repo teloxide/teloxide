@@ -52,7 +52,8 @@ use crate::{
 //
 // 4. Clear the history from records whose time < (current time - minute).
 //
-// 5. Count all requests which were sent last second, `allowed = limit.messages_per_sec_overall
+// 5. Count all requests which were sent last second, `allowed =
+// limit.messages_per_sec_overall
 // - count`.
 //
 // 6. If `allowed == 0` wait a bit and `continue` to the next iteration.
@@ -150,7 +151,7 @@ impl Default for Limits {
 pub struct Throttle<B> {
     bot: B,
     // Sender<Never> is used to pass the signal to unlock by closing the channel.
-    queue: mpsc::Sender<(FastChatId, Sender<Never>)>,
+    queue: mpsc::Sender<(ChatIdHash, Sender<Never>)>,
 }
 
 type RequestsSent = u32;
@@ -160,19 +161,19 @@ type RequestsSent = u32;
 // (waffle)
 #[derive(Default)]
 struct RequestsSentToChats {
-    per_min: HashMap<FastChatId, RequestsSent>,
-    per_sec: HashMap<FastChatId, RequestsSent>,
+    per_min: HashMap<ChatIdHash, RequestsSent>,
+    per_sec: HashMap<ChatIdHash, RequestsSent>,
 }
 
-async fn worker(limits: Limits, mut rx: mpsc::Receiver<(FastChatId, Sender<Never>)>) {
+async fn worker(limits: Limits, mut rx: mpsc::Receiver<(ChatIdHash, Sender<Never>)>) {
     // FIXME(waffle): Make an research about data structures for this queue.
     //                Currently this is O(n) removing (n = number of elements
     //                stayed), amortized O(1) push (vec+vecrem).
-    let mut queue: Vec<(FastChatId, Sender<Never>)> =
+    let mut queue: Vec<(ChatIdHash, Sender<Never>)> =
         Vec::with_capacity(limits.messages_per_sec_overall as usize);
 
-    let mut when_requests_were_sent: VecDeque<(FastChatId, Instant)> = VecDeque::new();
-    let mut requests_sent_to_chats = RequestsSentToChats::default();
+    let mut history: VecDeque<(ChatIdHash, Instant)> = VecDeque::new();
+    let mut requests_sent = RequestsSentToChats::default();
 
     let mut rx_is_closed = false;
 
@@ -217,19 +218,16 @@ async fn worker(limits: Limits, mut rx: mpsc::Receiver<(FastChatId, Sender<Never
         let sec_back = now - SECOND;
 
         // make history and hchats up-to-date
-        while let Some((_, time)) = when_requests_were_sent.front() {
+        while let Some((_, time)) = history.front() {
             // history is sorted, we found first up-to-date thing
             if time >= &min_back {
                 break;
             }
 
-            if let Some((chat, _)) = when_requests_were_sent.pop_front() {
-                let entry = requests_sent_to_chats
-                    .per_min
-                    .entry(chat)
-                    .and_modify(|count| {
-                        *count -= 1;
-                    });
+            if let Some((chat, _)) = history.pop_front() {
+                let entry = requests_sent.per_min.entry(chat).and_modify(|count| {
+                    *count -= 1;
+                });
 
                 if let Entry::Occupied(entry) = entry {
                     if *entry.get() == 0 {
@@ -241,41 +239,34 @@ async fn worker(limits: Limits, mut rx: mpsc::Receiver<(FastChatId, Sender<Never
 
         // as truncates which is ok since in case of truncation it would always be >=
         // limits.overall_s
-        let used = when_requests_were_sent
+        let used = history
             .iter()
             .take_while(|(_, time)| time > &sec_back)
             .count() as u32;
         let mut allowed = limits.messages_per_sec_overall.saturating_sub(used);
 
         if allowed == 0 {
-            requests_sent_to_chats.per_sec.clear();
+            requests_sent.per_sec.clear();
             tokio::time::sleep(DELAY).await;
             continue;
         }
 
-        for (chat, _) in when_requests_were_sent
-            .iter()
-            .take_while(|(_, time)| time > &sec_back)
-        {
-            *requests_sent_to_chats.per_sec.entry(*chat).or_insert(0) += 1;
+        for (chat, _) in history.iter().take_while(|(_, time)| time > &sec_back) {
+            *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
         }
 
-        let mut queue_removing_iter = queue.removing();
+        let mut queue_removing = queue.removing();
 
-        while let Some(entry) = queue_removing_iter.next() {
+        while let Some(entry) = queue_removing.next() {
             let chat = &entry.value().0;
-            let messages_sent = requests_sent_to_chats
-                .per_sec
-                .get(chat)
-                .copied()
-                .unwrap_or(0);
-            let limits_not_exceeded = messages_sent < limits.messages_per_sec_chat
-                && messages_sent < limits.messages_per_min_chat;
+            let requests_sent = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
+            let limits_not_exceeded = requests_sent < limits.messages_per_sec_chat
+                && requests_sent < limits.messages_per_min_chat;
 
             if limits_not_exceeded {
-                *requests_sent_to_chats.per_sec.entry(*chat).or_insert(0) += 1;
-                *requests_sent_to_chats.per_min.entry(*chat).or_insert(0) += 1;
-                when_requests_were_sent.push_back((*chat, Instant::now()));
+                *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
+                *requests_sent.per_min.entry(*chat).or_insert(0) += 1;
+                history.push_back((*chat, Instant::now()));
 
                 // Close the channel and unlock the associated request.
                 drop(entry.remove());
@@ -290,14 +281,14 @@ async fn worker(limits: Limits, mut rx: mpsc::Receiver<(FastChatId, Sender<Never
 
         // It's easier to just recompute last second stats, instead of keeping
         // track of it alongside with minute stats, so we just throw this away.
-        requests_sent_to_chats.per_sec.clear();
+        requests_sent.per_sec.clear();
         tokio::time::sleep(DELAY).await;
     }
 }
 
 async fn read_from_rx(
-    rx: &mut mpsc::Receiver<(FastChatId, Sender<Never>)>,
-    queue: &mut Vec<(FastChatId, Sender<Never>)>,
+    rx: &mut mpsc::Receiver<(ChatIdHash, Sender<Never>)>,
+    queue: &mut Vec<(ChatIdHash, Sender<Never>)>,
     rx_is_closed: &mut bool,
 ) {
     if queue.is_empty() {
@@ -458,7 +449,7 @@ where
                 prices,
             ),
             self.queue.clone(),
-            |p| FastChatId::Id(p.payload_ref().chat_id as _),
+            |p| ChatIdHash::Id(p.payload_ref().chat_id as _),
         )
     }
 
@@ -497,20 +488,20 @@ download_forward! {
 /// It is used instead of `ChatId` to make copying cheap even in case of
 /// usernames. (It is just a hashed username.)
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
-enum FastChatId {
+enum ChatIdHash {
     Id(i64),
     ChannelUsernameHash(u64),
 }
 
-impl From<&ChatId> for FastChatId {
+impl From<&ChatId> for ChatIdHash {
     fn from(value: &ChatId) -> Self {
         match value {
-            ChatId::Id(id) => FastChatId::Id(*id),
+            ChatId::Id(id) => ChatIdHash::Id(*id),
             ChatId::ChannelUsername(username) => {
                 let mut hasher = std::collections::hash_map::DefaultHasher::new();
                 username.hash(&mut hasher);
                 let hash = hasher.finish();
-                FastChatId::ChannelUsernameHash(hash)
+                ChatIdHash::ChannelUsernameHash(hash)
             }
         }
     }
@@ -518,8 +509,8 @@ impl From<&ChatId> for FastChatId {
 
 pub struct ThrottlingRequest<R: HasPayload>(
     R,
-    mpsc::Sender<(FastChatId, Sender<Never>)>,
-    fn(&R::Payload) -> FastChatId,
+    mpsc::Sender<(ChatIdHash, Sender<Never>)>,
+    fn(&R::Payload) -> ChatIdHash,
 );
 
 impl<R: HasPayload> HasPayload for ThrottlingRequest<R> {
@@ -753,10 +744,10 @@ mod chan_send {
     use never::Never;
     use tokio::sync::{mpsc, mpsc::error::SendError, oneshot::Sender};
 
-    use crate::adaptors::throttle::FastChatId;
+    use crate::adaptors::throttle::ChatIdHash;
 
     pub(super) trait SendTy {
-        fn send_t(self, val: (FastChatId, Sender<Never>)) -> ChanSend;
+        fn send_t(self, val: (ChatIdHash, Sender<Never>)) -> ChanSend;
     }
 
     #[pin_project::pin_project]
@@ -764,19 +755,19 @@ mod chan_send {
 
     #[cfg(not(feature = "nightly"))]
     type Inner =
-        Pin<Box<dyn Future<Output = Result<(), SendError<(FastChatId, Sender<Never>)>>> + Send>>;
+        Pin<Box<dyn Future<Output = Result<(), SendError<(ChatIdHash, Sender<Never>)>>> + Send>>;
     #[cfg(feature = "nightly")]
-    type Inner = impl Future<Output = Result<(), SendError<(FastChatId, Sender<Never>)>>>;
+    type Inner = impl Future<Output = Result<(), SendError<(ChatIdHash, Sender<Never>)>>>;
 
-    impl SendTy for mpsc::Sender<(FastChatId, Sender<Never>)> {
+    impl SendTy for mpsc::Sender<(ChatIdHash, Sender<Never>)> {
         // `return`s trick IDEA not to show errors
         #[allow(clippy::needless_return)]
-        fn send_t(self, val: (FastChatId, Sender<Never>)) -> ChanSend {
+        fn send_t(self, val: (ChatIdHash, Sender<Never>)) -> ChanSend {
             #[cfg(feature = "nightly")]
             {
                 fn def(
-                    sender: mpsc::Sender<(FastChatId, Sender<Never>)>,
-                    val: (FastChatId, Sender<Never>),
+                    sender: mpsc::Sender<(ChatIdHash, Sender<Never>)>,
+                    val: (ChatIdHash, Sender<Never>),
                 ) -> Inner {
                     async move { sender.send(val).await }
                 }
@@ -791,7 +782,7 @@ mod chan_send {
     }
 
     impl Future for ChanSend {
-        type Output = Result<(), SendError<(FastChatId, Sender<Never>)>>;
+        type Output = Result<(), SendError<(ChatIdHash, Sender<Never>)>>;
 
         fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
             self.project().0.poll(cx)
