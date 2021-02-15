@@ -52,7 +52,7 @@ use crate::{
 //
 // 4. Clear the history from records whose time < (current time - minute).
 //
-// 5. Count all requests which were sent last second, `allowed = limit.overall_s
+// 5. Count all requests which were sent last second, `allowed = limit.messages_per_sec_overall
 // - count`.
 //
 // 6. If `allowed == 0` wait a bit and `continue` to the next iteration.
