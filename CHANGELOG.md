@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `MultipartPayload` for future proofing ([#49][pr49])
 - Support for `rustls` ([#24][pr24])
 - `#[must_use]` attr to payloads implemented by macro ([#22][pr22])
 - forward-to-deref `Requester` impls ([#39][pr39])
@@ -52,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr35]: https://github.com/teloxide/teloxide-core/pull/35
 [pr39]: https://github.com/teloxide/teloxide-core/pull/39
 [pr46]: https://github.com/teloxide/teloxide-core/pull/46
+[pr49]: https://github.com/teloxide/teloxide-core/pull/49
 
 ### Changed
 

@@ -9,7 +9,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{
     bot::api_url::ApiUrl,
     net,
-    requests::{Payload, ResponseResult},
+    requests::{MultipartPayload, Payload, ResponseResult},
     serde_multipart,
 };
 
@@ -222,7 +222,7 @@ impl Bot {
         payload: &P,
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
-        P: Payload + Serialize,
+        P: MultipartPayload + Serialize,
         P::Output: DeserializeOwned,
     {
         let client = self.client.clone();
