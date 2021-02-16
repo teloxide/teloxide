@@ -13,7 +13,7 @@ use futures::{
 use never::Never;
 use tokio::sync::{
     mpsc,
-    oneshot::{channel, Receiver, Sender},
+    oneshot::{self, Receiver, Sender},
 };
 use vecrem::VecExt;
 
@@ -129,7 +129,6 @@ impl Default for Limits {
 /// ```no_run (throttle fails to spawn task without tokio runtime)
 /// use teloxide_core::{adaptors::throttle::Limits, requests::RequesterExt, Bot};
 ///
-/// # #[allow(deprecated)]
 /// let bot = Bot::new("TOKEN").throttle(Limits::default());
 ///
 /// /* send many requests here */
@@ -149,7 +148,7 @@ impl Default for Limits {
 /// wrapper.
 pub struct Throttle<B> {
     bot: B,
-    // Sender<Never> is used to pass the signal to unlock by closing the channel.
+    // `RequestLock` allows to unlock requests (allowing them to be sent).
     queue: mpsc::Sender<(ChatIdHash, RequestLock)>,
 }
 
@@ -533,8 +532,6 @@ where
 
     fn send(self) -> Self::Send {
         let (tx, rx) = channel();
-        let tx = RequestLock(tx);
-        let rx = RequestWaiter(rx);
 
         let chat_id = (self.chat_id)(self.payload_ref());
         let send = self.worker.send1((chat_id, tx));
@@ -549,8 +546,6 @@ where
 
     fn send_ref(&self) -> Self::SendRef {
         let (tx, rx) = channel();
-        let tx = RequestLock(tx);
-        let rx = RequestWaiter(rx);
 
         let chat_id = (self.chat_id)(self.payload_ref());
         let send = self.worker.clone().send1((chat_id, tx));
@@ -743,6 +738,13 @@ impl<R: Request> Future for ThrottlingSendRef<R> {
             SendRefProj::Done => Poll::Pending,
         }
     }
+}
+
+fn channel() -> (RequestLock, RequestWaiter) {
+    let (tx, rx) = oneshot::channel();
+    let tx = RequestLock(tx);
+    let rx = RequestWaiter(rx);
+    (tx, rx)
 }
 
 #[must_use]
