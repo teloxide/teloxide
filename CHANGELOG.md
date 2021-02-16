@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `#[non_exhaustive]` on `InputFile` since we may want to add new ways to send files in the future ([#49][pr49])
 - `MultipartPayload` for future proofing ([#49][pr49])
 - Support for `rustls` ([#24][pr24])
 - `#[must_use]` attr to payloads implemented by macro ([#22][pr22])
