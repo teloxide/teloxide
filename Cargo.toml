@@ -21,7 +21,7 @@ documentation = "https://docs.rs/teloxide-core/"
 readme = "README.md"
 
 keywords = ["telegram", "bot", "tba"]
-categories = ["API bindings", "Asynchronous"]
+categories = ["api-bindings", "asynchronous"]
 
 exclude = [
     ".github/*",
