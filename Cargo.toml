@@ -1,5 +1,6 @@
 [package]
 name = "teloxide-core"
+description = "Core part of the `teloxide` library - telegram bot API client"
 version = "0.1.0"
 edition = "2018"
 authors = [
@@ -11,6 +12,20 @@ authors = [
     "Sergey Levitin <selevit@gmail.com>",
     "Rustem B. <bakirov.com@yandex.ru>",
     "Alexey Fedechkin <aleksey-fedechkin@rambler.ru>"
+]
+
+license = "MIT"
+repository = "https://github.com/teloxide/teloxide-core/"
+homepage = "https://github.com/teloxide/teloxide-core/"
+documentation = "https://docs.rs/teloxide-core/"
+readme = "README.md"
+
+keywords = ["telegram", "bot", "tba"]
+categories = ["API bindings", "Asynchronous"]
+
+exclude = [
+    ".github/*",
+    "netlify.toml",
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
