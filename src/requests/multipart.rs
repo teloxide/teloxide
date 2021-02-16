@@ -2,7 +2,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
     bot::Bot,
-    requests::{HasPayload, Payload, Request, ResponseResult},
+    requests::{HasPayload, MultipartPayload, Payload, Request, ResponseResult},
     RequestError,
 };
 
@@ -33,7 +33,7 @@ where
     // (though critically, currently we have no
     // non-'static payloads)
     P: 'static,
-    P: Payload + Serialize,
+    P: Payload + MultipartPayload + Serialize,
     P::Output: DeserializeOwned,
 {
     type Err = RequestError;
@@ -67,7 +67,7 @@ where
 impl<P> core::ops::Deref for MultipartRequest<P>
 where
     P: 'static,
-    P: Payload + Serialize,
+    P: Payload + MultipartPayload,
     P::Output: DeserializeOwned,
 {
     type Target = P;
@@ -80,7 +80,7 @@ where
 impl<P> core::ops::DerefMut for MultipartRequest<P>
 where
     P: 'static,
-    P: Payload + Serialize,
+    P: Payload + MultipartPayload,
     P::Output: DeserializeOwned,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -95,7 +95,7 @@ req_future! {
     pub Send<U> (inner0) -> ResponseResult<U::Output>
     where
         U: 'static,
-        U: Payload + Serialize,
+        U: Payload + MultipartPayload + Serialize,
         U::Output: DeserializeOwned,
 }
 
@@ -106,6 +106,6 @@ req_future! {
     pub SendRef<U> (inner1) -> ResponseResult<U::Output>
     where
         U: 'static,
-        U: Payload + Serialize,
+        U: Payload + MultipartPayload + Serialize,
         U::Output: DeserializeOwned,
 }

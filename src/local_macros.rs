@@ -133,11 +133,14 @@ macro_rules! calculated_doc {
     );
 }
 
-/// Declare payload type, implement `Payload` trait amd ::new method for it,
+/// Declare payload type, implement `Payload` trait and ::new method for it,
 /// declare setters trait and implement it for all type which have payload.
 #[macro_use]
 macro_rules! impl_payload {
     (
+        $(
+            @[$multipart_attr:ident]
+        )?
         $(
             #[ $($method_meta:tt)* ]
         )*
@@ -241,6 +244,8 @@ macro_rules! impl_payload {
         }
 
         impl<P> $Setters for P where P: crate::requests::HasPayload<Payload = $Method> {}
+
+        impl_payload! { @[$($multipart_attr)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
     };
     (@setter_opt $Method:ident $field:ident : $FTy:ty [into]) => {
         calculated_doc! {
@@ -380,6 +385,11 @@ macro_rules! impl_payload {
     (@convert_map ($e:expr)) => {
         $e
     };
+    (@[multipart] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
+        impl crate::requests::MultipartPayload for $Method {}
+        impl crate::requests::multipart_payload::sealed::Sealed for $Method {}
+    };
+    (@[] $($ignored:tt)*) => {}
 }
 
 #[macro_use]

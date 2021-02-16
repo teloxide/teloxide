@@ -1,8 +1,9 @@
 //! Telegram API requests.
 
 pub use self::{
-    has_payload::HasPayload, json::JsonRequest, multipart::MultipartRequest, payload::Payload,
-    request::Request, requester::Requester, requester_ext::RequesterExt,
+    has_payload::HasPayload, json::JsonRequest, multipart::MultipartRequest,
+    multipart_payload::MultipartPayload, payload::Payload, request::Request, requester::Requester,
+    requester_ext::RequesterExt,
 };
 
 /// A type that is returned after making a request to Telegram.
@@ -14,6 +15,7 @@ pub type Output<T> = <<T as HasPayload>::Payload as Payload>::Output;
 mod has_payload;
 mod json;
 mod multipart;
+pub(crate) mod multipart_payload;
 mod payload;
 mod request;
 mod requester;

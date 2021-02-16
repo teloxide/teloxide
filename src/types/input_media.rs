@@ -410,9 +410,9 @@ impl InputMediaDocument {
     }
 }
 
-impl InputMedia {
-    pub fn media(&self) -> &InputFile {
-        match self {
+impl From<InputMedia> for InputFile {
+    fn from(media: InputMedia) -> InputFile {
+        match media {
             InputMedia::Photo(InputMediaPhoto { media, .. })
             | InputMedia::Document(InputMediaDocument { media, .. })
             | InputMedia::Audio(InputMediaAudio { media, .. })
@@ -422,9 +422,10 @@ impl InputMedia {
     }
 }
 
-impl From<InputMedia> for InputFile {
-    fn from(media: InputMedia) -> InputFile {
-        match media {
+impl InputMedia {
+    #[allow(dead_code)]
+    pub(crate) fn media(&self) -> &InputFile {
+        match self {
             InputMedia::Photo(InputMediaPhoto { media, .. })
             | InputMedia::Document(InputMediaDocument { media, .. })
             | InputMedia::Audio(InputMediaAudio { media, .. })
