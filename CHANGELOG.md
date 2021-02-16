@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RequesterExt` trait which is implemented for all `Requester`s and allows easily wrapping them in adaptors
 - `adaptors` module ([#14][pr14])
   - `throttle`, `cache_me`, `auto_send` and `full` crate features
-  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10], [#46][pr46])
+  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10], [#46][pr46], [#50][pr50])
   - Request auto sending - ability to `.await` requests without need to call `.send()` (opt-in feature represented by `AutoSend` bot adapter, [#8][pr8])
   - `get_me` caching (opt-in feature represented by `CacheMe` bot adapter)
 - `Requester` trait which represents bot-clients ([#7][pr7], [#12][pr12], [#27][pr27])
@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr39]: https://github.com/teloxide/teloxide-core/pull/39
 [pr46]: https://github.com/teloxide/teloxide-core/pull/46
 [pr49]: https://github.com/teloxide/teloxide-core/pull/49
+[pr50]: https://github.com/teloxide/teloxide-core/pull/50
 
 ### Changed
 
