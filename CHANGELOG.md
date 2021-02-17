@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+
+## [0.1.1] - 2020-02-17
+
+### Fixed
+
+- Remove `dbg!` call from internals ([#53][pr53])
+
+[pr53]: https://github.com/teloxide/teloxide-core/pull/53
+
+## [0.1.0] - 2020-02-17
+
 ### Added
 
 - `#[non_exhaustive]` on `InputFile` since we may want to add new ways to send files in the future ([#49][pr49])
@@ -45,8 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr7]: https://github.com/teloxide/teloxide-core/pull/7
 [pr8]: https://github.com/teloxide/teloxide-core/pull/8
 [pr10]: https://github.com/teloxide/teloxide-core/pull/10
-[pr12]: https://github.com/teloxide/teloxide-core/pull/10
-[pr14]: https://github.com/teloxide/teloxide-core/pull/10
+[pr12]: https://github.com/teloxide/teloxide-core/pull/12
+[pr14]: https://github.com/teloxide/teloxide-core/pull/14
 [pr22]: https://github.com/teloxide/teloxide-core/pull/22
 [pr24]: https://github.com/teloxide/teloxide-core/pull/24
 [pr26]: https://github.com/teloxide/teloxide-core/pull/26
