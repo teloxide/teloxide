@@ -18,12 +18,12 @@ impl_payload! {
             pub latitude: f64,
             /// Longitude of the location
             pub longitude: f64,
+        }
+        optional {
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400.
             ///
             /// [Live Locations]: https://telegram.org/blog/live-locations
             pub live_period: u32,
-        }
-        optional {
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
