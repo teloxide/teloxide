@@ -9,15 +9,15 @@ impl_payload! {
     /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message
-    #[derive(Debug, PartialEq, Clone, Serialize)]
+    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub SendContact (SendContactSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
             /// Contact's phone number
-            pub phone_number: f64,
+            pub phone_number: String [into],
             /// Contact's first name
-            pub first_name: f64,
+            pub first_name: String [into],
         }
         optional {
             /// Contact's last name
