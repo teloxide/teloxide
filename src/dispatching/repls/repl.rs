@@ -9,6 +9,7 @@ use crate::{
 };
 use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A [REPL] for messages.
 ///
@@ -57,7 +58,7 @@ where
 
     Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
-            rx.for_each_concurrent(None, move |message| {
+            UnboundedReceiverStream::new(rx).for_each_concurrent(None, move |message| {
                 let handler = Arc::clone(&handler);
 
                 async move {

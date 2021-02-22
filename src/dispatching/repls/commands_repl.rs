@@ -10,6 +10,7 @@ use crate::{
 };
 use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A [REPL] for commands.
 ///
@@ -73,13 +74,16 @@ pub async fn commands_repl_with_listener<'a, Cmd, H, Fut, L, ListenerE, HandlerE
 
     Dispatcher::new(bot)
         .messages_handler(move |rx: DispatcherHandlerRx<Message>| {
-            rx.commands::<Cmd, N>(bot_name).for_each_concurrent(None, move |(cx, cmd)| {
-                let handler = Arc::clone(&handler);
+            UnboundedReceiverStream::new(rx).commands::<Cmd, N>(bot_name).for_each_concurrent(
+                None,
+                move |(cx, cmd)| {
+                    let handler = Arc::clone(&handler);
 
-                async move {
-                    handler(cx, cmd).await.log_on_error().await;
-                }
-            })
+                    async move {
+                        handler(cx, cmd).await.log_on_error().await;
+                    }
+                },
+            )
         })
         .dispatch_with_listener(
             listener,
