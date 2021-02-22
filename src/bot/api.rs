@@ -267,9 +267,11 @@ impl Requester for Bot {
 
     type SendContact = JsonRequest<payloads::SendContact>;
 
-    fn send_contact<C>(&self, chat_id: C, phone_number: f64, first_name: f64) -> Self::SendContact
+    fn send_contact<C, P, F>(&self, chat_id: C, phone_number: P, first_name: F) -> Self::SendContact
     where
         C: Into<ChatId>,
+        P: Into<String>,
+        F: Into<String>,
     {
         Self::SendContact::new(
             self.clone(),
