@@ -166,13 +166,7 @@ pub trait Requester {
     type SendLocation: Request<Payload = SendLocation, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendLocation`].
-    fn send_location<C>(
-        &self,
-        chat_id: C,
-        latitude: f64,
-        longitude: f64,
-        live_period: u32,
-    ) -> Self::SendLocation
+    fn send_location<C>(&self, chat_id: C, latitude: f64, longitude: f64) -> Self::SendLocation
     where
         C: Into<ChatId>;
 

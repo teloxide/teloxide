@@ -532,9 +532,9 @@ macro_rules! requester_forward {
     (@method send_location $body:ident $ty:ident) => {
         type SendLocation = $ty![SendLocation];
 
-        fn send_location<C>(&self, chat_id: C, latitude: f64, longitude: f64, live_period: u32) -> Self::SendLocation where C: Into<ChatId> {
+        fn send_location<C>(&self, chat_id: C, latitude: f64, longitude: f64) -> Self::SendLocation where C: Into<ChatId> {
             let this = self;
-            $body!(send_location this (chat_id: C, latitude: f64, longitude: f64, live_period: u32))
+            $body!(send_location this (chat_id: C, latitude: f64, longitude: f64))
         }
     };
     (@method edit_message_live_location $body:ident $ty:ident) => {

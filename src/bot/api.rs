@@ -158,19 +158,13 @@ impl Requester for Bot {
 
     type SendLocation = JsonRequest<payloads::SendLocation>;
 
-    fn send_location<C>(
-        &self,
-        chat_id: C,
-        latitude: f64,
-        longitude: f64,
-        live_period: u32,
-    ) -> Self::SendLocation
+    fn send_location<C>(&self, chat_id: C, latitude: f64, longitude: f64) -> Self::SendLocation
     where
         C: Into<ChatId>,
     {
         Self::SendLocation::new(
             self.clone(),
-            payloads::SendLocation::new(chat_id, latitude, longitude, live_period),
+            payloads::SendLocation::new(chat_id, latitude, longitude),
         )
     }
 
