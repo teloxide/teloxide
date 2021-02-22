@@ -11,6 +11,7 @@ use tokio::sync::mpsc;
 
 use lockfree::map::Map;
 use std::sync::{Arc, Mutex};
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A dispatcher of dialogues.
 ///
@@ -84,7 +85,7 @@ where
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
+        tokio::spawn(UnboundedReceiverStream::new(rx).for_each(move |cx: UpdateWithCx<Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
@@ -137,7 +138,7 @@ where
     {
         let this = Arc::new(self);
 
-        updates
+        UnboundedReceiverStream::new(updates)
             .for_each(move |cx| {
                 let this = Arc::clone(&this);
                 let chat_id = cx.update.chat_id();
