@@ -2,7 +2,10 @@ use serde::Serialize;
 
 use crate::{
     net,
-    requests::{Request, ResponseResult},
+    requests::{
+        form_builder::FormBuilder,
+        RequestWithFile, ResponseResult
+    },
     types::{InputFile, True},
     Bot,
 };
@@ -22,11 +25,25 @@ pub struct SetStickerSetThumb {
 }
 
 #[async_trait::async_trait]
-impl Request for SetStickerSetThumb {
+impl RequestWithFile for SetStickerSetThumb {
     type Output = True;
 
-    async fn send(&self) -> ResponseResult<Self::Output> {
-        net::request_json(self.bot.client(), self.bot.token(), "setStickerSetThumb", &self).await
+    async fn send(&self) -> tokio::io::Result<ResponseResult<True>> {
+        let mut builder = FormBuilder::new()
+            .add_text("name", &self.name)
+            .add_text("user_id", &self.user_id);
+
+        if let Some(thumb) = self.thumb.as_ref() {
+            builder = builder.add_input_file("thumb", thumb).await?;
+        }
+
+        Ok(net::request_multipart(
+            self.bot.client(),
+            self.bot.token(),
+            "setStickerSetThumb",
+            builder.build(),
+        )
+        .await)
     }
 }
 
