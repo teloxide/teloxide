@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- `GetUpdatesFaultTolerant` - fault toletant version of `GetUpdates` ([#58][pr58]) (**BC**)
+
+[pr58]: https://github.com/teloxide/teloxide-core/pull/58
+
 ### Fixed
 
 - Fix typos in payloads ([#57][pr57]):

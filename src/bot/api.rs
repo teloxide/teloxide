@@ -970,4 +970,13 @@ impl Requester for Bot {
             payloads::GetGameHighScores::new(user_id, target),
         )
     }
+
+    type GetUpdatesFaultTolerant = JsonRequest<payloads::GetUpdatesFaultTolerant>;
+
+    fn get_updates_fault_tolerant(&self) -> Self::GetUpdatesFaultTolerant {
+        Self::GetUpdatesFaultTolerant::new(
+            self.clone(),
+            payloads::GetUpdatesFaultTolerant(payloads::GetUpdates::new()),
+        )
+    }
 }
