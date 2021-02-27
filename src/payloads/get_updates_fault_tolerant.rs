@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     payloads::GetUpdates,
     requests::Payload,
-    types::{NonStrictVec, Update},
+    types::{SemiparsedVec, Update},
 };
 
 /// The fault tolerant version of [`GetUpdates`].
@@ -12,7 +12,7 @@ use crate::{
 pub struct GetUpdatesFaultTolerant(pub GetUpdates);
 
 impl Payload for GetUpdatesFaultTolerant {
-    type Output = NonStrictVec<Update>;
+    type Output = SemiparsedVec<Update>;
 
     const NAME: &'static str = GetUpdates::NAME;
 }

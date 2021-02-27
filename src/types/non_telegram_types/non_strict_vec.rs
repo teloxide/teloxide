@@ -1,14 +1,16 @@
 use serde::de::DeserializeOwned;
 use serde_json::{from_value, Value};
 
+/// A vector of possibly unparsed JSON objects.
+///
 /// Similar to `Vec<T>` but if it fails to deserialize element, it just saves
-/// `Err((value, err))`
+/// `Err((serde_json::Value, serde_json::Error))`.
 #[derive(Debug, serde::Deserialize)]
 #[serde(from = "Vec<serde_json::Value>")]
 #[serde(bound = "T: DeserializeOwned")]
-pub struct NonStrictVec<T>(pub Vec<Result<T, (serde_json::Value, serde_json::Error)>>);
+pub struct SemiparsedVec<T>(pub Vec<Result<T, (serde_json::Value, serde_json::Error)>>);
 
-impl<T: DeserializeOwned> From<Vec<serde_json::Value>> for NonStrictVec<T> {
+impl<T: DeserializeOwned> From<Vec<serde_json::Value>> for SemiparsedVec<T> {
     fn from(vec: Vec<Value>) -> Self {
         Self(
             vec.into_iter()
@@ -22,7 +24,7 @@ impl<T: DeserializeOwned> From<Vec<serde_json::Value>> for NonStrictVec<T> {
 fn test() {
     use crate::types::Update;
 
-    let x: NonStrictVec<Update> = serde_json::from_str(
+    let x: SemiparsedVec<Update> = serde_json::from_str(
         r#"[{
          "update_id": 923808447,
          "message": {

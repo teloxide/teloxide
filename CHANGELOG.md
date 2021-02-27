@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr56]: https://github.com/teloxide/teloxide-core/pull/56
 [pr57]: https://github.com/teloxide/teloxide-core/pull/57
 
+### Changed
+
+ - `NonStrictVec` -> `SemiparsedVec`.
+
 ## [0.1.1] - 2020-02-17
 
 ### Fixed
