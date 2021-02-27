@@ -6,7 +6,7 @@ use crate::{
     types::{NonStrictVec, Update},
 };
 
-/// Fault tollerant version of [`GetUpdates`].
+/// The fault tolerant version of [`GetUpdates`].
 #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
 #[serde(transparent)]
 pub struct GetUpdatesFaultTolerant(pub GetUpdates);
