@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `GetUpdatesFaultTolerant` - fault toletant version of `GetUpdates` ([#58][pr58]) (**BC**)
+- Derive `Clone` for `AutoSend`.
 
 [pr58]: https://github.com/teloxide/teloxide-core/pull/58
 
