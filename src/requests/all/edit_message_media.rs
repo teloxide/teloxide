@@ -1,11 +1,10 @@
-use crate::types::{
-    InputFile, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaPhoto,
-    InputMediaVideo,
-};
 use crate::{
     net,
     requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
-    types::{ChatOrInlineMessage, InlineKeyboardMarkup, InputMedia, Message},
+    types::{
+        ChatOrInlineMessage, InlineKeyboardMarkup, InputFile, InputMedia, InputMediaAnimation,
+        InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo, Message,
+    },
     Bot,
 };
 
