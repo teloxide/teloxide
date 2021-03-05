@@ -1,6 +1,10 @@
+use crate::types::{
+    InputFile, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaPhoto,
+    InputMediaVideo,
+};
 use crate::{
     net,
-    requests::{form_builder::FormBuilder, Request, ResponseResult},
+    requests::{form_builder::FormBuilder, RequestWithFile, ResponseResult},
     types::{ChatOrInlineMessage, InlineKeyboardMarkup, InputMedia, Message},
     Bot,
 };
@@ -28,31 +32,47 @@ pub struct EditMessageMedia {
 }
 
 #[async_trait::async_trait]
-impl Request for EditMessageMedia {
+impl RequestWithFile for EditMessageMedia {
     type Output = Message;
 
-    async fn send(&self) -> ResponseResult<Message> {
-        let mut params = FormBuilder::new();
+    async fn send(&self) -> tokio::io::Result<ResponseResult<Message>> {
+        let mut params = FormBuilder::new().add_text("reply_markup", &self.reply_markup);
 
         match &self.chat_or_inline_message {
             ChatOrInlineMessage::Chat { chat_id, message_id } => {
-                params = params.add_text("chat_id", chat_id).add_text("message_id", message_id);
+                let file_id = InputFile::FileId(String::from("attach://media"));
+                let input_media = match &self.media {
+                    InputMedia::Photo(_media) => InputMedia::Photo(InputMediaPhoto::new(file_id)),
+                    InputMedia::Animation(_media) => {
+                        InputMedia::Animation(InputMediaAnimation::new(file_id))
+                    }
+                    InputMedia::Audio(_media) => InputMedia::Audio(InputMediaAudio::new(file_id)),
+                    InputMedia::Document(_media) => {
+                        InputMedia::Document(InputMediaDocument::new(file_id))
+                    }
+                    InputMedia::Video(_media) => InputMedia::Video(InputMediaVideo::new(file_id)),
+                };
+                params = params
+                    .add_text("chat_id", chat_id)
+                    .add_text("message_id", message_id)
+                    .add_text("media", &input_media)
+                    .add_input_file("media", &self.media.media())
+                    .await?;
             }
             ChatOrInlineMessage::Inline { inline_message_id } => {
-                params = params.add_text("inline_message_id", inline_message_id);
+                params = params
+                    .add_text("inline_message_id", inline_message_id)
+                    .add_text("media", &self.media);
             }
         }
 
-        net::request_multipart(
+        Ok(net::request_multipart(
             self.bot.client(),
             self.bot.token(),
             "editMessageMedia",
-            params
-                .add_text("media", &self.media)
-                .add_text("reply_markup", &self.reply_markup)
-                .build(),
+            params.build(),
         )
-        .await
+        .await)
     }
 }
 
