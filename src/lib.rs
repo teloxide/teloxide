@@ -77,6 +77,13 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
                      type>"
                 ),
             };
+            let requester_param_type = match params
+                .get(1)
+                .expect("A requester parameter must be specified")
+            {
+                FnArg::Typed(typed) => typed.ty.clone(),
+                _ => unreachable!(),
+            };
             let aux_param_type = match params.get(2) {
                 Some(data_param_type) => match *data_param_type {
                     FnArg::Typed(typed) => typed.ty.clone(),
@@ -101,8 +108,9 @@ pub fn teloxide(attr: TokenStream, item: TokenStream) -> TokenStream {
                     type Aux = #aux_param_type;
                     type Dialogue = <#fn_return_type as teloxide::dispatching::dialogue::SubtransitionOutputType>::Output;
                     type Error = <#fn_return_type as teloxide::dispatching::dialogue::SubtransitionOutputType>::Error;
+                    type Requester = <#requester_param_type as teloxide::dispatching::UpdateWithCxRequesterType>::Requester;
 
-                    fn react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: #aux_param_type)
+                    fn react(self, cx: teloxide::dispatching::dialogue::TransitionIn<Self::Requester>, aux: #aux_param_type)
                         -> futures::future::BoxFuture<'static, #fn_return_type> {
                                 #item
                                 futures::future::FutureExt::boxed(#call_fn)
@@ -152,8 +160,11 @@ pub fn derive_transition(item: TokenStream) -> TokenStream {
         "impl teloxide::dispatching::dialogue::Transition for {1} {{type Aux \
          = <{0} as teloxide::dispatching::dialogue::Subtransition>::Aux;type \
          Error = <{0} as \
-         teloxide::dispatching::dialogue::Subtransition>::Error;fn \
-         react(self, cx: teloxide::dispatching::dialogue::TransitionIn, aux: \
+         teloxide::dispatching::dialogue::Subtransition>::Error;type \
+         Requester = <{0} as \
+         teloxide::dispatching::dialogue::Subtransition>::Requester;fn \
+         react(self, cx: \
+         teloxide::dispatching::dialogue::TransitionIn<Self::Requester>, aux: \
          Self::Aux) -> futures::future::BoxFuture<'static, \
          teloxide::dispatching::dialogue::TransitionOut<Self, Self::Error>> \
          {{ futures::future::FutureExt::boxed(async move {{ match self {{",
