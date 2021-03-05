@@ -4,11 +4,10 @@ use crate::{
         UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    types::Message,
-    Bot,
 };
 use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
+use teloxide_core::{requests::Requester, types::Message};
 use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A [REPL] for messages.
@@ -22,15 +21,18 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub async fn repl<H, Fut, E>(bot: Bot, handler: H)
+pub async fn repl<R, H, Fut, E>(requester: R, handler: H)
 where
-    H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
+    H: Fn(UpdateWithCx<R, Message>) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), E>> + Send + 'static,
     Result<(), E>: OnError<E>,
     E: Debug + Send,
+    R: Requester + Send + Clone + 'static,
+    <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
-    let cloned_bot = bot.clone();
-    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
+    let cloned_requester = requester.clone();
+    repl_with_listener(requester, handler, update_listeners::polling_default(cloned_requester))
+        .await;
 }
 
 /// Like [`repl`], but with a custom [`UpdateListener`].
@@ -45,19 +47,23 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`repl`]: crate::dispatching::repls::repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
-pub async fn repl_with_listener<'a, H, Fut, E, L, ListenerE>(bot: Bot, handler: H, listener: L)
-where
-    H: Fn(UpdateWithCx<Message>) -> Fut + Send + Sync + 'static,
+pub async fn repl_with_listener<'a, R, H, Fut, E, L, ListenerE>(
+    requester: R,
+    handler: H,
+    listener: L,
+) where
+    H: Fn(UpdateWithCx<R, Message>) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), E>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug,
     Result<(), E>: OnError<E>,
     E: Debug + Send,
+    R: Requester + Clone + Send + 'static,
 {
     let handler = Arc::new(handler);
 
-    Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+    Dispatcher::new(requester)
+        .messages_handler(|rx: DispatcherHandlerRx<R, Message>| {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, move |message| {
                 let handler = Arc::clone(&handler);
 

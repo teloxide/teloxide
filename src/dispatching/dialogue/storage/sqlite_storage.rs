@@ -114,7 +114,7 @@ where
 }
 
 #[derive(sqlx::FromRow)]
-struct DialogueDBRow {
+struct DialogueDbRow {
     dialogue: Vec<u8>,
 }
 
@@ -123,7 +123,7 @@ async fn get_dialogue(
     chat_id: i64,
 ) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
     Ok(
-        match sqlx::query_as::<_, DialogueDBRow>(
+        match sqlx::query_as::<_, DialogueDbRow>(
             "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
         )
         .bind(chat_id)

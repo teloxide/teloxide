@@ -55,9 +55,9 @@ pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
-pub use update_with_cx::UpdateWithCx;
+pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
 
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub type DispatcherHandlerRx<Upd> = UnboundedReceiver<UpdateWithCx<Upd>>;
+pub type DispatcherHandlerRx<R, Upd> = UnboundedReceiver<UpdateWithCx<R, Upd>>;
