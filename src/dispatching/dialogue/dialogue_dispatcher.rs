@@ -177,15 +177,15 @@ where
 mod tests {
     use super::*;
 
-    use crate::Bot;
     use futures::{stream, StreamExt};
     use lazy_static::lazy_static;
+    use teloxide_core::Bot;
     use tokio::{
         sync::{mpsc, Mutex},
-        time::{delay_for, Duration},
+        time::Duration,
     };
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     #[allow(deprecated)]
     async fn updates_from_same_chat_executed_sequentially() {
         #[derive(Debug)]
@@ -212,9 +212,9 @@ mod tests {
             static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
         }
 
-        let dispatcher =
-            DialogueDispatcher::new(|cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
-                delay_for(Duration::from_millis(300)).await;
+        let dispatcher = DialogueDispatcher::new(
+            |cx: DialogueWithCx<Bot, MyUpdate, (), Infallible>| async move {
+                tokio::time::sleep(Duration::from_millis(300)).await;
 
                 match cx.cx.update {
                     MyUpdate { chat_id: 1, unique_number } => {
@@ -230,7 +230,8 @@ mod tests {
                 }
 
                 DialogueStage::Next(())
-            });
+            },
+        );
 
         let updates = stream::iter(
             vec![
@@ -257,8 +258,8 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| UpdateWithCx { update, bot: Bot::new("Doesn't matter here") })
-            .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
+            .map(|update| UpdateWithCx { update, requester: Bot::new("Doesn't matter here") })
+            .collect::<Vec<UpdateWithCx<Bot, MyUpdate>>>(),
         );
 
         let (tx, rx) = mpsc::unbounded_channel();
@@ -278,7 +279,7 @@ mod tests {
         dispatcher.handle(rx).await;
 
         // Wait until our futures to be finished.
-        delay_for(Duration::from_millis(3000)).await;
+        tokio::time::sleep(Duration::from_millis(3000)).await;
 
         assert_eq!(*SEQ1.lock().await, vec![174, 125, 2, 193, 104, 7, 7778]);
         assert_eq!(*SEQ2.lock().await, vec![411, 515, 623, 2222, 737, 10, 55456]);
