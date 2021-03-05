@@ -11,6 +11,7 @@ use tokio::sync::mpsc;
 
 use lockfree::map::Map;
 use std::sync::{Arc, Mutex};
+use teloxide_core::requests::Requester;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A dispatcher of dialogues.
@@ -23,7 +24,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, H, Upd> {
+pub struct DialogueDispatcher<R, D, S, H, Upd> {
     storage: Arc<S>,
     handler: Arc<H>,
     _phantom: PhantomData<Mutex<D>>,
@@ -34,12 +35,12 @@ pub struct DialogueDispatcher<D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
 }
 
-impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
+impl<R, D, H, Upd> DialogueDispatcher<R, D, InMemStorage<D>, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, Infallible> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
 {
@@ -58,9 +59,9 @@ where
     }
 }
 
-impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
+impl<R, D, S, H, Upd> DialogueDispatcher<R, D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
@@ -78,14 +79,17 @@ where
     }
 
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<R, Upd>>
+    where
+        R: Requester + Send + 'static,
+    {
         let (tx, rx) = mpsc::unbounded_channel();
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(UnboundedReceiverStream::new(rx).for_each(move |cx: UpdateWithCx<Upd>| {
+        tokio::spawn(UnboundedReceiverStream::new(rx).for_each(move |cx: UpdateWithCx<R, Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
@@ -124,17 +128,21 @@ where
     }
 }
 
-impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
+impl<R, D, S, H, Upd> DispatcherHandler<R, Upd> for DialogueDispatcher<R, D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
+    R: Requester + Send,
 {
-    fn handle(self, updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>) -> BoxFuture<'static, ()>
+    fn handle(
+        self,
+        updates: mpsc::UnboundedReceiver<UpdateWithCx<R, Upd>>,
+    ) -> BoxFuture<'static, ()>
     where
-        UpdateWithCx<Upd>: 'static,
+        UpdateWithCx<R, Upd>: 'static,
     {
         let this = Arc::new(self);
 

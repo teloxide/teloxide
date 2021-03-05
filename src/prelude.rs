@@ -9,9 +9,16 @@ pub use crate::{
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    requests::{respond, Request, ResponseResult},
+    respond,
+};
+
+pub use teloxide_core::prelude::*;
+
+pub use teloxide_core::{
+    adaptors::AutoSend,
+    requests::{Request, ResponseResult},
     types::{Message, Update},
-    Bot, RequestError,
+    RequestError,
 };
 
 #[cfg(feature = "frunk")]

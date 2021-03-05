@@ -51,25 +51,22 @@
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
 #![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
 
-pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
-pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
+pub use teloxide_core::{ApiError, DownloadError, RequestError};
 
-mod errors;
-mod net;
+mod logging;
 
-mod bot;
 pub mod dispatching;
 pub mod error_handlers;
-mod logging;
 pub mod prelude;
-pub mod requests;
-pub mod types;
 pub mod utils;
 
+pub use teloxide_core as core;
+
+use teloxide_core::requests::ResponseResult;
 #[cfg(feature = "macros")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
 #[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
@@ -78,3 +75,8 @@ pub use teloxide_macros::teloxide;
 #[cfg(all(feature = "nightly", doctest))]
 #[doc(include = "../README.md")]
 enum ReadmeDocTests {}
+
+/// A shortcut for `ResponseResult::Ok(val)`.
+pub fn respond<T>(val: T) -> ResponseResult<T> {
+    ResponseResult::Ok(val)
+}
