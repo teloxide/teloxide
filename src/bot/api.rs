@@ -20,15 +20,11 @@ impl Requester for Bot {
 
     type SetWebhook = JsonRequest<payloads::SetWebhook>;
 
-    fn set_webhook<U, A>(&self, url: U, allowed_updates: A) -> Self::SetWebhook
+    fn set_webhook<U>(&self, url: U) -> Self::SetWebhook
     where
         U: Into<String>,
-        A: IntoIterator<Item = crate::types::AllowedUpdate>,
     {
-        Self::SetWebhook::new(
-            self.clone(),
-            payloads::SetWebhook::new(url, allowed_updates),
-        )
+        Self::SetWebhook::new(self.clone(), payloads::SetWebhook::new(url))
     }
 
     type DeleteWebhook = JsonRequest<payloads::DeleteWebhook>;
