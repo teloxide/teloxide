@@ -22,7 +22,7 @@ enum Error {
     StorageError(#[from] StorageError),
 }
 
-type In = DialogueWithCx<Message, Dialogue, StorageError>;
+type In = DialogueWithCx<AutoSend<Bot>, Message, Dialogue, StorageError>;
 
 #[tokio::main]
 async fn main() {
@@ -30,7 +30,7 @@ async fn main() {
 }
 
 async fn run() {
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::with_storage(
             |DialogueWithCx { cx, dialogue }: In| async move {
@@ -47,10 +47,13 @@ async fn run() {
         .await;
 }
 
-async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
+async fn handle_message(
+    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    dialogue: Dialogue,
+) -> TransitionOut<Dialogue> {
     match cx.update.text_owned() {
         None => {
-            cx.answer_str("Send me a text message.").await?;
+            cx.answer("Send me a text message.").await?;
             next(dialogue)
         }
         Some(ans) => dialogue.react(cx, ans).await,
