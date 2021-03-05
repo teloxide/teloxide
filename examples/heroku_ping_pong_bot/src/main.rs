@@ -19,7 +19,7 @@ async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, In
     Ok(StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infallible> {
+pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
     // Heroku defines auto defines a port value
     let teloxide_token = env::var("TELOXIDE_TOKEN").expect("TELOXIDE_TOKEN env variable missing");
     let port: u16 = env::var("PORT")
@@ -31,7 +31,7 @@ pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infa
     let path = format!("bot{}", teloxide_token);
     let url = format!("https://{}/{}", host, path);
 
-    bot.set_webhook(url).send().await.expect("Cannot setup a webhook");
+    bot.set_webhook(url).await.expect("Cannot setup a webhook");
 
     let (tx, rx) = mpsc::unbounded_channel();
 
@@ -71,14 +71,14 @@ async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting heroku_ping_pong_bot...");
 
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
 
     let cloned_bot = bot.clone();
     teloxide::repl_with_listener(
         bot,
         |message| async move {
-            message.answer_str("pong").await?;
-            ResponseResult::<()>::Ok(())
+            message.answer("pong").await?;
+           respond(())
         },
         webhook(cloned_bot).await,
     )
