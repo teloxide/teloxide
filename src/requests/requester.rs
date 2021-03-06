@@ -5,9 +5,8 @@ use crate::{
     payloads::{GetMe, SendMessage, *},
     requests::Request,
     types::{
-        AllowedUpdate, BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult,
-        InputFile, InputMedia, InputSticker, LabeledPrice, PassportElementError, PollType,
-        TargetMessage,
+        BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
+        InputSticker, LabeledPrice, PassportElementError, PollType, TargetMessage,
     },
 };
 
