@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- `GetUpdatesFaultTolerant` - fault toletant version of `GetUpdates` ([#58][pr58]) (**BC**)
+- Derive `Clone` for `AutoSend`.
+
+[pr58]: https://github.com/teloxide/teloxide-core/pull/58
+
 ### Fixed
 
 - `set_webhook` signature (make `allowed_updates` optional) ([#59][pr59])
@@ -18,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr56]: https://github.com/teloxide/teloxide-core/pull/56
 [pr57]: https://github.com/teloxide/teloxide-core/pull/57
 [pr59]: https://github.com/teloxide/teloxide-core/pull/59
+
+### Changed
+
+ - `NonStrictVec` -> `SemiparsedVec`.
 
 ## [0.1.1] - 2020-02-17
 

@@ -747,6 +747,11 @@ pub trait Requester {
     fn get_game_high_scores<T>(&self, user_id: u32, target: T) -> Self::GetGameHighScores
     where
         T: Into<TargetMessage>;
+
+    type GetUpdatesFaultTolerant: Request<Payload = GetUpdatesFaultTolerant, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetUpdatesFaultTolerant`].
+    fn get_updates_fault_tolerant(&self) -> Self::GetUpdatesFaultTolerant;
 }
 
 macro_rules! fty {
@@ -784,7 +789,8 @@ macro_rules! forward_all {
             add_sticker_to_set, set_sticker_position_in_set, delete_sticker_from_set,
             set_sticker_set_thumb, send_invoice, answer_shipping_query,
             answer_pre_checkout_query, set_passport_data_errors, send_game,
-            set_game_score, set_game_score_inline, get_game_high_scores => fwd_deref, fty
+            set_game_score, set_game_score_inline, get_game_high_scores,
+            get_updates_fault_tolerant => fwd_deref, fty
         }
     };
 }

@@ -118,7 +118,7 @@ where
         add_sticker_to_set, set_sticker_position_in_set, delete_sticker_from_set,
         set_sticker_set_thumb, send_invoice, answer_shipping_query,
         answer_pre_checkout_query, set_passport_data_errors, send_game,
-        set_game_score, set_game_score_inline, get_game_high_scores => f, fty
+        set_game_score, set_game_score_inline, get_game_high_scores, get_updates_fault_tolerant => f, fty
     }
 }
 
