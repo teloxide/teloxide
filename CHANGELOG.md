@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `set_webhook` signature (make `allowed_updates` optional) ([#59][pr59])
 - Fix typos in payloads ([#57][pr57]):
   - `get_updates`: `offset` `i64` -> `i32`
   - `send_location`: make `live_period` optional
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr56]: https://github.com/teloxide/teloxide-core/pull/56
 [pr57]: https://github.com/teloxide/teloxide-core/pull/57
+[pr59]: https://github.com/teloxide/teloxide-core/pull/59
 
 ### Changed
 

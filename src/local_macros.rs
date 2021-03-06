@@ -414,10 +414,9 @@ macro_rules! requester_forward {
     (@method set_webhook $body:ident $ty:ident) => {
         type SetWebhook = $ty![SetWebhook];
 
-        fn set_webhook<U, A>(&self, url: U, allowed_updates: A) -> Self::SetWebhook where U: Into<String>,
-        A: IntoIterator<Item = AllowedUpdate> {
+        fn set_webhook<U>(&self, url: U) -> Self::SetWebhook where U: Into<String> {
             let this = self;
-            $body!(set_webhook this (url: U, allowed_updates: A))
+            $body!(set_webhook this (url: U))
         }
     };
     (@method delete_webhook $body:ident $ty:ident) => {
