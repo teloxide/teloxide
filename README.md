@@ -431,7 +431,8 @@ Feel free to push your own bot into our collection!
  - [_ArtHome12/cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
  - [_GoldsteinE/tg-vimhelpbot -- Link `:help` for Vim in Telegram_](https://github.com/GoldsteinE/tg-vimhelpbot)
  - [_sschiz/janitor-bot_ --  A bot that removes users trying to join to a chat that is designed for comments](https://github.com/sschiz/janitor-bot)
- - [ myblackbeard/basketball-betting-bot -- The bot lets you bet on NBA games against your buddies](https://github.com/myblackbeard/basketball-betting-bot)
+ - [_myblackbeard/basketball-betting-bot -- The bot lets you bet on NBA games against your buddies_](https://github.com/myblackbeard/basketball-betting-bot)
+ - [_slondr/BeerHolderBot -- A bot that holds your beer_](https://gitlab.com/slondr/BeerHolderBot)
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
