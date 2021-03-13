@@ -9,10 +9,11 @@
 //!
 //! ```
 //! use teloxide::prelude::*;
+//! use tokio_stream::wrappers::UnboundedReceiverStream;
 //!
-//! async fn handle_messages(rx: DispatcherHandlerRx<Message>) {
-//!     rx.for_each_concurrent(None, |message| async move {
-//!         dbg!(message);
+//! async fn handle_messages(rx: DispatcherHandlerRx<AutoSend<Bot>, Message>) {
+//!     UnboundedReceiverStream::new(rx).for_each_concurrent(None, |message| async move {
+//!         dbg!(message.update);
 //!     })
 //!     .await;
 //! }

@@ -185,14 +185,14 @@ mod tests {
         time::Duration,
     };
 
-    #[tokio::test(flavor = "multi_thread")]
+    #[tokio::test]
     #[allow(deprecated)]
     async fn updates_from_same_chat_executed_sequentially() {
         #[derive(Debug)]
         struct MyUpdate {
             chat_id: i64,
             unique_number: u32,
-        };
+        }
 
         impl MyUpdate {
             fn new(chat_id: i64, unique_number: u32) -> Self {
