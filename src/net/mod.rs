@@ -13,7 +13,7 @@ mod download;
 mod request;
 mod telegram_response;
 
-const TELEGRAM_API_URL: &str = "https://api.telegram.org";
+const TELEGRAM_API_URL: &str = env!("TELEGRAM_API_URL");
 
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
 ///
