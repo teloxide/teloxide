@@ -34,7 +34,7 @@ impl Update {
     ///
     /// It is used to implement update listeners.
     pub fn try_parse(value: &Value) -> Result<Self, serde_json::Error> {
-        match serde_json::from_str(&value.to_string()) {
+        match serde_json::from_value(value.clone()) {
             Ok(update) => Ok(update),
             Err(error) => {
                 log::error!(
