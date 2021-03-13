@@ -5,6 +5,7 @@ use teloxide::{dispatching::update_listeners, prelude::*};
 
 use std::{convert::Infallible, net::SocketAddr};
 use tokio::sync::mpsc;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::Filter;
 
 use reqwest::StatusCode;
@@ -45,7 +46,7 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
     // setup a self-signed TLS certificate.
 
     tokio::spawn(serve.run("127.0.0.1:80".parse::<SocketAddr>().unwrap()));
-    rx
+    UnboundedReceiverStream::new(rx)
 }
 
 async fn run() {

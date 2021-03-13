@@ -5,6 +5,7 @@ use teloxide::{dispatching::update_listeners, prelude::*};
 
 use std::{convert::Infallible, env, net::SocketAddr};
 use tokio::sync::mpsc;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::Filter;
 
 use reqwest::StatusCode;
@@ -39,20 +40,7 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
         .and(warp::path(path))
         .and(warp::body::json())
         .map(move |json: serde_json::Value| {
-            let try_parse = match serde_json::from_str(&json.to_string()) {
-                Ok(update) => Ok(update),
-                Err(error) => {
-                    log::error!(
-                        "Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                       This is a bug in teloxide, please open an issue here: \
-                       https://github.com/teloxide/teloxide/issues.",
-                        error,
-                        json
-                    );
-                    Err(error)
-                }
-            };
-            if let Ok(update) = try_parse {
+            if let Ok(update) = Update::try_parse(&json) {
                 tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
             }
 
@@ -64,7 +52,7 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
 
     let address = format!("0.0.0.0:{}", port);
     tokio::spawn(serve.run(address.parse::<SocketAddr>().unwrap()));
-    rx
+    UnboundedReceiverStream::new(rx)
 }
 
 async fn run() {
@@ -78,7 +66,7 @@ async fn run() {
         bot,
         |message| async move {
             message.answer("pong").await?;
-           respond(())
+            respond(())
         },
         webhook(cloned_bot).await,
     )

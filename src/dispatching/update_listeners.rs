@@ -179,10 +179,19 @@ where
                         offset = id + 1;
                     }
 
-                    let updates =
-                        updates.into_iter().filter_map(Result::ok).collect::<Vec<Update>>();
+                    for update in &updates {
+                        if let Err((value, e)) = update {
+                            log::error!(
+                            "Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                            e,
+                            value
+                            );
+                        }
+                    }
 
-                    updates.into_iter().map(Ok).collect::<Vec<_>>()
+                    updates.into_iter().filter_map(Result::ok).map(Ok).collect::<Vec<_>>()
                 }
             };
 
