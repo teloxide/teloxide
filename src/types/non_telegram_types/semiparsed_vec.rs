@@ -4,7 +4,7 @@ use serde_json::{from_value, Value};
 /// A vector of possibly unparsed JSON objects.
 ///
 /// Similar to `Vec<T>` but if it fails to deserialize element, it just saves
-/// `Err((serde_json::Value, serde_json::Error))` and logs an error.
+/// `Err((serde_json::Value, serde_json::Error))`.
 #[derive(Debug, serde::Deserialize)]
 #[serde(from = "Vec<serde_json::Value>")]
 #[serde(bound = "T: DeserializeOwned")]
@@ -12,18 +12,7 @@ pub struct SemiparsedVec<T>(pub Vec<Result<T, (serde_json::Value, serde_json::Er
 
 impl<T: DeserializeOwned> From<Vec<serde_json::Value>> for SemiparsedVec<T> {
     fn from(vec: Vec<Value>) -> Self {
-        Self(
-            vec.into_iter()
-                .map(|val| {
-                    from_value(val.clone()).map_err(|e| {
-                        log::error!("Cannot parse a JSON object.\nError: {:?}\nValue: {}\n\
-                        This is a bug in teloxide-core, please open an issue here: \
-                        https://github.com/teloxide/teloxide-core/issues.", e, val);
-                        (val, e)
-                    })
-                })
-                .collect(),
-        )
+        Self(vec.into_iter().map(|val| (val, e)).collect())
     }
 }
 
