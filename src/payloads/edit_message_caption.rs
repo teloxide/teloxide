@@ -3,7 +3,7 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, Message, ParseMode};
+use crate::types::{ChatId, InlineKeyboardMarkup, Message, MessageEntity, ParseMode};
 
 impl_payload! {
     /// Use this method to edit captions of messages. On success, the edited Message is returned.
@@ -24,6 +24,8 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
+            /// List of special entities that appear in the caption, which can be specified instead of _parse\_mode_
+            pub caption_entities: Vec<MessageEntity> [collect],
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

@@ -387,6 +387,7 @@ impl<B: Requester> Requester for Throttle<B>
 where
     B::SendMessage: Send,
     B::ForwardMessage: Send,
+    B::CopyMessage: Send,
     B::SendPhoto: Send,
     B::SendAudio: Send,
     B::SendDocument: Send,
@@ -406,10 +407,10 @@ where
     type Err = B::Err;
 
     requester_forward! {
-        send_message,
-        forward_message, send_photo, send_audio, send_document, send_video,
-        send_animation, send_voice, send_video_note, send_media_group, send_location,
-        send_venue, send_contact, send_poll, send_dice, send_sticker,  => f, fty
+        send_message, forward_message, copy_message, send_photo, send_audio,
+        send_document, send_video, send_animation, send_voice, send_video_note,
+        send_media_group, send_location, send_venue, send_contact, send_poll,
+        send_dice, send_sticker,  => f, fty
     }
 
     type SendInvoice = ThrottlingRequest<B::SendInvoice>;
@@ -451,15 +452,15 @@ where
     }
 
     requester_forward! {
-        get_me, get_updates, set_webhook, delete_webhook, get_webhook_info,
+        get_me, log_out, close, get_updates, set_webhook, delete_webhook, get_webhook_info,
         edit_message_live_location, edit_message_live_location_inline,
         stop_message_live_location, stop_message_live_location_inline,
         send_chat_action, get_user_profile_photos, get_file, kick_chat_member,
         unban_chat_member, restrict_chat_member, promote_chat_member,
         set_chat_administrator_custom_title, set_chat_permissions,
         export_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
-        set_chat_description, pin_chat_message, unpin_chat_message, leave_chat,
-        get_chat, get_chat_administrators, get_chat_members_count,
+        set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
+        leave_chat, get_chat, get_chat_administrators, get_chat_members_count,
         get_chat_member, set_chat_sticker_set, delete_chat_sticker_set,
         answer_callback_query, set_my_commands, get_my_commands, answer_inline_query,
         edit_message_text, edit_message_text_inline, edit_message_caption,

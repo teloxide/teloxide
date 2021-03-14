@@ -32,6 +32,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

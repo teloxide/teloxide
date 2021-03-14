@@ -83,6 +83,16 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMe`].
     fn get_me(&self) -> Self::GetMe;
 
+    type LogOut: Request<Payload = LogOut, Err = Self::Err>;
+
+    /// For Telegram documentation see [`LogOut`].
+    fn log_out(&self) -> Self::LogOut;
+
+    type Close: Request<Payload = Close, Err = Self::Err>;
+
+    /// For Telegram documentation see [`Close`].
+    fn close(&self) -> Self::Close;
+
     type SendMessage: Request<Payload = SendMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendMessage`].
@@ -100,6 +110,14 @@ pub trait Requester {
         from_chat_id: F,
         message_id: i32,
     ) -> Self::ForwardMessage
+    where
+        C: Into<ChatId>,
+        F: Into<ChatId>;
+
+    type CopyMessage: Request<Payload = CopyMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CopyMessage`].
+    fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage
     where
         C: Into<ChatId>,
         F: Into<ChatId>;
@@ -402,6 +420,13 @@ pub trait Requester {
 
     /// For Telegram documentation see [`UnpinChatMessage`].
     fn unpin_chat_message<C>(&self, chat_id: C) -> Self::UnpinChatMessage
+    where
+        C: Into<ChatId>;
+
+    type UnpinAllChatMessages: Request<Payload = UnpinAllChatMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UnpinAllChatMessages`].
+    fn unpin_all_chat_messages<C>(&self, chat_id: C) -> Self::UnpinAllChatMessages
     where
         C: Into<ChatId>;
 
@@ -769,17 +794,17 @@ macro_rules! fwd_deref {
 macro_rules! forward_all {
     () => {
         requester_forward! {
-            get_me, get_updates, set_webhook, delete_webhook, get_webhook_info,
-            forward_message, send_message, send_photo, send_audio, send_document, send_video,
-            send_animation, send_voice, send_video_note, send_media_group, send_location,
+            get_me, log_out, close, get_updates, set_webhook, delete_webhook, get_webhook_info,
+            forward_message, copy_message, send_message, send_photo, send_audio, send_document,
+            send_video, send_animation, send_voice, send_video_note, send_media_group, send_location,
             edit_message_live_location, edit_message_live_location_inline,
             stop_message_live_location, stop_message_live_location_inline, send_venue,
             send_contact, send_poll, send_dice, send_chat_action, get_user_profile_photos,
             get_file, kick_chat_member, unban_chat_member, restrict_chat_member,
             promote_chat_member, set_chat_administrator_custom_title, set_chat_permissions,
             export_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
-            set_chat_description, pin_chat_message, unpin_chat_message, leave_chat,
-            get_chat, get_chat_administrators, get_chat_members_count,get_chat_member,
+            set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
+            leave_chat, get_chat, get_chat_administrators, get_chat_members_count,get_chat_member,
             set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
             set_my_commands, get_my_commands, answer_inline_query, edit_message_text,
             edit_message_text_inline, edit_message_caption, edit_message_caption_inline,

@@ -12,5 +12,9 @@ impl_payload! {
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
     pub DeleteWebhook (DeleteWebhookSetters) => True {
 
+        optional {
+            /// Pass _True_ to drop all pending updates
+            pub drop_pending_updates: bool,
+        }
     }
 }

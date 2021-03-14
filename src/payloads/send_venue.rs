@@ -28,12 +28,20 @@ impl_payload! {
             pub foursquare_id: String [into],
             /// Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
             pub foursquare_type: String [into],
+            /// Google Places identifier of the venue
+            pub google_place_id: String [into],
+            /// Google Places type of the venue. (See [supported types].)
+            ///
+            /// [supported types]: https://developers.google.com/places/web-service/supported_types
+            pub google_place_type: String [into],
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

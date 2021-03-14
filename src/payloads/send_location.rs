@@ -20,16 +20,24 @@ impl_payload! {
             pub longitude: f64,
         }
         optional {
+            /// The radius of uncertainty for the location, measured in meters; 0-1500
+            pub horizontal_accuracy: f64,
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400.
             ///
             /// [Live Locations]: https://telegram.org/blog/live-locations
             pub live_period: u32,
+            /// For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
+            pub heading: u16,
+            /// For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+            pub proximity_alert_radius: u32,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

@@ -22,6 +22,12 @@ impl_payload! {
             pub longitude: f64,
         }
         optional {
+            /// The radius of uncertainty for the location, measured in meters; 0-1500
+            pub horizontal_accuracy: f64,
+            /// For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
+            pub heading: u16,
+            /// For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+            pub proximity_alert_radius: u32,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

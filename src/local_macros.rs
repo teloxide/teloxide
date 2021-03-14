@@ -443,6 +443,22 @@ macro_rules! requester_forward {
             $body!(get_me this ())
         }
     };
+    (@method log_out $body:ident $ty:ident) => {
+        type LogOut = $ty![LogOut];
+
+        fn log_out(&self) -> Self::LogOut {
+            let this = self;
+            $body!(log_out this ())
+        }
+    };
+    (@method close $body:ident $ty:ident) => {
+        type Close = $ty![Close];
+
+        fn close(&self) -> Self::Close {
+            let this = self;
+            $body!(close this ())
+        }
+    };
     (@method send_message $body:ident $ty:ident) => {
         type SendMessage = $ty![SendMessage];
 
@@ -459,6 +475,15 @@ macro_rules! requester_forward {
         F: Into<ChatId> {
             let this = self;
             $body!(forward_message this (chat_id: C, from_chat_id: F, message_id: i32))
+        }
+    };
+    (@method copy_message $body:ident $ty:ident) => {
+        type CopyMessage = $ty![CopyMessage];
+
+        fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage where C: Into<ChatId>,
+        F: Into<ChatId> {
+            let this = self;
+            $body!(copy_message this (chat_id: C, from_chat_id: F, message_id: i32))
         }
     };
     (@method send_photo $body:ident $ty:ident) => {
@@ -732,6 +757,14 @@ macro_rules! requester_forward {
         fn unpin_chat_message<C>(&self, chat_id: C) -> Self::UnpinChatMessage where C: Into<ChatId> {
             let this = self;
             $body!(unpin_chat_message this (chat_id: C))
+        }
+    };
+    (@method unpin_all_chat_messages $body:ident $ty:ident) => {
+        type UnpinAllChatMessages = $ty![UnpinAllChatMessages];
+
+        fn unpin_all_chat_messages<C>(&self, chat_id: C) -> Self::UnpinAllChatMessages where C: Into<ChatId> {
+            let this = self;
+            $body!(unpin_all_chat_messages this (chat_id: C))
         }
     };
     (@method leave_chat $body:ident $ty:ident) => {

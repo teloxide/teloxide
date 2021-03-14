@@ -6,15 +6,15 @@ use serde::Serialize;
 use crate::types::{ChatId, InputMedia, Message};
 
 impl_payload! {
-    /// Use this method to send a group of photos or videos as an album. On success, an array of the sent [`Message`]s is returned.
+    /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Messages`] that were sent is returned.
     ///
-    /// [`Message`]: crate::types::Message
+    /// [`Messages`]: crate::types::Messages
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub SendMediaGroup (SendMediaGroupSetters) => Vec<Message> {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// A JSON-serialized array describing photos and videos to be sent, must include 2-10 items
+            /// A JSON-serialized array describing messages to be sent, must include 2-10 items
             pub media: Vec<InputMedia> [collect],
         }
         optional {
@@ -24,6 +24,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
         }
     }
 }

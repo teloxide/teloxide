@@ -967,6 +967,40 @@ impl Requester for Bot {
         )
     }
 
+    type LogOut = JsonRequest<payloads::LogOut>;
+
+    fn log_out(&self) -> Self::LogOut {
+        Self::LogOut::new(self.clone(), payloads::LogOut::new())
+    }
+
+    type Close = JsonRequest<payloads::Close>;
+
+    fn close(&self) -> Self::Close {
+        Self::Close::new(self.clone(), payloads::Close::new())
+    }
+
+    type CopyMessage = JsonRequest<payloads::CopyMessage>;
+
+    fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage
+    where
+        C: Into<ChatId>,
+        F: Into<ChatId>,
+    {
+        Self::CopyMessage::new(
+            self.clone(),
+            payloads::CopyMessage::new(chat_id, from_chat_id, message_id),
+        )
+    }
+
+    type UnpinAllChatMessages = JsonRequest<payloads::UnpinAllChatMessages>;
+
+    fn unpin_all_chat_messages<C>(&self, chat_id: C) -> Self::UnpinAllChatMessages
+    where
+        C: Into<ChatId>,
+    {
+        Self::UnpinAllChatMessages::new(self.clone(), payloads::UnpinAllChatMessages::new(chat_id))
+    }
+
     type GetUpdatesFaultTolerant = JsonRequest<payloads::GetUpdatesFaultTolerant>;
 
     fn get_updates_fault_tolerant(&self) -> Self::GetUpdatesFaultTolerant {

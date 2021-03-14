@@ -3,7 +3,7 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ParseMode, PollType, ReplyMarkup};
+use crate::types::{ChatId, Message, MessageEntity, ParseMode, PollType, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
@@ -14,7 +14,7 @@ impl_payload! {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// Poll question, 1-255 characters
+            /// Poll question, 1-300 characters
             pub question: String [into],
             /// A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
             pub options: Vec<String> [collect],
@@ -34,6 +34,8 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub explanation_parse_mode: ParseMode,
+            /// List of special entities that appear in the poll explanation, which can be specified instead of _parse\_mode_
+            pub explanation_entities: Vec<MessageEntity> [collect],
             /// Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
             pub open_period: u16,
             /// Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with open_period.
@@ -46,6 +48,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

@@ -3,7 +3,7 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, Message, MessageEntity, ParseMode, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send text messages. On success, the sent [`Message`] is returned.
@@ -22,6 +22,8 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
+            /// List of special entities that appear in the message text, which can be specified instead of _parse\_mode_
+            pub entities: Vec<MessageEntity> [collect],
             /// Disables link previews for links in this message
             pub disable_web_page_preview: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -30,6 +32,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
