@@ -22,4 +22,12 @@ pub struct Venue {
     /// `arts_entertainment/default`, `arts_entertainment/aquarium` or
     /// `food/icecream`.)
     pub foursquare_type: Option<String>,
+
+    /// Google Places identifier of the venue.
+    pub google_place_id: Option<String>,
+
+    /// Google Places type of the venue. (See [supported types].)
+    ///
+    /// [supported types]: https://developers.google.com/places/web-service/supported_types
+    pub google_place_type: Option<String>,
 }

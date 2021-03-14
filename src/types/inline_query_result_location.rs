@@ -24,9 +24,21 @@ pub struct InlineQueryResultLocation {
     /// Location title.
     pub title: String,
 
+    /// The radius of uncertainty for the location, measured in meters; 0-1500
+    pub horizontal_accuracy: Option<f64>,
+
     /// Period in seconds for which the location can be updated, should be
     /// between 60 and 86400.
     pub live_period: Option<i32>,
+
+    /// For live locations, a direction in which the user is moving, in degrees.
+    /// Must be between 1 and 360 if specified.
+    pub heading: Option<u16>,
+
+    /// For live locations, a maximum distance for proximity alerts about
+    /// approaching another chat member, in meters. Must be between 1 and 100000
+    /// if specified.
+    pub proximity_alert_radius: Option<u32>,
 
     /// [Inline keyboard] attached to the message.
     ///
@@ -40,10 +52,10 @@ pub struct InlineQueryResultLocation {
     pub thumb_url: Option<String>,
 
     /// Thumbnail width.
-    pub thumb_width: Option<i32>,
+    pub thumb_width: Option<u32>,
 
     /// Thumbnail height.
-    pub thumb_height: Option<i32>,
+    pub thumb_height: Option<u32>,
 }
 
 impl InlineQueryResultLocation {
@@ -63,6 +75,9 @@ impl InlineQueryResultLocation {
             thumb_url: None,
             thumb_width: None,
             thumb_height: None,
+            horizontal_accuracy: None,
+            heading: None,
+            proximity_alert_radius: None,
         }
     }
 
@@ -92,8 +107,23 @@ impl InlineQueryResultLocation {
         self
     }
 
+    pub fn horizontal_accuracy<S>(mut self, val: f64) -> Self {
+        self.horizontal_accuracy = Some(val);
+        self
+    }
+
     pub fn live_period(mut self, val: i32) -> Self {
         self.live_period = Some(val);
+        self
+    }
+
+    pub fn heading(mut self, val: u16) -> Self {
+        self.heading = Some(val);
+        self
+    }
+
+    pub fn proximity_alert_radius(mut self, val: u32) -> Self {
+        self.proximity_alert_radius = Some(val);
         self
     }
 
@@ -115,12 +145,12 @@ impl InlineQueryResultLocation {
         self
     }
 
-    pub fn thumb_width(mut self, val: i32) -> Self {
+    pub fn thumb_width(mut self, val: u32) -> Self {
         self.thumb_width = Some(val);
         self
     }
 
-    pub fn thumb_height(mut self, val: i32) -> Self {
+    pub fn thumb_height(mut self, val: u32) -> Self {
         self.thumb_height = Some(val);
         self
     }

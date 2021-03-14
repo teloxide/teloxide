@@ -16,6 +16,9 @@ pub struct WebhookInfo {
     /// Number of updates awaiting delivery.
     pub pending_update_count: u32,
 
+    /// Currently used webhook IP address.
+    pub ip_address: Option<String>,
+
     /// Unix time for the most recent error that happened when trying to
     /// deliver an update via webhook.
     pub last_error_date: Option<u64>,

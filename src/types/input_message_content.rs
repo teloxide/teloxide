@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::ParseMode;
+use crate::types::{MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -30,6 +30,10 @@ pub struct InputMessageContentText {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in message text, which can be
+    /// specified instead of `parse_mode`.
+    pub entities: Option<Vec<MessageEntity>>,
+
     /// Disables link previews for links in the sent message.
     pub disable_web_page_preview: Option<bool>,
 }
@@ -43,6 +47,7 @@ impl InputMessageContentText {
             message_text: message_text.into(),
             parse_mode: None,
             disable_web_page_preview: None,
+            entities: None,
         }
     }
 
@@ -56,6 +61,14 @@ impl InputMessageContentText {
 
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.entities = Some(val.into_iter().collect());
         self
     }
 
@@ -76,9 +89,21 @@ pub struct InputMessageContentLocation {
     /// Longitude of the location in degrees.
     pub longitude: f64,
 
+    /// The radius of uncertainty for the location, measured in meters; 0-1500
+    pub horizontal_accuracy: Option<f64>,
+
     /// Period in seconds for which the location can be updated, should be
     /// between 60 and 86400.
     pub live_period: Option<u32>,
+
+    /// For live locations, a direction in which the user is moving, in degrees.
+    /// Must be between 1 and 360 if specified.
+    pub heading: Option<u16>,
+
+    /// For live locations, a maximum distance for proximity alerts about
+    /// approaching another chat member, in meters. Must be between 1 and 100000
+    /// if specified.
+    pub proximity_alert_radius: Option<u32>,
 }
 
 impl InputMessageContentLocation {
@@ -87,6 +112,9 @@ impl InputMessageContentLocation {
             latitude,
             longitude,
             live_period: None,
+            horizontal_accuracy: None,
+            heading: None,
+            proximity_alert_radius: None,
         }
     }
 
@@ -130,6 +158,14 @@ pub struct InputMessageContentVenue {
     /// `arts_entertainment/default`, `arts_entertainment/aquarium`
     /// or `food/icecream`.)
     pub foursquare_type: Option<String>,
+
+    /// Google Places identifier of the venue.
+    pub google_place_id: Option<String>,
+
+    /// Google Places type of the venue. (See [supported types].)
+    ///
+    /// [supported types]: https://developers.google.com/places/web-service/supported_types
+    pub google_place_type: Option<String>,
 }
 
 impl InputMessageContentVenue {
@@ -145,6 +181,8 @@ impl InputMessageContentVenue {
             address: address.into(),
             foursquare_id: None,
             foursquare_type: None,
+            google_place_id: None,
+            google_place_type: None,
         }
     }
 
@@ -270,6 +308,7 @@ mod tests {
             message_text: String::from("text"),
             parse_mode: None,
             disable_web_page_preview: None,
+            entities: None,
         });
 
         let actual_json = serde_json::to_string(&text_content).unwrap();
@@ -283,6 +322,9 @@ mod tests {
             latitude: 59.08,
             longitude: 38.4326,
             live_period: None,
+            horizontal_accuracy: None,
+            heading: None,
+            proximity_alert_radius: None,
         });
 
         let actual_json = serde_json::to_string(&location_content).unwrap();
@@ -299,6 +341,8 @@ mod tests {
             address: String::from("some address"),
             foursquare_id: None,
             foursquare_type: None,
+            google_place_id: None,
+            google_place_type: None,
         });
 
         let actual_json = serde_json::to_string(&venue_content).unwrap();

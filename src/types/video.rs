@@ -29,6 +29,9 @@ pub struct Video {
     /// Video thumbnail.
     pub thumb: Option<PhotoSize>,
 
+    /// Original filename as defined by sender
+    pub file_name: Option<String>,
+
     /// Mime type of a file as defined by sender.
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
     pub mime_type: Option<Mime>,

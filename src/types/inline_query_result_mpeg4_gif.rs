@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a video animation (H.264/MPEG-4 AVC video without
 /// sound).
@@ -45,6 +45,10 @@ pub struct InlineQueryResultMpeg4Gif {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
@@ -71,6 +75,7 @@ impl InlineQueryResultMpeg4Gif {
             title: None,
             caption: None,
             parse_mode: None,
+            caption_entities: None,
             reply_markup: None,
             input_message_content: None,
         }
@@ -133,6 +138,14 @@ impl InlineQueryResultMpeg4Gif {
 
     pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 

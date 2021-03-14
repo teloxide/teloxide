@@ -169,8 +169,10 @@ mod test {
                         username: Some(String::from("WaffleLapkin")),
                         first_name: Some(String::from("Waffle")),
                         last_name: None,
+                        bio: None,
                     }),
                     photo: None,
+                    pinned_message: None,
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {
@@ -190,6 +192,8 @@ mod test {
                         entities: vec![],
                     }),
                     reply_markup: None,
+                    sender_chat: None,
+                    author_signature: None,
                 }),
             }),
         };
