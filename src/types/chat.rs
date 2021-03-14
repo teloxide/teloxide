@@ -165,7 +165,7 @@ pub struct PublicChatSupergroup {
     /// [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
-    pub location: ChatLocation,
+    pub location: Option<ChatLocation>,
 }
 
 struct PrivateChatKindVisitor;

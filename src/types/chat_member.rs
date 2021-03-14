@@ -375,7 +375,7 @@ mod tests {
             "can_restrict_members":true,
             "can_pin_messages":true,
             "can_promote_members":true,
-            "is_anonymous":false,
+            "is_anonymous":false
         }"#;
         let expected = ChatMember {
             user: User {
