@@ -2,7 +2,7 @@ use std::{convert::TryInto, str::FromStr};
 
 use teloxide::{prelude::*, utils::command::BotCommand};
 
-use teloxide::core::types::ChatPermissions;
+use teloxide::types::ChatPermissions;
 
 // Derive BotCommand to parse text with a command into this enumeration.
 //

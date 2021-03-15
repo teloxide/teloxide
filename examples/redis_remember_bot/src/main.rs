@@ -9,6 +9,7 @@ use states::*;
 use teloxide::{
     dispatching::dialogue::{serializer::Bincode, RedisStorage, Storage},
     prelude::*,
+    RequestError,
 };
 use thiserror::Error;
 

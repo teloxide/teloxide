@@ -1,7 +1,7 @@
 // The version of Heroku ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
 
-use teloxide::{dispatching::update_listeners, prelude::*};
+use teloxide::{dispatching::update_listeners, prelude::*, types::Update};
 
 use std::{convert::Infallible, env, net::SocketAddr};
 use tokio::sync::mpsc;

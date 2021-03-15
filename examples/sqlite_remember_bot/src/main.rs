@@ -9,6 +9,7 @@ use states::*;
 use teloxide::{
     dispatching::dialogue::{serializer::JSON, SqliteStorage, Storage},
     prelude::*,
+    RequestError,
 };
 use thiserror::Error;
 

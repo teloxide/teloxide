@@ -120,9 +120,9 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default<R, E>(requester: R) -> impl UpdateListener<E>
+pub fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
-    R: Requester<Err = E>,
+    R: Requester,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     polling(requester, Some(Duration::from_secs(10)), None, None)
@@ -140,14 +140,14 @@ where
 /// See also: [`polling_default`](polling_default).
 ///
 /// [`GetUpdates`]: crate::requests::GetUpdates
-pub fn polling<R, E>(
+pub fn polling<R>(
     requester: R,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<E>
+) -> impl UpdateListener<R::Err>
 where
-    R: Requester<Err = E>,
+    R: Requester,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
