@@ -16,7 +16,7 @@ impl_payload! {
             pub chat_id: ChatId [into],
         }
         optional {
-            /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, or “🏀”. Dice can have values 1-6 for “🎲” and “🎯”, and values 1-5 for “🏀”. Defaults to “🎲”
+            /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
             pub emoji: DiceEmoji,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///

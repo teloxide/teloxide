@@ -13,7 +13,7 @@ impl_payload! {
     pub SetPassportDataErrors (SetPassportDataErrorsSetters) => True {
         required {
             /// User identifier
-            pub user_id: i32,
+            pub user_id: i64,
             /// A JSON-serialized array describing the errors
             pub errors: Vec<PassportElementError> [collect],
         }

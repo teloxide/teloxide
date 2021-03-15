@@ -13,7 +13,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
             /// Unique identifier of the target user
-            pub user_id: i32,
+            pub user_id: i64,
         }
         optional {
             /// Do nothing if the user is not banned

@@ -51,6 +51,12 @@ pub struct Administrator {
     /// administrator privileges of that user.
     pub can_be_edited: bool,
 
+    /// `true`, if the administrator can access the chat event log, chat
+    /// statistics, message statistics in channels, see channel members, see
+    /// anonymous administrators in supergroups and ignore slow mode. Implied by
+    /// any other administrator privilege
+    pub can_manage_chat: bool,
+
     /// `true`, if the administrator can change the chat
     /// title, photo and other settings.
     pub can_change_info: bool,
@@ -66,6 +72,9 @@ pub struct Administrator {
     /// `true`, if the administrator can delete messages
     /// of other users.
     pub can_delete_messages: bool,
+
+    /// `true`, if the administrator can manage voice chats.
+    pub can_manage_voice_chats: bool,
 
     /// `true`, if the administrator can invite new users
     /// to the chat.
@@ -166,6 +175,20 @@ impl ChatMemberKind {
         }
     }
 
+    /// Getter for [`Administrator::can_manage_chat`] field.
+    pub fn can_manage_chat(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator {
+                can_manage_chat, ..
+            }) => Some(*can_manage_chat),
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
+    }
+
     /// Getter for [`Administrator::can_change_info`] field.
     pub fn can_change_info(&self) -> Option<bool> {
         match &self {
@@ -215,6 +238,21 @@ impl ChatMemberKind {
                 can_delete_messages,
                 ..
             }) => Some(*can_delete_messages),
+            Self::Creator(_)
+            | Self::Member
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Kicked(_) => None,
+        }
+    }
+
+    /// Getter for [`Administrator::can_manage_voice_chats`] field.
+    pub fn can_manage_voice_chats(&self) -> Option<bool> {
+        match &self {
+            Self::Administrator(Administrator {
+                can_manage_voice_chats,
+                ..
+            }) => Some(*can_manage_voice_chats),
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
@@ -368,14 +406,16 @@ mod tests {
                 "language_code":"en"
             },
             "status":"administrator",
-            "can_be_edited":false,
-            "can_change_info":true,
-            "can_delete_messages":true,
-            "can_invite_users":true,
-            "can_restrict_members":true,
-            "can_pin_messages":true,
-            "can_promote_members":true,
-            "is_anonymous":false
+            "is_anonymous": false,
+            "can_be_edited": false,
+            "can_manage_chat": true,
+            "can_change_info": true,
+            "can_delete_messages": true,
+            "can_manage_voice_chats": true,
+            "can_invite_users": true,
+            "can_restrict_members": true,
+            "can_pin_messages": true,
+            "can_promote_members": true
         }"#;
         let expected = ChatMember {
             user: User {
@@ -388,16 +428,18 @@ mod tests {
             },
             kind: ChatMemberKind::Administrator(Administrator {
                 custom_title: None,
+                is_anonymous: false,
                 can_be_edited: false,
+                can_manage_chat: true,
                 can_change_info: true,
                 can_post_messages: None,
                 can_edit_messages: None,
                 can_delete_messages: true,
+                can_manage_voice_chats: true,
                 can_invite_users: true,
                 can_restrict_members: true,
                 can_pin_messages: Some(true),
                 can_promote_members: true,
-                is_anonymous: false,
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(&json).unwrap();

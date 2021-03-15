@@ -15,11 +15,13 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
             /// Unique identifier of the target user
-            pub user_id: i32,
+            pub user_id: i64,
         }
         optional {
             /// Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever
             pub until_date: u64,
+            /// Pass True to delete all messages from the chat for the user that is being removed. If False, the user will be able to see messages in the group that were sent before the user was removed. Always True for supergroups and channels.
+            pub revoke_messages: bool,
         }
     }
 }

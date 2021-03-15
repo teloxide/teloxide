@@ -15,7 +15,7 @@ impl_payload! {
     pub GetGameHighScores (GetGameHighScoresSetters) => True {
         required {
             /// User identifier
-            pub user_id: u32,
+            pub user_id: i64,
             /// Target message
             #[serde(flatten)]
             pub target: TargetMessage [into],

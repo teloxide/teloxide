@@ -313,7 +313,7 @@ impl Requester for Bot {
 
     type GetUserProfilePhotos = JsonRequest<payloads::GetUserProfilePhotos>;
 
-    fn get_user_profile_photos(&self, user_id: i32) -> Self::GetUserProfilePhotos {
+    fn get_user_profile_photos(&self, user_id: i64) -> Self::GetUserProfilePhotos {
         Self::GetUserProfilePhotos::new(self.clone(), payloads::GetUserProfilePhotos::new(user_id))
     }
 
@@ -328,7 +328,7 @@ impl Requester for Bot {
 
     type KickChatMember = JsonRequest<payloads::KickChatMember>;
 
-    fn kick_chat_member<C>(&self, chat_id: C, user_id: i32) -> Self::KickChatMember
+    fn kick_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::KickChatMember
     where
         C: Into<ChatId>,
     {
@@ -340,7 +340,7 @@ impl Requester for Bot {
 
     type UnbanChatMember = JsonRequest<payloads::UnbanChatMember>;
 
-    fn unban_chat_member<C>(&self, chat_id: C, user_id: i32) -> Self::UnbanChatMember
+    fn unban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::UnbanChatMember
     where
         C: Into<ChatId>,
     {
@@ -355,7 +355,7 @@ impl Requester for Bot {
     fn restrict_chat_member<C>(
         &self,
         chat_id: C,
-        user_id: i32,
+        user_id: i64,
         permissions: ChatPermissions,
     ) -> Self::RestrictChatMember
     where
@@ -369,7 +369,7 @@ impl Requester for Bot {
 
     type PromoteChatMember = JsonRequest<payloads::PromoteChatMember>;
 
-    fn promote_chat_member<C>(&self, chat_id: C, user_id: i32) -> Self::PromoteChatMember
+    fn promote_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::PromoteChatMember
     where
         C: Into<ChatId>,
     {
@@ -384,7 +384,7 @@ impl Requester for Bot {
     fn set_chat_administrator_custom_title<Ch, Cu>(
         &self,
         chat_id: Ch,
-        user_id: i32,
+        user_id: i64,
         custom_title: Cu,
     ) -> Self::SetChatAdministratorCustomTitle
     where
@@ -420,6 +420,45 @@ impl Requester for Bot {
         C: Into<ChatId>,
     {
         Self::ExportChatInviteLink::new(self.clone(), payloads::ExportChatInviteLink::new(chat_id))
+    }
+
+    type CreateChatInviteLink = JsonRequest<payloads::CreateChatInviteLink>;
+
+    fn create_chat_invite_link<C>(&self, chat_id: C) -> Self::CreateChatInviteLink
+    where
+        C: Into<ChatId>,
+    {
+        Self::CreateChatInviteLink::new(self.clone(), payloads::CreateChatInviteLink::new(chat_id))
+    }
+
+    type EditChatInviteLink = JsonRequest<payloads::EditChatInviteLink>;
+
+    fn edit_chat_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatInviteLink
+    where
+        C: Into<ChatId>,
+        I: Into<String>,
+    {
+        Self::EditChatInviteLink::new(
+            self.clone(),
+            payloads::EditChatInviteLink::new(chat_id, invite_link),
+        )
+    }
+
+    type RevokeChatInviteLink = JsonRequest<payloads::RevokeChatInviteLink>;
+
+    fn revoke_chat_invite_link<C, I>(
+        &self,
+        chat_id: C,
+        invite_link: I,
+    ) -> Self::RevokeChatInviteLink
+    where
+        C: Into<ChatId>,
+        I: Into<String>,
+    {
+        Self::RevokeChatInviteLink::new(
+            self.clone(),
+            payloads::RevokeChatInviteLink::new(chat_id, invite_link),
+        )
     }
 
     type SetChatPhoto = MultipartRequest<payloads::SetChatPhoto>;
@@ -521,7 +560,7 @@ impl Requester for Bot {
 
     type GetChatMember = JsonRequest<payloads::GetChatMember>;
 
-    fn get_chat_member<C>(&self, chat_id: C, user_id: i32) -> Self::GetChatMember
+    fn get_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::GetChatMember
     where
         C: Into<ChatId>,
     {
@@ -749,7 +788,7 @@ impl Requester for Bot {
 
     type UploadStickerFile = MultipartRequest<payloads::UploadStickerFile>;
 
-    fn upload_sticker_file(&self, user_id: i32, png_sticker: InputFile) -> Self::UploadStickerFile where
+    fn upload_sticker_file(&self, user_id: i64, png_sticker: InputFile) -> Self::UploadStickerFile where
     {
         Self::UploadStickerFile::new(
             self.clone(),
@@ -761,7 +800,7 @@ impl Requester for Bot {
 
     fn create_new_sticker_set<N, T, E>(
         &self,
-        user_id: i32,
+        user_id: i64,
         name: N,
         title: T,
         sticker: InputSticker,
@@ -782,7 +821,7 @@ impl Requester for Bot {
 
     fn add_sticker_to_set<N, E>(
         &self,
-        user_id: i32,
+        user_id: i64,
         name: N,
         sticker: InputSticker,
         emojis: E,
@@ -824,7 +863,7 @@ impl Requester for Bot {
 
     type SetStickerSetThumb = MultipartRequest<payloads::SetStickerSetThumb>;
 
-    fn set_sticker_set_thumb<N>(&self, name: N, user_id: i32) -> Self::SetStickerSetThumb
+    fn set_sticker_set_thumb<N>(&self, name: N, user_id: i64) -> Self::SetStickerSetThumb
     where
         N: Into<String>,
     {
@@ -901,7 +940,7 @@ impl Requester for Bot {
 
     type SetPassportDataErrors = JsonRequest<payloads::SetPassportDataErrors>;
 
-    fn set_passport_data_errors<E>(&self, user_id: i32, errors: E) -> Self::SetPassportDataErrors
+    fn set_passport_data_errors<E>(&self, user_id: i64, errors: E) -> Self::SetPassportDataErrors
     where
         E: IntoIterator<Item = crate::types::PassportElementError>,
     {
@@ -927,7 +966,7 @@ impl Requester for Bot {
 
     fn set_game_score(
         &self,
-        user_id: u32,
+        user_id: i64,
         score: u64,
         chat_id: u32,
         message_id: i64,
@@ -942,7 +981,7 @@ impl Requester for Bot {
 
     fn set_game_score_inline<I>(
         &self,
-        user_id: u32,
+        user_id: i64,
         score: u64,
         inline_message_id: I,
     ) -> Self::SetGameScoreInline
@@ -957,7 +996,7 @@ impl Requester for Bot {
 
     type GetGameHighScores = JsonRequest<payloads::GetGameHighScores>;
 
-    fn get_game_high_scores<T>(&self, user_id: u32, target: T) -> Self::GetGameHighScores
+    fn get_game_high_scores<T>(&self, user_id: i64, target: T) -> Self::GetGameHighScores
     where
         T: Into<crate::types::TargetMessage>,
     {

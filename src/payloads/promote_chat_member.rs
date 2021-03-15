@@ -13,11 +13,13 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
             /// Unique identifier of the target user
-            pub user_id: i32,
+            pub user_id: i64,
         }
         optional {
             /// Pass True, if the administrator's presence in the chat is hidden
             pub is_anonymous: bool,
+            /// Pass True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
+            pub can_manage_chat: bool,
             /// Pass True, if the administrator can change chat title, photo and other settings
             pub can_change_info: bool,
             /// Pass True, if the administrator can create channel posts, channels only
@@ -26,6 +28,8 @@ impl_payload! {
             pub can_edit_messages: bool,
             /// Pass True, if the administrator can delete messages of other users
             pub can_delete_messages: bool,
+            /// Pass True, if the administrator can manage voice chats, supergroups only
+            pub can_manage_voice_chats: bool,
             /// Pass True, if the administrator can invite new users to the chat
             pub can_invite_users: bool,
             /// Pass True, if the administrator can restrict, ban or unban chat members

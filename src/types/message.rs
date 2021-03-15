@@ -5,9 +5,10 @@ use serde::{Deserialize, Serialize};
 use crate::types::{
     chat::{ChatKind, PublicChatKind},
     Animation, Audio, Chat, ChatPublic, Contact, Dice, Document, Game, InlineKeyboardMarkup,
-    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
-    PublicChatChannel, PublicChatSupergroup, Sticker, SuccessfulPayment, True, User, Venue, Video,
-    VideoNote, Voice,
+    Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
+    ProximityAlertTriggered, PublicChatChannel, PublicChatSupergroup, Sticker, SuccessfulPayment,
+    True, User, Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
+    VoiceChatStarted,
 };
 
 /// This object represents a message.
@@ -44,6 +45,7 @@ pub enum MessageKind {
     GroupChatCreated(MessageGroupChatCreated),
     SupergroupChatCreated(MessageSupergroupChatCreated),
     ChannelChatCreated(MessageChannelChatCreated),
+    MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged),
     Migrate(MessageMigrate),
     Pinned(MessagePinned),
     Invoice(MessageInvoice),
@@ -52,6 +54,9 @@ pub enum MessageKind {
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
+    VoiceChatStarted(MessageVoiceChatStarted),
+    VoiceChatEnded(MessageVoiceChatEnded),
+    VoiceChatParticipantsInvited(MessageVoiceChatParticipantsInvited),
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -141,6 +146,12 @@ pub struct MessageChannelChatCreated {
     /// `reply_to_message` if someone replies to a very first message in a
     /// channel.
     pub channel_chat_created: True,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageMessageAutoDeleteTimerChanged {
+    /// Service message: auto-delete timer settings changed in the chat.
+    message_auto_delete_timer_changed: MessageAutoDeleteTimerChanged,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -443,6 +454,24 @@ pub struct MessageProximityAlertTriggered {
     /// Service message. A user in the chat triggered another user's proximity
     /// alert while sharing Live Location.
     pub proximity_alert_triggered: ProximityAlertTriggered,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageVoiceChatStarted {
+    /// Service message: voice chat started.
+    pub voice_chat_started: VoiceChatStarted,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageVoiceChatEnded {
+    /// Service message: voice chat ended.
+    pub voice_chat_ended: VoiceChatEnded,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageVoiceChatParticipantsInvited {
+    /// Service message: new participants invited to a voice chat.
+    pub voice_chat_participants_invited: VoiceChatParticipantsInvited,
 }
 
 mod getters {
