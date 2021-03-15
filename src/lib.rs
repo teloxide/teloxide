@@ -55,7 +55,6 @@ pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
-pub use teloxide_core::{ApiError, DownloadError, RequestError};
 
 mod logging;
 
