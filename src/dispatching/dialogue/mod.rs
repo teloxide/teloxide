@@ -33,7 +33,7 @@
 //! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide};
+//! use teloxide::{dispatching::dialogue::Transition, prelude::*, RequestError};
 //!
 //! struct _1State;
 //! struct _2State;
