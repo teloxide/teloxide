@@ -3,7 +3,7 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, InputFile, Message, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, InputFile, Message, MessageEntity, ParseMode, ReplyMarkup};
 
 impl_payload! {
     @[multipart]
@@ -31,12 +31,18 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
+            /// List of special entities that appear in the photo caption, which can be specified instead of _parse\_mode_
+            pub caption_entities: Vec<MessageEntity> [collect],
+            /// Disables automatic server-side content type detection for files uploaded using multipart/form-data.
+            pub disable_content_type_detection: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
+            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
+            pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

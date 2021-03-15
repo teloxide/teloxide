@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a voice recording in an .ogg container encoded with
 /// OPUS.
@@ -33,6 +33,10 @@ pub struct InlineQueryResultVoice {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
     /// Recording duration in seconds.
     pub voice_duration: Option<i32>,
 
@@ -58,6 +62,7 @@ impl InlineQueryResultVoice {
             title: title.into(),
             caption: None,
             parse_mode: None,
+            caption_entities: None,
             voice_duration: None,
             reply_markup: None,
             input_message_content: None,
@@ -98,6 +103,14 @@ impl InlineQueryResultVoice {
 
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 

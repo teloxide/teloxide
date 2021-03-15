@@ -23,6 +23,8 @@ impl_payload! {
             ///
             /// [self-signed guide]: https://core.telegram.org/bots/self-signed
             pub certificate: InputFile,
+            /// The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
+            pub ip_address: String [into],
             /// Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
             pub max_connections: u8,
             /// A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See [`Update`] for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
@@ -31,6 +33,8 @@ impl_payload! {
             ///
             /// [`Update`]: crate::types::Update
             pub allowed_updates: Vec<AllowedUpdate> [collect],
+            /// Pass _True_ to drop all pending updates
+            pub drop_pending_updates: bool,
         }
     }
 }

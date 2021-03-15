@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use crate::types::{
     chat::{ChatKind, PublicChatKind},
     Animation, Audio, Chat, ChatPublic, Contact, Dice, Document, Game, InlineKeyboardMarkup,
-    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, PublicChatChannel,
-    PublicChatSupergroup, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
+    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
+    PublicChatChannel, PublicChatSupergroup, Sticker, SuccessfulPayment, True, User, Venue, Video,
+    VideoNote, Voice,
 };
 
 /// This object represents a message.
@@ -50,6 +51,7 @@ pub enum MessageKind {
     ConnectedWebsite(MessageConnectedWebsite),
     PassportData(MessagePassportData),
     Dice(MessageDice),
+    ProximityAlertTriggered(MessageProximityAlertTriggered),
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -57,6 +59,16 @@ pub enum MessageKind {
 pub struct MessageCommon {
     /// Sender, empty for messages sent to channels.
     pub from: Option<User>,
+
+    /// Sender of the message, sent on behalf of a chat. The channel itself for
+    /// channel messages. The supergroup itself for messages from anonymous
+    /// group administrators. The linked channel for messages automatically
+    /// forwarded to the discussion group
+    pub sender_chat: Option<Chat>,
+
+    /// Signature of the post author for messages in channels, or the custom
+    /// title of an anonymous group administrator.
+    pub author_signature: Option<String>,
 
     #[serde(flatten)]
     pub forward_kind: ForwardKind,
@@ -426,27 +438,28 @@ pub struct MessageDice {
     pub dice: Dice,
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageProximityAlertTriggered {
+    /// Service message. A user in the chat triggered another user's proximity
+    /// alert while sharing Live Location.
+    pub proximity_alert_triggered: ProximityAlertTriggered,
+}
+
 mod getters {
     use std::ops::Deref;
 
     use crate::types::{
         self,
-        message::{
-            ForwardKind::NonChannel,
-            MessageKind::{
-                ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto, GroupChatCreated,
-                Invoice, LeftChatMember, Migrate, NewChatMembers, NewChatPhoto, NewChatTitle,
-                PassportData, Pinned, SuccessfulPayment, SupergroupChatCreated,
-            },
-        },
+        message::{ForwardKind::NonChannel, MessageKind::*},
         Chat, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin, ForwardedFrom,
         MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
         MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
         MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageEntity, MessageGroupChatCreated,
-        MessageInvoice, MessageLeftChatMember, MessageMigrate, MessageNewChatMembers,
-        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, PhotoSize, True, User,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
+        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageMigrate,
+        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
+        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MessageSupergroupChatCreated, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -454,10 +467,25 @@ mod getters {
     /// [Message]: crate::types::Message
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
-        /// NOTE: this is getter for both `from` and `author_signature`
         pub fn from(&self) -> Option<&User> {
             match &self.kind {
                 Common(MessageCommon { from, .. }) => from.as_ref(),
+                _ => None,
+            }
+        }
+
+        pub fn author_signature(&self) -> Option<&str> {
+            match &self.kind {
+                Common(MessageCommon {
+                    author_signature, ..
+                }) => author_signature.as_deref(),
+                _ => None,
+            }
+        }
+
+        pub fn sender_chat(&self) -> Option<&Chat> {
+            match &self.kind {
+                Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
                 _ => None,
             }
         }
@@ -564,10 +592,6 @@ mod getters {
                 }) => Some(text),
                 _ => None,
             }
-        }
-
-        pub fn text_owned(&self) -> Option<String> {
-            self.text().map(ToOwned::to_owned)
         }
 
         pub fn entities(&self) -> Option<&[MessageEntity]> {
@@ -903,6 +927,22 @@ mod getters {
             }
         }
 
+        pub fn dice(&self) -> Option<&types::Dice> {
+            match &self.kind {
+                Dice(MessageDice { dice }) => Some(dice),
+                _ => None,
+            }
+        }
+
+        pub fn proximity_alert_triggered(&self) -> Option<&types::ProximityAlertTriggered> {
+            match &self.kind {
+                ProximityAlertTriggered(MessageProximityAlertTriggered {
+                    proximity_alert_triggered,
+                }) => Some(proximity_alert_triggered),
+                _ => None,
+            }
+        }
+
         pub fn reply_markup(&self) -> Option<&types::InlineKeyboardMarkup> {
             match &self.kind {
                 Common(MessageCommon { reply_markup, .. }) => reply_markup.as_ref(),
@@ -919,6 +959,7 @@ impl Message {
                 kind:
                     PublicChatKind::Channel(PublicChatChannel {
                         username: Some(username),
+                        ..
                     }),
                 ..
             })

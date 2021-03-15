@@ -3,7 +3,7 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, Message, ParseMode};
+use crate::types::{ChatId, InlineKeyboardMarkup, Message, MessageEntity, ParseMode};
 
 impl_payload! {
     /// Use this method to edit text and [games] messages. On success, the edited Message is returned.
@@ -26,6 +26,8 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
+            /// List of special entities that appear in message text, which can be specified instead of _parse\_mode_
+            pub entities: Vec<MessageEntity> [collect],
             /// Disables link previews for links in this message
             pub disable_web_page_preview: bool,
             /// A JSON-serialized object for an [inline keyboard].

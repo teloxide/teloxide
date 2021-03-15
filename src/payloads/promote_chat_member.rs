@@ -16,6 +16,8 @@ impl_payload! {
             pub user_id: i32,
         }
         optional {
+            /// Pass True, if the administrator's presence in the chat is hidden
+            pub is_anonymous: bool,
             /// Pass True, if the administrator can change chat title, photo and other settings
             pub can_change_info: bool,
             /// Pass True, if the administrator can create channel posts, channels only

@@ -66,6 +66,7 @@ mod tests {
             audio_file_id: String::from("audio_file_id"),
             caption: None,
             parse_mode: None,
+            caption_entities: None,
             reply_markup: None,
             input_message_content: None,
         });
@@ -88,7 +89,9 @@ mod tests {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
                 disable_web_page_preview: Some(true),
+                entities: None,
             })),
+            caption_entities: None,
         });
 
         let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;

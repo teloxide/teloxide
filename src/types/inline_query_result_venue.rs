@@ -35,6 +35,14 @@ pub struct InlineQueryResultVenue {
     /// `food/icecream`.)
     pub foursquare_type: Option<String>,
 
+    /// Google Places identifier of the venue.
+    pub google_place_id: Option<String>,
+
+    /// Google Places type of the venue. (See [supported types].)
+    ///
+    /// [supported types]: https://developers.google.com/places/web-service/supported_types
+    pub google_place_type: Option<String>,
+
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
@@ -68,6 +76,8 @@ impl InlineQueryResultVenue {
             address: address.into(),
             foursquare_id: None,
             foursquare_type: None,
+            google_place_id: None,
+            google_place_type: None,
             reply_markup: None,
             input_message_content: None,
             thumb_url: None,
@@ -123,6 +133,22 @@ impl InlineQueryResultVenue {
         S: Into<String>,
     {
         self.foursquare_type = Some(val.into());
+        self
+    }
+
+    pub fn google_place_id<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.google_place_id = Some(val.into());
+        self
+    }
+
+    pub fn google_place_type<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.google_place_type = Some(val.into());
         self
     }
 

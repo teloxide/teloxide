@@ -32,6 +32,9 @@ pub enum ChatMemberKind {
 pub struct Creator {
     /// Custom title for this user.
     pub custom_title: Option<String>,
+
+    /// True, if the user's presence in the chat is hidden
+    pub is_anonymous: bool,
 }
 
 /// Administrator of the group. This struct is part of the [`ChatMemberKind`]
@@ -40,6 +43,9 @@ pub struct Creator {
 pub struct Administrator {
     /// Custom title for this user.
     pub custom_title: Option<String>,
+
+    /// True, if the user's presence in the chat is hidden
+    pub is_anonymous: bool,
 
     /// `true`, if the bot is allowed to edit
     /// administrator privileges of that user.
@@ -368,7 +374,8 @@ mod tests {
             "can_invite_users":true,
             "can_restrict_members":true,
             "can_pin_messages":true,
-            "can_promote_members":true
+            "can_promote_members":true,
+            "is_anonymous":false
         }"#;
         let expected = ChatMember {
             user: User {
@@ -390,6 +397,7 @@ mod tests {
                 can_restrict_members: true,
                 can_pin_messages: Some(true),
                 can_promote_members: true,
+                is_anonymous: false,
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(&json).unwrap();

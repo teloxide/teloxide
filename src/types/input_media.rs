@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InputFile, ParseMode};
+use crate::types::{InputFile, MessageEntity, ParseMode};
 
 /// This object represents the content of a media message to be sent.
 ///
@@ -35,6 +35,10 @@ pub struct InputMediaPhoto {
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
+
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
 }
 
 impl InputMediaPhoto {
@@ -43,6 +47,7 @@ impl InputMediaPhoto {
             media,
             caption: None,
             parse_mode: None,
+            caption_entities: None,
         }
     }
 
@@ -92,6 +97,10 @@ pub struct InputMediaVideo {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
     /// Video width.
     pub width: Option<u16>,
 
@@ -112,6 +121,7 @@ impl InputMediaVideo {
             thumb: None,
             caption: None,
             parse_mode: None,
+            caption_entities: None,
             width: None,
             height: None,
             duration: None,
@@ -139,6 +149,14 @@ impl InputMediaVideo {
 
     pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 
@@ -191,6 +209,10 @@ pub struct InputMediaAnimation {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
     /// Animation width.
     pub width: Option<u16>,
 
@@ -211,6 +233,7 @@ impl InputMediaAnimation {
             width: None,
             height: None,
             duration: None,
+            caption_entities: None,
         }
     }
 
@@ -234,6 +257,14 @@ impl InputMediaAnimation {
 
     pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 
@@ -280,6 +311,10 @@ pub struct InputMediaAudio {
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
 
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
     /// Duration of the audio in seconds.
     pub duration: Option<u16>,
 
@@ -300,6 +335,7 @@ impl InputMediaAudio {
             performer: None,
             title: None,
             duration: None,
+            caption_entities: None,
         }
     }
 
@@ -323,6 +359,14 @@ impl InputMediaAudio {
 
     pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 
@@ -374,6 +418,15 @@ pub struct InputMediaDocument {
     /// [HTML]: https://core.telegram.org/bots/api#html-style
     /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
     pub parse_mode: Option<ParseMode>,
+
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
+    /// Disables automatic server-side content type detection for files uploaded
+    /// using multipart/form-data. Always true, if the document is sent as part
+    /// of an album.
+    pub disable_content_type_detection: Option<bool>,
 }
 
 impl InputMediaDocument {
@@ -383,6 +436,8 @@ impl InputMediaDocument {
             thumb: None,
             caption: None,
             parse_mode: None,
+            disable_content_type_detection: None,
+            caption_entities: None,
         }
     }
 
@@ -406,6 +461,14 @@ impl InputMediaDocument {
 
     pub const fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
         self
     }
 }
@@ -446,6 +509,7 @@ mod tests {
             media: InputFile::FileId(String::from("123456")),
             caption: None,
             parse_mode: None,
+            caption_entities: None,
         });
 
         let actual_json = serde_json::to_string(&photo).unwrap();
@@ -464,6 +528,7 @@ mod tests {
             height: None,
             duration: None,
             supports_streaming: None,
+            caption_entities: None,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
@@ -481,6 +546,7 @@ mod tests {
             width: None,
             height: None,
             duration: None,
+            caption_entities: None,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
@@ -498,6 +564,7 @@ mod tests {
             duration: None,
             performer: None,
             title: None,
+            caption_entities: None,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
@@ -512,6 +579,8 @@ mod tests {
             thumb: None,
             caption: None,
             parse_mode: None,
+            caption_entities: None,
+            disable_content_type_detection: None,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();

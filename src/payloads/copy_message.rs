@@ -3,36 +3,31 @@
 // edit `cg` instead.
 use serde::Serialize;
 
-use crate::types::{ChatId, InputFile, Message, MessageEntity, ParseMode, ReplyMarkup};
+use crate::types::{ChatId, Message, MessageEntity, ParseMode, ReplyMarkup};
 
 impl_payload! {
-    @[multipart]
-    /// Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as [`Audio`] or [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+    /// Use this method to copy messages of any kind. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the [`MessageId`] of the sent message on success.
     ///
-    /// [`Document`]: crate::types::Document
-    /// [`Audio`]: crate::types::Audio
-    /// [`Message`]: crate::types::Message
+    /// [`MessageId`]: crate::types::MessageId
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendVoice (SendVoiceSetters) => Message {
+    pub CopyMessage (CopyMessageSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
-            /// Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]
-            ///
-            /// [More info on Sending Files »]: crate::types::InputFile
-            pub voice: InputFile,
+            /// Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)
+            pub from_chat_id: ChatId [into],
+            /// Message identifier in the chat specified in _from\_chat\_id_
+            pub message_id: i32,
         }
         optional {
-            /// Voice message caption, 0-1024 characters after entities parsing
+            /// New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
             pub caption: String [into],
-            /// Mode for parsing entities in the voice message caption. See [formatting options] for more details.
+            /// Mode for parsing entities in the photo caption. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub parse_mode: ParseMode,
-            /// List of special entities that appear in the photo caption, which can be specified instead of _parse\_mode_
+            /// List of special entities that appear in the new caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
-            /// Duration of the voice message in seconds
-            pub duration: u32,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

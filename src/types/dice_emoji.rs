@@ -13,4 +13,12 @@ pub enum DiceEmoji {
     /// Values from 1-5.
     #[serde(rename = "🏀")]
     Basketball,
+
+    /// Values 1-5
+    #[serde(rename = "⚽")]
+    Football,
+
+    /// Values 1-64
+    #[serde(rename = "🎰")]
+    SlotMachine,
 }

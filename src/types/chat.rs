@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatPermissions, ChatPhoto, Message};
+use crate::types::{ChatLocation, ChatPermissions, ChatPhoto, Message};
 
 /// This object represents a chat.
 ///
@@ -22,6 +22,12 @@ pub struct Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub photo: Option<ChatPhoto>,
+
+    /// The most recent pinned message (by sending date). Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub pinned_message: Option<Box<Message>>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -58,16 +64,10 @@ pub struct ChatPublic {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub invite_link: Option<String>,
-
-    /// Pinned message, for groups, supergroups and channels. Returned only
-    /// in [`GetChat`].
-    ///
-    /// [`GetChat`]: crate::payloads::GetChat
-    pub pinned_message: Option<Box<Message>>,
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatPrivate {
     /// A dummy field. Used to ensure that the `type` field is equal to
     /// `private`.
@@ -84,10 +84,15 @@ pub struct ChatPrivate {
 
     /// A last name of the other party in a private chat.
     pub last_name: Option<String>,
+
+    /// Bio of the other party in a private chat. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub bio: Option<String>,
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum PublicChatKind {
@@ -97,14 +102,20 @@ pub enum PublicChatKind {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
+
+    /// Unique identifier for the linked chat, i.e. the discussion group
+    /// identifier for a channel and vice versa. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub linked_chat_id: Option<i64>,
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
     /// only from [`GetChat`].
@@ -114,7 +125,7 @@ pub struct PublicChatGroup {
 }
 
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
@@ -143,6 +154,18 @@ pub struct PublicChatSupergroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub slow_mode_delay: Option<i32>,
+
+    /// Unique identifier for the linked chat, i.e. the discussion group
+    /// identifier for a channel and vice versa. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub linked_chat_id: Option<i64>,
+
+    /// The location to which the supergroup is connected. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub location: Option<ChatLocation>,
 }
 
 struct PrivateChatKindVisitor;
@@ -223,12 +246,13 @@ mod tests {
                 title: None,
                 kind: PublicChatKind::Channel(PublicChatChannel {
                     username: Some("channelname".into()),
+                    linked_chat_id: None,
                 }),
                 description: None,
                 invite_link: None,
-                pinned_message: None,
             }),
             photo: None,
+            pinned_message: None,
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -244,8 +268,10 @@ mod tests {
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
                     last_name: None,
+                    bio: None,
                 }),
                 photo: None,
+                pinned_message: None,
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
