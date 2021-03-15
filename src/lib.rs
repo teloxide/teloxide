@@ -64,7 +64,8 @@ pub mod error_handlers;
 pub mod prelude;
 pub mod utils;
 
-pub use teloxide_core as core;
+#[doc(inline)]
+pub use teloxide_core::*;
 
 use teloxide_core::requests::ResponseResult;
 #[cfg(feature = "macros")]

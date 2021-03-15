@@ -12,14 +12,14 @@ pub use crate::{
     respond,
 };
 
-pub use teloxide_core::prelude::*;
-
 pub use teloxide_core::{
     adaptors::AutoSend,
     requests::{Request, ResponseResult},
-    types::{Message, Update},
-    RequestError,
+    types::Message,
 };
+
+#[doc(inline)]
+pub use teloxide_core::prelude::*;
 
 #[cfg(feature = "frunk")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>

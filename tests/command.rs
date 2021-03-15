@@ -56,8 +56,8 @@ fn attribute_prefix() {
 #[test]
 #[cfg(feature = "macros")]
 fn many_attributes() {
-    #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
+    #[command(rename = "lowercase")]
     enum DefaultCommands {
         #[command(prefix = "!", description = "desc")]
         Start,
@@ -71,8 +71,8 @@ fn many_attributes() {
 #[test]
 #[cfg(feature = "macros")]
 fn global_attributes() {
-    #[command(prefix = "!", rename = "lowercase", description = "Bot commands")]
     #[derive(BotCommand, Debug, PartialEq)]
+    #[command(prefix = "!", rename = "lowercase", description = "Bot commands")]
     enum DefaultCommands {
         #[command(prefix = "/")]
         Start,
@@ -87,8 +87,8 @@ fn global_attributes() {
 #[test]
 #[cfg(feature = "macros")]
 fn parse_command_with_bot_name() {
-    #[command(rename = "lowercase")]
     #[derive(BotCommand, Debug, PartialEq)]
+    #[command(rename = "lowercase")]
     enum DefaultCommands {
         #[command(prefix = "/")]
         Start,
@@ -104,9 +104,9 @@ fn parse_command_with_bot_name() {
 #[test]
 #[cfg(feature = "macros")]
 fn parse_with_split() {
+    #[derive(BotCommand, Debug, PartialEq)]
     #[command(rename = "lowercase")]
     #[command(parse_with = "split")]
-    #[derive(BotCommand, Debug, PartialEq)]
     enum DefaultCommands {
         Start(u8, String),
         Help,
