@@ -669,7 +669,7 @@ impl MediaAudio {
 #[non_exhaustive]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
-    contact: Contact,
+    pub contact: Contact,
 }
 
 impl MediaContact {
