@@ -102,11 +102,11 @@ async fn main() {
     teloxide::enable_logging!();
     log::info!("Starting dices_bot...");
 
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
 
     teloxide::repl(bot, |message| async move {
-        message.answer_dice().send().await?;
-        ResponseResult::<()>::Ok(())
+        message.answer_dice().await?;
+        respond(())
     })
     .await;
 }
@@ -143,7 +143,7 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
+async fn answer(cx: UpdateWithCx<AutoSend<Bot>, Message>, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
@@ -162,7 +162,7 @@ async fn main() {
     teloxide::enable_logging!();
     log::info!("Starting simple_commands_bot...");
 
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
 
     let bot_name: String = panic!("Your bot's name here");
     teloxide::commands_repl(bot, bot_name, answer).await;
@@ -213,7 +213,7 @@ When a user sends a message to our bot and such a dialogue does not exist yet, a
 pub struct StartState;
 
 #[teloxide(subtransition)]
-async fn start(_state: StartState, cx: TransitionIn, _ans: String) -> TransitionOut<Dialogue> {
+async fn start(_state: StartState, cx: TransitionIn<AutoSend<Bot>>, _ans: String) -> TransitionOut<Dialogue> {
     cx.answer_str("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
 }
@@ -234,7 +234,7 @@ pub struct ReceiveFullNameState;
 #[teloxide(subtransition)]
 async fn receive_full_name(
     state: ReceiveFullNameState,
-    cx: TransitionIn,
+    cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
     cx.answer_str("How old are you?").await?;
@@ -259,7 +259,7 @@ pub struct ReceiveAgeState {
 #[teloxide(subtransition)]
 async fn receive_age_state(
     state: ReceiveAgeState,
-    cx: TransitionIn,
+    cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
     match ans.parse::<u8>() {
@@ -293,7 +293,7 @@ pub struct ReceiveLocationState {
 #[teloxide(subtransition)]
 async fn receive_location(
     state: ReceiveLocationState,
-    cx: TransitionIn,
+    cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
     cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
@@ -317,7 +317,7 @@ async fn main() {
     teloxide::enable_logging!();
     log::info!("Starting dialogue_bot...");
 
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
 
     teloxide::dialogues_repl(bot, |message, dialogue| async move {
         handle_message(message, dialogue).await.expect("Something wrong with the bot!")
@@ -325,7 +325,7 @@ async fn main() {
     .await;
 }
 
-async fn handle_message(cx: UpdateWithCx<Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
+async fn handle_message(cx: UpdateWithCx<AudoSend<Bot>, Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
     match cx.update.text_owned() {
         None => {
             cx.answer_str("Send me a text message.").await?;

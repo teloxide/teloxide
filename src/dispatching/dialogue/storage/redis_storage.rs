@@ -91,14 +91,13 @@ where
         Box::pin(async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
-            Ok(self
-                .conn
+            self.conn
                 .lock()
                 .await
                 .getset::<_, Vec<u8>, Option<Vec<u8>>>(chat_id, dialogue)
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
-                .transpose()?)
+                .transpose()
         })
     }
 }

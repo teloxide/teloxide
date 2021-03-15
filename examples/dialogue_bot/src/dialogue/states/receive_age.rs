@@ -10,16 +10,16 @@ pub struct ReceiveAgeState {
 #[teloxide(subtransition)]
 async fn receive_age_state(
     state: ReceiveAgeState,
-    cx: TransitionIn,
+    cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
     match ans.parse::<u8>() {
         Ok(ans) => {
-            cx.answer_str("What's your location?").await?;
+            cx.answer("What's your location?").await?;
             next(ReceiveLocationState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Send me a number.").await?;
+            cx.answer("Send me a number.").await?;
             next(state)
         }
     }

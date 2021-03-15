@@ -9,10 +9,17 @@ pub use crate::{
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    requests::{respond, Request, ResponseResult},
-    types::{Message, Update},
-    Bot, RequestError,
+    respond,
 };
+
+pub use teloxide_core::{
+    adaptors::AutoSend,
+    requests::{Request, ResponseResult},
+    types::Message,
+};
+
+#[doc(inline)]
+pub use teloxide_core::prelude::*;
 
 #[cfg(feature = "frunk")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>

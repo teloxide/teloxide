@@ -105,14 +105,11 @@
 
 use futures::{stream, Stream, StreamExt};
 
-use crate::{
-    bot::Bot,
-    requests::Request,
-    types::{AllowedUpdate, Update},
-    RequestError,
-};
-
 use std::{convert::TryInto, time::Duration};
+use teloxide_core::{
+    requests::{HasPayload, Request, Requester},
+    types::{AllowedUpdate, SemiparsedVec, Update},
+};
 
 /// A generic update listener.
 pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
@@ -123,8 +120,12 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default(bot: Bot) -> impl UpdateListener<RequestError> {
-    polling(bot, Some(Duration::from_secs(10)), None, None)
+pub fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
+where
+    R: Requester,
+    <R as Requester>::GetUpdatesFaultTolerant: Send,
+{
+    polling(requester, Some(Duration::from_secs(10)), None, None)
 }
 
 /// Returns a long/short polling update listener with some additional options.
@@ -139,25 +140,31 @@ pub fn polling_default(bot: Bot) -> impl UpdateListener<RequestError> {
 /// See also: [`polling_default`](polling_default).
 ///
 /// [`GetUpdates`]: crate::requests::GetUpdates
-pub fn polling(
-    bot: Bot,
+pub fn polling<R>(
+    requester: R,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<RequestError> {
+) -> impl UpdateListener<R::Err>
+where
+    R: Requester,
+    <R as Requester>::GetUpdatesFaultTolerant: Send,
+{
     let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
 
     stream::unfold(
-        (allowed_updates, bot, 0),
+        (allowed_updates, requester, 0),
         move |(mut allowed_updates, bot, mut offset)| async move {
-            let mut req = bot.get_updates().offset(offset);
-            req.timeout = timeout;
-            req.limit = limit;
-            req.allowed_updates = allowed_updates.take();
+            let mut req = bot.get_updates_fault_tolerant();
+            let payload = &mut req.payload_mut().0;
+            payload.offset = Some(offset);
+            payload.timeout = timeout;
+            payload.limit = limit;
+            payload.allowed_updates = allowed_updates.take();
 
             let updates = match req.send().await {
                 Err(err) => vec![Err(err)],
-                Ok(updates) => {
+                Ok(SemiparsedVec(updates)) => {
                     // Set offset to the last update's id + 1
                     if let Some(upd) = updates.last() {
                         let id: i32 = match upd {
@@ -172,10 +179,19 @@ pub fn polling(
                         offset = id + 1;
                     }
 
-                    let updates =
-                        updates.into_iter().filter_map(Result::ok).collect::<Vec<Update>>();
+                    for update in &updates {
+                        if let Err((value, e)) = update {
+                            log::error!(
+                            "Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                            e,
+                            value
+                            );
+                        }
+                    }
 
-                    updates.into_iter().map(Ok).collect::<Vec<_>>()
+                    updates.into_iter().filter_map(Result::ok).map(Ok).collect::<Vec<_>>()
                 }
             };
 

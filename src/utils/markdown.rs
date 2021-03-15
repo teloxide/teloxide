@@ -1,8 +1,8 @@
 //! Utils for working with the [Markdown V2 message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#markdownv2-style
-use crate::types::User;
-use std::string::String;
+
+use teloxide_core::types::User;
 
 /// Applies the bold font style to the string.
 ///
@@ -131,6 +131,7 @@ pub fn user_mention_or_link(user: &User) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use teloxide_core::types::User;
 
     #[test]
     fn test_bold() {
