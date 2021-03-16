@@ -6,9 +6,9 @@ use serde::Serialize;
 use crate::types::{ChatId, InputMedia, Message};
 
 impl_payload! {
-    /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Messages`] that were sent is returned.
+    /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
     ///
-    /// [`Messages`]: crate::types::Messages
+    /// [`Message`]: crate::types::Message
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub SendMediaGroup (SendMediaGroupSetters) => Vec<Message> {
         required {
