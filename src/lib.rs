@@ -74,7 +74,7 @@
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
-#![cfg_attr(feature = "full", deny(rustdoc::broken_intra_doc_links))]
+#![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
 // The internal helper macros.
