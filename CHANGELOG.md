@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
+  - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
+  - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` consructors
+  - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
+  - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
+  - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
+  - Change parameters order in `ReplyKeyboardMarkup::append_to_row` and `InlineKeyboardMarkup::append_to_row`
 - Support telegram bot API version 5.1 (see it's [changelog](https://core.telegram.org/bots/api#march-9-2021)) ([#pr63][pr63]) (**BC**)
 - Support telegram bot API version 5.0 (see it's [changelog](https://core.telegram.org/bots/api#november-4-2020)) ([#pr62][pr62]) (**BC**)
 
@@ -24,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Make `MediaContact::contact` public ([#pr64][pr64])
 - `set_webhook` signature (make `allowed_updates` optional) ([#59][pr59])
 - Fix typos in payloads ([#57][pr57]):
   - `get_updates`: `offset` `i64` -> `i32`
@@ -33,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr56]: https://github.com/teloxide/teloxide-core/pull/56
 [pr57]: https://github.com/teloxide/teloxide-core/pull/57
 [pr59]: https://github.com/teloxide/teloxide-core/pull/59
+[pr64]: https://github.com/teloxide/teloxide-core/pull/64
 
 ### Changed
 

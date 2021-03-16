@@ -7,20 +7,20 @@ use crate::types::True;
 ///
 /// By default, custom keyboards are displayed until a new keyboard is sent by a
 /// bot. An exception is made for one-time keyboards that are hidden immediately
-/// after the user presses a button (see [`ReplyKeyboardMarkup`]).
+/// after the user presses a button (see [`KeyboardMarkup`]).
 ///
 /// [The official docs](https://core.telegram.org/bots/api#replykeyboardremove).
 ///
-/// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
+/// [`KeyboardMarkup`]: crate::types::KeyboardMarkup
 #[serde_with_macros::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub struct ReplyKeyboardRemove {
+pub struct KeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
     /// to summon this keyboard; if you want to hide the keyboard from sight
     /// but keep it accessible, use one_time_keyboard in
-    /// [`ReplyKeyboardMarkup`]).
+    /// [`KeyboardMarkup`]).
     ///
-    /// [`ReplyKeyboardMarkup`]: crate::types::ReplyKeyboardMarkup
+    /// [`KeyboardMarkup`]: crate::types::KeyboardMarkup
     pub remove_keyboard: True,
 
     /// Use this parameter if you want to remove the keyboard for specific
@@ -36,7 +36,7 @@ pub struct ReplyKeyboardRemove {
     pub selective: Option<bool>,
 }
 
-impl ReplyKeyboardRemove {
+impl KeyboardRemove {
     pub const fn new() -> Self {
         Self {
             remove_keyboard: True,
