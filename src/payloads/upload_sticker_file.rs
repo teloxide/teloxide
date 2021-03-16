@@ -12,7 +12,7 @@ impl_payload! {
     pub UploadStickerFile (UploadStickerFileSetters) => File {
         required {
             /// User identifier of sticker file owner
-            pub user_id: i32,
+            pub user_id: i64,
             /// PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile

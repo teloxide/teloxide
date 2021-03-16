@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct User {
     /// Unique identifier for this user or bot.
-    pub id: i32,
+    pub id: i64,
 
     /// `true`, if this user is a bot.
     pub is_bot: bool,

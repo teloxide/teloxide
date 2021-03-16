@@ -3,8 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
-    PreCheckoutQuery, ShippingQuery, User,
+    CallbackQuery, Chat, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
+    PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 use serde_json::Value;
 
@@ -95,6 +95,19 @@ pub enum UpdateKind {
     /// A user changed their answer in a non-anonymous poll. Bots receive new
     /// votes only in polls that were sent by the bot itself.
     PollAnswer(PollAnswer),
+
+    /// The bot's chat member status was updated in a chat. For private chats,
+    /// this update is received only when the bot is blocked or unblocked by the
+    /// user.
+    MyChatMember(ChatMemberUpdated),
+
+    /// A chat member's status was updated in a chat. The bot must be an
+    /// administrator in the chat and must explicitly specify
+    /// [`AllowedUpdate::ChatMember`] in the list of `allowed_updates` to
+    /// receive these updates.
+    ///
+    /// [`AllowedUpdate::ChatMember`]: crate::types::AllowedUpdate::ChatMember
+    ChatMember(ChatMemberUpdated),
 }
 
 impl Update {

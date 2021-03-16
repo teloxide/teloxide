@@ -15,7 +15,7 @@ impl_payload! {
     pub SetGameScore (SetGameScoreSetters) => Message {
         required {
             /// User identifier
-            pub user_id: u32,
+            pub user_id: i64,
             /// New score
             pub score: u64,
             /// Unique identifier for the target chat

@@ -1,7 +1,7 @@
 //! Core part of the [`teloxide`] library.
 //!
 //! This library provides tools for making requests to the [Telegram Bot API]
-//! (Currently, version `5.0` is supported) with ease. The library is fully
+//! (Currently, version `5.` is supported) with ease. The library is fully
 //! asynchronouns and built using [`tokio`].
 //!
 //!```toml
@@ -74,7 +74,7 @@
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
-#![cfg_attr(feature = "full", deny(broken_intra_doc_links))]
+#![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
 // The internal helper macros.

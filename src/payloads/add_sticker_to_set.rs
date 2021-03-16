@@ -12,7 +12,7 @@ impl_payload! {
     pub AddStickerToSet (AddStickerToSetSetters) => True {
         required {
             /// User identifier of sticker file owner
-            pub user_id: i32,
+            pub user_id: i64,
             /// Sticker set name
             pub name: String [into],
             /// **PNG** or **TGS** image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a _file\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]

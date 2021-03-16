@@ -10,4 +10,10 @@ pub enum AllowedUpdate {
     InlineQuery,
     ChosenInlineResult,
     CallbackQuery,
+    ShippingQuery,
+    PreCheckoutQuery,
+    Poll,
+    PollAnswer,
+    MyChatMember,
+    ChatMember,
 }

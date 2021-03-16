@@ -13,7 +13,7 @@ impl_payload! {
     pub GetUserProfilePhotos (GetUserProfilePhotosSetters) => UserProfilePhotos {
         required {
             /// Unique identifier of the target user
-            pub user_id: i32,
+            pub user_id: i64,
         }
         optional {
             /// Sequential number of the first photo to be returned. By default, all photos are returned.
