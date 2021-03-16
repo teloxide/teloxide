@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.2.0] - 2020-03-16
+
 ### Changed
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
