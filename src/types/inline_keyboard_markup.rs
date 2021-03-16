@@ -30,10 +30,10 @@ pub struct InlineKeyboardMarkup {
 /// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
-    pub fn new<I1, I2>(inline_keyboard: I1) -> Self
+    pub fn new<I>(inline_keyboard: I) -> Self
     where
-        I1: IntoIterator<Item = I2>,
-        I2: IntoIterator<Item = InlineKeyboardButton>,
+        I: IntoIterator,
+        I::Item: IntoIterator<Item = InlineKeyboardButton>,
     {
         Self {
             inline_keyboard: inline_keyboard
@@ -44,10 +44,10 @@ impl InlineKeyboardMarkup {
         }
     }
 
-    pub fn inline_keyboard<I1, I2>(mut self, val: I1) -> Self
+    pub fn inline_keyboard<I>(mut self, val: I) -> Self
     where
-        I1: IntoIterator<Item = I2>,
-        I2: IntoIterator<Item = InlineKeyboardButton>,
+        I: IntoIterator,
+        I::Item: IntoIterator<Item = InlineKeyboardButton>,
     {
         self.inline_keyboard = val
             .into_iter()
@@ -65,7 +65,7 @@ impl InlineKeyboardMarkup {
         self
     }
 
-    pub fn append_to_row(mut self, button: InlineKeyboardButton, index: usize) -> Self {
+    pub fn append_to_row(mut self, index: usize, button: InlineKeyboardButton) -> Self {
         match self.inline_keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),
             None => self.inline_keyboard.push(vec![button]),
@@ -100,7 +100,7 @@ mod tests {
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
-            .append_to_row(button2.clone(), 0);
+            .append_to_row(0, button2.clone());
 
         let expected = InlineKeyboardMarkup {
             inline_keyboard: vec![vec![button1, button2]],
@@ -116,7 +116,7 @@ mod tests {
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
-            .append_to_row(button2.clone(), 1);
+            .append_to_row(1, button2.clone());
 
         let expected = InlineKeyboardMarkup {
             inline_keyboard: vec![vec![button1], vec![button2]],

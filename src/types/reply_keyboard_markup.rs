@@ -11,7 +11,7 @@ use crate::types::KeyboardButton;
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
-pub struct ReplyKeyboardMarkup {
+pub struct KeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
     ///
@@ -44,11 +44,11 @@ pub struct ReplyKeyboardMarkup {
     pub selective: Option<bool>,
 }
 
-impl ReplyKeyboardMarkup {
-    pub fn new<K1, K2>(keyboard: K1) -> Self
+impl KeyboardMarkup {
+    pub fn new<K>(keyboard: K) -> Self
     where
-        K1: IntoIterator<Item = K2>,
-        K2: IntoIterator<Item = KeyboardButton>,
+        K: IntoIterator,
+        K::Item: IntoIterator<Item = KeyboardButton>,
     {
         Self {
             keyboard: keyboard
@@ -67,7 +67,7 @@ impl ReplyKeyboardMarkup {
         self
     }
 
-    pub fn append_to_row(mut self, button: KeyboardButton, index: usize) -> Self {
+    pub fn append_to_row(mut self, index: usize, button: KeyboardButton) -> Self {
         match self.keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),
             None => self.keyboard.push(vec![button]),
