@@ -319,7 +319,7 @@ pub struct MediaAudio {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
-    contact: Contact,
+    pub contact: Contact,
 }
 
 #[serde_with_macros::skip_serializing_none]
