@@ -9,8 +9,8 @@ use std::{fmt::Debug, sync::Arc};
 use teloxide_core::{
     requests::Requester,
     types::{
-        CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
-        PreCheckoutQuery, ShippingQuery, UpdateKind,
+        CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
+        PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
 };
 use tokio::sync::mpsc;
@@ -61,6 +61,8 @@ pub struct Dispatcher<R> {
     pre_checkout_queries_queue: Tx<R, PreCheckoutQuery>,
     polls_queue: Tx<R, Poll>,
     poll_answers_queue: Tx<R, PollAnswer>,
+    my_chat_members_queue: Tx<R, ChatMemberUpdated>,
+    chat_members_queue: Tx<R, ChatMemberUpdated>,
 }
 
 impl<R> Dispatcher<R>
@@ -83,6 +85,8 @@ where
             pre_checkout_queries_queue: None,
             polls_queue: None,
             poll_answers_queue: None,
+            my_chat_members_queue: None,
+            chat_members_queue: None,
         }
     }
 
@@ -198,6 +202,24 @@ where
         H: DispatcherHandler<R, PollAnswer> + 'static + Send,
     {
         self.poll_answers_queue = self.new_tx(h);
+        self
+    }
+
+    #[must_use]
+    pub fn my_chat_members_handler<H>(mut self, h: H) -> Self
+    where
+        H: DispatcherHandler<R, ChatMemberUpdated> + 'static + Send,
+    {
+        self.my_chat_members_queue = self.new_tx(h);
+        self
+    }
+
+    #[must_use]
+    pub fn chat_members_handler<H>(mut self, h: H) -> Self
+    where
+        H: DispatcherHandler<R, ChatMemberUpdated> + 'static + Send,
+    {
+        self.chat_members_queue = self.new_tx(h);
         self
     }
 
@@ -328,6 +350,22 @@ where
                                 &self.poll_answers_queue,
                                 answer,
                                 UpdateKind::PollAnswer
+                            );
+                        }
+                        UpdateKind::MyChatMember(chat_member_updated) => {
+                            send!(
+                                &self.requester,
+                                &self.my_chat_members_queue,
+                                chat_member_updated,
+                                UpdateKind::MyChatMember
+                            );
+                        }
+                        UpdateKind::ChatMember(chat_member_updated) => {
+                            send!(
+                                &self.requester,
+                                &self.chat_members_queue,
+                                chat_member_updated,
+                                UpdateKind::MyChatMember
                             );
                         }
                     }

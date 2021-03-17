@@ -36,7 +36,7 @@ macros = ["teloxide-macros"]
 nightly = [] # currently used for `README.md` tests and building docs for `docsrs` to add `This is supported on feature="..." only.`
 
 [dependencies]
-teloxide-core = { git = "https://github.com/teloxide/teloxide-core.git", features = ["full"] }
+teloxide-core = { version = "0.2", features = ["full"] }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
