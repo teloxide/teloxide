@@ -34,7 +34,11 @@ where
         Self: Stream<Item = UpdateWithCx<R, Message>>,
         R: Send + 'static,
     {
-        self.filter_map(|cx| async move { cx.update.text_owned().map(|text| (cx, text)) }).boxed()
+        self.filter_map(|cx| async move {
+            let text = cx.update.text().map(ToOwned::to_owned);
+            text.map(move |text| (cx, text))
+        })
+        .boxed()
     }
 
     fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<R, Message>, C)>
