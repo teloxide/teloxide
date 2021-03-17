@@ -46,7 +46,7 @@ async fn handle_message(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
     dialogue: Dialogue,
 ) -> TransitionOut<Dialogue> {
-    match cx.update.text_owned() {
+    match cx.update.text().map(ToOwned::to_owned) {
         None => {
             cx.answer("Send me a text message.").await?;
             next(dialogue)
