@@ -25,5 +25,5 @@ pub struct StickerSet {
     pub stickers: Vec<Sticker>,
 
     /// Sticker set thumbnail in the .WEBP or .TGS format.
-    thumb: Option<PhotoSize>,
+    pub thumb: Option<PhotoSize>,
 }

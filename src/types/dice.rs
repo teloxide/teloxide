@@ -7,7 +7,7 @@ use crate::types::DiceEmoji;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Dice {
     /// Emoji on which the dice throw animation is based.
-    emoji: DiceEmoji,
+    pub emoji: DiceEmoji,
 
     /// Value of the dice.
     ///
@@ -17,5 +17,5 @@ pub struct Dice {
     /// [`DiceEmoji::Dice`]: crate::types::DiceEmoji::Dice
     /// [`DiceEmoji::Darts`]:crate::types::DiceEmoji::Darts
     /// [`DiceEmoji::Basketball`]:crate::types::DiceEmoji::Basketball
-    value: i32,
+    pub value: i32,
 }

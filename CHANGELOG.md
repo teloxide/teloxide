@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed 
+
+- Types fields privacy (make fields of some types public) ([#68][pr68])
+  - `Dice::{emoji, value}`
+  - `MessageMessageAutoDeleteTimerChanged::message_auto_delete_timer_changed`
+  - `PassportElementError::{message, kind}`
+  - `StickerSet::thumb`
+
+[pr68]: https://github.com/teloxide/teloxide-core/pull/68
+
 ## [0.2.0] - 2020-03-16
 
 ### Changed

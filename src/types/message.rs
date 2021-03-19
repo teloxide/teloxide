@@ -151,7 +151,7 @@ pub struct MessageChannelChatCreated {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageMessageAutoDeleteTimerChanged {
     /// Service message: auto-delete timer settings changed in the chat.
-    message_auto_delete_timer_changed: MessageAutoDeleteTimerChanged,
+    pub message_auto_delete_timer_changed: MessageAutoDeleteTimerChanged,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

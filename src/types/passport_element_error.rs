@@ -7,10 +7,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub struct PassportElementError {
     /// Error message.
-    message: String,
+    pub message: String,
 
     #[serde(flatten)]
-    kind: PassportElementErrorKind,
+    pub kind: PassportElementErrorKind,
 }
 
 impl PassportElementError {
