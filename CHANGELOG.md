@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.2.1] - 2020-03-19
+
 ### Fixed 
 
 - Types fields privacy (make fields of some types public) ([#68][pr68])
