@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr62]: https://github.com/teloxide/teloxide-core/pull/62
 [pr63]: https://github.com/teloxide/teloxide-core/pull/63
+[pr65]: https://github.com/teloxide/teloxide-core/pull/65
 
 ### Added
 
@@ -44,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr57]: https://github.com/teloxide/teloxide-core/pull/57
 [pr59]: https://github.com/teloxide/teloxide-core/pull/59
 [pr64]: https://github.com/teloxide/teloxide-core/pull/64
+
+### Removed
+
+- `Message::text_owned` ([#pr62][pr62]) (**BC**)
 
 ### Changed
 
