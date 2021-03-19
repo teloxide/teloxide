@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed 
    `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use 
    `Into<TargetMessage>` to accept `String`s. ([issue 253], [pr 257])
+ - Remove `ResponseResult` from `prelude`.
 
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257

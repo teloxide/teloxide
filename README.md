@@ -130,7 +130,9 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 
 ([Full](./examples/simple_commands_bot/src/main.rs))
 ```rust,no_run
-use teloxide::{utils::command::BotCommand, prelude::*};
+use teloxide::{prelude::*, utils::command::BotCommand};
+
+use std::error::Error;
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -143,14 +145,17 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(cx: UpdateWithCx<AutoSend<Bot>, Message>, command: Command) -> ResponseResult<()> {
+async fn answer(
+    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    command: Command,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
-            cx.answer_str(format!("Your username is @{}.", username)).await?
+            cx.answer(format!("Your username is @{}.", username)).await?
         }
         Command::UsernameAndAge { username, age } => {
-            cx.answer_str(format!("Your username is @{} and age is {}.", username, age)).await?
+            cx.answer(format!("Your username is @{} and age is {}.", username, age)).await?
         }
     };
 

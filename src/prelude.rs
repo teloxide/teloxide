@@ -14,7 +14,7 @@ pub use crate::{
 
 pub use teloxide_core::{
     adaptors::AutoSend,
-    requests::{Request, ResponseResult},
+    requests::Request,
     types::{
         CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery,
