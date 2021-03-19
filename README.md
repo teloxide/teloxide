@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 0.4.9 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 5.1 (inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -79,8 +79,8 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.3"
-teloxide-macros = "0.3"
+teloxide = "0.4"
+teloxide-macros = "0.4"
 
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
@@ -218,8 +218,12 @@ When a user sends a message to our bot and such a dialogue does not exist yet, a
 pub struct StartState;
 
 #[teloxide(subtransition)]
-async fn start(_state: StartState, cx: TransitionIn<AutoSend<Bot>>, _ans: String) -> TransitionOut<Dialogue> {
-    cx.answer_str("Let's start! What's your full name?").await?;
+async fn start(
+    _state: StartState,
+    cx: TransitionIn<AutoSend<Bot>>,
+    _ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
 }
 ```
@@ -242,7 +246,7 @@ async fn receive_full_name(
     cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str("How old are you?").await?;
+    cx.answer("How old are you?").await?;
     next(ReceiveAgeState::up(state, ans))
 }
 ```
@@ -269,11 +273,11 @@ async fn receive_age_state(
 ) -> TransitionOut<Dialogue> {
     match ans.parse::<u8>() {
         Ok(ans) => {
-            cx.answer_str("What's your location?").await?;
+            cx.answer("What's your location?").await?;
             next(ReceiveLocationState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Send me a number.").await?;
+            cx.answer("Send me a number.").await?;
             next(state)
         }
     }
@@ -301,7 +305,7 @@ async fn receive_location(
     cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
+    cx.answer(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
         .await?;
     exit()
 }
@@ -330,10 +334,13 @@ async fn main() {
     .await;
 }
 
-async fn handle_message(cx: UpdateWithCx<AudoSend<Bot>, Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
-    match cx.update.text_owned() {
+async fn handle_message(
+    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    dialogue: Dialogue,
+) -> TransitionOut<Dialogue> {
+    match cx.update.text().map(ToOwned::to_owned) {
         None => {
-            cx.answer_str("Send me a text message.").await?;
+            cx.answer("Send me a text message.").await?;
             next(dialogue)
         }
         Some(ans) => dialogue.react(cx, ans).await,
