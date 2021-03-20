@@ -1,5 +1,5 @@
 use crate::dialogue::{states::ReceiveFullNameState, Dialogue};
-use teloxide::{macros::teloxide, prelude::*};
+use teloxide::prelude::*;
 
 pub struct StartState;
 

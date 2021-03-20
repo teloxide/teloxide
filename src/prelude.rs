@@ -12,6 +12,9 @@ pub use crate::{
     respond,
 };
 
+#[cfg(feature = "macros")]
+pub use crate::teloxide;
+
 pub use teloxide_core::{
     adaptors::AutoSend,
     types::{

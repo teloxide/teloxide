@@ -1,5 +1,5 @@
 use crate::dialogue::{states::receive_age::ReceiveAgeState, Dialogue};
-use teloxide::{macros::teloxide, prelude::*};
+use teloxide::prelude::*;
 
 #[derive(Generic)]
 pub struct ReceiveFullNameState;
