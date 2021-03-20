@@ -1,5 +1,7 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
+use std::error::Error;
+
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
@@ -11,7 +13,10 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(cx: UpdateWithCx<AutoSend<Bot>, Message>, command: Command) -> ResponseResult<()> {
+async fn answer(
+    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    command: Command,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await?,
         Command::Username(username) => {
