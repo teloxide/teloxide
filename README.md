@@ -385,12 +385,21 @@ The second one produces very strange compiler messages due to the `#[tokio::main
  - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
  - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
  - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
- - `macros` -- re-exports macros from [teloxide-macros].
+ - `macros` -- re-exports macros from [`teloxide-macros`].
+ - `native-tls` -- enables the [`native-tls`] TLS implementation (enabled by default).
+ - `rustls` -- enables the [`rustls`] TLS implementation.
+ - `auto-send` -- enables `AutoSend` bot adaptor.
+ - `cache-me` -- enables the `CacheMe` bot adaptor.
+ - `full` -- enables all the features except `nightly`.
+ - `nightly` -- enables nightly-only features (see the [teloxide-core's features]).
 
 [CBOR]: https://en.wikipedia.org/wiki/CBOR
 [Bincode]: https://github.com/servo/bincode
 [`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
-[teloxide-macros]: https://github.com/teloxide/teloxide-macros
+[`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
+[`native-tls`]: https://docs.rs/native-tls
+[`rustls`]: https://docs.rs/rustls
+[teloxide-core's features]: https://docs.rs/teloxide-core/0.2.1/teloxide_core/#cargo-features
 
 ## FAQ
 **Q: Where I can ask questions?**

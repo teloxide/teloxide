@@ -17,13 +17,13 @@ pub use crate::{
 #[cfg(feature = "macros")]
 pub use crate::teloxide;
 
-pub use teloxide_core::{
-    adaptors::AutoSend,
-    types::{
-        CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
-        PollAnswer, PreCheckoutQuery, ShippingQuery,
-    },
+pub use teloxide_core::types::{
+    CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
+    PreCheckoutQuery, ShippingQuery,
 };
+
+#[cfg(feature = "auto-send")]
+pub use crate::adaptors::AutoSend;
 
 #[doc(inline)]
 pub use teloxide_core::prelude::*;

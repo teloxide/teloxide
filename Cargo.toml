@@ -30,13 +30,30 @@ cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
 frunk- = ["frunk"]
-
 macros = ["teloxide-macros"]
 
-nightly = [] # currently used for `README.md` tests and building docs for `docsrs` to add `This is supported on feature="..." only.`
+native-tls = ["teloxide-core/native-tls"]
+rustls = ["teloxide-core/rustls"]
+auto-send = ["teloxide-core/auto_send"]
+throttle = ["teloxide-core/throttle"]
+cache-me = ["teloxide-core/cache_me"]
+
+# currently used for `README.md` tests, building docs for `docsrs` to add `This is supported on feature="..." only.`,
+# and for teloxide-core.
+nightly = ["teloxide-core/nightly"]
+
+full = [
+    "sqlite-storage",
+    "redis-storage",
+    "cbor-serializer",
+    "bincode-serializer",
+    "frunk",
+    "macros",
+    "teloxide-core/full"
+]
 
 [dependencies]
-teloxide-core = { version = "0.2", features = ["full"] }
+teloxide-core = { version = "0.2", no-default-features = true }
 teloxide-macros = { version = "0.4", optional = true }
 
 serde_json = "1.0"
