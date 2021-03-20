@@ -1,6 +1,5 @@
 use crate::dialogue::Dialogue;
-use teloxide::prelude::*;
-use teloxide_macros::teloxide;
+use teloxide::{macros::teloxide, prelude::*};
 
 #[derive(Generic)]
 pub struct ReceiveLocationState {
