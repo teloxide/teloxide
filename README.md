@@ -385,10 +385,12 @@ The second one produces very strange compiler messages due to the `#[tokio::main
  - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
  - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
  - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
+ - `macros` -- re-exports macros from [teloxide-macros].
 
 [CBOR]: https://en.wikipedia.org/wiki/CBOR
 [Bincode]: https://github.com/servo/bincode
 [`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
+[teloxide-macros]: https://github.com/teloxide/teloxide-macros
 
 ## FAQ
 **Q: Where I can ask questions?**
