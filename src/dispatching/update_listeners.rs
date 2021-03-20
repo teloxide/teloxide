@@ -182,11 +182,11 @@ where
                     for update in &updates {
                         if let Err((value, e)) = update {
                             log::error!(
-                            "Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                                "Cannot parse an update.\nError: {:?}\nValue: {}\n\
                             This is a bug in teloxide-core, please open an issue here: \
                             https://github.com/teloxide/teloxide-core/issues.",
-                            e,
-                            value
+                                e,
+                                value
                             );
                         }
                     }

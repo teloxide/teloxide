@@ -22,7 +22,7 @@ pub use teloxide_core::types::{
     PreCheckoutQuery, ShippingQuery,
 };
 
-#[cfg(feature = "auto-send")]
+#[cfg(feature = "teloxide-core/auto_send")]
 pub use crate::adaptors::AutoSend;
 
 #[doc(inline)]
