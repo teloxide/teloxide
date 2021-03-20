@@ -53,7 +53,7 @@ full = [
 ]
 
 [dependencies]
-teloxide-core = { version = "0.2", no-default-features = true }
+teloxide-core = { version = "0.2.1", no-default-features = true }
 teloxide-macros = { version = "0.4", optional = true }
 
 serde_json = "1.0"
