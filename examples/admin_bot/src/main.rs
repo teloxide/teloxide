@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr};
+use std::{convert::TryInto, error::Error, str::FromStr};
 
 use teloxide::{prelude::*, utils::command::BotCommand};
 

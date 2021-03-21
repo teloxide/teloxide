@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 # You can also choose "cbor-serializer" or built-in JSON serializer
-teloxide = { path = "../../", features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros"] }
+teloxide = { path = "../../", features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros", "auto-send"] }
 
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
