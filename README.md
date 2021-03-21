@@ -1,3 +1,14 @@
+<details>
+  <summary>FYI: Updating to v0.4.0</summary>
+  
+  - `answer_str` -> `answer`
+  - Don't write `.send()` after each request, now it is done automatically.
+  - Use `.auto_send()` to construct your bot: `let bot = Bot::from_env().auto_send();`.
+  - `UpdateWithCx<Message>` -> `UpdateWithCx<AutoSend<Bot>, Message>`
+  - `ResponseResult<()>` -> `Result<(), Box<dyn Error + Send + Sync>>` (or import `ResponseResult` beforehand: `use teloxide::requests::ResponseResult;`)
+
+</details>
+
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
@@ -178,7 +189,7 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
+A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
