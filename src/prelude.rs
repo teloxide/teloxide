@@ -12,8 +12,7 @@ pub use crate::{
     respond,
 };
 
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
 pub use crate::teloxide;
 
@@ -25,12 +24,11 @@ pub use teloxide_core::types::{
 #[cfg(feature = "auto-send")]
 pub use crate::adaptors::AutoSend;
 
-#[doc(inline)]
+#[doc(no_inline)]
 pub use teloxide_core::prelude::*;
 
 #[cfg(feature = "frunk")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
 pub use crate::utils::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
