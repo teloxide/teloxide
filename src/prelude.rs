@@ -24,7 +24,7 @@ pub use teloxide_core::types::{
 #[cfg(feature = "auto-send")]
 pub use crate::adaptors::AutoSend;
 
-#[doc(inline)]
+#[doc(no_inline)]
 pub use teloxide_core::prelude::*;
 
 #[cfg(feature = "frunk")]
