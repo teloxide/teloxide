@@ -9,7 +9,7 @@ use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
 async fn test_redis_json() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7777",
-        teloxide::dispatching::dialogue::serializer::JSON,
+        teloxide::dispatching::dialogue::serializer::Json,
     )
     .await
     .unwrap();
@@ -31,7 +31,7 @@ async fn test_redis_bincode() {
 async fn test_redis_cbor() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7779",
-        teloxide::dispatching::dialogue::serializer::CBOR,
+        teloxide::dispatching::dialogue::serializer::Cbor,
     )
     .await
     .unwrap();

@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.3.4"
+version = "0.4.0"
 edition = "2018"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -30,13 +30,36 @@ cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
 frunk- = ["frunk"]
-
 macros = ["teloxide-macros"]
 
-nightly = [] # currently used for `README.md` tests and building docs for `docsrs` to add `This is supported on feature="..." only.`
+native-tls = ["teloxide-core/native-tls"]
+rustls = ["teloxide-core/rustls"]
+auto-send = ["teloxide-core/auto_send"]
+throttle = ["teloxide-core/throttle"]
+cache-me = ["teloxide-core/cache_me"]
+
+# currently used for `README.md` tests, building docs for `docsrs` to add `This is supported on feature="..." only.`,
+# and for teloxide-core.
+nightly = ["teloxide-core/nightly"]
+
+full = [
+    "sqlite-storage",
+    "redis-storage",
+    "cbor-serializer",
+    "bincode-serializer",
+    "frunk",
+    "macros",
+    "teloxide-core/full",
+    "native-tls",
+    "rustls",
+    "auto-send",
+    "throttle",
+    "cache-me"
+]
 
 [dependencies]
-teloxide-core = { version = "0.2", features = ["full"] }
+teloxide-core = { version = "0.2.1", default-features = false }
+teloxide-macros = { version = "0.4", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -67,8 +90,6 @@ redis = { version = "0.16", optional = true }
 serde_cbor = { version = "0.11", optional = true }
 bincode = { version = "1.3", optional = true }
 frunk = { version = "0.3", optional = true }
-
-teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master", optional = true }
 
 [dev-dependencies]
 smart-default = "0.6.0"
