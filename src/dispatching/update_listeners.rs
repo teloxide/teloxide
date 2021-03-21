@@ -97,7 +97,7 @@
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
 //! [`polling`]: polling
-//! [`Box::get_updates`]: crate::Bot::get_updates
+//! [`Box::get_updates`]: crate::requests::Requester::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
 //! [long]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 //! [short]: https://en.wikipedia.org/wiki/Polling_(computer_science)
@@ -139,7 +139,7 @@ where
 ///
 /// See also: [`polling_default`](polling_default).
 ///
-/// [`GetUpdates`]: crate::requests::GetUpdates
+/// [`GetUpdates`]: crate::payloads::GetUpdates
 pub fn polling<R>(
     requester: R,
     timeout: Option<Duration>,

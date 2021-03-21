@@ -158,13 +158,11 @@ pub use transition::{
 };
 
 #[cfg(feature = "macros")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use storage::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
