@@ -11,9 +11,9 @@ pub trait Serializer<D> {
 }
 
 /// The JSON serializer for memory storages.
-pub struct JSON;
+pub struct Json;
 
-impl<D> Serializer<D> for JSON
+impl<D> Serializer<D> for Json
 where
     D: Serialize + DeserializeOwned,
 {
@@ -34,12 +34,12 @@ where
 #[cfg(feature = "cbor-serializer")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
 #[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
-pub struct CBOR;
+pub struct Cbor;
 
 #[cfg(feature = "cbor-serializer")]
 // FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
 #[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "cbor-serializer")))]
-impl<D> Serializer<D> for CBOR
+impl<D> Serializer<D> for Cbor
 where
     D: Serialize + DeserializeOwned,
 {

@@ -1,5 +1,5 @@
 use teloxide::prelude::*;
-use teloxide_macros::teloxide;
+use teloxide::macros::teloxide;
 
 use super::states::*;
 

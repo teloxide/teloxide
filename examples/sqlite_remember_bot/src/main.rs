@@ -7,13 +7,13 @@ mod transitions;
 use states::*;
 
 use teloxide::{
-    dispatching::dialogue::{serializer::JSON, SqliteStorage, Storage},
+    dispatching::dialogue::{serializer::Json, SqliteStorage, Storage},
     prelude::*,
     RequestError,
 };
 use thiserror::Error;
 
-type StorageError = <SqliteStorage<JSON> as Storage<Dialogue>>::Error;
+type StorageError = <SqliteStorage<Json> as Storage<Dialogue>>::Error;
 
 #[derive(Debug, Error)]
 enum Error {
@@ -48,7 +48,7 @@ async fn main() {
                 let dialogue = dialogue.expect("std::convert::Infallible");
                 handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
             },
-            SqliteStorage::open("db.sqlite", JSON).await.unwrap(),
+            SqliteStorage::open("db.sqlite", Json).await.unwrap(),
         ))
         .dispatch()
         .await;

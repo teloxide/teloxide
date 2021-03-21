@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 0.4.9 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 5.1 (inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -79,13 +79,10 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.3"
-teloxide-macros = "0.3"
-
+teloxide = "0.4"
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
-
-tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
+tokio = { version =  "1.3", features = ["rt-threaded", "macros"] }
 ```
 
 ## API overview
@@ -218,8 +215,12 @@ When a user sends a message to our bot and such a dialogue does not exist yet, a
 pub struct StartState;
 
 #[teloxide(subtransition)]
-async fn start(_state: StartState, cx: TransitionIn<AutoSend<Bot>>, _ans: String) -> TransitionOut<Dialogue> {
-    cx.answer_str("Let's start! What's your full name?").await?;
+async fn start(
+    _state: StartState,
+    cx: TransitionIn<AutoSend<Bot>>,
+    _ans: String,
+) -> TransitionOut<Dialogue> {
+    cx.answer("Let's start! What's your full name?").await?;
     next(ReceiveFullNameState)
 }
 ```
@@ -242,7 +243,7 @@ async fn receive_full_name(
     cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str("How old are you?").await?;
+    cx.answer("How old are you?").await?;
     next(ReceiveAgeState::up(state, ans))
 }
 ```
@@ -269,11 +270,11 @@ async fn receive_age_state(
 ) -> TransitionOut<Dialogue> {
     match ans.parse::<u8>() {
         Ok(ans) => {
-            cx.answer_str("What's your location?").await?;
+            cx.answer("What's your location?").await?;
             next(ReceiveLocationState::up(state, ans))
         }
         _ => {
-            cx.answer_str("Send me a number.").await?;
+            cx.answer("Send me a number.").await?;
             next(state)
         }
     }
@@ -301,7 +302,7 @@ async fn receive_location(
     cx: TransitionIn<AutoSend<Bot>>,
     ans: String,
 ) -> TransitionOut<Dialogue> {
-    cx.answer_str(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
+    cx.answer(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
         .await?;
     exit()
 }
@@ -330,10 +331,13 @@ async fn main() {
     .await;
 }
 
-async fn handle_message(cx: UpdateWithCx<AudoSend<Bot>, Message>, dialogue: Dialogue) -> TransitionOut<Dialogue> {
-    match cx.update.text_owned() {
+async fn handle_message(
+    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    dialogue: Dialogue,
+) -> TransitionOut<Dialogue> {
+    match cx.update.text().map(ToOwned::to_owned) {
         None => {
-            cx.answer_str("Send me a text message.").await?;
+            cx.answer("Send me a text message.").await?;
             next(dialogue)
         }
         Some(ans) => dialogue.react(cx, ans).await,
@@ -381,10 +385,21 @@ The second one produces very strange compiler messages due to the `#[tokio::main
  - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
  - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
  - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
+ - `macros` -- re-exports macros from [`teloxide-macros`].
+ - `native-tls` -- enables the [`native-tls`] TLS implementation (enabled by default).
+ - `rustls` -- enables the [`rustls`] TLS implementation.
+ - `auto-send` -- enables `AutoSend` bot adaptor.
+ - `cache-me` -- enables the `CacheMe` bot adaptor.
+ - `full` -- enables all the features except `nightly`.
+ - `nightly` -- enables nightly-only features (see the [teloxide-core's features]).
 
 [CBOR]: https://en.wikipedia.org/wiki/CBOR
 [Bincode]: https://github.com/servo/bincode
 [`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
+[`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
+[`native-tls`]: https://docs.rs/native-tls
+[`rustls`]: https://docs.rs/rustls
+[teloxide-core's features]: https://docs.rs/teloxide-core/0.2.1/teloxide_core/#cargo-features
 
 ## FAQ
 **Q: Where I can ask questions?**
