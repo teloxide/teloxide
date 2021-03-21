@@ -13,11 +13,11 @@
 //! teloxide::enable_logging!();
 //! log::info!("Starting dices_bot...");
 //!
-//! let bot = Bot::from_env();
+//! let bot = Bot::from_env().auto_send();
 //!
 //! teloxide::repl(bot, |message| async move {
-//!     message.answer_dice().send().await?;
-//!     ResponseResult::<()>::Ok(())
+//!     message.answer_dice().await?;
+//!     respond(())
 //! })
 //! .await;
 //! # }
@@ -45,36 +45,40 @@
 //
 // To properly build docs of this crate run
 // ```console
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-// $ RUSTDOCFLAGS="--cfg teloxide_docsrs" cargo +nightly doc --open --all-features
+// $ RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --open --all-features
 // ```
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#![cfg_attr(all(teloxide_docsrs, feature = "nightly"), feature(doc_cfg))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
-pub use bot::{Bot, BotBuilder};
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
-pub use errors::{ApiErrorKind, DownloadError, KnownApiErrorKind, RequestError};
 
-mod errors;
-mod net;
+mod logging;
 
-mod bot;
 pub mod dispatching;
 pub mod error_handlers;
-mod logging;
 pub mod prelude;
-pub mod requests;
-pub mod types;
 pub mod utils;
 
+#[doc(inline)]
+pub use teloxide_core::*;
+
 #[cfg(feature = "macros")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros as macros;
+
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg(feature = "macros")]
 pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
 #[doc(include = "../README.md")]
 enum ReadmeDocTests {}
+
+use teloxide_core::requests::ResponseResult;
+
+/// A shortcut for `ResponseResult::Ok(val)`.
+pub fn respond<T>(val: T) -> ResponseResult<T> {
+    ResponseResult::Ok(val)
+}

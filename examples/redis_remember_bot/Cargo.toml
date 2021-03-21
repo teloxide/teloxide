@@ -5,13 +5,12 @@ authors = ["Maximilian Siling <mouse-art@ya.ru>"]
 edition = "2018"
 
 [dependencies]
+# You can also choose "cbor-serializer" or built-in JSON serializer
+teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer", "macros", "auto-send"] }
+
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
-tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
-
-# You can also choose "cbor-serializer" or built-in JSON serializer
-teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer"] }
-teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
+tokio = { version =  "1.3.0", features = ["rt-multi-thread", "macros"] }
 
 serde = "1.0.104"
 futures = "0.3.5"

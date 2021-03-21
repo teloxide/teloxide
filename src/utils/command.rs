@@ -46,12 +46,13 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
-use serde::export::Formatter;
-use std::{error::Error, fmt::Display};
+use std::{
+    error::Error,
+    fmt::{Display, Formatter},
+};
 
 #[cfg(feature = "macros")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.

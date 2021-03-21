@@ -8,24 +8,32 @@ use std::{future::Future, sync::Arc};
 /// overview](crate::dispatching::dialogue).
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
-pub trait DialogueDispatcherHandler<Upd, D, E> {
+pub trait DialogueDispatcherHandler<R, Upd, D, E> {
     #[must_use]
     fn handle(
         self: Arc<Self>,
-        cx: DialogueWithCx<Upd, D, E>,
+        cx: DialogueWithCx<R, Upd, D, E>,
     ) -> BoxFuture<'static, DialogueStage<D>>
     where
-        DialogueWithCx<Upd, D, E>: Send + 'static;
+        DialogueWithCx<R, Upd, D, E>: Send + 'static,
+        R: Send,
+        Upd: Send,
+        D: Send,
+        E: Send;
 }
 
-impl<Upd, D, E, F, Fut> DialogueDispatcherHandler<Upd, D, E> for F
+impl<R, Upd, D, E, F, Fut> DialogueDispatcherHandler<R, Upd, D, E> for F
 where
-    F: Fn(DialogueWithCx<Upd, D, E>) -> Fut + Send + Sync + 'static,
+    F: Fn(DialogueWithCx<R, Upd, D, E>) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
 {
-    fn handle(self: Arc<Self>, cx: DialogueWithCx<Upd, D, E>) -> BoxFuture<'static, Fut::Output>
+    fn handle(self: Arc<Self>, cx: DialogueWithCx<R, Upd, D, E>) -> BoxFuture<'static, Fut::Output>
     where
-        DialogueWithCx<Upd, D, E>: Send + 'static,
+        DialogueWithCx<R, Upd, D, E>: Send + 'static,
+        R: Send,
+        Upd: Send,
+        D: Send,
+        E: Send,
     {
         Box::pin(async move { self(cx).await })
     }

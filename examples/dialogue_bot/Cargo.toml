@@ -7,19 +7,17 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+teloxide = { path = "../../", features = ["frunk", "macros", "auto-send"] }
+
+futures = "0.3.5"
+tokio = { version =  "1.3.0", features = ["rt-multi-thread", "macros"] }
+
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
+derive_more = "0.99.9"
 
 frunk = "0.3.1"
 frunk_core = "0.3.1"
-
-futures = "0.3.5"
-tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
-
-teloxide = { path = "../../", features = ["frunk"] }
-teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", branch = "master" }
-
-derive_more = "0.99.9"
 
 [profile.release]
 lto = true

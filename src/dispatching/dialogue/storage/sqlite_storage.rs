@@ -86,12 +86,10 @@ where
         dialogue: D,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
-            let prev_dialogue = match get_dialogue(&self.pool, chat_id).await? {
-                Some(d) => {
-                    Some(self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError)?)
-                }
-                _ => None,
-            };
+            let prev_dialogue = get_dialogue(&self.pool, chat_id)
+                .await?
+                .map(|d| self.serializer.deserialize(&d).map_err(SqliteStorageError::SerdeError))
+                .transpose()?;
             let upd_dialogue =
                 self.serializer.serialize(&dialogue).map_err(SqliteStorageError::SerdeError)?;
             self.pool
@@ -114,7 +112,7 @@ where
 }
 
 #[derive(sqlx::FromRow)]
-struct DialogueDBRow {
+struct DialogueDbRow {
     dialogue: Vec<u8>,
 }
 
@@ -122,16 +120,11 @@ async fn get_dialogue(
     pool: &SqlitePool,
     chat_id: i64,
 ) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
-    Ok(
-        match sqlx::query_as::<_, DialogueDBRow>(
-            "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
-        )
-        .bind(chat_id)
-        .fetch_optional(pool)
-        .await?
-        {
-            Some(r) => Some(Box::new(r.dialogue)),
-            _ => None,
-        },
+    Ok(sqlx::query_as::<_, DialogueDbRow>(
+        "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
     )
+    .bind(chat_id)
+    .fetch_optional(pool)
+    .await?
+    .map(|r| Box::new(r.dialogue)))
 }

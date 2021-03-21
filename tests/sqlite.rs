@@ -5,16 +5,16 @@ use std::{
 };
 use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, Storage};
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_json() {
     let storage =
-        SqliteStorage::open("./test_db1.sqlite", teloxide::dispatching::dialogue::serializer::JSON)
+        SqliteStorage::open("./test_db1.sqlite", teloxide::dispatching::dialogue::serializer::Json)
             .await
             .unwrap();
     test_sqlite(storage).await;
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_bincode() {
     let storage = SqliteStorage::open(
         "./test_db2.sqlite",
@@ -25,10 +25,10 @@ async fn test_sqlite_bincode() {
     test_sqlite(storage).await;
 }
 
-#[tokio::test(threaded_scheduler)]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_cbor() {
     let storage =
-        SqliteStorage::open("./test_db3.sqlite", teloxide::dispatching::dialogue::serializer::CBOR)
+        SqliteStorage::open("./test_db3.sqlite", teloxide::dispatching::dialogue::serializer::Cbor)
             .await
             .unwrap();
     test_sqlite(storage).await;

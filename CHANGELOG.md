@@ -6,12 +6,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.0] - 2021-03-19
+
 ### Added
+ - Integrate [teloxide-core].
  - Allow arbitrary error types to be returned from (sub)transitions ([issue 242](https://github.com/teloxide/teloxide/issues/242)).
  - The `respond` function, a shortcut for `ResponseResult::Ok(())`.
  - The `sqlite-storage` feature -- enables SQLite support.
+ - `Dispatcher::{my_chat_members_handler, chat_members_handler}`
+
+[teloxide-core]: https://github.com/teloxide/teloxide-core
+
+### Deprecated
+
+ - `UpdateWithCx::answer_str`
+
+### Fixed
+
+ - Hide `SubtransitionOutputType` from the docs.
 
 ### Changed
+ - Export `teloxide_macros::teloxide` in `prelude`.
+ - `dispatching::dialogue::serializer::{JSON -> Json, CBOR -> Cbor}`
  - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
  - 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`, 
    `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline 
@@ -22,9 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed 
    `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use 
    `Into<TargetMessage>` to accept `String`s. ([issue 253], [pr 257])
+ - Remove `ResponseResult` from `prelude`.
 
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
+
+## [0.3.4] - 2020-01-13
+
+### Fixed
+
+ - Failing compilation with `serde::export` ([issue 328](https://github.com/teloxide/teloxide/issues/328)).
 
 ## [0.3.3] - 2020-10-30
 

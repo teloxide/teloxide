@@ -1,4 +1,4 @@
-use teloxide_macros::Transition;
+use teloxide::dispatching::dialogue::Transition;
 
 use serde::{Deserialize, Serialize};
 
