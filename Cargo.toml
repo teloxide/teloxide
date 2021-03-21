@@ -49,11 +49,12 @@ full = [
     "bincode-serializer",
     "frunk",
     "macros",
-    "teloxide-core/native-tls",
-    "teloxide-core/rustls",
-    "teloxide-core/auto_send",
-    "teloxide-core/throttle",
-    "teloxide-core/cache_me"
+    "teloxide-core/full",
+    "native-tls",
+    "rustls",
+    "auto-send",
+    "throttle",
+    "cache-me"
 ]
 
 [dependencies]
