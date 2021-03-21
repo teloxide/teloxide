@@ -1,8 +1,8 @@
 //! Utils for working with the [HTML message style][spec].
 //!
 //! [spec]: https://core.telegram.org/bots/api#html-style
-use crate::types::User;
-use std::string::String;
+
+use teloxide_core::types::User;
 
 /// Applies the bold font style to the string.
 ///

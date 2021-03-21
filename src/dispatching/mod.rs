@@ -9,12 +9,14 @@
 //!
 //! ```
 //! use teloxide::prelude::*;
+//! use tokio_stream::wrappers::UnboundedReceiverStream;
 //!
-//! async fn handle_messages(rx: DispatcherHandlerRx<Message>) {
-//!     rx.for_each_concurrent(None, |message| async move {
-//!         dbg!(message);
-//!     })
-//!     .await;
+//! async fn handle_messages(rx: DispatcherHandlerRx<AutoSend<Bot>, Message>) {
+//!     UnboundedReceiverStream::new(rx)
+//!         .for_each_concurrent(None, |message| async move {
+//!             dbg!(message.update);
+//!         })
+//!         .await;
 //! }
 //! ```
 //!
@@ -55,9 +57,9 @@ pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
-pub use update_with_cx::UpdateWithCx;
+pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
 
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub type DispatcherHandlerRx<Upd> = UnboundedReceiver<UpdateWithCx<Upd>>;
+pub type DispatcherHandlerRx<R, Upd> = UnboundedReceiver<UpdateWithCx<R, Upd>>;

@@ -30,29 +30,29 @@
 //! skeleton should look like:
 //!
 //! ```no_run
+//! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::prelude::*;
-//! use teloxide_macros::{teloxide, Transition};
+//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide, RequestError};
 //!
 //! struct _1State;
 //! struct _2State;
 //! struct _3State;
 //!
-//! type Out = TransitionOut<D>;
+//! type Out = TransitionOut<D, RequestError>;
 //!
 //! #[teloxide(subtransition)]
-//! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
+//! async fn _1_transition(_state: _1State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
 //! #[teloxide(subtransition)]
-//! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
+//! async fn _2_transition(_state: _2State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
 //! #[teloxide(subtransition)]
-//! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
+//! async fn _3_transition(_state: _3State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
@@ -69,7 +69,7 @@
 //!     }
 //! }
 //!
-//! type In = DialogueWithCx<Message, D, Infallible>;
+//! type In = DialogueWithCx<AutoSend<Bot>, Message, D, Infallible>;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -80,7 +80,7 @@
 //!     teloxide::enable_logging!();
 //!     log::info!("Starting dialogue_bot!");
 //!
-//!     let bot = Bot::from_env();
+//!     let bot = Bot::from_env().auto_send();
 //!
 //!     Dispatcher::new(bot)
 //!         .messages_handler(DialogueDispatcher::new(
@@ -97,6 +97,7 @@
 //!         .dispatch()
 //!         .await;
 //! }
+//! # }
 //! ```
 //!
 //!  - `#[teloxide(subtransition)]` implements [`Subtransition`] for the first
@@ -156,7 +157,15 @@ pub use transition::{
     Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
 };
 
+#[cfg(feature = "macros")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+pub use teloxide_macros::Transition;
+
 #[cfg(feature = "redis-storage")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use storage::{RedisStorage, RedisStorageError};
 
-pub use storage::{serializer, InMemStorage, Serializer, Storage};
+#[cfg(feature = "sqlite-storage")]
+pub use storage::{SqliteStorage, SqliteStorageError};
+
+pub use storage::{serializer, InMemStorage, Serializer, Storage, TraceStorage};

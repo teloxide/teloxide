@@ -1,15 +1,15 @@
-
 on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 name: Continuous integration
 
 jobs:
-  code-checks:
+  style:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -17,33 +17,78 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-          components: rustfmt, clippy
-      - name: Cargo fmt
-        run: cargo +nightly fmt --all -- --check
-      - uses: actions-rs/toolchain@v1
+          components: rustfmt
+
+      - name: fmt
+        uses: actions-rs/cargo@v1
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Cargo clippy
-        run: cargo clippy --all --all-targets --all-features -- -D warnings
-  stable-test:
+          command: fmt
+          args: --all -- --check 
+
+  clippy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: nightly
           override: true
+          components: clippy
+
+      - name: clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: 
+          - stable
+          - beta
+          - nightly
+    
+        include:
+          - rust: stable
+            features: "--features full"
+          - rust: beta
+            features: "--features full"
+          - rust: nightly
+            features: "--all-features"
+
+    steps:
+      - uses: actions/checkout@v2
+        
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: build 
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --verbose ${{ matrix.features }}
+      
       - name: Setup redis
         run: |
           sudo apt install redis-server
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
-      - name: Cargo test
-        run: cargo test --all --all-features
+
+      - name: test 
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --verbose ${{ matrix.features }}
+
   build-example:
     runs-on: ubuntu-latest
     strategy:
@@ -65,5 +110,5 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Test the example
+      - name: Check the example
         run: cd examples && cd ${{ matrix.example }} && cargo check

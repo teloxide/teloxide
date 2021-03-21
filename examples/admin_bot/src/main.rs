@@ -1,6 +1,8 @@
-use std::str::FromStr;
+use std::{convert::TryInto, error::Error, str::FromStr};
 
-use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
+use teloxide::{prelude::*, utils::command::BotCommand};
+
+use teloxide::types::ChatPermissions;
 
 // Derive BotCommand to parse text with a command into this enumeration.
 //
@@ -60,20 +62,19 @@ fn calc_restrict_time(time: u32, unit: UnitOfTime) -> u32 {
     }
 }
 
-type Cx = UpdateWithCx<Message>;
+type Cx = UpdateWithCx<AutoSend<Bot>, Message>;
 
 // Mute a user with a replied message.
-async fn mute_user(cx: &Cx, time: u32) -> ResponseResult<()> {
+async fn mute_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync>> {
     match cx.update.reply_to_message() {
         Some(msg1) => {
-            cx.bot
+            cx.requester
                 .restrict_chat_member(
                     cx.update.chat_id(),
                     msg1.from().expect("Must be MessageKind::Common").id,
                     ChatPermissions::default(),
                 )
-                .until_date(cx.update.date + time as i32)
-                .send()
+                .until_date((cx.update.date + time as i32).try_into().unwrap())
                 .await?;
         }
         None => {
@@ -84,11 +85,14 @@ async fn mute_user(cx: &Cx, time: u32) -> ResponseResult<()> {
 }
 
 // Kick a user with a replied message.
-async fn kick_user(cx: &Cx) -> ResponseResult<()> {
+async fn kick_user(cx: &Cx) -> Result<(), Box<dyn Error + Send + Sync>> {
     match cx.update.reply_to_message() {
         Some(mes) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            cx.bot.unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id).send().await?;
+            cx.requester
+                .unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id)
+                .send()
+                .await?;
         }
         None => {
             cx.reply_to("Use this command in reply to another message").send().await?;
@@ -98,16 +102,15 @@ async fn kick_user(cx: &Cx) -> ResponseResult<()> {
 }
 
 // Ban a user with replied message.
-async fn ban_user(cx: &Cx, time: u32) -> ResponseResult<()> {
+async fn ban_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync>> {
     match cx.update.reply_to_message() {
         Some(message) => {
-            cx.bot
+            cx.requester
                 .kick_chat_member(
                     cx.update.chat_id(),
                     message.from().expect("Must be MessageKind::Common").id,
                 )
-                .until_date(cx.update.date + time as i32)
-                .send()
+                .until_date((cx.update.date + time as i32).try_into().unwrap())
                 .await?;
         }
         None => {
@@ -117,7 +120,7 @@ async fn ban_user(cx: &Cx, time: u32) -> ResponseResult<()> {
     Ok(())
 }
 
-async fn action(cx: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
+async fn action(cx: Cx, command: Command) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => cx.answer(Command::descriptions()).send().await.map(|_| ())?,
         Command::Kick => kick_user(&cx).await?,
@@ -137,7 +140,8 @@ async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting admin_bot...");
 
-    let bot = Bot::from_env();
+    let bot = Bot::from_env().auto_send();
 
-    teloxide::commands_repl(bot, panic!("Your bot's name here"), action).await;
+    let bot_name: String = panic!("Your bot's name here");
+    teloxide::commands_repl(bot, bot_name, action).await;
 }

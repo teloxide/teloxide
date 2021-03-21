@@ -1,12 +1,12 @@
 [package]
-name = "redis_remember_bot"
+name = "sqlite_remember_bot"
 version = "0.1.0"
-authors = ["Maximilian Siling <mouse-art@ya.ru>"]
+authors = ["Maximilian Siling <mouse-art@ya.ru>", "Sergey Levitin <selevit@gmail.com>"]
 edition = "2018"
 
 [dependencies]
 # You can also choose "cbor-serializer" or built-in JSON serializer
-teloxide = { path = "../../", features = ["redis-storage", "bincode-serializer", "macros", "auto-send"] }
+teloxide = { path = "../../", features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros", "auto-send"] }
 
 log = "0.4.8"
 pretty_env_logger = "0.4.0"

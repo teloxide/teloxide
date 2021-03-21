@@ -3,44 +3,40 @@ use std::{
     future::Future,
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
+use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, Storage};
 
-#[tokio::test]
-async fn test_redis_json() {
-    let storage = RedisStorage::open(
-        "redis://127.0.0.1:7777",
-        teloxide::dispatching::dialogue::serializer::Json,
-    )
-    .await
-    .unwrap();
-    test_redis(storage).await;
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sqlite_json() {
+    let storage =
+        SqliteStorage::open("./test_db1.sqlite", teloxide::dispatching::dialogue::serializer::Json)
+            .await
+            .unwrap();
+    test_sqlite(storage).await;
 }
 
-#[tokio::test]
-async fn test_redis_bincode() {
-    let storage = RedisStorage::open(
-        "redis://127.0.0.1:7778",
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sqlite_bincode() {
+    let storage = SqliteStorage::open(
+        "./test_db2.sqlite",
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
     .await
     .unwrap();
-    test_redis(storage).await;
+    test_sqlite(storage).await;
 }
 
-#[tokio::test]
-async fn test_redis_cbor() {
-    let storage = RedisStorage::open(
-        "redis://127.0.0.1:7779",
-        teloxide::dispatching::dialogue::serializer::Cbor,
-    )
-    .await
-    .unwrap();
-    test_redis(storage).await;
+#[tokio::test(flavor = "multi_thread")]
+async fn test_sqlite_cbor() {
+    let storage =
+        SqliteStorage::open("./test_db3.sqlite", teloxide::dispatching::dialogue::serializer::Cbor)
+            .await
+            .unwrap();
+    test_sqlite(storage).await;
 }
 
 type Dialogue = String;
 
-async fn test_redis<S>(storage: Arc<RedisStorage<S>>)
+async fn test_sqlite<S>(storage: Arc<SqliteStorage<S>>)
 where
     S: Send + Sync + Serializer<Dialogue> + 'static,
     <S as Serializer<Dialogue>>::Error: Debug + Display,
