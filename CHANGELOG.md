@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
  - Export `teloxide_macros::teloxide` in `prelude`.
+ - `dispatching::dialogue::serializer::{JSON -> Json, CBOR -> Cbor}`
  - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
  - 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`, 
    `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline 
