@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Typo: `ReplyMarkup::{keyboad => keyboard}` ([#69][pr69])
   - Note: method with the old name was deprecated and hidden from docs
 
+[pr69]: https://github.com/teloxide/teloxide-core/pull/69
+
 ## [0.2.1] - 2020-03-19
 
 ### Fixed 
