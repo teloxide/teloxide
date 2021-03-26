@@ -9,21 +9,21 @@ use futures::future::BoxFuture;
 /// overview.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-pub trait DispatcherHandler<Upd> {
+pub trait DispatcherHandler<R, Upd> {
     #[must_use]
-    fn handle(self, updates: DispatcherHandlerRx<Upd>) -> BoxFuture<'static, ()>
+    fn handle(self, updates: DispatcherHandlerRx<R, Upd>) -> BoxFuture<'static, ()>
     where
-        UpdateWithCx<Upd>: Send + 'static;
+        UpdateWithCx<R, Upd>: Send + 'static;
 }
 
-impl<Upd, F, Fut> DispatcherHandler<Upd> for F
+impl<R, Upd, F, Fut> DispatcherHandler<R, Upd> for F
 where
-    F: FnOnce(DispatcherHandlerRx<Upd>) -> Fut + Send + 'static,
+    F: FnOnce(DispatcherHandlerRx<R, Upd>) -> Fut + Send + 'static,
     Fut: Future<Output = ()> + Send + 'static,
 {
-    fn handle(self, updates: DispatcherHandlerRx<Upd>) -> BoxFuture<'static, ()>
+    fn handle(self, updates: DispatcherHandlerRx<R, Upd>) -> BoxFuture<'static, ()>
     where
-        UpdateWithCx<Upd>: Send + 'static,
+        UpdateWithCx<R, Upd>: Send + 'static,
     {
         Box::pin(async move { self(updates).await })
     }

@@ -14,8 +14,7 @@ use futures::future::BoxFuture;
 pub use self::{in_mem_storage::InMemStorage, trace_storage::TraceStorage};
 
 #[cfg(feature = "redis-storage")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use redis_storage::{RedisStorage, RedisStorageError};
 pub use serializer::Serializer;
 use std::sync::Arc;
@@ -27,6 +26,9 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 ///
 /// You can implement this trait for a structure that communicates with a DB and
 /// be sure that after you restart your bot, all the dialogues won't be lost.
+///
+/// `Storage` is used only to store dialogue states, i.e. it can't be used as a
+/// generic database.
 ///
 /// Currently we support the following storages out of the box:
 ///

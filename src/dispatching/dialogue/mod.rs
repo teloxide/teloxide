@@ -33,7 +33,7 @@
 //! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide};
+//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide, RequestError};
 //!
 //! struct _1State;
 //! struct _2State;
@@ -42,17 +42,17 @@
 //! type Out = TransitionOut<D, RequestError>;
 //!
 //! #[teloxide(subtransition)]
-//! async fn _1_transition(_state: _1State, _cx: TransitionIn) -> Out {
+//! async fn _1_transition(_state: _1State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
 //! #[teloxide(subtransition)]
-//! async fn _2_transition(_state: _2State, _cx: TransitionIn) -> Out {
+//! async fn _2_transition(_state: _2State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
 //! #[teloxide(subtransition)]
-//! async fn _3_transition(_state: _3State, _cx: TransitionIn) -> Out {
+//! async fn _3_transition(_state: _3State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
 //!     todo!()
 //! }
 //!
@@ -69,7 +69,7 @@
 //!     }
 //! }
 //!
-//! type In = DialogueWithCx<Message, D, Infallible>;
+//! type In = DialogueWithCx<AutoSend<Bot>, Message, D, Infallible>;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -80,7 +80,7 @@
 //!     teloxide::enable_logging!();
 //!     log::info!("Starting dialogue_bot!");
 //!
-//!     let bot = Bot::from_env();
+//!     let bot = Bot::from_env().auto_send();
 //!
 //!     Dispatcher::new(bot)
 //!         .messages_handler(DialogueDispatcher::new(
@@ -158,13 +158,11 @@ pub use transition::{
 };
 
 #[cfg(feature = "macros")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use storage::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]

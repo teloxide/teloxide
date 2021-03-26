@@ -1,4 +1,4 @@
-use crate::types::Message;
+use teloxide_core::types::Message;
 
 /// Something that has a chat ID.
 pub trait GetChatId {

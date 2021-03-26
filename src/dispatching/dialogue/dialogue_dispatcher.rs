@@ -11,6 +11,8 @@ use tokio::sync::mpsc;
 
 use lockfree::map::Map;
 use std::sync::{Arc, Mutex};
+use teloxide_core::requests::Requester;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A dispatcher of dialogues.
 ///
@@ -22,7 +24,7 @@ use std::sync::{Arc, Mutex};
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-pub struct DialogueDispatcher<D, S, H, Upd> {
+pub struct DialogueDispatcher<R, D, S, H, Upd> {
     storage: Arc<S>,
     handler: Arc<H>,
     _phantom: PhantomData<Mutex<D>>,
@@ -33,12 +35,12 @@ pub struct DialogueDispatcher<D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<Upd>>>>,
+    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
 }
 
-impl<D, H, Upd> DialogueDispatcher<D, InMemStorage<D>, H, Upd>
+impl<R, D, H, Upd> DialogueDispatcher<R, D, InMemStorage<D>, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, Infallible> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, Infallible> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
 {
@@ -57,9 +59,9 @@ where
     }
 }
 
-impl<D, S, H, Upd> DialogueDispatcher<D, S, H, Upd>
+impl<R, D, S, H, Upd> DialogueDispatcher<R, D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
@@ -77,14 +79,17 @@ where
     }
 
     #[must_use]
-    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<Upd>> {
+    fn new_tx(&self) -> mpsc::UnboundedSender<UpdateWithCx<R, Upd>>
+    where
+        R: Requester + Send + 'static,
+    {
         let (tx, rx) = mpsc::unbounded_channel();
 
         let storage = Arc::clone(&self.storage);
         let handler = Arc::clone(&self.handler);
         let senders = Arc::clone(&self.senders);
 
-        tokio::spawn(rx.for_each(move |cx: UpdateWithCx<Upd>| {
+        tokio::spawn(UnboundedReceiverStream::new(rx).for_each(move |cx: UpdateWithCx<R, Upd>| {
             let storage = Arc::clone(&storage);
             let handler = Arc::clone(&handler);
             let senders = Arc::clone(&senders);
@@ -123,21 +128,25 @@ where
     }
 }
 
-impl<D, S, H, Upd> DispatcherHandler<Upd> for DialogueDispatcher<D, S, H, Upd>
+impl<R, D, S, H, Upd> DispatcherHandler<R, Upd> for DialogueDispatcher<R, D, S, H, Upd>
 where
-    H: DialogueDispatcherHandler<Upd, D, S::Error> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, S::Error> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
     S::Error: Send + 'static,
+    R: Requester + Send,
 {
-    fn handle(self, updates: mpsc::UnboundedReceiver<UpdateWithCx<Upd>>) -> BoxFuture<'static, ()>
+    fn handle(
+        self,
+        updates: mpsc::UnboundedReceiver<UpdateWithCx<R, Upd>>,
+    ) -> BoxFuture<'static, ()>
     where
-        UpdateWithCx<Upd>: 'static,
+        UpdateWithCx<R, Upd>: 'static,
     {
         let this = Arc::new(self);
 
-        updates
+        UnboundedReceiverStream::new(updates)
             .for_each(move |cx| {
                 let this = Arc::clone(&this);
                 let chat_id = cx.update.chat_id();
@@ -168,12 +177,12 @@ where
 mod tests {
     use super::*;
 
-    use crate::Bot;
     use futures::{stream, StreamExt};
     use lazy_static::lazy_static;
+    use teloxide_core::Bot;
     use tokio::{
         sync::{mpsc, Mutex},
-        time::{delay_for, Duration},
+        time::Duration,
     };
 
     #[tokio::test]
@@ -183,7 +192,7 @@ mod tests {
         struct MyUpdate {
             chat_id: i64,
             unique_number: u32,
-        };
+        }
 
         impl MyUpdate {
             fn new(chat_id: i64, unique_number: u32) -> Self {
@@ -203,9 +212,9 @@ mod tests {
             static ref SEQ3: Mutex<Vec<u32>> = Mutex::new(Vec::new());
         }
 
-        let dispatcher =
-            DialogueDispatcher::new(|cx: DialogueWithCx<MyUpdate, (), Infallible>| async move {
-                delay_for(Duration::from_millis(300)).await;
+        let dispatcher = DialogueDispatcher::new(
+            |cx: DialogueWithCx<Bot, MyUpdate, (), Infallible>| async move {
+                tokio::time::sleep(Duration::from_millis(300)).await;
 
                 match cx.cx.update {
                     MyUpdate { chat_id: 1, unique_number } => {
@@ -221,7 +230,8 @@ mod tests {
                 }
 
                 DialogueStage::Next(())
-            });
+            },
+        );
 
         let updates = stream::iter(
             vec![
@@ -248,8 +258,8 @@ mod tests {
                 MyUpdate::new(3, 1611),
             ]
             .into_iter()
-            .map(|update| UpdateWithCx { update, bot: Bot::new("Doesn't matter here") })
-            .collect::<Vec<UpdateWithCx<MyUpdate>>>(),
+            .map(|update| UpdateWithCx { update, requester: Bot::new("Doesn't matter here") })
+            .collect::<Vec<UpdateWithCx<Bot, MyUpdate>>>(),
         );
 
         let (tx, rx) = mpsc::unbounded_channel();
@@ -269,7 +279,7 @@ mod tests {
         dispatcher.handle(rx).await;
 
         // Wait until our futures to be finished.
-        delay_for(Duration::from_millis(3000)).await;
+        tokio::time::sleep(Duration::from_millis(3000)).await;
 
         assert_eq!(*SEQ1.lock().await, vec![174, 125, 2, 193, 104, 7, 7778]);
         assert_eq!(*SEQ2.lock().await, vec![411, 515, 623, 2222, 737, 10, 55456]);

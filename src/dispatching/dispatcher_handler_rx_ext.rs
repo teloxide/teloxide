@@ -1,5 +1,6 @@
-use crate::{prelude::UpdateWithCx, types::Message, utils::command::BotCommand};
+use crate::{dispatching::UpdateWithCx, utils::command::BotCommand};
 use futures::{stream::BoxStream, Stream, StreamExt};
+use teloxide_core::types::Message;
 
 /// An extension trait to be used with [`DispatcherHandlerRx`].
 ///
@@ -7,37 +8,45 @@ use futures::{stream::BoxStream, Stream, StreamExt};
 /// overview.
 ///
 /// [`DispatcherHandlerRx`]: crate::dispatching::DispatcherHandlerRx
-pub trait DispatcherHandlerRxExt {
+pub trait DispatcherHandlerRxExt<R> {
     /// Extracts only text messages from this stream of arbitrary messages.
-    fn text_messages(self) -> BoxStream<'static, (UpdateWithCx<Message>, String)>
+    fn text_messages(self) -> BoxStream<'static, (UpdateWithCx<R, Message>, String)>
     where
-        Self: Stream<Item = UpdateWithCx<Message>>;
+        Self: Stream<Item = UpdateWithCx<R, Message>>,
+        R: Send + 'static;
 
     /// Extracts only commands with their arguments from this stream of
     /// arbitrary messages.
-    fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<Message>, C)>
+    fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<R, Message>, C)>
     where
-        Self: Stream<Item = UpdateWithCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<R, Message>>,
         C: BotCommand,
-        N: Into<String> + Send;
+        N: Into<String> + Send,
+        R: Send + 'static;
 }
 
-impl<T> DispatcherHandlerRxExt for T
+impl<R, T> DispatcherHandlerRxExt<R> for T
 where
     T: Send + 'static,
 {
-    fn text_messages(self) -> BoxStream<'static, (UpdateWithCx<Message>, String)>
+    fn text_messages(self) -> BoxStream<'static, (UpdateWithCx<R, Message>, String)>
     where
-        Self: Stream<Item = UpdateWithCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<R, Message>>,
+        R: Send + 'static,
     {
-        self.filter_map(|cx| async move { cx.update.text_owned().map(|text| (cx, text)) }).boxed()
+        self.filter_map(|cx| async move {
+            let text = cx.update.text().map(ToOwned::to_owned);
+            text.map(move |text| (cx, text))
+        })
+        .boxed()
     }
 
-    fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<Message>, C)>
+    fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<R, Message>, C)>
     where
-        Self: Stream<Item = UpdateWithCx<Message>>,
+        Self: Stream<Item = UpdateWithCx<R, Message>>,
         C: BotCommand,
         N: Into<String> + Send,
+        R: Send + 'static,
     {
         let bot_name = bot_name.into();
 

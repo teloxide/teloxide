@@ -9,14 +9,26 @@ pub use crate::{
         Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    requests::{respond, Request, ResponseResult},
-    types::{Message, Update},
-    Bot, RequestError,
+    respond,
 };
 
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
+#[cfg(feature = "macros")]
+pub use crate::teloxide;
+
+pub use teloxide_core::types::{
+    CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll, PollAnswer,
+    PreCheckoutQuery, ShippingQuery,
+};
+
+#[cfg(feature = "auto-send")]
+pub use crate::adaptors::AutoSend;
+
+#[doc(no_inline)]
+pub use teloxide_core::prelude::*;
+
 #[cfg(feature = "frunk")]
-// FIXME(waffle): use `docsrs` here when issue with combine is resolved <https://github.com/teloxide/teloxide/pull/305#issuecomment-716172103>
-#[cfg_attr(all(teloxide_docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
 pub use crate::utils::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;

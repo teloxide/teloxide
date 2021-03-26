@@ -6,10 +6,9 @@ use crate::{
         Dispatcher, UpdateWithCx,
     },
     error_handlers::LoggingErrorHandler,
-    types::Message,
-    Bot,
 };
 use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
+use teloxide_core::{requests::Requester, types::Message};
 
 /// A [REPL] for dialogues.
 ///
@@ -24,15 +23,22 @@ use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
-pub async fn dialogues_repl<'a, H, D, Fut>(bot: Bot, handler: H)
+pub async fn dialogues_repl<'a, R, H, D, Fut>(requester: R, handler: H)
 where
-    H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
+    H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
     D: Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
+    R: Requester + Send + Clone + 'static,
+    <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
-    let cloned_bot = bot.clone();
+    let cloned_requester = requester.clone();
 
-    dialogues_repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
+    dialogues_repl_with_listener(
+        requester,
+        handler,
+        update_listeners::polling_default(cloned_requester),
+    )
+    .await;
 }
 
 /// Like [`dialogues_repl`], but with a custom [`UpdateListener`].
@@ -49,22 +55,23 @@ where
 /// [`dialogues_repl`]: crate::dispatching::repls::dialogues_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
-pub async fn dialogues_repl_with_listener<'a, H, D, Fut, L, ListenerE>(
-    bot: Bot,
+pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
+    requester: R,
     handler: H,
     listener: L,
 ) where
-    H: Fn(UpdateWithCx<Message>, D) -> Fut + Send + Sync + 'static,
+    H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
     D: Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
+    R: Requester + Send + Clone + 'static,
 {
     let handler = Arc::new(handler);
 
-    Dispatcher::new(bot)
+    Dispatcher::new(requester)
         .messages_handler(DialogueDispatcher::new(
-            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<Message, D, Infallible>| {
+            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<R, Message, D, Infallible>| {
                 let handler = Arc::clone(&handler);
 
                 async move {
