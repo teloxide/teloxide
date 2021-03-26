@@ -7,10 +7,10 @@
   - `ResponseResult<()>` -> `Result<(), Box<dyn Error + Send + Sync>>` (or import `ResponseResult` beforehand: `use teloxide::requests::ResponseResult;`)
   - Tokio updated to v1.2.
 
-Note: this list is non-exhaustive; for the full list of changes, see [teloxide-core's changelog] and the [changelog of teloxide].
+Note: this list is non-exhaustive; for the full list of changes, see the [teloxide-core changelog] and [teloxide changelog].
 
-[teloxide-core's changelog]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md
-[changelog of teloxide]: CHANGELOG.md
+[teloxide-core changelog]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md
+[teloxide changelog]: CHANGELOG.md
 
 </details>
 
