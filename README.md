@@ -1,3 +1,19 @@
+<details>
+  <summary>FYI: Updating from v0.3.4 to v0.4.0</summary>
+  
+  - `answer_str` -> `answer`
+  - `msg.text_owned()` -> `msg.map(ToOwned::to_owned)`
+  - Use `.auto_send()` to construct your bot: `let bot = Bot::from_env().auto_send();`. This allows not to write `.send()` after each request; now it is done automatically. Also, rewrite `UpdateWithCx<Message>` -> `UpdateWithCx<AutoSend<Bot>, Message>`.
+  - `ResponseResult<()>` -> `Result<(), Box<dyn Error + Send + Sync>>` (or import `ResponseResult` beforehand: `use teloxide::requests::ResponseResult;`)
+  - Tokio updated to v1.2.
+
+Note: this list is non-exhaustive; for the full list of changes, see the [teloxide-core changelog] and [teloxide changelog].
+
+[teloxide-core changelog]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md
+[teloxide changelog]: CHANGELOG.md
+
+</details>
+
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
@@ -178,7 +194,7 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
+A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
