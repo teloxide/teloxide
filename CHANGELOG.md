@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed
+
+- `reqwest` dependency bringing `native-tls` in even when `rustls` was selected ([#71][pr71])
+
+[pr71]: https://github.com/teloxide/teloxide-core/pull/71
+
 ## [0.2.2] - 2020-03-22
 
 ### Fixed
