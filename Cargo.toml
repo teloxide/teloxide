@@ -36,7 +36,7 @@ tokio = { version = "1.2.0", features = ["fs"] }
 tokio-util = "0.6.0"
 pin-project = "1.0.3"
 bytes = "1.0.0"
-reqwest = { version = "0.11.0", features = ["json", "stream", "multipart"] }
+reqwest = { version = "0.11.0", features = ["json", "stream", "multipart"], default-features = false }
 log = "0.4"
 
 serde = { version = "1.0.114", features = ["derive"] }
