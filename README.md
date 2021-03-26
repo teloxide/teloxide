@@ -2,10 +2,15 @@
   <summary>FYI: Updating from v0.3.4 to v0.4.0</summary>
   
   - `answer_str` -> `answer`
+  - `msg.text_owned()` -> `msg.map(ToOwned::to_owned)`
   - Use `.auto_send()` to construct your bot: `let bot = Bot::from_env().auto_send();`. This allows not to write `.send()` after each request; now it is done automatically. Also, rewrite `UpdateWithCx<Message>` -> `UpdateWithCx<AutoSend<Bot>, Message>`.
   - `ResponseResult<()>` -> `Result<(), Box<dyn Error + Send + Sync>>` (or import `ResponseResult` beforehand: `use teloxide::requests::ResponseResult;`)
   - Tokio updated to v1.2.
-  - `msg.text_owned()` -> `msg.map(ToOwned::to_owned)`
+
+Note: this list is non-exhaustive; for the full list of changes, see [teloxide-core's changelog] and the [changelog of teloxide].
+
+[teloxide-core's changelog]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md
+[changelog of teloxide]: CHANGELOG.md
 
 </details>
 
