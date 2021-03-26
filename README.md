@@ -39,19 +39,6 @@ Note: this list is non-exhaustive; for the full list of changes, see the [teloxi
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
 
-## Table of contents
- - [Highlights](#highlights)
- - [Setting up your environment](#setting-up-your-environment)
- - [API overview](#api-overview)
-   - [The dices bot](#the-dices-bot)
-   - [Commands](#commands)
-   - [Dialogues management](#dialogues-management)
- - [Recommendations](#recommendations)
- - [Cargo features](#cargo-features)
- - [FAQ](#faq)
- - [Community bots](#community-bots)
- - [Contributing](#contributing)
-
 ## Highlights
 
  - **Functional reactive design.** teloxide follows [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
@@ -396,18 +383,20 @@ The second one produces very strange compiler messages due to the `#[tokio::main
 
 ## Cargo features
 
- - `redis-storage` -- enables the [Redis] support.
- - `sqlite-storage` -- enables the [Sqlite] support.
- - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
- - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
- - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
- - `macros` -- re-exports macros from [`teloxide-macros`].
- - `native-tls` -- enables the [`native-tls`] TLS implementation (enabled by default).
- - `rustls` -- enables the [`rustls`] TLS implementation.
- - `auto-send` -- enables `AutoSend` bot adaptor.
- - `cache-me` -- enables the `CacheMe` bot adaptor.
- - `full` -- enables all the features except `nightly`.
- - `nightly` -- enables nightly-only features (see the [teloxide-core's features]).
+| Feature | Description |
+|----------|----------|
+| `redis-storage` | Enables the [Redis] support.| 
+| `sqlite-storage` | Enables the [Sqlite] support. |
+| `cbor-serializer` | Enables the [CBOR] serializer for dialogues. |
+| `bincode-serializer` | Enables the [Bincode] serializer for dialogues. |
+| `macros` | Re-exports macros from [`teloxide-macros`]. |
+| `native-tls` | Enables the [`native-tls`] TLS implementation (enabled by default). |
+| `rustls` | Enables the [`rustls`] TLS implementation. |
+| `auto-send` | Enables the `AutoSend` bot adaptor. |
+| `cache-me` | Enables the `CacheMe` bot adaptor. |
+| `frunk` | Enables [`teloxide::utils::UpState`]. |
+| `full` | Enables all the features except `nightly`. |
+| `nightly` | Enables nightly-only features (see the [teloxide-core features]). |
 
 [CBOR]: https://en.wikipedia.org/wiki/CBOR
 [Bincode]: https://github.com/servo/bincode
@@ -415,7 +404,7 @@ The second one produces very strange compiler messages due to the `#[tokio::main
 [`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
 [`native-tls`]: https://docs.rs/native-tls
 [`rustls`]: https://docs.rs/rustls
-[teloxide-core's features]: https://docs.rs/teloxide-core/0.2.1/teloxide_core/#cargo-features
+[teloxide-core features]: https://docs.rs/teloxide-core/latest/teloxide_core/#cargo-features
 
 ## FAQ
 **Q: Where I can ask questions?**
