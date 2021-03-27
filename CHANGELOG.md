@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+ - `Storage::get_dialogue`
+
+### Changed
+
+ - Do not return a dialogue from `Storage::{remove_dialogue, update_dialogue}`.
+
+### Fixed
+
+ - A storage persistency bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
+
 ### Fixed
 
 - Remove `reqwest` dependency. It's not needed after the [teloxide-core] integration.

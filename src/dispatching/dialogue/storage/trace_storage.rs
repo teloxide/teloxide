@@ -5,14 +5,13 @@ use std::{
 };
 
 use futures::future::BoxFuture;
-use log::{log_enabled, trace, Level::Trace};
 
 use crate::dispatching::dialogue::Storage;
 
-/// Storage wrapper for logging purposes
+/// Storage wrapper for logging purposes.
 ///
-/// Reports about any dialogue update or removal action on `trace` level
-/// using `log` crate.
+/// Reports about any dialogue action using the `trace` level in the `log`
+/// crate.
 pub struct TraceStorage<S> {
     inner: Arc<S>,
 }
@@ -35,14 +34,11 @@ where
 {
     type Error = <S as Storage<D>>::Error;
 
-    fn remove_dialogue(
-        self: Arc<Self>,
-        chat_id: i64,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    fn remove_dialogue(self: Arc<Self>, chat_id: i64) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
-        trace!("Removing dialogue with {}", chat_id);
+        log::trace!("Removing dialogue #{}", chat_id);
         <S as Storage<D>>::remove_dialogue(self.inner.clone(), chat_id)
     }
 
@@ -50,21 +46,23 @@ where
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
-        if log_enabled!(Trace) {
-            Box::pin(async move {
-                let to = format!("{:#?}", dialogue);
-                let from =
-                    <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue)
-                        .await?;
-                trace!("Updated dialogue with {}, {:#?} -> {}", chat_id, from, to);
-                Ok(from)
-            })
-        } else {
-            <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue)
-        }
+        Box::pin(async move {
+            let to = format!("{:#?}", dialogue);
+            <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue).await?;
+            log::trace!("Updated a dialogue #{}: {:#?}", chat_id, to);
+            Ok(())
+        })
+    }
+
+    fn get_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+        log::trace!("Requested a dialogue #{}", chat_id);
+        <S as Storage<D>>::get_dialogue(self.inner.clone(), chat_id)
     }
 }

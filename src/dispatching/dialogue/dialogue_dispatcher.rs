@@ -4,7 +4,7 @@ use crate::dispatching::{
     },
     DispatcherHandler, UpdateWithCx,
 };
-use std::{convert::Infallible, marker::PhantomData};
+use std::{convert::Infallible, fmt::Debug, marker::PhantomData};
 
 use futures::{future::BoxFuture, FutureExt, StreamExt};
 use tokio::sync::mpsc;
@@ -65,7 +65,7 @@ where
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    S::Error: Debug + Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
@@ -97,18 +97,13 @@ where
             async move {
                 let chat_id = cx.update.chat_id();
 
-                let dialogue = Arc::clone(&storage)
-                    .remove_dialogue(chat_id)
-                    .await
-                    .map(Option::unwrap_or_default);
+                let dialogue =
+                    Arc::clone(&storage).get_dialogue(chat_id).await.map(Option::unwrap_or_default);
 
                 match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
-                        if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
-                            panic!(
-                                "Oops, you have an bug in your Storage: update_dialogue returns \
-                                 Some after remove_dialogue"
-                            );
+                        if let Err(e) = storage.update_dialogue(chat_id, new_dialogue).await {
+                            log::error!("Storage::update_dialogue failed: {:?}", e);
                         }
                     }
                     DialogueStage::Exit => {
@@ -117,8 +112,9 @@ where
                         // sender right here:
                         senders.remove(&chat_id);
 
-                        // We already removed a dialogue from `storage` (see
-                        // the beginning of this async block).
+                        if let Err(e) = storage.remove_dialogue(chat_id).await {
+                            log::error!("Storage::remove_dialogue failed: {:?}", e);
+                        }
                     }
                 }
             }
@@ -134,7 +130,7 @@ where
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    S::Error: Debug + Send + 'static,
     R: Requester + Send,
 {
     fn handle(
