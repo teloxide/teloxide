@@ -27,7 +27,7 @@ impl<S> InMemStorage<S> {
 
 impl<D> Storage<D> for InMemStorage<D>
 where
-    D: ToOwned<Owned = D>,
+    D: Clone,
     D: Send + 'static,
 {
     type Error = std::convert::Infallible;
