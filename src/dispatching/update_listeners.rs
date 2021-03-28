@@ -120,11 +120,16 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
 /// See also: [`polling`](polling).
-pub fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
+///
+/// ## Notes
+///
+/// This function will automatically delete a webhook if it was set up.
+pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
     R: Requester,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
+    delete_webhook_if_setup(&requester).await;
     polling(requester, Some(Duration::from_secs(10)), None, None)
 }
 
@@ -199,4 +204,25 @@ where
         },
     )
     .flatten()
+}
+
+async fn delete_webhook_if_setup<R>(requester: &R)
+where
+    R: Requester,
+{
+    let webhook_info = match requester.get_webhook_info().send().await {
+        Ok(ok) => ok,
+        Err(e) => {
+            log::error!("Failed to get webhook info: {:?}", e);
+            return;
+        }
+    };
+
+    let is_webhook_setup = !webhook_info.url.is_empty();
+
+    if is_webhook_setup {
+        if let Err(e) = requester.delete_webhook().send().await {
+            log::error!("Failed to delete a webhook: {:?}", e);
+        }
+    }
 }
