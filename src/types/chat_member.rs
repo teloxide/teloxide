@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 
 use crate::types::User;
@@ -130,9 +132,27 @@ pub struct Kicked {
     pub until_date: i32,
 }
 
-impl ChatMember {
+/// This allows calling [`ChatMemberKind`]'s methods directly on [`ChatMember`]
+///
+/// ```no_run
+/// use teloxide_core::types::ChatMember;
+///
+/// let member: ChatMember = todo!();
+///
+/// let _ = member.status();
+/// let _ = member.kind.status();
+/// ```
+impl Deref for ChatMember {
+    type Target = ChatMemberKind;
+
+    fn deref(&self) -> &Self::Target {
+        &self.kind
+    }
+}
+
+impl ChatMemberKind {
     pub fn status(&self) -> ChatMemberStatus {
-        match &self.kind {
+        match self {
             ChatMemberKind::Creator(_) => ChatMemberStatus::Creator,
             ChatMemberKind::Administrator(_) => ChatMemberStatus::Administrator,
             ChatMemberKind::Member => ChatMemberStatus::Member,
@@ -141,9 +161,7 @@ impl ChatMember {
             ChatMemberKind::Kicked(_) => ChatMemberStatus::Kicked,
         }
     }
-}
 
-impl ChatMemberKind {
     /// Getter for [`Administrator::custom_title`] and [`Creator::custom_title`]
     /// fields.
     pub fn custom_title(&self) -> Option<&str> {
