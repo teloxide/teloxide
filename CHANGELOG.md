@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
  - A storage persistency bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
+ - Log errors from `Storage::{remove_dialogue, update_dialogue}` in `DialogueDispatcher` ([issue 302](https://github.com/teloxide/teloxide/issues/302)).
 
 ### Fixed
 
