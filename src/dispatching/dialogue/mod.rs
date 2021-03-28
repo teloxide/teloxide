@@ -35,8 +35,11 @@
 //!
 //! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide, RequestError};
 //!
+//! #[derive(Clone)]
 //! struct _1State;
+//! #[derive(Clone)]
 //! struct _2State;
+//! #[derive(Clone)]
 //! struct _3State;
 //!
 //! type Out = TransitionOut<D, RequestError>;
@@ -56,7 +59,7 @@
 //!     todo!()
 //! }
 //!
-//! #[derive(Transition)]
+//! #[derive(Clone, Transition)]
 //! enum D {
 //!     _1(_1State),
 //!     _2(_2State),

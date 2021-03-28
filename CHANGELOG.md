@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Do not return a dialogue from `Storage::{remove_dialogue, update_dialogue}`.
+ - Require `D: ToOwned<Owned = D>` in `dialogues_repl` and `InMemStorage`.
 
 ### Fixed
 
