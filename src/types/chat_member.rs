@@ -232,163 +232,228 @@ impl ChatMemberKind {
             | Self::Kicked(Kicked { until_date, .. }) => Some(*until_date),
         }
     }
+}
 
-    /// Getter for [`Administrator::can_be_edited`] field.
-    pub fn can_be_edited(&self) -> Option<bool> {
-        match &self {
-            Self::Administrator(Administrator { can_be_edited, .. }) => Some(*can_be_edited),
+/// Methods to check admin privileges.
+impl ChatMemberKind {
+    /// Returns `true` if the user is an administrator in the given chat and the
+    /// bot is allowed to edit administrator privileges of that user.
+    pub fn can_be_edited(&self) -> bool {
+        match self {
+            Self::Administrator(Administrator { can_be_edited, .. }) => *can_be_edited,
+            // Creator can't ever be edited by any bot.
             Self::Creator(_)
             | Self::Member
             | Self::Restricted(_)
             | Self::Left
-            | Self::Kicked(_) => None,
+            | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_manage_chat`] field.
-    pub fn can_manage_chat(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, if the can access the chat event log, chat
+    /// statistics, message statistics in channels, see channel members, see
+    /// anonymous administrators in supergroups and ignore slow mode. Implied by
+    /// any other administrator privilege.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_manage_chat`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_manage_chat`]: ChatMemberKind::Administrator::can_manage_chat
+    pub fn can_manage_chat(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_manage_chat, ..
-            }) => Some(*can_manage_chat),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_manage_chat,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => true,
         }
     }
 
-    /// Getter for [`Administrator::can_change_info`] field.
-    pub fn can_change_info(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can change the chat
+    /// title, photo and other settings.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_change_info`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_change_info`]: ChatMemberKind::Administrator::can_change_info
+    pub fn can_change_info(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_change_info, ..
-            }) => Some(*can_change_info),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_change_info,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_post_messages`] field.
-    pub fn can_post_messages(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can post in the
+    /// channel, channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat (even if the chat is not a channel)
+    /// - is administrator and has [`can_post_messages`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_post_messages`]: ChatMemberKind::Administrator::can_post_messages
+    pub fn can_post_messages(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_post_messages, ..
-            }) => *can_post_messages,
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => can_post_messages.unwrap_or_default(),
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_edit_messages`] field.
-    pub fn can_edit_messages(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can edit messages of
+    /// other users and can pin messages, channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat (even if the chat is not a channel)
+    /// - is administrator and has [`can_edit_messages`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_edit_messages`]: ChatMemberKind::Administrator::can_edit_messages
+    pub fn can_edit_messages(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_edit_messages, ..
-            }) => *can_edit_messages,
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => can_edit_messages.unwrap_or_default(),
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_delete_messages`] field.
-    pub fn can_delete_messages(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can delete messages
+    /// of other users.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_delete_messages`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_delete_messages`]:
+    /// ChatMemberKind::Administrator::can_delete_messages
+    pub fn can_delete_messages(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_delete_messages,
                 ..
-            }) => Some(*can_delete_messages),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_delete_messages,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_manage_voice_chats`] field.
-    pub fn can_manage_voice_chats(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can manage voice chats.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_manage_voice_chats`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_manage_voice_chats`]:
+    /// ChatMemberKind::Administrator::can_manage_voice_chats
+    pub fn can_manage_voice_chats(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_manage_voice_chats,
                 ..
-            }) => Some(*can_manage_voice_chats),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_manage_voice_chats,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_invite_users`] field.
-    pub fn can_invite_users(&self) -> Option<bool> {
+    /// Returns `true`, the user can can invite new users
+    /// to the chat.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_invite_users`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_invite_users`]: ChatMemberKind::Administrator::can_invite_users
+    pub fn can_invite_users(&self) -> bool {
         match &self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_invite_users, ..
-            }) => Some(*can_invite_users),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_invite_users,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_restrict_members`] field.
-    pub fn can_restrict_members(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can restrict,
+    /// ban or unban chat members.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat
+    /// - is administrator and has [`can_restrict_members`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_restrict_members`]:
+    /// ChatMemberKind::Administrator::can_restrict_members
+    pub fn can_restrict_members(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_restrict_members,
                 ..
-            }) => Some(*can_restrict_members),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_restrict_members,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_pin_messages`] field.
-    pub fn can_pin_messages(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can pin messages,
+    /// supergroups only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat (even if the chat is not a supergroups)
+    /// - is administrator and has [`can_pin_messages`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_pin_messages`]: ChatMemberKind::Administrator::can_pin_messages
+    pub fn can_pin_messages(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_pin_messages, ..
-            }) => *can_pin_messages,
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => can_pin_messages.unwrap_or_default(),
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Administrator::can_promote_members`] field.
-    pub fn can_promote_members(&self) -> Option<bool> {
-        match &self {
+    /// Returns `true`, the user can add new
+    /// administrators with a subset of his own privileges or demote
+    /// administrators that he has promoted, directly or indirectly
+    /// (promoted by administrators that were appointed by the
+    /// user).
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the creator of the chat (even if the chat is not a channel)
+    /// - is administrator and has [`can_promote_members`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_promote_members`]:
+    /// ChatMemberKind::Administrator::can_promote_members
+    pub fn can_promote_members(&self) -> bool {
+        match self {
+            Self::Creator(_) => true,
             Self::Administrator(Administrator {
                 can_promote_members,
                 ..
-            }) => Some(*can_promote_members),
-            Self::Creator(_)
-            | Self::Member
-            | Self::Restricted(_)
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_promote_members,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
         }
     }
+}
 
+impl ChatMemberKind {
     /// Getter for [`Restricted::can_send_messages`] field.
     pub fn can_send_messages(&self) -> Option<bool> {
         match &self {
