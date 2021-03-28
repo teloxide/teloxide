@@ -19,6 +19,11 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 /// Note that it implements [`DispatcherHandler`], so you can just put an
 /// instance of this dispatcher into the [`Dispatcher`]'s methods.
 ///
+/// Note that when the storage methods [`Storage::remove_dialogue`] and
+/// [`Storage::update_dialogue`] are failed, the errors are logged, but a result
+/// from [`Storage::get_dialogue`] is provided to a user handler as-is so you
+/// can respond to a concrete user with an error description.
+///
 /// See the [module-level documentation](crate::dispatching::dialogue) for the
 /// design overview.
 ///
