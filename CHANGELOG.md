@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+- Refactor `ChatMember` methods ([#74][pr74])
+  - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callible directly on `ChatMember`
+  - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
+  - Refactor privilege getters 
+
+[pr74]: https://github.com/teloxide/teloxide-core/pull/74
+
 ### Fixed
 
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
