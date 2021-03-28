@@ -150,7 +150,9 @@ impl Deref for ChatMember {
     }
 }
 
+/// Simple methods to check user status.
 impl ChatMemberKind {
+    /// Returns chat member status.
     pub fn status(&self) -> ChatMemberStatus {
         match self {
             ChatMemberKind::Creator(_) => ChatMemberStatus::Creator,
@@ -162,6 +164,56 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true` if the user is the creator (owner) of the given chat.
+    pub fn is_creator(&self) -> bool {
+        matches!(self, Self::Creator { .. })
+    }
+
+    /// Returns `true` if the user is an administrator of the given chat.
+    ///
+    /// **Note**: this function doesn't return `true` if the user is the creator
+    /// of the given chat. See also: [`is_privileged`].
+    pub fn is_administrator(&self) -> bool {
+        matches!(self, Self::Administrator { .. })
+    }
+
+    /// Returns `true` if the user is a common member of the given chat.
+    pub fn is_member(&self) -> bool {
+        matches!(self, Self::Member { .. })
+    }
+
+    /// Returns `true` if the user is restricred in the given chat.
+    pub fn is_restricted(&self) -> bool {
+        matches!(self, Self::Restricted { .. })
+    }
+
+    /// Returns `true` if the user left the given chat.
+    pub fn is_left(&self) -> bool {
+        matches!(self, Self::Left { .. })
+    }
+
+    /// Returns `true` if the user is kicked from the given chat.
+    pub fn is_kicked(&self) -> bool {
+        matches!(self, Self::Kicked { .. })
+    }
+}
+
+/// Compound methods to check user status.
+impl ChatMemberKind {
+    /// Returns `true` if the user is privileged in the given chat. i.e. if the
+    /// user is either creator or administrator.
+    pub fn is_privileged(&self) -> bool {
+        self.is_administrator() || self.is_creator()
+    }
+
+    /// Returns `true` if the user is currently in chat. i.e. the user hasn't
+    /// left or been kicked.
+    pub fn is_in_chat(&self) -> bool {
+        !(self.is_left() || self.is_kicked())
+    }
+}
+
+impl ChatMemberKind {
     /// Getter for [`Administrator::custom_title`] and [`Creator::custom_title`]
     /// fields.
     pub fn custom_title(&self) -> Option<&str> {
