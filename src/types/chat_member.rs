@@ -224,6 +224,21 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true`, if the user's presence in the chat is hidden.
+    ///
+    /// I.e. returns `true` if the user is the creator of the chat or an
+    /// administrator in the chat and has [`can_manage_chat`] privilege.
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_manage_chat`]: ChatMemberKind::Administrator::can_manage_chat
+    pub fn is_anonymous(&self) -> bool {
+        match self {
+            Self::Creator(Creator { is_anonymous, .. })
+            | Self::Administrator(Administrator { is_anonymous, .. }) => *is_anonymous,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Kicked(_) => false,
+        }
+    }
+
     /// Getter for [`Restricted::until_date`] and [`Kicked::until_date`] fields.
     pub fn until_date(&self) -> Option<i32> {
         match &self {
@@ -250,14 +265,15 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the can access the chat event log, chat
+    /// Returns `true`, if the user can access the chat event log, chat
     /// statistics, message statistics in channels, see channel members, see
     /// anonymous administrators in supergroups and ignore slow mode. Implied by
     /// any other administrator privilege.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_manage_chat`] privilege.
+    /// - is an administrator in the given chat and has [`can_manage_chat`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: ChatMemberKind::Administrator::can_manage_chat
@@ -276,7 +292,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_change_info`] privilege.
+    /// - is an administrator in the given chat and has [`can_change_info`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_change_info`]: ChatMemberKind::Administrator::can_change_info
@@ -295,7 +312,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is administrator and has [`can_post_messages`] privilege.
+    /// - is an administrator in the given chat and has [`can_post_messages`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_post_messages`]: ChatMemberKind::Administrator::can_post_messages
@@ -314,7 +332,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is administrator and has [`can_edit_messages`] privilege.
+    /// - is an administrator in the given chat and has [`can_edit_messages`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_edit_messages`]: ChatMemberKind::Administrator::can_edit_messages
@@ -333,7 +352,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_delete_messages`] privilege.
+    /// - is an administrator in the given chat and has [`can_delete_messages`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_delete_messages`]:
@@ -353,7 +373,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_manage_voice_chats`] privilege.
+    /// - is an administrator in the given chat and has
+    ///   [`can_manage_voice_chats`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_voice_chats`]:
@@ -374,7 +395,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_invite_users`] privilege.
+    /// - is an administrator in the given chat and has [`can_invite_users`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_invite_users`]: ChatMemberKind::Administrator::can_invite_users
@@ -393,7 +415,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is administrator and has [`can_restrict_members`] privilege.
+    /// - is an administrator in the given chat and has [`can_restrict_members`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_restrict_members`]:
@@ -414,7 +437,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a supergroups)
-    /// - is administrator and has [`can_pin_messages`] privilege.
+    /// - is an administrator in the given chat and has [`can_pin_messages`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_pin_messages`]: ChatMemberKind::Administrator::can_pin_messages
@@ -436,7 +460,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is administrator and has [`can_promote_members`] privilege.
+    /// - is an administrator in the given chat and has [`can_promote_members`]
+    ///   privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_promote_members`]:
