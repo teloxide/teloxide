@@ -31,8 +31,12 @@ where
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     let cloned_requester = requester.clone();
-    repl_with_listener(requester, handler, update_listeners::polling_default(cloned_requester))
-        .await;
+    repl_with_listener(
+        requester,
+        handler,
+        update_listeners::polling_default(cloned_requester).await,
+    )
+    .await;
 }
 
 /// Like [`repl`], but with a custom [`UpdateListener`].
