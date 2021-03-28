@@ -106,19 +106,19 @@ pub struct Restricted {
     /// this user, unix time.
     pub until_date: i32,
 
-    /// Restricted only. `true`, if the user can send text messages,
+    /// `true`, if the user can send text messages,
     /// contacts, locations and venues.
     pub can_send_messages: bool,
 
-    /// Restricted only. `true`, if the user is allowed to send audios,
+    /// `true`, if the user is allowed to send audios,
     /// documents, photos, videos, video notes and voice notes.
     pub can_send_media_messages: bool,
 
-    /// Restricted only. `true`, if the user is allowed to send animations,
+    /// `true`, if the user is allowed to send animations,
     /// games, stickers and use inline bots.
     pub can_send_other_messages: bool,
 
-    /// Restricted only. `true`, if the user is allowed to add web page
+    /// `true`, if the user is allowed to add web page
     /// previews to their messages.
     pub can_add_web_page_previews: bool,
 }
@@ -453,63 +453,84 @@ impl ChatMemberKind {
     }
 }
 
+/// Methods to check member rights.
 impl ChatMemberKind {
-    /// Getter for [`Restricted::can_send_messages`] field.
-    pub fn can_send_messages(&self) -> Option<bool> {
+    /// Returns `true`, if the user can send text messages,
+    /// contacts, locations and venues.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been kicked from the chat
+    /// - is restricted and doesn't have [`can_send_messages`] right
+    /// Returns `true` otherwise.
+    ///
+    /// [`can_send_messages`]: Restricted::can_send_messages
+    pub fn can_send_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
                 can_send_messages, ..
-            }) => Some(*can_send_messages),
-            Self::Creator(_)
-            | Self::Administrator(_)
-            | Self::Member
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_send_messages,
+            Self::Creator(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Restricted::can_send_media_messages`] field.
-    pub fn can_send_media_messages(&self) -> Option<bool> {
+    /// Returns `true`, if the user is allowed to send audios,
+    /// documents, photos, videos, video notes and voice notes.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been kicked from the chat
+    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// Returns `true` otherwise.
+    ///
+    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    pub fn can_send_media_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
                 can_send_media_messages,
                 ..
-            }) => Some(*can_send_media_messages),
-            Self::Creator(_)
-            | Self::Administrator(_)
-            | Self::Member
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_send_media_messages,
+            Self::Creator(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Restricted::can_send_other_messages`] field.
-    pub fn can_send_other_messages(&self) -> Option<bool> {
+    /// Returns `true`, if the user is allowed to send animations,
+    /// games, stickers and use inline bots.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been kicked from the chat
+    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// Returns `true` otherwise.
+    ///
+    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    pub fn can_send_other_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
                 can_send_other_messages,
                 ..
-            }) => Some(*can_send_other_messages),
-            Self::Creator(_)
-            | Self::Administrator(_)
-            | Self::Member
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_send_other_messages,
+            Self::Creator(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Kicked(_) => false,
         }
     }
 
-    /// Getter for [`Restricted::can_add_web_page_previews`] field.
-    pub fn can_add_web_page_previews(&self) -> Option<bool> {
+    /// Returns `true`, if the user is allowed to add web page
+    /// previews to their messages.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been kicked from the chat
+    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// Returns `true` otherwise.
+    ///
+    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    pub fn can_add_web_page_previews(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
                 can_add_web_page_previews,
                 ..
-            }) => Some(*can_add_web_page_previews),
-            Self::Creator(_)
-            | Self::Administrator(_)
-            | Self::Member
-            | Self::Left
-            | Self::Kicked(_) => None,
+            }) => *can_add_web_page_previews,
+            Self::Creator(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Kicked(_) => false,
         }
     }
 }
