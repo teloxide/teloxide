@@ -36,7 +36,7 @@ where
     dialogues_repl_with_listener(
         requester,
         handler,
-        update_listeners::polling_default(cloned_requester),
+        update_listeners::polling_default(cloned_requester).await,
     )
     .await;
 }

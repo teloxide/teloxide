@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+ - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
+
 ### Fixed
 
 - Remove `reqwest` dependency. It's not needed after the [teloxide-core] integration.
+
 ## [0.4.0] - 2021-03-22
 
 ### Added

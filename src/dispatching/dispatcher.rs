@@ -233,7 +233,7 @@ where
         <R as Requester>::GetUpdatesFaultTolerant: Send,
     {
         self.dispatch_with_listener(
-            update_listeners::polling_default(self.requester.clone()),
+            update_listeners::polling_default(self.requester.clone()).await,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
         .await;
