@@ -26,7 +26,7 @@ use teloxide_core::{requests::Requester, types::Message};
 pub async fn dialogues_repl<'a, R, H, D, Fut>(requester: R, handler: H)
 where
     H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
-    D: Default + Send + 'static,
+    D: Clone + Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     R: Requester + Send + Clone + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
@@ -61,7 +61,7 @@ pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
     listener: L,
 ) where
     H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
-    D: Default + Send + 'static,
+    D: Clone + Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,

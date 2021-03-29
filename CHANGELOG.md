@@ -6,13 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+ - `Storage::get_dialogue`
+
 ### Changed
 
+ - Do not return a dialogue from `Storage::{remove_dialogue, update_dialogue}`.
+ - Require `D: Clone` in `dialogues_repl(_with_listener)` and `InMemStorage`.
  - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
 
 ### Fixed
 
-- Remove `reqwest` dependency. It's not needed after the [teloxide-core] integration.
+ - Remove the `reqwest` dependency. It's not needed after the [teloxide-core] integration.
+ - A storage persistency bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
+ - Log errors from `Storage::{remove_dialogue, update_dialogue}` in `DialogueDispatcher` ([issue 302](https://github.com/teloxide/teloxide/issues/302)).
 
 ## [0.4.0] - 2021-03-22
 

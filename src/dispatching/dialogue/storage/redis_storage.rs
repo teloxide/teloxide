@@ -56,7 +56,7 @@ where
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+    ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let res = redis::pipe()
                 .atomic()
@@ -70,13 +70,14 @@ where
             // bulk, so all other branches should be unreachable
             match res {
                 redis::Value::Bulk(bulk) if bulk.len() == 1 => {
-                    Ok(Option::<Vec<u8>>::from_redis_value(&bulk[0])?
+                    Option::<Vec<u8>>::from_redis_value(&bulk[0])?
                         .map(|v| {
                             self.serializer
                                 .deserialize(&v)
                                 .map_err(RedisStorageError::SerdeError)
                         })
-                        .transpose()?)
+                        .transpose()?;
+                    Ok(())
                 }
                 _ => unreachable!(),
             }
@@ -87,14 +88,24 @@ where
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+    ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
+            self.conn.lock().await.set::<_, Vec<u8>, _>(chat_id, dialogue).await?;
+            Ok(())
+        })
+    }
+
+    fn get_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+        Box::pin(async move {
             self.conn
                 .lock()
                 .await
-                .getset::<_, Vec<u8>, Option<Vec<u8>>>(chat_id, dialogue)
+                .get::<_, Option<Vec<u8>>>(chat_id)
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()

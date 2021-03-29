@@ -25,27 +25,41 @@ impl<S> InMemStorage<S> {
     }
 }
 
-impl<D> Storage<D> for InMemStorage<D> {
+impl<D> Storage<D> for InMemStorage<D>
+where
+    D: Clone,
+    D: Send + 'static,
+{
     type Error = std::convert::Infallible;
 
-    fn remove_dialogue(
-        self: Arc<Self>,
-        chat_id: i64,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    fn remove_dialogue(self: Arc<Self>, chat_id: i64) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
-        Box::pin(async move { Ok(self.map.lock().await.remove(&chat_id)) })
+        Box::pin(async move {
+            self.map.lock().await.remove(&chat_id);
+            Ok(())
+        })
     }
 
     fn update_dialogue(
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
-        Box::pin(async move { Ok(self.map.lock().await.insert(chat_id, dialogue)) })
+        Box::pin(async move {
+            self.map.lock().await.insert(chat_id, dialogue);
+            Ok(())
+        })
+    }
+
+    fn get_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+        Box::pin(async move { Ok(self.map.lock().await.get(&chat_id).map(ToOwned::to_owned)) })
     }
 }

@@ -42,26 +42,26 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 pub trait Storage<D> {
     type Error;
 
-    /// Removes a dialogue with the specified `chat_id`.
-    ///
-    /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
-    /// `dialogue` was deleted.
+    /// Removes a dialogue indexed by `chat_id`.
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static;
 
-    /// Updates a dialogue with the specified `chat_id`.
-    ///
-    /// Returns `None` if there wasn't such a dialogue, `Some(dialogue)` if a
-    /// `dialogue` was updated.
+    /// Updates a dialogue indexed by `chat_id` with `dialogue`.
     fn update_dialogue(
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static;
+
+    /// Provides a dialogue indexed by `chat_id`.
+    fn get_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>;
 }
