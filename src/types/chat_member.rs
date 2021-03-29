@@ -164,35 +164,49 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user is the creator (owner) of the given chat.
+    /// Returns `true` if the user is the [creator] (owner) of the given chat.
+    ///
+    /// [creator]: ChatMemberKind::Creator
     pub fn is_creator(&self) -> bool {
         matches!(self, Self::Creator { .. })
     }
 
-    /// Returns `true` if the user is an administrator of the given chat.
+    /// Returns `true` if the user is an [administrator] of the given chat.
     ///
-    /// **Note**: this function doesn't return `true` if the user is the creator
-    /// of the given chat. See also: [`is_privileged`].
+    /// [administrator]: ChatMemberKind::Administrator
+    ///
+    /// **Note**: this function **doesn't** return `true` if the user is the
+    /// creator of the given chat. See also: [`is_privileged`].
+    ///
+    /// [`is_privileged`]: ChatMemberKind::is_privileged
     pub fn is_administrator(&self) -> bool {
         matches!(self, Self::Administrator { .. })
     }
 
-    /// Returns `true` if the user is a common member of the given chat.
+    /// Returns `true` if the user is a common [member] of the given chat.
+    ///
+    /// [member]: ChatMemberKind::Member
     pub fn is_member(&self) -> bool {
         matches!(self, Self::Member { .. })
     }
 
-    /// Returns `true` if the user is restricred in the given chat.
+    /// Returns `true` if the user is [restricted] in the given chat.
+    ///
+    /// [restricted]: ChatMemberKind::Restricted
     pub fn is_restricted(&self) -> bool {
         matches!(self, Self::Restricted { .. })
     }
 
-    /// Returns `true` if the user left the given chat.
+    /// Returns `true` if the user [left] the given chat.
+    ///
+    /// [left]: ChatMemberKind::Left
     pub fn is_left(&self) -> bool {
         matches!(self, Self::Left { .. })
     }
 
-    /// Returns `true` if the user is kicked from the given chat.
+    /// Returns `true` if the user is [kicked] from the given chat.
+    ///
+    /// [kicked]: ChatMemberKind::Kicked
     pub fn is_kicked(&self) -> bool {
         matches!(self, Self::Kicked { .. })
     }
@@ -201,14 +215,20 @@ impl ChatMemberKind {
 /// Compound methods to check user status.
 impl ChatMemberKind {
     /// Returns `true` if the user is privileged in the given chat. i.e. if the
-    /// user is either creator or administrator.
+    /// user is either the [creator] or an [administrator] in the given chat.
+    ///
+    /// [creator]: ChatMemberKind::Creator
+    /// [administrator]: ChatMemberKind::Administrator
     pub fn is_privileged(&self) -> bool {
         self.is_administrator() || self.is_creator()
     }
 
-    /// Returns `true` if the user is currently in chat. i.e. the user hasn't
-    /// left or been kicked.
-    pub fn is_in_chat(&self) -> bool {
+    /// Returns `true` if the user is currently present in the chat. i.e. if the
+    /// user **hasn't** [left] or been [kicked].
+    ///
+    /// [left]: ChatMemberKind::Left
+    /// [kicked]: ChatMemberKind::Kicked
+    pub fn is_present(&self) -> bool {
         !(self.is_left() || self.is_kicked())
     }
 }
@@ -230,7 +250,7 @@ impl ChatMemberKind {
     /// administrator in the chat and has [`can_manage_chat`] privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_manage_chat`]: ChatMemberKind::Administrator::can_manage_chat
+    /// [`can_manage_chat`]: Administrator::can_manage_chat
     pub fn is_anonymous(&self) -> bool {
         match self {
             Self::Creator(Creator { is_anonymous, .. })
@@ -276,7 +296,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_manage_chat`]: ChatMemberKind::Administrator::can_manage_chat
+    /// [`can_manage_chat`]: Administrator::can_manage_chat
     pub fn can_manage_chat(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -296,7 +316,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_change_info`]: ChatMemberKind::Administrator::can_change_info
+    /// [`can_change_info`]: Administrator::can_change_info
     pub fn can_change_info(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -316,7 +336,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_post_messages`]: ChatMemberKind::Administrator::can_post_messages
+    /// [`can_post_messages`]: Administrator::can_post_messages
     pub fn can_post_messages(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -336,7 +356,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_edit_messages`]: ChatMemberKind::Administrator::can_edit_messages
+    /// [`can_edit_messages`]: Administrator::can_edit_messages
     pub fn can_edit_messages(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -356,8 +376,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_delete_messages`]:
-    /// ChatMemberKind::Administrator::can_delete_messages
+    /// [`can_delete_messages`]: Administrator::can_delete_messages
     pub fn can_delete_messages(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -377,8 +396,7 @@ impl ChatMemberKind {
     ///   [`can_manage_voice_chats`] privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_manage_voice_chats`]:
-    /// ChatMemberKind::Administrator::can_manage_voice_chats
+    /// [`can_manage_voice_chats`]: Administrator::can_manage_voice_chats
     pub fn can_manage_voice_chats(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -399,7 +417,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_invite_users`]: ChatMemberKind::Administrator::can_invite_users
+    /// [`can_invite_users`]: Administrator::can_invite_users
     pub fn can_invite_users(&self) -> bool {
         match &self {
             Self::Creator(_) => true,
@@ -419,8 +437,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_restrict_members`]:
-    /// ChatMemberKind::Administrator::can_restrict_members
+    /// [`can_restrict_members`]: Administrator::can_restrict_members
     pub fn can_restrict_members(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -441,7 +458,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_pin_messages`]: ChatMemberKind::Administrator::can_pin_messages
+    /// [`can_pin_messages`]: Administrator::can_pin_messages
     pub fn can_pin_messages(&self) -> bool {
         match self {
             Self::Creator(_) => true,
@@ -464,8 +481,7 @@ impl ChatMemberKind {
     ///   privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_promote_members`]:
-    /// ChatMemberKind::Administrator::can_promote_members
+    /// [`can_promote_members`]: Administrator::can_promote_members
     pub fn can_promote_members(&self) -> bool {
         match self {
             Self::Creator(_) => true,
