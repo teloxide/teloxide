@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
 - `reqwest` dependency bringing `native-tls` in even when `rustls` was selected ([#71][pr71])
+- Type of `{Restricted,Kicked}::until_date` fields: `i32` => `i64` ([#74][pr74])
 
 [pr71]: https://github.com/teloxide/teloxide-core/pull/71
 [pr73]: https://github.com/teloxide/teloxide-core/pull/73

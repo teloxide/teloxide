@@ -104,7 +104,7 @@ pub struct Administrator {
 pub struct Restricted {
     /// Date when restrictions will be lifted for
     /// this user, unix time.
-    pub until_date: i32,
+    pub until_date: i64,
 
     /// `true`, if the user can send text messages,
     /// contacts, locations and venues.
@@ -129,7 +129,7 @@ pub struct Restricted {
 pub struct Kicked {
     /// Date when restrictions will be lifted for
     /// this user, unix time.
-    pub until_date: i32,
+    pub until_date: i64,
 }
 
 /// This allows calling [`ChatMemberKind`]'s methods directly on [`ChatMember`]
@@ -260,7 +260,7 @@ impl ChatMemberKind {
     }
 
     /// Getter for [`Restricted::until_date`] and [`Kicked::until_date`] fields.
-    pub fn until_date(&self) -> Option<i32> {
+    pub fn until_date(&self) -> Option<i64> {
         match &self {
             Self::Creator(_) | Self::Administrator(_) | Self::Member | Self::Left => None,
             Self::Restricted(Restricted { until_date, .. })
