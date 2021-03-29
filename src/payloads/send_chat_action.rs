@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatAction, ChatId, Message};
+use crate::types::{ChatAction, ChatId, True};
 
 impl_payload! {
     /// Use this method when you need to tell the user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status). Returns True on success.
@@ -19,7 +19,7 @@ impl_payload! {
     ///
     /// [ImageBot]: https://t.me/imagebot
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendChatAction (SendChatActionSetters) => Message {
+    pub SendChatAction (SendChatActionSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: ChatId [into],
