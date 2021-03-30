@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#75][pr75])
+
+[pr75]: https://github.com/teloxide/teloxide-core/pull/75
+
 ### Fixed
 
 - `SendChatAction` output type `Message` => `True` ([#75][pr75])

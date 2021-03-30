@@ -146,6 +146,7 @@ impl Default for Limits {
 ///
 /// As such, we encourage not to use `ChatId::ChannelUsername(u)` with this bot
 /// wrapper.
+#[derive(Clone)]
 pub struct Throttle<B> {
     bot: B,
     // `RequestLock` allows to unlock requests (allowing them to be sent).
