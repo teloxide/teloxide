@@ -13,11 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 
+### Changed
+
+- Refactor `ChatMember` methods ([#74][pr74])
+  - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callible directly on `ChatMember`
+  - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
+  - Refactor privilege getters 
+
+[pr74]: https://github.com/teloxide/teloxide-core/pull/74
+
 ### Fixed
 
 - `SendChatAction` output type `Message` => `True` ([#75][pr75])
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
 - `reqwest` dependency bringing `native-tls` in even when `rustls` was selected ([#71][pr71])
+- Type of `{Restricted,Kicked}::until_date` fields: `i32` => `i64` ([#74][pr74])
 
 [pr71]: https://github.com/teloxide/teloxide-core/pull/71
 [pr73]: https://github.com/teloxide/teloxide-core/pull/73
