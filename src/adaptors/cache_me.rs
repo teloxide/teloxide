@@ -18,6 +18,7 @@ use crate::{
 ///
 /// Bot's user is hardly ever changed, so sometimes it's reasonable to cache
 /// response from `get_me` method.
+#[derive(Clone)]
 pub struct CacheMe<B> {
     bot: B,
     me: Arc<OnceCell<Me>>,

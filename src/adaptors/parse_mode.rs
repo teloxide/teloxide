@@ -6,6 +6,7 @@ use crate::{
 
 /// Default parse mode adaptor, see
 /// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode).
+#[derive(Clone)]
 pub struct DefaultParseMode<B> {
     bot: B,
     mode: ParseMode,
