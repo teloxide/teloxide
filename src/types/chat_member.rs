@@ -150,7 +150,7 @@ impl Deref for ChatMember {
     }
 }
 
-/// Simple methods to check user status.
+/// Simple methods for checking a user status.
 impl ChatMemberKind {
     /// Returns chat member status.
     pub fn status(&self) -> ChatMemberStatus {
@@ -212,7 +212,7 @@ impl ChatMemberKind {
     }
 }
 
-/// Compound methods to check user status.
+/// Compound methods for checking a user status.
 impl ChatMemberKind {
     /// Returns `true` if the user is privileged in the given chat. i.e. if the
     /// user is either the [creator] or an [administrator] in the given chat.
