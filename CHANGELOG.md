@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `impl Clone` for {`CacheMe<_>`, `DefaultParseMode<_>`, `Throttle<_>`} ([#75][pr75])
+- `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#75][pr75])
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 
