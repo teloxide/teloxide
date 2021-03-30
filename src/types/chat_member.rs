@@ -110,15 +110,15 @@ pub struct Restricted {
     /// contacts, locations and venues.
     pub can_send_messages: bool,
 
-    /// `true`, if the user is allowed to send audios,
+    /// `true` if the user is allowed to send audios,
     /// documents, photos, videos, video notes and voice notes.
     pub can_send_media_messages: bool,
 
-    /// `true`, if the user is allowed to send animations,
+    /// `true` if the user is allowed to send animations,
     /// games, stickers and use inline bots.
     pub can_send_other_messages: bool,
 
-    /// `true`, if the user is allowed to add web page
+    /// `true` if the user is allowed to add web page
     /// previews to their messages.
     pub can_add_web_page_previews: bool,
 }
@@ -132,7 +132,7 @@ pub struct Kicked {
     pub until_date: i64,
 }
 
-/// This allows calling [`ChatMemberKind`]'s methods directly on [`ChatMember`]
+/// This allows calling [`ChatMemberKind`]'s methods directly on [`ChatMember`].
 ///
 /// ```no_run
 /// use teloxide_core::types::ChatMember;
@@ -247,7 +247,7 @@ impl ChatMemberKind {
     /// Returns `true`, if the user's presence in the chat is hidden.
     ///
     /// I.e. returns `true` if the user is the creator of the chat or an
-    /// administrator in the chat and has [`can_manage_chat`] privilege.
+    /// administrator in the chat and has the [`can_manage_chat`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: Administrator::can_manage_chat
@@ -269,7 +269,7 @@ impl ChatMemberKind {
     }
 }
 
-/// Methods to check admin privileges.
+/// Methods for checking admin privileges.
 impl ChatMemberKind {
     /// Returns `true` if the user is an administrator in the given chat and the
     /// bot is allowed to edit administrator privileges of that user.
@@ -312,7 +312,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has [`can_change_info`]
+    /// - is an administrator in the given chat and has the [`can_change_info`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -352,7 +352,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is an administrator in the given chat and has [`can_edit_messages`]
+    /// - is an administrator in the given chat and has the [`can_edit_messages`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -372,7 +372,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has [`can_delete_messages`]
+    /// - is an administrator in the given chat and has the [`can_delete_messages`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -393,7 +393,7 @@ impl ChatMemberKind {
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
     /// - is an administrator in the given chat and has
-    ///   [`can_manage_voice_chats`] privilege.
+    /// the [`can_manage_voice_chats`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_voice_chats`]: Administrator::can_manage_voice_chats
@@ -413,7 +413,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has [`can_invite_users`]
+    /// - is an administrator in the given chat and has the [`can_invite_users`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -433,7 +433,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has [`can_restrict_members`]
+    /// - is an administrator in the given chat and has the [`can_restrict_members`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -453,8 +453,8 @@ impl ChatMemberKind {
     /// supergroups only.
     ///
     /// I.e. returns `true` if the user
-    /// - is the creator of the chat (even if the chat is not a supergroups)
-    /// - is an administrator in the given chat and has [`can_pin_messages`]
+    /// - is the creator of the chat (even if the chat is not a supergroup)
+    /// - is an administrator in the given chat and has the [`can_pin_messages`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -477,7 +477,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is an administrator in the given chat and has [`can_promote_members`]
+    /// - is an administrator in the given chat and has the [`can_promote_members`]
     ///   privilege.
     /// Returns `false` otherwise.
     ///
@@ -494,14 +494,14 @@ impl ChatMemberKind {
     }
 }
 
-/// Methods to check member rights.
+    /// Methods for checking member rights.
 impl ChatMemberKind {
     /// Returns `true`, if the user can send text messages,
     /// contacts, locations and venues.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
-    /// - is restricted and doesn't have [`can_send_messages`] right
+    /// - is restricted and doesn't have the [`can_send_messages`] right
     /// Returns `true` otherwise.
     ///
     /// [`can_send_messages`]: Restricted::can_send_messages
@@ -520,7 +520,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
-    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// - is restricted and doesn't have the [`can_send_media_messages`] right
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
@@ -540,7 +540,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
-    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// - is restricted and doesn't have the [`can_send_media_messages`] right
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
@@ -560,7 +560,7 @@ impl ChatMemberKind {
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
-    /// - is restricted and doesn't have [`can_send_media_messages`] right
+    /// - is restricted and doesn't have the [`can_send_media_messages`] right
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
