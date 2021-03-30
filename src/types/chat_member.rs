@@ -46,55 +46,49 @@ pub struct Administrator {
     /// Custom title for this user.
     pub custom_title: Option<String>,
 
-    /// True, if the user's presence in the chat is hidden
+    /// `true` if the user's presence in the chat is hidden
     pub is_anonymous: bool,
 
-    /// `true`, if the bot is allowed to edit
-    /// administrator privileges of that user.
+    /// `true` if the bot is allowed to edit administrator privileges of that
+    /// user.
     pub can_be_edited: bool,
 
-    /// `true`, if the administrator can access the chat event log, chat
+    /// `true` if the administrator can access the chat event log, chat
     /// statistics, message statistics in channels, see channel members, see
     /// anonymous administrators in supergroups and ignore slow mode. Implied by
     /// any other administrator privilege
     pub can_manage_chat: bool,
 
-    /// `true`, if the administrator can change the chat
-    /// title, photo and other settings.
+    /// `true` if the administrator can change the chat title, photo and other
+    /// settings.
     pub can_change_info: bool,
 
-    /// `true`, if the administrator can post in the
-    /// channel, channels only.
+    /// `true` if the administrator can post in the channel, channels only.
     pub can_post_messages: Option<bool>,
 
-    /// `true`, if the administrator can edit messages of
-    /// other users and can pin messages, channels only.
+    /// `true` if the administrator can edit messages of other users and can pin
+    /// messages, channels only.
     pub can_edit_messages: Option<bool>,
 
-    /// `true`, if the administrator can delete messages
-    /// of other users.
+    /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
 
-    /// `true`, if the administrator can manage voice chats.
+    /// `true` if the administrator can manage voice chats.
     pub can_manage_voice_chats: bool,
 
-    /// `true`, if the administrator can invite new users
-    /// to the chat.
+    /// `true` if the administrator can invite new users to the chat.
     pub can_invite_users: bool,
 
-    /// `true`, if the administrator can restrict,
-    /// ban or unban chat members.
+    /// `true` if the administrator can restrict, ban or unban chat members.
     pub can_restrict_members: bool,
 
-    /// `true`, if the administrator can pin messages,
-    /// supergroups only.
+    /// `true` if the administrator can pin messages, supergroups only.
     pub can_pin_messages: Option<bool>,
 
-    /// `true`, if the administrator can add new
-    /// administrators with a subset of his own privileges or demote
-    /// administrators that he has promoted, directly or indirectly
-    /// (promoted by administrators that were appointed by the
-    /// user).
+    /// `true` if the administrator can add new administrators with a subset of
+    /// his own privileges or demote administrators that he has promoted,
+    /// directly or indirectly (promoted by administrators that were appointed
+    /// by the user).
     pub can_promote_members: bool,
 }
 
@@ -102,24 +96,23 @@ pub struct Administrator {
 /// enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Restricted {
-    /// Date when restrictions will be lifted for
-    /// this user, unix time.
+    /// Date when restrictions will be lifted for this user, unix time.
     pub until_date: i64,
 
-    /// `true` if the user can send text messages,
-    /// contacts, locations and venues.
+    /// `true` if the user can send text messages, contacts, locations and
+    /// venues.
     pub can_send_messages: bool,
 
-    /// `true` if the user is allowed to send audios,
-    /// documents, photos, videos, video notes and voice notes.
+    /// `true` if the user is allowed to send audios, documents, photos, videos,
+    /// video notes and voice notes.
     pub can_send_media_messages: bool,
 
-    /// `true` if the user is allowed to send animations,
-    /// games, stickers and use inline bots.
+    /// `true` if the user is allowed to send animations, games, stickers and
+    /// use inline bots.
     pub can_send_other_messages: bool,
 
-    /// `true` if the user is allowed to add web page
-    /// previews to their messages.
+    /// `true` if the user is allowed to add web page previews to their
+    /// messages.
     pub can_add_web_page_previews: bool,
 }
 
@@ -127,8 +120,7 @@ pub struct Restricted {
 /// enum.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Kicked {
-    /// Date when restrictions will be lifted for
-    /// this user, unix time.
+    /// Date when restrictions will be lifted for this user, unix time.
     pub until_date: i64,
 }
 
@@ -307,8 +299,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can change the chat
-    /// title, photo and other settings.
+    /// Returns `true` if the user can change the chat title, photo and other
+    /// settings.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
@@ -327,8 +319,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can post in the
-    /// channel, channels only.
+    /// Returns `true` if the user can post in the channel, channels only.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
@@ -347,13 +338,13 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can edit messages of
-    /// other users and can pin messages, channels only.
+    /// Returns `true` if the user can edit messages of other users and can pin
+    /// messages, channels only.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is an administrator in the given chat and has the [`can_edit_messages`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`can_edit_messages`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_edit_messages`]: Administrator::can_edit_messages
@@ -367,13 +358,12 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can delete messages
-    /// of other users.
+    /// Returns `true` if the user can delete messages of other users.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has the [`can_delete_messages`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`can_delete_messages`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_delete_messages`]: Administrator::can_delete_messages
@@ -392,8 +382,8 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has
-    /// the [`can_manage_voice_chats`] privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`can_manage_voice_chats`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_voice_chats`]: Administrator::can_manage_voice_chats
@@ -408,8 +398,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can can invite new users
-    /// to the chat.
+    /// Returns `true` if the user can can invite new users to the chat.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
@@ -428,13 +417,12 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can restrict,
-    /// ban or unban chat members.
+    /// Returns `true` if the user can restrict, ban or unban chat members.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
-    /// - is an administrator in the given chat and has the [`can_restrict_members`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`can_restrict_members`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_restrict_members`]: Administrator::can_restrict_members
@@ -449,8 +437,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can pin messages,
-    /// supergroups only.
+    /// Returns `true` if the user can pin messages, supergroups only.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a supergroup)
@@ -469,16 +456,15 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can add new
-    /// administrators with a subset of his own privileges or demote
-    /// administrators that he has promoted, directly or indirectly
-    /// (promoted by administrators that were appointed by the
-    /// user).
+    /// Returns `true` if the user can add new administrators with a subset of
+    /// his own privileges or demote administrators that he has promoted,
+    /// directly or indirectly (promoted by administrators that were appointed
+    /// by the user).
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat (even if the chat is not a channel)
-    /// - is an administrator in the given chat and has the [`can_promote_members`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`can_promote_members`] privilege.
     /// Returns `false` otherwise.
     ///
     /// [`can_promote_members`]: Administrator::can_promote_members
@@ -494,10 +480,10 @@ impl ChatMemberKind {
     }
 }
 
-    /// Methods for checking member rights.
+/// Methods for checking member rights.
 impl ChatMemberKind {
-    /// Returns `true` if the user can send text messages,
-    /// contacts, locations and venues.
+    /// Returns `true` if the user can send text messages, contacts, locations
+    /// and venues.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
@@ -515,8 +501,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user is allowed to send audios,
-    /// documents, photos, videos, video notes and voice notes.
+    /// Returns `true` if the user is allowed to send audios, documents, photos,
+    /// videos, video notes and voice notes.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
@@ -535,8 +521,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user is allowed to send animations,
-    /// games, stickers and use inline bots.
+    /// Returns `true` if the user is allowed to send animations, games,
+    /// stickers and use inline bots.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
@@ -555,8 +541,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user is allowed to add web page
-    /// previews to their messages.
+    /// Returns `true` if the user is allowed to add web page previews to their
+    /// messages.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been kicked from the chat
