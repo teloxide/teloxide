@@ -106,7 +106,7 @@ pub struct Restricted {
     /// this user, unix time.
     pub until_date: i64,
 
-    /// `true`, if the user can send text messages,
+    /// `true` if the user can send text messages,
     /// contacts, locations and venues.
     pub can_send_messages: bool,
 
@@ -244,7 +244,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the user's presence in the chat is hidden.
+    /// Returns `true` if the user's presence in the chat is hidden.
     ///
     /// I.e. returns `true` if the user is the creator of the chat or an
     /// administrator in the chat and has the [`can_manage_chat`] privilege.
@@ -285,7 +285,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the user can access the chat event log, chat
+    /// Returns `true` if the user can access the chat event log, chat
     /// statistics, message statistics in channels, see channel members, see
     /// anonymous administrators in supergroups and ignore slow mode. Implied by
     /// any other administrator privilege.
@@ -307,7 +307,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can change the chat
+    /// Returns `true` if the user can change the chat
     /// title, photo and other settings.
     ///
     /// I.e. returns `true` if the user
@@ -327,7 +327,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can post in the
+    /// Returns `true` if the user can post in the
     /// channel, channels only.
     ///
     /// I.e. returns `true` if the user
@@ -347,7 +347,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can edit messages of
+    /// Returns `true` if the user can edit messages of
     /// other users and can pin messages, channels only.
     ///
     /// I.e. returns `true` if the user
@@ -367,7 +367,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can delete messages
+    /// Returns `true` if the user can delete messages
     /// of other users.
     ///
     /// I.e. returns `true` if the user
@@ -388,7 +388,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can manage voice chats.
+    /// Returns `true` if the user can manage voice chats.
     ///
     /// I.e. returns `true` if the user
     /// - is the creator of the chat
@@ -408,7 +408,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can can invite new users
+    /// Returns `true` if the user can can invite new users
     /// to the chat.
     ///
     /// I.e. returns `true` if the user
@@ -428,7 +428,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can restrict,
+    /// Returns `true` if the user can restrict,
     /// ban or unban chat members.
     ///
     /// I.e. returns `true` if the user
@@ -449,7 +449,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can pin messages,
+    /// Returns `true` if the user can pin messages,
     /// supergroups only.
     ///
     /// I.e. returns `true` if the user
@@ -469,7 +469,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, the user can add new
+    /// Returns `true` if the user can add new
     /// administrators with a subset of his own privileges or demote
     /// administrators that he has promoted, directly or indirectly
     /// (promoted by administrators that were appointed by the
@@ -496,7 +496,7 @@ impl ChatMemberKind {
 
     /// Methods for checking member rights.
 impl ChatMemberKind {
-    /// Returns `true`, if the user can send text messages,
+    /// Returns `true` if the user can send text messages,
     /// contacts, locations and venues.
     ///
     /// I.e. returns **`false`** if the user
@@ -515,7 +515,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the user is allowed to send audios,
+    /// Returns `true` if the user is allowed to send audios,
     /// documents, photos, videos, video notes and voice notes.
     ///
     /// I.e. returns **`false`** if the user
@@ -535,7 +535,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the user is allowed to send animations,
+    /// Returns `true` if the user is allowed to send animations,
     /// games, stickers and use inline bots.
     ///
     /// I.e. returns **`false`** if the user
@@ -555,7 +555,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true`, if the user is allowed to add web page
+    /// Returns `true` if the user is allowed to add web page
     /// previews to their messages.
     ///
     /// I.e. returns **`false`** if the user
