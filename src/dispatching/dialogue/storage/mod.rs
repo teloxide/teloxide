@@ -43,7 +43,7 @@ pub trait Storage<D> {
     type Error;
 
     /// Removes a dialogue indexed by `chat_id`.
-    #[must_use]
+    #[must_use = "You must .await it as futures are lazy"]
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
@@ -52,7 +52,7 @@ pub trait Storage<D> {
         D: Send + 'static;
 
     /// Updates a dialogue indexed by `chat_id` with `dialogue`.
-    #[must_use]
+    #[must_use = "You must .await it as futures are lazy"]
     fn update_dialogue(
         self: Arc<Self>,
         chat_id: i64,
@@ -62,7 +62,7 @@ pub trait Storage<D> {
         D: Send + 'static;
 
     /// Provides a dialogue indexed by `chat_id`.
-    #[must_use]
+    #[must_use = "You must .await it as futures are lazy"]
     fn get_dialogue(
         self: Arc<Self>,
         chat_id: i64,
