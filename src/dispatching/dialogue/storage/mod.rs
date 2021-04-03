@@ -43,6 +43,7 @@ pub trait Storage<D> {
     type Error;
 
     /// Removes a dialogue indexed by `chat_id`.
+    #[must_use]
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
@@ -51,6 +52,7 @@ pub trait Storage<D> {
         D: Send + 'static;
 
     /// Updates a dialogue indexed by `chat_id` with `dialogue`.
+    #[must_use]
     fn update_dialogue(
         self: Arc<Self>,
         chat_id: i64,
@@ -60,6 +62,7 @@ pub trait Storage<D> {
         D: Send + 'static;
 
     /// Provides a dialogue indexed by `chat_id`.
+    #[must_use]
     fn get_dialogue(
         self: Arc<Self>,
         chat_id: i64,
