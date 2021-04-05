@@ -381,31 +381,6 @@ async fn handle_message(
 
 The second one produces very strange compiler messages due to the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
-## Cargo features
-
-| Feature | Description |
-|----------|----------|
-| `redis-storage` | Enables the [Redis] support.| 
-| `sqlite-storage` | Enables the [Sqlite] support. |
-| `cbor-serializer` | Enables the [CBOR] serializer for dialogues. |
-| `bincode-serializer` | Enables the [Bincode] serializer for dialogues. |
-| `macros` | Re-exports macros from [`teloxide-macros`]. |
-| `native-tls` | Enables the [`native-tls`] TLS implementation (enabled by default). |
-| `rustls` | Enables the [`rustls`] TLS implementation. |
-| `auto-send` | Enables the `AutoSend` bot adaptor. |
-| `cache-me` | Enables the `CacheMe` bot adaptor. |
-| `frunk` | Enables [`teloxide::utils::UpState`]. |
-| `full` | Enables all the features except `nightly`. |
-| `nightly` | Enables nightly-only features (see the [teloxide-core features]). |
-
-[CBOR]: https://en.wikipedia.org/wiki/CBOR
-[Bincode]: https://github.com/servo/bincode
-[`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
-[`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
-[`native-tls`]: https://docs.rs/native-tls
-[`rustls`]: https://docs.rs/rustls
-[teloxide-core features]: https://docs.rs/teloxide-core/latest/teloxide_core/#cargo-features
-
 ## FAQ
 **Q: Where I can ask questions?**
 
