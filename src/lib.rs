@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "nightly", feature(extended_key_value_attributes))]
+
 //! A full-featured framework that empowers you to easily build [Telegram bots]
 //! using the [`async`/`.await`] syntax in [Rust]. It handles all the difficult
 //! stuff so you can focus only on your business logic.
@@ -33,6 +35,8 @@
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/
 
+// This hack is used to cancel formatting for a Markdown table. See <https://github.com/rust-lang/rustfmt/issues/4210>.
+#![cfg_attr(feature = "nightly", doc = include_str!("features.txt"))]
 // https://github.com/teloxide/teloxide/raw/master/logo.svg doesn't work in html_logo_url, I don't know why.
 #![doc(
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
