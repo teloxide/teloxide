@@ -35,8 +35,12 @@
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/
 
-// This hack is used to cancel formatting for a Markdown table. See <https://github.com/rust-lang/rustfmt/issues/4210>.
-#![cfg_attr(feature = "nightly", doc = include_str!("features.txt"))]
+// This hack is used to cancel formatting for a Markdown table. See [1], [2], and [3].
+//
+// [1]: https://github.com/rust-lang/rustfmt/issues/4210
+// [2]: https://github.com/rust-lang/rustfmt/issues/4787
+// [3]: https://github.com/rust-lang/rust/issues/82768#issuecomment-803935643
+#![cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("features.txt")))]
 // https://github.com/teloxide/teloxide/raw/master/logo.svg doesn't work in html_logo_url, I don't know why.
 #![doc(
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
