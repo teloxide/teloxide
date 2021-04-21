@@ -65,13 +65,10 @@ where
         chat_id: i64,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
-            if get_dialogue(&self.pool, chat_id).await?.is_some() {
-                sqlx::query("DELETE FROM teloxide_dialogues WHERE chat_id = ?")
-                    .bind(chat_id)
-                    .execute(&self.pool)
-                    .await?;
-            }
-
+            sqlx::query("DELETE FROM teloxide_dialogues WHERE chat_id = ?")
+                .bind(chat_id)
+                .execute(&self.pool)
+                .await?;
             Ok(())
         })
     }
