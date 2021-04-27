@@ -373,6 +373,18 @@ pub enum ApiError {
     #[serde(rename = "Bad Request: not enough rights to pin a message")]
     NotEnoughRightsToPinMessage,
 
+    /// Occurs when bot tries to pin or unpin a message without rights to pin
+    /// in this chat.
+    ///
+    /// May happen in methods:
+    /// 1. [`PinChatMessage`]
+    /// 2. [`UnpinChatMessage`]
+    ///
+    /// [`PinChatMessage`]: crate::payloads::PinChatMessage
+    /// [`UnpinChatMessage`]: crate::payloads::UnpinChatMessage
+    #[serde(rename = "Bad Request: not enough rights to manage pinned messages in the chat")]
+    NotEnoughRightsToManagePins,
+
     /// Occurs when bot tries to use method in group which is allowed only in a
     /// supergroup or channel.
     #[serde(rename = "Bad Request: method is available only for supergroups and channel")]
@@ -474,6 +486,16 @@ pub enum ApiError {
     /// [`SendMessage`]: crate::payloads::SendMessage
     #[serde(rename = "Unauthorized: bot was kicked from a chat")]
     BotKicked,
+
+    /// Occurs when bot tries to do something in a supergroup the bot was
+    /// kicked from.
+    ///
+    /// May happen in methods:
+    /// 1. [`SendMessage`]
+    ///
+    /// [`SendMessage`]: crate::payloads::SendMessage
+    #[serde(rename = "Forbidden: bot was kicked from the supergroup chat")]
+    BotKickedFromSupergroup,
 
     /// Occurs when bot tries to send message to deactivated user.
     ///
