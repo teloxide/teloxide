@@ -982,29 +982,37 @@ mod getters {
 }
 
 impl Message {
+    /// Produces a direct link to the message.
+    ///
+    /// Note that for private groups the link will only be accesible for group
+    /// members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs).
     pub fn url(&self) -> Option<reqwest::Url> {
-        match &self.chat.kind {
-            ChatKind::Public(ChatPublic {
-                kind:
-                    PublicChatKind::Channel(PublicChatChannel {
-                        username: Some(username),
-                        ..
-                    }),
-                ..
-            })
-            | ChatKind::Public(ChatPublic {
-                kind:
-                    PublicChatKind::Supergroup(PublicChatSupergroup {
-                        username: Some(username),
-                        ..
-                    }),
-                ..
-            }) => Some(
-                reqwest::Url::parse(format!("https://t.me/{0}/{1}/", username, self.id).as_str())
-                    .unwrap(),
-            ),
-            _ => None,
+        if self.chat.is_private() {
+            // For private chats (i.e.: DMs) we can't produce "normal" t.me link.
+            //
+            // There are "tg://openmessage?user_id={0}&message_id={1}" links, which are
+            // supposed to open any chat, including private messages, but they
+            // are only supported by some telegram clients (e.g. Plus Messenger,
+            // Telegram for Androud 4.9+).
+            return None;
         }
+
+        let url = match self.chat.username() {
+            // If it's public group (i.e. not DM, not private group), we can produce
+            // "normal" t.me link (accesible to everyone).
+            Some(username) => format!("https://t.me/{0}/{1}/", username, self.id),
+            // For private groups we produce "private" t.me/c links. These are only
+            // accesible to the group members.
+            None => format!("https://t.me/c/{0}/{1}/", self.chat.id, self.id),
+        };
+
+        // UNWRAP:
+        //
+        // The `url` produced by formatting is correct since username is
+        // /[a-zA-Z0-9_]{5,32}/ and chat/message ids are integers.
+        Some(reqwest::Url::parse(&url).unwrap())
     }
 }
 
