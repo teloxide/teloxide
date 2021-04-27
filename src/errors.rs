@@ -487,6 +487,16 @@ pub enum ApiError {
     #[serde(rename = "Unauthorized: bot was kicked from a chat")]
     BotKicked,
 
+    /// Occurs when bot tries to do something in a supergroup the bot was
+    /// kicked from.
+    ///
+    /// May happen in methods:
+    /// 1. [`SendMessage`]
+    ///
+    /// [`SendMessage`]: crate::payloads::SendMessage
+    #[serde(rename = "Forbidden: bot was kicked from the supergroup chat")]
+    BotKickedFromSupergroup,
+
     /// Occurs when bot tries to send message to deactivated user.
     ///
     /// May happen in methods:
