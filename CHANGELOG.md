@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#75][pr75])
+- Getters for fields nested in `Chat` ([#80][pr80]) 
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
+[pr80]: https://github.com/teloxide/teloxide-core/pull/80
 
 ### Changed
 
+- `Message::url` now returns links to messages in private groups too ([#80][pr80]) 
 - Refactor `ChatMember` methods ([#74][pr74])
   - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callible directly on `ChatMember`
   - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
@@ -24,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Add missing `Chat::message_auto_delete_time` field ([#80][pr80]) 
 - `SendChatAction` output type `Message` => `True` ([#75][pr75])
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
 - `reqwest` dependency bringing `native-tls` in even when `rustls` was selected ([#71][pr71])
