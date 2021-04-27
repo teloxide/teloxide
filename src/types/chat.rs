@@ -28,6 +28,12 @@ pub struct Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub pinned_message: Option<Box<Message>>,
+
+    /// The time after which all messages sent to the chat will be automatically
+    /// deleted; in seconds. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub message_auto_delete_time: Option<u32>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -424,6 +430,7 @@ mod tests {
             }),
             photo: None,
             pinned_message: None,
+            message_auto_delete_time: None,
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -443,6 +450,7 @@ mod tests {
                 }),
                 photo: None,
                 pinned_message: None,
+                message_auto_delete_time: None,
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
