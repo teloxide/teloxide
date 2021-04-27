@@ -72,7 +72,7 @@
 // ```console
 // $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo doc --open --all-features
 // ```
-#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_spotlight))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_notable_trait))]
 #![cfg_attr(feature = "nightly", feature(min_type_alias_impl_trait))]
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
