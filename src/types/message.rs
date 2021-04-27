@@ -3,12 +3,10 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    chat::{ChatKind, PublicChatKind},
-    Animation, Audio, Chat, ChatPublic, Contact, Dice, Document, Game, InlineKeyboardMarkup,
-    Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
-    ProximityAlertTriggered, PublicChatChannel, PublicChatSupergroup, Sticker, SuccessfulPayment,
-    True, User, Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
-    VoiceChatStarted,
+    Animation, Audio, Chat, Contact, Dice, Document, Game, InlineKeyboardMarkup, Invoice, Location,
+    MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
+    ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote,
+    Voice, VoiceChatEnded, VoiceChatParticipantsInvited, VoiceChatStarted,
 };
 
 /// This object represents a message.

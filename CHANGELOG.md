@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Type of `PublicChatSupergroup::slow_mode_delay` field: `Option<i32>`=> `Option<u32>` ([#80][pr80]) 
 - Add missing `Chat::message_auto_delete_time` field ([#80][pr80]) 
 - `SendChatAction` output type `Message` => `True` ([#75][pr75])
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
