@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#75][pr75])
+- API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
+[pr84]: https://github.com/teloxide/teloxide-core/pull/84
 
 ### Changed
 
