@@ -1040,15 +1040,15 @@ macro_rules! requester_forward {
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
-        fn send_invoice<T, D, Pa, P, S, C, Pri>(&self, chat_id: i32, title: T, description: D, payload: Pa, provider_token: P, start_parameter: S, currency: C, prices: Pri) -> Self::SendInvoice where T: Into<String>,
+        fn send_invoice<Ch, T, D, Pa, P, C, Pri>(&self, chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::SendInvoice where Ch: Into<ChatId>,
+        T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
         P: Into<String>,
-        S: Into<String>,
         C: Into<String>,
         Pri: IntoIterator<Item = LabeledPrice> {
             let this = self;
-            $body!(send_invoice this (chat_id: i32, title: T, description: D, payload: Pa, provider_token: P, start_parameter: S, currency: C, prices: Pri))
+            $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
         }
     };
     (@method answer_shipping_query $body:ident $ty:ident) => {

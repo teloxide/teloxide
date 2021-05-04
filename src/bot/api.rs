@@ -875,23 +875,22 @@ impl Requester for Bot {
 
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
-    fn send_invoice<T, D, Pa, P, S, C, Pri>(
+    fn send_invoice<Ch, T, D, Pa, P, C, Pri>(
         &self,
-        chat_id: i32,
+        chat_id: Ch,
         title: T,
         description: D,
         payload: Pa,
         provider_token: P,
-        start_parameter: S,
         currency: C,
         prices: Pri,
     ) -> Self::SendInvoice
     where
+        Ch: Into<ChatId>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
         P: Into<String>,
-        S: Into<String>,
         C: Into<String>,
         Pri: IntoIterator<Item = LabeledPrice>,
     {
@@ -903,7 +902,6 @@ impl Requester for Bot {
                 description,
                 payload,
                 provider_token,
-                start_parameter,
                 currency,
                 prices,
             ),

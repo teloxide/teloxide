@@ -60,7 +60,6 @@ pub trait Requester {
     //
     // [cg]: https://github.com/teloxide/cg
     // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
-
     type GetUpdates: Request<Payload = GetUpdates, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetUpdates`].
@@ -723,23 +722,22 @@ pub trait Requester {
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
-    fn send_invoice<T, D, Pa, P, S, C, Pri>(
+    fn send_invoice<Ch, T, D, Pa, P, C, Pri>(
         &self,
-        chat_id: i32,
+        chat_id: Ch,
         title: T,
         description: D,
         payload: Pa,
         provider_token: P,
-        start_parameter: S,
         currency: C,
         prices: Pri,
     ) -> Self::SendInvoice
     where
+        Ch: Into<ChatId>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
         P: Into<String>,
-        S: Into<String>,
         C: Into<String>,
         Pri: IntoIterator<Item = LabeledPrice>;
 

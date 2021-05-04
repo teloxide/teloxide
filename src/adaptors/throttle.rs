@@ -411,45 +411,7 @@ where
         send_message, forward_message, copy_message, send_photo, send_audio,
         send_document, send_video, send_animation, send_voice, send_video_note,
         send_media_group, send_location, send_venue, send_contact, send_poll,
-        send_dice, send_sticker,  => f, fty
-    }
-
-    type SendInvoice = ThrottlingRequest<B::SendInvoice>;
-
-    fn send_invoice<T, D, Pa, P, S, C, Pri>(
-        &self,
-        chat_id: i32,
-        title: T,
-        description: D,
-        payload: Pa,
-        provider_token: P,
-        start_parameter: S,
-        currency: C,
-        prices: Pri,
-    ) -> Self::SendInvoice
-    where
-        T: Into<String>,
-        D: Into<String>,
-        Pa: Into<String>,
-        P: Into<String>,
-        S: Into<String>,
-        C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice>,
-    {
-        ThrottlingRequest {
-            request: self.inner().send_invoice(
-                chat_id,
-                title,
-                description,
-                payload,
-                provider_token,
-                start_parameter,
-                currency,
-                prices,
-            ),
-            chat_id: |p| ChatIdHash::Id(p.payload_ref().chat_id as _),
-            worker: self.queue.clone(),
-        }
+        send_dice, send_sticker, send_invoice => f, fty
     }
 
     requester_forward! {
