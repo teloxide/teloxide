@@ -1,6 +1,7 @@
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MessageEntity, ParseMode};
+use crate::types::{Currency, LabeledPrice, MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -13,6 +14,7 @@ pub enum InputMessageContent {
     Location(InputMessageContentLocation),
     Venue(InputMessageContentVenue),
     Contact(InputMessageContentContact),
+    Invoice(InputMessageContentInvoice),
 }
 /// Represents the content of a text message to be sent as the result of an
 /// inline query.
@@ -293,6 +295,262 @@ impl InputMessageContentContact {
         S: Into<String>,
     {
         self.vcard = Some(val.into());
+        self
+    }
+}
+
+/// Represents the [content] of an invoice message to be sent as the result of
+/// an inline query.
+///
+/// [content]: InputMessageContent
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct InputMessageContentInvoice {
+    /// Product name, 1-32 characters
+    pub title: String,
+
+    /// Product description, 1-255 characters
+    pub description: String,
+
+    /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to
+    /// the user, use for your internal processes.
+    pub payload: String,
+
+    /// Payment provider token, obtained via [@Botfather]
+    ///
+    /// [@Botfather]: https://t.me/Botfather
+    pub provider_token: String,
+
+    /// Three-letter ISO 4217 currency code, see [more on currencies]
+    ///
+    /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
+    pub currency: Currency,
+
+    /// Price breakdown, list of components (e.g. product price, tax, discount,
+    /// delivery cost, delivery tax, bonus, etc.)
+    pub prices: Vec<LabeledPrice>,
+
+    /// ----The maximum accepted amount for tips in the smallest units of the
+    /// currency (integer, not float/double). For example, for a maximum tip of
+    /// US$ 1.45 pass max_tip_amount = 145. See the exp parameter in
+    /// currencies.json, it shows the number of digits past the decimal point
+    /// for each currency (2 for the majority of currencies). Defaults to 0
+    pub max_tip_amount: Option<u32>,
+
+    /// List of suggested amounts of tip in the smallest units of the currency
+    /// (integer, not float/double). At most 4 suggested tip amounts can be
+    /// specified. The suggested tip amounts must be positive, passed in a
+    /// strictly increased order and must not exceed max_tip_amount.
+    pub suggested_tip_amounts: Option<Vec<u32>>,
+
+    /// ----A JSON-serialized object for data about the invoice, which will be
+    /// shared with the payment provider. A detailed description of the required
+    /// fields should be provided by the payment provider.
+    pub provider_data: Option<String>,
+
+    /// URL of the product photo for the invoice. Can be a photo of the goods or
+    /// a marketing image for a service. People like it better when they see
+    /// what they are paying for.
+    pub photo_url: Option<Url>,
+
+    /// Photo size
+    pub photo_size: Option<u32>,
+
+    /// Photo width
+    pub photo_width: Option<u32>,
+
+    /// Photo height
+    pub photo_height: Option<u32>,
+
+    /// Pass `true`, if you require the user's full name to complete the order
+    pub need_name: Option<bool>,
+
+    /// Pass `true`, if you require the user's phone number to complete the
+    /// order
+    pub need_phone_number: Option<bool>,
+
+    /// Pass `true`, if you require the user's email address to complete the
+    /// order
+    pub need_email: Option<bool>,
+
+    /// Pass `true`, if you require the user's shipping address to complete the
+    /// order
+    pub need_shipping_address: Option<bool>,
+
+    /// Pass True, if user's phone number should be sent to provider
+    pub send_phone_number_to_provider: Option<bool>,
+
+    /// Pass True, if user's email address should be sent to provider
+    pub send_email_to_provider: Option<bool>,
+
+    /// Pass True, if the final price depends on the shipping method
+    pub is_flexible: Option<bool>,
+}
+
+impl InputMessageContentInvoice {
+    pub fn new<T, D, PA, PT, PR>(
+        title: T,
+        description: D,
+        payload: PA,
+        provider_token: PT,
+        currency: Currency,
+        prices: PR,
+    ) -> Self
+    where
+        T: Into<String>,
+        D: Into<String>,
+        PA: Into<String>,
+        PT: Into<String>,
+        PR: IntoIterator<Item = LabeledPrice>,
+    {
+        let title = title.into();
+        let description = description.into();
+        let payload = payload.into();
+        let provider_token = provider_token.into();
+        let prices = prices.into_iter().collect();
+
+        Self {
+            title,
+            description,
+            payload,
+            provider_token,
+            currency,
+            prices,
+            max_tip_amount: None,
+            suggested_tip_amounts: None,
+            provider_data: None,
+            photo_url: None,
+            photo_size: None,
+            photo_width: None,
+            photo_height: None,
+            need_name: None,
+            need_phone_number: None,
+            need_email: None,
+            need_shipping_address: None,
+            send_phone_number_to_provider: None,
+            send_email_to_provider: None,
+            is_flexible: None,
+        }
+    }
+
+    pub fn title<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.title = val.into();
+        self
+    }
+
+    pub fn description<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.description = val.into();
+        self
+    }
+
+    pub fn payload<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.payload = val.into();
+        self
+    }
+
+    pub fn provider_token<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.provider_token = val.into();
+        self
+    }
+
+    pub fn currency(mut self, val: Currency) -> Self {
+        self.currency = val.into();
+        self
+    }
+
+    pub fn prices<T>(mut self, val: T) -> Self
+    where
+        T: IntoIterator<Item = LabeledPrice>,
+    {
+        self.prices = val.into_iter().collect();
+        self
+    }
+
+    pub fn max_tip_amount(mut self, val: u32) -> Self {
+        self.max_tip_amount = Some(val);
+        self
+    }
+
+    pub fn suggested_tip_amounts<T>(mut self, val: T) -> Self
+    where
+        T: IntoIterator<Item = u32>,
+    {
+        self.suggested_tip_amounts = Some(val.into_iter().collect());
+        self
+    }
+
+    pub fn provider_data<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.provider_data = Some(val.into());
+        self
+    }
+
+    pub fn photo_url(mut self, val: Url) -> Self {
+        self.photo_url = Some(val);
+        self
+    }
+
+    pub fn photo_size(mut self, val: u32) -> Self {
+        self.photo_size = Some(val);
+        self
+    }
+
+    pub fn photo_width(mut self, val: u32) -> Self {
+        self.photo_width = Some(val);
+        self
+    }
+
+    pub fn photo_height(mut self, val: u32) -> Self {
+        self.photo_height = Some(val);
+        self
+    }
+
+    pub fn need_name(mut self, val: bool) -> Self {
+        self.need_name = Some(val);
+        self
+    }
+
+    pub fn need_phone_number(mut self, val: bool) -> Self {
+        self.need_phone_number = Some(val);
+        self
+    }
+
+    pub fn need_email(mut self, val: bool) -> Self {
+        self.need_email = Some(val);
+        self
+    }
+
+    pub fn need_shipping_address(mut self, val: bool) -> Self {
+        self.need_shipping_address = Some(val);
+        self
+    }
+
+    pub fn send_phone_number_to_provider(mut self, val: bool) -> Self {
+        self.send_phone_number_to_provider = Some(val);
+        self
+    }
+
+    pub fn send_email_to_provider(mut self, val: bool) -> Self {
+        self.send_email_to_provider = Some(val);
+        self
+    }
+
+    pub fn is_flexible(mut self, val: bool) -> Self {
+        self.is_flexible = Some(val);
         self
     }
 }
