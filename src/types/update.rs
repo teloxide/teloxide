@@ -186,6 +186,7 @@ mod test {
                     }),
                     photo: None,
                     pinned_message: None,
+                    message_auto_delete_time: None,
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {
