@@ -466,7 +466,7 @@ impl InputMessageContentInvoice {
     }
 
     pub fn currency(mut self, val: Currency) -> Self {
-        self.currency = val.into();
+        self.currency = val;
         self
     }
 
@@ -549,6 +549,7 @@ impl InputMessageContentInvoice {
         self
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_flexible(mut self, val: bool) -> Self {
         self.is_flexible = Some(val);
         self
