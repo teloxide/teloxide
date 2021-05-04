@@ -6,7 +6,7 @@ use crate::types::{
     Animation, Audio, Chat, Contact, Dice, Document, Game, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
     ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote,
-    Voice, VoiceChatEnded, VoiceChatParticipantsInvited, VoiceChatStarted,
+    Voice, VoiceChatEnded, VoiceChatParticipantsInvited, VoiceChatScheduled, VoiceChatStarted,
 };
 
 /// This object represents a message.
@@ -52,6 +52,7 @@ pub enum MessageKind {
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
+    VoiceChatScheduled(MessageVoiceChatScheduled),
     VoiceChatStarted(MessageVoiceChatStarted),
     VoiceChatEnded(MessageVoiceChatEnded),
     VoiceChatParticipantsInvited(MessageVoiceChatParticipantsInvited),
@@ -452,6 +453,12 @@ pub struct MessageProximityAlertTriggered {
     /// Service message. A user in the chat triggered another user's proximity
     /// alert while sharing Live Location.
     pub proximity_alert_triggered: ProximityAlertTriggered,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageVoiceChatScheduled {
+    /// Service message: voice chat scheduled
+    pub voice_chat_scheduled: VoiceChatScheduled,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

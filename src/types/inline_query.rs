@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Location, User};
+use crate::types::{ChatType, Location, User};
 
 /// This object represents an incoming inline query.
 ///
@@ -25,8 +25,16 @@ pub struct InlineQuery {
 
     /// Offset of the results to be returned, can be controlled by the bot.
     pub offset: String,
+
+    /// Type of the chat, from which the inline query was sent.
+    ///
+    /// The chat type should be always known for requests sent from official
+    /// clients and most third-party clients, unless the request was sent
+    /// from a secret chat.
+    pub chat_type: Option<ChatType>,
 }
 
+// TODO(waffle): remove
 impl InlineQuery {
     pub fn new<S1, S2, S3>(id: S1, from: User, query: S2, offset: S3) -> Self
     where
@@ -40,6 +48,7 @@ impl InlineQuery {
             location: None,
             query: query.into(),
             offset: offset.into(),
+            chat_type: None,
         }
     }
 
