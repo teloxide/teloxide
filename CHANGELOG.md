@@ -11,16 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#75][pr75])
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
+- Telegram bot API 5.2 support ([#86][pr86])
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 [pr84]: https://github.com/teloxide/teloxide-core/pull/84
+[pr86]: https://github.com/teloxide/teloxide-core/pull/86
 
 ### Changed
 
 - Refactor `ChatMember` methods ([#74][pr74])
   - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callible directly on `ChatMember`
   - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
-  - Refactor privilege getters 
+  - Refactor privilege getters
+- Rename `ChatAction::{RecordAudio => RecordVoice, UploadAudio => UploadVoice}` ([#86][pr86])
 
 [pr74]: https://github.com/teloxide/teloxide-core/pull/74
 
