@@ -6,7 +6,7 @@
     <img src="https://github.com/teloxide/teloxide-core/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="https://docs.rs/teloxide_core/">
-    <img src="https://docs.rs/teloxide_core/badge.svg">
+    <img src="https://docs.rs/teloxide-core/badge.svg">
   </a>
   <a href="https://teloxide-core.netlify.com">
     <img src="https://img.shields.io/badge/docs-master-blue">
