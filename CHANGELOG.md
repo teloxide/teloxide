@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - `Storage::get_dialogue` to obtain a dialogue indexed by a chat ID.
- - `RedisStorageError::RowNotFound` to be returned from `RedisStorage::remove_dialogue`.
  - `InMemStorageError` with a single variant `DialogueNotFound` to be returned from `InMemStorage::remove_dialogue`.
  - `RedisStorageError::DialogueNotFound` and `SqliteStorageError::DialogueNotFound` to be returned from `Storage::remove_dialogue`.
 
