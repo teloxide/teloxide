@@ -65,19 +65,16 @@ where
                 .query_async::<_, redis::Value>(self.conn.lock().await.deref_mut())
                 .await?;
 
-            let deleted_rows_count = match deleted_rows_count {
-                redis::Value::Bulk(values) => match values[0] {
-                    redis::Value::Int(x) => x,
-                    _ => unreachable!("Must return redis::Value::Int"),
-                },
-                _ => unreachable!("Must return redis::Value::Bulk"),
-            };
-
-            if deleted_rows_count == 0 {
-                return Err(RedisStorageError::RowNotFound);
-            }
-
-            Ok(())
+            if let redis::Value::Bulk(values) = deleted_rows_count {
+                 if let redis::Value::Int(deleted_rows_count) = values[0] {
+                     match deleted_rows_count {
+                         0 => return Err(RedisStorageError::RowNotFound),
+                         _ => return Ok(())
+                     }
+                 }
+             }
+                 
+             unreachable!("Must return redis::Value::Bulk(redis::Value::Int(_))");
         })
     }
 
