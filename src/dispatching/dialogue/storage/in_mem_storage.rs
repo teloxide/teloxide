@@ -46,7 +46,7 @@ where
                 .lock()
                 .await
                 .remove(&chat_id)
-                .map_or_else(|| Err(InMemStorageError::RowNotFound), |_| Ok(()))
+                .map_or(Err(InMemStorageError::RowNotFound), |_| Ok(()))
         })
     }
 
