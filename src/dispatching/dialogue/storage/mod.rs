@@ -35,9 +35,9 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 ///
 /// Currently we support the following storages out of the box:
 ///
-/// - [`InMemStorage`] -- A storage based on [`std::collections::HashMap`].
-/// - [`RedisStorage`] -- A Redis-based storage.
-/// - [`SqliteStorage`] -- An SQLite-based persistent storage.
+/// - [`InMemStorage`] -- a storage based on [`std::collections::HashMap`].
+/// - [`RedisStorage`] -- a Redis-based storage.
+/// - [`SqliteStorage`] -- an SQLite-based persistent storage.
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 /// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
