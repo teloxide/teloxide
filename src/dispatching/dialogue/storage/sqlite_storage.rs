@@ -66,7 +66,7 @@ where
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let deleted_rows_count =
-                sqlx::query("DELETE FROM teloxide_dialogues WHERE chat_id = ?; SELECT changes()")
+                sqlx::query("DELETE FROM teloxide_dialogues WHERE chat_id = ?")
                     .bind(chat_id)
                     .execute(&self.pool)
                     .await?
@@ -119,10 +119,7 @@ where
     }
 }
 
-async fn get_dialogue(
-    pool: &SqlitePool,
-    chat_id: i64,
-) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
+async fn get_dialogue(pool: &SqlitePool, chat_id: i64) -> Result<Option<Vec<u8>>, sqlx::Error> {
     #[derive(sqlx::FromRow)]
     struct DialogueDbRow {
         dialogue: Vec<u8>,
@@ -134,7 +131,7 @@ async fn get_dialogue(
     .bind(chat_id)
     .fetch_optional(pool)
     .await?
-    .map(|r| Box::new(r.dialogue));
+    .map(|r| r.dialogue);
 
     Ok(bytes)
 }
