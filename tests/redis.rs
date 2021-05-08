@@ -2,7 +2,7 @@ use std::{
     fmt::{Debug, Display},
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
+use teloxide::dispatching::dialogue::{RedisStorage, RedisStorageError, Serializer, Storage};
 
 #[tokio::test]
 async fn test_redis_json() {
@@ -70,4 +70,10 @@ where
     Arc::clone(&storage).remove_dialogue(256).await.unwrap();
 
     test_dialogues!(storage, None, None, None);
+
+    // Check that a try to remove a non-existing dialogue results in an error.
+    assert!(matches!(
+        Arc::clone(&storage).remove_dialogue(1).await.unwrap_err(),
+        RedisStorageError::DialogueNotFound
+    ));
 }

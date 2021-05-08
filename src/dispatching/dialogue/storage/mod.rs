@@ -11,7 +11,10 @@ mod sqlite_storage;
 
 use futures::future::BoxFuture;
 
-pub use self::{in_mem_storage::InMemStorage, trace_storage::TraceStorage};
+pub use self::{
+    in_mem_storage::{InMemStorage, InMemStorageError},
+    trace_storage::TraceStorage,
+};
 
 #[cfg(feature = "redis-storage")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
@@ -32,9 +35,9 @@ pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 ///
 /// Currently we support the following storages out of the box:
 ///
-/// - [`InMemStorage`] - a storage based on a simple hash map
-/// - [`RedisStorage`] - a Redis-based storage
-/// - [`SqliteStorage`] - an SQLite-based persistent storage
+/// - [`InMemStorage`] -- a storage based on [`std::collections::HashMap`].
+/// - [`RedisStorage`] -- a Redis-based storage.
+/// - [`SqliteStorage`] -- an SQLite-based persistent storage.
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 /// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
@@ -43,6 +46,9 @@ pub trait Storage<D> {
     type Error;
 
     /// Removes a dialogue indexed by `chat_id`.
+    ///
+    /// If the dialogue indexed by `chat_id` does not exist, this function
+    /// results in an error.
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn remove_dialogue(
         self: Arc<Self>,
@@ -61,7 +67,7 @@ pub trait Storage<D> {
     where
         D: Send + 'static;
 
-    /// Provides a dialogue indexed by `chat_id`.
+    /// Returns the dialogue indexed by `chat_id`.
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn get_dialogue(
         self: Arc<Self>,

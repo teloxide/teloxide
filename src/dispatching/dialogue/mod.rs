@@ -33,7 +33,11 @@
 //! # #[cfg(feature = "macros")] {
 //! use std::convert::Infallible;
 //!
-//! use teloxide::{dispatching::dialogue::Transition, prelude::*, teloxide, RequestError};
+//! use teloxide::{
+//!     dispatching::dialogue::{InMemStorageError, Transition},
+//!     prelude::*,
+//!     teloxide, RequestError,
+//! };
 //!
 //! #[derive(Clone)]
 //! struct _1State;
@@ -72,7 +76,7 @@
 //!     }
 //! }
 //!
-//! type In = DialogueWithCx<AutoSend<Bot>, Message, D, Infallible>;
+//! type In = DialogueWithCx<AutoSend<Bot>, Message, D, InMemStorageError>;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -171,4 +175,4 @@ pub use storage::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use storage::{SqliteStorage, SqliteStorageError};
 
-pub use storage::{serializer, InMemStorage, Serializer, Storage, TraceStorage};
+pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};

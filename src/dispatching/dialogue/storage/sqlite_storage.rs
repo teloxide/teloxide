@@ -10,15 +10,13 @@ use std::{
 };
 use thiserror::Error;
 
-/// A persistent storage based on [SQLite](https://www.sqlite.org/).
+/// A persistent dialogue storage based on [SQLite](https://www.sqlite.org/).
 pub struct SqliteStorage<S> {
     pool: SqlitePool,
     serializer: S,
 }
 
 /// An error returned from [`SqliteStorage`].
-///
-/// [`SqliteStorage`]: struct.SqliteStorage.html
 #[derive(Debug, Error)]
 pub enum SqliteStorageError<SE>
 where
@@ -26,8 +24,13 @@ where
 {
     #[error("dialogue serialization error: {0}")]
     SerdeError(SE),
+
     #[error("sqlite error: {0}")]
     SqliteError(#[from] sqlx::Error),
+
+    /// Returned from [`SqliteStorage::remove_dialogue`].
+    #[error("row not found")]
+    DialogueNotFound,
 }
 
 impl<S> SqliteStorage<S> {
@@ -60,16 +63,21 @@ where
 {
     type Error = SqliteStorageError<<S as Serializer<D>>::Error>;
 
+    /// Returns [`sqlx::Error::RowNotFound`] if a dialogue does not exist.
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
-            if get_dialogue(&self.pool, chat_id).await?.is_some() {
+            let deleted_rows_count =
                 sqlx::query("DELETE FROM teloxide_dialogues WHERE chat_id = ?")
                     .bind(chat_id)
                     .execute(&self.pool)
-                    .await?;
+                    .await?
+                    .rows_affected();
+
+            if deleted_rows_count == 0 {
+                return Err(SqliteStorageError::DialogueNotFound);
             }
 
             Ok(())
@@ -115,20 +123,19 @@ where
     }
 }
 
-#[derive(sqlx::FromRow)]
-struct DialogueDbRow {
-    dialogue: Vec<u8>,
-}
+async fn get_dialogue(pool: &SqlitePool, chat_id: i64) -> Result<Option<Vec<u8>>, sqlx::Error> {
+    #[derive(sqlx::FromRow)]
+    struct DialogueDbRow {
+        dialogue: Vec<u8>,
+    }
 
-async fn get_dialogue(
-    pool: &SqlitePool,
-    chat_id: i64,
-) -> Result<Option<Box<Vec<u8>>>, sqlx::Error> {
-    Ok(sqlx::query_as::<_, DialogueDbRow>(
+    let bytes = sqlx::query_as::<_, DialogueDbRow>(
         "SELECT dialogue FROM teloxide_dialogues WHERE chat_id = ?",
     )
     .bind(chat_id)
     .fetch_optional(pool)
     .await?
-    .map(|r| Box::new(r.dialogue)))
+    .map(|r| r.dialogue);
+
+    Ok(bytes)
 }
