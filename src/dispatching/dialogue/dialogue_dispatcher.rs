@@ -215,7 +215,7 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueWithCx<Bot, MyUpdate, (), Infallible>| async move {
+            |cx: DialogueWithCx<Bot, MyUpdate, (), InMemStorageError>| async move {
                 tokio::time::sleep(Duration::from_millis(300)).await;
 
                 match cx.cx.update {
