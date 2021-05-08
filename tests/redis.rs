@@ -7,7 +7,7 @@ use teloxide::dispatching::dialogue::{RedisStorage, RedisStorageError, Serialize
 #[tokio::test]
 async fn test_redis_json() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:9000",
+        "redis://127.0.0.1:7777",
         teloxide::dispatching::dialogue::serializer::Json,
     )
     .await
@@ -18,7 +18,7 @@ async fn test_redis_json() {
 #[tokio::test]
 async fn test_redis_bincode() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:9001",
+        "redis://127.0.0.1:7778",
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
     .await
@@ -29,7 +29,7 @@ async fn test_redis_bincode() {
 #[tokio::test]
 async fn test_redis_cbor() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:9002",
+        "redis://127.0.0.1:7779",
         teloxide::dispatching::dialogue::serializer::Cbor,
     )
     .await
