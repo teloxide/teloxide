@@ -166,9 +166,9 @@ pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
-pub use storage::{InMemStorageError, RedisStorage, RedisStorageError};
+pub use storage::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
 pub use storage::{SqliteStorage, SqliteStorageError};
 
-pub use storage::{serializer, InMemStorage, Serializer, Storage, TraceStorage};
+pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
