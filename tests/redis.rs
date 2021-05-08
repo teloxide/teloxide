@@ -74,6 +74,6 @@ where
     // Check that a try to remove a non-existing dialogue results in an error.
     assert!(matches!(
         Arc::clone(&storage).remove_dialogue(1).await.unwrap_err(),
-        RedisStorageError::RowNotFound
+        RedisStorageError::DialogueNotFound
     ));
 }

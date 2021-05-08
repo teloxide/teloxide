@@ -27,6 +27,10 @@ where
 
     #[error("sqlite error: {0}")]
     SqliteError(#[from] sqlx::Error),
+
+    /// Returned from [`SqliteStorage::remove_dialogue`].
+    #[error("row not found")]
+    DialogueNotFound,
 }
 
 impl<S> SqliteStorage<S> {
@@ -73,7 +77,7 @@ where
                     .rows_affected();
 
             if deleted_rows_count == 0 {
-                return Err(SqliteStorageError::SqliteError(sqlx::Error::RowNotFound));
+                return Err(SqliteStorageError::DialogueNotFound);
             }
 
             Ok(())

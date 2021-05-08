@@ -9,7 +9,7 @@ use tokio::sync::Mutex;
 pub enum InMemStorageError {
     /// Returned from [`InMemStorage::remove_dialogue`].
     #[error("row not found")]
-    RowNotFound,
+    DialogueNotFound,
 }
 
 /// A dialogue storage based on [`std::collections::HashMap`].
@@ -46,7 +46,7 @@ where
                 .lock()
                 .await
                 .remove(&chat_id)
-                .map_or_else(|| Err(InMemStorageError::RowNotFound), |_| Ok(()))
+                .map_or_else(|| Err(InMemStorageError::DialogueNotFound), |_| Ok(()))
         })
     }
 

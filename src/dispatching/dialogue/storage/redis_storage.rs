@@ -25,7 +25,7 @@ where
 
     /// Returned from [`RedisStorage::remove_dialogue`].
     #[error("row not found")]
-    RowNotFound,
+    DialogueNotFound,
 }
 
 /// A dialogue storage based on [Redis](https://redis.io/).
@@ -66,15 +66,15 @@ where
                 .await?;
 
             if let redis::Value::Bulk(values) = deleted_rows_count {
-                 if let redis::Value::Int(deleted_rows_count) = values[0] {
-                     match deleted_rows_count {
-                         0 => return Err(RedisStorageError::RowNotFound),
-                         _ => return Ok(())
-                     }
-                 }
-             }
-                 
-             unreachable!("Must return redis::Value::Bulk(redis::Value::Int(_))");
+                if let redis::Value::Int(deleted_rows_count) = values[0] {
+                    match deleted_rows_count {
+                        0 => return Err(RedisStorageError::DialogueNotFound),
+                        _ => return Ok(()),
+                    }
+                }
+            }
+
+            unreachable!("Must return redis::Value::Bulk(redis::Value::Int(_))");
         })
     }
 

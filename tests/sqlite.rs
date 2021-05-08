@@ -68,9 +68,8 @@ where
     test_dialogues!(storage, None, None, None);
 
     // Check that a try to remove a non-existing dialogue results in an error.
-    let err = Arc::clone(&storage).remove_dialogue(1).await.unwrap_err();
-    match err {
-        SqliteStorageError::SqliteError(err) => assert!(matches!(err, sqlx::Error::RowNotFound)),
-        _ => panic!("Must be sqlx::Error::RowNotFound"),
-    }
+    assert!(matches!(
+        Arc::clone(&storage).remove_dialogue(1).await.unwrap_err(),
+        SqliteStorageError::DialogueNotFound
+    ));
 }
