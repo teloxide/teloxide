@@ -67,7 +67,7 @@ pub trait Storage<D> {
     where
         D: Send + 'static;
 
-    /// Extracts a dialogue indexed by `chat_id`.
+    /// Returns the dialogue indexed by `chat_id`.
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn get_dialogue(
         self: Arc<Self>,

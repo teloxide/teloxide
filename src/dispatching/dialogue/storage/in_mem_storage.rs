@@ -46,7 +46,7 @@ where
                 .lock()
                 .await
                 .remove(&chat_id)
-                .map_or_else(|| Err(InMemStorageError::DialogueNotFound), |_| Ok(()))
+                .map_or(Err(InMemStorageError::DialogueNotFound), |_| Ok(()))
         })
     }
 
