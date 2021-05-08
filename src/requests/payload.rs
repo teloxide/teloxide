@@ -5,7 +5,7 @@
 ///
 /// Also, this trait provides some additional information needed to send a
 /// request to Telegram.
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(notable_trait))]
 pub trait Payload {
     /// The return type of a Telegram method.
     ///
