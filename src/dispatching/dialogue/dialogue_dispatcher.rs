@@ -4,11 +4,12 @@ use crate::dispatching::{
     },
     DispatcherHandler, UpdateWithCx,
 };
-use std::{convert::Infallible, fmt::Debug, marker::PhantomData};
+use std::{fmt::Debug, marker::PhantomData};
 
 use futures::{future::BoxFuture, FutureExt, StreamExt};
 use tokio::sync::mpsc;
 
+use crate::dispatching::dialogue::InMemStorageError;
 use lockfree::map::Map;
 use std::sync::{Arc, Mutex};
 use teloxide_core::requests::Requester;
@@ -45,7 +46,7 @@ pub struct DialogueDispatcher<R, D, S, H, Upd> {
 
 impl<R, D, H, Upd> DialogueDispatcher<R, D, InMemStorage<D>, H, Upd>
 where
-    H: DialogueDispatcherHandler<R, Upd, D, Infallible> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, InMemStorageError> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
 {

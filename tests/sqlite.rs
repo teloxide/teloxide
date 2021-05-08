@@ -2,7 +2,7 @@ use std::{
     fmt::{Debug, Display},
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, Storage};
+use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, SqliteStorageError, Storage};
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_json() {
@@ -66,4 +66,11 @@ where
     Arc::clone(&storage).remove_dialogue(256).await.unwrap();
 
     test_dialogues!(storage, None, None, None);
+
+    // Check that a try to remove a non-existing dialogue results in an error.
+    let err = Arc::clone(&storage).remove_dialogue(1).await.unwrap_err();
+    match err {
+        SqliteStorageError::SqliteError(err) => assert!(matches!(err, sqlx::Error::RowNotFound)),
+        _ => panic!("Must be sqlx::Error::RowNotFound"),
+    }
 }

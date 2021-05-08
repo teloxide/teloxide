@@ -8,10 +8,10 @@ use futures::future::BoxFuture;
 
 use crate::dispatching::dialogue::Storage;
 
-/// Storage wrapper for logging purposes.
+/// A dialogue storage wrapper which logs all actions performed on an underlying
+/// storage.
 ///
-/// Reports about any dialogue action using the `trace` level in the `log`
-/// crate.
+/// Reports about any dialogue action via [`log::Level::Trace`].
 pub struct TraceStorage<S> {
     inner: Arc<S>,
 }

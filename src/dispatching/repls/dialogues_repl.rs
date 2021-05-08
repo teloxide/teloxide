@@ -1,13 +1,13 @@
 use crate::{
     dispatching::{
-        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx},
+        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx, InMemStorageError},
         update_listeners,
         update_listeners::UpdateListener,
         Dispatcher, UpdateWithCx,
     },
     error_handlers::LoggingErrorHandler,
 };
-use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
+use std::{fmt::Debug, future::Future, sync::Arc};
 use teloxide_core::{requests::Requester, types::Message};
 
 /// A [REPL] for dialogues.
@@ -71,7 +71,12 @@ pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
 
     Dispatcher::new(requester)
         .messages_handler(DialogueDispatcher::new(
-            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<R, Message, D, Infallible>| {
+            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<
+                R,
+                Message,
+                D,
+                InMemStorageError,
+            >| {
                 let handler = Arc::clone(&handler);
 
                 async move {

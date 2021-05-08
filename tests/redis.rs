@@ -2,12 +2,12 @@ use std::{
     fmt::{Debug, Display},
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{RedisStorage, Serializer, Storage};
+use teloxide::dispatching::dialogue::{RedisStorage, RedisStorageError, Serializer, Storage};
 
 #[tokio::test]
 async fn test_redis_json() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:7777",
+        "redis://127.0.0.1:9000",
         teloxide::dispatching::dialogue::serializer::Json,
     )
     .await
@@ -18,7 +18,7 @@ async fn test_redis_json() {
 #[tokio::test]
 async fn test_redis_bincode() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:7778",
+        "redis://127.0.0.1:9001",
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
     .await
@@ -29,7 +29,7 @@ async fn test_redis_bincode() {
 #[tokio::test]
 async fn test_redis_cbor() {
     let storage = RedisStorage::open(
-        "redis://127.0.0.1:7779",
+        "redis://127.0.0.1:9002",
         teloxide::dispatching::dialogue::serializer::Cbor,
     )
     .await
@@ -70,4 +70,10 @@ where
     Arc::clone(&storage).remove_dialogue(256).await.unwrap();
 
     test_dialogues!(storage, None, None, None);
+
+    // Check that a try to remove a non-existing dialogue results in an error.
+    assert!(matches!(
+        Arc::clone(&storage).remove_dialogue(1).await.unwrap_err(),
+        RedisStorageError::RowNotFound
+    ));
 }

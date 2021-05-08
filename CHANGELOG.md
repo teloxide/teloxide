@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- - `Storage::get_dialogue`
+ - `Storage::get_dialogue` to obtain a dialogue indexed by a chat ID.
+ - `RedisStorageError::RowNotFound` to be returned from `RedisStorage::remove_dialogue`.
+ - `InMemStorageError` with a single variant `RowNotFound` to be returned from `InMemStorage::remove_dialogue`.
 
 ### Changed
 
  - Do not return a dialogue from `Storage::{remove_dialogue, update_dialogue}`.
+ - Return an error from `Storage::remove_dialogue` if a dialogue does not exist.
  - Require `D: Clone` in `dialogues_repl(_with_listener)` and `InMemStorage`.
  - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
 

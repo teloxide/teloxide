@@ -1,4 +1,4 @@
-//! Various serializers for memory storages.
+//! Various serializers for dialogue storages.
 
 use serde::{de::DeserializeOwned, ser::Serialize};
 
