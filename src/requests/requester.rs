@@ -47,7 +47,7 @@ use crate::{
 ///     bot.send_message(chat, "hi").send().await.expect("error")
 /// }
 /// ```
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(spotlight))]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(notable_trait))]
 pub trait Requester {
     /// Error type returned by all requests.
     type Err: std::error::Error + Send;
