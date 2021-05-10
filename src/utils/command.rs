@@ -76,7 +76,7 @@ pub use teloxide_macros::BotCommand;
 /// # }
 /// ```
 ///
-/// ## Enum attributes
+/// # Enum attributes
 ///  1. `#[command(rename = "rule")]`
 /// Rename all commands by `rule`. Allowed rules are `lowercase`. If you will
 /// not use this attribute, commands will be parsed by their original names.
@@ -93,7 +93,7 @@ pub use teloxide_macros::BotCommand;
 ///    after the first space into the first argument, which must implement
 ///    [`FromStr`].
 ///
-/// ### Example
+/// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
@@ -113,7 +113,7 @@ pub use teloxide_macros::BotCommand;
 ///    space character) and parses each part into the corresponding arguments,
 ///    which must implement [`FromStr`].
 ///
-/// ### Example
+/// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
@@ -133,7 +133,7 @@ pub use teloxide_macros::BotCommand;
 /// Specify separator used by the `split` parser. It will be ignored when
 /// accompanied by another type of parsers.
 ///
-/// ### Example
+/// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::BotCommand;
@@ -149,20 +149,24 @@ pub use teloxide_macros::BotCommand;
 /// # }
 /// ```
 ///
-/// ## Variant attributes
+/// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
 ///
 ///  1. `#[command(rename = "rule")]`
 /// Rename one command by a rule. Allowed rules are `lowercase`, `%some_name%`,
 /// where `%some_name%` is any string, a new name.
 ///
-///  2. `#[command(parse_with = "parser")]`
+///  2. `#[command(description = "description")]`
+/// Give your command a description. Write `"off"` for `"description"` to hide a
+/// command.
+///
+///  3. `#[command(parse_with = "parser")]`
 /// One more option is available for variants.
 ///    - `custom_parser` - your own parser of the signature `fn(String) ->
 ///    Result<Tuple, ParseError>`, where `Tuple` corresponds to the variant's
 /// arguments.
 ///
-/// ### Example
+/// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::utils::command::{BotCommand, ParseError};
@@ -191,11 +195,11 @@ pub use teloxide_macros::BotCommand;
 /// # }
 /// ```
 ///
-///  3. `#[command(prefix = "prefix")]`
-///  4. `#[command(description = "description")]`
+///  4. `#[command(prefix = "prefix")]`
 ///  5. `#[command(separator = "sep")]`
 ///
-/// Analogous to the descriptions above.
+/// These boys just override the corresponding `enum` attributes for a specific
+/// variant.
 ///
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
 /// [`BotCommand`]: crate::utils::command::BotCommand
