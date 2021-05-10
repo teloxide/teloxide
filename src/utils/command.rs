@@ -198,7 +198,7 @@ pub use teloxide_macros::BotCommand;
 ///  4. `#[command(prefix = "prefix")]`
 ///  5. `#[command(separator = "sep")]`
 ///
-/// These boys just override the corresponding `enum` attributes for a specific
+/// These attributes just override the corresponding `enum` attributes for a specific
 /// variant.
 ///
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
