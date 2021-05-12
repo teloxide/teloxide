@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Getters for fields nested in `Chat` ([#80][pr80]) 
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
 - Telegram bot API 5.2 support ([#86][pr86])
+- `net::default_reqwest_settings` function ([#90][pr90])
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 [pr80]: https://github.com/teloxide/teloxide-core/pull/80
 [pr84]: https://github.com/teloxide/teloxide-core/pull/84
 [pr86]: https://github.com/teloxide/teloxide-core/pull/86
+[pr90]: https://github.com/teloxide/teloxide-core/pull/90
 
 ### Changed
 

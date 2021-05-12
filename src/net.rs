@@ -1,5 +1,7 @@
 //! Network-specific API.
 
+use std::time::Duration;
+
 pub use self::download::{download_file, download_file_stream, Download};
 
 pub(crate) use self::{
@@ -33,17 +35,51 @@ pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 ///
 /// If `TELOXIDE_PROXY` exists, but isn't correct url.
 pub fn client_from_env() -> reqwest::Client {
-    use crate::bot::{sound_bot, TELOXIDE_PROXY};
     use reqwest::Proxy;
 
-    let builder = sound_bot();
+    const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
+
+    let builder = default_reqwest_settings();
 
     match std::env::var(TELOXIDE_PROXY).ok() {
-        Some(proxy) => builder.proxy(Proxy::all(&proxy).expect("creating reqwest::Proxy")),
+        Some(proxy) => builder.proxy(Proxy::all(&proxy).expect("reqwest::Proxy creation failed")),
         None => builder,
     }
     .build()
     .expect("creating reqwest::Client")
+}
+
+/// Returns a reqwest client builder with default settings.
+///
+/// Client built from default settings is supposed to work in long time
+/// durations, see the [issue 223].
+///
+/// Current setting are:
+/// - `connection/keep-alive` default header
+/// - connection timeout of 5 seconds
+/// - timeout of 17 seconds
+/// - tcp_nodelay is on
+///
+/// Notes:
+/// 1. the settings may change in the future
+/// 2. if you are using polling mechanizm to get updates, the timeout configured
+///    in the client should be bigger than polling timeout
+///
+/// [issue 223]: https://github.com/teloxide/teloxide/issues/223
+pub fn default_reqwest_settings() -> reqwest::ClientBuilder {
+    use reqwest::header::{HeaderMap, CONNECTION};
+
+    let mut headers = HeaderMap::new();
+    headers.insert(CONNECTION, "keep-alive".parse().unwrap());
+
+    let connect_timeout = Duration::from_secs(5);
+    let timeout = connect_timeout + Duration::from_secs(12);
+
+    reqwest::Client::builder()
+        .connect_timeout(connect_timeout)
+        .timeout(timeout)
+        .tcp_nodelay(true)
+        .default_headers(headers)
 }
 
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
