@@ -51,19 +51,21 @@ pub fn client_from_env() -> reqwest::Client {
 
 /// Returns a reqwest client builder with default settings.
 ///
-/// Client built from default settings is supposed to work in long time
+/// Client built from default settings is supposed to work over long time
 /// durations, see the [issue 223].
 ///
-/// Current setting are:
-/// - `connection/keep-alive` default header
-/// - connection timeout of 5 seconds
-/// - timeout of 17 seconds
-/// - tcp_nodelay is on
+/// The current settings are:
+///  - The `connection/keep-alive` default header.
+///  - A connection timeout of 5 seconds.
+///  - A timeout of 17 seconds.
+///  - `tcp_nodelay` is on.
 ///
-/// Notes:
-/// 1. the settings may change in the future
-/// 2. if you are using polling mechanizm to get updates, the timeout configured
-///    in the client should be bigger than polling timeout
+/// ## Notes
+/// 1. The settings may change in the future.
+/// 2. If you are using the polling mechanism to get updates, the timeout
+///    configured in the client should be bigger than the polling timeout.
+/// 3. If you alter the current settings listed above, your bot will not be
+///    guaranteed to work over long time durations.
 ///
 /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
 pub fn default_reqwest_settings() -> reqwest::ClientBuilder {
