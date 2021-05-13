@@ -1,9 +1,6 @@
-use std::{future::Future, sync::Arc, time::Duration};
+use std::{future::Future, sync::Arc};
 
-use reqwest::{
-    header::{HeaderMap, CONNECTION},
-    Client, ClientBuilder,
-};
+use reqwest::Client;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
@@ -17,8 +14,7 @@ mod api;
 mod api_url;
 mod download;
 
-pub(crate) const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
-pub(crate) const TELOXIDE_PROXY: &str = "TELOXIDE_PROXY";
+const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 
 /// A requests sender.
 ///
@@ -76,13 +72,18 @@ impl Bot {
     where
         S: Into<String>,
     {
-        Self::with_client(token, build_sound_bot())
+        let client = net::default_reqwest_settings()
+            .build()
+            .expect("Client creation failed");
+
+        Self::with_client(token, client)
     }
 
     /// Creates a new `Bot` with the specified token and your
     /// [`reqwest::Client`].
     ///
     /// # Caution
+    ///
     /// Your custom client might not be configured correctly to be able to work
     /// in long time durations, see [issue 223].
     ///
@@ -237,30 +238,6 @@ impl Bot {
             net::request_multipart(&client, token.as_ref(), api_url.get(), P::NAME, params).await
         }
     }
-}
-
-/// Returns a builder with safe settings.
-///
-/// By "safe settings" I mean that a client will be able to work in long time
-/// durations, see the [issue 223].
-///
-/// [issue 223]: https://github.com/teloxide/teloxide/issues/223
-pub(crate) fn sound_bot() -> ClientBuilder {
-    let mut headers = HeaderMap::new();
-    headers.insert(CONNECTION, "keep-alive".parse().unwrap());
-
-    let connect_timeout = Duration::from_secs(5);
-    let timeout = 10;
-
-    ClientBuilder::new()
-        .connect_timeout(connect_timeout)
-        .timeout(Duration::from_secs(connect_timeout.as_secs() + timeout + 2))
-        .tcp_nodelay(true)
-        .default_headers(headers)
-}
-
-pub(crate) fn build_sound_bot() -> Client {
-    sound_bot().build().expect("creating reqwest::Client")
 }
 
 fn get_env(env: &'static str) -> String {
