@@ -53,7 +53,7 @@
 //
 // To properly build docs of this crate run
 // ```console
-// $ RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --open --all-features
+// $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
