@@ -219,6 +219,7 @@ where
         // Updates fetched last time.
         //
         // We need to store them here so we can drop stream without loosing state.
+        #[allow(clippy::type_complexity)]
         fetched: Option<
             iter::Map<
                 iter::FilterMap<
@@ -402,7 +403,9 @@ where
     Thf: Fn(&St) -> Option<Duration>,
 {
     fn stop(&mut self) {
-        self.stop.take().map(|stop| stop(&mut self.state));
+        if let Some(stop) = self.stop.take() {
+            stop(&mut self.state)
+        }
     }
 
     fn timeout_hint(&self) -> Option<Duration> {
