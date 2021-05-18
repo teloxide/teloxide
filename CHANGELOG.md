@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `InMemStorageError` with a single variant `DialogueNotFound` to be returned from `InMemStorage::remove_dialogue`.
  - `RedisStorageError::DialogueNotFound` and `SqliteStorageError::DialogueNotFound` to be returned from `Storage::remove_dialogue`.
  - `Dispatcher::shutdown` function.
+ - `Dispatcher::setup_ctrlc_handler` function ([issue 153](https://github.com/teloxide/teloxide/issues/153)).
 
 ### Changed
 
@@ -21,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
  - `polling` and `polling_default` now require `R: 'static`
  - Refactor `UpdateListener` trait:
-   - Add a `stop` function that allows stopping the listener.
+   - Add a `stop` function that allows stopping the listener ([issue 166](https://github.com/teloxide/teloxide/issues/166)).
    - Remove blanked implementation.
    - Remove `Stream` from super traits.
    - Add `AsUpdateStream` to super traits.

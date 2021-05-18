@@ -75,7 +75,7 @@ pub struct Dispatcher<R> {
     my_chat_members_queue: Tx<R, ChatMemberUpdated>,
     chat_members_queue: Tx<R, ChatMemberUpdated>,
 
-    shutdown_state: AtomicShutdownState,
+    shutdown_state: Arc<AtomicShutdownState>,
     shutdown_notify_back: Notify,
 }
 
@@ -101,9 +101,9 @@ where
             poll_answers_queue: None,
             my_chat_members_queue: None,
             chat_members_queue: None,
-            shutdown_state: AtomicShutdownState {
+            shutdown_state: Arc::new(AtomicShutdownState {
                 inner: AtomicU8::new(ShutdownState::IsntRunning as _),
-            },
+            }),
             shutdown_notify_back: Notify::new(),
         }
     }
@@ -122,6 +122,25 @@ where
             fut.await;
         });
         Some(tx)
+    }
+
+    /// Setup `^C` handler which [`shutdown`]s dispatching.
+    ///
+    /// [`shutdown`]: Dispatcher::shutdown
+    #[cfg(feature = "ctrlc_handler")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
+    pub fn setup_ctrlc_handler(self) -> Self {
+        let shutdown_state = Arc::clone(&self.shutdown_state);
+        tokio::spawn(async move {
+            loop {
+                tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
+
+                // If dispatcher wasn't running, then there is nothing to do
+                Self::shutdown_inner(&shutdown_state).ok();
+            }
+        });
+
+        self
     }
 
     #[must_use]
@@ -293,6 +312,7 @@ where
                 }
 
                 if let ShuttingDown = self.shutdown_state.load() {
+                    log::debug!("Start shutting down dispatching");
                     break;
                 }
             }
@@ -310,25 +330,31 @@ where
 
             // Notify `shutdown`s that we finished
             self.shutdown_notify_back.notify_waiters();
+            log::debug!("Dispatching shut down");
+        } else {
+            log::debug!("Dispatching stopped (listner returned `None`)");
         }
 
         self.shutdown_state.store(IsntRunning);
     }
 
-    /// Tries shutting down dispatching.
+    /// Tries to shutdown dispatching.
     ///
-    /// Returns error if this dispather isn't dispathing at the moment.
+    /// Returns error if this dispather isn't dispatching at the moment.
     ///
-    /// If you don't need to wait for shutdown returned future can be ignored.
+    /// If you don't need to wait for shutdown, returned future can be ignored.
     pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, ShutdownError> {
+        Self::shutdown_inner(&self.shutdown_state)
+            .map(|()| async move { self.shutdown_notify_back.notified().await })
+    }
+
+    fn shutdown_inner(shutdown_state: &AtomicShutdownState) -> Result<(), ShutdownError> {
         use ShutdownState::*;
 
-        let res = self.shutdown_state.compare_exchange(Running, ShuttingDown);
+        let res = shutdown_state.compare_exchange(Running, ShuttingDown);
 
         match res {
-            Ok(_) | Err(ShuttingDown) => {
-                Ok(async move { self.shutdown_notify_back.notified().await })
-            }
+            Ok(_) | Err(ShuttingDown) => Ok(()),
             Err(IsntRunning) => return Err(ShutdownError::IsntRunning),
             Err(Running) => unreachable!(),
         }

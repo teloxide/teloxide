@@ -34,6 +34,8 @@ bincode-serializer = ["bincode"]
 frunk- = ["frunk"]
 macros = ["teloxide-macros"]
 
+ctrlc_handler = ["tokio/signal"]
+
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
 auto-send = ["teloxide-core/auto_send"]
@@ -51,6 +53,7 @@ full = [
     "bincode-serializer",
     "frunk",
     "macros",
+    "ctrlc_handler",
     "teloxide-core/full",
     "native-tls",
     "rustls",

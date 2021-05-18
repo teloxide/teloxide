@@ -9,6 +9,7 @@
 | `macros` | Re-exports macros from [`teloxide-macros`]. |
 | `native-tls` | Enables the [`native-tls`] TLS implementation (enabled by default). |
 | `rustls` | Enables the [`rustls`] TLS implementation. |
+| `ctrlc_handler` | Enables [`Dispatcher::setup_ctrlc_handler`](dispatching::Dispatcher::setup_ctrlc_handler) function. |
 | `auto-send` | Enables the `AutoSend` bot adaptor. |
 | `cache-me` | Enables the `CacheMe` bot adaptor. |
 | `frunk` | Enables [`teloxide::utils::UpState`]. |
