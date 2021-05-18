@@ -28,16 +28,6 @@ use tokio::{
 
 type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
 
-#[macro_use]
-mod macros {
-    /// Pushes an update to a queue.
-    macro_rules! send {
-        ($requester:expr, $tx:expr, $update:expr, $variant:expr) => {
-            send($requester, $tx, $update, stringify!($variant));
-        };
-    }
-}
-
 fn send<'a, R, Upd>(requester: &'a R, tx: &'a Tx<R, Upd>, update: Upd, variant: &'static str)
 where
     Upd: Debug,
@@ -355,7 +345,7 @@ where
 
         match res {
             Ok(_) | Err(ShuttingDown) => Ok(()),
-            Err(IsntRunning) => return Err(ShutdownError::IsntRunning),
+            Err(IsntRunning) => Err(ShutdownError::IsntRunning),
             Err(Running) => unreachable!(),
         }
     }
@@ -382,99 +372,77 @@ where
 
             match update.kind {
                 UpdateKind::Message(message) => {
-                    send!(&self.requester, &self.messages_queue, message, UpdateKind::Message);
+                    send(&self.requester, &self.messages_queue, message, "UpdateKind::Message")
                 }
-                UpdateKind::EditedMessage(message) => {
-                    send!(
-                        &self.requester,
-                        &self.edited_messages_queue,
-                        message,
-                        UpdateKind::EditedMessage
-                    );
-                }
-                UpdateKind::ChannelPost(post) => {
-                    send!(
-                        &self.requester,
-                        &self.channel_posts_queue,
-                        post,
-                        UpdateKind::ChannelPost
-                    );
-                }
-                UpdateKind::EditedChannelPost(post) => {
-                    send!(
-                        &self.requester,
-                        &self.edited_channel_posts_queue,
-                        post,
-                        UpdateKind::EditedChannelPost
-                    );
-                }
-                UpdateKind::InlineQuery(query) => {
-                    send!(
-                        &self.requester,
-                        &self.inline_queries_queue,
-                        query,
-                        UpdateKind::InlineQuery
-                    );
-                }
-                UpdateKind::ChosenInlineResult(result) => {
-                    send!(
-                        &self.requester,
-                        &self.chosen_inline_results_queue,
-                        result,
-                        UpdateKind::ChosenInlineResult
-                    );
-                }
-                UpdateKind::CallbackQuery(query) => {
-                    send!(
-                        &self.requester,
-                        &self.callback_queries_queue,
-                        query,
-                        UpdateKind::CallbackQuer
-                    );
-                }
-                UpdateKind::ShippingQuery(query) => {
-                    send!(
-                        &self.requester,
-                        &self.shipping_queries_queue,
-                        query,
-                        UpdateKind::ShippingQuery
-                    );
-                }
-                UpdateKind::PreCheckoutQuery(query) => {
-                    send!(
-                        &self.requester,
-                        &self.pre_checkout_queries_queue,
-                        query,
-                        UpdateKind::PreCheckoutQuery
-                    );
-                }
+                UpdateKind::EditedMessage(message) => send(
+                    &self.requester,
+                    &self.edited_messages_queue,
+                    message,
+                    "UpdateKind::EditedMessage",
+                ),
+                UpdateKind::ChannelPost(post) => send(
+                    &self.requester,
+                    &self.channel_posts_queue,
+                    post,
+                    "UpdateKind::ChannelPost",
+                ),
+                UpdateKind::EditedChannelPost(post) => send(
+                    &self.requester,
+                    &self.edited_channel_posts_queue,
+                    post,
+                    "UpdateKind::EditedChannelPost",
+                ),
+                UpdateKind::InlineQuery(query) => send(
+                    &self.requester,
+                    &self.inline_queries_queue,
+                    query,
+                    "UpdateKind::InlineQuery",
+                ),
+                UpdateKind::ChosenInlineResult(result) => send(
+                    &self.requester,
+                    &self.chosen_inline_results_queue,
+                    result,
+                    "UpdateKind::ChosenInlineResult",
+                ),
+                UpdateKind::CallbackQuery(query) => send(
+                    &self.requester,
+                    &self.callback_queries_queue,
+                    query,
+                    "UpdateKind::CallbackQuer",
+                ),
+                UpdateKind::ShippingQuery(query) => send(
+                    &self.requester,
+                    &self.shipping_queries_queue,
+                    query,
+                    "UpdateKind::ShippingQuery",
+                ),
+                UpdateKind::PreCheckoutQuery(query) => send(
+                    &self.requester,
+                    &self.pre_checkout_queries_queue,
+                    query,
+                    "UpdateKind::PreCheckoutQuery",
+                ),
                 UpdateKind::Poll(poll) => {
-                    send!(&self.requester, &self.polls_queue, poll, UpdateKind::Poll);
+                    send(&self.requester, &self.polls_queue, poll, "UpdateKind::Poll")
                 }
-                UpdateKind::PollAnswer(answer) => {
-                    send!(
-                        &self.requester,
-                        &self.poll_answers_queue,
-                        answer,
-                        UpdateKind::PollAnswer
-                    );
-                }
-                UpdateKind::MyChatMember(chat_member_updated) => {
-                    send!(
-                        &self.requester,
-                        &self.my_chat_members_queue,
-                        chat_member_updated,
-                        UpdateKind::MyChatMember
-                    );
-                }
-                UpdateKind::ChatMember(chat_member_updated) => {
-                    send!(
-                        &self.requester,
-                        &self.chat_members_queue,
-                        chat_member_updated,
-                        UpdateKind::MyChatMember
-                    );
-                }
+                UpdateKind::PollAnswer(answer) => send(
+                    &self.requester,
+                    &self.poll_answers_queue,
+                    answer,
+                    "UpdateKind::PollAnswer",
+                ),
+                UpdateKind::MyChatMember(chat_member_updated) => send(
+                    &self.requester,
+                    &self.my_chat_members_queue,
+                    chat_member_updated,
+                    "UpdateKind::MyChatMember",
+                ),
+                UpdateKind::ChatMember(chat_member_updated) => send(
+                    &self.requester,
+                    &self.chat_members_queue,
+                    chat_member_updated,
+                    "UpdateKind::MyChatMember",
+                ),
             }
         }
     }
