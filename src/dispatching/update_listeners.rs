@@ -105,7 +105,7 @@
 
 use futures::{stream, Stream, StreamExt};
 
-use std::{convert::TryInto, time::Duration};
+use std::{convert::TryInto, iter, time::Duration, vec};
 use teloxide_core::{
     requests::{HasPayload, Request, Requester},
     types::{AllowedUpdate, SemiparsedVec, Update},
@@ -153,6 +153,8 @@ pub trait AsUpdateStream<'a, E> {
     /// Creates the update [`Stream`].
     ///
     /// [`Stream`]: AsUpdateStream::Stream
+    ///
+    /// Returned stream **must not** be stateful. State must be kept in `self`.
     fn as_stream(&'a mut self) -> Self::Stream;
 }
 
@@ -200,13 +202,28 @@ where
         Stopped,
     }
 
-    struct State<B> {
+    struct State<B: Requester> {
         bot: B,
         timeout: Option<u32>,
         limit: Option<u8>,
         allowed_updates: Option<Vec<AllowedUpdate>>,
         offset: i32,
         run_state: RunningState,
+
+        // Updates fetched last time.
+        //
+        // We need to store them here so we can drop stream without loosing state.
+        fetched: Option<
+            iter::Map<
+                iter::FilterMap<
+                    vec::IntoIter<Result<Update, (serde_json::Value, serde_json::Error)>>,
+                    fn(
+                        Result<Update, (serde_json::Value, serde_json::Error)>,
+                    ) -> std::option::Option<Update>,
+                >,
+                fn(Update) -> Result<Update, B::Err>,
+            >,
+        >,
     }
 
     fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + '_
@@ -214,71 +231,84 @@ where
         B: Requester,
     {
         stream::unfold(st, move |state| async move {
-            let State { timeout, limit, allowed_updates, bot, offset, run_state, .. } = &mut *state;
+            let State { timeout, limit, allowed_updates, bot, offset, run_state, fetched, .. } =
+                &mut *state;
 
-            match run_state {
-                RunningState::Polling => {}
-                RunningState::Stopped => return None,
-                RunningState::Stopping => {
-                    let mut req = bot.get_updates_fault_tolerant();
+            let fetched_is_none_or_empty = fetched
+                .as_ref()
+                .map(|f| matches!(f.size_hint(), (_lower, Some(0))))
+                .unwrap_or(true);
 
-                    let payload = &mut req.payload_mut().0;
-                    payload.offset = Some(*offset);
-                    payload.timeout = *timeout;
-                    payload.limit = Some(1);
-                    payload.allowed_updates = allowed_updates.take();
+            if fetched_is_none_or_empty {
+                match run_state {
+                    RunningState::Polling => {}
+                    RunningState::Stopped => return None,
+                    RunningState::Stopping => {
+                        let mut req = bot.get_updates_fault_tolerant();
 
-                    return match req.send().await {
-                        Ok(_) => {
-                            *run_state = RunningState::Stopped;
-                            None
-                        }
-                        Err(err) => Some((stream::iter(vec![Err(err)]), state)),
-                    };
-                }
-            }
+                        let payload = &mut req.payload_mut().0;
+                        payload.offset = Some(*offset);
+                        payload.timeout = *timeout;
+                        payload.limit = Some(1);
+                        payload.allowed_updates = allowed_updates.take();
 
-            let mut req = bot.get_updates_fault_tolerant();
-            let payload = &mut req.payload_mut().0;
-            payload.offset = Some(*offset);
-            payload.timeout = *timeout;
-            payload.limit = *limit;
-            payload.allowed_updates = allowed_updates.take();
-
-            let updates = match req.send().await {
-                Err(err) => vec![Err(err)],
-                Ok(SemiparsedVec(updates)) => {
-                    // Set offset to the last update's id + 1
-                    if let Some(upd) = updates.last() {
-                        let id: i32 = match upd {
-                            Ok(ok) => ok.id,
-                            Err((value, _)) => value["update_id"]
-                                .as_i64()
-                                .expect("The 'update_id' field must always exist in Update")
-                                .try_into()
-                                .expect("update_id must be i32"),
+                        return match req.send().await {
+                            Ok(_) => {
+                                *run_state = RunningState::Stopped;
+                                None
+                            }
+                            Err(err) => Some((stream::iter(Some(Err(err))), state)),
                         };
-
-                        *offset = id + 1;
                     }
+                }
 
-                    for update in &updates {
-                        if let Err((value, e)) = update {
-                            log::error!(
+                let mut req = bot.get_updates_fault_tolerant();
+                let payload = &mut req.payload_mut().0;
+                payload.offset = Some(*offset);
+                payload.timeout = *timeout;
+                payload.limit = *limit;
+                payload.allowed_updates = allowed_updates.take();
+
+                let updates = match req.send().await {
+                    Err(err) => return Some((stream::iter(Some(Err(err))), state)),
+                    Ok(SemiparsedVec(updates)) => {
+                        // Set offset to the last update's id + 1
+                        if let Some(upd) = updates.last() {
+                            let id: i32 = match upd {
+                                Ok(ok) => ok.id,
+                                Err((value, _)) => value["update_id"]
+                                    .as_i64()
+                                    .expect("The 'update_id' field must always exist in Update")
+                                    .try_into()
+                                    .expect("update_id must be i32"),
+                            };
+
+                            *offset = id + 1;
+                        }
+
+                        for update in &updates {
+                            if let Err((value, e)) = update {
+                                log::error!(
                                 "Cannot parse an update.\nError: {:?}\nValue: {}\n\
                             This is a bug in teloxide-core, please open an issue here: \
                             https://github.com/teloxide/teloxide-core/issues.",
                                 e,
                                 value
                             );
+                            }
                         }
+
+                        updates
+                            .into_iter()
+                            .filter_map(Result::ok as fn(_) -> _)
+                            .map(Ok as fn(_) -> _)
                     }
+                };
 
-                    updates.into_iter().filter_map(Result::ok).map(Ok).collect::<Vec<_>>()
-                }
-            };
+                *fetched = Some(updates);
+            }
 
-            Some((stream::iter(updates), state))
+            Some((stream::iter(fetched.as_mut().and_then(|f| f.next())), state))
         })
         .flatten()
     }
@@ -292,6 +322,7 @@ where
         allowed_updates,
         offset: 0,
         run_state: RunningState::Polling,
+        fetched: None,
     };
 
     let stop = assert_stop_fn(|st: &mut State<_>| {
