@@ -107,6 +107,7 @@ use futures::{stream, Stream, StreamExt};
 
 use std::{convert::TryInto, iter, time::Duration, vec};
 use teloxide_core::{
+    payloads::GetUpdates,
     requests::{HasPayload, Request, Requester},
     types::{AllowedUpdate, SemiparsedVec, Update},
 };
@@ -251,11 +252,12 @@ where
                     RunningState::Stopping => {
                         let mut req = bot.get_updates_fault_tolerant();
 
-                        let payload = &mut req.payload_mut().0;
-                        payload.offset = Some(*offset);
-                        payload.timeout = *timeout;
-                        payload.limit = Some(1);
-                        payload.allowed_updates = allowed_updates.take();
+                        req.payload_mut().0 = GetUpdates {
+                            offset: Some(*offset),
+                            timeout: *timeout,
+                            limit: Some(1),
+                            allowed_updates: allowed_updates.take(),
+                        };
 
                         return match req.send().await {
                             Ok(_) => {
@@ -268,11 +270,12 @@ where
                 }
 
                 let mut req = bot.get_updates_fault_tolerant();
-                let payload = &mut req.payload_mut().0;
-                payload.offset = Some(*offset);
-                payload.timeout = *timeout;
-                payload.limit = *limit;
-                payload.allowed_updates = allowed_updates.take();
+                req.payload_mut().0 = GetUpdates {
+                    offset: Some(*offset),
+                    timeout: *timeout,
+                    limit: *limit,
+                    allowed_updates: allowed_updates.take(),
+                };
 
                 let updates = match req.send().await {
                     Err(err) => return Some((stream::iter(Some(Err(err))), state)),
