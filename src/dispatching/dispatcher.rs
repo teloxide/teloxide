@@ -243,7 +243,7 @@ where
     /// `update_listener_error_handler`.
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a self,
-        update_listener: UListener,
+        mut update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
     ) where
         UListener: UpdateListener<ListenerE> + 'a,
@@ -251,9 +251,8 @@ where
         ListenerE: Debug,
         R: Requester + Clone,
     {
-        let update_listener = Box::pin(update_listener);
-
         update_listener
+            .as_stream()
             .for_each(move |update| {
                 let update_listener_error_handler = Arc::clone(&update_listener_error_handler);
 

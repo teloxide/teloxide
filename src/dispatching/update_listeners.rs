@@ -111,11 +111,50 @@ use teloxide_core::{
     types::{AllowedUpdate, SemiparsedVec, Update},
 };
 
-/// A generic update listener.
-pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
-    // TODO: add some methods here (.shutdown(), etc).
+/// An update listener.
+///
+/// Implementors of this trait allow getting updates from Telegram.
+///
+/// Currently Telegram has 2 ways of getting updates -- [polling] and
+/// [webhooks]. Currently, only the former one is implemented (see [`polling`]
+/// and [`polling_default`])
+///
+/// Some functions of this trait are located in the supertrait
+/// ([`AsUpdateStream`]), see also:
+/// - [`Stream`]
+/// - [`as_stream`]
+///
+/// [polling]: self#long-polling
+/// [webhooks]: self#webhooks
+/// [`Stream`]: AsUpdateStream::Stream
+/// [`as_stream`]: AsUpdateStream::as_stream
+pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
+    /// Stop listening for updates.
+    ///  
+    /// This function is not guaranteed to have an immidiate effect. That is
+    /// some listners can return updates even after [`stop`] is called (e.g.:
+    /// because of buffering).
+    ///
+    /// [`stop`]: UpdateListener::stop
+    ///
+    /// Implementors of this function are encouraged to stop listening for
+    /// updates as soon as possible and return `None` from the update stream as
+    /// soon as all cached updates are returned.
+    fn stop(&mut self);
 }
-impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
+
+/// [`UpdateListener`]'s supertrait/extension.
+///
+/// This trait is a workaround to not require GAT.
+pub trait AsUpdateStream<'a, E> {
+    /// Stream of updates from Telegram.
+    type Stream: Stream<Item = Result<Update, E>> + 'a;
+
+    /// Creates the update [`Stream`].
+    ///
+    /// [`Stream`]: AsUpdateStream::Stream
+    fn as_stream(&'a mut self) -> Self::Stream;
+}
 
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
@@ -126,7 +165,7 @@ impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 /// This function will automatically delete a webhook if it was set up.
 pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
-    R: Requester,
+    R: Requester + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     delete_webhook_if_setup(&requester).await;
@@ -152,19 +191,58 @@ pub fn polling<R>(
     allowed_updates: Option<Vec<AllowedUpdate>>,
 ) -> impl UpdateListener<R::Err>
 where
-    R: Requester,
+    R: Requester + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
-    let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+    enum RunningState {
+        Polling,
+        Stopping,
+        Stopped,
+    }
 
-    stream::unfold(
-        (allowed_updates, requester, 0),
-        move |(mut allowed_updates, bot, mut offset)| async move {
+    struct State<B> {
+        bot: B,
+        timeout: Option<u32>,
+        limit: Option<u8>,
+        allowed_updates: Option<Vec<AllowedUpdate>>,
+        offset: i32,
+        run_state: RunningState,
+    }
+
+    fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + '_
+    where
+        B: Requester,
+    {
+        stream::unfold(st, move |state| async move {
+            let State { timeout, limit, allowed_updates, bot, offset, run_state, .. } = &mut *state;
+
+            match run_state {
+                RunningState::Polling => {}
+                RunningState::Stopped => return None,
+                RunningState::Stopping => {
+                    let mut req = bot.get_updates_fault_tolerant();
+
+                    let payload = &mut req.payload_mut().0;
+                    payload.offset = Some(*offset);
+                    payload.timeout = *timeout;
+                    payload.limit = Some(1);
+                    payload.allowed_updates = allowed_updates.take();
+
+                    return match req.send().await {
+                        Ok(_) => {
+                            *run_state = RunningState::Stopped;
+                            None
+                        }
+                        Err(err) => Some((stream::iter(vec![Err(err)]), state)),
+                    };
+                }
+            }
+
             let mut req = bot.get_updates_fault_tolerant();
             let payload = &mut req.payload_mut().0;
-            payload.offset = Some(offset);
-            payload.timeout = timeout;
-            payload.limit = limit;
+            payload.offset = Some(*offset);
+            payload.timeout = *timeout;
+            payload.limit = *limit;
             payload.allowed_updates = allowed_updates.take();
 
             let updates = match req.send().await {
@@ -181,7 +259,7 @@ where
                                 .expect("update_id must be i32"),
                         };
 
-                        offset = id + 1;
+                        *offset = id + 1;
                     }
 
                     for update in &updates {
@@ -200,10 +278,27 @@ where
                 }
             };
 
-            Some((stream::iter(updates), (allowed_updates, bot, offset)))
-        },
-    )
-    .flatten()
+            Some((stream::iter(updates), state))
+        })
+        .flatten()
+    }
+
+    let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+
+    let state = State {
+        bot: requester,
+        timeout,
+        limit,
+        allowed_updates,
+        offset: 0,
+        run_state: RunningState::Polling,
+    };
+
+    let stop = assert_stop_fn(|st: &mut State<_>| {
+        st.run_state = RunningState::Stopping;
+    });
+
+    StatefulListner { state, stream, stop }
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
@@ -225,4 +320,53 @@ where
             log::error!("Failed to delete a webhook: {:?}", e);
         }
     }
+}
+
+/// A listner created from `state` and `stream`/`stop` functions.
+struct StatefulListner<St, Sf, F> {
+    /// The state of the listner.
+    state: St,
+
+    /// Function used as `AsUpdateStream::as_stream`.
+    ///
+    /// Must be of type `for<'a> &'a mut St -> impl Stream + 'a` and callable by
+    /// `&mut`.
+    stream: Sf,
+
+    /// Function used as `UpdateListner::stop`.
+    ///
+    /// Must be of type `for<'a> &'a mut St`.
+    stop: Option<F>,
+}
+
+impl<'a, St, Sf, F, Strm, E> AsUpdateStream<'a, E> for StatefulListner<St, Sf, F>
+where
+    (St, Strm): 'a,
+    Sf: FnMut(&'a mut St) -> Strm,
+    Strm: Stream<Item = Result<Update, E>>,
+{
+    type Stream = Strm;
+
+    fn as_stream(&'a mut self) -> Self::Stream {
+        (self.stream)(&mut self.state)
+    }
+}
+
+impl<St, Sf, F, E> UpdateListener<E> for StatefulListner<St, Sf, F>
+where
+    Self: for<'a> AsUpdateStream<'a, E>,
+    F: FnOnce(&mut St),
+{
+    fn stop(&mut self) {
+        self.stop.take().map(|stop| stop(&mut self.state));
+    }
+}
+
+/// Assert (at compile tume) that `f` is fine as a stop-function (closure
+/// lifetime inference workaround).
+fn assert_stop_fn<F, St>(f: F) -> Option<F>
+where
+    F: FnOnce(&mut St),
+{
+    Some(f)
 }

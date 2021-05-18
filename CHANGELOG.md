@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Return an error from `Storage::remove_dialogue` if a dialogue does not exist.
  - Require `D: Clone` in `dialogues_repl(_with_listener)` and `InMemStorage`.
  - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
+ - `polling` and `polling_default` now require `R: 'static`
+ - Refactor `UpdateListener` trait:
+   - Add a `stop` function that allows stopping the listener.
+   - Remove blanked implementation.
+   - Remove `Stream` from super traits.
+   - Add `AsUpdateStream` to super traits.
+     - Add an `AsUpdateStream` trait that allows turning implementors into streams of updates (GAT workaround).
 
 ### Fixed
 
