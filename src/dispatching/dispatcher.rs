@@ -282,8 +282,11 @@ where
 
         const MIN_SHUTDOWN_CHECK_TIMEOUT: Duration = Duration::from_secs(1);
 
+        // FIXME: replace this by just Duration::ZERO once 1.53 will be released
+        const DZERO: Duration = Duration::from_secs(0);
+
         let shutdown_check_timeout =
-            update_listener.timeout_hint().unwrap_or(Duration::ZERO) + MIN_SHUTDOWN_CHECK_TIMEOUT;
+            update_listener.timeout_hint().unwrap_or(DZERO) + MIN_SHUTDOWN_CHECK_TIMEOUT;
 
         if let Err(_) = self.shutdown_state.compare_exchange(IsntRunning, Running) {
             panic!("Dispatching is already running");
