@@ -24,6 +24,8 @@ authors = [
 maintenance = { status = "actively-developed" }
 
 [features]
+default = ["native-tls", "teloxide-core/default"]
+
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
