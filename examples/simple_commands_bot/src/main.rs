@@ -18,7 +18,7 @@ async fn answer(
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).send().await?,
+        Command::Help => cx.answer(Command::descriptions()).await?,
         Command::Username(username) => {
             cx.answer(format!("Your username is @{}.", username)).await?
         }

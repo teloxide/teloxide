@@ -1,5 +1,3 @@
-#![cfg_attr(feature = "nightly", feature(extended_key_value_attributes))]
-
 //! A full-featured framework that empowers you to easily build [Telegram bots]
 //! using the [`async`/`.await`] syntax in [Rust]. It handles all the difficult
 //! stuff so you can focus only on your business logic.
