@@ -287,8 +287,12 @@ where
         // FIXME: replace this by just Duration::ZERO once 1.53 will be released
         const DZERO: Duration = Duration::from_secs(0);
 
-        let shutdown_check_timeout =
-            update_listener.timeout_hint().unwrap_or(DZERO) + MIN_SHUTDOWN_CHECK_TIMEOUT;
+        let shutdown_check_timeout = update_listener.timeout_hint().unwrap_or(DZERO);
+
+        // FIXME: replace this by just saturating_add once 1.53 will be released
+        let shutdown_check_timeout = shutdown_check_timeout
+            .checked_add(MIN_SHUTDOWN_CHECK_TIMEOUT)
+            .unwrap_or(shutdown_check_timeout);
 
         let mut stop_token = Some(update_listener.stop_token());
 
