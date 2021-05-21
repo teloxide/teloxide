@@ -132,8 +132,8 @@ use teloxide_core::{
 pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
     /// Stop listening for updates.
     ///  
-    /// This function is not guaranteed to have an immidiate effect. That is
-    /// some listners can return updates even after [`stop`] is called (e.g.:
+    /// This function is not guaranteed to have an immediate effect. That is
+    /// some listeners can return updates even after [`stop`] is called (e.g.:
     /// because of buffering).
     ///
     /// [`stop`]: UpdateListener::stop
