@@ -103,14 +103,19 @@
 //! [short]: https://en.wikipedia.org/wiki/Polling_(computer_science)
 //! [webhook]: https://en.wikipedia.org/wiki/Webhook
 
-use futures::{stream, Stream, StreamExt};
+use futures::{
+    future::{ready, Either},
+    stream, Stream, StreamExt,
+};
 
-use std::{convert::TryInto, iter, time::Duration, vec};
+use std::{convert::TryInto, time::Duration};
 use teloxide_core::{
     payloads::GetUpdates,
     requests::{HasPayload, Request, Requester},
     types::{AllowedUpdate, SemiparsedVec, Update},
 };
+
+use crate::dispatching::stop_token::{AsyncStopFlag, AsyncStopToken, StopToken};
 
 /// An update listener.
 ///
@@ -130,20 +135,33 @@ use teloxide_core::{
 /// [`Stream`]: AsUpdateStream::Stream
 /// [`as_stream`]: AsUpdateStream::as_stream
 pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
-    /// Stop listening for updates.
+    /// Type of token which allows ti stop this listener.
+    type StopToken: StopToken;
+
+    /// Returns a token which stops this listener.
     ///  
-    /// This function is not guaranteed to have an immediate effect. That is
-    /// some listeners can return updates even after [`stop`] is called (e.g.:
-    /// because of buffering).
+    /// The [`stop`] function of the token is not guaranteed to have an
+    /// immediate effect. That is some listeners can return updates even
+    /// after [`stop`] is called (e.g.: because of buffering).
     ///
-    /// [`stop`]: UpdateListener::stop
+    /// [`stop`]: StopToken::stop
     ///
     /// Implementors of this function are encouraged to stop listening for
     /// updates as soon as possible and return `None` from the update stream as
     /// soon as all cached updates are returned.
-    fn stop(&mut self);
+    #[must_use = "This function doesn't stop listening, to stop listening you need to call stop on \
+                  the returned token"]
+    fn stop_token(&mut self) -> Self::StopToken;
 
     /// Timeout duration hint.
+    ///
+    /// This hints how often dispatcher should check for shutdown. E.g. for
+    /// [`polling`] this returns the [`timeout`].
+    ///
+    /// [`timeout`]: crate::payloads::GetUpdates::timeout
+    ///
+    /// If you are implementing this trait and not sure what to return from this
+    /// function, just leave it with default implementation.
     fn timeout_hint(&self) -> Option<Duration> {
         None
     }
@@ -159,8 +177,6 @@ pub trait AsUpdateStream<'a, E> {
     /// Creates the update [`Stream`].
     ///
     /// [`Stream`]: AsUpdateStream::Stream
-    ///
-    /// Returned stream **must not** be stateful. State must be kept in `self`.
     fn as_stream(&'a mut self) -> Self::Stream;
 }
 
@@ -202,35 +218,14 @@ where
     R: Requester + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
-    enum RunningState {
-        Polling,
-        Stopping,
-        Stopped,
-    }
-
     struct State<B: Requester> {
         bot: B,
         timeout: Option<u32>,
         limit: Option<u8>,
         allowed_updates: Option<Vec<AllowedUpdate>>,
         offset: i32,
-        run_state: RunningState,
-
-        // Updates fetched last time.
-        //
-        // We need to store them here so we can drop stream without loosing state.
-        #[allow(clippy::type_complexity)]
-        fetched: Option<
-            iter::Map<
-                iter::FilterMap<
-                    vec::IntoIter<Result<Update, (serde_json::Value, serde_json::Error)>>,
-                    fn(
-                        Result<Update, (serde_json::Value, serde_json::Error)>,
-                    ) -> std::option::Option<Update>,
-                >,
-                fn(Update) -> Result<Update, B::Err>,
-            >,
-        >,
+        flag: AsyncStopFlag,
+        token: AsyncStopToken,
     }
 
     fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + '_
@@ -238,89 +233,71 @@ where
         B: Requester,
     {
         stream::unfold(st, move |state| async move {
-            let State { timeout, limit, allowed_updates, bot, offset, run_state, fetched, .. } =
-                &mut *state;
+            let State { timeout, limit, allowed_updates, bot, offset, flag, .. } = &mut *state;
 
-            let fetched_is_none_or_empty = fetched
-                .as_ref()
-                .map(|f| matches!(f.size_hint(), (_lower, Some(0))))
-                .unwrap_or(true);
-
-            if fetched_is_none_or_empty {
-                match run_state {
-                    RunningState::Polling => {}
-                    RunningState::Stopped => return None,
-                    RunningState::Stopping => {
-                        let mut req = bot.get_updates_fault_tolerant();
-
-                        req.payload_mut().0 = GetUpdates {
-                            offset: Some(*offset),
-                            timeout: *timeout,
-                            limit: Some(1),
-                            allowed_updates: allowed_updates.take(),
-                        };
-
-                        return match req.send().await {
-                            Ok(_) => {
-                                *run_state = RunningState::Stopped;
-                                None
-                            }
-                            Err(err) => Some((stream::iter(Some(Err(err))), state)),
-                        };
-                    }
-                }
-
+            if flag.is_stopped() {
                 let mut req = bot.get_updates_fault_tolerant();
+
                 req.payload_mut().0 = GetUpdates {
                     offset: Some(*offset),
-                    timeout: *timeout,
-                    limit: *limit,
+                    timeout: Some(0),
+                    limit: Some(1),
                     allowed_updates: allowed_updates.take(),
                 };
 
-                let updates = match req.send().await {
-                    Err(err) => return Some((stream::iter(Some(Err(err))), state)),
-                    Ok(SemiparsedVec(updates)) => {
-                        // Set offset to the last update's id + 1
-                        if let Some(upd) = updates.last() {
-                            let id: i32 = match upd {
-                                Ok(ok) => ok.id,
-                                Err((value, _)) => value["update_id"]
-                                    .as_i64()
-                                    .expect("The 'update_id' field must always exist in Update")
-                                    .try_into()
-                                    .expect("update_id must be i32"),
-                            };
+                return match req.send().await {
+                    Ok(_) => None,
+                    Err(err) => Some((Either::Left(stream::once(ready(Err(err)))), state)),
+                };
+            }
 
-                            *offset = id + 1;
-                        }
+            let mut req = bot.get_updates_fault_tolerant();
+            req.payload_mut().0 = GetUpdates {
+                offset: Some(*offset),
+                timeout: *timeout,
+                limit: *limit,
+                allowed_updates: allowed_updates.take(),
+            };
 
-                        for update in &updates {
-                            if let Err((value, e)) = update {
-                                log::error!(
+            let updates = match req.send().await {
+                Err(err) => return Some((Either::Left(stream::once(ready(Err(err)))), state)),
+                Ok(SemiparsedVec(updates)) => {
+                    // Set offset to the last update's id + 1
+                    if let Some(upd) = updates.last() {
+                        let id: i32 = match upd {
+                            Ok(ok) => ok.id,
+                            Err((value, _)) => value["update_id"]
+                                .as_i64()
+                                .expect("The 'update_id' field must always exist in Update")
+                                .try_into()
+                                .expect("update_id must be i32"),
+                        };
+
+                        *offset = id + 1;
+                    }
+
+                    for update in &updates {
+                        if let Err((value, e)) = update {
+                            log::error!(
                                 "Cannot parse an update.\nError: {:?}\nValue: {}\n\
                             This is a bug in teloxide-core, please open an issue here: \
                             https://github.com/teloxide/teloxide-core/issues.",
                                 e,
                                 value
                             );
-                            }
                         }
-
-                        updates
-                            .into_iter()
-                            .filter_map(Result::ok as fn(_) -> _)
-                            .map(Ok as fn(_) -> _)
                     }
-                };
 
-                *fetched = Some(updates);
-            }
+                    updates.into_iter().filter_map(Result::ok).map(Ok)
+                }
+            };
 
-            Some((stream::iter(fetched.as_mut().and_then(|f| f.next())), state))
+            Some((Either::Right(stream::iter(updates)), state))
         })
         .flatten()
     }
+
+    let (token, flag) = AsyncStopToken::new_pair();
 
     let state = State {
         bot: requester,
@@ -328,15 +305,15 @@ where
         limit,
         allowed_updates,
         offset: 0,
-        run_state: RunningState::Polling,
-        fetched: None,
+        flag,
+        token,
     };
 
-    let stop = Some(|st: &mut State<_>| st.run_state = RunningState::Stopping);
+    let stop = |st: &mut State<_>| st.token.clone();
 
     let timeout_hint = Some(move |_: &State<_>| timeout);
 
-    StatefulListner { state, stream, stop, timeout_hint }
+    StatefulListener { state, stream, stop, timeout_hint }
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
@@ -360,9 +337,9 @@ where
     }
 }
 
-/// A listner created from `state` and `stream`/`stop` functions.
-struct StatefulListner<St, Assf, Sf, Thf> {
-    /// The state of the listner.
+/// A listener created from `state` and `stream`/`stop` functions.
+struct StatefulListener<St, Assf, Sf, Thf> {
+    /// The state of the listener.
     state: St,
 
     /// Function used as `AsUpdateStream::as_stream`.
@@ -371,19 +348,19 @@ struct StatefulListner<St, Assf, Sf, Thf> {
     /// `&mut`.
     stream: Assf,
 
-    /// Function used as `UpdateListner::stop`.
+    /// Function used as `UpdateListener::stop`.
     ///
-    /// Must be of type `for<'a> &'a mut St`.
-    stop: Option<Sf>,
+    /// Must be of type `for<'a> &'a mut St -> impl StopToken`.
+    stop: Sf,
 
-    /// Function used as `UpdateListner::timeout_hint`.
+    /// Function used as `UpdateListener::timeout_hint`.
     ///
     /// Must be of type `for<'a> &'a St -> Option<Duration>` and callable by
     /// `&`.
     timeout_hint: Option<Thf>,
 }
 
-impl<'a, St, Assf, Sf, Thf, Strm, E> AsUpdateStream<'a, E> for StatefulListner<St, Assf, Sf, Thf>
+impl<'a, St, Assf, Sf, Thf, Strm, E> AsUpdateStream<'a, E> for StatefulListener<St, Assf, Sf, Thf>
 where
     (St, Strm): 'a,
     Assf: FnMut(&'a mut St) -> Strm,
@@ -396,16 +373,17 @@ where
     }
 }
 
-impl<St, Assf, Sf, Thf, E> UpdateListener<E> for StatefulListner<St, Assf, Sf, Thf>
+impl<St, Assf, Sf, Stt, Thf, E> UpdateListener<E> for StatefulListener<St, Assf, Sf, Thf>
 where
     Self: for<'a> AsUpdateStream<'a, E>,
-    Sf: FnOnce(&mut St),
+    Sf: FnMut(&mut St) -> Stt,
+    Stt: StopToken,
     Thf: Fn(&St) -> Option<Duration>,
 {
-    fn stop(&mut self) {
-        if let Some(stop) = self.stop.take() {
-            stop(&mut self.state)
-        }
+    type StopToken = Stt;
+
+    fn stop_token(&mut self) -> Stt {
+        (self.stop)(&mut self.state)
     }
 
     fn timeout_hint(&self) -> Option<Duration> {

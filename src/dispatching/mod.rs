@@ -46,11 +46,14 @@
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 pub mod dialogue;
+pub mod stop_token;
+pub mod update_listeners;
+
+pub(crate) mod repls;
+
 mod dispatcher;
 mod dispatcher_handler;
 mod dispatcher_handler_rx_ext;
-pub(crate) mod repls;
-pub mod update_listeners;
 mod update_with_cx;
 
 pub use dispatcher::Dispatcher;

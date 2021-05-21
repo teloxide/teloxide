@@ -1,6 +1,8 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener, DispatcherHandler, UpdateWithCx,
+        stop_token::StopToken,
+        update_listeners::{self, UpdateListener},
+        DispatcherHandler, UpdateWithCx,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
 };
@@ -288,6 +290,8 @@ where
         let shutdown_check_timeout =
             update_listener.timeout_hint().unwrap_or(DZERO) + MIN_SHUTDOWN_CHECK_TIMEOUT;
 
+        let mut stop_token = Some(update_listener.stop_token());
+
         if let Err(_) = self.shutdown_state.compare_exchange(IsntRunning, Running) {
             panic!("Dispatching is already running");
         }
@@ -305,18 +309,13 @@ where
                 }
 
                 if let ShuttingDown = self.shutdown_state.load() {
-                    log::debug!("Start shutting down dispatching");
-                    break;
+                    if let Some(token) = stop_token.take() {
+                        log::debug!("Start shutting down dispatching");
+                        token.stop();
+                    }
                 }
             }
         }
-
-        update_listener.stop();
-
-        update_listener
-            .as_stream()
-            .for_each(|upd| self.process_update(upd, &update_listener_error_handler))
-            .await;
 
         if let ShuttingDown = self.shutdown_state.load() {
             // Stopped because of a `shutdown` call.
@@ -325,7 +324,7 @@ where
             self.shutdown_notify_back.notify_waiters();
             log::debug!("Dispatching shut down");
         } else {
-            log::debug!("Dispatching stopped (listner returned `None`)");
+            log::debug!("Dispatching stopped (listener returned `None`)");
         }
 
         self.shutdown_state.store(IsntRunning);
