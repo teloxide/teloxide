@@ -112,7 +112,10 @@ use crate::{dispatching::stop_token::StopToken, types::Update};
 mod polling;
 mod stateful_listener;
 
-pub use self::polling::{polling, polling_default};
+pub use self::{
+    polling::{polling, polling_default},
+    stateful_listener::StatefulListener,
+};
 
 /// An update listener.
 ///

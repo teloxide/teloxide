@@ -148,7 +148,7 @@ where
 
     let timeout_hint = Some(move |_: &State<_>| timeout);
 
-    StatefulListener { state, stream, stop, timeout_hint }
+    StatefulListener { state, stream, stop_token: stop, timeout_hint }
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
