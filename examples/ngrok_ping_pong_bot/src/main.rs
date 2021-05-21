@@ -1,7 +1,7 @@
 // The version of ngrok ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
 
-use teloxide::{dispatching::update_listeners, prelude::*, types::Update};
+use teloxide::{dispatching::{update_listeners::{self, StatefulListener}, stop_token::AsyncStopToken}, prelude::*, types::Update};
 
 use std::{convert::Infallible, net::SocketAddr};
 use tokio::sync::mpsc;
@@ -20,10 +20,10 @@ async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, In
     Ok(StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
+pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
     // You might want to specify a self-signed certificate via .certificate
     // method on SetWebhook.
-    bot.set_webhook("Your HTTPS ngrok URL here. Get it by 'ngrok http 80'")
+    bot.set_webhook("Your HTTPS ngrok URL here. Get it by `ngrok http 80`")
         .await
         .expect("Cannot setup a webhook");
 
@@ -40,13 +40,21 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
         })
         .recover(handle_rejection);
 
-    let serve = warp::serve(server);
+    let (stop_token, stop_flag) = AsyncStopToken::new_pair();
+
+    let addr = "127.0.0.1:80".parse::<SocketAddr>().unwrap();
+    let server = warp::serve(server);
+    let (_addr, fut) = server.bind_with_graceful_shutdown(addr, stop_flag);
 
     // You might want to use serve.key_path/serve.cert_path methods here to
     // setup a self-signed TLS certificate.
 
-    tokio::spawn(serve.run("127.0.0.1:80".parse::<SocketAddr>().unwrap()));
-    UnboundedReceiverStream::new(rx)
+    tokio::spawn(fut);
+    let stream = UnboundedReceiverStream::new(rx);
+
+    fn streamf<S, T>(state: &mut (S, T)) -> &mut S { &mut state.0 }
+    
+    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| state.1.clone(), None::<for<'a> fn(&'a _) -> _>)
 }
 
 async fn run() {

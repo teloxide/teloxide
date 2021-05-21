@@ -144,11 +144,11 @@ where
         token,
     };
 
-    let stop = |st: &mut State<_>| st.token.clone();
+    let stop_token = |st: &mut State<_>| st.token.clone();
 
     let timeout_hint = Some(move |_: &State<_>| timeout);
 
-    StatefulListener { state, stream, stop_token: stop, timeout_hint }
+    StatefulListener { state, stream, stop_token, timeout_hint }
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
