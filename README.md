@@ -423,16 +423,20 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 [`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
-Feel free to push your own bot into our collection!
+Feel free to propose your own bot to our collection!
 
- - [_steadylearner/subreddit_reader_](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
- - [_ArtHome12/vzmuinebot -- Telegram bot for food menu navigate_](https://github.com/ArtHome12/vzmuinebot)
- - [_Hermitter/tepe -- A CLI to command a bot to send messages and files over Telegram_](https://github.com/Hermitter/tepe)
- - [_ArtHome12/cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
- - [_pro-vim/tg-vimhelpbot -- Link `:help` for Vim in Telegram_](https://github.com/pro-vim/tg-vimhelpbot)
- - [_sschiz/janitor-bot_ --  A bot that removes users trying to join to a chat that is designed for comments](https://github.com/sschiz/janitor-bot)
- - [_myblackbeard/basketball-betting-bot -- The bot lets you bet on NBA games against your buddies_](https://github.com/myblackbeard/basketball-betting-bot)
- - [_slondr/BeerHolderBot -- A bot that holds your beer_](https://gitlab.com/slondr/BeerHolderBot)
+ - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
+ - [ArtHome12/vzmuinebot](https://github.com/ArtHome12/vzmuinebot) -- Telegram bot for food menu navigate.
+ - [ArtHome12/cognito_bot](https://github.com/ArtHome12/cognito_bot) -- The bot is designed to anonymize messages to a group.
+ - [Hermitter/tepe](https://github.com/Hermitter/tepe) -- A CLI to command a bot to send messages and files over Telegram.
+ - [pro-vim/tg-vimhelpbot](https://github.com/pro-vim/tg-vimhelpbot) -- Link `:help` for Vim in Telegram.
+ - [sschiz/janitor-bot](https://github.com/sschiz/janitor-bot) --  A bot that removes users trying to join to a chat that is designed for comments.
+ - [myblackbeard/basketball-betting-bot](https://github.com/myblackbeard/basketball-betting-bot) -- The bot lets you bet on NBA games against your buddies.
+ - [slondr/BeerHolderBot](https://gitlab.com/slondr/BeerHolderBot) -- A bot that holds your beer.
+ - [mxseev/logram](https://github.com/mxseev/logram) -- Utility that takes logs from anywhere and sends them to Telegram.
+ - [msfjarvis/walls-bot-rs](https://github.com/msfjarvis/walls-bot-rs) -- Telegram bot for my wallpapers collection, in Rust.
+ - [MustafaSalih1993/Miss-Vodka-Telegram-Bot](https://github.com/MustafaSalih1993/Miss-Vodka-Telegram-Bot) -- A telegram bot written in rust using "Teloxide" library.
+ - [x13a/tg-prompt](https://github.com/x13a/tg-prompt) -- Telegram prompt.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
