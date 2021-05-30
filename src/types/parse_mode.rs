@@ -47,10 +47,10 @@ use serde::{Deserialize, Serialize};
 /// pre-formatted fixed-width code block
 /// ```
 /// ```rust
-/// pre-formatted fixed-width code block written in the Rust programming
-/// language ```
+#[doc = "pre-formatted fixed-width code block written in the Rust programming language"]
+/// ```
 /// ````
-/// 
+///
 /// Please note:
 /// - Any character between 1 and 126 inclusively can be escaped anywhere with a
 ///   preceding '\' character, in which case it is treated as an ordinary
@@ -69,21 +69,23 @@ use serde::{Deserialize, Serialize};
 ///   ignored.
 ///
 /// ## HTML style
+///
 /// To use this mode, pass [`Html`] in the `parse_mode` field.
 /// The following tags are currently supported:
 /// ````text
 /// <b>bold</b>, <strong>bold</strong>
 /// <i>italic</i>, <em>italic</em>
 /// <u>underline</u>, <ins>underline</ins>
-/// <s>strikethrough</s>, <strike>strikethrough</strike>,
-/// <del>strikethrough</del> <b>bold <i>italic bold <s>italic bold
-/// strikethrough</s> <u>underline italic bold</u></i> bold</b> <a href="http:// www.example.com/">inline URL</a>
+/// <s>strikethrough</s>, <strike>strikethrough</strike>, <del>strikethrough</del>
+/// <b>bold <i>italic bold <s>italic bold strikethrough</s> <u>underline italic bold</u></i> bold</b>
+/// <a href="http:// www.example.com/">inline URL</a>
 /// <a href="tg:// user?id=123456789">inline mention of a user</a>
 /// <code>inline fixed-width code</code>
 /// <pre>pre-formatted fixed-width code block</pre>
-/// <pre><code class="language-rust">pre-formatted fixed-width code block
-/// written in the Rust programming language</code></pre> ````
-///
+#[doc = "<pre><code class=\"language-rust\">pre-formatted fixed-width code block written in the \
+         Rust programming language</code></pre>"]
+/// ````
+/// 
 /// Please note:
 ///
 /// - Only the tags mentioned above are currently supported.
@@ -98,6 +100,7 @@ use serde::{Deserialize, Serialize};
 /// - Programming language can't be specified for standalone `code` tags.
 ///
 /// ## Markdown style
+///
 /// This is a legacy mode, retained for backward compatibility. To use this
 /// mode, pass [`Markdown`] in the `parse_mode` field.
 /// Use the following syntax in your message:
@@ -107,9 +110,12 @@ use serde::{Deserialize, Serialize};
 /// [inline URL](http://www.example.com/)
 /// [inline mention of a user](tg://user?id=123456789)
 /// `inline fixed-width code`
+/// ```
+/// pre-formatted fixed-width code block
+/// ```
 /// ```rust
-/// pre-formatted fixed-width code block written in the Rust programming
-/// language ```
+/// pre-formatted fixed-width code block written in the Rust programming language
+/// ```
 /// ````
 /// 
 /// Please note:
