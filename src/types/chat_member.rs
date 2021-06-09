@@ -625,7 +625,7 @@ mod tests {
                 can_promote_members: true,
             }),
         };
-        let actual = serde_json::from_str::<ChatMember>(&json).unwrap();
+        let actual = serde_json::from_str::<ChatMember>(json).unwrap();
         assert_eq!(actual, expected)
     }
 }
