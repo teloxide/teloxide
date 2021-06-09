@@ -17,11 +17,7 @@ use crate::requests::Payload;
 /// [`BorrowMut`]: std::borrow::BorrowMut
 /// [`Payload`]: crate::requests::Payload
 /// [output type]: HasPayload::Payload
-pub trait HasPayload
-// FIXME(waffle):
-//   we wanted to use As{Mut,Ref} here, but they doesn't work
-//   because of https://github.com/rust-lang/rust/issues/77010
-{
+pub trait HasPayload {
     /// The type of the payload contained.
     type Payload: Payload;
 
