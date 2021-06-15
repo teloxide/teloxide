@@ -106,7 +106,7 @@ fn parser_with_separator<'a>(
     let inner = quote! { let mut splited = s.split(#separator); };
     let i = 0..count_args;
     let inner2 = quote! {
-        #(#types::from_str(splited.next().ok_or(ParseError::TooFewArguments {
+        #(<#types>::from_str(splited.next().ok_or(ParseError::TooFewArguments {
             expected: #count_args,
             found: #i,
             message: format!("Expected but not found arg number {}", #i + 1),
