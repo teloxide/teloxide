@@ -46,7 +46,6 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
-#![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
 #![cfg_attr(feature = "nightly", feature(doc_cfg))]
 
 // we pass "--cfg docsrs" when building docs to add `This is supported on
