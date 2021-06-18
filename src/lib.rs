@@ -47,13 +47,15 @@
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
 #![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
-// we pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
+#![cfg_attr(feature = "nightly", feature(doc_cfg))]
+
+// we pass "--cfg docsrs" when building docs to add `This is supported on
+// feature="..." only.`
 //
 // To properly build docs of this crate run
 // ```console
 // $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
-#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
@@ -79,7 +81,7 @@ pub use teloxide_macros as macros;
 pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
-#[doc(include = "../README.md")]
+#[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../README.md")))]
 enum ReadmeDocTests {}
 
 use teloxide_core::requests::ResponseResult;
