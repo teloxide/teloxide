@@ -10,7 +10,7 @@ use futures::{future::BoxFuture, FutureExt, StreamExt};
 use tokio::sync::mpsc;
 
 use crate::dispatching::dialogue::InMemStorageError;
-use lockfree::map::Map;
+use flurry::HashMap;
 use std::sync::{Arc, Mutex};
 use teloxide_core::requests::Requester;
 use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -41,7 +41,7 @@ pub struct DialogueDispatcher<R, D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
+    senders: Arc<HashMap<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
 }
 
 impl<R, D, H, Upd> DialogueDispatcher<R, D, InMemStorage<D>, H, Upd>
@@ -59,7 +59,7 @@ where
         Self {
             storage: InMemStorage::new(),
             handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            senders: Arc::new(HashMap::new()),
             _phantom: PhantomData,
         }
     }
@@ -79,7 +79,7 @@ where
         Self {
             storage,
             handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            senders: Arc::new(HashMap::new()),
             _phantom: PhantomData,
         }
     }
@@ -116,7 +116,7 @@ where
                         // On the next .poll() call, the spawned future will
                         // return Poll::Ready, because we are dropping the
                         // sender right here:
-                        senders.remove(&chat_id);
+                        senders.pin().remove(&chat_id);
 
                         if let Err(e) = storage.remove_dialogue(chat_id).await {
                             log::error!("Storage::remove_dialogue failed: {:?}", e);
@@ -153,10 +153,10 @@ where
                 let this = Arc::clone(&this);
                 let chat_id = cx.update.chat_id();
 
-                match this.senders.get(&chat_id) {
+                match this.senders.pin().get(&chat_id) {
                     // An old dialogue
                     Some(tx) => {
-                        if tx.1.send(cx).is_err() {
+                        if tx.send(cx).is_err() {
                             panic!("We are not dropping a receiver or call .close() on it",);
                         }
                     }
@@ -165,7 +165,7 @@ where
                         if tx.send(cx).is_err() {
                             panic!("We are not dropping a receiver or call .close() on it",);
                         }
-                        this.senders.insert(chat_id, tx);
+                        this.senders.pin().insert(chat_id, tx);
                     }
                 }
 

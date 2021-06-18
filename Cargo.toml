@@ -71,8 +71,8 @@ tokio = { version = "1.2", features = ["fs"] }
 tokio-util = "0.6"
 tokio-stream = "0.1"
 
+flurry = "0.3"
 log = "0.4"
-lockfree = "0.5.1"
 bytes = "1.0"
 mime = "0.3"
 
