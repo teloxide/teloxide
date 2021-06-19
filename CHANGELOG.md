@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- telegram_response: fix issue `retry_after` and `migrate_to_chat_id` handling ([#94][pr94])
 - Type of `PublicChatSupergroup::slow_mode_delay` field: `Option<i32>`=> `Option<u32>` ([#80][pr80]) 
 - Add missing `Chat::message_auto_delete_time` field ([#80][pr80]) 
 - Output types of `LeaveChat` `PinChatMessage`, `SetChatDescription`, `SetChatPhoto` `SetChatTitle`, `UnpinAllChatMessages` and `UnpinChatMessage`: `String` => `True` ([#79][pr79])
@@ -46,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr73]: https://github.com/teloxide/teloxide-core/pull/73
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 [pr79]: https://github.com/teloxide/teloxide-core/pull/79
+[pr94]: https://github.com/teloxide/teloxide-core/pull/94
 
 ## [0.2.2] - 2020-03-22
 
