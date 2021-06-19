@@ -80,7 +80,7 @@ mod tests {
             }),
             file_name: None,
         };
-        let actual = serde_json::from_str::<Audio>(&json).unwrap();
+        let actual = serde_json::from_str::<Audio>(json).unwrap();
         assert_eq!(actual, expected)
     }
 }
