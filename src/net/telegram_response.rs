@@ -25,6 +25,7 @@ pub(crate) enum TelegramResponse<R> {
         #[serde(rename = "description")]
         error: ApiError,
         error_code: u16,
+        #[serde(rename = "parameters")]
         response_parameters: Option<ResponseParameters>,
     },
 }
