@@ -8,12 +8,14 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
+use crate::types::BotCommand;
+
 impl_payload! {
     /// Use this method to get the current list of the bot's commands. Requires no parameters. Returns Array of [`BotCommand`] on success.
     ///
     /// [`BotCommand`]: crate::types::BotCommand
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
-    pub GetMyCommands (GetMyCommandsSetters) => u32 {
+    pub GetMyCommands (GetMyCommandsSetters) => Vec<BotCommand> {
 
     }
 }
