@@ -54,7 +54,7 @@ pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListene
 
     fn streamf<S, T>(state: &mut (S, T)) -> &mut S { &mut state.0 }
     
-    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| state.1.clone(), None::<for<'a> fn(&'a _) -> _>)
+    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| state.1.clone())
 }
 
 async fn run() {

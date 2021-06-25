@@ -39,9 +39,21 @@ pub struct StatefulListener<St, Assf, Sf, Thf> {
     pub timeout_hint: Option<Thf>,
 }
 
+impl<St, Assf, Sf> StatefulListener<St, Assf, Sf, for<'a> fn(&'a St) -> Option<Duration>> {
+    /// Creates new stateful listener from it's components.
+    pub fn new(state: St, stream: Assf, stop_token: Sf) -> Self {
+        Self { state, stream, stop_token, timeout_hint: None }
+    }
+}
+
 impl<St, Assf, Sf, Thf> StatefulListener<St, Assf, Sf, Thf> {
     /// Creates new stateful listener from it's components.
-    pub fn new(state: St, stream: Assf, stop_token: Sf, timeout_hint: Option<Thf>) -> Self {
+    pub fn new_with_timeout_hint(
+        state: St,
+        stream: Assf,
+        stop_token: Sf,
+        timeout_hint: Option<Thf>,
+    ) -> Self {
         Self { state, stream, stop_token, timeout_hint }
     }
 }
