@@ -104,7 +104,7 @@ where
 
     /// Setup `^C` handler which [`shutdown`]s dispatching.
     ///
-    /// [`shutdown`]: Dispatcher::shutdown
+    /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
     pub fn setup_ctrlc_handler(self) -> Self {
@@ -249,7 +249,7 @@ where
     /// [ctrlc signal], or `update_listener` returning `None`) all handlers will
     /// be gone. As such, to restart listening you need to re-add handlers.
     ///
-    /// [`shutdown`]; ShutdownToken::shutdown
+    /// [`shutdown`]: ShutdownToken::shutdown
     /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch(&mut self)
     where
@@ -270,7 +270,7 @@ where
     /// [ctrlc signal], or `update_listener` returning `None`) all handlers will
     /// be gone. As such, to restart listening you need to re-add handlers.
     ///
-    /// [`shutdown`]; ShutdownToken::shutdown
+    /// [`shutdown`]: ShutdownToken::shutdown
     /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a mut self,
