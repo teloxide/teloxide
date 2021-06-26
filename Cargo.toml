@@ -24,7 +24,7 @@ authors = [
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["native-tls", "teloxide-core/default"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
