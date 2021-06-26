@@ -7,7 +7,7 @@ use crate::{
     error_handlers::{ErrorHandler, LoggingErrorHandler},
 };
 use core::panic;
-use futures::{Future, StreamExt};
+use futures::{stream::FuturesUnordered, Future, StreamExt};
 use std::{
     fmt::Debug,
     sync::{
@@ -25,6 +25,7 @@ use teloxide_core::{
 };
 use tokio::{
     sync::{mpsc, Notify},
+    task::JoinHandle,
     time::timeout,
 };
 
@@ -50,6 +51,8 @@ pub struct Dispatcher<R> {
     poll_answers_queue: Tx<R, PollAnswer>,
     my_chat_members_queue: Tx<R, ChatMemberUpdated>,
     chat_members_queue: Tx<R, ChatMemberUpdated>,
+
+    running_handlers: FuturesUnordered<JoinHandle<()>>,
 
     shutdown_state: Arc<AtomicShutdownState>,
     shutdown_notify_back: Arc<Notify>,
@@ -77,6 +80,7 @@ where
             poll_answers_queue: None,
             my_chat_members_queue: None,
             chat_members_queue: None,
+            running_handlers: FuturesUnordered::new(),
             shutdown_state: Arc::new(AtomicShutdownState {
                 inner: AtomicU8::new(ShutdownState::IsntRunning as _),
             }),
@@ -86,17 +90,20 @@ where
 
     #[must_use]
     #[allow(clippy::unnecessary_wraps)]
-    fn new_tx<H, Upd>(&self, h: H) -> Tx<R, Upd>
+    fn new_tx<H, Upd>(&mut self, h: H) -> Tx<R, Upd>
     where
         H: DispatcherHandler<R, Upd> + Send + 'static,
         Upd: Send + 'static,
         R: Send + 'static,
     {
         let (tx, rx) = mpsc::unbounded_channel();
-        tokio::spawn(async move {
+        let join_handle = tokio::spawn(async move {
             let fut = h.handle(rx);
             fut.await;
         });
+
+        self.running_handlers.push(join_handle);
+
         Some(tx)
     }
 
@@ -110,6 +117,8 @@ where
         tokio::spawn(async move {
             loop {
                 tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
+
+                log::debug!("^C receieved, trying to shutdown dispatcher");
 
                 // If dispatcher wasn't running, then there is nothing to do
                 shutdown_inner(&shutdown_state).ok();
@@ -240,7 +249,13 @@ where
     ///
     /// The default parameters are a long polling update listener and log all
     /// errors produced by this listener).
-    pub async fn dispatch(&self)
+    ///
+    /// Please note that after shutting down (either because of [`shutdown`],
+    /// [ctrlc signal], or `update_listener` returning `None`)
+    ///
+    /// [`shutdown`]; ShutdownToken::shutdown
+    /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
+    pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
         <R as Requester>::GetUpdatesFaultTolerant: Send,
@@ -254,8 +269,15 @@ where
 
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
+    ///
+    /// Please note that after shutting down (either because of [`shutdown`],
+    /// [ctrlc signal], or `update_listener` returning `None`) all handlers will
+    /// be gone. As such, to restart listening you need to re-add handlers.
+    ///
+    /// [`shutdown`]; ShutdownToken::shutdown
+    /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
-        &'a self,
+        &'a mut self,
         mut update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
     ) where
@@ -305,6 +327,24 @@ where
             }
         }
 
+        // Drop all senders, so handlers can stop
+        self.messages_queue.take();
+        self.edited_messages_queue.take();
+        self.channel_posts_queue.take();
+        self.edited_channel_posts_queue.take();
+        self.inline_queries_queue.take();
+        self.chosen_inline_results_queue.take();
+        self.callback_queries_queue.take();
+        self.shipping_queries_queue.take();
+        self.pre_checkout_queries_queue.take();
+        self.polls_queue.take();
+        self.poll_answers_queue.take();
+        self.my_chat_members_queue.take();
+        self.chat_members_queue.take();
+
+        // Wait untill all handlers process all updates
+        self.running_handlers.by_ref().for_each(|_| async {}).await;
+
         if let ShuttingDown = self.shutdown_state.load() {
             // Stopped because of a `shutdown` call.
 
@@ -316,16 +356,6 @@ where
         }
 
         self.shutdown_state.store(IsntRunning);
-    }
-
-    /// Tries to shutdown dispatching.
-    ///
-    /// Returns error if this dispather isn't dispatching at the moment.
-    ///
-    /// If you don't need to wait for shutdown, returned future can be ignored.
-    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, ShutdownError> {
-        shutdown_inner(&self.shutdown_state)
-            .map(|()| async move { self.shutdown_notify_back.notified().await })
     }
 
     /// Returns shutdown token, which can later be used to shutdown dispatching.
