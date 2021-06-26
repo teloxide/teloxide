@@ -468,20 +468,13 @@ pub struct ShutdownToken {
 impl ShutdownToken {
     /// Tries to shutdown dispatching.
     ///
-    /// Returns error if this dispather isn't dispatching at the moment.
+    /// Returns error if this dispather is idle at the moment.
     ///
     /// If you don't need to wait for shutdown, returned future can be ignored.
-    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, ShutdownError> {
+    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, ()> {
         shutdown_inner(&self.dispatcher_state)
             .map(|()| async move { self.shutdown_notify_back.notified().await })
     }
-}
-
-/// Error occured while trying to shutdown dispatcher.
-#[derive(Debug)]
-pub enum ShutdownError {
-    /// Couldn"t stop dispatcher since it wasn't running.
-    Idle,
 }
 
 struct DispatcherState {
