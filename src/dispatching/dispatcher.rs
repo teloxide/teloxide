@@ -1,5 +1,5 @@
 use std::{
-    fmt::Debug,
+    fmt::{self, Debug},
     sync::{
         atomic::{AtomicU8, Ordering},
         Arc,
@@ -458,6 +458,19 @@ where
     }
 }
 
+/// This error is returned from [`ShutdownToken::shutdown`] when trying to
+/// shutdown idle dispatcher.
+#[derive(Debug)]
+pub struct IdleShutdownError;
+
+impl fmt::Display for IdleShutdownError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Dispatcher was idle and as such couldn't be shut down")
+    }
+}
+
+impl std::error::Error for IdleShutdownError {}
+
 /// A token which can be used to shutdown dispatcher.
 #[derive(Clone)]
 pub struct ShutdownToken {
@@ -471,7 +484,7 @@ impl ShutdownToken {
     /// Returns error if this dispather is idle at the moment.
     ///
     /// If you don't need to wait for shutdown, returned future can be ignored.
-    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, ()> {
+    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, IdleShutdownError> {
         shutdown_inner(&self.dispatcher_state)
             .map(|()| async move { self.shutdown_notify_back.notified().await })
     }
@@ -543,14 +556,14 @@ fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Du
     shutdown_check_timeout.checked_add(MIN_SHUTDOWN_CHECK_TIMEOUT).unwrap_or(shutdown_check_timeout)
 }
 
-fn shutdown_inner(state: &DispatcherState) -> Result<(), ShutdownError> {
+fn shutdown_inner(state: &DispatcherState) -> Result<(), IdleShutdownError> {
     use ShutdownState::*;
 
     let res = state.compare_exchange(Running, ShuttingDown);
 
     match res {
         Ok(_) | Err(ShuttingDown) => Ok(()),
-        Err(Idle) => Err(ShutdownError::Idle),
+        Err(Idle) => Err(IdleShutdownError),
         Err(Running) => unreachable!(),
     }
 }
