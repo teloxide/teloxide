@@ -1,7 +1,7 @@
 /// Enables logging through [pretty-env-logger].
 ///
-/// A logger will **only** print errors from teloxide and **all** logs from
-/// your program.
+/// A logger will **only** print errors, warnings, and general information from
+/// teloxide and **all** logs from your program.
 ///
 /// # Example
 /// ```no_compile
@@ -46,7 +46,7 @@ macro_rules! enable_logging_with_filter {
         pretty_env_logger::formatted_builder()
             .write_style(pretty_env_logger::env_logger::WriteStyle::Auto)
             .filter(Some(&env!("CARGO_PKG_NAME").replace("-", "_")), $filter)
-            .filter(Some("teloxide"), log::LevelFilter::Error)
+            .filter(Some("teloxide"), log::LevelFilter::Info)
             .init();
     };
 }

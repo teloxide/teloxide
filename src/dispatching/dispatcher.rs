@@ -113,7 +113,7 @@ where
             loop {
                 tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
 
-                log::debug!("^C receieved, trying to shutdown dispatcher");
+                log::info!("^C received, trying to shutdown the dispatcher...");
 
                 // If dispatcher wasn't running, then there is nothing to do
                 shutdown_inner(&state).ok();
@@ -310,7 +310,7 @@ where
 
                 if let ShuttingDown = self.state.load() {
                     if let Some(token) = stop_token.take() {
-                        log::debug!("Start shutting down dispatching");
+                        log::debug!("Start shutting down dispatching...");
                         token.stop();
                     }
                 }
@@ -324,9 +324,9 @@ where
 
             // Notify `shutdown`s that we finished
             self.shutdown_notify_back.notify_waiters();
-            log::debug!("Dispatching shut down");
+            log::info!("Dispatching has been shut down.");
         } else {
-            log::debug!("Dispatching stopped (listener returned `None`)");
+            log::debug!("Dispatching has been stopped (listener returned `None`).");
         }
 
         self.state.store(Idle);
