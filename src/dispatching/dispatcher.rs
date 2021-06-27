@@ -20,8 +20,8 @@ use futures::{stream::FuturesUnordered, Future, StreamExt};
 use teloxide_core::{
     requests::Requester,
     types::{
-        CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
-        PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
+        AllowedUpdate, CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
+        Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
     },
 };
 use tokio::{
@@ -286,6 +286,8 @@ where
     {
         use ShutdownState::*;
 
+        self.hint_allowed_updates(&mut update_listener);
+
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
 
@@ -436,6 +438,61 @@ where
                 ),
             }
         }
+    }
+
+    fn hint_allowed_updates<E>(&self, listener: &mut impl UpdateListener<E>) {
+        fn hint_handler_allowed_update<T>(
+            queue: &Option<T>,
+            kind: AllowedUpdate,
+        ) -> std::option::IntoIter<AllowedUpdate> {
+            queue.as_ref().map(|_| kind).into_iter()
+        }
+
+        let mut allowed = hint_handler_allowed_update(&self.messages_queue, AllowedUpdate::Message)
+            .chain(hint_handler_allowed_update(
+                &self.edited_messages_queue,
+                AllowedUpdate::EditedMessage,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.channel_posts_queue,
+                AllowedUpdate::ChannelPost,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.edited_channel_posts_queue,
+                AllowedUpdate::EditedChannelPost,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.inline_queries_queue,
+                AllowedUpdate::InlineQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.chosen_inline_results_queue,
+                AllowedUpdate::ChosenInlineResult,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.callback_queries_queue,
+                AllowedUpdate::CallbackQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.shipping_queries_queue,
+                AllowedUpdate::ShippingQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.pre_checkout_queries_queue,
+                AllowedUpdate::PreCheckoutQuery,
+            ))
+            .chain(hint_handler_allowed_update(&self.polls_queue, AllowedUpdate::Poll))
+            .chain(hint_handler_allowed_update(&self.poll_answers_queue, AllowedUpdate::PollAnswer))
+            .chain(hint_handler_allowed_update(
+                &self.my_chat_members_queue,
+                AllowedUpdate::MyChatMember,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.chat_members_queue,
+                AllowedUpdate::ChatMember,
+            ));
+
+        listener.hint_allowed_updates(&mut allowed);
     }
 
     async fn wait_for_handlers(&mut self) {

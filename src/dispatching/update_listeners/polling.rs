@@ -146,9 +146,15 @@ where
 
     let stop_token = |st: &mut State<_>| st.token.clone();
 
+    let hint_allowed_updates =
+        Some(|state: &mut State<_>, allowed: &mut dyn Iterator<Item = AllowedUpdate>| {
+            // TODO: we should probably warn if there already were different allowed updates
+            // before
+            state.allowed_updates = Some(allowed.collect());
+        });
     let timeout_hint = Some(move |_: &State<_>| timeout);
 
-    StatefulListener { state, stream, stop_token, timeout_hint }
+    StatefulListener::new_with_hints(state, stream, stop_token, hint_allowed_updates, timeout_hint)
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
