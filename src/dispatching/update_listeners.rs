@@ -127,21 +127,19 @@ pub use self::{
 ///
 /// Some functions of this trait are located in the supertrait
 /// ([`AsUpdateStream`]), see also:
-/// - [`Stream`]
-/// - [`as_stream`]
+/// - [`AsUpdateStream::Stream`]
+/// - [`AsUpdateStream::as_stream`]
 ///
 /// [polling]: self#long-polling
 /// [webhooks]: self#webhooks
-/// [`Stream`]: AsUpdateStream::Stream
-/// [`as_stream`]: AsUpdateStream::as_stream
 pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
-    /// Type of token which allows ti stop this listener.
+    /// The type of token which allows to stop this listener.
     type StopToken: StopToken;
 
     /// Returns a token which stops this listener.
     ///  
     /// The [`stop`] function of the token is not guaranteed to have an
-    /// immediate effect. That is some listeners can return updates even
+    /// immediate effect. That is, some listeners can return updates even
     /// after [`stop`] is called (e.g.: because of buffering).
     ///
     /// [`stop`]: StopToken::stop
@@ -153,15 +151,15 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
                   the returned token"]
     fn stop_token(&mut self) -> Self::StopToken;
 
-    /// Timeout duration hint.
+    /// The timeout duration hint.
     ///
-    /// This hints how often dispatcher should check for shutdown. E.g. for
+    /// This hints how often dispatcher should check for a shutdown. E.g., for
     /// [`polling()`] this returns the [`timeout`].
     ///
     /// [`timeout`]: crate::payloads::GetUpdates::timeout
     ///
     /// If you are implementing this trait and not sure what to return from this
-    /// function, just leave it with default implementation.
+    /// function, just leave it with the default implementation.
     fn timeout_hint(&self) -> Option<Duration> {
         None
     }
@@ -171,7 +169,7 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
 ///
 /// This trait is a workaround to not require GAT.
 pub trait AsUpdateStream<'a, E> {
-    /// Stream of updates from Telegram.
+    /// The stream of updates from Telegram.
     type Stream: Stream<Item = Result<Update, E>> + 'a;
 
     /// Creates the update [`Stream`].

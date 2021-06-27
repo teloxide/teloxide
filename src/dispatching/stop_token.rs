@@ -1,8 +1,10 @@
+//! A stop token used to stop a listener.
+
 use std::{future::Future, pin::Pin, task};
 
 use futures::future::{pending, AbortHandle, Abortable, Pending};
 
-/// A stop token allows you to stop listener.
+/// A stop token allows you to stop a listener.
 ///
 /// See also: [`UpdateListener::stop_token`].
 ///
@@ -27,8 +29,8 @@ pub struct AsyncStopToken(AbortHandle);
 
 /// A flag which corresponds to [`AsyncStopToken`].
 ///
-/// To know if stop token was used you can either repeatedly call [`is_stopped`]
-/// or use this type as a `Future`.
+/// To know if the stop token was used you can either repeatedly call
+/// [`is_stopped`] or use this type as a `Future`.
 ///
 /// [`is_stopped`]: AsyncStopFlag::is_stopped
 #[pin_project::pin_project]
@@ -52,7 +54,7 @@ impl StopToken for AsyncStopToken {
 }
 
 impl AsyncStopFlag {
-    /// Returns true if stop token linked to `self` was used.
+    /// Returns true if the stop token linked to `self` was used.
     pub fn is_stopped(&self) -> bool {
         self.0.is_aborted()
     }

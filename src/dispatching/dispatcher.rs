@@ -102,7 +102,7 @@ where
         Some(tx)
     }
 
-    /// Setup `^C` handler which [`shutdown`]s dispatching.
+    /// Setup the `^C` handler which [`shutdown`]s dispatching.
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
@@ -246,11 +246,12 @@ where
     /// errors produced by this listener).
     ///
     /// Please note that after shutting down (either because of [`shutdown`],
-    /// [ctrlc signal], or `update_listener` returning `None`) all handlers will
-    /// be gone. As such, to restart listening you need to re-add handlers.
+    /// [a ctrlc signal], or [`UpdateListener`] returning `None`) all handlers
+    /// will be gone. As such, to restart listening you need to re-add
+    /// handlers.
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
-    /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
+    /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
@@ -267,11 +268,12 @@ where
     /// `update_listener_error_handler`.
     ///
     /// Please note that after shutting down (either because of [`shutdown`],
-    /// [ctrlc signal], or `update_listener` returning `None`) all handlers will
-    /// be gone. As such, to restart listening you need to re-add handlers.
+    /// [a ctrlc signal], or [`UpdateListener`] returning `None`) all handlers
+    /// will be gone. As such, to restart listening you need to re-add
+    /// handlers.
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
-    /// [ctrlc signal]: Dispatcher::setup_ctrlc_handler
+    /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a mut self,
         mut update_listener: UListener,
@@ -330,7 +332,8 @@ where
         self.state.store(Idle);
     }
 
-    /// Returns shutdown token, which can later be used to shutdown dispatching.
+    /// Returns a shutdown token, which can later be used to shutdown
+    /// dispatching.
     pub fn shutdown_token(&self) -> ShutdownToken {
         ShutdownToken {
             dispatcher_state: Arc::clone(&self.state),
@@ -459,7 +462,7 @@ where
 }
 
 /// This error is returned from [`ShutdownToken::shutdown`] when trying to
-/// shutdown idle dispatcher.
+/// shutdown an idle [`Dispatcher`].
 #[derive(Debug)]
 pub struct IdleShutdownError;
 
@@ -471,7 +474,7 @@ impl fmt::Display for IdleShutdownError {
 
 impl std::error::Error for IdleShutdownError {}
 
-/// A token which can be used to shutdown dispatcher.
+/// A token which used to shutdown [`Dispatcher`].
 #[derive(Clone)]
 pub struct ShutdownToken {
     dispatcher_state: Arc<DispatcherState>,
@@ -481,9 +484,10 @@ pub struct ShutdownToken {
 impl ShutdownToken {
     /// Tries to shutdown dispatching.
     ///
-    /// Returns error if this dispather is idle at the moment.
+    /// Returns an error if the dispatcher is idle at the moment.
     ///
-    /// If you don't need to wait for shutdown, returned future can be ignored.
+    /// If you don't need to wait for shutdown, the returned future can be
+    /// ignored.
     pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, IdleShutdownError> {
         shutdown_inner(&self.dispatcher_state)
             .map(|()| async move { self.shutdown_notify_back.notified().await })
