@@ -11,8 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `Storage::get_dialogue` to obtain a dialogue indexed by a chat ID.
  - `InMemStorageError` with a single variant `DialogueNotFound` to be returned from `InMemStorage::remove_dialogue`.
  - `RedisStorageError::DialogueNotFound` and `SqliteStorageError::DialogueNotFound` to be returned from `Storage::remove_dialogue`.
- - `Dispatcher::shutdown` function.
+ - A way to `shutdown` dispatcher
+   - `Dispatcher::shutdown_token` function.
+   - `ShutdownToken` with a `shutdown` function.
  - `Dispatcher::setup_ctrlc_handler` function ([issue 153](https://github.com/teloxide/teloxide/issues/153)).
+ - `IdleShutdownError`
 
 ### Changed
 
@@ -22,11 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
  - `polling` and `polling_default` now require `R: 'static`
  - Refactor `UpdateListener` trait:
-   - Add a `stop` function that allows stopping the listener ([issue 166](https://github.com/teloxide/teloxide/issues/166)).
+   - Add a `StopToken` associated type.
+     - It must implement a new `StopToken` trait which has the only function `fn stop(self);`
+   - Add a `stop_token` function that returns `Self::StopToken` and allows stopping the listener later ([issue 166](https://github.com/teloxide/teloxide/issues/166)).
    - Remove blanked implementation.
    - Remove `Stream` from super traits.
    - Add `AsUpdateStream` to super traits.
      - Add an `AsUpdateStream` trait that allows turning implementors into streams of updates (GAT workaround).
+   - Add a `timeout_hint` function (with a default implementation).
+ - `Dispatcher::dispatch` and `Dispatcher::dispatch_with_listener` now require mutable reference to self.
+ - Repls can now be stopped by `^C` signal.
+ - `Noop` and `AsyncStopToken`stop tokens.
+ - `StatefulListener`.
 
 ### Fixed
 
