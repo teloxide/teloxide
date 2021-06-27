@@ -326,7 +326,7 @@ where
             self.shutdown_notify_back.notify_waiters();
             log::info!("Dispatching has been shut down.");
         } else {
-            log::debug!("Dispatching has been stopped (listener returned `None`).");
+            log::info!("Dispatching has been stopped (listener returned `None`).");
         }
 
         self.state.store(Idle);
@@ -489,8 +489,10 @@ impl ShutdownToken {
     /// If you don't need to wait for shutdown, the returned future can be
     /// ignored.
     pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, IdleShutdownError> {
-        shutdown_inner(&self.dispatcher_state)
-            .map(|()| async move { self.shutdown_notify_back.notified().await })
+        shutdown_inner(&self.dispatcher_state).map(|()| async move {
+            log::info!("Trying to shutdown the dispatcher...");
+            self.shutdown_notify_back.notified().await
+        })
     }
 }
 

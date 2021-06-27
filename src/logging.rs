@@ -23,8 +23,8 @@ macro_rules! enable_logging {
 /// Enables logging through [pretty-env-logger] with a custom filter for your
 /// program.
 ///
-/// A logger will **only** print errors from teloxide and restrict logs from
-/// your program by the specified filter.
+/// A logger will **only** print errors, warnings, and general information from
+/// teloxide and restrict logs from your program by the specified filter.
 ///
 /// # Example
 /// Allow printing all logs from your program up to [`LevelFilter::Debug`] (i.e.
