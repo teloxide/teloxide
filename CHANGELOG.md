@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - `ShutdownToken` with a `shutdown` function.
  - `Dispatcher::setup_ctrlc_handler` function ([issue 153](https://github.com/teloxide/teloxide/issues/153)).
  - `IdleShutdownError`
+ - Automatic update filtering ([issue 389](https://github.com/teloxide/teloxide/issues/389)).
 
 ### Changed
 

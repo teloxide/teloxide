@@ -107,7 +107,10 @@ use futures::Stream;
 
 use std::time::Duration;
 
-use crate::{dispatching::stop_token::StopToken, types::Update};
+use crate::{
+    dispatching::stop_token::StopToken,
+    types::{AllowedUpdate, Update},
+};
 
 mod polling;
 mod stateful_listener;
@@ -150,6 +153,21 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
     #[must_use = "This function doesn't stop listening, to stop listening you need to call stop on \
                   the returned token"]
     fn stop_token(&mut self) -> Self::StopToken;
+
+    /// Hint which updates should the listener listen for.
+    ///
+    /// For example [`polling()`] should send the hint as
+    /// [`GetUpdates::allowed_updates`]
+    ///
+    /// Note however that this is a _hint_ and as such, it can be ignored. The
+    /// listener is not guaranteed to only return updates which types are listed
+    /// in the hint.
+    ///
+    /// [`GetUpdates::allowed_updates`]:
+    /// crate::payloads::GetUpdates::allowed_updates
+    fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>) {
+        let _ = hint;
+    }
 
     /// The timeout duration hint.
     ///
