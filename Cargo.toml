@@ -24,7 +24,7 @@ authors = [
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["native-tls", "teloxide-core/default"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
@@ -33,6 +33,8 @@ bincode-serializer = ["bincode"]
 
 frunk- = ["frunk"]
 macros = ["teloxide-macros"]
+
+ctrlc_handler = ["tokio/signal"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
@@ -51,6 +53,7 @@ full = [
     "bincode-serializer",
     "frunk",
     "macros",
+    "ctrlc_handler",
     "teloxide-core/full",
     "native-tls",
     "rustls",

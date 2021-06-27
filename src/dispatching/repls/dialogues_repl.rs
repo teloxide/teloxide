@@ -23,6 +23,7 @@ use teloxide_core::{requests::Requester, types::Message};
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
+#[cfg(feature = "ctrlc_handler")]
 pub async fn dialogues_repl<'a, R, H, D, Fut>(requester: R, handler: H)
 where
     H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
@@ -55,6 +56,7 @@ where
 /// [`dialogues_repl`]: crate::dispatching::repls::dialogues_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
+#[cfg(feature = "ctrlc_handler")]
 pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
     requester: R,
     handler: H,
@@ -85,6 +87,7 @@ pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
                 }
             },
         ))
+        .setup_ctrlc_handler()
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
