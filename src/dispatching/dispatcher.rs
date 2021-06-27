@@ -441,62 +441,56 @@ where
     }
 
     fn hint_allowed_updates<E>(&self, listener: &mut impl UpdateListener<E>) {
-        let mut allowed = self
-            .messages_queue
-            .as_ref()
-            .map(|_| AllowedUpdate::Message)
-            .into_iter()
-            .chain(
-                self.edited_messages_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::EditedMessage)
-                    .into_iter(),
-            )
-            .chain(
-                self.channel_posts_queue.as_ref().map(|_| AllowedUpdate::ChannelPost).into_iter(),
-            )
-            .chain(
-                self.edited_channel_posts_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::EditedChannelPost)
-                    .into_iter(),
-            )
-            .chain(
-                self.inline_queries_queue.as_ref().map(|_| AllowedUpdate::InlineQuery).into_iter(),
-            )
-            .chain(
-                self.chosen_inline_results_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::ChosenInlineResult)
-                    .into_iter(),
-            )
-            .chain(
-                self.callback_queries_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::CallbackQuery)
-                    .into_iter(),
-            )
-            .chain(
-                self.shipping_queries_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::ShippingQuery)
-                    .into_iter(),
-            )
-            .chain(
-                self.pre_checkout_queries_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::PreCheckoutQuery)
-                    .into_iter(),
-            )
-            .chain(self.polls_queue.as_ref().map(|_| AllowedUpdate::Poll).into_iter())
-            .chain(self.poll_answers_queue.as_ref().map(|_| AllowedUpdate::PollAnswer).into_iter())
-            .chain(
-                self.my_chat_members_queue
-                    .as_ref()
-                    .map(|_| AllowedUpdate::MyChatMember)
-                    .into_iter(),
-            )
-            .chain(self.chat_members_queue.as_ref().map(|_| AllowedUpdate::ChatMember).into_iter());
+        fn hint_handler_allowed_update<T>(
+            queue: &Option<T>,
+            kind: AllowedUpdate,
+        ) -> std::option::IntoIter<AllowedUpdate> {
+            queue.as_ref().map(|_| kind).into_iter()
+        }
+
+        let mut allowed = hint_handler_allowed_update(&self.messages_queue, AllowedUpdate::Message)
+            .chain(hint_handler_allowed_update(
+                &self.edited_messages_queue,
+                AllowedUpdate::EditedMessage,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.channel_posts_queue,
+                AllowedUpdate::ChannelPost,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.edited_channel_posts_queue,
+                AllowedUpdate::EditedChannelPost,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.inline_queries_queue,
+                AllowedUpdate::InlineQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.chosen_inline_results_queue,
+                AllowedUpdate::ChosenInlineResult,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.callback_queries_queue,
+                AllowedUpdate::CallbackQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.shipping_queries_queue,
+                AllowedUpdate::ShippingQuery,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.pre_checkout_queries_queue,
+                AllowedUpdate::PreCheckoutQuery,
+            ))
+            .chain(hint_handler_allowed_update(&self.polls_queue, AllowedUpdate::Poll))
+            .chain(hint_handler_allowed_update(&self.poll_answers_queue, AllowedUpdate::PollAnswer))
+            .chain(hint_handler_allowed_update(
+                &self.my_chat_members_queue,
+                AllowedUpdate::MyChatMember,
+            ))
+            .chain(hint_handler_allowed_update(
+                &self.chat_members_queue,
+                AllowedUpdate::ChatMember,
+            ));
 
         listener.hint_allowed_updates(&mut allowed);
     }
