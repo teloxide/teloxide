@@ -241,6 +241,9 @@ const SECOND: Duration = Duration::from_secs(1);
 // want to change this.
 const DELAY: Duration = Duration::from_millis(250);
 
+/// Minimal time beetween calls to queue_full function
+const QUEUE_FULL_DELAY: Duration = Duration::from_secs(4);
+
 #[derive(Debug)]
 enum InfoMessage {
     GetLimits { response: Sender<Limits> },
@@ -321,6 +324,10 @@ async fn worker<F, Fut>(
 
     let mut rx_is_closed = false;
 
+    let mut last_queue_full = Instant::now()
+        .checked_sub(QUEUE_FULL_DELAY)
+        .unwrap_or_else(Instant::now);
+
     while !rx_is_closed || !queue.is_empty() {
         // FIXME(waffle):
         // 1. If the `queue` is empty, `read_from_rx` call down below will 'block'
@@ -335,7 +342,8 @@ async fn worker<F, Fut>(
         read_from_rx(&mut rx, &mut queue, &mut rx_is_closed).await;
         //debug_assert_eq!(queue.capacity(), limits.messages_per_sec_overall as usize);
 
-        if queue.len() == queue.capacity() {
+        if queue.len() == queue.capacity() && last_queue_full.elapsed() > QUEUE_FULL_DELAY {
+            last_queue_full = Instant::now();
             tokio::spawn(queue_full(queue.len()));
         }
 
