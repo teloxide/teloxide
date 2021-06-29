@@ -78,7 +78,9 @@ impl<B> Throttle<B> {
         let (tx, rx) = mpsc::channel(limits.messages_per_sec_overall as usize);
         let (info_tx, info_rx) = mpsc::channel(2);
 
-        let worker = worker(limits, rx, info_rx);
+        let worker = worker(limits, rx, info_rx, |pending| async move {
+            log::warn!("Throttle queue is full ({} pending requests)", pending);
+        });
         let this = Self {
             bot,
             queue: tx,
@@ -253,11 +255,15 @@ struct RequestsSentToChats {
 // the request that it can be now executed, increase counts, add record to the
 // history.
 
-async fn worker(
+async fn worker<F, Fut>(
     mut limits: Limits,
     mut rx: mpsc::Receiver<(ChatIdHash, RequestLock)>,
     mut info_rx: mpsc::Receiver<InfoMessage>,
-) {
+    queue_full: F,
+) where
+    F: Fn(usize) -> Fut,
+    Fut: Future<Output = ()> + Send + 'static,
+{
     // FIXME(waffle): Make an research about data structures for this queue.
     //                Currently this is O(n) removing (n = number of elements
     //                stayed), amortized O(1) push (vec+vecrem).
@@ -282,6 +288,10 @@ async fn worker(
 
         read_from_rx(&mut rx, &mut queue, &mut rx_is_closed).await;
         //debug_assert_eq!(queue.capacity(), limits.messages_per_sec_overall as usize);
+
+        if queue.len() == queue.capacity() {
+            tokio::spawn(queue_full(queue.len()));
+        }
 
         // _Maybe_ we need to use `spawn_blocking` here, because there is
         // decent amount of blocking work. However _for now_ I've decided not
