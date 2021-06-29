@@ -75,12 +75,30 @@ impl<B> Throttle<B> {
     /// Note: [`Throttle`] will only send requests if returned worker is
     /// polled/spawned/awaited.
     pub fn new(bot: B, limits: Limits) -> (Self, impl Future<Output = ()>) {
+        Self::with_queue_full_fn(bot, limits, |pending| async move {
+            log::warn!("Throttle queue is full ({} pending requests)", pending);
+        })
+    }
+
+    /// Creates new [`Throttle`] alongside with worker future.
+    ///
+    /// `queue_full` function is called when internal queue is full.
+    ///
+    /// Note: [`Throttle`] will only send requests if returned worker is
+    /// polled/spawned/awaited.
+    pub fn with_queue_full_fn<F, Fut>(
+        bot: B,
+        limits: Limits,
+        queue_full: F,
+    ) -> (Self, impl Future<Output = ()>)
+    where
+        F: Fn(usize) -> Fut,
+        Fut: Future<Output = ()> + Send + 'static,
+    {
         let (tx, rx) = mpsc::channel(limits.messages_per_sec_overall as usize);
         let (info_tx, info_rx) = mpsc::channel(2);
 
-        let worker = worker(limits, rx, info_rx, |pending| async move {
-            log::warn!("Throttle queue is full ({} pending requests)", pending);
-        });
+        let worker = worker(limits, rx, info_rx, queue_full);
         let this = Self {
             bot,
             queue: tx,
@@ -95,21 +113,49 @@ impl<B> Throttle<B> {
     /// Note: it's recommended to use [`RequesterExt::throttle`] instead.
     ///
     /// [`RequesterExt::throttle`]: crate::requests::RequesterExt::throttle
-    pub fn new_spawn(bot: B, limits: Limits) -> Self
-    where
-        // Basically, I hate this bound.
-        // This is yet another problem caused by [rust-lang/#76882].
-        // And I think it *is* a bug.
+    pub fn new_spawn(bot: B, limits: Limits) -> Self {
+        // new/with_queue_full_fn copypasted here to avoid [rust-lang/#76882]
         //
         // [rust-lang/#76882]: https://github.com/rust-lang/rust/issues/76882
-        //
-        // Though crucially I can't think of a case with non-static bot.
-        // But anyway, it doesn't change the fact that this bound is redundant.
-        //
-        // (waffle)
-        B: 'static,
+
+        let (tx, rx) = mpsc::channel(limits.messages_per_sec_overall as usize);
+        let (info_tx, info_rx) = mpsc::channel(2);
+
+        let worker = worker(limits, rx, info_rx, |pending| async move {
+            log::warn!("Throttle queue is full ({} pending requests)", pending);
+        });
+        let this = Self {
+            bot,
+            queue: tx,
+            info_tx,
+        };
+
+        tokio::spawn(worker);
+        this
+    }
+
+    /// Creates new [`Throttle`] spawning the worker with `tokio::spawn`
+    ///
+    /// `queue_full` function is called when internal queue is full.
+    pub fn spawn_with_queue_full_fn<F, Fut>(bot: B, limits: Limits, queue_full: F) -> Self
+    where
+        F: Fn(usize) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
-        let (this, worker) = Self::new(bot, limits);
+        // with_queue_full_fn copypasted here to avoid [rust-lang/#76882]
+        //
+        // [rust-lang/#76882]: https://github.com/rust-lang/rust/issues/76882
+
+        let (tx, rx) = mpsc::channel(limits.messages_per_sec_overall as usize);
+        let (info_tx, info_rx) = mpsc::channel(2);
+
+        let worker = worker(limits, rx, info_rx, queue_full);
+        let this = Self {
+            bot,
+            queue: tx,
+            info_tx,
+        };
+
         tokio::spawn(worker);
         this
     }
