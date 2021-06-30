@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `Dispatcher::setup_ctrlc_handler` function ([issue 153](https://github.com/teloxide/teloxide/issues/153)).
  - `IdleShutdownError`
  - Automatic update filtering ([issue 389](https://github.com/teloxide/teloxide/issues/389)).
- - Added reply shortcut to every kind of messages.
+ - Added reply shortcut to every kind of messages ([PR 404](https://github.com/teloxide/teloxide/pull/404)).
 
 ### Changed
 
