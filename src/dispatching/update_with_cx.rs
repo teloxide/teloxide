@@ -1,6 +1,11 @@
 use crate::dispatching::dialogue::GetChatId;
 use teloxide_core::{
-    payloads::SendMessageSetters,
+    payloads::{
+        SendAnimationSetters, SendAudioSetters, SendContactSetters, SendDocumentSetters,
+        SendLocationSetters, SendMediaGroupSetters, SendMessageSetters, SendPhotoSetters,
+        SendStickerSetters, SendVenueSetters, SendVideoNoteSetters, SendVideoSetters,
+        SendVoiceSetters,
+    },
     requests::{Request, Requester},
     types::{ChatId, InputFile, InputMedia, Message},
 };
@@ -62,6 +67,87 @@ where
         T: Into<String>,
     {
         self.requester.send_message(self.chat_id(), text).reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_audio(&self, audio: InputFile) -> R::SendAudio {
+        self.requester.send_audio(self.update.chat.id, audio).reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_animation(&self, animation: InputFile) -> R::SendAnimation {
+        self.requester
+            .send_animation(self.update.chat.id, animation)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_document(&self, document: InputFile) -> R::SendDocument {
+        self.requester
+            .send_document(self.update.chat.id, document)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_photo(&self, photo: InputFile) -> R::SendPhoto {
+        self.requester.send_photo(self.update.chat.id, photo).reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_video(&self, video: InputFile) -> R::SendVideo {
+        self.requester.send_video(self.update.chat.id, video).reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_voice(&self, voice: InputFile) -> R::SendVoice {
+        self.requester.send_voice(self.update.chat.id, voice).reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_media_group<T>(&self, media_group: T) -> R::SendMediaGroup
+    where
+        T: IntoIterator<Item = InputMedia>,
+    {
+        self.requester
+            .send_media_group(self.update.chat.id, media_group)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_location(&self, latitude: f64, longitude: f64) -> R::SendLocation {
+        self.requester
+            .send_location(self.update.chat.id, latitude, longitude)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_venue<T, U>(
+        &self,
+        latitude: f64,
+        longitude: f64,
+        title: T,
+        address: U,
+    ) -> R::SendVenue
+    where
+        T: Into<String>,
+        U: Into<String>,
+    {
+        self.requester
+            .send_venue(self.update.chat.id, latitude, longitude, title, address)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_video_note(&self, video_note: InputFile) -> R::SendVideoNote {
+        self.requester
+            .send_video_note(self.update.chat.id, video_note)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_contact<T, U>(&self, phone_number: T, first_name: U) -> R::SendContact
+    where
+        T: Into<String>,
+        U: Into<String>,
+    {
+        self.requester
+            .send_contact(self.update.chat.id, phone_number, first_name)
+            .reply_to_message_id(self.update.id)
+    }
+
+    pub fn reply_sticker(&self, sticker: InputFile) -> R::SendSticker {
+        self.requester
+            .send_sticker(self.update.chat.id, sticker)
+            .reply_to_message_id(self.update.id)
     }
 
     pub fn answer_photo(&self, photo: InputFile) -> R::SendPhoto {
