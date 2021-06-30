@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#76][pr76])
+- `DefaultParseMode::parse_mode` which allows to get currently used default parse mode ([#77][pr77])
+- `Thrrotle::{limits,set_limits,with_queue_full_fn,spawn_with_queue_full_fn}` functions ([#77][pr77])
 - Getters for fields nested in `Chat` ([#80][pr80]) 
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
 - Telegram bot API 5.2 support ([#86][pr86])
 - `net::default_reqwest_settings` function ([#90][pr90])
 
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
+[pr77]: https://github.com/teloxide/teloxide-core/pull/77
 [pr76]: https://github.com/teloxide/teloxide-core/pull/76
 [pr80]: https://github.com/teloxide/teloxide-core/pull/80
 [pr84]: https://github.com/teloxide/teloxide-core/pull/84
@@ -26,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Message::url` now returns links to messages in private groups too ([#80][pr80]) 
 - Refactor `ChatMember` methods ([#74][pr74])
-  - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callible directly on `ChatMember`
+  - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callable directly on `ChatMember`
   - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
   - Refactor privilege getters
 - Rename `ChatAction::{RecordAudio => RecordVoice, UploadAudio => UploadVoice}` ([#86][pr86])

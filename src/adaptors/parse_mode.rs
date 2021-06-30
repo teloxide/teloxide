@@ -34,6 +34,11 @@ impl<B> DefaultParseMode<B> {
     pub fn into_inner(self) -> B {
         self.bot
     }
+
+    /// Returns currently used [`ParseMode`].
+    pub fn parse_mode(&self) -> ParseMode {
+        self.mode
+    }
 }
 
 macro_rules! f {
