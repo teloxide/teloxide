@@ -55,6 +55,8 @@
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 #![allow(clippy::redundant_pattern_matching)]
+// https://github.com/rust-lang/rust-clippy/issues/7422
+#![allow(clippy::nonstandard_macro_braces)]
 
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
