@@ -1,3 +1,5 @@
+use url::Url;
+
 use crate::{
     payloads,
     prelude::Requester,
@@ -20,10 +22,7 @@ impl Requester for Bot {
 
     type SetWebhook = JsonRequest<payloads::SetWebhook>;
 
-    fn set_webhook<U>(&self, url: U) -> Self::SetWebhook
-    where
-        U: Into<String>,
-    {
+    fn set_webhook(&self, url: Url) -> Self::SetWebhook {
         Self::SetWebhook::new(self.clone(), payloads::SetWebhook::new(url))
     }
 

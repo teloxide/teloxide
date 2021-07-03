@@ -7,6 +7,7 @@
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
+use url::Url;
 
 use crate::types::True;
 
@@ -35,7 +36,7 @@ impl_payload! {
             /// [callback_game]: https://core.telegram.org/bots/api#inlinekeyboardbutton
             /// [@Botfather]: https://t.me/botfather
             /// [`Game`]: crate::types::Game
-            pub url: String [into],
+            pub url: Url,
             /// The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
             pub cache_time: u32,
         }

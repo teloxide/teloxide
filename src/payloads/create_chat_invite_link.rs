@@ -6,6 +6,7 @@
 //
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{ChatId, ChatInviteLink};
@@ -23,7 +24,8 @@ impl_payload! {
         }
         optional {
             /// Point in time (Unix timestamp) when the link will expire
-            pub expire_date: i64,
+            #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+            pub expire_date: DateTime<Utc> [into],
             /// Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999
             pub member_limit: u32,
         }

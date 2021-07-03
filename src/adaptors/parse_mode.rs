@@ -1,3 +1,5 @@
+use url::Url;
+
 use crate::{
     prelude::Requester,
     requests::HasPayload,

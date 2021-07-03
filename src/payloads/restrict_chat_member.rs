@@ -6,6 +6,7 @@
 //
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{ChatId, ChatPermissions, True};
@@ -24,7 +25,8 @@ impl_payload! {
         }
         optional {
             /// Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever
-            pub until_date: u64,
+            #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+            pub until_date: DateTime<Utc> [into],
         }
     }
 }

@@ -1,6 +1,8 @@
 // We can't change Telegram API
 #![allow(clippy::too_many_arguments)]
 
+use url::Url;
+
 use crate::{
     payloads::{GetMe, SendMessage, *},
     requests::Request,
@@ -60,6 +62,7 @@ pub trait Requester {
     //
     // [cg]: https://github.com/teloxide/cg
     // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
+
     type GetUpdates: Request<Payload = GetUpdates, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetUpdates`].
@@ -68,9 +71,7 @@ pub trait Requester {
     type SetWebhook: Request<Payload = SetWebhook, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetWebhook`].
-    fn set_webhook<U>(&self, url: U) -> Self::SetWebhook
-    where
-        U: Into<String>;
+    fn set_webhook(&self, url: Url) -> Self::SetWebhook;
 
     type DeleteWebhook: Request<Payload = DeleteWebhook, Err = Self::Err>;
 

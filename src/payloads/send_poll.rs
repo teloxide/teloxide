@@ -6,6 +6,7 @@
 //
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{ChatId, Message, MessageEntity, ParseMode, PollType, ReplyMarkup};
@@ -44,7 +45,8 @@ impl_payload! {
             /// Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
             pub open_period: u16,
             /// Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with open_period.
-            pub close_date: u64,
+            #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+            pub close_date: DateTime<Utc> [into],
             /// Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.
             pub is_closed: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.

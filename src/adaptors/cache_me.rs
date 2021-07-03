@@ -7,6 +7,7 @@ use futures::{
     Future,
 };
 use once_cell::sync::OnceCell;
+use url::Url;
 
 use crate::{
     payloads::GetMe,
