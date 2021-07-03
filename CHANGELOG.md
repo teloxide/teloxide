@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `Noop` and `AsyncStopToken`stop tokens.
  - `StatefulListener`.
  - Emit not only errors but also warnings and general information from teloxide, when set up by `enable_logging!`.
+ - `user_id` should be passed as i64 in `html::user_mention` and `markdown::user_mention`.
 
 ### Fixed
 
