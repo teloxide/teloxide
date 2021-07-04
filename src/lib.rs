@@ -77,6 +77,9 @@
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
 
+// https://github.com/rust-lang/rust-clippy/issues/7422
+#![allow(clippy::nonstandard_macro_braces)]
+
 // The internal helper macros.
 #[macro_use]
 mod local_macros;
