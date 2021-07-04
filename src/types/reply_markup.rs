@@ -62,17 +62,6 @@ impl ReplyMarkup {
     pub fn force_reply() -> Self {
         Self::ForceReply(ForceReply::new())
     }
-
-    // FIXME(waffle): remove this method in the next minor version bump (0.3.0)
-    #[doc(hidden)]
-    #[deprecated = "This method has a typo in name. Use `ReplyMarkup::keyboard` instead."]
-    pub fn keyboad<K>(keyboard: K) -> Self
-    where
-        K: IntoIterator,
-        K::Item: IntoIterator<Item = KeyboardButton>,
-    {
-        Self::Keyboard(KeyboardMarkup::new(keyboard))
-    }
 }
 
 #[cfg(test)]
