@@ -684,6 +684,14 @@ macro_rules! requester_forward {
             $body!(get_file this (file_id: F))
         }
     };
+    (@method ban_chat_member $body:ident $ty:ident) => {
+        type BanChatMember = $ty![BanChatMember];
+
+        fn ban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::BanChatMember where C: Into<ChatId> {
+            let this = self;
+            $body!(ban_chat_member this (chat_id: C, user_id: i64))
+        }
+    };
     (@method kick_chat_member $body:ident $ty:ident) => {
         type KickChatMember = $ty![KickChatMember];
 
@@ -848,6 +856,14 @@ macro_rules! requester_forward {
             $body!(get_chat_administrators this (chat_id: C))
         }
     };
+    (@method get_chat_member_count $body:ident $ty:ident) => {
+        type GetChatMemberCount = $ty![GetChatMemberCount];
+
+        fn get_chat_member_count<C>(&self, chat_id: C) -> Self::GetChatMemberCount where C: Into<ChatId> {
+            let this = self;
+            $body!(get_chat_member_count this (chat_id: C))
+        }
+    };
     (@method get_chat_members_count $body:ident $ty:ident) => {
         type GetChatMembersCount = $ty![GetChatMembersCount];
 
@@ -903,6 +919,14 @@ macro_rules! requester_forward {
         fn get_my_commands(&self) -> Self::GetMyCommands {
             let this = self;
             $body!(get_my_commands this ())
+        }
+    };
+    (@method delete_my_commands $body:ident $ty:ident) => {
+        type DeleteMyCommands = $ty![DeleteMyCommands];
+
+        fn delete_my_commands(&self) -> Self::DeleteMyCommands {
+            let this = self;
+            $body!(delete_my_commands this ())
         }
     };
     (@method answer_inline_query $body:ident $ty:ident) => {
