@@ -337,6 +337,15 @@ impl Requester for Bot {
         )
     }
 
+    type BanChatMember = JsonRequest<payloads::BanChatMember>;
+
+    fn ban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::BanChatMember
+    where
+        C: Into<ChatId>,
+    {
+        Self::BanChatMember::new(self.clone(), payloads::BanChatMember::new(chat_id, user_id))
+    }
+
     type UnbanChatMember = JsonRequest<payloads::UnbanChatMember>;
 
     fn unban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::UnbanChatMember
@@ -557,6 +566,15 @@ impl Requester for Bot {
         Self::GetChatMembersCount::new(self.clone(), payloads::GetChatMembersCount::new(chat_id))
     }
 
+    type GetChatMemberCount = JsonRequest<payloads::GetChatMemberCount>;
+
+    fn get_chat_member_count<C>(&self, chat_id: C) -> Self::GetChatMemberCount
+    where
+        C: Into<ChatId>,
+    {
+        Self::GetChatMemberCount::new(self.clone(), payloads::GetChatMemberCount::new(chat_id))
+    }
+
     type GetChatMember = JsonRequest<payloads::GetChatMember>;
 
     fn get_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::GetChatMember
@@ -613,6 +631,12 @@ impl Requester for Bot {
 
     fn get_my_commands(&self) -> Self::GetMyCommands {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
+    }
+
+    type DeleteMyCommands = JsonRequest<payloads::DeleteMyCommands>;
+
+    fn delete_my_commands(&self) -> Self::DeleteMyCommands {
+        Self::DeleteMyCommands::new(self.clone(), payloads::DeleteMyCommands::new())
     }
 
     type AnswerInlineQuery = JsonRequest<payloads::AnswerInlineQuery>;

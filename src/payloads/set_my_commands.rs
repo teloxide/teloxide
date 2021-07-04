@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{BotCommand, True};
+use crate::types::{BotCommand, BotCommandScope, True};
 
 impl_payload! {
     /// Use this method to change the list of the bot's commands. Returns _True_ on success.
@@ -17,6 +17,12 @@ impl_payload! {
         required {
             /// A JSON-serialized list of bot commands to be set as the list of the bot's commands. At most 100 commands can be specified.
             pub commands: Vec<BotCommand> [collect],
+        }
+        optional {
+            /// A JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.
+            pub scope: BotCommandScope,
+            /// A two-letter ISO 639-1 language code. If empty, commands will be applied to all users from the given scope, for whose language there are no dedicated commands
+            pub language_code: String [into],
         }
     }
 }

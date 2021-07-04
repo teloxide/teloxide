@@ -8,14 +8,14 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{BotCommand, BotCommandScope};
+use crate::types::{BotCommandScope, True};
 
 impl_payload! {
-    /// Use this method to get the current list of the bot's commands. Requires no parameters. Returns Array of [`BotCommand`] on success.
+    /// Use this method to delete the list of the bot's commands for the given scope and user language. After deletion, [higher level commands] will be shown to affected users. Returns _True_ on success.
     ///
-    /// [`BotCommand`]: crate::types::BotCommand
+    /// [higher level commands]: https://core.telegram.org/bots/api#determining-list-of-commands
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
-    pub GetMyCommands (GetMyCommandsSetters) => Vec<BotCommand> {
+    pub DeleteMyCommands (DeleteMyCommandsSetters) => True {
 
         optional {
             /// A JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.

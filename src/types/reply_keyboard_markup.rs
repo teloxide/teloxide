@@ -31,6 +31,10 @@ pub struct KeyboardMarkup {
     /// Defaults to `false`.
     pub one_time_keyboard: Option<bool>,
 
+    /// The placeholder to be shown in the input field when the keyboard is
+    /// active; 1-64 characters.
+    pub input_field_placeholder: Option<String>,
+
     /// Use this parameter if you want to show the keyboard to specific users
     /// only. Targets: 1) users that are `@mentioned` in the `text` of the
     /// [`Message`] object; 2) if the bot's message is a reply (has
@@ -58,6 +62,7 @@ impl KeyboardMarkup {
                 .collect(),
             resize_keyboard: None,
             one_time_keyboard: None,
+            input_field_placeholder: None,
             selective: None,
         }
     }
@@ -88,6 +93,14 @@ impl KeyboardMarkup {
         T: Into<Option<bool>>,
     {
         self.one_time_keyboard = val.into();
+        self
+    }
+
+    pub fn input_field_placeholder<T>(mut self, val: T) -> Self
+    where
+        T: Into<Option<String>>,
+    {
+        self.input_field_placeholder = val.into();
         self
     }
 
