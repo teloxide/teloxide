@@ -1,7 +1,7 @@
 [package]
 name = "teloxide-core"
 description = "Core part of the `teloxide` library - telegram bot API client"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2018"
 authors = [
     "Temirkhan Myrzamadi <hirrolot@gmail.com>",
@@ -32,7 +32,7 @@ exclude = [
 
 [dependencies]
 futures = "0.3.5"
-tokio = { version = "1.2.0", features = ["fs"] }
+tokio = { version = "1.8.0", features = ["fs"] }
 tokio-util = "0.6.0"
 pin-project = "1.0.3"
 bytes = "1.0.0"

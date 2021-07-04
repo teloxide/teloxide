@@ -28,7 +28,7 @@
 </div>
 
 ```toml
-teloxide_core = "0.2"
+teloxide_core = "0.3"
 ```
 _Compiler support: requires rustc 1.49+_.
 

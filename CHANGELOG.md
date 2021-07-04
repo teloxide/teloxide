@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## 0.3.0
+
 ### Added
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#76][pr76])
@@ -52,12 +54,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
 - `reqwest` dependency bringing `native-tls` in even when `rustls` was selected ([#71][pr71])
 - Type of `{Restricted,Kicked}::until_date` fields: `i32` => `i64` ([#74][pr74])
+- Type of `PhotoSize::{width,height}` fields: `i32` => `u32` ([#100][pr100])
 
 [pr71]: https://github.com/teloxide/teloxide-core/pull/71
 [pr73]: https://github.com/teloxide/teloxide-core/pull/73
 [pr75]: https://github.com/teloxide/teloxide-core/pull/75
 [pr79]: https://github.com/teloxide/teloxide-core/pull/79
 [pr94]: https://github.com/teloxide/teloxide-core/pull/94
+[pr100]: https://github.com/teloxide/teloxide-core/pull/100
 
 ## [0.2.2] - 2020-03-22
 
