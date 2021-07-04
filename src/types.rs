@@ -217,3 +217,27 @@ mod non_telegram_types {
     pub(crate) mod mime;
     pub(super) mod semiparsed_vec;
 }
+
+pub(crate) mod serde_opt_date_from_unix_timestamp {
+    use chrono::{DateTime, Utc};
+    use serde::{Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(
+        this: &Option<DateTime<Utc>>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        this.map(|dt| dt.timestamp()).serialize(serializer)
+    }
+
+    // pub(crate) fn deserialize<'de, D>(deserializer: D) ->
+    // Result<Option<DateTime<Utc>>, D::Error> where
+    //     D: Deserializer<'de>,
+    // {
+    //     Ok(Option::<i64>::deserialize(deserializer)?
+    //         .map(|timestamp|
+    // DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
+    // }
+}

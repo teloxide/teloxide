@@ -7,6 +7,7 @@
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
+use url::Url;
 
 use crate::types::{ChatId, InlineKeyboardMarkup, LabeledPrice, Message};
 
@@ -46,7 +47,7 @@ impl_payload! {
             /// A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
             pub provider_data: String [into],
             /// URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
-            pub photo_url: String [into],
+            pub photo_url: Url,
             /// Photo size
             pub photo_size: String [into],
             /// Photo width

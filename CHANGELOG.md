@@ -33,8 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
   - Refactor privilege getters
 - Rename `ChatAction::{RecordAudio => RecordVoice, UploadAudio => UploadVoice}` ([#86][pr86])
+- Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates ([#97][pr97])
 
 [pr74]: https://github.com/teloxide/teloxide-core/pull/74
+[pr97]: https://github.com/teloxide/teloxide-core/pull/97
 
 ### Fixed
 

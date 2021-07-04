@@ -15,6 +15,7 @@ use tokio::sync::{
     mpsc,
     oneshot::{self, Receiver, Sender},
 };
+use url::Url;
 use vecrem::VecExt;
 
 use crate::{

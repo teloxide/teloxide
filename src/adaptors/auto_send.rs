@@ -5,6 +5,7 @@ use std::{
 };
 
 use futures::future::FusedFuture;
+use url::Url;
 
 use crate::{
     requests::{HasPayload, Output, Request, Requester},

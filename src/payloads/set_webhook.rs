@@ -7,6 +7,7 @@
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
+use url::Url;
 
 use crate::types::{AllowedUpdate, InputFile, True};
 
@@ -21,7 +22,7 @@ impl_payload! {
     pub SetWebhook (SetWebhookSetters) => True {
         required {
             /// HTTPS url to send updates to. Use an empty string to remove webhook integration
-            pub url: String [into],
+            pub url: Url,
         }
         optional {
             /// Upload your public key certificate so that the root certificate in use can be checked. See our [self-signed guide] for details.
