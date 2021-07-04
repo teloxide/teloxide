@@ -241,3 +241,27 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
     // DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
     // }
 }
+
+pub(crate) mod serde_date_from_unix_timestamp {
+    use chrono::{DateTime, NaiveDateTime, Utc};
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(this: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        this.timestamp().serialize(serializer)
+    }
+
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let timestamp = i64::deserialize(deserializer)?;
+
+        Ok(DateTime::from_utc(
+            NaiveDateTime::from_timestamp(timestamp, 0),
+            Utc,
+        ))
+    }
+}
