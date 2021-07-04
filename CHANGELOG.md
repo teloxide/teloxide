@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#76][pr76])
 - `DefaultParseMode::parse_mode` which allows to get currently used default parse mode ([#77][pr77])
-- `Thrrotle::{limits,set_limits,with_queue_full_fn,spawn_with_queue_full_fn}` functions ([#77][pr77])
+- `Thrrotle::{limits,set_limits}` functions ([#77][pr77])
+- `Throttle::{with_settings,spawn_with_settings}` and `throttle::Settings` ([#96][pr96])
 - Getters for fields nested in `Chat` ([#80][pr80]) 
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
 - Telegram bot API 5.2 support ([#86][pr86])
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr84]: https://github.com/teloxide/teloxide-core/pull/84
 [pr86]: https://github.com/teloxide/teloxide-core/pull/86
 [pr90]: https://github.com/teloxide/teloxide-core/pull/90
+[pr96]: https://github.com/teloxide/teloxide-core/pull/96
 
 ### Changed
 
