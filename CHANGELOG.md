@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `StatefulListener`.
  - Emit not only errors but also warnings and general information from teloxide, when set up by `enable_logging!`.
  - Use `i64` instead of `i32` for `user_id` in `html::user_mention` and `markdown::user_mention`.
+ - Updated to `teloxide-core` `v0.3.0` (see it's [changelog](https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md#030---2021-07-05) for more)
 
 ### Fixed
 
