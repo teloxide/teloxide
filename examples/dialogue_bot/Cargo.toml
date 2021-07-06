@@ -16,8 +16,8 @@ log = "0.4.8"
 pretty_env_logger = "0.4.0"
 derive_more = "0.99.9"
 
-frunk = "0.3.1"
-frunk_core = "0.3.1"
+frunk = "0.4"
+frunk_core = "0.4"
 
 [profile.release]
 lto = true
