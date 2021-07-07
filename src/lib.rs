@@ -46,12 +46,14 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
-// we pass "--cfg docsrs" when building docs to add `This is supported on
+// We pass "--cfg docsrs" when building docs to add `This is supported on
 // feature="..." only.`
+//
+// "--cfg dep_docsrs" is used for the same reason, but for `teloxide-core`.
 //
 // To properly build docs of this crate run
 // ```console
-// $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
+// $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
 #![allow(clippy::redundant_pattern_matching)]

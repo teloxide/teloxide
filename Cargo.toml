@@ -63,7 +63,7 @@ full = [
 ]
 
 [dependencies]
-teloxide-core = { version = "0.3.0", default-features = false }
+teloxide-core = { version = "0.3.1", default-features = false }
 #teloxide-core = { git = "https://github.com/teloxide/teloxide-core.git", rev = "...", default-features = false }
 teloxide-macros = { version = "0.4", optional = true }
 
@@ -106,6 +106,7 @@ tokio = { version = "1.8", features = ["fs", "rt-multi-thread", "macros"] }
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
+rustc-args = ["--cfg", "dep_docsrs"]
 
 [[test]]
 name = "redis"
