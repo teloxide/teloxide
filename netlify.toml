@@ -1,9 +1,6 @@
 [build] 
 command = "rustup install nightly --profile minimal && cargo +nightly doc --all-features --no-deps && cp -r target/doc _netlify_out"
-environment = { 
-    RUSTFLAGS="--cfg dep_docsrs",    
-    RUSTDOCFLAGS= "--cfg docsrs -Znormalize-docs" 
-} 
+environment = { RUSTFLAGS="--cfg dep_docsrs", RUSTDOCFLAGS= "--cfg docsrs -Znormalize-docs" }
 publish = "_netlify_out" 
 
 [[redirects]]
