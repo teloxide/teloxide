@@ -50,9 +50,6 @@ pub trait RequesterExt: Requester {
     fn throttle(self, limits: Limits) -> Throttle<Self>
     where
         Self: Sized,
-        // >:(
-        // (waffle)
-        Self: 'static,
     {
         Throttle::new_spawn(self, limits)
     }
