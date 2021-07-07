@@ -8,7 +8,7 @@ use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::Filter;
 
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Url};
 
 #[tokio::main]
 async fn main() {
@@ -21,9 +21,11 @@ async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, In
 }
 
 pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
+    let url = Url::parse("Your HTTPS ngrok URL here. Get it by `ngrok http 80`").unwrap();
+
     // You might want to specify a self-signed certificate via .certificate
     // method on SetWebhook.
-    bot.set_webhook("Your HTTPS ngrok URL here. Get it by `ngrok http 80`")
+    bot.set_webhook(url)
         .await
         .expect("Cannot setup a webhook");
 

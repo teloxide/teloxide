@@ -1,8 +1,7 @@
-use std::{convert::TryInto, error::Error, str::FromStr};
+use std::{error::Error, str::FromStr};
 
-use teloxide::{prelude::*, utils::command::BotCommand};
-
-use teloxide::types::ChatPermissions;
+use chrono::{DateTime, Duration, NaiveDateTime, Utc};
+use teloxide::{prelude::*, types::{ChatPermissions, Me}, utils::command::BotCommand};
 
 // Derive BotCommand to parse text with a command into this enumeration.
 //
@@ -24,12 +23,12 @@ enum Command {
     Kick,
     #[command(description = "ban user in chat.")]
     Ban {
-        time: u32,
+        time: u64,
         unit: UnitOfTime,
     },
     #[command(description = "mute user in chat.")]
     Mute {
-        time: u32,
+        time: u64,
         unit: UnitOfTime,
     },
     Help,
@@ -54,18 +53,18 @@ impl FromStr for UnitOfTime {
 }
 
 // Calculates time of user restriction.
-fn calc_restrict_time(time: u32, unit: UnitOfTime) -> u32 {
+fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
     match unit {
-        UnitOfTime::Hours => time * 3600,
-        UnitOfTime::Minutes => time * 60,
-        UnitOfTime::Seconds => time,
+        UnitOfTime::Hours => Duration::hours(time as i64),
+        UnitOfTime::Minutes => Duration::minutes(time as i64),
+        UnitOfTime::Seconds => Duration::seconds(time as i64),
     }
 }
 
 type Cx = UpdateWithCx<AutoSend<Bot>, Message>;
 
 // Mute a user with a replied message.
-async fn mute_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn mute_user(cx: &Cx, time: Duration) -> Result<(), Box<dyn Error + Send + Sync>> {
     match cx.update.reply_to_message() {
         Some(msg1) => {
             cx.requester
@@ -74,7 +73,12 @@ async fn mute_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync
                     msg1.from().expect("Must be MessageKind::Common").id,
                     ChatPermissions::default(),
                 )
-                .until_date((cx.update.date + time as i32).try_into().unwrap())
+                .until_date(
+                    DateTime::<Utc>::from_utc(
+                        NaiveDateTime::from_timestamp(cx.update.date as i64, 0),
+                        Utc,
+                    ) + time,
+                )
                 .await?;
         }
         None => {
@@ -102,7 +106,7 @@ async fn kick_user(cx: &Cx) -> Result<(), Box<dyn Error + Send + Sync>> {
 }
 
 // Ban a user with replied message.
-async fn ban_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn ban_user(cx: &Cx, time: Duration) -> Result<(), Box<dyn Error + Send + Sync>> {
     match cx.update.reply_to_message() {
         Some(message) => {
             cx.requester
@@ -110,7 +114,12 @@ async fn ban_user(cx: &Cx, time: u32) -> Result<(), Box<dyn Error + Send + Sync>
                     cx.update.chat_id(),
                     message.from().expect("Must be MessageKind::Common").id,
                 )
-                .until_date((cx.update.date + time as i32).try_into().unwrap())
+                .until_date(
+                    DateTime::<Utc>::from_utc(
+                        NaiveDateTime::from_timestamp(cx.update.date as i64, 0),
+                        Utc,
+                    ) + time,
+                )
                 .await?;
         }
         None => {
@@ -142,6 +151,7 @@ async fn run() {
 
     let bot = Bot::from_env().auto_send();
 
-    let bot_name: String = panic!("Your bot's name here");
+    let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
+    let bot_name = bot_user.username.expect("Bots must have usernames");
     teloxide::commands_repl(bot, bot_name, action).await;
 }
