@@ -14,7 +14,10 @@
 /// [`AutoSend`]: auto_send::AutoSend
 /// [`send`]: crate::requests::Request::send
 #[cfg(feature = "auto_send")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "auto_send")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "auto_send"))
+)]
 pub mod auto_send;
 
 /// [`CacheMe`] bot adaptor which caches [`GetMe`] requests.
@@ -22,7 +25,10 @@ pub mod auto_send;
 /// [`CacheMe`]: cache_me::CacheMe
 /// [`GetMe`]: crate::payloads::GetMe
 #[cfg(feature = "cache_me")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cache_me")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "cache_me"))
+)]
 pub mod cache_me;
 
 /// [`Throttle`] bot adaptor which allows automatically throttle when hitting
@@ -30,19 +36,31 @@ pub mod cache_me;
 ///
 /// [`Throttle`]: throttle::Throttle
 #[cfg(feature = "throttle")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "throttle"))
+)]
 pub mod throttle;
 
 mod parse_mode;
 
 #[cfg(feature = "auto_send")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "auto_send")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "auto_send"))
+)]
 pub use auto_send::AutoSend;
 #[cfg(feature = "cache_me")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cache_me")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "cache_me"))
+)]
 pub use cache_me::CacheMe;
 #[cfg(feature = "throttle")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "throttle"))
+)]
 pub use throttle::Throttle;
 
 pub use parse_mode::DefaultParseMode;

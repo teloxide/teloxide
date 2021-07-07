@@ -72,7 +72,13 @@
 // ```console
 // $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo doc --open --all-features
 // ```
-#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_notable_trait))]
+//
+// `dep_docsrs` is used for the same purpose, but when `teloxide-core` is built as a dependency
+// (see: `teloxide`). We can't use `docsrs` as it breaks tokio compilation in this case.
+#![cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    feature(doc_cfg, doc_notable_trait)
+)]
 #![cfg_attr(feature = "nightly", feature(min_type_alias_impl_trait))]
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]

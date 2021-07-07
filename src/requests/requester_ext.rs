@@ -15,7 +15,10 @@ pub trait RequesterExt: Requester {
     ///
     /// [`CacheMe`]:
     #[cfg(feature = "cache_me")]
-    #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "cache_me")))]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "cache_me"))
+    )]
     fn cache_me(self) -> CacheMe<Self>
     where
         Self: Sized,
@@ -25,7 +28,10 @@ pub trait RequesterExt: Requester {
 
     /// Send requests automatically, see [`AutoSend`] for more.
     #[cfg(feature = "auto_send")]
-    #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "auto_send")))]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "auto_send"))
+    )]
     fn auto_send(self) -> AutoSend<Self>
     where
         Self: Sized,
@@ -37,7 +43,10 @@ pub trait RequesterExt: Requester {
     ///
     /// Note: this spawns the worker, just as [`Throttle::new_spawn`].
     #[cfg(feature = "throttle")]
-    #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "throttle")))]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "throttle"))
+    )]
     fn throttle(self, limits: Limits) -> Throttle<Self>
     where
         Self: Sized,

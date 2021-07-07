@@ -16,7 +16,7 @@ use crate::requests::{HasPayload, Output};
 /// `B::send_ref` while _not_ meaning to really send the request at the moment.
 ///
 /// [`Throttle<B>`]: crate::adaptors::Throttle
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(notable_trait))]
+#[cfg_attr(all(any(docsrs, dep_docsrs), feature = "nightly"), doc(notable_trait))]
 pub trait Request: HasPayload {
     /*
      * Could be mostly `core::future::IntoFuture` though there is no reason to
