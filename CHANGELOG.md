@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.5.0] - 2021-07-08
+
 ### Added
 
  - `Storage::get_dialogue` to obtain a dialogue indexed by a chat ID.

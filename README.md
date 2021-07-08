@@ -1,18 +1,4 @@
-<details>
-  <summary>FYI: Updating from v0.3.4 to v0.4.0</summary>
-  
-  - `answer_str` -> `answer`
-  - `msg.text_owned()` -> `msg.map(ToOwned::to_owned)`
-  - Use `.auto_send()` to construct your bot: `let bot = Bot::from_env().auto_send();`. This allows not to write `.send()` after each request; now it is done automatically. Also, rewrite `UpdateWithCx<Message>` -> `UpdateWithCx<AutoSend<Bot>, Message>`.
-  - `ResponseResult<()>` -> `Result<(), Box<dyn Error + Send + Sync>>` (or import `ResponseResult` beforehand: `use teloxide::requests::ResponseResult;`)
-  - Tokio updated to v1.2.
-
-Note: this list is non-exhaustive; for the full list of changes, see the [teloxide-core changelog] and [teloxide changelog].
-
-[teloxide-core changelog]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md
-[teloxide changelog]: CHANGELOG.md
-
-</details>
+[_v0.4.0 => v0.5.0 migration guide >>_](MIGRATION_GUIDE.md#04---05)
 
 <div align="center">
   <img src="ICON.png" width="250"/>
@@ -30,7 +16,7 @@ Note: this list is non-exhaustive; for the full list of changes, see the [teloxi
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 5.1 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 5.3 (inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
