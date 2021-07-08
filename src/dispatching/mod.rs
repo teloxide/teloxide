@@ -27,7 +27,7 @@
 //! that:
 //!  - You are able to supply [`DialogueDispatcher`] as a handler.
 //!  - You are able to supply functions that accept
-//!    [`tokio::sync::mpsc::UnboundedReceiver`] and return `Future<Output = ()`
+//!    [`tokio::sync::mpsc::UnboundedReceiver`] and return `Future<Output = ()>`
 //!    as a handler.
 //!
 //! Since they implement [`DispatcherHandler`] too.
@@ -46,14 +46,17 @@
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
 pub mod dialogue;
+pub mod stop_token;
+pub mod update_listeners;
+
+pub(crate) mod repls;
+
 mod dispatcher;
 mod dispatcher_handler;
 mod dispatcher_handler_rx_ext;
-pub(crate) mod repls;
-pub mod update_listeners;
 mod update_with_cx;
 
-pub use dispatcher::Dispatcher;
+pub use dispatcher::{Dispatcher, IdleShutdownError, ShutdownToken};
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;

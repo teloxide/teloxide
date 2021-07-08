@@ -6,7 +6,7 @@ use crate::dialogue::states::{
 use derive_more::From;
 use teloxide::macros::Transition;
 
-#[derive(Transition, From)]
+#[derive(Transition, Clone, From)]
 pub enum Dialogue {
     Start(StartState),
     ReceiveFullName(ReceiveFullNameState),

@@ -96,107 +96,102 @@
 //!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
-//! [`polling`]: polling
+//! [`polling`]: polling()
 //! [`Box::get_updates`]: crate::requests::Requester::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
 //! [long]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 //! [short]: https://en.wikipedia.org/wiki/Polling_(computer_science)
 //! [webhook]: https://en.wikipedia.org/wiki/Webhook
 
-use futures::{stream, Stream, StreamExt};
+use futures::Stream;
 
-use std::{convert::TryInto, time::Duration};
-use teloxide_core::{
-    requests::{HasPayload, Request, Requester},
-    types::{AllowedUpdate, SemiparsedVec, Update},
+use std::time::Duration;
+
+use crate::{
+    dispatching::stop_token::StopToken,
+    types::{AllowedUpdate, Update},
 };
 
-/// A generic update listener.
-pub trait UpdateListener<E>: Stream<Item = Result<Update, E>> {
-    // TODO: add some methods here (.shutdown(), etc).
+mod polling;
+mod stateful_listener;
+
+pub use self::{
+    polling::{polling, polling_default},
+    stateful_listener::StatefulListener,
+};
+
+/// An update listener.
+///
+/// Implementors of this trait allow getting updates from Telegram.
+///
+/// Currently Telegram has 2 ways of getting updates -- [polling] and
+/// [webhooks]. Currently, only the former one is implemented (see [`polling()`]
+/// and [`polling_default`])
+///
+/// Some functions of this trait are located in the supertrait
+/// ([`AsUpdateStream`]), see also:
+/// - [`AsUpdateStream::Stream`]
+/// - [`AsUpdateStream::as_stream`]
+///
+/// [polling]: self#long-polling
+/// [webhooks]: self#webhooks
+pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
+    /// The type of token which allows to stop this listener.
+    type StopToken: StopToken;
+
+    /// Returns a token which stops this listener.
+    ///  
+    /// The [`stop`] function of the token is not guaranteed to have an
+    /// immediate effect. That is, some listeners can return updates even
+    /// after [`stop`] is called (e.g.: because of buffering).
+    ///
+    /// [`stop`]: StopToken::stop
+    ///
+    /// Implementors of this function are encouraged to stop listening for
+    /// updates as soon as possible and return `None` from the update stream as
+    /// soon as all cached updates are returned.
+    #[must_use = "This function doesn't stop listening, to stop listening you need to call stop on \
+                  the returned token"]
+    fn stop_token(&mut self) -> Self::StopToken;
+
+    /// Hint which updates should the listener listen for.
+    ///
+    /// For example [`polling()`] should send the hint as
+    /// [`GetUpdates::allowed_updates`]
+    ///
+    /// Note however that this is a _hint_ and as such, it can be ignored. The
+    /// listener is not guaranteed to only return updates which types are listed
+    /// in the hint.
+    ///
+    /// [`GetUpdates::allowed_updates`]:
+    /// crate::payloads::GetUpdates::allowed_updates
+    fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>) {
+        let _ = hint;
+    }
+
+    /// The timeout duration hint.
+    ///
+    /// This hints how often dispatcher should check for a shutdown. E.g., for
+    /// [`polling()`] this returns the [`timeout`].
+    ///
+    /// [`timeout`]: crate::payloads::GetUpdates::timeout
+    ///
+    /// If you are implementing this trait and not sure what to return from this
+    /// function, just leave it with the default implementation.
+    fn timeout_hint(&self) -> Option<Duration> {
+        None
+    }
 }
-impl<S, E> UpdateListener<E> for S where S: Stream<Item = Result<Update, E>> {}
 
-/// Returns a long polling update listener with `timeout` of 10 seconds.
+/// [`UpdateListener`]'s supertrait/extension.
 ///
-/// See also: [`polling`](polling).
-pub fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
-where
-    R: Requester,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
-{
-    polling(requester, Some(Duration::from_secs(10)), None, None)
-}
+/// This trait is a workaround to not require GAT.
+pub trait AsUpdateStream<'a, E> {
+    /// The stream of updates from Telegram.
+    type Stream: Stream<Item = Result<Update, E>> + 'a;
 
-/// Returns a long/short polling update listener with some additional options.
-///
-/// - `bot`: Using this bot, the returned update listener will receive updates.
-/// - `timeout`: A timeout for polling.
-/// - `limit`: Limits the number of updates to be retrieved at once. Values
-///   between 1—100 are accepted.
-/// - `allowed_updates`: A list the types of updates you want to receive.
-/// See [`GetUpdates`] for defaults.
-///
-/// See also: [`polling_default`](polling_default).
-///
-/// [`GetUpdates`]: crate::payloads::GetUpdates
-pub fn polling<R>(
-    requester: R,
-    timeout: Option<Duration>,
-    limit: Option<u8>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<R::Err>
-where
-    R: Requester,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
-{
-    let timeout = timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
-
-    stream::unfold(
-        (allowed_updates, requester, 0),
-        move |(mut allowed_updates, bot, mut offset)| async move {
-            let mut req = bot.get_updates_fault_tolerant();
-            let payload = &mut req.payload_mut().0;
-            payload.offset = Some(offset);
-            payload.timeout = timeout;
-            payload.limit = limit;
-            payload.allowed_updates = allowed_updates.take();
-
-            let updates = match req.send().await {
-                Err(err) => vec![Err(err)],
-                Ok(SemiparsedVec(updates)) => {
-                    // Set offset to the last update's id + 1
-                    if let Some(upd) = updates.last() {
-                        let id: i32 = match upd {
-                            Ok(ok) => ok.id,
-                            Err((value, _)) => value["update_id"]
-                                .as_i64()
-                                .expect("The 'update_id' field must always exist in Update")
-                                .try_into()
-                                .expect("update_id must be i32"),
-                        };
-
-                        offset = id + 1;
-                    }
-
-                    for update in &updates {
-                        if let Err((value, e)) = update {
-                            log::error!(
-                                "Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                            This is a bug in teloxide-core, please open an issue here: \
-                            https://github.com/teloxide/teloxide-core/issues.",
-                                e,
-                                value
-                            );
-                        }
-                    }
-
-                    updates.into_iter().filter_map(Result::ok).map(Ok).collect::<Vec<_>>()
-                }
-            };
-
-            Some((stream::iter(updates), (allowed_updates, bot, offset)))
-        },
-    )
-    .flatten()
+    /// Creates the update [`Stream`].
+    ///
+    /// [`Stream`]: AsUpdateStream::Stream
+    fn as_stream(&'a mut self) -> Self::Stream;
 }

@@ -6,7 +6,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-## [0.4.0] - 2021-03-19
+## [0.5.0] - 2021-07-08
+
+### Added
+
+ - `Storage::get_dialogue` to obtain a dialogue indexed by a chat ID.
+ - `InMemStorageError` with a single variant `DialogueNotFound` to be returned from `InMemStorage::remove_dialogue`.
+ - `RedisStorageError::DialogueNotFound` and `SqliteStorageError::DialogueNotFound` to be returned from `Storage::remove_dialogue`.
+ - A way to `shutdown` dispatcher
+   - `Dispatcher::shutdown_token` function.
+   - `ShutdownToken` with a `shutdown` function.
+ - `Dispatcher::setup_ctrlc_handler` function ([issue 153](https://github.com/teloxide/teloxide/issues/153)).
+ - `IdleShutdownError`
+ - Automatic update filtering ([issue 389](https://github.com/teloxide/teloxide/issues/389)).
+ - Added reply shortcut to every kind of messages ([PR 404](https://github.com/teloxide/teloxide/pull/404)).
+
+### Changed
+
+ - Do not return a dialogue from `Storage::{remove_dialogue, update_dialogue}`.
+ - Return an error from `Storage::remove_dialogue` if a dialogue does not exist.
+ - Require `D: Clone` in `dialogues_repl(_with_listener)` and `InMemStorage`.
+ - Automatically delete a webhook if it was set up in `update_listeners::polling_default` (thereby making it `async`, [issue 319](https://github.com/teloxide/teloxide/issues/319)).
+ - `polling` and `polling_default` now require `R: 'static`
+ - Refactor `UpdateListener` trait:
+   - Add a `StopToken` associated type.
+     - It must implement a new `StopToken` trait which has the only function `fn stop(self);`
+   - Add a `stop_token` function that returns `Self::StopToken` and allows stopping the listener later ([issue 166](https://github.com/teloxide/teloxide/issues/166)).
+   - Remove blanked implementation.
+   - Remove `Stream` from super traits.
+   - Add `AsUpdateStream` to super traits.
+     - Add an `AsUpdateStream` trait that allows turning implementors into streams of updates (GAT workaround).
+   - Add a `timeout_hint` function (with a default implementation).
+ - `Dispatcher::dispatch` and `Dispatcher::dispatch_with_listener` now require mutable reference to self.
+ - Repls can now be stopped by `^C` signal.
+ - `Noop` and `AsyncStopToken`stop tokens.
+ - `StatefulListener`.
+ - Emit not only errors but also warnings and general information from teloxide, when set up by `enable_logging!`.
+ - Use `i64` instead of `i32` for `user_id` in `html::user_mention` and `markdown::user_mention`.
+ - Updated to `teloxide-core` `v0.3.0` (see it's [changelog](https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md#030---2021-07-05) for more)
+
+### Fixed
+
+ - Remove the `reqwest` dependency. It's not needed after the [teloxide-core] integration.
+ - A storage persistency bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
+ - Log errors from `Storage::{remove_dialogue, update_dialogue}` in `DialogueDispatcher` ([issue 302](https://github.com/teloxide/teloxide/issues/302)).
+ - Mark all the functions of `Storage` as `#[must_use]`.
+
+## [0.4.0] - 2021-03-22
 
 ### Added
  - Integrate [teloxide-core].

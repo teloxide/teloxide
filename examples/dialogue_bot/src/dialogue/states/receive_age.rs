@@ -1,7 +1,7 @@
 use crate::dialogue::{states::receive_location::ReceiveLocationState, Dialogue};
 use teloxide::prelude::*;
 
-#[derive(Generic)]
+#[derive(Clone, Generic)]
 pub struct ReceiveAgeState {
     pub full_name: String,
 }

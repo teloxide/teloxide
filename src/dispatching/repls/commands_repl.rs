@@ -22,6 +22,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl<R, Cmd, H, Fut, HandlerE, N>(requester: R, bot_name: N, handler: H)
 where
     Cmd: BotCommand + Send + 'static,
@@ -39,7 +40,7 @@ where
         requester,
         bot_name,
         handler,
-        update_listeners::polling_default(cloned_requester),
+        update_listeners::polling_default(cloned_requester).await,
     )
     .await;
 }
@@ -56,6 +57,7 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+#[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl_with_listener<'a, R, Cmd, H, Fut, L, ListenerE, HandlerE, N>(
     requester: R,
     bot_name: N,
@@ -87,6 +89,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, Fut, L, ListenerE, Handl
                 },
             )
         })
+        .setup_ctrlc_handler()
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),

@@ -1,14 +1,14 @@
 // The version of Heroku ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
 
-use teloxide::{dispatching::update_listeners, prelude::*, types::Update};
+use teloxide::{dispatching::{update_listeners::{self, StatefulListener}, stop_token::AsyncStopToken}, prelude::*, types::Update};
 
 use std::{convert::Infallible, env, net::SocketAddr};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::Filter;
 
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Url};
 
 #[tokio::main]
 async fn main() {
@@ -20,8 +20,8 @@ async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, In
     Ok(StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
-    // Heroku defines auto defines a port value
+pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListener<Infallible> {
+    // Heroku auto defines a port value
     let teloxide_token = env::var("TELOXIDE_TOKEN").expect("TELOXIDE_TOKEN env variable missing");
     let port: u16 = env::var("PORT")
         .expect("PORT env variable missing")
@@ -30,7 +30,7 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
     // Heroku host example .: "heroku-ping-pong-bot.herokuapp.com"
     let host = env::var("HOST").expect("have HOST env variable");
     let path = format!("bot{}", teloxide_token);
-    let url = format!("https://{}/{}", host, path);
+    let url = Url::parse(&format!("https://{}/{}", host, path)).unwrap();
 
     bot.set_webhook(url).await.expect("Cannot setup a webhook");
 
@@ -48,11 +48,21 @@ pub async fn webhook<'a>(bot: AutoSend<Bot>) -> impl update_listeners::UpdateLis
         })
         .recover(handle_rejection);
 
-    let serve = warp::serve(server);
+    let (stop_token, stop_flag) = AsyncStopToken::new_pair();
 
-    let address = format!("0.0.0.0:{}", port);
-    tokio::spawn(serve.run(address.parse::<SocketAddr>().unwrap()));
-    UnboundedReceiverStream::new(rx)
+    let addr = format!("0.0.0.0:{}", port).parse::<SocketAddr>().unwrap();
+    let server = warp::serve(server);
+    let (_addr, fut) = server.bind_with_graceful_shutdown(addr, stop_flag);
+
+    // You might want to use serve.key_path/serve.cert_path methods here to
+    // setup a self-signed TLS certificate.
+
+    tokio::spawn(fut);
+    let stream = UnboundedReceiverStream::new(rx);
+
+    fn streamf<S, T>(state: &mut (S, T)) -> &mut S { &mut state.0 }
+    
+    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| state.1.clone())
 }
 
 async fn run() {

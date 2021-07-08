@@ -1,6 +1,6 @@
 use super::{serializer::Serializer, Storage};
 use futures::future::BoxFuture;
-use redis::{AsyncCommands, FromRedisValue, IntoConnectionInfo};
+use redis::{AsyncCommands, IntoConnectionInfo};
 use serde::{de::DeserializeOwned, Serialize};
 use std::{
     convert::Infallible,
@@ -12,8 +12,6 @@ use thiserror::Error;
 use tokio::sync::Mutex;
 
 /// An error returned from [`RedisStorage`].
-///
-/// [`RedisStorage`]: struct.RedisStorage.html
 #[derive(Debug, Error)]
 pub enum RedisStorageError<SE>
 where
@@ -21,11 +19,16 @@ where
 {
     #[error("parsing/serializing error: {0}")]
     SerdeError(SE),
+
     #[error("error from Redis: {0}")]
     RedisError(#[from] redis::RedisError),
+
+    /// Returned from [`RedisStorage::remove_dialogue`].
+    #[error("row not found")]
+    DialogueNotFound,
 }
 
-/// A memory storage based on [Redis](https://redis.io/).
+/// A dialogue storage based on [Redis](https://redis.io/).
 pub struct RedisStorage<S> {
     conn: Mutex<redis::aio::Connection>,
     serializer: S,
@@ -51,35 +54,27 @@ where
 {
     type Error = RedisStorageError<<S as Serializer<D>>::Error>;
 
-    // `.del().ignore()` is much more readable than `.del()\n.ignore()`
-    #[rustfmt::skip]
     fn remove_dialogue(
         self: Arc<Self>,
         chat_id: i64,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+    ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
-            let res = redis::pipe()
+            let deleted_rows_count = redis::pipe()
                 .atomic()
-                .get(chat_id)
-                .del(chat_id).ignore()
-                .query_async::<_, redis::Value>(
-                    self.conn.lock().await.deref_mut(),
-                )
+                .del(chat_id)
+                .query_async::<_, redis::Value>(self.conn.lock().await.deref_mut())
                 .await?;
-            // We're expecting `.pipe()` to return us an exactly one result in
-            // bulk, so all other branches should be unreachable
-            match res {
-                redis::Value::Bulk(bulk) if bulk.len() == 1 => {
-                    Ok(Option::<Vec<u8>>::from_redis_value(&bulk[0])?
-                        .map(|v| {
-                            self.serializer
-                                .deserialize(&v)
-                                .map_err(RedisStorageError::SerdeError)
-                        })
-                        .transpose()?)
+
+            if let redis::Value::Bulk(values) = deleted_rows_count {
+                if let redis::Value::Int(deleted_rows_count) = values[0] {
+                    match deleted_rows_count {
+                        0 => return Err(RedisStorageError::DialogueNotFound),
+                        _ => return Ok(()),
+                    }
                 }
-                _ => unreachable!(),
             }
+
+            unreachable!("Must return redis::Value::Bulk(redis::Value::Int(_))");
         })
     }
 
@@ -87,14 +82,24 @@ where
         self: Arc<Self>,
         chat_id: i64,
         dialogue: D,
-    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+    ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
+            self.conn.lock().await.set::<_, Vec<u8>, _>(chat_id, dialogue).await?;
+            Ok(())
+        })
+    }
+
+    fn get_dialogue(
+        self: Arc<Self>,
+        chat_id: i64,
+    ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
+        Box::pin(async move {
             self.conn
                 .lock()
                 .await
-                .getset::<_, Vec<u8>, Option<Vec<u8>>>(chat_id, dialogue)
+                .get::<_, Option<Vec<u8>>>(chat_id)
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()

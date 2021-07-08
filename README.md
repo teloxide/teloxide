@@ -1,3 +1,5 @@
+[_v0.4.0 => v0.5.0 migration guide >>_](MIGRATION_GUIDE.md#04---05)
+
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
@@ -14,7 +16,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 5.1 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 5.3 (inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -22,19 +24,6 @@
 
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using the [`async`/`.await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html) syntax in [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>
-
-## Table of contents
- - [Highlights](#highlights)
- - [Setting up your environment](#setting-up-your-environment)
- - [API overview](#api-overview)
-   - [The dices bot](#the-dices-bot)
-   - [Commands](#commands)
-   - [Dialogues management](#dialogues-management)
- - [Recommendations](#recommendations)
- - [Cargo features](#cargo-features)
- - [FAQ](#faq)
- - [Community bots](#community-bots)
- - [Contributing](#contributing)
 
 ## Highlights
 
@@ -79,10 +68,10 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = "0.4"
+teloxide = { version = "0.4", features = ["auto-send", "macros"] }
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
-tokio = { version =  "1.3", features = ["rt-threaded", "macros"] }
+tokio = { version =  "1.3", features = ["rt-multi-thread", "macros"] }
 ```
 
 ## API overview
@@ -147,7 +136,7 @@ async fn answer(
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).send().await?,
+        Command::Help => cx.answer(Command::descriptions()).await?,
         Command::Username(username) => {
             cx.answer(format!("Your username is @{}.", username)).await?
         }
@@ -178,7 +167,7 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming a [FSM].
+A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
@@ -378,29 +367,6 @@ async fn handle_message(
 
 The second one produces very strange compiler messages due to the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
 
-## Cargo features
-
- - `redis-storage` -- enables the [Redis] support.
- - `sqlite-storage` -- enables the [Sqlite] support.
- - `cbor-serializer` -- enables the [CBOR] serializer for dialogues.
- - `bincode-serializer` -- enables the [Bincode] serializer for dialogues.
- - `frunk` -- enables [`teloxide::utils::UpState`], which allows mapping from a structure of `field1, ..., fieldN` to a structure of `field1, ..., fieldN, fieldN+1`.
- - `macros` -- re-exports macros from [`teloxide-macros`].
- - `native-tls` -- enables the [`native-tls`] TLS implementation (enabled by default).
- - `rustls` -- enables the [`rustls`] TLS implementation.
- - `auto-send` -- enables `AutoSend` bot adaptor.
- - `cache-me` -- enables the `CacheMe` bot adaptor.
- - `full` -- enables all the features except `nightly`.
- - `nightly` -- enables nightly-only features (see the [teloxide-core's features]).
-
-[CBOR]: https://en.wikipedia.org/wiki/CBOR
-[Bincode]: https://github.com/servo/bincode
-[`teloxide::utils::UpState`]: https://docs.rs/teloxide/latest/teloxide/utils/trait.UpState.html
-[`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
-[`native-tls`]: https://docs.rs/native-tls
-[`rustls`]: https://docs.rs/rustls
-[teloxide-core's features]: https://docs.rs/teloxide-core/0.2.1/teloxide_core/#cargo-features
-
 ## FAQ
 **Q: Where I can ask questions?**
 
@@ -443,15 +409,21 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 [`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
-Feel free to push your own bot into our collection!
+Feel free to propose your own bot to our collection!
 
- - [_steadylearner/subreddit_reader_](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader)
- - [_ArtHome12/vzmuinebot -- Telegram bot for food menu navigate_](https://github.com/ArtHome12/vzmuinebot)
- - [_Hermitter/tepe -- A CLI to command a bot to send messages and files over Telegram_](https://github.com/Hermitter/tepe)
- - [_ArtHome12/cognito_bot -- The bot is designed to anonymize messages to a group_](https://github.com/ArtHome12/cognito_bot)
- - [_GoldsteinE/tg-vimhelpbot -- Link `:help` for Vim in Telegram_](https://github.com/GoldsteinE/tg-vimhelpbot)
- - [_sschiz/janitor-bot_ --  A bot that removes users trying to join to a chat that is designed for comments](https://github.com/sschiz/janitor-bot)
- - [ myblackbeard/basketball-betting-bot -- The bot lets you bet on NBA games against your buddies](https://github.com/myblackbeard/basketball-betting-bot)
+ - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A telegram group manager bot with variety of extra features.
+ - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
+ - [ArtHome12/vzmuinebot](https://github.com/ArtHome12/vzmuinebot) -- Telegram bot for food menu navigate.
+ - [ArtHome12/cognito_bot](https://github.com/ArtHome12/cognito_bot) -- The bot is designed to anonymize messages to a group.
+ - [Hermitter/tepe](https://github.com/Hermitter/tepe) -- A CLI to command a bot to send messages and files over Telegram.
+ - [pro-vim/tg-vimhelpbot](https://github.com/pro-vim/tg-vimhelpbot) -- Link `:help` for Vim in Telegram.
+ - [sschiz/janitor-bot](https://github.com/sschiz/janitor-bot) --  A bot that removes users trying to join to a chat that is designed for comments.
+ - [myblackbeard/basketball-betting-bot](https://github.com/myblackbeard/basketball-betting-bot) -- The bot lets you bet on NBA games against your buddies.
+ - [slondr/BeerHolderBot](https://gitlab.com/slondr/BeerHolderBot) -- A bot that holds your beer.
+ - [mxseev/logram](https://github.com/mxseev/logram) -- Utility that takes logs from anywhere and sends them to Telegram.
+ - [msfjarvis/walls-bot-rs](https://github.com/msfjarvis/walls-bot-rs) -- Telegram bot for my wallpapers collection, in Rust.
+ - [MustafaSalih1993/Miss-Vodka-Telegram-Bot](https://github.com/MustafaSalih1993/Miss-Vodka-Telegram-Bot) -- A telegram bot written in rust using "Teloxide" library.
+ - [x13a/tg-prompt](https://github.com/x13a/tg-prompt) -- Telegram prompt.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).

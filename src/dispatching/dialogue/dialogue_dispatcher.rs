@@ -4,12 +4,13 @@ use crate::dispatching::{
     },
     DispatcherHandler, UpdateWithCx,
 };
-use std::{convert::Infallible, marker::PhantomData};
+use std::{fmt::Debug, marker::PhantomData};
 
 use futures::{future::BoxFuture, FutureExt, StreamExt};
 use tokio::sync::mpsc;
 
-use lockfree::map::Map;
+use crate::dispatching::dialogue::InMemStorageError;
+use flurry::HashMap;
 use std::sync::{Arc, Mutex};
 use teloxide_core::requests::Requester;
 use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -18,6 +19,11 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// Note that it implements [`DispatcherHandler`], so you can just put an
 /// instance of this dispatcher into the [`Dispatcher`]'s methods.
+///
+/// Note that when the storage methods [`Storage::remove_dialogue`] and
+/// [`Storage::update_dialogue`] are failed, the errors are logged, but a result
+/// from [`Storage::get_dialogue`] is provided to a user handler as-is so you
+/// can respond to a concrete user with an error description.
 ///
 /// See the [module-level documentation](crate::dispatching::dialogue) for the
 /// design overview.
@@ -35,12 +41,12 @@ pub struct DialogueDispatcher<R, D, S, H, Upd> {
     /// A value is the TX part of an unbounded asynchronous MPSC channel. A
     /// handler that executes updates from the same chat ID sequentially
     /// handles the RX part.
-    senders: Arc<Map<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
+    senders: Arc<HashMap<i64, mpsc::UnboundedSender<UpdateWithCx<R, Upd>>>>,
 }
 
 impl<R, D, H, Upd> DialogueDispatcher<R, D, InMemStorage<D>, H, Upd>
 where
-    H: DialogueDispatcherHandler<R, Upd, D, Infallible> + Send + Sync + 'static,
+    H: DialogueDispatcherHandler<R, Upd, D, InMemStorageError> + Send + Sync + 'static,
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
 {
@@ -53,7 +59,7 @@ where
         Self {
             storage: InMemStorage::new(),
             handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            senders: Arc::new(HashMap::new()),
             _phantom: PhantomData,
         }
     }
@@ -65,7 +71,7 @@ where
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    S::Error: Debug + Send + 'static,
 {
     /// Creates a dispatcher with the specified `handler` and `storage`.
     #[must_use]
@@ -73,7 +79,7 @@ where
         Self {
             storage,
             handler: Arc::new(handler),
-            senders: Arc::new(Map::new()),
+            senders: Arc::new(HashMap::new()),
             _phantom: PhantomData,
         }
     }
@@ -97,28 +103,24 @@ where
             async move {
                 let chat_id = cx.update.chat_id();
 
-                let dialogue = Arc::clone(&storage)
-                    .remove_dialogue(chat_id)
-                    .await
-                    .map(Option::unwrap_or_default);
+                let dialogue =
+                    Arc::clone(&storage).get_dialogue(chat_id).await.map(Option::unwrap_or_default);
 
                 match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
-                        if let Ok(Some(_)) = storage.update_dialogue(chat_id, new_dialogue).await {
-                            panic!(
-                                "Oops, you have an bug in your Storage: update_dialogue returns \
-                                 Some after remove_dialogue"
-                            );
+                        if let Err(e) = storage.update_dialogue(chat_id, new_dialogue).await {
+                            log::error!("Storage::update_dialogue failed: {:?}", e);
                         }
                     }
                     DialogueStage::Exit => {
                         // On the next .poll() call, the spawned future will
                         // return Poll::Ready, because we are dropping the
                         // sender right here:
-                        senders.remove(&chat_id);
+                        senders.pin().remove(&chat_id);
 
-                        // We already removed a dialogue from `storage` (see
-                        // the beginning of this async block).
+                        if let Err(e) = storage.remove_dialogue(chat_id).await {
+                            log::error!("Storage::remove_dialogue failed: {:?}", e);
+                        }
                     }
                 }
             }
@@ -134,7 +136,7 @@ where
     Upd: GetChatId + Send + 'static,
     D: Default + Send + 'static,
     S: Storage<D> + Send + Sync + 'static,
-    S::Error: Send + 'static,
+    S::Error: Debug + Send + 'static,
     R: Requester + Send,
 {
     fn handle(
@@ -151,10 +153,10 @@ where
                 let this = Arc::clone(&this);
                 let chat_id = cx.update.chat_id();
 
-                match this.senders.get(&chat_id) {
+                match this.senders.pin().get(&chat_id) {
                     // An old dialogue
                     Some(tx) => {
-                        if tx.1.send(cx).is_err() {
+                        if tx.send(cx).is_err() {
                             panic!("We are not dropping a receiver or call .close() on it",);
                         }
                     }
@@ -163,7 +165,7 @@ where
                         if tx.send(cx).is_err() {
                             panic!("We are not dropping a receiver or call .close() on it",);
                         }
-                        this.senders.insert(chat_id, tx);
+                        this.senders.pin().insert(chat_id, tx);
                     }
                 }
 
@@ -213,7 +215,7 @@ mod tests {
         }
 
         let dispatcher = DialogueDispatcher::new(
-            |cx: DialogueWithCx<Bot, MyUpdate, (), Infallible>| async move {
+            |cx: DialogueWithCx<Bot, MyUpdate, (), InMemStorageError>| async move {
                 tokio::time::sleep(Duration::from_millis(300)).await;
 
                 match cx.cx.update {

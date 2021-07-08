@@ -21,6 +21,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[cfg(feature = "ctrlc_handler")]
 pub async fn repl<R, H, Fut, E>(requester: R, handler: H)
 where
     H: Fn(UpdateWithCx<R, Message>) -> Fut + Send + Sync + 'static,
@@ -31,8 +32,12 @@ where
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     let cloned_requester = requester.clone();
-    repl_with_listener(requester, handler, update_listeners::polling_default(cloned_requester))
-        .await;
+    repl_with_listener(
+        requester,
+        handler,
+        update_listeners::polling_default(cloned_requester).await,
+    )
+    .await;
 }
 
 /// Like [`repl`], but with a custom [`UpdateListener`].
@@ -47,6 +52,7 @@ where
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`repl`]: crate::dispatching::repls::repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+#[cfg(feature = "ctrlc_handler")]
 pub async fn repl_with_listener<'a, R, H, Fut, E, L, ListenerE>(
     requester: R,
     handler: H,
@@ -72,6 +78,7 @@ pub async fn repl_with_listener<'a, R, H, Fut, E, L, ListenerE>(
                 }
             })
         })
+        .setup_ctrlc_handler()
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),

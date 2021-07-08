@@ -59,7 +59,7 @@ pub fn link(url: &str, text: &str) -> String {
 }
 
 /// Builds an inline user mention link with an anchor.
-pub fn user_mention(user_id: i32, text: &str) -> String {
+pub fn user_mention(user_id: i64, text: &str) -> String {
     link(format!("tg://user?id={}", user_id).as_str(), text)
 }
 

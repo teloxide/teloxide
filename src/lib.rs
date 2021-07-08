@@ -33,6 +33,12 @@
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/
 
+// This hack is used to cancel formatting for a Markdown table. See [1], [2], and [3].
+//
+// [1]: https://github.com/rust-lang/rustfmt/issues/4210
+// [2]: https://github.com/rust-lang/rustfmt/issues/4787
+// [3]: https://github.com/rust-lang/rust/issues/82768#issuecomment-803935643
+#![cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("features.txt")))]
 // https://github.com/teloxide/teloxide/raw/master/logo.svg doesn't work in html_logo_url, I don't know why.
 #![doc(
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
@@ -40,14 +46,19 @@
 )]
 #![allow(clippy::match_bool)]
 #![forbid(unsafe_code)]
-#![cfg_attr(all(feature = "nightly", doctest), feature(external_doc))]
-// we pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
+// We pass "--cfg docsrs" when building docs to add `This is supported on
+// feature="..." only.`
+//
+// "--cfg dep_docsrs" is used for the same reason, but for `teloxide-core`.
 //
 // To properly build docs of this crate run
 // ```console
-// $ RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --open --all-features
+// $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
+#![allow(clippy::redundant_pattern_matching)]
+// https://github.com/rust-lang/rust-clippy/issues/7422
+#![allow(clippy::nonstandard_macro_braces)]
 
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
@@ -73,7 +84,7 @@ pub use teloxide_macros as macros;
 pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
-#[doc(include = "../README.md")]
+#[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../README.md")))]
 enum ReadmeDocTests {}
 
 use teloxide_core::requests::ResponseResult;

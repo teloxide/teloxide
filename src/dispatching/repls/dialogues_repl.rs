@@ -1,13 +1,13 @@
 use crate::{
     dispatching::{
-        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx},
+        dialogue::{DialogueDispatcher, DialogueStage, DialogueWithCx, InMemStorageError},
         update_listeners,
         update_listeners::UpdateListener,
         Dispatcher, UpdateWithCx,
     },
     error_handlers::LoggingErrorHandler,
 };
-use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
+use std::{fmt::Debug, future::Future, sync::Arc};
 use teloxide_core::{requests::Requester, types::Message};
 
 /// A [REPL] for dialogues.
@@ -23,10 +23,11 @@ use teloxide_core::{requests::Requester, types::Message};
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
+#[cfg(feature = "ctrlc_handler")]
 pub async fn dialogues_repl<'a, R, H, D, Fut>(requester: R, handler: H)
 where
     H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
-    D: Default + Send + 'static,
+    D: Clone + Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     R: Requester + Send + Clone + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
@@ -36,7 +37,7 @@ where
     dialogues_repl_with_listener(
         requester,
         handler,
-        update_listeners::polling_default(cloned_requester),
+        update_listeners::polling_default(cloned_requester).await,
     )
     .await;
 }
@@ -55,13 +56,14 @@ where
 /// [`dialogues_repl`]: crate::dispatching::repls::dialogues_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
+#[cfg(feature = "ctrlc_handler")]
 pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
     requester: R,
     handler: H,
     listener: L,
 ) where
     H: Fn(UpdateWithCx<R, Message>, D) -> Fut + Send + Sync + 'static,
-    D: Default + Send + 'static,
+    D: Clone + Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
@@ -71,7 +73,12 @@ pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
 
     Dispatcher::new(requester)
         .messages_handler(DialogueDispatcher::new(
-            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<R, Message, D, Infallible>| {
+            move |DialogueWithCx { cx, dialogue }: DialogueWithCx<
+                R,
+                Message,
+                D,
+                InMemStorageError,
+            >| {
                 let handler = Arc::clone(&handler);
 
                 async move {
@@ -80,6 +87,7 @@ pub async fn dialogues_repl_with_listener<'a, R, H, D, Fut, L, ListenerE>(
                 }
             },
         ))
+        .setup_ctrlc_handler()
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),

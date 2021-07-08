@@ -1,9 +1,8 @@
 use std::{
     fmt::{Debug, Display},
-    future::Future,
     sync::Arc,
 };
-use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, Storage};
+use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, SqliteStorageError, Storage};
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_json() {
@@ -36,32 +35,41 @@ async fn test_sqlite_cbor() {
 
 type Dialogue = String;
 
+macro_rules! test_dialogues {
+    ($storage:expr, $_0:expr, $_1:expr, $_2:expr) => {
+        assert_eq!(Arc::clone(&$storage).get_dialogue(1).await.unwrap(), $_0);
+        assert_eq!(Arc::clone(&$storage).get_dialogue(11).await.unwrap(), $_1);
+        assert_eq!(Arc::clone(&$storage).get_dialogue(256).await.unwrap(), $_2);
+    };
+}
+
 async fn test_sqlite<S>(storage: Arc<SqliteStorage<S>>)
 where
     S: Send + Sync + Serializer<Dialogue> + 'static,
     <S as Serializer<Dialogue>>::Error: Debug + Display,
 {
-    check_dialogue(None, Arc::clone(&storage).update_dialogue(1, "ABC".to_owned())).await;
-    check_dialogue(None, Arc::clone(&storage).update_dialogue(11, "DEF".to_owned())).await;
-    check_dialogue(None, Arc::clone(&storage).update_dialogue(256, "GHI".to_owned())).await;
+    test_dialogues!(storage, None, None, None);
 
-    // 1 - ABC, 11 - DEF, 256 - GHI
+    Arc::clone(&storage).update_dialogue(1, "ABC".to_owned()).await.unwrap();
+    Arc::clone(&storage).update_dialogue(11, "DEF".to_owned()).await.unwrap();
+    Arc::clone(&storage).update_dialogue(256, "GHI".to_owned()).await.unwrap();
 
-    check_dialogue("ABC", Arc::clone(&storage).update_dialogue(1, "JKL".to_owned())).await;
-    check_dialogue("GHI", Arc::clone(&storage).update_dialogue(256, "MNO".to_owned())).await;
+    test_dialogues!(
+        storage,
+        Some("ABC".to_owned()),
+        Some("DEF".to_owned()),
+        Some("GHI".to_owned())
+    );
 
-    // 1 - GKL, 11 - DEF, 256 - MNO
+    Arc::clone(&storage).remove_dialogue(1).await.unwrap();
+    Arc::clone(&storage).remove_dialogue(11).await.unwrap();
+    Arc::clone(&storage).remove_dialogue(256).await.unwrap();
 
-    check_dialogue("JKL", Arc::clone(&storage).remove_dialogue(1)).await;
-    check_dialogue("DEF", Arc::clone(&storage).remove_dialogue(11)).await;
-    check_dialogue("MNO", Arc::clone(&storage).remove_dialogue(256)).await;
-}
+    test_dialogues!(storage, None, None, None);
 
-async fn check_dialogue<E>(
-    expected: impl Into<Option<&str>>,
-    actual: impl Future<Output = Result<Option<Dialogue>, E>>,
-) where
-    E: Debug,
-{
-    assert_eq!(expected.into().map(ToOwned::to_owned), actual.await.unwrap())
+    // Check that a try to remove a non-existing dialogue results in an error.
+    assert!(matches!(
+        Arc::clone(&storage).remove_dialogue(1).await.unwrap_err(),
+        SqliteStorageError::DialogueNotFound
+    ));
 }

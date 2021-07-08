@@ -1,7 +1,7 @@
 use crate::dialogue::{states::receive_age::ReceiveAgeState, Dialogue};
 use teloxide::prelude::*;
 
-#[derive(Generic)]
+#[derive(Clone, Generic)]
 pub struct ReceiveFullNameState;
 
 #[teloxide(subtransition)]

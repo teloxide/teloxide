@@ -2,7 +2,7 @@
 name: Unknown telegram error
 about: You've found telegram error which is not known to teloxide
 title: 'Unknown Error: <error description>'
-labels: FIXME, bug, good first issue
+labels: bug, good first issue, FIXME, core, Unknown API error
 assignees: ''
 
 ---
