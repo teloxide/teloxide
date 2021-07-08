@@ -1,5 +1,8 @@
 use std::future::Future;
 
+use either::Either;
+use futures::future;
+
 use crate::requests::{HasPayload, Output};
 
 /// A ready-to-send Telegram request.
@@ -84,4 +87,29 @@ pub trait Request: HasPayload {
     /// # };
     /// ```
     fn send_ref(&self) -> Self::SendRef;
+}
+
+impl<L, R> Request for Either<L, R>
+where
+    L: Request,
+    R: Request<Payload = L::Payload, Err = L::Err>,
+{
+    type Err = L::Err;
+
+    type Send = future::Either<L::Send, R::Send>;
+
+    type SendRef = future::Either<L::SendRef, R::SendRef>;
+
+    fn send(self) -> Self::Send {
+        self.map_left(<_>::send)
+            .map_right(<_>::send)
+            .either(future::Either::Left, future::Either::Right)
+    }
+
+    fn send_ref(&self) -> Self::SendRef {
+        self.as_ref()
+            .map_left(<_>::send_ref)
+            .map_right(<_>::send_ref)
+            .either(future::Either::Left, future::Either::Right)
+    }
 }
