@@ -1,16 +1,17 @@
 [package]
 name = "teloxide"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2018"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
 documentation = "https://docs.rs/teloxide/"
 readme = "README.md"
 keywords = ["teloxide", "telegram", "telegram-bot", "telegram-bot-api"]
+categories = ["web-programming", "api-bindings"]
 license = "MIT"
 exclude = ["media"]
 authors = [
-        "Temirkhan Myrzamadi <hirrolot@gmail.com>",
+        "Hirrolot <hirrolot@gmail.com>",
         "Waffle Lapkin <waffle.lapkin@gmail.com>",
         "p0lunin <dmytro.polunin@gmail.com>",
         "Mishko torop'izhko",

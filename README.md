@@ -30,7 +30,7 @@ Note: this list is non-exhaustive; for the full list of changes, see the [teloxi
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API coverage-Up to 5.1 (inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API coverage-Up to 5.3 (inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
