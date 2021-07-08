@@ -76,10 +76,7 @@ cache_me = []
 # AutoSend bot adaptor
 auto_send = []
 
-# Erased bot adaptor
-erased = []
-
-full = ["throttle", "cache_me", "auto_send", "erased"]
+full = ["throttle", "cache_me", "auto_send"]
 
 [package.metadata.docs.rs]
 all-features = true
