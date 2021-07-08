@@ -51,6 +51,7 @@ thiserror = "1.0.20"
 once_cell = "1.5.0"
 never = "0.1.0"
 chrono = "0.4.19"
+either = "1.6.1"
 
 vecrem = { version = "0.1", optional = true }
 
@@ -75,7 +76,10 @@ cache_me = []
 # AutoSend bot adaptor
 auto_send = []
 
-full = ["throttle", "cache_me", "auto_send"]
+# Erased bot adaptor
+erased = []
+
+full = ["throttle", "cache_me", "auto_send", "erased"]
 
 [package.metadata.docs.rs]
 all-features = true
