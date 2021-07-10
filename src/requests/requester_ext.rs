@@ -6,6 +6,9 @@ use crate::adaptors::CacheMe;
 #[cfg(feature = "auto_send")]
 use crate::adaptors::AutoSend;
 
+#[cfg(feature = "trace_adaptor")]
+use crate::adaptors::trace::{Settings, Trace};
+
 #[cfg(feature = "throttle")]
 use crate::adaptors::throttle::{Limits, Throttle};
 
@@ -37,6 +40,19 @@ pub trait RequesterExt: Requester {
         Self: Sized,
     {
         AutoSend::new(self)
+    }
+
+    /// Trace requests, see [`Trace`] for more.
+    #[cfg(feature = "trace_adaptor")]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "trace_adaptor"))
+    )]
+    fn trace(self, settings: Settings) -> Trace<Self>
+    where
+        Self: Sized,
+    {
+        Trace::new(self, settings)
     }
 
     /// Add throttling ability, see [`Throttle`] for more.

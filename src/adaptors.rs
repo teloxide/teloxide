@@ -31,6 +31,16 @@ pub mod auto_send;
 )]
 pub mod cache_me;
 
+/// [`Trace`] bot adaptor which traces requests.
+///
+/// [`Trace`]: trace::Trace
+#[cfg(feature = "trace_adaptor")]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "trace_adaptor"))
+)]
+pub mod trace;
+
 /// [`Throttle`] bot adaptor which allows automatically throttle when hitting
 /// API limits.
 ///
@@ -62,5 +72,11 @@ pub use cache_me::CacheMe;
     doc(cfg(feature = "throttle"))
 )]
 pub use throttle::Throttle;
+#[cfg(feature = "trace_adaptor")]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "trace_adaptor"))
+)]
+pub use trace::Trace;
 
 pub use parse_mode::DefaultParseMode;
