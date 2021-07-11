@@ -47,6 +47,7 @@
 //!   default**)
 //! - `rustls` — use [`rustls`] tls implementation
 //! - `auto_send` — enables [`AutoSend`] bot adaptor
+//! - `trace_adaptor` — enables [`Trace`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
 //! - `full` — enables all features except `nigthly`
@@ -55,6 +56,7 @@
 //!   - Used to built docs (`#![feature(doc_cfg, doc_spotlight)]`)
 //!
 //! [`AutoSend`]: adaptors::AutoSend
+//! [`Trace`]: adaptors::Trace
 //! [`Throttle`]: adaptors::Throttle
 //! [`CacheMe`]: adaptors::CacheMe
 //! [`native-tls`]: https://docs.rs/native-tls
