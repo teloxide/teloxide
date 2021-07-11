@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.1] - 2021-07-11
+
 ### Fixed
 
  - Fix generics support for a variant's arguments ([PR #8](https://github.com/teloxide/teloxide-macros/issues/8)).
