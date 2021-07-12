@@ -601,6 +601,8 @@ trait ErasableRequester<'a> {
         user_id: i64,
     ) -> ErasedRequest<'a, SetStickerSetThumb, Self::Err>;
 
+    // we can't change telegram API
+    #[allow(clippy::too_many_arguments)]
     fn send_invoice(
         &self,
         chat_id: ChatId,
