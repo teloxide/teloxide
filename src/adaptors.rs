@@ -41,6 +41,18 @@ pub mod cache_me;
 )]
 pub mod trace;
 
+/// [`ErasedErasedRequester`] bot adaptor which allows to erase type of
+/// [`Requester`].
+///
+/// [`ErasedRequester`]: erased::ErasedRequester
+/// [`Requester`]: crate::requests::Requester
+#[cfg(feature = "erased")]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "erased"))
+)]
+pub mod erased;
+
 /// [`Throttle`] bot adaptor which allows automatically throttle when hitting
 /// API limits.
 ///
@@ -66,6 +78,12 @@ pub use auto_send::AutoSend;
     doc(cfg(feature = "cache_me"))
 )]
 pub use cache_me::CacheMe;
+#[cfg(feature = "erased")]
+#[cfg_attr(
+    all(any(docsrs, dep_docsrs), feature = "nightly"),
+    doc(cfg(feature = "erased"))
+)]
+pub use erased::ErasedRequester;
 #[cfg(feature = "throttle")]
 #[cfg_attr(
     all(any(docsrs, dep_docsrs), feature = "nightly"),

@@ -56,6 +56,9 @@ either = "1.6.1"
 vecrem = { version = "0.1", optional = true }
 bitflags = { version = "1.2", optional = true }
 
+[dev-dependencies]
+pretty_env_logger = "0.4"
+
 [features]
 default = ["native-tls"]
 
@@ -74,13 +77,16 @@ throttle = ["vecrem"]
 # Trace bot adaptor
 trace_adaptor = ["bitflags"]
 
+# Erased bot adaptor
+erased = []
+
 # CacheMe bot adaptor
 cache_me = []
 
 # AutoSend bot adaptor
 auto_send = []
 
-full = ["throttle", "trace_adaptor", "cache_me", "auto_send"]
+full = ["throttle", "trace_adaptor", "erased", "cache_me", "auto_send"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -89,3 +95,7 @@ rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 [[example]]
 name = "self_info"
 required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send"]
+
+[[example]]
+name = "erased"
+required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send", "erased"]

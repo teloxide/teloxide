@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `ErasedRequester` bot adaptor, `ErasedRequest` struct, `{Request, RequesterExt}::erase` functions ([#105][pr105])
 - `Trace` bot adaptor ([#104][pr104])
 - `HasPayload`, `Request` and `Requester` implementations for `either::Either` ([#103][pr103])
 
 [pr103]: https://github.com/teloxide/teloxide-core/pull/103
 [pr104]: https://github.com/teloxide/teloxide-core/pull/104
+[pr105]: https://github.com/teloxide/teloxide-core/pull/105
 
 ## 0.3.1 - 2021-07-07
 

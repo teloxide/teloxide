@@ -48,6 +48,7 @@
 //! - `rustls` — use [`rustls`] tls implementation
 //! - `auto_send` — enables [`AutoSend`] bot adaptor
 //! - `trace_adaptor` — enables [`Trace`] bot adaptor
+//! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
 //! - `full` — enables all features except `nigthly`
@@ -57,6 +58,7 @@
 //!
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace
+//! [`ErasedRequester`]: adaptors::ErasedRequester
 //! [`Throttle`]: adaptors::Throttle
 //! [`CacheMe`]: adaptors::CacheMe
 //! [`native-tls`]: https://docs.rs/native-tls

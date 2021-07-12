@@ -87,6 +87,18 @@ pub trait Request: HasPayload {
     /// # };
     /// ```
     fn send_ref(&self) -> Self::SendRef;
+
+    #[cfg(feature = "erased")]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "erased"))
+    )]
+    fn erase<'a>(self) -> crate::adaptors::erased::ErasedRequest<'a, Self::Payload, Self::Err>
+    where
+        Self: Sized + 'a,
+    {
+        crate::adaptors::erased::ErasedRequest::erase(self)
+    }
 }
 
 impl<L, R> Request for Either<L, R>
