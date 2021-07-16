@@ -41,7 +41,7 @@ pub mod cache_me;
 )]
 pub mod trace;
 
-/// [`ErasedErasedRequester`] bot adaptor which allows to erase type of
+/// [`ErasedRequester`] bot adaptor which allows to erase type of
 /// [`Requester`].
 ///
 /// [`ErasedRequester`]: erased::ErasedRequester
