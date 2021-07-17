@@ -6,6 +6,9 @@ use crate::adaptors::CacheMe;
 #[cfg(feature = "auto_send")]
 use crate::adaptors::AutoSend;
 
+#[cfg(feature = "erased")]
+use crate::adaptors::ErasedRequester;
+
 #[cfg(feature = "trace_adaptor")]
 use crate::adaptors::trace::{Settings, Trace};
 
@@ -40,6 +43,20 @@ pub trait RequesterExt: Requester {
         Self: Sized,
     {
         AutoSend::new(self)
+    }
+
+    /// Erase requester type.
+    #[cfg(feature = "erased")]
+    #[cfg_attr(
+        all(any(docsrs, dep_docsrs), feature = "nightly"),
+        doc(cfg(feature = "erased"))
+    )]
+    fn erase<'a>(self) -> ErasedRequester<'a, Self::Err>
+    where
+        Self: 'a,
+        Self: Sized,
+    {
+        ErasedRequester::new(self)
     }
 
     /// Trace requests, see [`Trace`] for more.
