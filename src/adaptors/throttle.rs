@@ -495,7 +495,7 @@ async fn worker(
 
 fn answer_info(rx: &mut mpsc::Receiver<InfoMessage>, limits: &mut Limits) {
     // FIXME(waffle): https://github.com/tokio-rs/tokio/issues/3350
-    while let Some(Some(req)) = rx.recv().now_or_never() {
+    while let Some(Some(req)) = tokio::task::unconstrained(rx.recv()).now_or_never() {
         // Errors are ignored with .ok(). Error means that the response channel
         // is closed and the response isn't needed.
         match req {
@@ -519,7 +519,7 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
     // Don't grow queue bigger than the capacity to limit DOS posibility
     while queue.len() < queue.capacity() {
         // FIXME(waffle): https://github.com/tokio-rs/tokio/issues/3350
-        match rx.recv().now_or_never() {
+        match tokio::task::unconstrained(rx.recv()).now_or_never() {
             Some(Some(req)) => queue.push(req),
             Some(None) => *rx_is_closed = true,
             // There are no items in queue.
