@@ -113,10 +113,18 @@ where
             loop {
                 tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
 
-                log::info!("^C received, trying to shutdown the dispatcher...");
-
-                // If dispatcher wasn't running, then there is nothing to do
-                shutdown_inner(&state).ok();
+                match shutdown_inner(&state) {
+                    Ok(()) => log::info!("^C received, trying to shutdown the dispatcher..."),
+                    Err(Ok(AlreadyShuttingDown)) => {
+                        log::info!(
+                            "^C received, the dispatcher is already shutting down, ignoring the \
+                             signal"
+                        )
+                    }
+                    Err(Err(IdleShutdownError)) => {
+                        log::info!("^C received, the dispatcher isn't running, ignoring the signal")
+                    }
+                }
             }
         });
 
@@ -546,10 +554,13 @@ impl ShutdownToken {
     /// If you don't need to wait for shutdown, the returned future can be
     /// ignored.
     pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, IdleShutdownError> {
-        shutdown_inner(&self.dispatcher_state).map(|()| async move {
-            log::info!("Trying to shutdown the dispatcher...");
-            self.shutdown_notify_back.notified().await
-        })
+        match shutdown_inner(&self.dispatcher_state) {
+            Ok(()) | Err(Ok(AlreadyShuttingDown)) => Ok(async move {
+                log::info!("Trying to shutdown the dispatcher...");
+                self.shutdown_notify_back.notified().await
+            }),
+            Err(Err(err)) => Err(err),
+        }
     }
 }
 
@@ -619,14 +630,19 @@ fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Du
     shutdown_check_timeout.checked_add(MIN_SHUTDOWN_CHECK_TIMEOUT).unwrap_or(shutdown_check_timeout)
 }
 
-fn shutdown_inner(state: &DispatcherState) -> Result<(), IdleShutdownError> {
+struct AlreadyShuttingDown;
+
+fn shutdown_inner(
+    state: &DispatcherState,
+) -> Result<(), Result<AlreadyShuttingDown, IdleShutdownError>> {
     use ShutdownState::*;
 
     let res = state.compare_exchange(Running, ShuttingDown);
 
     match res {
-        Ok(_) | Err(ShuttingDown) => Ok(()),
-        Err(Idle) => Err(IdleShutdownError),
+        Ok(_) => Ok(()),
+        Err(ShuttingDown) => Err(Ok(AlreadyShuttingDown)),
+        Err(Idle) => Err(Err(IdleShutdownError)),
         Err(Running) => unreachable!(),
     }
 }
