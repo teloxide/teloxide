@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## 0.3.2 - 2021-07-27
+
 ### Added
 
 - `ErasedRequester` bot adaptor, `ErasedRequest` struct, `{Request, RequesterExt}::erase` functions ([#105][pr105])
