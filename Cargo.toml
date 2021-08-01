@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2018"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -64,7 +64,7 @@ full = [
 ]
 
 [dependencies]
-teloxide-core = { version = "0.3.1", default-features = false }
+teloxide-core = { version = "0.3.2", default-features = false }
 #teloxide-core = { git = "https://github.com/teloxide/teloxide-core.git", rev = "...", default-features = false }
 teloxide-macros = { version = "0.4", optional = true }
 
