@@ -54,7 +54,7 @@
 //! - `full` — enables all features except `nigthly`
 //! - `nightly` — enables nigthly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
-//!   - Used to built docs (`#![feature(doc_cfg, doc_spotlight)]`)
+//!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
 //!
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace
@@ -83,7 +83,7 @@
     all(any(docsrs, dep_docsrs), feature = "nightly"),
     feature(doc_cfg, doc_notable_trait)
 )]
-#![cfg_attr(feature = "nightly", feature(min_type_alias_impl_trait))]
+#![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
 

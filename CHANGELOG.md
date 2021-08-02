@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## 0.3.3
+
+### Fixed
+
+- Compilation with `nightly` feature (use `type_alias_impl_trait` instead of `min_type_alias_impl_trait`) ([#108][pr108])
+
+[pr108]: https://github.com/teloxide/teloxide-core/pull/108
+
 ## 0.3.2 - 2021-07-27
 
 ### Added
