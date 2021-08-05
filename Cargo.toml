@@ -42,6 +42,8 @@ rustls = ["teloxide-core/rustls"]
 auto-send = ["teloxide-core/auto_send"]
 throttle = ["teloxide-core/throttle"]
 cache-me = ["teloxide-core/cache_me"]
+trace-adaptor = ["teloxide-core/trace_adaptor"]
+erased = ["teloxide-core/erased"]
 
 # currently used for `README.md` tests, building docs for `docsrs` to add `This is supported on feature="..." only.`,
 # and for teloxide-core.
@@ -60,7 +62,9 @@ full = [
     "rustls",
     "auto-send",
     "throttle",
-    "cache-me"
+    "cache-me",
+    "trace-adaptor",
+    "erased",
 ]
 
 [dependencies]
