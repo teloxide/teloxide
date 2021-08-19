@@ -1,5 +1,4 @@
 use teloxide::{
-    payloads::AnswerInlineQuery,
     prelude::*,
     types::{
         InlineQueryResult, InlineQueryResultArticle, InputMessageContent, InputMessageContentText,
@@ -52,27 +51,13 @@ async fn run() {
                     thumb_height: Some(64),
                 };
 
-                // Now put those responses into a "Result"
-                // https://docs.rs/teloxide/0.5.1/teloxide/payloads/struct.AnswerInlineQuery.html
-                let all_results = AnswerInlineQuery {
-                    inline_query_id: "03".to_string(), // again, anything -- as long as it's unique in this context
-                    results: vec![
-                        InlineQueryResult::Article(google_search),
-                        InlineQueryResult::Article(ddg_search),
-                    ],
-                    cache_time: None,
-                    is_personal: None,
-                    next_offset: None,
-                    switch_pm_text: None,
-                    switch_pm_parameter: None,
-                };
-
+                let results = vec![
+                    InlineQueryResult::Article(google_search),
+                    InlineQueryResult::Article(ddg_search),
+                ];
                 // Send it off! One thing to note -- the ID we use here must be of the query we're responding to.
-                let response = query
-                    .requester
-                    .answer_inline_query(query.update.id.to_string(), all_results.results)
-                    .send()
-                    .await;
+                let response =
+                    query.requester.answer_inline_query(&query.update.id, results).send().await;
                 if response.is_err() {
                     dbg!(response);
                 }
