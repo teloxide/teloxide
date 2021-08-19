@@ -58,8 +58,8 @@ async fn run() {
                 // Send it off! One thing to note -- the ID we use here must be of the query we're responding to.
                 let response =
                     query.requester.answer_inline_query(&query.update.id, results).send().await;
-                if response.is_err() {
-                    dbg!(response);
+                if let Err(err) = response {
+                    log::error!("Error in handler: {:?}", err);
                 }
             })
         })
