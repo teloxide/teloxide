@@ -15,10 +15,10 @@ async fn main() {
 
 async fn run() {
     let bot = Bot::from_env().auto_send();
-    // Create a new dispatcher to handle incoming messages
+    // Create a new dispatcher to handle incoming queries
     Dispatcher::new(bot)
         .inline_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, InlineQuery>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |msg| async move {
+            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |query| async move {
                 // First, create your actual response
                 let google_search = InlineQueryResultArticle::new(
                     // Each item needs a unique ID, as well as the response container for the items.
@@ -26,10 +26,10 @@ async fn run() {
                     "01".to_string(),
                     // What the user will actually see
                     "Google Search",
-                    // What message will send when clicked/tapped
+                    // What message will be sent when clicked/tapped
                     InputMessageContent::Text(InputMessageContentText::new(format!(
                         "https://www.google.com/search?q={}",
-                        msg.update.query,
+                        query.update.query,
                     ))),
                 );
                 // You can also construct them from the struct itself, if you want a little more control.
@@ -39,7 +39,7 @@ async fn run() {
                     id: "02".to_string(), // again, anything -- as long as it's unique in this context
                     title: "DuckDuckGo Search".to_string(),
                     input_message_content: InputMessageContent::Text(InputMessageContentText::new(
-                        format!("https://duckduckgo.com/?q={}", msg.update.query.to_string()),
+                        format!("https://duckduckgo.com/?q={}", query.update.query.to_string()),
                     )),
                     reply_markup: None,
                     url: Some("https://duckduckgo.com/about".to_string()), // Note: This is the url that will open if they click the thumbnail
@@ -67,10 +67,10 @@ async fn run() {
                     switch_pm_parameter: None,
                 };
 
-                // Send it off! One thing to note -- the ID we use here must be of the message we're responding to.
-                let response = msg
+                // Send it off! One thing to note -- the ID we use here must be of the query we're responding to.
+                let response = query
                     .requester
-                    .answer_inline_query(msg.update.id.to_string(), all_results.results)
+                    .answer_inline_query(query.update.id.to_string(), all_results.results)
                     .send()
                     .await;
                 if response.is_err() {
