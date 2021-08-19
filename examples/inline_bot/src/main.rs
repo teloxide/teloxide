@@ -31,30 +31,27 @@ async fn run() {
                         query.update.query,
                     ))),
                 );
-                // You can also construct them from the struct itself, if you want a little more control.
+                // While constructing them from the struct itself is possible, it is preferred to use
+                // the builder pattern if you wish to add more information to your result.
                 // Please refer to the documentation for more detailed information about each field.
                 // https://docs.rs/teloxide/0.5.1/teloxide/types/struct.InlineQueryResultArticle.html
-                let ddg_search = InlineQueryResultArticle {
-                    id: "02".to_string(), // again, anything -- as long as it's unique in this context
-                    title: "DuckDuckGo Search".to_string(),
-                    input_message_content: InputMessageContent::Text(InputMessageContentText::new(
-                        format!("https://duckduckgo.com/?q={}", query.update.query.to_string()),
-                    )),
-                    reply_markup: None,
-                    url: Some("https://duckduckgo.com/about".to_string()), // Note: This is the url that will open if they click the thumbnail
-                    hide_url: None,
-                    description: Some("DuckDuckGo Search".to_string()),
-                    thumb_url: Some(
-                        "https://duckduckgo.com/assets/logo_header.v108.png".to_string(),
-                    ),
-                    thumb_width: Some(64),
-                    thumb_height: Some(64),
-                };
+                let ddg_search = InlineQueryResultArticle::new(
+                    "02".to_string(),
+                    "DuckDuckGo Search".to_string(),
+                    InputMessageContent::Text(InputMessageContentText::new(format!(
+                        "https://duckduckgo.com/?q={}",
+                        query.update.query.to_string()
+                    ))),
+                )
+                .description("DuckDuckGo Search")
+                .thumb_url("https://duckduckgo.com/assets/logo_header.v108.png")
+                .url("https://duckduckgo.com/about"); // Note: This is the url that will open if they click the thumbnail
 
                 let results = vec![
                     InlineQueryResult::Article(google_search),
                     InlineQueryResult::Article(ddg_search),
                 ];
+
                 // Send it off! One thing to note -- the ID we use here must be of the query we're responding to.
                 let response =
                     query.requester.answer_inline_query(&query.update.id, results).send().await;
