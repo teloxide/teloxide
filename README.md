@@ -411,6 +411,7 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 ## Community bots
 Feel free to propose your own bot to our collection!
 
+ - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) -- A bot that notifies about crate updates.
  - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A telegram group manager bot with variety of extra features.
  - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
  - [ArtHome12/vzmuinebot](https://github.com/ArtHome12/vzmuinebot) -- Telegram bot for food menu navigate.
