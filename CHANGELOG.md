@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+- Add `EditedMessageIsTooLong` error [#109][pr109]
+
+[pr109]: https://github.com/teloxide/teloxide-core/pull/109
+
 ## 0.3.3
 
 ### Fixed
