@@ -424,8 +424,7 @@ Feel free to propose your own bot to our collection!
  - [msfjarvis/walls-bot-rs](https://github.com/msfjarvis/walls-bot-rs) -- Telegram bot for my wallpapers collection, in Rust.
  - [MustafaSalih1993/Miss-Vodka-Telegram-Bot](https://github.com/MustafaSalih1993/Miss-Vodka-Telegram-Bot) -- A telegram bot written in rust using "Teloxide" library.
  - [x13a/tg-prompt](https://github.com/x13a/tg-prompt) -- Telegram prompt.
- - [magnickolas/remindee-bot](https://github.com/magnickolas/remindee-bot) -- Reminder bot for Telegram without bullshit.
- - [perosar/perorustbot](https://github.com/perosar/perorustbot) -- My personal telegram bot in rust.
+ - [magnickolas/remindee-bot](https://github.com/magnickolas/remindee-bot) -- Telegram bot for managing reminders.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
