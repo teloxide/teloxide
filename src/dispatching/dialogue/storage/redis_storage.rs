@@ -66,6 +66,8 @@ where
                 .await?;
 
             if let redis::Value::Bulk(values) = deleted_rows_count {
+                // False positive
+                #[allow(clippy::collapsible_match)]
                 if let redis::Value::Int(deleted_rows_count) = values[0] {
                     match deleted_rows_count {
                         0 => return Err(RedisStorageError::DialogueNotFound),
