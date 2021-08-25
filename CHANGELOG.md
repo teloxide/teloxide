@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.5.2] - 2021-08-25
+
 ### Fixed
 
-- Depend on a right `futures` version
+- Depend on a correct `futures` version (v0.3.15).
 
 ## [0.5.1] - 2021-08-05
 
