@@ -311,6 +311,8 @@ where
             tokio::pin!(stream);
 
             loop {
+                // False positive
+                #[allow(clippy::collapsible_match)]
                 if let Ok(upd) = timeout(shutdown_check_timeout, stream.next()).await {
                     match upd {
                         None => break,

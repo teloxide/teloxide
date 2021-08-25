@@ -411,6 +411,7 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 ## Community bots
 Feel free to propose your own bot to our collection!
 
+ - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) -- A bot that notifies about crate updates.
  - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A telegram group manager bot with variety of extra features.
  - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
  - [ArtHome12/vzmuinebot](https://github.com/ArtHome12/vzmuinebot) -- Telegram bot for food menu navigate.
@@ -424,6 +425,8 @@ Feel free to propose your own bot to our collection!
  - [msfjarvis/walls-bot-rs](https://github.com/msfjarvis/walls-bot-rs) -- Telegram bot for my wallpapers collection, in Rust.
  - [MustafaSalih1993/Miss-Vodka-Telegram-Bot](https://github.com/MustafaSalih1993/Miss-Vodka-Telegram-Bot) -- A telegram bot written in rust using "Teloxide" library.
  - [x13a/tg-prompt](https://github.com/x13a/tg-prompt) -- Telegram prompt.
+ - [magnickolas/remindee-bot](https://github.com/magnickolas/remindee-bot) -- Telegram bot for managing reminders.
+ - [cyberknight777/knight-bot](https://gitlab.com/cyberknight777/knight-bot) -- A telegram bot with variety of fun features.
 
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).

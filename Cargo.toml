@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2018"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -87,7 +87,7 @@ mime = "0.3"
 derive_more = "0.99"
 thiserror = "1.0"
 async-trait = "0.1"
-futures = "0.3"
+futures = "0.3.15"
 pin-project = "1.0"
 serde_with_macros = "1.4"
 
