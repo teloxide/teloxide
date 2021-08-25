@@ -51,8 +51,12 @@
 # Unix-like
 $ export TELOXIDE_TOKEN=<Your token here>
 
-# Windows
+# Windows command line
 $ set TELOXIDE_TOKEN=<Your token here>
+
+# Windows PowerShell
+$ $env:TELOXIDE_TOKEN=<Your token here>
+
 ```
  4. Make sure that your Rust compiler is up to date:
 ```bash
