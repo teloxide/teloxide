@@ -4,14 +4,12 @@ use reqwest::Client;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
-    bot::api_url::ApiUrl,
     net,
     requests::{MultipartPayload, Payload, ResponseResult},
     serde_multipart,
 };
 
 mod api;
-mod api_url;
 mod download;
 
 const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
@@ -56,7 +54,7 @@ const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
-    api_url: ApiUrl,
+    api_url: Arc<reqwest::Url>,
     client: Client,
 }
 
@@ -93,9 +91,15 @@ impl Bot {
     where
         S: Into<String>,
     {
+        let token = Into::<String>::into(token).into();
+        let api_url = Arc::new(
+            reqwest::Url::parse(net::TELEGRAM_API_URL)
+                .expect("Failed to parse default Telegram bot API url"),
+        );
+
         Self {
-            token: Into::<Arc<str>>::into(Into::<String>::into(token)),
-            api_url: ApiUrl::Default,
+            token,
+            api_url,
             client,
         }
     }
@@ -174,7 +178,7 @@ impl Bot {
     /// assert_ne!(bot2.api_url().as_str(), "https://example.com/");
     /// ```
     pub fn set_api_url(mut self, url: reqwest::Url) -> Self {
-        self.api_url = ApiUrl::Custom(Arc::new(url));
+        self.api_url = Arc::new(url);
         self
     }
 }
@@ -193,7 +197,7 @@ impl Bot {
 
     /// Returns currently used token API url.
     pub fn api_url(&self) -> reqwest::Url {
-        self.api_url.get()
+        reqwest::Url::clone(&*self.api_url)
     }
 }
 
@@ -208,14 +212,23 @@ impl Bot {
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
-        let api_url = self.api_url.clone();
+        let api_url = Arc::clone(&self.api_url);
 
         let params = serde_json::to_vec(payload)
             // this `expect` should be ok since we don't write request those may trigger error here
             .expect("serialization of request to be infallible");
 
         // async move to capture client&token&api_url&params
-        async move { net::request_json(&client, token.as_ref(), api_url.get(), P::NAME, params).await }
+        async move {
+            net::request_json(
+                &client,
+                token.as_ref(),
+                reqwest::Url::clone(&*api_url),
+                P::NAME,
+                params,
+            )
+            .await
+        }
     }
 
     pub(crate) fn execute_multipart<P>(
@@ -228,14 +241,21 @@ impl Bot {
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
-        let api_url = self.api_url.clone();
+        let api_url = Arc::clone(&self.api_url);
 
         let params = serde_multipart::to_form(payload);
 
         // async move to capture client&token&api_url&params
         async move {
             let params = params.await?;
-            net::request_multipart(&client, token.as_ref(), api_url.get(), P::NAME, params).await
+            net::request_multipart(
+                &client,
+                token.as_ref(),
+                reqwest::Url::clone(&*api_url),
+                P::NAME,
+                params,
+            )
+            .await
         }
     }
 }
