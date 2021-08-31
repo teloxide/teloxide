@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 
-## 0.3.3
+## 0.3.3 - 2021-08-03
 
 ### Fixed
 
