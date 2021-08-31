@@ -84,7 +84,7 @@ fn test() {
     let value = String::from("test");
     assert_eq!(value.serialize(StringUnserializer), Ok(value));
 
-    let value = InputFile::Url(String::from("url"));
+    let value = InputFile::Url(reqwest::Url::parse("http://example.com").unwrap());
     assert_eq!(value.serialize(InputFileUnserializer::NotMem), Ok(value));
 
     let value = InputFile::FileId(String::from("file_id"));

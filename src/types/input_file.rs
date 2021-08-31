@@ -1,3 +1,4 @@
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
 use std::{borrow::Cow, path::PathBuf};
@@ -13,7 +14,7 @@ pub enum InputFile {
         file_name: String,
         data: Cow<'static, [u8]>,
     },
-    Url(String),
+    Url(Url),
     FileId(String),
 }
 
@@ -36,11 +37,8 @@ impl InputFile {
         }
     }
 
-    pub fn url<T>(url: T) -> Self
-    where
-        T: Into<String>,
-    {
-        Self::Url(url.into())
+    pub fn url(url: Url) -> Self {
+        Self::Url(url)
     }
 
     pub fn file_id<T>(file_id: T) -> Self
@@ -57,7 +55,7 @@ impl InputFile {
         }
     }
 
-    pub fn as_url(&self) -> Option<&String> {
+    pub fn as_url(&self) -> Option<&Url> {
         match self {
             Self::Url(url) => Some(url),
             _ => None,
@@ -118,7 +116,8 @@ impl InputFile {
                 Ok(Part::stream(Body::wrap_stream(file)).file_name(file_name))
             }
             Self::Memory { file_name, data } => Ok(Part::bytes(data).file_name(file_name)),
-            Self::Url(s) | Self::FileId(s) => Ok(Part::text(s)),
+            Self::Url(s) => Ok(Part::text(String::from(s))),
+            Self::FileId(s) => Ok(Part::text(s)),
         }
     }
 }

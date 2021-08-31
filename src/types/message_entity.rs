@@ -59,7 +59,7 @@ pub enum MessageEntityKind {
     Italic,
     Code,
     Pre { language: Option<String> },
-    TextLink { url: String },
+    TextLink { url: reqwest::Url },
     TextMention { user: User },
     Underline,
     Strikethrough,
@@ -76,13 +76,13 @@ mod tests {
         assert_eq!(
             MessageEntity {
                 kind: MessageEntityKind::TextLink {
-                    url: "ya.ru".into()
+                    url: reqwest::Url::parse("https://example.com").unwrap(),
                 },
                 offset: 1,
                 length: 2,
             },
             from_str::<MessageEntity>(
-                r#"{"type":"text_link","url":"ya.ru","offset":1,"length":2}"#
+                r#"{"type":"text_link","url":"https://example.com","offset":1,"length":2}"#
             )
             .unwrap()
         );
@@ -100,10 +100,8 @@ mod tests {
                 offset: 1,
                 length: 2,
             },
-            from_str::<MessageEntity>(
-                r#"{"type":"pre","url":"ya.ru","offset":1,"length":2,"language":"rust"}"#
-            )
-            .unwrap()
+            from_str::<MessageEntity>(r#"{"type":"pre","offset":1,"length":2,"language":"rust"}"#)
+                .unwrap()
         );
     }
 }

@@ -221,8 +221,8 @@ mod non_telegram_types {
 }
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
-    use chrono::{DateTime, Utc};
-    use serde::{Serialize, Serializer};
+    use chrono::{DateTime, NaiveDateTime, Utc};
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
     pub(crate) fn serialize<S>(
         this: &Option<DateTime<Utc>>,
@@ -234,14 +234,42 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
         this.map(|dt| dt.timestamp()).serialize(serializer)
     }
 
-    // pub(crate) fn deserialize<'de, D>(deserializer: D) ->
-    // Result<Option<DateTime<Utc>>, D::Error> where
-    //     D: Deserializer<'de>,
-    // {
-    //     Ok(Option::<i64>::deserialize(deserializer)?
-    //         .map(|timestamp|
-    // DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
-    // }
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(Option::<i64>::deserialize(deserializer)?
+            .map(|timestamp| DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
+    }
+
+    pub(crate) fn none<T>() -> Option<T> {
+        None
+    }
+
+    #[test]
+    fn test() {
+        #[derive(Serialize, Deserialize)]
+        struct Struct {
+            #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+            #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+            date: Option<DateTime<Utc>>,
+        }
+
+        {
+            let json = r#"{"date":1}"#;
+            let expected = DateTime::from_utc(NaiveDateTime::from_timestamp(1, 0), Utc);
+
+            let Struct { date } = serde_json::from_str(json).unwrap();
+            assert_eq!(date, Some(expected));
+        }
+
+        {
+            let json = r#"{}"#;
+
+            let Struct { date } = serde_json::from_str(json).unwrap();
+            assert_eq!(date, None);
+        }
+    }
 }
 
 pub(crate) mod serde_date_from_unix_timestamp {

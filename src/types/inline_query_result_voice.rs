@@ -17,7 +17,7 @@ pub struct InlineQueryResultVoice {
     pub id: String,
 
     /// A valid URL for the voice recording.
-    pub voice_url: String,
+    pub voice_url: reqwest::Url,
 
     /// Recording title.
     pub title: String,
@@ -50,15 +50,14 @@ pub struct InlineQueryResultVoice {
 }
 
 impl InlineQueryResultVoice {
-    pub fn new<S1, S2, S3>(id: S1, voice_url: S2, title: S3) -> Self
+    pub fn new<S1, S2>(id: S1, voice_url: reqwest::Url, title: S2) -> Self
     where
         S1: Into<String>,
         S2: Into<String>,
-        S3: Into<String>,
     {
         Self {
             id: id.into(),
-            voice_url: voice_url.into(),
+            voice_url,
             title: title.into(),
             caption: None,
             parse_mode: None,
@@ -77,11 +76,8 @@ impl InlineQueryResultVoice {
         self
     }
 
-    pub fn voice_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.voice_url = val.into();
+    pub fn voice_url(mut self, val: reqwest::Url) -> Self {
+        self.voice_url = val;
         self
     }
 

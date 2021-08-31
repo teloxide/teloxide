@@ -21,7 +21,7 @@ pub struct InlineQueryResultArticle {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// URL of the result.
-    pub url: Option<String>,
+    pub url: Option<reqwest::Url>,
 
     /// Pass `true`, if you don't want the URL to be shown in the
     /// message.
@@ -31,7 +31,7 @@ pub struct InlineQueryResultArticle {
     pub description: Option<String>,
 
     /// Url of the thumbnail for the result.
-    pub thumb_url: Option<String>,
+    pub thumb_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
     pub thumb_width: Option<i32>,
@@ -86,11 +86,8 @@ impl InlineQueryResultArticle {
         self
     }
 
-    pub fn url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.url = Some(val.into());
+    pub fn url(mut self, val: reqwest::Url) -> Self {
+        self.url = Some(val);
         self
     }
 
@@ -107,11 +104,8 @@ impl InlineQueryResultArticle {
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.thumb_url = Some(val.into());
+    pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
+        self.thumb_url = Some(val);
         self
     }
 

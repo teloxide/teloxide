@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::types::User;
@@ -13,9 +14,11 @@ pub struct ChatInviteLink {
     pub is_primary: bool,
     /// `true`, if the link is revoked
     pub is_revoked: bool,
-    /// Point in time (Unix timestamp) when the link will expire or has been
+    /// Point in time when the link will expire or has been
     /// expired
-    pub expire_date: Option<i64>,
+    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    pub expire_date: Option<DateTime<Utc>>,
     /// Maximum number of users that can be members of the chat simultaneously
     /// after joining the chat via this invite link; 1-99999
     pub member_limit: Option<u32>,

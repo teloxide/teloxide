@@ -26,7 +26,8 @@ pub struct InlineKeyboardMarkup {
 /// ```
 /// use teloxide_core::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 ///
-/// let url_button = InlineKeyboardButton::url("text".to_string(), "http://url.com".to_string());
+/// let url = url::Url::parse("https://example.com").unwrap();
+/// let url_button = InlineKeyboardButton::url("text".to_string(), url);
 /// let keyboard = InlineKeyboardMarkup::default().append_row(vec![url_button]);
 /// ```
 impl InlineKeyboardMarkup {
@@ -78,10 +79,14 @@ impl InlineKeyboardMarkup {
 mod tests {
     use super::*;
 
+    fn url(n: u32) -> reqwest::Url {
+        reqwest::Url::parse(&format!("https://example.com/{n}", n = n)).unwrap()
+    }
+
     #[test]
     fn append_row() {
-        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
-        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), url(1));
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), url(2));
 
         let markup =
             InlineKeyboardMarkup::default().append_row(vec![button1.clone(), button2.clone()]);
@@ -95,8 +100,8 @@ mod tests {
 
     #[test]
     fn append_to_row_existent_row() {
-        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
-        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), url(1));
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), url(2));
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])
@@ -111,8 +116,8 @@ mod tests {
 
     #[test]
     fn append_to_row_nonexistent_row() {
-        let button1 = InlineKeyboardButton::url("text 1".to_string(), "url 1".to_string());
-        let button2 = InlineKeyboardButton::url("text 2".to_string(), "url 2".to_string());
+        let button1 = InlineKeyboardButton::url("text 1".to_string(), url(1));
+        let button2 = InlineKeyboardButton::url("text 2".to_string(), url(2));
 
         let markup = InlineKeyboardMarkup::default()
             .append_row(vec![button1.clone()])

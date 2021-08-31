@@ -15,18 +15,39 @@ use serde::{Deserialize, Serialize};
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct LoginUrl {
-    pub url: String,
+    /// An HTTP URL to be opened with user authorization data added to the query
+    /// string when the button is pressed. If the user refuses to provide
+    /// authorization data, the original URL without information about the user
+    /// will be opened. The data added is the same as described in [Receiving
+    /// authorization data].
+    ///
+    /// [Receiving authorization data]: https://core.telegram.org/widgets/login#receiving-authorization-data
+    ///
+    /// NOTE: You must always check the hash of the received data to verify the
+    /// authentication and the integrity of the data as described in [Checking
+    /// authorization].
+    ///
+    /// [Checking authorization]: https://core.telegram.org/widgets/login#checking-authorization
+    pub url: reqwest::Url,
+    /// New text of the button in forwarded messages.
     pub forward_text: Option<String>,
+    /// Username of a bot, which will be used for user authorization. See
+    /// [Setting up a bot] for more details. If not specified, the current bot's
+    /// username will be assumed. The url's domain must be the same as the
+    /// domain linked with the bot. See [Linking your domain to the bot] for
+    /// more details.
+    ///
+    /// [Setting up a bot]: https://core.telegram.org/widgets/login#setting-up-a-bot
+    /// [Linking your domain to the bot]: https://core.telegram.org/widgets/login#linking-your-domain-to-the-bot
     pub bot_username: Option<String>,
+    /// Pass `true` to request the permission for your bot to send messages to
+    /// the user.
     pub request_write_access: Option<bool>,
 }
 
 impl LoginUrl {
-    pub fn url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.url = val.into();
+    pub fn url(mut self, val: reqwest::Url) -> Self {
+        self.url = val;
         self
     }
 
@@ -46,7 +67,7 @@ impl LoginUrl {
         self
     }
 
-    pub fn request_write_access<S>(mut self, val: bool) -> Self {
+    pub fn request_write_access(mut self, val: bool) -> Self {
         self.request_write_access = Some(val);
         self
     }

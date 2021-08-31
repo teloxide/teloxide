@@ -144,9 +144,14 @@ mod test {
         MessageCommon, MessageKind, Update, UpdateKind, User,
     };
 
+    use chrono::{DateTime, NaiveDateTime, Utc};
+
     // TODO: more tests for deserialization
     #[test]
     fn message() {
+        let timestamp = 1_569_518_342;
+        let date = DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc);
+
         let json = r#"{
             "update_id":892252934,
             "message":{
@@ -174,7 +179,7 @@ mod test {
             kind: UpdateKind::Message(Message {
                 via_bot: None,
                 id: 6557,
-                date: 1_569_518_342,
+                date,
                 chat: Chat {
                     id: 218_485_655,
                     kind: ChatKind::Private(ChatPrivate {

@@ -16,7 +16,7 @@ pub struct InlineQueryResultGif {
     pub id: String,
 
     /// A valid URL for the GIF file. File size must not exceed 1MB.
-    pub gif_url: String,
+    pub gif_url: reqwest::Url,
 
     /// Width of the GIF.
     pub gif_width: Option<i32>,
@@ -28,7 +28,7 @@ pub struct InlineQueryResultGif {
     pub gif_duration: Option<i32>,
 
     /// URL of the static thumbnail for the result (jpeg or gif).
-    pub thumb_url: String,
+    pub thumb_url: reqwest::Url,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -58,19 +58,17 @@ pub struct InlineQueryResultGif {
 }
 
 impl InlineQueryResultGif {
-    pub fn new<S1, S2, S3>(id: S1, gif_url: S2, thumb_url: S3) -> Self
+    pub fn new<S>(id: S, gif_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
     where
-        S1: Into<String>,
-        S2: Into<String>,
-        S3: Into<String>,
+        S: Into<String>,
     {
         Self {
             id: id.into(),
-            gif_url: gif_url.into(),
+            gif_url,
             gif_width: None,
             gif_height: None,
             gif_duration: None,
-            thumb_url: thumb_url.into(),
+            thumb_url,
             title: None,
             caption: None,
             parse_mode: None,
@@ -88,11 +86,8 @@ impl InlineQueryResultGif {
         self
     }
 
-    pub fn gif_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.gif_url = val.into();
+    pub fn gif_url(mut self, val: reqwest::Url) -> Self {
+        self.gif_url = val;
         self
     }
 
@@ -111,11 +106,8 @@ impl InlineQueryResultGif {
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.thumb_url = val.into();
+    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
+        self.thumb_url = val;
         self
     }
 

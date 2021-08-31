@@ -16,7 +16,7 @@ pub struct InlineQueryResultAudio {
     pub id: String,
 
     /// A valid URL for the audio file.
-    pub audio_url: String,
+    pub audio_url: reqwest::Url,
 
     /// Title.
     pub title: String,
@@ -52,15 +52,14 @@ pub struct InlineQueryResultAudio {
 }
 
 impl InlineQueryResultAudio {
-    pub fn new<S1, S2, S3>(id: S1, audio_url: S2, title: S3) -> Self
+    pub fn new<S1, S2>(id: S1, audio_url: reqwest::Url, title: S2) -> Self
     where
         S1: Into<String>,
         S2: Into<String>,
-        S3: Into<String>,
     {
         Self {
             id: id.into(),
-            audio_url: audio_url.into(),
+            audio_url,
             title: title.into(),
             caption: None,
             parse_mode: None,
@@ -80,11 +79,8 @@ impl InlineQueryResultAudio {
         self
     }
 
-    pub fn audio_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.audio_url = val.into();
+    pub fn audio_url(mut self, val: reqwest::Url) -> Self {
+        self.audio_url = val;
         self
     }
 

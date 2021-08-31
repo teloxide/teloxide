@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 /// This object represents a file uploaded to Telegram Passport.
@@ -19,6 +20,7 @@ pub struct PassportFile {
     /// File size.
     pub file_size: u64,
 
-    /// Unix time when the file was uploaded.
-    pub file_date: u64,
+    /// Time when the file was uploaded.
+    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    pub file_date: DateTime<Utc>,
 }
