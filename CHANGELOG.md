@@ -96,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr94]: https://github.com/teloxide/teloxide-core/pull/94
 [pr100]: https://github.com/teloxide/teloxide-core/pull/100
 
-## [0.2.2] - 2020-03-22
+## 0.2.2 - 2020-03-22
 
 ### Fixed
 
@@ -105,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
 
-## [0.2.1] - 2020-03-19
+## 0.2.1 - 2020-03-19
 
 ### Fixed 
 
@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr68]: https://github.com/teloxide/teloxide-core/pull/68
 
-## [0.2.0] - 2020-03-16
+## 0.2.0 - 2020-03-16
 
 ### Changed
 
@@ -164,7 +164,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - `NonStrictVec` -> `SemiparsedVec`.
 
-## [0.1.1] - 2020-02-17
+## 0.1.1 - 2020-02-17
 
 ### Fixed
 
@@ -172,7 +172,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr53]: https://github.com/teloxide/teloxide-core/pull/53
 
-## [0.1.0] - 2020-02-17
+## 0.1.0 - 2020-02-17
 
 ### Added
 
