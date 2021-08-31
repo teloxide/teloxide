@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 /// Contains information about the current status of a webhook.
@@ -6,8 +7,8 @@ use serde::{Deserialize, Serialize};
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct WebhookInfo {
-    /// Webhook URL, may be empty if webhook is not set up.
-    pub url: String,
+    /// Webhook URL, `None` if webhook is not set up.
+    pub url: Option<reqwest::Url>,
 
     /// `true`, if a custom certificate was provided for webhook certificate
     /// checks.
@@ -19,9 +20,11 @@ pub struct WebhookInfo {
     /// Currently used webhook IP address.
     pub ip_address: Option<String>,
 
-    /// Unix time for the most recent error that happened when trying to
+    /// Time of the most recent error that happened when trying to
     /// deliver an update via webhook.
-    pub last_error_date: Option<u64>,
+    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    pub last_error_date: Option<DateTime<Utc>>,
 
     /// Error message in human-readable format for the most recent error that
     /// happened when trying to deliver an update via webhook.

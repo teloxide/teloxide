@@ -107,7 +107,7 @@ impl InlineQueryResultCachedPhoto {
         self
     }
 
-    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }

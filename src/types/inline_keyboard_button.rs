@@ -42,7 +42,7 @@ impl InlineKeyboardButton {
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
     /// HTTP or tg:// url to be opened when button is pressed.
-    Url(String),
+    Url(reqwest::Url),
 
     /// An HTTP URL used to automatically authorize the user. Can be used as a
     /// replacement for the [Telegram Login Widget]().
@@ -104,10 +104,11 @@ pub enum InlineKeyboardButtonKind {
 /// ```
 /// use teloxide_core::types::InlineKeyboardButton;
 ///
-/// let url_button = InlineKeyboardButton::url("Text".to_string(), "http://url.com".to_string());
+/// let url = url::Url::parse("https://example.com").unwrap();
+/// let url_button = InlineKeyboardButton::url("Text".to_string(), url);
 /// ```
 impl InlineKeyboardButton {
-    pub fn url(text: String, url: String) -> InlineKeyboardButton {
+    pub fn url(text: String, url: reqwest::Url) -> InlineKeyboardButton {
         InlineKeyboardButton {
             text,
             kind: InlineKeyboardButtonKind::Url(url),

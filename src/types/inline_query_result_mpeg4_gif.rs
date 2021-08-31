@@ -17,7 +17,7 @@ pub struct InlineQueryResultMpeg4Gif {
     pub id: String,
 
     /// A valid URL for the MP4 file. File size must not exceed 1MB.
-    pub mpeg4_url: String,
+    pub mpeg4_url: reqwest::Url,
 
     /// Video width.
     pub mpeg4_width: Option<i32>,
@@ -29,7 +29,7 @@ pub struct InlineQueryResultMpeg4Gif {
     pub mpeg4_duration: Option<i32>,
 
     /// URL of the static thumbnail (jpeg or gif) for the result.
-    pub thumb_url: String,
+    pub thumb_url: reqwest::Url,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -59,16 +59,14 @@ pub struct InlineQueryResultMpeg4Gif {
 }
 
 impl InlineQueryResultMpeg4Gif {
-    pub fn new<S1, S2, S3>(id: S1, mpeg4_url: S2, thumb_url: S3) -> Self
+    pub fn new<S>(id: S, mpeg4_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
     where
-        S1: Into<String>,
-        S2: Into<String>,
-        S3: Into<String>,
+        S: Into<String>,
     {
         Self {
             id: id.into(),
-            mpeg4_url: mpeg4_url.into(),
-            thumb_url: thumb_url.into(),
+            mpeg4_url,
+            thumb_url,
             mpeg4_width: None,
             mpeg4_height: None,
             mpeg4_duration: None,
@@ -89,11 +87,8 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
-    pub fn mpeg4_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.mpeg4_url = val.into();
+    pub fn mpeg4_url(mut self, val: reqwest::Url) -> Self {
+        self.mpeg4_url = val;
         self
     }
 
@@ -112,11 +107,8 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.thumb_url = val.into();
+    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
+        self.thumb_url = val;
         self
     }
 
@@ -136,7 +128,7 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
-    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }

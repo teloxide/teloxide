@@ -39,7 +39,7 @@ pub struct InlineQueryResultContact {
     pub input_message_content: Option<InputMessageContent>,
 
     /// Url of the thumbnail for the result.
-    pub thumb_url: Option<String>,
+    pub thumb_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
     pub thumb_width: Option<i32>,
@@ -119,11 +119,8 @@ impl InlineQueryResultContact {
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.thumb_url = Some(val.into());
+    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
+        self.thumb_url = Some(val);
         self
     }
 

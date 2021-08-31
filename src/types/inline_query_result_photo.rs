@@ -17,10 +17,10 @@ pub struct InlineQueryResultPhoto {
 
     /// A valid URL of the photo. Photo must be in **jpeg** format. Photo size
     /// must not exceed 5MB.
-    pub photo_url: String,
+    pub photo_url: reqwest::Url,
 
     /// URL of the thumbnail for the photo.
-    pub thumb_url: String,
+    pub thumb_url: reqwest::Url,
 
     /// Width of the photo.
     pub photo_width: Option<i32>,
@@ -59,16 +59,14 @@ pub struct InlineQueryResultPhoto {
 }
 
 impl InlineQueryResultPhoto {
-    pub fn new<S1, S2, S3>(id: S1, photo_url: S2, thumb_url: S3) -> Self
+    pub fn new<S>(id: S, photo_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
     where
-        S1: Into<String>,
-        S2: Into<String>,
-        S3: Into<String>,
+        S: Into<String>,
     {
         Self {
             id: id.into(),
-            photo_url: photo_url.into(),
-            thumb_url: thumb_url.into(),
+            photo_url,
+            thumb_url,
             photo_width: None,
             photo_height: None,
             title: None,
@@ -89,28 +87,22 @@ impl InlineQueryResultPhoto {
         self
     }
 
-    pub fn photo_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.photo_url = val.into();
+    pub fn photo_url(mut self, val: reqwest::Url) -> Self {
+        self.photo_url = val;
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.thumb_url = val.into();
+    pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
+        self.thumb_url = val;
         self
     }
 
-    pub fn photo_width<S>(mut self, val: i32) -> Self {
+    pub fn photo_width(mut self, val: i32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
-    pub fn photo_height<S>(mut self, val: i32) -> Self {
+    pub fn photo_height(mut self, val: i32) -> Self {
         self.photo_height = Some(val);
         self
     }
@@ -139,7 +131,7 @@ impl InlineQueryResultPhoto {
         self
     }
 
-    pub fn parse_mode<S>(mut self, val: ParseMode) -> Self {
+    pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
     }

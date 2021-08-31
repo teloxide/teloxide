@@ -485,7 +485,8 @@ impl Serializer for PartSerializer {
                 let part = Part::text(format!("attach://{}", uuid));
                 Ok((part, vec![(uuid, f)]))
             }
-            InputFile::FileId(s) | InputFile::Url(s) => Ok((Part::text(s), Vec::new())),
+            InputFile::FileId(s) => Ok((Part::text(s), Vec::new())),
+            InputFile::Url(s) => Ok((Part::text(String::from(s)), Vec::new())),
         }
     }
 
@@ -586,7 +587,8 @@ impl SerializeStructVariant for PartFromFile {
 
                 Ok((part, vec![(uuid, f)]))
             }
-            InputFile::FileId(s) | InputFile::Url(s) => Ok((Part::text(s), vec![])),
+            InputFile::FileId(s) => Ok((Part::text(s), vec![])),
+            InputFile::Url(s) => Ok((Part::text(String::from(s)), vec![])),
         }
     }
 }
@@ -615,8 +617,11 @@ impl SerializeSeq for InnerPartSerializer {
                 value["media"] = serde_json::Value::String(format!("attach://{}", uuid));
                 self.files.push((uuid, f));
             }
-            InputFile::FileId(s) | InputFile::Url(s) => {
+            InputFile::FileId(s) => {
                 value["media"] = serde_json::Value::String(s);
+            }
+            InputFile::Url(s) => {
+                value["media"] = serde_json::Value::String(String::from(s));
             }
         }
 
@@ -673,8 +678,12 @@ impl SerializeStruct for PartSerializerStruct {
 
                     self.2.push((uuid, f));
                 }
-                InputFile::FileId(s) | InputFile::Url(s) => {
+                InputFile::FileId(s) => {
                     SerializeStruct::serialize_field(&mut ser, key, &s)?;
+                    self.1 = get_state(ser)
+                }
+                InputFile::Url(s) => {
+                    SerializeStruct::serialize_field(&mut ser, key, s.as_str())?;
                     self.1 = get_state(ser)
                 }
             }

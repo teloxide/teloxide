@@ -1,5 +1,6 @@
 #![allow(clippy::large_enum_variant)]
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
@@ -19,7 +20,8 @@ pub struct Message {
     pub id: i32,
 
     /// Date the message was sent in Unix time.
-    pub date: i32,
+    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    pub date: DateTime<Utc>,
 
     /// Conversation the message belongs to.
     pub chat: Chat,
@@ -78,7 +80,9 @@ pub struct MessageCommon {
     pub forward_kind: ForwardKind,
 
     /// Date the message was last edited in Unix time.
-    pub edit_date: Option<i32>,
+    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    pub edit_date: Option<DateTime<Utc>>,
 
     #[serde(flatten)]
     pub media_kind: MediaKind,
@@ -234,7 +238,8 @@ pub enum ForwardKind {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ForwardChannel {
     #[serde(rename = "forward_date")]
-    pub date: i32,
+    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    pub date: DateTime<Utc>,
 
     #[serde(rename = "forward_from_chat")]
     pub chat: Chat,
@@ -249,7 +254,8 @@ pub struct ForwardChannel {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ForwardNonChannel {
     #[serde(rename = "forward_date")]
-    pub date: i32,
+    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    pub date: DateTime<Utc>,
 
     #[serde(flatten)]
     pub from: ForwardedFrom,
@@ -480,6 +486,7 @@ pub struct MessageVoiceChatParticipantsInvited {
 }
 
 mod getters {
+    use chrono::{DateTime, Utc};
     use std::ops::Deref;
 
     use crate::types::{
@@ -570,7 +577,7 @@ mod getters {
             }
         }
 
-        pub fn forward_date(&self) -> Option<&i32> {
+        pub fn forward_date(&self) -> Option<&DateTime<Utc>> {
             match &self.kind {
                 Common(MessageCommon {
                     forward_kind: ForwardKind::Channel(ForwardChannel { date, .. }),
@@ -597,7 +604,7 @@ mod getters {
             }
         }
 
-        pub fn edit_date(&self) -> Option<&i32> {
+        pub fn edit_date(&self) -> Option<&DateTime<Utc>> {
             match &self.kind {
                 Common(MessageCommon { edit_date, .. }) => edit_date.as_ref(),
                 _ => None,

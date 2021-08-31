@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{Chat, ChatInviteLink, ChatMember, User};
@@ -8,8 +9,9 @@ pub struct ChatMemberUpdated {
     pub chat: Chat,
     /// Performer of the action, which resulted in the change
     pub from: User,
-    /// Date the change was done in Unix time
-    pub date: i64,
+    /// Date the change was done
+    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    pub date: DateTime<Utc>,
     /// Previous information about the chat member
     pub old_chat_member: ChatMember,
     /// New information about the chat member

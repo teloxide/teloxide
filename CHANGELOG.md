@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 - Add `EditedMessageIsTooLong` error [#109][pr109]
+- Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
+[pr115]: https://github.com/teloxide/teloxide-core/pull/115
 
 ## 0.3.3
 
