@@ -7,11 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-- Add `EditedMessageIsTooLong` error [#109][pr109]
-- Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
+### Added
+
+- `EditedMessageIsTooLong` error [#109][pr109]
+- `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
+[pr116]: https://github.com/teloxide/teloxide-core/pull/116
+
+### Changed
+
+- Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
+
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
+
+### Fixed
+
+- Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
 
 ## 0.3.3
 
