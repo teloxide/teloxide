@@ -212,12 +212,13 @@ mod passport_data;
 mod passport_element_error;
 mod passport_file;
 
-pub use non_telegram_types::{country_code::*, currency::*, semiparsed_vec::*};
+pub use non_telegram_types::{country_code::*, currency::*, semiparsed_vec::*, until_date::*};
 mod non_telegram_types {
     pub(super) mod country_code;
     pub(super) mod currency;
     pub(crate) mod mime;
     pub(super) mod semiparsed_vec;
+    pub(super) mod until_date;
 }
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
