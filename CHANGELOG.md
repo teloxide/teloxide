@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## unreleased
 
 ### Added
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
 
-## 0.3.3
+## 0.3.3 - 2021-08-03
 
 ### Fixed
 
@@ -108,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr94]: https://github.com/teloxide/teloxide-core/pull/94
 [pr100]: https://github.com/teloxide/teloxide-core/pull/100
 
-## [0.2.2] - 2020-03-22
+## 0.2.2 - 2020-03-22
 
 ### Fixed
 
@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
 
-## [0.2.1] - 2020-03-19
+## 0.2.1 - 2020-03-19
 
 ### Fixed 
 
@@ -129,7 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr68]: https://github.com/teloxide/teloxide-core/pull/68
 
-## [0.2.0] - 2020-03-16
+## 0.2.0 - 2020-03-16
 
 ### Changed
 
@@ -176,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - `NonStrictVec` -> `SemiparsedVec`.
 
-## [0.1.1] - 2020-02-17
+## 0.1.1 - 2020-02-17
 
 ### Fixed
 
@@ -184,7 +184,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr53]: https://github.com/teloxide/teloxide-core/pull/53
 
-## [0.1.0] - 2020-02-17
+## 0.1.0 - 2020-02-17
 
 ### Added
 
