@@ -1,9 +1,8 @@
 use std::ops::Deref;
 
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::User;
+use crate::types::{UntilDate, User};
 
 /// This object contains information about one member of the chat.
 ///
@@ -100,8 +99,7 @@ pub struct Administrator {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Restricted {
     /// Date when restrictions will be lifted for this user.
-    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub until_date: DateTime<Utc>,
+    pub until_date: UntilDate,
 
     /// `true` if the user can send text messages, contacts, locations and
     /// venues.
@@ -125,8 +123,7 @@ pub struct Restricted {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Banned {
     /// Date when restrictions will be lifted for this user.
-    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub until_date: DateTime<Utc>,
+    pub until_date: UntilDate,
 }
 
 /// This allows calling [`ChatMemberKind`]'s methods directly on [`ChatMember`].
@@ -273,7 +270,7 @@ impl ChatMemberKind {
     }
 
     /// Getter for [`Restricted::until_date`] and [`Banned::until_date`] fields.
-    pub fn until_date(&self) -> Option<DateTime<Utc>> {
+    pub fn until_date(&self) -> Option<UntilDate> {
         match &self {
             Self::Owner(_) | Self::Administrator(_) | Self::Member | Self::Left => None,
             Self::Restricted(Restricted { until_date, .. })
