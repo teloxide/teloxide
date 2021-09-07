@@ -48,7 +48,7 @@ pub struct Poll {
     pub explanation_entities: Option<Vec<MessageEntity>>,
 
     /// Amount of time in seconds the poll will be active after creation.
-    pub open_period: Option<i32>,
+    pub open_period: Option<u16>,
 
     /// Point in time when the poll will be automatically closed.
     #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
