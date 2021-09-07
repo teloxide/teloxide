@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
+- Type of `Poll::correct_option_id`: `i32` -> `u8` ([#119][pr119])
+- Type of `Poll::open_period`: `i32` -> `u16` ([#119][pr119])
 
 ## 0.3.3 - 2021-08-03
 
