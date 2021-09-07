@@ -37,7 +37,7 @@ pub struct Poll {
     /// 0-based identifier of the correct answer option. Available only for
     /// polls in the quiz mode, which are closed, or was sent (not
     /// forwarded) by the bot or to the private chat with the bot.
-    pub correct_option_id: Option<i32>,
+    pub correct_option_id: Option<u8>,
 
     /// Text that is shown when a user chooses an incorrect answer or taps on
     /// the lamp icon in a quiz-style poll, 0-200 characters.
@@ -48,7 +48,7 @@ pub struct Poll {
     pub explanation_entities: Option<Vec<MessageEntity>>,
 
     /// Amount of time in seconds the poll will be active after creation.
-    pub open_period: Option<i32>,
+    pub open_period: Option<u16>,
 
     /// Point in time when the poll will be automatically closed.
     #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
