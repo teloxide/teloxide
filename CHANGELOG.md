@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `EditedMessageIsTooLong` error [#109][pr109]
 - `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
+- `Limits::messages_per_min_channel` ([#121][pr121])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr116]: https://github.com/teloxide/teloxide-core/pull/116
+[pr121]: https://github.com/teloxide/teloxide-core/pull/121
 
 ### Changed
 
@@ -26,8 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
 - Type of `Poll::correct_option_id`: `i32` -> `u8` ([#119][pr119])
 - Type of `Poll::open_period`: `i32` -> `u16` ([#119][pr119])
+- `Throttle` adaptor not honouring chat/min limits ([#121][pr121])
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
+
 ## 0.3.3 - 2021-08-03
 
 ### Fixed

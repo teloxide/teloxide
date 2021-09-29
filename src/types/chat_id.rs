@@ -15,6 +15,39 @@ pub enum ChatId {
     ChannelUsername(String),
 }
 
+impl ChatId {
+    pub(crate) fn is_channel(&self) -> bool {
+        matches!(self.unmark(), None | Some(UnmarkedChatId::Channel(_)))
+    }
+
+    pub(crate) fn unmark(&self) -> Option<UnmarkedChatId> {
+        use UnmarkedChatId::*;
+
+        const MAX_CHANNEL_ID: i64 = -(10i64.pow(12));
+        const MIN_CHANNEL_ID: i64 = MAX_CHANNEL_ID - (i32::MAX as i64);
+        const MAX_USER_ID: i64 = i32::MAX as _;
+        const MIN_CHAT_ID: i64 = -MAX_USER_ID;
+
+        let res = match self {
+            &Self::Id(id @ MIN_CHAT_ID..=-1) => Chat(-id as _),
+            &Self::Id(id @ MIN_CHANNEL_ID..=MAX_CHANNEL_ID) => Channel((MAX_CHANNEL_ID - id) as _),
+            &Self::Id(id) => {
+                debug_assert!(0 < id && id < MAX_USER_ID, "malformed chat id");
+                User(id as _)
+            }
+            Self::ChannelUsername(_) => return None,
+        };
+
+        Some(res)
+    }
+}
+
+pub(crate) enum UnmarkedChatId {
+    User(u32),
+    Chat(u32),
+    Channel(u32),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

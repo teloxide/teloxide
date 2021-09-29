@@ -203,11 +203,15 @@ pub struct Limits {
     /// Allowed messages in one chat per minute.
     pub messages_per_min_chat: u32,
 
+    /// Allowed messages in one channel per minute.
+    pub messages_per_min_channel: u32,
+
     /// Allowed messages per second.
     pub messages_per_sec_overall: u32,
 }
 
-/// Defaults are taken from [telegram documentation][tgdoc].
+/// Defaults are taken from [telegram documentation][tgdoc] (except for
+/// `messages_per_min_channel`).
 ///
 /// [tgdoc]: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
 impl Default for Limits {
@@ -216,6 +220,7 @@ impl Default for Limits {
             messages_per_sec_chat: 1,
             messages_per_sec_overall: 30,
             messages_per_min_chat: 20,
+            messages_per_min_channel: 10,
         }
     }
 }
@@ -465,9 +470,17 @@ async fn worker(
 
         while let Some(entry) = queue_removing.next() {
             let chat = &entry.value().0;
-            let requests_sent_count = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
-            let limits_not_exceeded = requests_sent_count < limits.messages_per_sec_chat
-                && requests_sent_count < limits.messages_per_min_chat;
+            let requests_sent_per_sec_count = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
+            let requests_sent_per_min_count = requests_sent.per_min.get(chat).copied().unwrap_or(0);
+
+            let messages_per_min_limit = if chat.is_channel() {
+                limits.messages_per_min_channel
+            } else {
+                limits.messages_per_min_chat
+            };
+
+            let limits_not_exceeded = requests_sent_per_sec_count < limits.messages_per_sec_chat
+                && requests_sent_per_min_count < messages_per_min_limit;
 
             if limits_not_exceeded {
                 *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
@@ -625,6 +638,15 @@ download_forward! {
 enum ChatIdHash {
     Id(i64),
     ChannelUsernameHash(u64),
+}
+
+impl ChatIdHash {
+    fn is_channel(&self) -> bool {
+        match self {
+            &Self::Id(id) => ChatId::Id(id).is_channel(),
+            Self::ChannelUsernameHash(_) => true,
+        }
+    }
 }
 
 impl From<&ChatId> for ChatIdHash {
