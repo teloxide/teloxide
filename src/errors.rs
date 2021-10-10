@@ -434,6 +434,11 @@ pub enum ApiError {
     #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
     NotEnoughRightsToRestrict,
 
+    /// Occurs when bot tries to post a message in a channel without "Post
+    /// Messages" admin right.
+    #[serde(rename = "Bad Request: need administrator rights in the channel chat")]
+    NotEnoughRightsToPostMessages,
+
     /// Occurs when bot tries set webhook to protocol other than HTTPS.
     ///
     /// May happen in methods:
