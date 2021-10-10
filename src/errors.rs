@@ -379,6 +379,41 @@ pub enum ApiError {
     #[serde(rename = "Bad Request: STICKERSET_INVALID")]
     InvalidStickersSet,
 
+    /// Occurs when bot tries to create a sticker set with a name that is
+    /// already used by another sticker set.
+    ///
+    /// May happen in methods:
+    /// 1. [`CreateNewStickerSet`]
+    ///
+    /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
+    #[serde(rename = "Bad Request: sticker set name is already occupied")]
+    StickerSetNameOccupied,
+
+    /// Occurs when bot tries to create a sticker set with user id of a bot.
+    ///
+    /// May happen in methods:
+    /// 1. [`CreateNewStickerSet`]
+    ///
+    /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
+    #[serde(rename = "Bad Request: USER_IS_BOT")]
+    StickerSetOwnerIsBot,
+
+    /// Occurs when bot tries to create a sticker set with invalid name.
+    ///
+    /// From documentation of [`CreateNewStickerSet`]:
+    /// > Short name of sticker set, to be used in `t.me/addstickers/` URLs
+    /// (e.g., _animals_). Can contain only english letters, digits and
+    /// underscores. Must begin with a letter, can't contain consecutive
+    /// underscores and must end in “\_by\_<bot\_username>”. <bot\_username>
+    /// is case insensitive. 1-64 characters.
+    ///
+    /// May happen in methods:
+    /// 1. [`CreateNewStickerSet`]
+    ///
+    /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
+    #[serde(rename = "Bad Request: invalid sticker set name is specified")]
+    InvalidStickerName,
+
     /// Occurs when bot tries to pin a message without rights to pin in this
     /// chat.
     ///
