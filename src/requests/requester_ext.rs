@@ -18,13 +18,7 @@ use crate::adaptors::throttle::{Limits, Throttle};
 /// Extensions methods for [`Requester`].
 pub trait RequesterExt: Requester {
     /// Add `get_me` caching ability, see [`CacheMe`] for more.
-    ///
-    /// [`CacheMe`]:
     #[cfg(feature = "cache_me")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "cache_me"))
-    )]
     fn cache_me(self) -> CacheMe<Self>
     where
         Self: Sized,
@@ -34,10 +28,6 @@ pub trait RequesterExt: Requester {
 
     /// Send requests automatically, see [`AutoSend`] for more.
     #[cfg(feature = "auto_send")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "auto_send"))
-    )]
     fn auto_send(self) -> AutoSend<Self>
     where
         Self: Sized,
@@ -47,10 +37,6 @@ pub trait RequesterExt: Requester {
 
     /// Erase requester type.
     #[cfg(feature = "erased")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "erased"))
-    )]
     fn erase<'a>(self) -> ErasedRequester<'a, Self::Err>
     where
         Self: 'a,
@@ -61,10 +47,6 @@ pub trait RequesterExt: Requester {
 
     /// Trace requests, see [`Trace`] for more.
     #[cfg(feature = "trace_adaptor")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "trace_adaptor"))
-    )]
     fn trace(self, settings: Settings) -> Trace<Self>
     where
         Self: Sized,
@@ -76,10 +58,6 @@ pub trait RequesterExt: Requester {
     ///
     /// Note: this spawns the worker, just as [`Throttle::new_spawn`].
     #[cfg(feature = "throttle")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "throttle"))
-    )]
     fn throttle(self, limits: Limits) -> Throttle<Self>
     where
         Self: Sized,
