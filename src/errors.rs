@@ -61,6 +61,7 @@ pub enum RequestError {
 /// A kind of an API error.
 #[derive(Debug, Deserialize, PartialEq, Hash, Eq, Clone)]
 #[serde(field_identifier)]
+#[non_exhaustive]
 pub enum ApiError {
     /// Occurs when the bot tries to send message to user who blocked the bot.
     #[serde(rename = "Forbidden: bot was blocked by the user")]
