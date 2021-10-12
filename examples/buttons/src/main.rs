@@ -10,7 +10,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
-pub enum Command {
+enum Command {
     #[command(description = "Display this text")]
     Help,
     #[command(description = "Start")]
@@ -40,7 +40,7 @@ fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
 /// Parse the text wrote on Telegram and check if that text is a valid command
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
-pub async fn query_handler(
+async fn query_handler(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Ok(command) =
