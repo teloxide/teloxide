@@ -16,7 +16,7 @@ pub enum Command {
 }
 
 /// Creates a keyboard made by buttons in a big column.
-async fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
+fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
     let mut keyboard_array: Vec<Vec<InlineKeyboardButton>> = vec![];
     // The column is made by the list of Debian versions.
     let debian_versions = vec![
@@ -50,7 +50,7 @@ pub async fn handler(
                 cx.answer(Command::descriptions()).await?;
             }
             Command::Start => {
-                let keyboard = make_keyboard(cx.chat_id()).await;
+                let keyboard = make_keyboard(cx.chat_id());
                 // Create a list of buttons using callbacks to receive the response.
                 cx.answer("Debian versions:").reply_markup(keyboard).await?;
             }
