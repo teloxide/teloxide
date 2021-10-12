@@ -40,7 +40,7 @@ fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
 /// Parse the text wrote on Telegram and check if that text is a valid command
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
-async fn query_handler(
+async fn message_handler(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Ok(command) =
@@ -96,7 +96,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, Message>| {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
-                query_handler(cx).await.log_on_error().await;
+                message_handler(cx).await.log_on_error().await;
             })
         })
         .callback_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, CallbackQuery>| {
