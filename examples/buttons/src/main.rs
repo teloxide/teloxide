@@ -66,7 +66,7 @@ async fn message_handler(
 
 /// When it receives a callback from a button it edits the message with all
 /// those buttons writing a text with the selected Debian version.
-async fn callback_hander(
+async fn callback_handler(
     cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let data = &cx.update.data;
@@ -101,7 +101,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         })
         .callback_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, CallbackQuery>| {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
-                callback_hander(cx).await.log_on_error().await;
+                callback_handler(cx).await.log_on_error().await;
             })
         })
         .dispatch()
