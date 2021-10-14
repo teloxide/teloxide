@@ -8,6 +8,8 @@ use teloxide_core::types::User;
 ///
 /// Passed string will not be automatically escaped because it can contain
 /// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn bold(s: &str) -> String {
     format!("<b>{}</b>", s)
 }
@@ -16,6 +18,8 @@ pub fn bold(s: &str) -> String {
 ///
 /// Passed string will not be automatically escaped because it can contain
 /// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn italic(s: &str) -> String {
     format!("<i>{}</i>", s)
 }
@@ -24,6 +28,8 @@ pub fn italic(s: &str) -> String {
 ///
 /// Passed string will not be automatically escaped because it can contain
 /// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn underline(s: &str) -> String {
     format!("<u>{}</u>", s)
 }
@@ -32,6 +38,8 @@ pub fn underline(s: &str) -> String {
 ///
 /// Passed string will not be automatically escaped because it can contain
 /// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn strike(s: &str) -> String {
     format!("<s>{}</s>", s)
 }
@@ -39,11 +47,15 @@ pub fn strike(s: &str) -> String {
 /// Builds an inline link with an anchor.
 ///
 /// Escapes the passed URL and the link text.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn link(url: &str, text: &str) -> String {
     format!("<a href=\"{}\">{}</a>", escape(url), escape(text))
 }
 
 /// Builds an inline user mention link with an anchor.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn user_mention(user_id: i64, text: &str) -> String {
     link(format!("tg://user?id={}", user_id).as_str(), text)
 }
@@ -51,6 +63,8 @@ pub fn user_mention(user_id: i64, text: &str) -> String {
 /// Formats the code block.
 ///
 /// Escapes HTML characters inside the block.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn code_block(code: &str) -> String {
     format!("<pre>{}</pre>", escape(code))
 }
@@ -58,6 +72,8 @@ pub fn code_block(code: &str) -> String {
 /// Formats the code block with a specific language syntax.
 ///
 /// Escapes HTML characters inside the block.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     format!(
         "<pre><code class=\"language-{}\">{}</code></pre>",
@@ -69,6 +85,8 @@ pub fn code_block_with_lang(code: &str, lang: &str) -> String {
 /// Formats the string as an inline code.
 ///
 /// Escapes HTML characters inside the block.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn code_inline(s: &str) -> String {
     format!("<code>{}</code>", escape(s))
 }
@@ -80,10 +98,14 @@ pub fn code_inline(s: &str) -> String {
 /// they shoudn't be escaped by the [spec].
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn escape(s: &str) -> String {
     s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
 }
 
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using it's output does nothing useful"]
 pub fn user_mention_or_link(user: &User) -> String {
     match user.mention() {
         Some(mention) => mention,
