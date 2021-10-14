@@ -18,11 +18,12 @@ pub struct TraceStorage<S> {
 }
 
 impl<S> TraceStorage<S> {
-    #[must_use]
+    #[must_use = "This function is pure, that is does nothing unless it's output is used"]
     pub fn new(inner: Arc<S>) -> Arc<Self> {
         Arc::new(Self { inner })
     }
 
+    #[must_use = "This function is pure, that is does nothing unless it's output is used"]
     pub fn into_inner(self) -> Arc<S> {
         self.inner
     }

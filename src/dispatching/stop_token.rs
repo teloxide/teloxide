@@ -39,6 +39,7 @@ pub struct AsyncStopFlag(#[pin] Abortable<Pending<()>>);
 
 impl AsyncStopToken {
     /// Create a new token/flag pair.
+    #[must_use = "This function is pure, that is does nothing unless it's output is used"]
     pub fn new_pair() -> (Self, AsyncStopFlag) {
         let (handle, reg) = AbortHandle::new_pair();
         let token = Self(handle);
@@ -56,6 +57,7 @@ impl StopToken for AsyncStopToken {
 
 impl AsyncStopFlag {
     /// Returns true if the stop token linked to `self` was used.
+    #[must_use = "This function is pure, that is does nothing unless it's output is used"]
     pub fn is_stopped(&self) -> bool {
         self.0.is_aborted()
     }
