@@ -663,6 +663,7 @@ impl From<&ChatId> for ChatIdHash {
     }
 }
 
+#[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct ThrottlingRequest<R: HasPayload> {
     request: R,
     chat_id: fn(&R::Payload) -> ChatIdHash,

@@ -9,7 +9,7 @@ use crate::{
 /// A ready-to-send Telegram request whose payload is sent using [JSON].
 ///
 /// [JSON]: https://core.telegram.org/bots/api#making-requests
-#[must_use = "requests do nothing until sent"]
+#[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct JsonRequest<P> {
     bot: Bot,
     payload: P,

@@ -59,6 +59,7 @@ pub trait Request: HasPayload {
     /// let _: Me = request.send().await.unwrap();
     /// # };
     /// ```
+    #[must_use = "Futures are lazy and do nothing unless polled or awaited"]
     fn send(self) -> Self::Send;
 
     /// Send this request by reference.
@@ -86,13 +87,10 @@ pub trait Request: HasPayload {
     /// }
     /// # };
     /// ```
+    #[must_use = "Futures are lazy and do nothing unless polled or awaited"]
     fn send_ref(&self) -> Self::SendRef;
 
     #[cfg(feature = "erased")]
-    #[cfg_attr(
-        all(any(docsrs, dep_docsrs), feature = "nightly"),
-        doc(cfg(feature = "erased"))
-    )]
     fn erase<'a>(self) -> crate::adaptors::erased::ErasedRequest<'a, Self::Payload, Self::Err>
     where
         Self: Sized + 'a,

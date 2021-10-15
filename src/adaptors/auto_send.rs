@@ -116,6 +116,7 @@ download_forward! {
     { this => this.inner() }
 }
 
+#[must_use = "Futures are lazy and do nothing unless polled or awaited"]
 #[pin_project::pin_project]
 pub struct AutoRequest<R: Request>(#[pin] Inner<R>);
 

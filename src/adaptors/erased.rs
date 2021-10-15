@@ -35,6 +35,7 @@ impl<'a, E> ErasedRequester<'a, E> {
 }
 
 /// [`Request`] with erased type.
+#[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct ErasedRequest<'a, T, E> {
     inner: Box<dyn ErasableRequest<'a, Payload = T, Err = E> + 'a>,
 }
