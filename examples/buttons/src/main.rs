@@ -20,7 +20,7 @@ enum Command {
 /// Creates a keyboard made by buttons in a big column.
 fn make_keyboard() -> InlineKeyboardMarkup {
     let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
-    // The column is made by the list of Debian versions.
+
     let debian_versions = [
         "Buzz", "Rex", "Bo", "Hamm", "Slink", "Potato", "Woody", "Sarge", "Etch", "Lenny",
         "Squeeze", "Wheezy", "Jessie", "Stretch", "Buster", "Bullseye",
@@ -44,22 +44,25 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 async fn message_handler(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    if let Ok(command) =
-        BotCommand::parse(cx.update.text().expect("Error with the text"), "buttons")
-    {
-        match command {
-            Command::Help => {
-                // Just send the description of all commands.
-                cx.answer(Command::descriptions()).await?;
-            }
-            Command::Start => {
-                let keyboard = make_keyboard();
-                // Create a list of buttons using callbacks to receive the response.
-                cx.answer("Debian versions:").reply_markup(keyboard).await?;
+    match cx.update.text() {
+        Some(text) => {
+            match BotCommand::parse(text, "buttons") {
+                Ok(Command::Help) => {
+                    // Just send the description of all commands.
+                    cx.answer(Command::descriptions()).await?;
+                }
+                Ok(Command::Start) => {
+                    // Create a list of buttons and send them.
+                    let keyboard = make_keyboard();
+                    cx.answer("Debian versions:").reply_markup(keyboard).await?;
+                }
+
+                Err(_) => {
+                    cx.reply_to("Command not found!").await?;
+                }
             }
         }
-    } else {
-        cx.reply_to("Command not found!").await?;
+        None => {}
     }
 
     Ok(())
@@ -70,13 +73,13 @@ async fn message_handler(
 async fn callback_handler(
     cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let data = &cx.update.data;
-    if let Some(version) = data {
-        let message = cx.update.message.clone().unwrap();
-        let _ = cx
-            .requester
-            .edit_message_text(message.chat.id, message.id, format!("You chose: {}", version))
-            .await;
+    let UpdateWithCx { requester: bot, update: query } = cx;
+    if let Some(version) = query.data {
+        let message = query.message.unwrap();
+
+        bot.edit_message_text(message.chat.id, message.id, format!("You chose: {}", version))
+            .await?;
+
         log::info!("You chose: {}", version);
     }
 
