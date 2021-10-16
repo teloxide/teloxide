@@ -2,7 +2,10 @@ use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
     prelude::*,
-    types::{InlineKeyboardButton, InlineKeyboardMarkup},
+    types::{
+        InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
+        InputMessageContentText,
+    },
     utils::command::BotCommand,
 };
 
@@ -18,23 +21,24 @@ enum Command {
 }
 
 /// Creates a keyboard made by buttons in a big column.
-fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
-    let mut keyboard_array: Vec<Vec<InlineKeyboardButton>> = vec![];
-    // The column is made by the list of Debian versions.
-    let debian_versions = vec![
+fn make_keyboard() -> InlineKeyboardMarkup {
+    let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
+
+    let debian_versions = [
         "Buzz", "Rex", "Bo", "Hamm", "Slink", "Potato", "Woody", "Sarge", "Etch", "Lenny",
         "Squeeze", "Wheezy", "Jessie", "Stretch", "Buster", "Bullseye",
     ];
 
-    for version in debian_versions {
-        // Match each button with the chat id and the Debian version.
-        keyboard_array.push(vec![InlineKeyboardButton::callback(
-            version.into(),
-            format!("{}_{}", chat_id, version),
-        )]);
+    for versions in debian_versions.chunks(3) {
+        let row = versions
+            .iter()
+            .map(|&version| InlineKeyboardButton::callback(version.to_owned(), version.to_owned()))
+            .collect();
+
+        keyboard.push(row);
     }
 
-    InlineKeyboardMarkup::new(keyboard_array)
+    InlineKeyboardMarkup::new(keyboard)
 }
 
 /// Parse the text wrote on Telegram and check if that text is a valid command
@@ -43,23 +47,43 @@ fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
 async fn message_handler(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    if let Ok(command) =
-        BotCommand::parse(cx.update.text().expect("Error with the text"), "buttons")
-    {
-        match command {
-            Command::Help => {
-                // Just send the description of all commands.
-                cx.answer(Command::descriptions()).await?;
-            }
-            Command::Start => {
-                let keyboard = make_keyboard(cx.chat_id());
-                // Create a list of buttons using callbacks to receive the response.
-                cx.answer("Debian versions:").reply_markup(keyboard).await?;
+    match cx.update.text() {
+        Some(text) => {
+            match BotCommand::parse(text, "buttons") {
+                Ok(Command::Help) => {
+                    // Just send the description of all commands.
+                    cx.answer(Command::descriptions()).await?;
+                }
+                Ok(Command::Start) => {
+                    // Create a list of buttons and send them.
+                    let keyboard = make_keyboard();
+                    cx.answer("Debian versions:").reply_markup(keyboard).await?;
+                }
+
+                Err(_) => {
+                    cx.reply_to("Command not found!").await?;
+                }
             }
         }
-    } else {
-        cx.reply_to("Command not found!").await?;
+        None => {}
     }
+
+    Ok(())
+}
+
+async fn inline_query_handler(
+    cx: UpdateWithCx<AutoSend<Bot>, InlineQuery>,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let UpdateWithCx { requester: bot, update: query } = cx;
+
+    let choose_debian_version = InlineQueryResultArticle::new(
+        "0",
+        "Chose debian version",
+        InputMessageContent::Text(InputMessageContentText::new("Debian versions:")),
+    )
+    .reply_markup(make_keyboard());
+
+    bot.answer_inline_query(query.id, vec![choose_debian_version.into()]).await?;
 
     Ok(())
 }
@@ -69,17 +93,22 @@ async fn message_handler(
 async fn callback_handler(
     cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let data = &cx.update.data;
-    if let Some(text) = data {
-        let callback: Vec<&str> = text.split('_').collect();
-        let chat_id = callback[0];
-        let version = callback[1];
+    let UpdateWithCx { requester: bot, update: query } = cx;
 
-        let message_id = cx.update.message.clone().unwrap().id;
-        let _ = cx
-            .requester
-            .edit_message_text(chat_id.to_string(), message_id, format!("You chose: {}", version))
-            .await;
+    if let Some(version) = query.data {
+        let text = format!("You chose: {}", version);
+
+        match query.message {
+            Some(Message { id, chat, .. }) => {
+                bot.edit_message_text(chat.id, id, text).await?;
+            }
+            None => {
+                if let Some(id) = query.inline_message_id {
+                    bot.edit_message_text_inline(dbg!(id), text).await?;
+                }
+            }
+        }
+
         log::info!("You chose: {}", version);
     }
 
@@ -102,6 +131,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .callback_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, CallbackQuery>| {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
                 callback_handler(cx).await.log_on_error().await;
+            })
+        })
+        .inline_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, InlineQuery>| {
+            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
+                inline_query_handler(cx).await.log_on_error().await;
             })
         })
         .dispatch()
