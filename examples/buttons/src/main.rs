@@ -2,7 +2,10 @@ use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
     prelude::*,
-    types::{InlineKeyboardButton, InlineKeyboardMarkup},
+    types::{
+        InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
+        InputMessageContentText,
+    },
     utils::command::BotCommand,
 };
 
@@ -68,17 +71,43 @@ async fn message_handler(
     Ok(())
 }
 
+async fn inline_query_handler(
+    cx: UpdateWithCx<AutoSend<Bot>, InlineQuery>,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let UpdateWithCx { requester: bot, update: query } = cx;
+
+    let choose_debian_version = InlineQueryResultArticle::new(
+        "0",
+        "Chose debian version",
+        InputMessageContent::Text(InputMessageContentText::new("Debian versions:")),
+    )
+    .reply_markup(make_keyboard());
+
+    bot.answer_inline_query(query.id, vec![choose_debian_version.into()]).await?;
+
+    Ok(())
+}
+
 /// When it receives a callback from a button it edits the message with all
 /// those buttons writing a text with the selected Debian version.
 async fn callback_handler(
     cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let UpdateWithCx { requester: bot, update: query } = cx;
-    if let Some(version) = query.data {
-        let message = query.message.unwrap();
 
-        bot.edit_message_text(message.chat.id, message.id, format!("You chose: {}", version))
-            .await?;
+    if let Some(version) = query.data {
+        let text = format!("You chose: {}", version);
+
+        match query.message {
+            Some(Message { id, chat, .. }) => {
+                bot.edit_message_text(chat.id, id, text).await?;
+            }
+            None => {
+                if let Some(id) = query.inline_message_id {
+                    bot.edit_message_text_inline(dbg!(id), text).await?;
+                }
+            }
+        }
 
         log::info!("You chose: {}", version);
     }
@@ -102,6 +131,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .callback_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, CallbackQuery>| {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
                 callback_handler(cx).await.log_on_error().await;
+            })
+        })
+        .inline_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, InlineQuery>| {
+            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
+                inline_query_handler(cx).await.log_on_error().await;
             })
         })
         .dispatch()
