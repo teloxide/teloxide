@@ -19,22 +19,23 @@ enum Command {
 
 /// Creates a keyboard made by buttons in a big column.
 fn make_keyboard() -> InlineKeyboardMarkup {
-    let mut keyboard_array: Vec<Vec<InlineKeyboardButton>> = vec![];
+    let mut keyboard: Vec<Vec<InlineKeyboardButton>> = vec![];
     // The column is made by the list of Debian versions.
-    let debian_versions = vec![
+    let debian_versions = [
         "Buzz", "Rex", "Bo", "Hamm", "Slink", "Potato", "Woody", "Sarge", "Etch", "Lenny",
         "Squeeze", "Wheezy", "Jessie", "Stretch", "Buster", "Bullseye",
     ];
 
-    for version in debian_versions {
-        // Match each button with the chat id and the Debian version.
-        keyboard_array.push(vec![InlineKeyboardButton::callback(
-            version.to_owned(),
-            version.to_owned(),
-        )]);
+    for versions in debian_versions.chunks(3) {
+        let row = versions
+            .iter()
+            .map(|&version| InlineKeyboardButton::callback(version.to_owned(), version.to_owned()))
+            .collect();
+
+        keyboard.push(row);
     }
 
-    InlineKeyboardMarkup::new(keyboard_array)
+    InlineKeyboardMarkup::new(keyboard)
 }
 
 /// Parse the text wrote on Telegram and check if that text is a valid command
