@@ -18,7 +18,7 @@ enum Command {
 }
 
 /// Creates a keyboard made by buttons in a big column.
-fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
+fn make_keyboard() -> InlineKeyboardMarkup {
     let mut keyboard_array: Vec<Vec<InlineKeyboardButton>> = vec![];
     // The column is made by the list of Debian versions.
     let debian_versions = vec![
@@ -29,8 +29,8 @@ fn make_keyboard(chat_id: i64) -> InlineKeyboardMarkup {
     for version in debian_versions {
         // Match each button with the chat id and the Debian version.
         keyboard_array.push(vec![InlineKeyboardButton::callback(
-            version.into(),
-            format!("{}_{}", chat_id, version),
+            version.to_owned(),
+            version.to_owned(),
         )]);
     }
 
@@ -52,7 +52,7 @@ async fn message_handler(
                 cx.answer(Command::descriptions()).await?;
             }
             Command::Start => {
-                let keyboard = make_keyboard(cx.chat_id());
+                let keyboard = make_keyboard();
                 // Create a list of buttons using callbacks to receive the response.
                 cx.answer("Debian versions:").reply_markup(keyboard).await?;
             }
@@ -70,15 +70,11 @@ async fn callback_handler(
     cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let data = &cx.update.data;
-    if let Some(text) = data {
-        let callback: Vec<&str> = text.split('_').collect();
-        let chat_id = callback[0];
-        let version = callback[1];
-
-        let message_id = cx.update.message.clone().unwrap().id;
+    if let Some(version) = data {
+        let message = cx.update.message.clone().unwrap();
         let _ = cx
             .requester
-            .edit_message_text(chat_id.to_string(), message_id, format!("You chose: {}", version))
+            .edit_message_text(message.chat.id, message.id, format!("You chose: {}", version))
             .await;
         log::info!("You chose: {}", version);
     }
