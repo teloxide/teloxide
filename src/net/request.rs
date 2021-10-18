@@ -20,6 +20,19 @@ pub async fn request_multipart<T>(
 where
     T: DeserializeOwned,
 {
+    // Workaround for [#460]
+    //
+    // Telegram has some methods that return either `Message` or `True` depending on
+    // the used arguments we model this as `...` and `..._inline` pairs of methods.
+    //
+    // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
+    // sufix). This removes the sufix allowing to call the right telegram method.
+    // Note that currently there are no normal telegram methods ending in "Inline",
+    // so this is fine.
+    //
+    // [#460]: https://github.com/teloxide/teloxide/issues/460
+    let method_name = method_name.trim_end_matches("Inline");
+
     let response = client
         .post(crate::net::method_url(api_url, token, method_name))
         .multipart(params)
@@ -40,6 +53,19 @@ pub async fn request_json<T>(
 where
     T: DeserializeOwned,
 {
+    // Workaround for [#460]
+    //
+    // Telegram has some methods that return either `Message` or `True` depending on
+    // the used arguments we model this as `...` and `..._inline` pairs of methods.
+    //
+    // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
+    // sufix). This removes the sufix allowing to call the right telegram method.
+    // Note that currently there are no normal telegram methods ending in "Inline",
+    // so this is fine.
+    //
+    // [#460]: https://github.com/teloxide/teloxide/issues/460
+    let method_name = method_name.trim_end_matches("Inline");
+
     let response = client
         .post(crate::net::method_url(api_url, token, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
