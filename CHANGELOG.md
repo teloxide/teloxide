@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed
+
+- Compilation when the `ctrlc_handler` feature is disabled ([issue 462](https://github.com/teloxide/teloxide/issues/462))
+
 ## [0.5.2] - 2021-08-25
 
 ### Fixed
