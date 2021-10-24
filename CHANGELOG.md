@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- `RequestError::RetryAfter` now has a `u32` field instead of `i32`
+
 ### Added
 
 - `UserId::{url, is_anonymous, is_channel, is_telegram}` convenience functions ([#197][pr197]) 

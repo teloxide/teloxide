@@ -16,7 +16,7 @@ pub enum ResponseParameters {
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
-    RetryAfter(i32),
+    RetryAfter(u32),
 }
 
 #[cfg(test)]

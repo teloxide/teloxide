@@ -31,7 +31,7 @@ pub enum RequestError {
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
     #[error("Retry after {0} seconds")]
-    RetryAfter(i32),
+    RetryAfter(u32),
 
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
