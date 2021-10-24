@@ -3,11 +3,13 @@ use std::{
     future::Future,
     hash::{Hash, Hasher},
     pin::Pin,
+    sync::Arc,
     time::{Duration, Instant},
 };
 
+use either::Either;
 use futures::{
-    future::ready,
+    future::{ready, BoxFuture},
     task::{Context, Poll},
     FutureExt,
 };
@@ -19,7 +21,6 @@ use url::Url;
 use vecrem::VecExt;
 
 use crate::{
-    adaptors::throttle::chan_send::{ChanSend, MpscSend},
     errors::AsResponseParameters,
     requests::{HasPayload, Output, Request, Requester},
     types::*,
@@ -708,24 +709,24 @@ impl<B: Requester> Requester for Throttle<B>
 where
     B::Err: AsResponseParameters,
 
-    B::SendMessage: Clone + Send + Sync,
-    B::ForwardMessage: Clone + Send + Sync,
-    B::CopyMessage: Clone + Send + Sync,
-    B::SendPhoto: Clone + Send + Sync,
-    B::SendAudio: Clone + Send + Sync,
-    B::SendDocument: Clone + Send + Sync,
-    B::SendVideo: Clone + Send + Sync,
-    B::SendAnimation: Clone + Send + Sync,
-    B::SendVoice: Clone + Send + Sync,
-    B::SendVideoNote: Clone + Send + Sync,
-    B::SendMediaGroup: Clone + Send + Sync,
-    B::SendLocation: Clone + Send + Sync,
-    B::SendVenue: Clone + Send + Sync,
-    B::SendContact: Clone + Send + Sync,
-    B::SendPoll: Clone + Send + Sync,
-    B::SendDice: Clone + Send + Sync,
-    B::SendSticker: Clone + Send + Sync,
-    B::SendInvoice: Clone + Send + Sync,
+    B::SendMessage: Clone + Send + Sync + 'static,
+    B::ForwardMessage: Clone + Send + Sync + 'static,
+    B::CopyMessage: Clone + Send + Sync + 'static,
+    B::SendPhoto: Clone + Send + Sync + 'static,
+    B::SendAudio: Clone + Send + Sync + 'static,
+    B::SendDocument: Clone + Send + Sync + 'static,
+    B::SendVideo: Clone + Send + Sync + 'static,
+    B::SendAnimation: Clone + Send + Sync + 'static,
+    B::SendVoice: Clone + Send + Sync + 'static,
+    B::SendVideoNote: Clone + Send + Sync + 'static,
+    B::SendMediaGroup: Clone + Send + Sync + 'static,
+    B::SendLocation: Clone + Send + Sync + 'static,
+    B::SendVenue: Clone + Send + Sync + 'static,
+    B::SendContact: Clone + Send + Sync + 'static,
+    B::SendPoll: Clone + Send + Sync + 'static,
+    B::SendDice: Clone + Send + Sync + 'static,
+    B::SendSticker: Clone + Send + Sync + 'static,
+    B::SendInvoice: Clone + Send + Sync + 'static,
 {
     type Err = B::Err;
 
@@ -812,6 +813,8 @@ pub struct ThrottlingRequest<R: HasPayload> {
 impl<R: HasPayload + Clone> HasPayload for ThrottlingRequest<R> {
     type Payload = R::Payload;
 
+    /// Note that if this request was already executed via `send_ref` and it
+    /// didn't yet completed, this method will clone the underlying request
     fn payload_mut(&mut self) -> &mut Self::Payload {
         Arc::make_mut(&mut self.request).payload_mut()
     }
@@ -823,8 +826,8 @@ impl<R: HasPayload + Clone> HasPayload for ThrottlingRequest<R> {
 
 impl<R> Request for ThrottlingRequest<R>
 where
-    R: Request + Clone + Send + Sync,
-    R::Err: AsResponseParameters,
+    R: Request + Clone + Send + Sync + 'static, // TODO: rem static
+    R::Err: AsResponseParameters + Send,
     Output<R>: Send,
 {
     type Err = R::Err;
@@ -832,99 +835,22 @@ where
     type SendRef = ThrottlingSend<R>;
 
     fn send(self) -> Self::Send {
-        let (tx, rx) = channel();
+        let chat = (self.chat_id)(self.payload_ref());
+        let request = Either::from(Arc::try_unwrap(self.request));
 
-        let chat_id = (self.chat_id)(self.payload_ref());
-        let send = self.worker.send1((chat_id, tx));
-
-        let inner = ThrottlingSendInner::Registering {
-            request: Arc::try_unwrap(self.request).into(),
-            chat: chat_id,
-            send,
-            wait: rx,
-        };
-        ThrottlingSend(inner)
+        ThrottlingSend(Box::pin(send(request, chat, self.worker)))
     }
 
     fn send_ref(&self) -> Self::SendRef {
-        let (tx, rx) = channel();
-
-        let chat_id = (self.chat_id)(self.payload_ref());
-        let send = self.worker.clone().send1((chat_id, tx));
-
-        // As we can't move self.0 (request) out, as we do in `send` we are
-        // forced to call `send_ref()`. This may have overhead and/or lead to
-        // wrong results because `R::send_ref` does the send.
-        //
-        // However `Request` documentation explicitly notes that `send{,_ref}`
-        // should **not** do any kind of work, so it's ok.
+        let chat = (self.chat_id)(self.payload_ref());
         let request = Either::Left(Arc::clone(&self.request));
 
-        let inner = ThrottlingSendInner::Registering {
-            chat: chat_id,
-            request,
-            send,
-            wait: rx,
-        };
-        ThrottlingSend(inner)
+        ThrottlingSend(Box::pin(send(request, chat, self.worker.clone())))
     }
 }
 
-use either::Either;
-use std::sync::Arc;
-
 #[pin_project::pin_project]
-pub struct ThrottlingSend<R: Request>(#[pin] ThrottlingSendInner<R>);
-
-#[pin_project::pin_project(project = SendProj, project_replace = SendRepl)]
-enum ThrottlingSendInner<R: Request> {
-    Registering {
-        request: Either<Arc<R>, R>,
-        chat: ChatIdHash,
-        #[pin]
-        send: ChanSend<(ChatIdHash, RequestLock)>,
-        wait: RequestWaiter,
-    },
-    Freezing {
-        #[pin]
-        freeze_fut: ChanSend<FreezeUntil>,
-        res: Result<Output<R>, R::Err>,
-    },
-    FreezingRetry {
-        #[pin]
-        freeze_fut: ChanSend<FreezeUntil>,
-        request: Either<Arc<R>, R>,
-        chat: ChatIdHash,
-        wait: RequestWaiter,
-    },
-    Pending {
-        request: Either<Arc<R>, R>,
-        chat: ChatIdHash,
-        #[pin]
-        wait: RequestWaiter,
-    },
-    Sent {
-        freeze: mpsc::Sender<FreezeUntil>,
-        chat: ChatIdHash,
-        #[pin]
-        fut: R::Send,
-    },
-    SentRef {
-        freeze: mpsc::Sender<FreezeUntil>,
-        chat: ChatIdHash,
-        #[pin]
-        fut: R::SendRef,
-    },
-    SentRetryable {
-        request: Either<Arc<R>, R>,
-        chat: ChatIdHash,
-        freeze: mpsc::Sender<FreezeUntil>,
-        #[pin]
-        fut: R::SendRef,
-    },
-
-    Done,
-}
+pub struct ThrottlingSend<R: Request>(#[pin] BoxFuture<'static, Result<Output<R>, R::Err>>);
 
 impl<R: Request> Future for ThrottlingSend<R>
 where
@@ -933,195 +859,85 @@ where
     type Output = Result<Output<R>, R::Err>;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let mut this = self.as_mut().project().0;
+        self.as_mut().project().0.poll(cx)
+    }
+}
 
-        match this.as_mut().project() {
-            SendProj::Registering { send, .. } => match send.poll(cx) {
-                Poll::Pending => Poll::Pending,
-                Poll::Ready(res) => {
-                    if let SendRepl::Registering {
-                        request,
-                        send: _,
-                        wait,
-                        chat,
-                    } = this.as_mut().project_replace(ThrottlingSendInner::Done)
-                    {
-                        match res {
-                            Ok(()) => this.as_mut().set(ThrottlingSendInner::Pending {
-                                request,
-                                wait,
-                                chat,
-                            }),
-                            // The worker is unlikely to drop queue before sending all requests,
-                            // but just in case it has dropped the queue, we want to just send the
-                            // request.
-                            Err(_) => this.as_mut().set(match request {
-                                Either::Left(shared) => ThrottlingSendInner::SentRef {
-                                    freeze: mpsc::channel(1).0,
-                                    fut: shared.send_ref(),
-                                    chat,
-                                },
-                                Either::Right(owned) => ThrottlingSendInner::Sent {
-                                    freeze: mpsc::channel(1).0,
-                                    fut: owned.send(),
-                                    chat,
-                                },
-                            }),
-                        };
-                    }
+/// Actual implementation of the `ThrottlingSend` future
+async fn send<R>(
+    request: Either<Arc<R>, R>,
+    chat: ChatIdHash,
+    worker: mpsc::Sender<(ChatIdHash, RequestLock)>,
+) -> Result<Output<R>, R::Err>
+where
+    R: Request + Send + Sync + 'static,
+    R::Err: AsResponseParameters + Send,
+    Output<R>: Send,
+{
+    // We use option to `take` when sending by value.
+    //
+    // All unwraps down below will succed because we always return immediately after
+    // taking.
+    let mut request: Either<Arc<R>, Option<R>> = request.map_right(Some);
 
-                    self.poll(cx)
-                }
-            },
-            SendProj::Pending { wait, .. } => match wait.poll(cx) {
-                Poll::Pending => Poll::Pending,
-                // Worker pass "message" to unlock us by closing the channel,
-                // and thus we can safely ignore this result as we know it will
-                // always be `Err(_)` (because `Ok(Never)` is uninhibited)
-                // and that's what we want.
-                Poll::Ready((retry, freeze)) => {
-                    if let SendRepl::Pending { request, chat, .. } =
-                        this.as_mut().project_replace(ThrottlingSendInner::Done)
-                    {
-                        let repl = match (retry, request) {
-                            (true, request) => ThrottlingSendInner::SentRetryable {
-                                fut: request.as_ref().either(|r| &**r, |r| r).send_ref(),
-                                chat,
-                                request,
-                                freeze,
-                            },
-                            (false, Either::Left(shared)) => ThrottlingSendInner::SentRef {
-                                fut: shared.send_ref(),
-                                chat,
-                                freeze,
-                            },
-                            (false, Either::Right(owned)) => ThrottlingSendInner::Sent {
-                                fut: owned.send(),
-                                chat,
-                                freeze,
-                            },
-                        };
+    loop {
+        let (lock, wait) = channel();
 
-                        this.as_mut().project_replace(repl);
-                    }
+        // The worker is unlikely to drop queue before sending all requests,
+        // but just in case it has dropped the queue, we want to just send the
+        // request.
+        if let Err(_) = worker.send((chat, lock)).await {
+            return match &mut request {
+                Either::Left(shared) => shared.send_ref().await,
+                Either::Right(owned) => owned.take().unwrap().send().await,
+            };
+        };
 
-                    self.poll(cx)
-                }
-            },
-            SendProj::Freezing { freeze_fut, .. } => {
-                // Error here means that the worker died, so we can't really do anything about
-                // it
-                let _ = futures::ready!(freeze_fut.poll(cx));
-                if let SendRepl::Freezing { res, .. } =
-                    this.as_mut().project_replace(ThrottlingSendInner::Done)
-                {
-                    Poll::Ready(res)
-                } else {
-                    // The match above guarantees that this is unreachable
-                    unreachable!()
-                }
+        let (retry, freeze) = wait.await;
+
+        let res = match (retry, &mut request) {
+            (true, request) => {
+                request
+                    .as_ref()
+                    .either(|r| &**r, |r| r.as_ref().unwrap())
+                    .send_ref()
+                    .await
             }
-            SendProj::FreezingRetry { freeze_fut, .. } => {
-                // Error here means that the worker died, so we can't really do anything about
-                // it
-                let _ = futures::ready!(freeze_fut.poll(cx));
+            (false, Either::Left(shared)) => shared.send_ref().await,
+            (false, Either::Right(owned)) => owned.take().unwrap().send().await,
+        };
 
-                if let SendRepl::FreezingRetry {
-                    request,
+        let retry_after = res.as_ref().err().and_then(<_>::retry_after);
+        if let Some(retry_after) = retry_after {
+            let after = Duration::from_secs(retry_after.into());
+
+            if retry {
+                log::warn!("Freezing, before retrying: {}", retry_after);
+            }
+
+            let (lock, wait) = channel();
+
+            // Error here means that the worker died, so we can't really do anything about
+            // it
+            let _ = freeze
+                .send(FreezeUntil {
+                    until: Instant::now(), // TODO: this is obviously wrong
+                    after,
                     chat,
-                    wait,
-                    ..
-                } = this.as_mut().project_replace(ThrottlingSendInner::Done)
-                {
-                    this.as_mut().set(ThrottlingSendInner::Pending {
-                        request,
-                        chat,
-                        wait,
-                    });
+                    retry: Some(lock),
+                })
+                .await;
 
-                    self.poll(cx)
-                } else {
-                    unreachable!()
-                }
-            }
-            SendProj::Sent { fut, freeze, chat } => {
-                let res = futures::ready!(fut.poll(cx));
-
-                if let Err(Some(retry_after)) = res.as_ref().map_err(<_>::retry_after) {
-                    let after = Duration::from_secs(retry_after.into());
-                    let freeze_fut = freeze.clone().send1(FreezeUntil {
-                        until: Instant::now() + after,
-                        after,
-                        chat: *chat,
-                        retry: None,
-                    });
-
-                    this.set(ThrottlingSendInner::Freezing { freeze_fut, res });
-                    self.poll(cx)
-                } else {
-                    this.set(ThrottlingSendInner::Done);
-                    Poll::Ready(res)
-                }
-            }
-            SendProj::SentRef { freeze, fut, chat } => {
-                let res = futures::ready!(fut.poll(cx));
-
-                if let Err(Some(retry_after)) = res.as_ref().map_err(<_>::retry_after) {
-                    let after = Duration::from_secs(retry_after.into());
-                    let freeze_fut = freeze.clone().send1(FreezeUntil {
-                        until: Instant::now() + after,
-                        after,
-                        chat: *chat,
-                        retry: None,
-                    });
-
-                    this.set(ThrottlingSendInner::Freezing { freeze_fut, res });
-                    self.poll(cx)
-                } else {
-                    this.set(ThrottlingSendInner::Done);
-                    Poll::Ready(res)
-                }
-            }
-            SendProj::SentRetryable { fut, .. } => {
-                let res = futures::ready!(fut.poll(cx));
-                let (lock, wait) = channel();
-
-                if let Err(Some(retry_after)) = res.as_ref().map_err(<_>::retry_after) {
-                    let after = Duration::from_secs(retry_after.into());
-
-                    if let SendRepl::SentRetryable {
-                        request,
-                        freeze,
-                        chat,
-                        ..
-                    } = this.as_mut().project_replace(ThrottlingSendInner::Done)
-                    {
-                        log::warn!("Freezing, before retrying: {}", retry_after);
-                        let freeze_fut = freeze.send1(FreezeUntil {
-                            until: Instant::now(),
-                            after,
-                            chat,
-                            retry: Some(lock),
-                        });
-                        this.as_mut().set(ThrottlingSendInner::FreezingRetry {
-                            freeze_fut,
-                            request,
-                            chat,
-                            wait,
-                        })
-                    }
-
-                    self.poll(cx)
-                } else {
-                    this.set(ThrottlingSendInner::Done);
-                    Poll::Ready(res)
-                }
-            }
-            SendProj::Done => {
-                log::error!("Polling done");
-                Poll::Pending
-            }
+            wait.await;
         }
+
+        match res {
+            res @ Ok(_) => break res,
+            res @ Err(_) if !retry => break res,
+            Err(_) => {
+                // Next iteration will retry
+            }
+        };
     }
 }
 
@@ -1154,52 +970,6 @@ impl Future for RequestWaiter {
             Poll::Ready(Ok(ret)) => Poll::Ready(ret),
             Poll::Ready(Err(_)) => panic!("`RequestLock` is dropped by the throttle worker"),
             Poll::Pending => Poll::Pending,
-        }
-    }
-}
-
-mod chan_send {
-    use std::{future::Future, pin::Pin};
-
-    use futures::task::{Context, Poll};
-    use tokio::sync::{mpsc, mpsc::error::SendError};
-
-    pub(super) trait MpscSend<T> {
-        fn send1(self, val: T) -> ChanSend<T>;
-    }
-
-    #[pin_project::pin_project]
-    pub(super) struct ChanSend<T>(#[pin] Inner<T>);
-
-    #[cfg(not(feature = "nightly"))]
-    type Inner<T> = Pin<Box<dyn Future<Output = Result<(), SendError<T>>> + Send>>;
-    #[cfg(feature = "nightly")]
-    type Inner<T> = impl Future<Output = Result<(), SendError<T>>>;
-
-    impl<T: Send + 'static> MpscSend<T> for mpsc::Sender<T> {
-        // `return`s trick IDEA not to show errors
-        #[allow(clippy::needless_return)]
-        fn send1(self, val: T) -> ChanSend<T> {
-            #[cfg(feature = "nightly")]
-            {
-                fn def<T>(sender: mpsc::Sender<T>, val: T) -> Inner<T> {
-                    async move { sender.send(val).await }
-                }
-                return ChanSend(def(self, val));
-            }
-            #[cfg(not(feature = "nightly"))]
-            {
-                let this = self;
-                return ChanSend(Box::pin(async move { this.send(val).await }));
-            }
-        }
-    }
-
-    impl<T> Future for ChanSend<T> {
-        type Output = Result<(), SendError<T>>;
-
-        fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-            self.project().0.poll(cx)
         }
     }
 }
