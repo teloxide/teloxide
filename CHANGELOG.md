@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve `Throttling` adoptor
+  - Freeze when getting `RetryAfter(_)` error
+  - Retry requests that previously returned `RetryAfter(_)` error
 - `RequestError::RetryAfter` now has a `u32` field instead of `i32`
 
 ### Added
