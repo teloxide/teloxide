@@ -101,6 +101,7 @@ pub use self::{
 };
 
 pub mod adaptors;
+pub mod errors;
 pub mod net;
 pub mod payloads;
 pub mod prelude;
@@ -109,7 +110,6 @@ pub mod types;
 
 // reexported
 mod bot;
-mod errors;
 
 // implementation details
 mod serde_multipart;

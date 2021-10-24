@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `errors` module and `errors::AsResponseParameters` trait
+- `EditedMessageIsTooLong` error [#109][pr109]
+- `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
+- `Limits::messages_per_min_channel` ([#121][pr121])
+
+[pr109]: https://github.com/teloxide/teloxide-core/pull/109
+[pr116]: https://github.com/teloxide/teloxide-core/pull/116
+[pr121]: https://github.com/teloxide/teloxide-core/pull/121
+
 ### Changed
 
 - `RequestError::RetryAfter` now has a `u32` field instead of `i32`
