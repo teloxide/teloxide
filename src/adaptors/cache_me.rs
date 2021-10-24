@@ -123,6 +123,7 @@ download_forward! {
     { this => this.inner() }
 }
 
+#[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct CachedMeRequest<R: Request<Payload = GetMe>>(Inner<R>, GetMe);
 
 enum Inner<R: Request<Payload = GetMe>> {

@@ -255,6 +255,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field<T>(mut self, value: T) -> Self
             where
                 T: Into<$FTy>,
@@ -276,6 +277,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field<T>(mut self, value: T) -> Self
             where
                 T: ::core::iter::IntoIterator<Item = <$FTy as ::core::iter::IntoIterator>::Item>,
@@ -297,6 +299,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field(mut self, value: $FTy) -> Self {
                 self.payload_mut().$field = Some(value);
                 self
@@ -315,6 +318,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field<T>(mut self, value: T) -> Self
             where
                 T: Into<$FTy>,
@@ -336,6 +340,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field<T>(mut self, value: T) -> Self
             where
                 T: ::core::iter::IntoIterator<Item = <$FTy as ::core::iter::IntoIterator>::Item>,
@@ -357,6 +362,7 @@ macro_rules! impl_payload {
                 ") field."
             )]
             #[allow(clippy::wrong_self_convention)]
+            #[must_use = "Payloads and requests do nothing unless sent"]
             fn $field(mut self, value: $FTy) -> Self {
                 self.payload_mut().$field = value;
                 self
