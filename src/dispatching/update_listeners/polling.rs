@@ -24,7 +24,7 @@ use crate::{
 /// This function will automatically delete a webhook if it was set up.
 pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
-    R: Requester + 'static,
+    R: Requester + Send + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     delete_webhook_if_setup(&requester).await;
@@ -50,7 +50,7 @@ pub fn polling<R>(
     allowed_updates: Option<Vec<AllowedUpdate>>,
 ) -> impl UpdateListener<R::Err>
 where
-    R: Requester + 'static,
+    R: Requester + Send + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
     struct State<B: Requester> {
@@ -63,9 +63,10 @@ where
         token: AsyncStopToken,
     }
 
-    fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + '_
+    fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + Send + '_
     where
-        B: Requester,
+        B: Requester + Send,
+        <B as Requester>::GetUpdatesFaultTolerant: Send,
     {
         stream::unfold(st, move |state| async move {
             let State { timeout, limit, allowed_updates, bot, offset, flag, .. } = &mut *state;
@@ -176,4 +177,17 @@ where
             log::error!("Failed to delete a webhook: {:?}", e);
         }
     }
+}
+
+#[test]
+fn polling_is_send() {
+    use crate::dispatching::update_listeners::AsUpdateStream;
+
+    let bot = crate::Bot::new("TOKEN");
+    let mut polling = polling(bot, None, None, None);
+
+    assert_send(&polling);
+    assert_send(&polling.as_stream());
+
+    fn assert_send(_: &impl Send) {}
 }

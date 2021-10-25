@@ -188,7 +188,14 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
 /// This trait is a workaround to not require GAT.
 pub trait AsUpdateStream<'a, E> {
     /// The stream of updates from Telegram.
-    type Stream: Stream<Item = Result<Update, E>> + 'a;
+    // HACK: There is currently no way to write something like
+    // `-> impl for<'a> AsUpdateStream<'a, E, Stream: Send>`. Since we return
+    // `impl UpdateListener<E>` from `polling`, we need to have `Send` bound here,
+    // to make the stream `Send`.
+    //
+    // Without this it's, for example, impossible to spawn a tokio task with
+    // teloxide polling.
+    type Stream: Stream<Item = Result<Update, E>> + Send + 'a;
 
     /// Creates the update [`Stream`].
     ///
