@@ -156,15 +156,17 @@ where
                 match this.senders.pin().get(&chat_id) {
                     // An old dialogue
                     Some(tx) => {
-                        if tx.send(cx).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
+                        assert!(
+                            tx.send(cx).is_ok(),
+                            "We are not dropping a receiver or call .close() on it"
+                        );
                     }
                     None => {
                         let tx = this.new_tx();
-                        if tx.send(cx).is_err() {
-                            panic!("We are not dropping a receiver or call .close() on it",);
-                        }
+                        assert!(
+                            tx.send(cx).is_ok(),
+                            "We are not dropping a receiver or call .close() on it"
+                        );
                         this.senders.pin().insert(chat_id, tx);
                     }
                 }
@@ -271,9 +273,7 @@ mod tests {
                 let tx = tx.clone();
 
                 async move {
-                    if tx.send(update).is_err() {
-                        panic!("tx.send(update) failed");
-                    }
+                    assert!(tx.send(update).is_ok(), "tx.send(update) failed");
                 }
             })
             .await;
