@@ -25,7 +25,7 @@ use crate::{
 /// TRACE teloxide_core::adaptors::trace > Sending `SendDice` request: SendDice { chat_id: Id(0), emoji: Some(Dice), disable_notification: None, reply_to_message_id: None, allow_sending_without_reply: None, reply_markup: None }
 /// TRACE teloxide_core::adaptors::trace > Got response from `SendDice` request: Ok(Message { id: 13812, date: 1625926524, chat: Chat { .. }, via_bot: None, kind: Dice(MessageDice { dice: Dice { emoji: Dice, value: 3 } }) })
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Trace<B> {
     inner: B,
     settings: Settings,

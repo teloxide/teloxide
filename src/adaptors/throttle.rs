@@ -63,7 +63,7 @@ use crate::{
 ///
 /// As such, we encourage not to use `ChatId::ChannelUsername(u)` with this bot
 /// wrapper.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Throttle<B> {
     bot: B,
     // `RequestLock` allows to unlock requests (allowing them to be sent).

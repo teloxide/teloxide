@@ -8,7 +8,7 @@ use crate::{
 
 /// Default parse mode adaptor, see
 /// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode).
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct DefaultParseMode<B> {
     bot: B,
     mode: ParseMode,
