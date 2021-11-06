@@ -84,19 +84,13 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
 
     type SendPoll = B::SendPoll;
 
-    fn send_poll<C, Q, O>(
-        &self,
-        chat_id: C,
-        question: Q,
-        options: O,
-        type_: PollType,
-    ) -> Self::SendPoll
+    fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
         O: IntoIterator<Item = String>,
     {
-        let mut req = self.inner().send_poll(chat_id, question, options, type_);
+        let mut req = self.inner().send_poll(chat_id, question, options);
         req.payload_mut().explanation_parse_mode = Some(self.mode);
         req
     }

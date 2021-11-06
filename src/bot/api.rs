@@ -270,13 +270,7 @@ impl Requester for Bot {
 
     type SendPoll = JsonRequest<payloads::SendPoll>;
 
-    fn send_poll<C, Q, O>(
-        &self,
-        chat_id: C,
-        question: Q,
-        options: O,
-        type_: crate::types::PollType,
-    ) -> Self::SendPoll
+    fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,
@@ -284,7 +278,7 @@ impl Requester for Bot {
     {
         Self::SendPoll::new(
             self.clone(),
-            payloads::SendPoll::new(chat_id, question, options, type_),
+            payloads::SendPoll::new(chat_id, question, options),
         )
     }
 

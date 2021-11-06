@@ -651,11 +651,11 @@ macro_rules! requester_forward {
     (@method send_poll $body:ident $ty:ident) => {
         type SendPoll = $ty![SendPoll];
 
-        fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O, type_: PollType) -> Self::SendPoll where C: Into<ChatId>,
+        fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll where C: Into<ChatId>,
         Q: Into<String>,
         O: IntoIterator<Item = String> {
             let this = self;
-            $body!(send_poll this (chat_id: C, question: Q, options: O, type_: PollType))
+            $body!(send_poll this (chat_id: C, question: Q, options: O))
         }
     };
     (@method send_dice $body:ident $ty:ident) => {

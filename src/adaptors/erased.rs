@@ -8,7 +8,7 @@ use crate::{
     requests::{HasPayload, Output, Payload, Request, Requester},
     types::{
         BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, PollType, TargetMessage,
+        InputSticker, LabeledPrice, PassportElementError, TargetMessage,
     },
 };
 
@@ -330,7 +330,6 @@ trait ErasableRequester<'a> {
         chat_id: ChatId,
         question: String,
         options: Vec<String>,
-        type_: PollType,
     ) -> ErasedRequest<'a, SendPoll, Self::Err>;
 
     fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err>;
@@ -869,9 +868,8 @@ where
         chat_id: ChatId,
         question: String,
         options: Vec<String>,
-        type_: PollType,
     ) -> ErasedRequest<'a, SendPoll, Self::Err> {
-        Requester::send_poll(self, chat_id, question, options, type_).erase()
+        Requester::send_poll(self, chat_id, question, options).erase()
     }
 
     fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err> {

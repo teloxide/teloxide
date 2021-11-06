@@ -8,7 +8,7 @@ use crate::{
     requests::Request,
     types::{
         BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, PollType, TargetMessage,
+        InputSticker, LabeledPrice, PassportElementError, TargetMessage,
     },
 };
 
@@ -280,13 +280,7 @@ pub trait Requester {
     type SendPoll: Request<Payload = SendPoll, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendPoll`].
-    fn send_poll<C, Q, O>(
-        &self,
-        chat_id: C,
-        question: Q,
-        options: O,
-        type_: PollType,
-    ) -> Self::SendPoll
+    fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
     where
         C: Into<ChatId>,
         Q: Into<String>,

@@ -24,12 +24,12 @@ impl_payload! {
             pub question: String [into],
             /// A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
             pub options: Vec<String> [collect],
-            /// Poll type, “quiz” or “regular”, defaults to “regular”
-            pub type_: PollType,
         }
         optional {
             /// True, if the poll needs to be anonymous, defaults to True
             pub is_anonymous: bool,
+            /// Poll type, “quiz” or “regular”, defaults to “regular”
+            pub type_: PollType,
             /// True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
             pub allows_multiple_answers: bool,
             /// 0-based identifier of the correct answer option, required for polls in quiz mode
