@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ApiError::TooMuchInlineQueryResults` ([#135][pr135])
-- `EditedMessageIsTooLong` error [#109][pr109]
+- Support for 5.4 telegram bot API ([#133][pr133])
+- `EditedMessageIsTooLong` error ([#109][pr109])
 - `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
 - `Limits::messages_per_min_channel` ([#121][pr121])
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Implement `Error` for `ApiError`
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
+- `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
@@ -40,8 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type of `Poll::correct_option_id`: `i32` -> `u8` ([#119][pr119])
 - Type of `Poll::open_period`: `i32` -> `u16` ([#119][pr119])
 - `Throttle` adaptor not honouring chat/min limits ([#121][pr121])
+- Make `SendPoll::poll_` optional ([#133][pr133])
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
+[pr133]: https://github.com/teloxide/teloxide-core/pull/133
 
 ## 0.3.3 - 2021-08-03
 
