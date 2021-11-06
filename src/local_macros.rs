@@ -781,6 +781,22 @@ macro_rules! requester_forward {
             $body!(revoke_chat_invite_link this (chat_id: C, invite_link: I))
         }
     };
+    (@method approve_chat_join_request $body:ident $ty:ident) => {
+        type ApproveChatJoinRequest = $ty![ApproveChatJoinRequest];
+
+        fn approve_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::ApproveChatJoinRequest where C: Into<ChatId> {
+            let this = self;
+            $body!(approve_chat_join_request this (chat_id: C, user_id: i64))
+        }
+    };
+    (@method decline_chat_join_request $body:ident $ty:ident) => {
+        type DeclineChatJoinRequest = $ty![DeclineChatJoinRequest];
+
+        fn decline_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::DeclineChatJoinRequest where C: Into<ChatId> {
+            let this = self;
+            $body!(decline_chat_join_request this (chat_id: C, user_id: i64))
+        }
+    };
     (@method set_chat_photo $body:ident $ty:ident) => {
         type SetChatPhoto = $ty![SetChatPhoto];
 

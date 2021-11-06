@@ -413,6 +413,28 @@ pub trait Requester {
         C: Into<ChatId>,
         I: Into<String>;
 
+    type ApproveChatJoinRequest: Request<Payload = ApproveChatJoinRequest, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ApproveChatJoinRequest`].
+    fn approve_chat_join_request<C>(
+        &self,
+        chat_id: C,
+        user_id: i64,
+    ) -> Self::ApproveChatJoinRequest
+    where
+        C: Into<ChatId>;
+
+    type DeclineChatJoinRequest: Request<Payload = DeclineChatJoinRequest, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeclineChatJoinRequest`].
+    fn decline_chat_join_request<C>(
+        &self,
+        chat_id: C,
+        user_id: i64,
+    ) -> Self::DeclineChatJoinRequest
+    where
+        C: Into<ChatId>;
+
     type SetChatPhoto: Request<Payload = SetChatPhoto, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetChatPhoto`].
@@ -860,6 +882,7 @@ macro_rules! forward_all {
             set_sticker_set_thumb, send_invoice, answer_shipping_query,
             answer_pre_checkout_query, set_passport_data_errors, send_game,
             set_game_score, set_game_score_inline, get_game_high_scores,
+            approve_chat_join_request, decline_chat_join_request,
             get_updates_fault_tolerant => fwd_deref, fty
         }
     };
@@ -955,6 +978,7 @@ where
         set_sticker_set_thumb, send_invoice, answer_shipping_query,
         answer_pre_checkout_query, set_passport_data_errors, send_game,
         set_game_score, set_game_score_inline, get_game_high_scores,
+        approve_chat_join_request, decline_chat_join_request,
         get_updates_fault_tolerant => fwd_either, fty_either
     }
 }

@@ -116,6 +116,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         set_sticker_set_thumb, send_invoice, answer_shipping_query,
         answer_pre_checkout_query, set_passport_data_errors, send_game,
         set_game_score, set_game_score_inline, get_game_high_scores,
+        approve_chat_join_request, decline_chat_join_request,
         get_updates_fault_tolerant => fid, fty
     }
 }
