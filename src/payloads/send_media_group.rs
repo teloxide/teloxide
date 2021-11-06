@@ -14,7 +14,7 @@ impl_payload! {
     /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
     ///
     /// [`Message`]: crate::types::Message
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SendMediaGroup (SendMediaGroupSetters) => Vec<Message> {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)

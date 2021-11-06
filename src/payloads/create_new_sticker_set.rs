@@ -13,7 +13,7 @@ use crate::types::{InputSticker, MaskPosition, True};
 impl_payload! {
     @[multipart]
     /// Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. You must use exactly one of the fields _png\_sticker_ or _tgs\_sticker_. Returns _True_ on success.
-    #[derive(Debug, PartialEq, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub CreateNewStickerSet (CreateNewStickerSetSetters) => True {
         required {
             /// User identifier of sticker file owner

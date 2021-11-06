@@ -5,7 +5,7 @@ use crate::types::{InputFile, MessageEntity, ParseMode};
 /// This object represents the content of a media message to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmedia).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InputMedia {
@@ -20,7 +20,7 @@ pub enum InputMedia {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputMediaPhoto {
     /// File to send.
     pub media: InputFile,
@@ -74,7 +74,7 @@ impl InputMediaPhoto {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputMediaVideo {
     // File to send.
     pub media: InputFile,
@@ -186,7 +186,7 @@ impl InputMediaVideo {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputMediaAnimation {
     /// File to send.
     pub media: InputFile,
@@ -288,7 +288,7 @@ impl InputMediaAnimation {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputMediaAudio {
     /// File to send.
     pub media: InputFile,
@@ -396,7 +396,7 @@ impl InputMediaAudio {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputMediaDocument {
     /// File to send.
     pub media: InputFile,

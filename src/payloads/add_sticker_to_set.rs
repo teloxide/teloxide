@@ -13,7 +13,7 @@ use crate::types::{InputSticker, MaskPosition, True};
 impl_payload! {
     @[multipart]
     /// Use this method to add a new sticker to a set created by the bot. Animated stickers can be added to animated sticker sets and only to them. Animated sticker sets can have up to 50 stickers. Static sticker sets can have up to 120 stickers. Returns _True_ on success.
-    #[derive(Debug, PartialEq, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub AddStickerToSet (AddStickerToSetSetters) => True {
         required {
             /// User identifier of sticker file owner

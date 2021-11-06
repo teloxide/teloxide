@@ -17,7 +17,7 @@ impl_payload! {
     /// [`Document`]: crate::types::Document
     /// [`Audio`]: crate::types::Audio
     /// [`Message`]: crate::types::Message
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SendVoice (SendVoiceSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
