@@ -3,8 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    CallbackQuery, Chat, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, Poll,
-    PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    CallbackQuery, Chat, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery,
+    Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 use serde_json::Value;
 
@@ -108,6 +108,11 @@ pub enum UpdateKind {
     ///
     /// [`AllowedUpdate::ChatMember`]: crate::types::AllowedUpdate::ChatMember
     ChatMember(ChatMemberUpdated),
+
+    /// A request to join the chat has been sent. The bot must have the
+    /// can_invite_users administrator right in the chat to receive these
+    /// updates.
+    ChatJoinRequest(ChatJoinRequest),
 }
 
 impl Update {
