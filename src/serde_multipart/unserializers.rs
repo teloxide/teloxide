@@ -73,29 +73,41 @@ impl std::error::Error for UnserializerError {}
 
 #[test]
 fn test() {
-    use crate::serde_multipart::unserializers::string::StringUnserializer;
+    use crate::{
+        serde_multipart::unserializers::{
+            input_file::InputFileUnserializer, string::StringUnserializer,
+        },
+        types::InputFile,
+    };
+
     use serde::Serialize;
 
-    use crate::{
-        serde_multipart::unserializers::input_file::InputFileUnserializer, types::InputFile,
-    };
-    use std::borrow::Cow;
+    use std::{borrow::Cow, path::Path};
 
     let value = String::from("test");
-    assert_eq!(value.serialize(StringUnserializer), Ok(value));
+    assert!(matches!(value.serialize(StringUnserializer), Ok(v) if v == value));
 
-    let value = InputFile::Url(reqwest::Url::parse("http://example.com").unwrap());
-    assert_eq!(value.serialize(InputFileUnserializer::NotMem), Ok(value));
+    let url = reqwest::Url::parse("http://example.com").unwrap();
+    let value = InputFile::Url(url.clone());
+    assert!(
+        matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::Url(v)) if v == url)
+    );
 
     let value = InputFile::FileId(String::from("file_id"));
-    assert_eq!(value.serialize(InputFileUnserializer::NotMem), Ok(value));
+    assert!(
+        matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::FileId(v)) if v == "file_id")
+    );
 
     let value = InputFile::Memory {
         file_name: String::from("name"),
         data: Cow::Owned(vec![1, 2, 3]),
     };
-    assert_eq!(value.serialize(InputFileUnserializer::memory()), Ok(value));
+    assert!(
+        matches!(value.serialize(InputFileUnserializer::memory()), Ok(InputFile::Memory { file_name, data }) if file_name == "name" && *data == [1, 2, 3])
+    );
 
     let value = InputFile::File("a/b/c".into());
-    assert_eq!(value.serialize(InputFileUnserializer::NotMem), Ok(value));
+    assert!(
+        matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::File(v)) if v == Path::new("a/b/c"))
+    );
 }
