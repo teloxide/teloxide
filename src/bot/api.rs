@@ -465,7 +465,6 @@ impl Requester for Bot {
 
     type ApproveChatJoinRequest = JsonRequest<payloads::ApproveChatJoinRequest>;
 
-    /// For Telegram documentation see [`ApproveChatJoinRequest`].
     fn approve_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::ApproveChatJoinRequest
     where
         C: Into<ChatId>,
@@ -478,7 +477,6 @@ impl Requester for Bot {
 
     type DeclineChatJoinRequest = JsonRequest<payloads::DeclineChatJoinRequest>;
 
-    /// For Telegram documentation see [`DeclineChatJoinRequest`].
     fn decline_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::DeclineChatJoinRequest
     where
         C: Into<ChatId>,
