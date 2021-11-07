@@ -38,7 +38,7 @@ use crate::{
 /// let myself: Me = bot.get_me().await?; // No .send()!
 /// # Ok::<_, teloxide_core::RequestError>(()) };
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AutoSend<B> {
     bot: B,
 }

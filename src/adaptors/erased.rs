@@ -34,6 +34,12 @@ impl<'a, E> ErasedRequester<'a, E> {
     }
 }
 
+impl<E> std::fmt::Debug for ErasedRequester<'_, E> {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.debug_struct("ErasedRequester").finish_non_exhaustive()
+    }
+}
+
 /// [`Request`] with erased type.
 #[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct ErasedRequest<'a, T, E> {
