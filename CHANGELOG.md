@@ -21,11 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactor errors ([#134][pr134])
+  - Rename `DownloadError::NetworkError` to `Network`
+  - Rename `RequestError::ApiError` to `Api`
+  - Remove `RequestError::Api::status_code` and rename `RequestError::Api::kind` to `0` (struct to tuple struct)
+  - Rename `RequestError::NetworkError` to `Network`
+  - Implement `Error` for `ApiError`
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
+[pr134]: https://github.com/teloxide/teloxide-core/pull/134
 
 ### Fixed
 

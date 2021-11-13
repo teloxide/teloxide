@@ -38,7 +38,7 @@ where
         .multipart(params)
         .send()
         .await
-        .map_err(RequestError::NetworkError)?;
+        .map_err(RequestError::Network)?;
 
     process_response(response).await
 }
@@ -72,7 +72,7 @@ where
         .body(params)
         .send()
         .await
-        .map_err(RequestError::NetworkError)?;
+        .map_err(RequestError::Network)?;
 
     process_response(response).await
 }
@@ -86,7 +86,7 @@ where
     }
 
     serde_json::from_str::<TelegramResponse<T>>(
-        &response.text().await.map_err(RequestError::NetworkError)?,
+        &response.text().await.map_err(RequestError::Network)?,
     )
     .map_err(RequestError::InvalidJson)?
     .into()

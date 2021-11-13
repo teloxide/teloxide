@@ -1,4 +1,3 @@
-use reqwest::StatusCode;
 use serde::Deserialize;
 
 use crate::{
@@ -14,6 +13,7 @@ pub(crate) enum TelegramResponse<R> {
         /// A dummy field. Used only for deserialization.
         #[allow(dead_code)]
         ok: True,
+
         #[serde(rename = "result")]
         response: R,
     },
@@ -24,7 +24,10 @@ pub(crate) enum TelegramResponse<R> {
 
         #[serde(rename = "description")]
         error: ApiError,
-        error_code: u16,
+
+        // // This field is present in the json sent by telegram, but isn't currently used anywhere
+        // // and as such - ignored
+        // error_code: u16,
         #[serde(rename = "parameters")]
         response_parameters: Option<ResponseParameters>,
     },
@@ -35,25 +38,13 @@ impl<R> From<TelegramResponse<R>> for ResponseResult<R> {
         match this {
             TelegramResponse::Ok { response, .. } => Ok(response),
             TelegramResponse::Err {
-                error,
-                error_code,
-                response_parameters,
+                response_parameters: Some(params),
                 ..
-            } => {
-                if let Some(params) = response_parameters {
-                    match params {
-                        ResponseParameters::RetryAfter(i) => Err(RequestError::RetryAfter(i)),
-                        ResponseParameters::MigrateToChatId(to) => {
-                            Err(RequestError::MigrateToChatId(to))
-                        }
-                    }
-                } else {
-                    Err(RequestError::ApiError {
-                        kind: error,
-                        status_code: StatusCode::from_u16(error_code).unwrap(),
-                    })
-                }
-            }
+            } => Err(match params {
+                ResponseParameters::RetryAfter(i) => RequestError::RetryAfter(i),
+                ResponseParameters::MigrateToChatId(to) => RequestError::MigrateToChatId(to),
+            }),
+            TelegramResponse::Err { error, .. } => Err(RequestError::Api(error)),
         }
     }
 }
