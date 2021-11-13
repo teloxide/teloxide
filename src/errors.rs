@@ -193,6 +193,18 @@ pub enum ApiError {
     #[serde(rename = "Bad Request: Too much messages to send as an album")]
     ToMuchMessages,
 
+    /// Occurs when bot tries to answer an inline query with more than 50
+    /// results.
+    ///
+    /// Consider using offsets to paginate results.
+    ///
+    /// May happen in methods:
+    /// 1. [`AnswerInlineQuery`]
+    ///
+    /// [`AnswerInlineQuery`]: crate::payloads::AnswerInlineQuery
+    #[serde(rename = "Bad Request: RESULTS_TOO_MUCH")]
+    TooMuchInlineQueryResults,
+
     /// Occurs when bot tries to stop poll that has already been stopped.
     ///
     /// May happen in methods:
