@@ -213,6 +213,7 @@ pub enum ApiError {
     ///
     /// [`AnswerInlineQuery`]: crate::payloads::AnswerInlineQuery
     #[serde(rename = "Bad Request: RESULTS_TOO_MUCH")]
+    #[error("Bad Request: RESULTS_TOO_MUCH")]
     TooMuchInlineQueryResults,
 
     /// Occurs when bot tries to stop poll that has already been stopped.
