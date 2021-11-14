@@ -23,11 +23,15 @@ impl_payload! {
             pub chat_id: ChatId [into],
         }
         optional {
+            /// Invite link name; 0-32 characters
+            pub name: String [into],
             /// Point in time (Unix timestamp) when the link will expire
             #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
             pub expire_date: DateTime<Utc> [into],
             /// Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999
             pub member_limit: u32,
+            /// True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
+            pub creates_join_request: bool,
         }
     }
 }

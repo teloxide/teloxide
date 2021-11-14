@@ -9,11 +9,12 @@
 #[doc(no_inline)]
 pub use crate::payloads::{
     AddStickerToSetSetters as _, AnswerCallbackQuerySetters as _, AnswerInlineQuerySetters as _,
-    AnswerPreCheckoutQuerySetters as _, AnswerShippingQuerySetters as _, BanChatMemberSetters as _,
-    CloseSetters as _, CopyMessageSetters as _, CreateChatInviteLinkSetters as _,
-    CreateNewStickerSetSetters as _, DeleteChatPhotoSetters as _, DeleteChatStickerSetSetters as _,
-    DeleteMessageSetters as _, DeleteMyCommandsSetters as _, DeleteStickerFromSetSetters as _,
-    DeleteWebhookSetters as _, EditChatInviteLinkSetters as _,
+    AnswerPreCheckoutQuerySetters as _, AnswerShippingQuerySetters as _,
+    ApproveChatJoinRequestSetters as _, BanChatMemberSetters as _, CloseSetters as _,
+    CopyMessageSetters as _, CreateChatInviteLinkSetters as _, CreateNewStickerSetSetters as _,
+    DeclineChatJoinRequestSetters as _, DeleteChatPhotoSetters as _,
+    DeleteChatStickerSetSetters as _, DeleteMessageSetters as _, DeleteMyCommandsSetters as _,
+    DeleteStickerFromSetSetters as _, DeleteWebhookSetters as _, EditChatInviteLinkSetters as _,
     EditMessageCaptionInlineSetters as _, EditMessageCaptionSetters as _,
     EditMessageLiveLocationInlineSetters as _, EditMessageLiveLocationSetters as _,
     EditMessageMediaInlineSetters as _, EditMessageMediaSetters as _,

@@ -13,7 +13,7 @@ use crate::types::{InputFile, True};
 impl_payload! {
     @[multipart]
     /// Use this method to set the thumbnail of a sticker set. Animated thumbnails can be set for animated sticker sets only. Returns _True_ on success.
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SetStickerSetThumb (SetStickerSetThumbSetters) => True {
         required {
             /// Name of the sticker set

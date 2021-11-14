@@ -13,7 +13,7 @@ use crate::types::{File, InputFile};
 impl_payload! {
     @[multipart]
     /// Use this method to upload a .PNG file with a sticker for later use in _createNewStickerSet_ and _addStickerToSet_ methods (can be used multiple times). Returns the uploaded File on success.
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub UploadStickerFile (UploadStickerFileSetters) => File {
         required {
             /// User identifier of sticker file owner

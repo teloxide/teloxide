@@ -16,7 +16,7 @@ impl_payload! {
     ///
     /// [v.4.0]: https://core.telegram.org/bots/api#document
     /// [`Message`]: crate::types::Message
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SendVideoNote (SendVideoNoteSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)

@@ -8,7 +8,7 @@ use crate::{
     requests::{HasPayload, Output, Payload, Request, Requester},
     types::{
         BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, PollType, TargetMessage,
+        InputSticker, LabeledPrice, PassportElementError, TargetMessage,
     },
 };
 
@@ -181,6 +181,7 @@ where
         set_sticker_set_thumb, send_invoice, answer_shipping_query,
         answer_pre_checkout_query, set_passport_data_errors, send_game,
         set_game_score, set_game_score_inline, get_game_high_scores,
+        approve_chat_join_request, decline_chat_join_request,
         get_updates_fault_tolerant => fwd_erased, fty
     }
 }
@@ -330,7 +331,6 @@ trait ErasableRequester<'a> {
         chat_id: ChatId,
         question: String,
         options: Vec<String>,
-        type_: PollType,
     ) -> ErasedRequest<'a, SendPoll, Self::Err>;
 
     fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err>;
@@ -413,6 +413,20 @@ trait ErasableRequester<'a> {
         chat_id: ChatId,
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err>;
+
+    /// For Telegram documentation see [`ApproveChatJoinRequest`].
+    fn approve_chat_join_request(
+        &self,
+        chat_id: ChatId,
+        user_id: i64,
+    ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err>;
+
+    /// For Telegram documentation see [`DeclineChatJoinRequest`].
+    fn decline_chat_join_request(
+        &self,
+        chat_id: ChatId,
+        user_id: i64,
+    ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err>;
 
     fn set_chat_photo(
         &self,
@@ -869,9 +883,8 @@ where
         chat_id: ChatId,
         question: String,
         options: Vec<String>,
-        type_: PollType,
     ) -> ErasedRequest<'a, SendPoll, Self::Err> {
-        Requester::send_poll(self, chat_id, question, options, type_).erase()
+        Requester::send_poll(self, chat_id, question, options).erase()
     }
 
     fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err> {
@@ -983,6 +996,24 @@ where
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err> {
         Requester::revoke_chat_invite_link(self, chat_id, invite_link).erase()
+    }
+
+    /// For Telegram documentation see [`ApproveChatJoinRequest`].
+    fn approve_chat_join_request(
+        &self,
+        chat_id: ChatId,
+        user_id: i64,
+    ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err> {
+        Requester::approve_chat_join_request(self, chat_id, user_id).erase()
+    }
+
+    /// For Telegram documentation see [`DeclineChatJoinRequest`].
+    fn decline_chat_join_request(
+        &self,
+        chat_id: ChatId,
+        user_id: i64,
+    ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err> {
+        Requester::decline_chat_join_request(self, chat_id, user_id).erase()
     }
 
     fn set_chat_photo(

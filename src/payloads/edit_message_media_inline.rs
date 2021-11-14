@@ -14,7 +14,7 @@ impl_payload! {
     /// Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned.
     ///
     /// See also: [`EditMessageMedia`](crate::payloads::EditMessageMedia)
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub EditMessageMediaInline (EditMessageMediaInlineSetters) => True {
         required {
             /// Identifier of the inline message

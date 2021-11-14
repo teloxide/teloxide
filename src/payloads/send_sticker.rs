@@ -15,7 +15,7 @@ impl_payload! {
     /// Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.
     ///
     /// [animated]: https://telegram.org/blog/animated-stickers
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SendSticker (SendStickerSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).

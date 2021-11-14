@@ -18,7 +18,7 @@ impl_payload! {
     /// If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot's token, you can be pretty sure it's us.
     ///
     /// [`Update`]: crate::types::Update
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SetWebhook (SetWebhookSetters) => True {
         required {
             /// HTTPS url to send updates to. Use an empty string to remove webhook integration

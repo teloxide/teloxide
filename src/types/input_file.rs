@@ -6,7 +6,7 @@ use std::{borrow::Cow, path::PathBuf};
 /// This object represents the contents of a file to be uploaded.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum InputFile {
     File(PathBuf),

@@ -651,11 +651,11 @@ macro_rules! requester_forward {
     (@method send_poll $body:ident $ty:ident) => {
         type SendPoll = $ty![SendPoll];
 
-        fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O, type_: PollType) -> Self::SendPoll where C: Into<ChatId>,
+        fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll where C: Into<ChatId>,
         Q: Into<String>,
         O: IntoIterator<Item = String> {
             let this = self;
-            $body!(send_poll this (chat_id: C, question: Q, options: O, type_: PollType))
+            $body!(send_poll this (chat_id: C, question: Q, options: O))
         }
     };
     (@method send_dice $body:ident $ty:ident) => {
@@ -779,6 +779,22 @@ macro_rules! requester_forward {
         I: Into<String> {
             let this = self;
             $body!(revoke_chat_invite_link this (chat_id: C, invite_link: I))
+        }
+    };
+    (@method approve_chat_join_request $body:ident $ty:ident) => {
+        type ApproveChatJoinRequest = $ty![ApproveChatJoinRequest];
+
+        fn approve_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::ApproveChatJoinRequest where C: Into<ChatId> {
+            let this = self;
+            $body!(approve_chat_join_request this (chat_id: C, user_id: i64))
+        }
+    };
+    (@method decline_chat_join_request $body:ident $ty:ident) => {
+        type DeclineChatJoinRequest = $ty![DeclineChatJoinRequest];
+
+        fn decline_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::DeclineChatJoinRequest where C: Into<ChatId> {
+            let this = self;
+            $body!(decline_chat_join_request this (chat_id: C, user_id: i64))
         }
     };
     (@method set_chat_photo $body:ident $ty:ident) => {
