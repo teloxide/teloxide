@@ -60,9 +60,10 @@ impl From<Error> for RequestError {
             Error::Io(ioerr) => RequestError::Io(ioerr),
             // this should be ok since we don't write request those may trigger errors and
             // Error is internal.
-            _ => unreachable!(
+            e => unreachable!(
                 "we don't create requests those fail to serialize (if you see this, open an issue \
-                 :|)"
+                 :|): {}",
+                e
             ),
         }
     }
@@ -609,19 +610,23 @@ impl SerializeSeq for InnerPartSerializer {
         // NOTE: this is probably highly inefficient (especially for ::Memory),
         //       but at least it works
         let mut value = serde_json::to_value(value)?;
-        let file: InputFile = serde_json::from_value(value["media"].take())?;
 
-        match file {
-            f @ InputFile::Memory { .. } | f @ InputFile::File(_) => {
-                let uuid = uuid::Uuid::new_v4().to_string();
-                value["media"] = serde_json::Value::String(format!("attach://{}", uuid));
-                self.files.push((uuid, f));
-            }
-            InputFile::FileId(s) => {
-                value["media"] = serde_json::Value::String(s);
-            }
-            InputFile::Url(s) => {
-                value["media"] = serde_json::Value::String(String::from(s));
+        // Update value if it contains InputFile in a `media` field (i.e.: `InputMedia`)
+        if let Some(file) = value.get_mut("media") {
+            let file: InputFile = serde_json::from_value(file.take())?;
+
+            match file {
+                f @ InputFile::Memory { .. } | f @ InputFile::File(_) => {
+                    let uuid = uuid::Uuid::new_v4().to_string();
+                    value["media"] = serde_json::Value::String(format!("attach://{}", uuid));
+                    self.files.push((uuid, f));
+                }
+                InputFile::FileId(s) => {
+                    value["media"] = serde_json::Value::String(s);
+                }
+                InputFile::Url(s) => {
+                    value["media"] = serde_json::Value::String(String::from(s));
+                }
             }
         }
 
