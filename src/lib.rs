@@ -86,9 +86,7 @@
 #![cfg_attr(feature = "nightly", feature(type_alias_impl_trait))]
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
-
-// https://github.com/rust-lang/rust-clippy/issues/7422
-#![allow(clippy::nonstandard_macro_braces)]
+#![warn(clippy::print_stdout, clippy::dbg_macro)]
 
 // The internal helper macros.
 #[macro_use]
