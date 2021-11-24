@@ -29,3 +29,22 @@ pub(crate) fn to_form<T: ?Sized + Serialize>(val: &T) -> impl Future<Output = Re
     let fut = val.serialize(MultipartTopLvlSerializer {});
     async { Ok(fut?.await?) }
 }
+
+// https://github.com/teloxide/teloxide/issues/473
+#[tokio::test]
+async fn issue_473() {
+    use crate::{
+        payloads::{self, SendPhotoSetters},
+        types::{InputFile, MessageEntity, MessageEntityKind},
+    };
+
+    to_form(
+        &payloads::SendPhoto::new(0, InputFile::file_id("0")).caption_entities([MessageEntity {
+            kind: MessageEntityKind::Url,
+            offset: 0,
+            length: 0,
+        }]),
+    )
+    .await
+    .unwrap();
+}
