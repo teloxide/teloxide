@@ -13,7 +13,7 @@ use std::{collections::HashSet, convert::Infallible, fmt::Debug, ops::ControlFlo
 use tokio::{sync::Notify, time::timeout};
 
 pub struct Dispatcher<R, Err> {
-    requester: R,
+    requester: Arc<R>,
     dependencies: DependencyMap,
 
     handler: UpdateHandler<Err>,
@@ -41,10 +41,10 @@ macro_rules! make_parser {
 
 impl<R, Err> Dispatcher<R, Err>
 where
-    R: 'static,
+    R: Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
-    pub fn new(requester: R) -> Self {
+    pub fn new(requester: Arc<R>) -> Self {
         Dispatcher {
             requester,
             dependencies: DependencyMap::new(),
@@ -138,7 +138,6 @@ where
         UListener: UpdateListener<ListenerE> + 'a,
         Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
-        R: Requester + Clone,
     {
         use crate::dispatching::ShutdownState::*;
 
@@ -202,6 +201,7 @@ where
             Ok(upd) => {
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
+                deps.insert_arc(self.requester.clone());
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
                     ControlFlow::Break(Err(_err)) => todo!("error handler"),
@@ -240,7 +240,7 @@ where
         Dispatcher { dependencies, ..self }
     }
 
-    pub fn message_handler(
+    pub fn messages_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
     ) -> Self {
@@ -251,7 +251,7 @@ where
         self.handler(handler)
     }
 
-    pub fn edited_message_handler(
+    pub fn edited_messages_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
     ) -> Self {

@@ -1,16 +1,21 @@
 //! Commonly used items.
 
 pub use crate::{
-    dispatching::{
-        dialogue::{
-            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
-            TransitionIn, TransitionOut,
-        },
-        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
-    },
     error_handlers::{LoggingErrorHandler, OnError},
     respond,
 };
+
+#[cfg(not(feature = "dispatching2"))]
+pub use crate::dispatching::{
+    dialogue::{
+        exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
+        TransitionIn, TransitionOut,
+    },
+    Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
+};
+
+#[cfg(feature = "dispatching2")]
+pub use crate::dispatching2::Dispatcher;
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]

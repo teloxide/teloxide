@@ -1,4 +1,4 @@
-use crate::prelude::{DialogueStage, DialogueWithCx};
+use crate::dispatching::dialogue::{DialogueStage, DialogueWithCx};
 use futures::future::BoxFuture;
 use std::{future::Future, sync::Arc};
 

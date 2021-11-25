@@ -27,6 +27,8 @@ maintenance = { status = "actively-developed" }
 [features]
 default = ["native-tls", "ctrlc_handler", "teloxide-core/default"]
 
+dispatching2 = ["dptree"]
+
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
@@ -75,7 +77,7 @@ teloxide-macros = { version = "0.4", optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = { git = "https://github.com/p0lunin/dptree" }
+dptree = { git = "https://github.com/p0lunin/dptree", optional = true }
 
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.6"
