@@ -62,6 +62,10 @@ pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
 pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
 
+pub(crate) use dispatcher::{
+    shutdown_check_timeout_for, shutdown_inner, DispatcherState, ShutdownState,
+};
+
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
