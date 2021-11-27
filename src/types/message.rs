@@ -319,6 +319,10 @@ pub struct MediaAudio {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// The unique identifier of a media message group this message belongs
+    /// to.
+    pub media_group_id: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -340,6 +344,10 @@ pub struct MediaDocument {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// The unique identifier of a media message group this message belongs
+    /// to.
+    pub media_group_id: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -619,6 +627,14 @@ mod getters {
                 })
                 | Common(MessageCommon {
                     media_kind: MediaKind::Photo(MediaPhoto { media_group_id, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
+                    media_kind: MediaKind::Document(MediaDocument { media_group_id, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
+                    media_kind: MediaKind::Audio(MediaAudio { media_group_id, .. }),
                     ..
                 }) => media_group_id.as_ref().map(Deref::deref),
                 _ => None,
