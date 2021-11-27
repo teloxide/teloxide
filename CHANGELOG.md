@@ -14,11 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `EditedMessageIsTooLong` error ([#109][pr109])
 - `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
 - `Limits::messages_per_min_channel` ([#121][pr121])
+- `media_group_id` field to `MediaDocument` and `MediaAudio` ([#139][pr139])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr116]: https://github.com/teloxide/teloxide-core/pull/116
 [pr121]: https://github.com/teloxide/teloxide-core/pull/121
 [pr135]: https://github.com/teloxide/teloxide-core/pull/135
+[pr139]: https://github.com/teloxide/teloxide-core/pull/139
 
 ### Changed
 
