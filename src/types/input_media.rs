@@ -68,6 +68,14 @@ impl InputMediaPhoto {
         self.parse_mode = Some(val);
         self
     }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
 }
 
 /// Represents a video to be sent.
