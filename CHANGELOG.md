@@ -46,9 +46,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Throttle` adaptor not honouring chat/min limits ([#121][pr121])
 - Make `SendPoll::poll_` optional ([#133][pr133])
 - Bug with `caption_entities`, see issue [#473][issue473]
+- Type of response for `CopyMessage` method ([#141](pr141))
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
 [pr133]: https://github.com/teloxide/teloxide-core/pull/133
+[pr141]: https://github.com/teloxide/teloxide-core/pull/141
 [issue473]: https://github.com/teloxide/teloxide/issues/473
 
 ## 0.3.3 - 2021-08-03
