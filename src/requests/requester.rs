@@ -368,6 +368,24 @@ pub trait Requester {
         Ch: Into<ChatId>,
         Cu: Into<String>;
 
+    type BanChatSenderChat: Request<Payload = BanChatSenderChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`BanChatSenderChat`].
+    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat
+    where
+        C: Into<ChatId>;
+
+    type UnbanChatSenderChat: Request<Payload = UnbanChatSenderChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UnbanChatSenderChat`].
+    fn unban_chat_sender_chat<C>(
+        &self,
+        chat_id: C,
+        sender_chat_id: i64,
+    ) -> Self::UnbanChatSenderChat
+    where
+        C: Into<ChatId>;
+
     type SetChatPermissions: Request<Payload = SetChatPermissions, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetChatPermissions`].
@@ -867,7 +885,8 @@ macro_rules! forward_all {
             stop_message_live_location, stop_message_live_location_inline, send_venue,
             send_contact, send_poll, send_dice, send_chat_action, get_user_profile_photos,
             get_file, kick_chat_member, ban_chat_member, unban_chat_member, restrict_chat_member,
-            promote_chat_member, set_chat_administrator_custom_title, set_chat_permissions,
+            promote_chat_member, set_chat_administrator_custom_title,
+            ban_chat_sender_chat, unban_chat_sender_chat, set_chat_permissions,
             export_chat_invite_link, create_chat_invite_link, edit_chat_invite_link,
             revoke_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
             set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
@@ -963,7 +982,8 @@ where
         stop_message_live_location, stop_message_live_location_inline, send_venue,
         send_contact, send_poll, send_dice, send_chat_action, get_user_profile_photos,
         get_file, kick_chat_member, ban_chat_member, unban_chat_member, restrict_chat_member,
-        promote_chat_member, set_chat_administrator_custom_title, set_chat_permissions,
+        promote_chat_member, set_chat_administrator_custom_title,
+        ban_chat_sender_chat, unban_chat_sender_chat, set_chat_permissions,
         export_chat_invite_link, create_chat_invite_link, edit_chat_invite_link,
         revoke_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,

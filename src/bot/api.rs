@@ -399,6 +399,34 @@ impl Requester for Bot {
         )
     }
 
+    type BanChatSenderChat = JsonRequest<payloads::BanChatSenderChat>;
+
+    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat
+    where
+        C: Into<ChatId>,
+    {
+        Self::BanChatSenderChat::new(
+            self.clone(),
+            payloads::BanChatSenderChat::new(chat_id, sender_chat_id),
+        )
+    }
+
+    type UnbanChatSenderChat = JsonRequest<payloads::UnbanChatSenderChat>;
+
+    fn unban_chat_sender_chat<C>(
+        &self,
+        chat_id: C,
+        sender_chat_id: i64,
+    ) -> Self::UnbanChatSenderChat
+    where
+        C: Into<ChatId>,
+    {
+        Self::UnbanChatSenderChat::new(
+            self.clone(),
+            payloads::UnbanChatSenderChat::new(chat_id, sender_chat_id),
+        )
+    }
+
     type SetChatPermissions = JsonRequest<payloads::SetChatPermissions>;
 
     fn set_chat_permissions<C>(

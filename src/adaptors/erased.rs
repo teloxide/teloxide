@@ -166,7 +166,8 @@ where
         stop_message_live_location, stop_message_live_location_inline, send_venue,
         send_contact, send_poll, send_dice, send_chat_action, get_user_profile_photos,
         get_file, kick_chat_member, ban_chat_member, unban_chat_member, restrict_chat_member,
-        promote_chat_member, set_chat_administrator_custom_title, set_chat_permissions,
+        promote_chat_member, set_chat_administrator_custom_title,
+        ban_chat_sender_chat, unban_chat_sender_chat, set_chat_permissions,
         export_chat_invite_link, create_chat_invite_link, edit_chat_invite_link,
         revoke_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
@@ -385,6 +386,18 @@ trait ErasableRequester<'a> {
         user_id: i64,
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err>;
+
+    fn ban_chat_sender_chat(
+        &self,
+        chat_id: ChatId,
+        sender_chat_id: i64,
+    ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err>;
+
+    fn unban_chat_sender_chat(
+        &self,
+        chat_id: ChatId,
+        sender_chat_id: i64,
+    ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err>;
 
     fn set_chat_permissions(
         &self,
@@ -958,6 +971,22 @@ where
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err> {
         Requester::set_chat_administrator_custom_title(self, chat_id, user_id, custom_title).erase()
+    }
+
+    fn ban_chat_sender_chat(
+        &self,
+        chat_id: ChatId,
+        sender_chat_id: i64,
+    ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err> {
+        Requester::ban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
+    }
+
+    fn unban_chat_sender_chat(
+        &self,
+        chat_id: ChatId,
+        sender_chat_id: i64,
+    ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err> {
+        Requester::unban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
     }
 
     fn set_chat_permissions(

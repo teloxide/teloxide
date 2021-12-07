@@ -739,6 +739,22 @@ macro_rules! requester_forward {
             $body!(set_chat_administrator_custom_title this (chat_id: Ch, user_id: i64, custom_title: Cu))
         }
     };
+    (@method ban_chat_sender_chat $body:ident $ty:ident) => {
+        type BanChatSenderChat = $ty![BanChatSenderChat];
+
+        fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat where C: Into<ChatId> {
+            let this = self;
+            $body!(ban_chat_sender_chat this (chat_id: C, sender_chat_id: i64))
+        }
+    };
+    (@method unban_chat_sender_chat $body:ident $ty:ident) => {
+        type UnbanChatSenderChat = $ty![UnbanChatSenderChat];
+
+        fn unban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::UnbanChatSenderChat where C: Into<ChatId> {
+            let this = self;
+            $body!(unban_chat_sender_chat this (chat_id: C, sender_chat_id: i64))
+        }
+    };
     (@method set_chat_permissions $body:ident $ty:ident) => {
         type SetChatPermissions = $ty![SetChatPermissions];
 
@@ -1187,4 +1203,5 @@ macro_rules! requester_forward {
             $body!(get_updates_fault_tolerant this ())
         }
     };
+
 }
