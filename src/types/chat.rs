@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatLocation, ChatPermissions, ChatPhoto, Message};
+use crate::types::{ChatLocation, ChatPermissions, ChatPhoto, Message, True};
 
 /// This object represents a chat.
 ///
@@ -95,6 +95,13 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub bio: Option<String>,
+
+    /// `True`, if privacy settings of the other party in the private chat
+    /// allows to use tg://user?id=<user_id> links only in chats with the
+    /// user. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub has_private_forwards: Option<True>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -407,6 +414,18 @@ impl Chat {
             _ => None,
         }
     }
+
+    /// `True`, if privacy settings of the other party in the private chat
+    /// allows to use tg://user?id=<user_id> links only in chats with the
+    /// user. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub fn has_private_forwards(&self) -> Option<True> {
+        match &self.kind {
+            ChatKind::Private(this) => this.has_private_forwards,
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -447,6 +466,7 @@ mod tests {
                     first_name: Some("Anon".into()),
                     last_name: None,
                     bio: None,
+                    has_private_forwards: None
                 }),
                 photo: None,
                 pinned_message: None,

@@ -193,6 +193,7 @@ mod test {
                         first_name: Some(String::from("Waffle")),
                         last_name: None,
                         bio: None,
+                        has_private_forwards: None,
                     }),
                     photo: None,
                     pinned_message: None,
@@ -218,6 +219,8 @@ mod test {
                     reply_markup: None,
                     sender_chat: None,
                     author_signature: None,
+                    is_automatic_forward: false,
+                    has_protected_content: false,
                 }),
             }),
         };
