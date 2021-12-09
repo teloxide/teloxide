@@ -43,8 +43,8 @@ mod tests {
             "hash":"1122",
             "secret":"secret"
         }"#
-        .replace("\n", "")
-        .replace(" ", "");
+        .replace('\n', "")
+        .replace(' ', "");
         let encrypted_credentials = EncryptedCredentials {
             data: "someData".to_string(),
             hash: "1122".to_string(),
