@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Deserialization of chat migrations, see issue [#427][issue427] ([#143][pr143])
 - Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
 - Type of `Poll::correct_option_id`: `i32` -> `u8` ([#119][pr119])
 - Type of `Poll::open_period`: `i32` -> `u16` ([#119][pr119])
@@ -54,7 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr133]: https://github.com/teloxide/teloxide-core/pull/133
 [pr141]: https://github.com/teloxide/teloxide-core/pull/141
 [pr142]: https://github.com/teloxide/teloxide-core/pull/142
+[pr143]: https://github.com/teloxide/teloxide-core/pull/143
 [issue473]: https://github.com/teloxide/teloxide/issues/473
+[issue427]: https://github.com/teloxide/teloxide/issues/427
 
 ## 0.3.3 - 2021-08-03
 

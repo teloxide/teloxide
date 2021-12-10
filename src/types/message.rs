@@ -46,7 +46,6 @@ pub enum MessageKind {
     SupergroupChatCreated(MessageSupergroupChatCreated),
     ChannelChatCreated(MessageChannelChatCreated),
     MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged),
-    Migrate(MessageMigrate),
     Pinned(MessagePinned),
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
@@ -157,23 +156,32 @@ pub struct MessageMessageAutoDeleteTimerChanged {
     pub message_auto_delete_timer_changed: MessageAutoDeleteTimerChanged,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageMigrate {
+/// Represents group migration to a supergroup or a supergroup migration from a
+/// group.
+///
+/// Note that bot receives **both** updates. For example: a group with id `0`
+/// migrates to a supergroup with id `1` bots in that group will receive 2
+/// updates:
+/// - `message.chat.id = 0`, `message.chat_migration() = ChatMigration::To {
+///   chat_id: 1 }`
+/// - `message.chat.id = 1`, `message.chat_migration() = ChatMigration::From {
+///   chat_id: 0 }`
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ChatMigration {
     /// The group has been migrated to a supergroup with the specified
-    /// identifier. This number may be greater than 32 bits and some
-    /// programming languages may have difficulty/silent defects in
-    /// interpreting it. But it is smaller than 52 bits, so a signed 64 bit
-    /// integer or double-precision float type are safe for storing this
-    /// identifier.
-    pub migrate_to_chat_id: i64,
+    /// identifier `chat_id`.
+    To {
+        #[serde(rename = "migrate_to_chat_id")]
+        chat_id: i64,
+    },
 
     /// The supergroup has been migrated from a group with the specified
-    /// identifier. This number may be greater than 32 bits and some
-    /// programming languages may have difficulty/silent defects in
-    /// interpreting it. But it is smaller than 52 bits, so a signed 64 bit
-    /// integer or double-precision float type are safe for storing this
-    /// identifier.
-    pub migrate_from_chat_id: i64,
+    /// identifier `chat_id`.
+    From {
+        #[serde(rename = "migrate_from_chat_id")]
+        chat_id: i64,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -283,6 +291,7 @@ pub enum MediaKind {
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
     Venue(MediaVenue),
+    Migration(ChatMigration),
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -500,15 +509,15 @@ mod getters {
     use crate::types::{
         self,
         message::{ForwardKind::NonChannel, MessageKind::*},
-        Chat, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin, ForwardedFrom,
-        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
-        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
-        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
+        Chat, ChatMigration, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin,
+        ForwardedFrom, MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame,
+        MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue,
+        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
         MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageMigrate,
-        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
-        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
-        MessageSupergroupChatCreated, PhotoSize, True, User,
+        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
+        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
+        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
+        PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -926,21 +935,32 @@ mod getters {
             }
         }
 
+        pub fn chat_migration(&self) -> Option<ChatMigration> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Migration(chat_migration),
+                    ..
+                }) => Some(*chat_migration),
+                _ => None,
+            }
+        }
+
         pub fn migrate_to_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate {
-                    migrate_to_chat_id, ..
-                }) => Some(*migrate_to_chat_id),
+                Common(MessageCommon {
+                    media_kind: MediaKind::Migration(ChatMigration::To { chat_id }),
+                    ..
+                }) => Some(*chat_id),
                 _ => None,
             }
         }
 
         pub fn migrate_from_chat_id(&self) -> Option<i64> {
             match &self.kind {
-                Migrate(MessageMigrate {
-                    migrate_from_chat_id,
+                Common(MessageCommon {
+                    media_kind: MediaKind::Migration(ChatMigration::From { chat_id }),
                     ..
-                }) => Some(*migrate_from_chat_id),
+                }) => Some(*chat_id),
                 _ => None,
             }
         }
@@ -1251,5 +1271,43 @@ mod tests {
          }"#;
         let message = from_str::<Message>(json);
         assert!(message.is_ok());
+    }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/427>
+    #[test]
+    fn issue_427() {
+        let old = -599075523;
+        let new = -1001555296434;
+
+        // Migration to a supergroup
+        let json = r#"{"chat":{"all_members_are_administrators":false,"id":-599075523,"title":"test","type":"group"},"date":1629404938,"from":{"first_name":"nullptr","id":729497414,"is_bot":false,"language_code":"en","username":"hex0x0000"},"message_id":16,"migrate_to_chat_id":-1001555296434}"#;
+        let message: Message = from_str(json).unwrap();
+
+        assert_eq!(message.chat.id, old);
+        assert_eq!(
+            message.chat_migration(),
+            Some(ChatMigration::To { chat_id: new })
+        );
+        assert_eq!(message.migrate_to_chat_id(), Some(new));
+
+        // The user who initialized the migration
+        assert!(message.from().is_some());
+
+        // Migration from a common group
+        let json = r#"{"chat":{"id":-1001555296434,"title":"test","type":"supergroup"},"date":1629404938,"from":{"first_name":"Group","id":1087968824,"is_bot":true,"username":"GroupAnonymousBot"},"message_id":1,"migrate_from_chat_id":-599075523,"sender_chat":{"id":-1001555296434,"title":"test","type":"supergroup"}}"#;
+        let message: Message = from_str(json).unwrap();
+
+        assert_eq!(message.chat.id, new);
+        assert_eq!(
+            message.chat_migration(),
+            Some(ChatMigration::From { chat_id: old })
+        );
+        assert_eq!(message.migrate_from_chat_id(), Some(old));
+
+        // Anonymous bot
+        assert!(message.from().is_some());
+
+        // The chat to which the group migrated
+        assert!(message.sender_chat().is_some());
     }
 }
