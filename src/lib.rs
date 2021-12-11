@@ -60,19 +60,19 @@
 // https://github.com/rust-lang/rust-clippy/issues/7422
 #![allow(clippy::nonstandard_macro_braces)]
 
-#[cfg(not(feature = "dispatching2"))]
+#[cfg(feature = "old_dispatching")]
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
 
-#[cfg(feature = "dispatching2")]
+#[cfg(not(feature = "old_dispatching"))]
 pub use dispatching2::repls::{repl, repl_with_listener};
 
 mod logging;
 
 pub mod dispatching;
-#[cfg(feature = "dispatching2")]
+#[cfg(not(feature = "old_dispatching"))]
 pub mod dispatching2;
 pub mod error_handlers;
 pub mod prelude;

@@ -1,7 +1,5 @@
 use crate::{
-    dispatching::{
-        update_listeners, update_listeners::UpdateListener, Dispatcher, DispatcherHandlerRx,
-        DispatcherHandlerRxExt, UpdateWithCx,
+    dispatching2::{Dispatcher
     },
     error_handlers::{LoggingErrorHandler, OnError},
     utils::command::BotCommand,
@@ -10,6 +8,10 @@ use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
 use teloxide_core::{requests::Requester, types::Message};
 use tokio_stream::wrappers::UnboundedReceiverStream;
+use dptree::di::{DependencyMap, Injector};
+use crate::dispatching::update_listeners::UpdateListener;
+use crate::dispatching::update_listeners;
+use std::marker::PhantomData;
 
 /// A [REPL] for commands.
 ///
@@ -23,16 +25,14 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl<R, Cmd, H, Fut, HandlerE, N>(requester: R, bot_name: N, handler: H)
+pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(requester: R, bot_name: N, handler: H, cmd: PhantomData<Cmd>)
 where
-    Cmd: BotCommand + Send + 'static,
-    H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
-    Result<(), HandlerE>: OnError<HandlerE>,
-    HandlerE: Debug + Send,
+    Cmd: BotCommand + Send + Sync + 'static,
+    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     N: Into<String> + Send + 'static,
-    R: Requester + Send + Clone + 'static,
+    R: Requester + Clone + Send + Sync+ 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
+    E: Send + Sync + 'static,
 {
     let cloned_requester = requester.clone();
 
@@ -41,6 +41,7 @@ where
         bot_name,
         handler,
         update_listeners::polling_default(cloned_requester).await,
+        cmd,
     )
     .await;
 }
@@ -58,41 +59,44 @@ where
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl_with_listener<'a, R, Cmd, H, Fut, L, ListenerE, HandlerE, N>(
+pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args>(
     requester: R,
     bot_name: N,
     handler: H,
     listener: L,
+    _cmd: PhantomData<Cmd>,
 ) where
-    Cmd: BotCommand + Send + 'static,
-    H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
+    Cmd: BotCommand + Send + Sync + 'static,
+    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
-    Result<(), HandlerE>: OnError<HandlerE>,
-    HandlerE: Debug + Send,
     N: Into<String> + Send + 'static,
-    R: Requester + Clone + Send + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
+    E: Send + Sync + 'static,
 {
-    let handler = Arc::new(handler);
+    let bot_name = bot_name.into();
 
-    Dispatcher::<R>::new(requester)
-        .messages_handler(move |rx: DispatcherHandlerRx<R, Message>| {
-            UnboundedReceiverStream::new(rx).commands::<Cmd, N>(bot_name).for_each_concurrent(
-                None,
-                move |(cx, cmd)| {
-                    let handler = Arc::clone(&handler);
+    let dispatcher = Dispatcher::new(Arc::new(requester))
+        .messages_handler(|h| h.chain(
+            dptree::map(move |message: Arc<Message>| {
+                let bot_name = bot_name.clone();
+                async move {
+                    message.text().and_then(|text| Cmd::parse(text, bot_name).ok())
+                }
+            }))
+            .branch(dptree::endpoint(handler))
+        );
 
-                    async move {
-                        handler(cx, cmd).await.log_on_error().await;
-                    }
-                },
-            )
-        })
-        .setup_ctrlc_handler()
+    #[cfg(feature = "ctrlc_handler")]
+    let dispatcher = dispatcher.setup_ctrlc_handler();
+
+    // To make mutable var from immutable.
+    let mut dispatcher = dispatcher;
+
+    dispatcher
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
-        .await
+        .await;
 }

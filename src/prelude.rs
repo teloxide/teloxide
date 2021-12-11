@@ -5,7 +5,7 @@ pub use crate::{
     respond,
 };
 
-#[cfg(not(feature = "dispatching2"))]
+#[cfg(feature = "old_dispatching")]
 pub use crate::dispatching::{
     dialogue::{
         exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
@@ -14,7 +14,7 @@ pub use crate::dispatching::{
     Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
 };
 
-#[cfg(feature = "dispatching2")]
+#[cfg(not(feature = "old_dispatching"))]
 pub use crate::dispatching2::Dispatcher;
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]

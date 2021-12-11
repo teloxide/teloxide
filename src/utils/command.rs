@@ -54,6 +54,7 @@ use std::{
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
+use std::marker::PhantomData;
 
 /// An enumeration of bot's commands.
 ///
@@ -208,6 +209,9 @@ pub trait BotCommand: Sized {
     fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
     where
         N: Into<String>;
+    fn ty() -> PhantomData<Self> {
+        PhantomData
+    }
 }
 
 pub type PrefixedBotCommand = String;
