@@ -67,7 +67,7 @@ pub use dispatching::repls::{
 };
 
 #[cfg(not(feature = "old_dispatching"))]
-pub use dispatching2::repls::{repl, repl_with_listener};
+pub use dispatching2::repls::{repl, repl_with_listener, commands_repl, commands_repl_with_listener};
 
 mod logging;
 
