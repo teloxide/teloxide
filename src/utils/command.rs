@@ -51,10 +51,10 @@ use std::{
     fmt::{Display, Formatter},
 };
 
+use std::marker::PhantomData;
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
-use std::marker::PhantomData;
 
 /// An enumeration of bot's commands.
 ///
