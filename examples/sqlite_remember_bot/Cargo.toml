@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 # You can also choose "cbor-serializer" or built-in JSON serializer
 teloxide = { path = "../../", features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros", "auto-send"] }
+dptree = { path = "../../../chakka" }
 
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
@@ -16,4 +17,3 @@ serde = "1.0.104"
 futures = "0.3.5"
 
 thiserror = "1.0.15"
-derive_more = "0.99.9"

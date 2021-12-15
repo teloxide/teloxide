@@ -1,19 +1,15 @@
-#[macro_use]
-extern crate derive_more;
-
-mod states;
-mod transitions;
-
-use states::*;
-
 use teloxide::{
-    dispatching::dialogue::{serializer::Json, SqliteStorage, Storage},
+    dispatching2::dialogue::{serializer::Json, SqliteStorage, Storage},
     prelude::*,
     RequestError,
 };
 use thiserror::Error;
+use std::sync::Arc;
 
-type StorageError = <SqliteStorage<Json> as Storage<Dialogue>>::Error;
+type Store = SqliteStorage<Json>;
+// FIXME: naming
+type MyDialogue = Dialogue<BotDialogue, Store>;
+type StorageError = <SqliteStorage<Json> as Storage<BotDialogue>>::Error;
 
 #[derive(Debug, Error)]
 enum Error {
@@ -23,33 +19,69 @@ enum Error {
     StorageError(#[from] StorageError),
 }
 
-type In = DialogueWithCx<AutoSend<Bot>, Message, Dialogue, StorageError>;
+#[derive(serde::Serialize, serde::Deserialize)]
+pub enum BotDialogue {
+    Start,
+    HaveNumber(i32),
+}
+
+impl Default for BotDialogue {
+    fn default() -> Self {
+        Self::Start
+    }
+}
 
 async fn handle_message(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
-    match cx.update.text().map(ToOwned::to_owned) {
+    bot: Arc<AutoSend<Bot>>,
+    mes: Arc<Message>,
+    dialogue: Arc<MyDialogue>,
+) -> Result<(), Error> {
+    match mes.text() {
         None => {
-            cx.answer("Send me a text message.").await?;
-            next(dialogue)
+            bot.send_message(mes.chat.id, "Send me a text message.").await?;
         }
-        Some(ans) => dialogue.react(cx, ans).await,
+        Some(ans) => {
+            let state = dialogue.current_state_or_default().await?;
+            match state {
+                BotDialogue::Start => {
+                    if let Ok(number) = ans.parse() {
+                        dialogue.next(BotDialogue::HaveNumber(number)).await?;
+                        bot.send_message(mes.chat.id, format!("Remembered number {}. Now use /get or /reset", number)).await?;
+                    } else {
+                        bot.send_message(mes.chat.id, "Please, send me a number").await?;
+                    }
+                }
+                BotDialogue::HaveNumber(num) => {
+                    if ans.starts_with("/get") {
+                        bot.send_message(mes.chat.id, format!("Here is your number: {}", num)).await?;
+                    } else if ans.starts_with("/reset") {
+                        dialogue.reset().await?;
+                        bot.send_message(mes.chat.id, "Resetted number").await?;
+                    } else {
+                        bot.send_message(mes.chat.id, "Please, send /get or /reset").await?;
+                    }
+                }
+            }
+        },
     }
+    Ok(())
 }
 
 #[tokio::main]
 async fn main() {
-    let bot = Bot::from_env().auto_send();
+    let bot = Arc::new(Bot::from_env().auto_send());
+    let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     Dispatcher::new(bot)
-        .messages_handler(DialogueDispatcher::with_storage(
-            |DialogueWithCx { cx, dialogue }: In| async move {
-                let dialogue = dialogue.expect("std::convert::Infallible");
-                handle_message(cx, dialogue).await.expect("Something wrong with the bot!")
-            },
-            SqliteStorage::open("db.sqlite", Json).await.unwrap(),
-        ))
+        .dependencies({
+            let mut map = dptree::di::DependencyMap::new();
+            map.insert_arc(storage);
+            map
+        })
+        .messages_handler(|h| {
+            h.add_dialogue::<Message, Store, BotDialogue>()
+                .branch(dptree::endpoint(handle_message))
+        })
         .dispatch()
         .await;
 }

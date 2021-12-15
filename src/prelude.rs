@@ -15,7 +15,10 @@ pub use crate::dispatching::{
 };
 
 #[cfg(not(feature = "old_dispatching"))]
-pub use crate::dispatching2::Dispatcher;
+pub use crate::dispatching2::{
+    dialogue::{Dialogue, DialogueHandlerExt as _},
+    Dispatcher,
+};
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
