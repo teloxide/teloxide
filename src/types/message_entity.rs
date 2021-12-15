@@ -44,6 +44,7 @@ impl MessageEntity {
     }
 }
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
@@ -102,6 +103,22 @@ mod tests {
             },
             from_str::<MessageEntity>(r#"{"type":"pre","offset":1,"length":2,"language":"rust"}"#)
                 .unwrap()
+        );
+    }
+
+    #[test]
+    fn pre_with_none_language() {
+        use serde_json::to_string;
+
+        assert_eq!(
+            to_string(&MessageEntity {
+                kind: MessageEntityKind::Pre { language: None },
+                offset: 1,
+                length: 2,
+            })
+            .unwrap()
+            .find("language"),
+            None
         );
     }
 }
