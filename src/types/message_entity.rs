@@ -106,6 +106,7 @@ mod tests {
         );
     }
 
+    // https://github.com/teloxide/teloxide-core/pull/145
     #[test]
     fn pre_with_none_language() {
         use serde_json::to_string;
