@@ -52,12 +52,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make `SendPoll::poll_` optional ([#133][pr133])
 - Bug with `caption_entities`, see issue [#473][issue473]
 - Type of response for `CopyMessage` method ([#141](pr141), [#142](pr142))
+- Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145](pr145))
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
 [pr133]: https://github.com/teloxide/teloxide-core/pull/133
 [pr141]: https://github.com/teloxide/teloxide-core/pull/141
 [pr142]: https://github.com/teloxide/teloxide-core/pull/142
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
+[pr145]: https://github.com/teloxide/teloxide-core/pull/145
 [issue473]: https://github.com/teloxide/teloxide/issues/473
 [issue427]: https://github.com/teloxide/teloxide/issues/427
 
