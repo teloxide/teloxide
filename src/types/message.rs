@@ -286,11 +286,20 @@ pub struct ForwardOrigin {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MediaKind {
+    // Note:
+    // - `Venue` must be in front of `Location`
+    // - `Animation` must be in front of `Document`
+    //
+    // This is needed so serde doesn't parse `Venue` as `Location` or `Animation` as `Document`
+    // (for backward compatability telegram duplicates some fields)
+    //
+    // See <https://github.com/teloxide/teloxide/issues/481>
     Animation(MediaAnimation),
     Audio(MediaAudio),
     Contact(MediaContact),
     Document(MediaDocument),
     Game(MediaGame),
+    Venue(MediaVenue),
     Location(MediaLocation),
     Photo(MediaPhoto),
     Poll(MediaPoll),
@@ -299,7 +308,6 @@ pub enum MediaKind {
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
-    Venue(MediaVenue),
     Migration(ChatMigration),
 }
 
@@ -310,11 +318,6 @@ pub struct MediaAnimation {
     /// will also be set.
     pub animation: Animation,
 
-    #[doc(hidden)]
-    /// "For backward compatibility" (c) Telegram Docs.
-    #[serde(skip)]
-    pub document: (),
-
     /// Caption for the animation, 0-1024 characters.
     pub caption: Option<String>,
 
@@ -322,6 +325,7 @@ pub struct MediaAnimation {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+    // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -472,6 +476,7 @@ pub struct MediaVoice {
 pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,
+    // Note: for backward compatibility telegram also sends `location` field, but we ignore it
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -1338,5 +1343,54 @@ mod tests {
 
         // The chat to which the group migrated
         assert!(message.sender_chat().is_some());
+    }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/481>
+    #[test]
+    fn issue_481() {
+        let json = r#"
+{
+  "message_id": 0,
+  "date": 0,
+  "location": {
+   "latitude": 0.0,
+   "longitude": 0.0
+  },
+  "chat": {
+   "id": 0,
+   "first_name": "f",
+   "type": "private"
+  },
+  "venue": {
+   "location": {
+    "latitude": 0.0,
+    "longitude": 0.0
+   },
+   "title": "Title",
+   "address": "Address",
+   "foursquare_id": "some_foursquare_id"
+  }
+ }
+"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.venue().unwrap(),
+            &Venue {
+                location: Location {
+                    longitude: 0.0,
+                    latitude: 0.0,
+                    horizontal_accuracy: None,
+                    live_period: None,
+                    heading: None,
+                    proximity_alert_radius: None
+                },
+                title: "Title".to_owned(),
+                address: "Address".to_owned(),
+                foursquare_id: Some("some_foursquare_id".to_owned()),
+                foursquare_type: None,
+                google_place_id: None,
+                google_place_type: None,
+            }
+        )
     }
 }
