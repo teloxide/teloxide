@@ -1344,4 +1344,53 @@ mod tests {
         // The chat to which the group migrated
         assert!(message.sender_chat().is_some());
     }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/481>
+    #[test]
+    fn issue_481() {
+        let json = r#"
+{
+  "message_id": 0,
+  "date": 0,
+  "location": {
+   "latitude": 0.0,
+   "longitude": 0.0
+  },
+  "chat": {
+   "id": 0,
+   "first_name": "f",
+   "type": "private"
+  },
+  "venue": {
+   "location": {
+    "latitude": 0.0,
+    "longitude": 0.0
+   },
+   "title": "Title",
+   "address": "Address",
+   "foursquare_id": "some_foursquare_id"
+  }
+ }
+"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.venue().unwrap(),
+            &Venue {
+                location: Location {
+                    longitude: 0.0,
+                    latitude: 0.0,
+                    horizontal_accuracy: None,
+                    live_period: None,
+                    heading: None,
+                    proximity_alert_radius: None
+                },
+                title: "Title".to_owned(),
+                address: "Address".to_owned(),
+                foursquare_id: Some("some_foursquare_id".to_owned()),
+                foursquare_type: None,
+                google_place_id: None,
+                google_place_type: None,
+            }
+        )
+    }
 }
