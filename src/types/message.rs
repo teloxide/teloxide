@@ -286,11 +286,20 @@ pub struct ForwardOrigin {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MediaKind {
+    // Note:
+    // - `Venue` must be in front of `Location`
+    // - `Animation` must be in front of `Document`
+    //
+    // This is needed so serde doesn't parse `Venue` as `Location` or `Animation` as `Document`
+    // (for backward compatability telegram duplicates some fields)
+    //
+    // See <https://github.com/teloxide/teloxide/issues/481>
     Animation(MediaAnimation),
     Audio(MediaAudio),
     Contact(MediaContact),
     Document(MediaDocument),
     Game(MediaGame),
+    Venue(MediaVenue),
     Location(MediaLocation),
     Photo(MediaPhoto),
     Poll(MediaPoll),
@@ -299,7 +308,6 @@ pub enum MediaKind {
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
-    Venue(MediaVenue),
     Migration(ChatMigration),
 }
 
@@ -310,11 +318,6 @@ pub struct MediaAnimation {
     /// will also be set.
     pub animation: Animation,
 
-    #[doc(hidden)]
-    /// "For backward compatibility" (c) Telegram Docs.
-    #[serde(skip)]
-    pub document: (),
-
     /// Caption for the animation, 0-1024 characters.
     pub caption: Option<String>,
 
@@ -322,6 +325,7 @@ pub struct MediaAnimation {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+    // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -472,6 +476,7 @@ pub struct MediaVoice {
 pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,
+    // Note: for backward compatibility telegram also sends `location` field, but we ignore it
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
