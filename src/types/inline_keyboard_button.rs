@@ -41,7 +41,13 @@ impl InlineKeyboardButton {
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
-    /// HTTP or tg:// url to be opened when button is pressed.
+    /// HTTP or `tg://` url to be opened when button is pressed.
+    ///
+    /// Links in the form of `tg://user?id=<user_id>` can be used to mention a
+    /// user by their ID without using a username, if this is allowed by
+    /// their privacy settings. This will only work in Telegram versions
+    /// released after December 7, 2021. Older clients will display _unsupported
+    /// message_.
     Url(reqwest::Url),
 
     /// An HTTP URL used to automatically authorize the user. Can be used as a

@@ -89,6 +89,15 @@ pub struct MessageCommon {
     /// Inline keyboard attached to the message. `login_url` buttons are
     /// represented as ordinary `url` buttons.
     pub reply_markup: Option<InlineKeyboardMarkup>,
+
+    /// `true`, if the message is a channel post that was automatically
+    /// forwarded to the connected discussion group.
+    #[serde(default)]
+    pub is_automatic_forward: bool,
+
+    /// `true`, if the message can't be forwarded.
+    #[serde(default)]
+    pub has_protected_content: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -1024,6 +1033,26 @@ mod getters {
             match &self.kind {
                 Common(MessageCommon { reply_markup, .. }) => reply_markup.as_ref(),
                 _ => None,
+            }
+        }
+
+        pub fn is_automatic_forward(&self) -> bool {
+            match &self.kind {
+                Common(MessageCommon {
+                    is_automatic_forward,
+                    ..
+                }) => *is_automatic_forward,
+                _ => false,
+            }
+        }
+
+        pub fn has_protected_content(&self) -> bool {
+            match &self.kind {
+                Common(MessageCommon {
+                    has_protected_content,
+                    ..
+                }) => *has_protected_content,
+                _ => false,
             }
         }
     }

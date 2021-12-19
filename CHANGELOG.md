@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `ApiError::TooMuchInlineQueryResults` ([#135][pr135])
 - Support for 5.4 telegram bot API ([#133][pr133])
+- Support for 5.5 telegram bot API ([#143][pr143])
 - `EditedMessageIsTooLong` error ([#109][pr109])
 - `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
 - `Limits::messages_per_min_channel` ([#121][pr121])
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr135]: https://github.com/teloxide/teloxide-core/pull/135
 [pr139]: https://github.com/teloxide/teloxide-core/pull/139
 [pr140]: https://github.com/teloxide/teloxide-core/pull/140
+[pr143]: https://github.com/teloxide/teloxide-core/pull/143
 
 ### Changed
 
