@@ -9,6 +9,25 @@ on:
 name: Continuous integration
 
 jobs:
+  style:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2021-12-19
+          override: true
+          components: rustfmt
+
+      - name: fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check 
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -56,7 +75,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: nightly-2021-12-19
           override: true
           components: clippy
 
@@ -65,22 +84,3 @@ jobs:
         with:
           command: clippy
           args: --all-targets --all-features -- -D warnings
-
-  style:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
-
-      - name: fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check 
