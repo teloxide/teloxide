@@ -21,7 +21,7 @@ where
         D: Send + Sync + 'static,
         Upd: GetChatId + Send + Sync + 'static,
     {
-        self.chain(dptree::map(|storage: Arc<S>, upd: Arc<Upd>| async move {
+        self.chain(dptree::filter_map(|storage: Arc<S>, upd: Arc<Upd>| async move {
             let chat_id = upd.chat_id()?;
             Dialogue::new(storage, chat_id).ok()
         }))

@@ -32,7 +32,7 @@ pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible
 
 macro_rules! make_parser {
     ($kind:ident) => {
-        dptree::map(|upd: Arc<Update>| async move {
+        dptree::filter_map(|upd: Arc<Update>| async move {
             match &upd.kind {
                 UpdateKind::$kind(u) => Some(u.clone()),
                 _ => None,
