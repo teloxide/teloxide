@@ -21,9 +21,6 @@ authors = [
         "Alexey Fedechkin <aleksey-fedechkin@rambler.ru>"
 ]
 
-[badges]
-maintenance = { status = "actively-developed" }
-
 [features]
 default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
 
