@@ -3,16 +3,6 @@ name = "teloxide-core"
 description = "Core part of the `teloxide` library - telegram bot API client"
 version = "0.3.1"
 edition = "2018"
-authors = [
-    "Temirkhan Myrzamadi <hirrolot@gmail.com>",
-    "Waffle Lapkin <waffle.lapkin@gmail.com>",
-    "p0lunin <dmytro.polunin@gmail.com>",
-    "Mishko torop'izhko",
-    "Mr-Andersen",
-    "Sergey Levitin <selevit@gmail.com>",
-    "Rustem B. <bakirov.com@yandex.ru>",
-    "Alexey Fedechkin <aleksey-fedechkin@rambler.ru>"
-]
 
 license = "MIT"
 repository = "https://github.com/teloxide/teloxide-core/"
