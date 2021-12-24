@@ -1,14 +1,12 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
     dispatching2::Dispatcher,
-    error_handlers::{LoggingErrorHandler, OnError},
+    error_handlers::LoggingErrorHandler,
     utils::command::BotCommand,
 };
 use dptree::di::{DependencyMap, Injector};
-use futures::StreamExt;
-use std::{fmt::Debug, future::Future, marker::PhantomData, sync::Arc};
+use std::{fmt::Debug, marker::PhantomData, sync::Arc};
 use teloxide_core::{requests::Requester, types::Message};
-use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// A [REPL] for commands.
 ///
