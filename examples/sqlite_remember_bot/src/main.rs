@@ -32,9 +32,9 @@ impl Default for BotDialogue {
 }
 
 async fn handle_message(
-    bot: Arc<AutoSend<Bot>>,
-    mes: Arc<Message>,
-    dialogue: Arc<MyDialogue>,
+    bot: AutoSend<Bot>,
+    mes: Message,
+    dialogue: MyDialogue,
 ) -> Result<(), Error> {
     match mes.text() {
         None => {
@@ -73,11 +73,7 @@ async fn main() {
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     Dispatcher::new(bot)
-        .dependencies({
-            let mut map = dptree::di::DependencyMap::new();
-            map.insert_arc(storage);
-            map
-        })
+        .dependencies(dptree::deps!(storage))
         .messages_handler(|h| {
             h.add_dialogue::<Message, Store, BotDialogue>()
                 .branch(dptree::endpoint(handle_message))

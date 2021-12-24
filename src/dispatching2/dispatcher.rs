@@ -32,9 +32,9 @@ pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible
 
 macro_rules! make_parser {
     ($kind:ident) => {
-        dptree::filter_map(|upd: Arc<Update>| async move {
-            match &upd.kind {
-                UpdateKind::$kind(u) => Some(u.clone()),
+        dptree::filter_map(|upd: Update| async move {
+            match upd.kind {
+                UpdateKind::$kind(u) => Some(u),
                 _ => None,
             }
         })
@@ -203,7 +203,8 @@ where
             Ok(upd) => {
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
-                deps.insert_arc(self.requester.clone());
+                deps.insert(self.requester.clone());
+
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
                     ControlFlow::Break(Err(_err)) => todo!("error handler"),

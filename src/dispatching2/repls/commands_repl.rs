@@ -78,7 +78,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
     let bot_name = bot_name.into();
 
     let dispatcher = Dispatcher::new(Arc::new(requester)).messages_handler(|h| {
-        h.chain(dptree::filter_map(move |message: Arc<Message>| {
+        h.chain(dptree::filter_map(move |message: Message| {
             let bot_name = bot_name.clone();
             async move { message.text().and_then(|text| Cmd::parse(text, bot_name).ok()) }
         }))
