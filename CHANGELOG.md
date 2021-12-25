@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
+- How forwarded messages are represented ([#151][pr151])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125

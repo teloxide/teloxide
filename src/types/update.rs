@@ -145,8 +145,8 @@ impl Update {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ChatPrivate, ForwardKind, ForwardOrigin, MediaKind, MediaText, Message,
-        MessageCommon, MessageKind, Update, UpdateKind, User,
+        Chat, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon, MessageKind,
+        Update, UpdateKind, User,
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
@@ -208,9 +208,8 @@ mod test {
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(String::from("en")),
                     }),
-                    forward_kind: ForwardKind::Origin(ForwardOrigin {
-                        reply_to_message: None,
-                    }),
+                    reply_to_message: None,
+                    forward: None,
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),
