@@ -43,8 +43,13 @@ pub enum RequestError {
     /// description of the error.
     ///
     /// [open an issue]: https://github.com/teloxide/teloxide/issues/new
-    #[error("An error while parsing JSON: {0}")]
-    InvalidJson(#[source] serde_json::Error),
+    #[error("An error while parsing JSON: {source} (raw: {raw:?})")]
+    InvalidJson {
+        #[source]
+        source: serde_json::Error,
+        /// The raw string JSON that couldn't been parsed
+        raw: Box<str>,
+    },
 
     /// Occurs when trying to send a file to Telegram.
     #[error("An I/O error: {0}")]
