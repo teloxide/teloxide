@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Limits::messages_per_min_channel` ([#121][pr121])
 - `media_group_id` field to `MediaDocument` and `MediaAudio` ([#139][pr139])
 - `caption_entities` method to `InputMediaPhoto` ([#140][pr140])
+- `User::is_anonymous` and `User::is_channel` functions ([#151][pr151])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr116]: https://github.com/teloxide/teloxide-core/pull/116
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr139]: https://github.com/teloxide/teloxide-core/pull/139
 [pr140]: https://github.com/teloxide/teloxide-core/pull/140
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
+[pr151]: https://github.com/teloxide/teloxide-core/pull/151
 
 ### Changed
 
