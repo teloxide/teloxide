@@ -32,7 +32,7 @@ impl ChatId {
             &Self::Id(id @ MIN_CHAT_ID..=-1) => Chat(-id as _),
             &Self::Id(id @ MIN_CHANNEL_ID..=MAX_CHANNEL_ID) => Channel((MAX_CHANNEL_ID - id) as _),
             &Self::Id(id) => {
-                debug_assert!(0 < id && id < MAX_USER_ID, "malformed chat id");
+                debug_assert!(0 < id && id < MAX_USER_ID, "malformed chat id: {}", id);
                 User(id as _)
             }
             Self::ChannelUsername(_) => return None,
