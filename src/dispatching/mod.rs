@@ -49,7 +49,7 @@ pub mod dialogue;
 pub mod stop_token;
 pub mod update_listeners;
 
-#[cfg(feature = "old_dispatching")]
+#[cfg(feature = "old-dispatching")]
 pub(crate) mod repls;
 
 mod dispatcher;
@@ -63,7 +63,7 @@ pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
 pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
 
-#[cfg(not(feature = "old_dispatching"))]
+#[cfg(feature = "new-dispatching")]
 pub(crate) use dispatcher::{
     shutdown_check_timeout_for, shutdown_inner, DispatcherState, ShutdownState,
 };

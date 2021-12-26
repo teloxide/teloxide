@@ -1,10 +1,10 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::Dispatcher,
+    dispatching2::{handler_ext::HandlerExt, Dispatcher},
     error_handlers::{LoggingErrorHandler, OnError},
     utils::command::BotCommand,
 };
-use dptree::di::{DependencyMap, Injector};
+use dptree::di::{DependencyMap, Injectable};
 use futures::StreamExt;
 use std::{fmt::Debug, future::Future, marker::PhantomData, sync::Arc};
 use teloxide_core::{requests::Requester, types::Message};
@@ -29,7 +29,7 @@ pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(
     cmd: PhantomData<Cmd>,
 ) where
     Cmd: BotCommand + Send + Sync + 'static,
-    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     N: Into<String> + Send + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
@@ -68,7 +68,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
     _cmd: PhantomData<Cmd>,
 ) where
     Cmd: BotCommand + Send + Sync + 'static,
-    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
     N: Into<String> + Send + 'static,
@@ -77,13 +77,8 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
 {
     let bot_name = bot_name.into();
 
-    let dispatcher = Dispatcher::new(Arc::new(requester)).messages_handler(|h| {
-        h.chain(dptree::map(move |message: Arc<Message>| {
-            let bot_name = bot_name.clone();
-            async move { message.text().and_then(|text| Cmd::parse(text, bot_name).ok()) }
-        }))
-        .branch(dptree::endpoint(handler))
-    });
+    let dispatcher = Dispatcher::new(Arc::new(requester))
+        .messages_handler(|h| h.add_command::<Cmd>(bot_name).branch(dptree::endpoint(handler)));
 
     #[cfg(feature = "ctrlc_handler")]
     let dispatcher = dispatcher.setup_ctrlc_handler();

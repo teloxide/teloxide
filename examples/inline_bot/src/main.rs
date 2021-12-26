@@ -20,8 +20,9 @@ async fn run() {
             UnboundedReceiverStream::new(rx).for_each_concurrent(None, |query| async move {
                 // First, create your actual response
                 let google_search = InlineQueryResultArticle::new(
-                    // Each item needs a unique ID, as well as the response container for the items.
-                    // These can be whatever, as long as they don't conflict.
+                    // Each item needs a unique ID, as well as the response container for the
+                    // items. These can be whatever, as long as they don't
+                    // conflict.
                     "01".to_string(),
                     // What the user will actually see
                     "Google Search",
@@ -31,10 +32,10 @@ async fn run() {
                         query.update.query,
                     ))),
                 );
-                // While constructing them from the struct itself is possible, it is preferred to use
-                // the builder pattern if you wish to add more information to your result.
-                // Please refer to the documentation for more detailed information about each field.
-                // https://docs.rs/teloxide/0.5.1/teloxide/types/struct.InlineQueryResultArticle.html
+                // While constructing them from the struct itself is possible, it is preferred
+                // to use the builder pattern if you wish to add more
+                // information to your result. Please refer to the documentation
+                // for more detailed information about each field. https://docs.rs/teloxide/0.5.1/teloxide/types/struct.InlineQueryResultArticle.html
                 let ddg_search = InlineQueryResultArticle::new(
                     "02".to_string(),
                     "DuckDuckGo Search".to_string(),
@@ -52,7 +53,8 @@ async fn run() {
                     InlineQueryResult::Article(ddg_search),
                 ];
 
-                // Send it off! One thing to note -- the ID we use here must be of the query we're responding to.
+                // Send it off! One thing to note -- the ID we use here must be of the query
+                // we're responding to.
                 let response =
                     query.requester.answer_inline_query(&query.update.id, results).send().await;
                 if let Err(err) = response {

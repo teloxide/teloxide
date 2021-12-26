@@ -24,6 +24,18 @@ pub struct Dialogue<D, S> {
     _phantom: PhantomData<D>,
 }
 
+// #[derive] requires generics to implement Clone,
+// but `S` wrapped around Arc, and `D` wrapped around PhantomData.
+impl<D, S> Clone for Dialogue<D, S> {
+    fn clone(&self) -> Self {
+        Dialogue {
+            storage: self.storage.clone(),
+            chat_id: self.chat_id.clone(),
+            _phantom: PhantomData,
+        }
+    }
+}
+
 impl<D, S> Dialogue<D, S>
 where
     D: Send + 'static,

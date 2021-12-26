@@ -3,7 +3,7 @@ use crate::{
     dispatching2::Dispatcher,
     error_handlers::{LoggingErrorHandler, OnError},
 };
-use dptree::di::{DependencyMap, Injector};
+use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, sync::Arc};
 use teloxide_core::requests::Requester;
 
@@ -21,7 +21,7 @@ use teloxide_core::requests::Requester;
 #[cfg(feature = "ctrlc_handler")]
 pub async fn repl<R, H, E, Args>(requester: R, handler: H)
 where
-    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     Result<(), E>: OnError<E>,
     E: Debug + Send + Sync + 'static,
     R: Requester + Send + Sync + Clone + 'static,
@@ -54,7 +54,7 @@ pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
     handler: H,
     listener: L,
 ) where
-    H: Injector<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug,
     Result<(), E>: OnError<E>,

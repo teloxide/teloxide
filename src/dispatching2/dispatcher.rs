@@ -13,7 +13,7 @@ use std::{collections::HashSet, convert::Infallible, fmt::Debug, ops::ControlFlo
 use tokio::{sync::Notify, time::timeout};
 
 pub struct Dispatcher<R, Err> {
-    requester: Arc<R>,
+    requester: R,
     dependencies: DependencyMap,
 
     handler: UpdateHandler<Err>,
@@ -32,9 +32,9 @@ pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible
 
 macro_rules! make_parser {
     ($kind:ident) => {
-        dptree::map(|upd: Arc<Update>| async move {
-            match &upd.kind {
-                UpdateKind::$kind(u) => Some(u.clone()),
+        dptree::filter_map(|upd: Update| async move {
+            match upd.kind {
+                UpdateKind::$kind(u) => Some(u),
                 _ => None,
             }
         })
@@ -43,16 +43,16 @@ macro_rules! make_parser {
 
 impl<R, Err> Dispatcher<R, Err>
 where
-    R: Send + Sync + 'static,
+    R: Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
-    pub fn new(requester: Arc<R>) -> Self {
+    pub fn new(requester: R) -> Self {
         Dispatcher {
             requester,
             dependencies: DependencyMap::new(),
             handler: dptree::entry(),
-            default_handler: dptree::endpoint(|update: Arc<Update>| async move {
-                log::warn!("Unhandled update: {:?}", update.as_ref())
+            default_handler: dptree::endpoint(|update: Update| async move {
+                log::warn!("Unhandled update: {:?}", update)
             }),
             allowed_updates: Default::default(),
             state: Arc::new(Default::default()),
@@ -203,7 +203,7 @@ where
             Ok(upd) => {
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
-                deps.insert_arc(self.requester.clone());
+                deps.insert(self.requester.clone());
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
                     ControlFlow::Break(Err(_err)) => todo!("error handler"),

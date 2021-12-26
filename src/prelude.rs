@@ -5,7 +5,7 @@ pub use crate::{
     respond,
 };
 
-#[cfg(feature = "old_dispatching")]
+#[cfg(feature = "old-dispatching")]
 pub use crate::dispatching::{
     dialogue::{
         exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
@@ -14,7 +14,7 @@ pub use crate::dispatching::{
     Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
 };
 
-#[cfg(not(feature = "old_dispatching"))]
+#[cfg(feature = "new-dispatching")]
 pub use crate::dispatching2::{
     dialogue::{Dialogue, DialogueHandlerExt as _},
     Dispatcher,
@@ -42,3 +42,5 @@ pub use crate::utils::UpState;
 pub use tokio::sync::mpsc::UnboundedReceiver;
 
 pub use futures::StreamExt;
+
+pub use dptree::{self, prelude::*};

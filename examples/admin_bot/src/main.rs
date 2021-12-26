@@ -1,7 +1,11 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
-use teloxide::{prelude::*, types::{ChatPermissions, Me}, utils::command::BotCommand};
+use teloxide::{
+    prelude::*,
+    types::{ChatPermissions, Me},
+    utils::command::BotCommand,
+};
 
 // Derive BotCommand to parse text with a command into this enumeration.
 //

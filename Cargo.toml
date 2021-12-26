@@ -25,9 +25,10 @@ authors = [
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default", "new-dispatching"]
 
-old_dispatching = []
+old-dispatching = []
+new-dispatching = ["dptree"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
@@ -74,12 +75,10 @@ teloxide-core = { version = "0.3.3", default-features = false }
 #teloxide-core = { git = "https://github.com/teloxide/teloxide-core.git", rev = "...", default-features = false }
 teloxide-macros = { version = "0.4", optional = true }
 
-dptree = { path = "../chakka" }
-
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-# dptree = { git = "https://github.com/p0lunin/dptree", optional = true }
+dptree = { git = "https://github.com/p0lunin/dptree", optional = true }
 
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.6"

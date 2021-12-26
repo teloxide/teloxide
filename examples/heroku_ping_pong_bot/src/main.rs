@@ -1,7 +1,14 @@
 // The version of Heroku ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
 
-use teloxide::{dispatching::{update_listeners::{self, StatefulListener}, stop_token::AsyncStopToken}, prelude::*, types::Update};
+use teloxide::{
+    dispatching::{
+        stop_token::AsyncStopToken,
+        update_listeners::{self, StatefulListener},
+    },
+    prelude::*,
+    types::Update,
+};
 
 use std::{convert::Infallible, env, net::SocketAddr};
 use tokio::sync::mpsc;
@@ -60,9 +67,13 @@ pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListene
     tokio::spawn(fut);
     let stream = UnboundedReceiverStream::new(rx);
 
-    fn streamf<S, T>(state: &mut (S, T)) -> &mut S { &mut state.0 }
-    
-    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| state.1.clone())
+    fn streamf<S, T>(state: &mut (S, T)) -> &mut S {
+        &mut state.0
+    }
+
+    StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| {
+        state.1.clone()
+    })
 }
 
 async fn run() {

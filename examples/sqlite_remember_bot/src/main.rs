@@ -1,10 +1,10 @@
+use std::sync::Arc;
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage, Storage},
     prelude::*,
     RequestError,
 };
 use thiserror::Error;
-use std::sync::Arc;
 
 type Store = SqliteStorage<Json>;
 // FIXME: naming
@@ -32,9 +32,9 @@ impl Default for BotDialogue {
 }
 
 async fn handle_message(
-    bot: Arc<AutoSend<Bot>>,
-    mes: Arc<Message>,
-    dialogue: Arc<MyDialogue>,
+    bot: AutoSend<Bot>,
+    mes: Message,
+    dialogue: MyDialogue,
 ) -> Result<(), Error> {
     match mes.text() {
         None => {
@@ -46,14 +46,19 @@ async fn handle_message(
                 BotDialogue::Start => {
                     if let Ok(number) = ans.parse() {
                         dialogue.next(BotDialogue::HaveNumber(number)).await?;
-                        bot.send_message(mes.chat.id, format!("Remembered number {}. Now use /get or /reset", number)).await?;
+                        bot.send_message(
+                            mes.chat.id,
+                            format!("Remembered number {}. Now use /get or /reset", number),
+                        )
+                        .await?;
                     } else {
                         bot.send_message(mes.chat.id, "Please, send me a number").await?;
                     }
                 }
                 BotDialogue::HaveNumber(num) => {
                     if ans.starts_with("/get") {
-                        bot.send_message(mes.chat.id, format!("Here is your number: {}", num)).await?;
+                        bot.send_message(mes.chat.id, format!("Here is your number: {}", num))
+                            .await?;
                     } else if ans.starts_with("/reset") {
                         dialogue.reset().await?;
                         bot.send_message(mes.chat.id, "Resetted number").await?;
@@ -62,25 +67,20 @@ async fn handle_message(
                     }
                 }
             }
-        },
+        }
     }
     Ok(())
 }
 
 #[tokio::main]
 async fn main() {
-    let bot = Arc::new(Bot::from_env().auto_send());
+    let bot = Bot::from_env().auto_send();
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     Dispatcher::new(bot)
-        .dependencies({
-            let mut map = dptree::di::DependencyMap::new();
-            map.insert_arc(storage);
-            map
-        })
+        .dependencies(dptree::deps![storage])
         .messages_handler(|h| {
-            h.add_dialogue::<Message, Store, BotDialogue>()
-                .branch(dptree::endpoint(handle_message))
+            h.add_dialogue::<Message, Store, BotDialogue>().branch(dptree::endpoint(handle_message))
         })
         .dispatch()
         .await;
