@@ -16,7 +16,7 @@ use teloxide::{
 // your commands in this format:
 // %GENERAL-DESCRIPTION%
 // %PREFIX%%COMMAND% - %DESCRIPTION%
-#[derive(BotCommand)]
+#[derive(BotCommand, Clone)]
 #[command(
     rename = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
@@ -38,6 +38,7 @@ enum Command {
     Help,
 }
 
+#[derive(Clone)]
 enum UnitOfTime {
     Seconds,
     Minutes,
@@ -65,80 +66,88 @@ fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
     }
 }
 
-type Cx = UpdateWithCx<AutoSend<Bot>, Message>;
+// FIXME: naming
+type MyBot = AutoSend<Bot>;
 
-// Mute a user with a replied message.
-async fn mute_user(cx: &Cx, time: Duration) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match cx.update.reply_to_message() {
-        Some(msg1) => {
-            cx.requester
-                .restrict_chat_member(
-                    cx.update.chat_id(),
-                    msg1.from().expect("Must be MessageKind::Common").id,
-                    ChatPermissions::default(),
-                )
-                .until_date(
-                    DateTime::<Utc>::from_utc(
-                        NaiveDateTime::from_timestamp(cx.update.date as i64, 0),
-                        Utc,
-                    ) + time,
-                )
-                .await?;
+// Kick a user with a replied message.
+async fn kick_user(bot: MyBot, mes: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match mes.reply_to_message() {
+        Some(replied) => {
+            // bot.unban_chat_member can also kicks a user from a group chat.
+            bot.unban_chat_member(mes.chat_id(), replied.from().unwrap().id).await?;
         }
         None => {
-            cx.reply_to("Use this command in reply to another message").send().await?;
+            bot.send_message(mes.chat_id(), "Use this command in reply to another message").await?;
         }
     }
     Ok(())
 }
 
-// Kick a user with a replied message.
-async fn kick_user(cx: &Cx) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match cx.update.reply_to_message() {
-        Some(mes) => {
-            // bot.unban_chat_member can also kicks a user from a group chat.
-            cx.requester
-                .unban_chat_member(cx.update.chat_id(), mes.from().unwrap().id)
-                .send()
-                .await?;
+// Mute a user with a replied message.
+async fn mute_user(
+    bot: MyBot,
+    mes: Message,
+    time: Duration,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match mes.reply_to_message() {
+        Some(replied) => {
+            bot.restrict_chat_member(
+                mes.chat_id(),
+                replied.from().expect("Must be MessageKind::Common").id,
+                ChatPermissions::default(),
+            )
+            .until_date(
+                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(mes.date as i64, 0), Utc)
+                    + time,
+            )
+            .await?;
         }
         None => {
-            cx.reply_to("Use this command in reply to another message").send().await?;
+            bot.send_message(mes.chat_id(), "Use this command in a reply to another message!")
+                .await?;
         }
     }
     Ok(())
 }
 
 // Ban a user with replied message.
-async fn ban_user(cx: &Cx, time: Duration) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match cx.update.reply_to_message() {
-        Some(message) => {
-            cx.requester
-                .kick_chat_member(
-                    cx.update.chat_id(),
-                    message.from().expect("Must be MessageKind::Common").id,
-                )
-                .until_date(
-                    DateTime::<Utc>::from_utc(
-                        NaiveDateTime::from_timestamp(cx.update.date as i64, 0),
-                        Utc,
-                    ) + time,
-                )
-                .await?;
+async fn ban_user(
+    bot: MyBot,
+    mes: Message,
+    time: Duration,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match mes.reply_to_message() {
+        Some(replied) => {
+            bot.kick_chat_member(
+                mes.chat_id(),
+                replied.from().expect("Must be MessageKind::Common").id,
+            )
+            .until_date(
+                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(mes.date as i64, 0), Utc)
+                    + time,
+            )
+            .await?;
         }
         None => {
-            cx.reply_to("Use this command in a reply to another message!").send().await?;
+            bot.send_message(mes.chat_id(), "Use this command in a reply to another message!")
+                .await?;
         }
     }
     Ok(())
 }
 
-async fn action(cx: Cx, command: Command) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn action(
+    bot: MyBot,
+    mes: Message,
+    command: Command,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).send().await.map(|_| ())?,
-        Command::Kick => kick_user(&cx).await?,
-        Command::Ban { time, unit } => ban_user(&cx, calc_restrict_time(time, unit)).await?,
-        Command::Mute { time, unit } => mute_user(&cx, calc_restrict_time(time, unit)).await?,
+        Command::Help => {
+            bot.send_message(mes.chat_id(), Command::descriptions()).await?;
+        }
+        Command::Kick => kick_user(bot, mes).await?,
+        Command::Ban { time, unit } => ban_user(bot, mes, calc_restrict_time(time, unit)).await?,
+        Command::Mute { time, unit } => mute_user(bot, mes, calc_restrict_time(time, unit)).await?,
     };
 
     Ok(())
@@ -157,5 +166,5 @@ async fn run() {
 
     let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
     let bot_name = bot_user.username.expect("Bots must have usernames");
-    teloxide::commands_repl(bot, bot_name, action).await;
+    teloxide::commands_repl(bot, bot_name, action, Command::ty()).await;
 }
