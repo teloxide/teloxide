@@ -77,7 +77,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
 {
     let bot_name = bot_name.into();
 
-    let dispatcher = Dispatcher::new(Arc::new(requester))
+    let dispatcher = Dispatcher::new(requester)
         .messages_handler(|h| h.add_command::<Cmd>(bot_name).branch(dptree::endpoint(handler)));
 
     #[cfg(feature = "ctrlc_handler")]

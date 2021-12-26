@@ -59,11 +59,11 @@ pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
     ListenerE: Debug,
     Result<(), E>: OnError<E>,
     E: Debug + Send + Sync + 'static,
-    R: Requester + Send + Sync + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
 {
     #[allow(unused_mut)]
-    let mut dispatcher = Dispatcher::new(Arc::new(requester))
-        .messages_handler(|h| h.branch(dptree::endpoint(handler)));
+    let mut dispatcher =
+        Dispatcher::new(requester).messages_handler(|h| h.branch(dptree::endpoint(handler)));
 
     #[cfg(feature = "ctrlc_handler")]
     let mut dispatcher = dispatcher.setup_ctrlc_handler();
