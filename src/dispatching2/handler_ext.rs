@@ -3,7 +3,6 @@ use dptree::{
     di::{DependencySupplier, Insert},
     Handler,
 };
-use std::sync::Arc;
 
 pub trait HandlerExt<IR> {
     fn add_command<C>(self, bot_name: String) -> Self

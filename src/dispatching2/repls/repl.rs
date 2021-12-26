@@ -4,7 +4,7 @@ use crate::{
     error_handlers::{LoggingErrorHandler, OnError},
 };
 use dptree::di::{DependencyMap, Injectable};
-use std::{fmt::Debug, sync::Arc};
+use std::fmt::Debug;
 use teloxide_core::requests::Requester;
 
 /// A [REPL] for messages.
