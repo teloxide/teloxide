@@ -9,10 +9,6 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 
 #[tokio::main]
 async fn main() {
-    run().await;
-}
-
-async fn run() {
     let bot = Bot::from_env().auto_send();
     // Create a new dispatcher to handle incoming queries
     Dispatcher::new(bot)

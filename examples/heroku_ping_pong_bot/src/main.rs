@@ -19,7 +19,21 @@ use reqwest::{StatusCode, Url};
 
 #[tokio::main]
 async fn main() {
-    run().await;
+    teloxide::enable_logging!();
+    log::info!("Starting heroku_ping_pong_bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    let cloned_bot = bot.clone();
+    teloxide::repl_with_listener(
+        bot,
+        |message| async move {
+            message.answer("pong").await?;
+            respond(())
+        },
+        webhook(cloned_bot).await,
+    )
+    .await;
 }
 
 async fn handle_rejection(error: warp::Rejection) -> Result<impl warp::Reply, Infallible> {
@@ -74,22 +88,4 @@ pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListene
     StatefulListener::new((stream, stop_token), streamf, |state: &mut (_, AsyncStopToken)| {
         state.1.clone()
     })
-}
-
-async fn run() {
-    teloxide::enable_logging!();
-    log::info!("Starting heroku_ping_pong_bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    let cloned_bot = bot.clone();
-    teloxide::repl_with_listener(
-        bot,
-        |message| async move {
-            message.answer("pong").await?;
-            respond(())
-        },
-        webhook(cloned_bot).await,
-    )
-    .await;
 }

@@ -37,10 +37,6 @@ async fn answer(
 
 #[tokio::main]
 async fn main() {
-    run().await;
-}
-
-async fn run() {
     teloxide::enable_logging!();
     log::info!("Starting simple_commands_bot...");
 

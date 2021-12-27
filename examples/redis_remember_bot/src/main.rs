@@ -27,10 +27,6 @@ type In = DialogueWithCx<AutoSend<Bot>, Message, Dialogue, StorageError>;
 
 #[tokio::main]
 async fn main() {
-    run().await;
-}
-
-async fn run() {
     let bot = Bot::from_env().auto_send();
     Dispatcher::new(bot)
         .messages_handler(DialogueDispatcher::with_storage(

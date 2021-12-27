@@ -342,31 +342,6 @@ async fn handle_message(
 
 [More examples!](./examples)
 
-## Recommendations
- - Use this pattern:
- 
- ```rust
- #[tokio::main]
- async fn main() {
-     run().await;
- }
- 
- async fn run() {
-     // Your logic here...
- }
- ```
- 
- Instead of this:
- 
- ```rust
-#[tokio::main]
- async fn main() {
-     // Your logic here...
- }
- ```
-
-The second one produces very strange compiler messages due to the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
-
 ## FAQ
 **Q: Where I can ask questions?**
 
