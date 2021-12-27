@@ -13,7 +13,6 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
-use crate::state::State;
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage},
     prelude::*,
