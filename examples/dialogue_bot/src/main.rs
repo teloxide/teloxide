@@ -13,17 +13,30 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
+use crate::state::State;
+use teloxide::{
+    dispatching2::dialogue::{serializer::Json, SqliteStorage},
+    prelude::*,
+};
 
-#![allow(clippy::trivial_regex)]
-#![allow(dead_code)]
+// FIXME: naming
+type MyBot = AutoSend<Bot>;
+type Store = SqliteStorage<Json>;
+type BotDialogue = Dialogue<State, Store>;
 
-#[macro_use]
-extern crate frunk;
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub enum State {
+    Start,
+    ReceiveFullName,
+    ReceiveAge { full_name: String },
+    ReceiveLocation { full_name: String, age: u8 },
+}
 
-mod dialogue;
-
-use crate::dialogue::Dialogue;
-use teloxide::prelude::*;
+impl Default for State {
+    fn default() -> Self {
+        Self::Start
+    }
+}
 
 #[tokio::main]
 async fn main() {
@@ -35,22 +48,80 @@ async fn run() {
     log::info!("Starting dialogue_bot...");
 
     let bot = Bot::from_env().auto_send();
+    let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
-    teloxide::dialogues_repl(bot, |message, dialogue| async move {
-        handle_message(message, dialogue).await.expect("Something wrong with the bot!")
-    })
-    .await;
+    Dispatcher::new(bot)
+        .dependencies(dptree::deps![storage])
+        .messages_handler(|h| {
+            h.add_dialogue::<Message, Store, State>().branch(dptree::endpoint(handle_message))
+        })
+        .dispatch()
+        .await;
 }
 
-async fn handle_message(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
-    match cx.update.text().map(ToOwned::to_owned) {
+async fn handle_message(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {
+    match mes.text().map(ToOwned::to_owned) {
         None => {
-            cx.answer("Send me a text message.").await?;
-            next(dialogue)
+            bot.send_message(mes.chat_id(), "Send me a text message.").await?;
+            Ok(())
         }
-        Some(ans) => dialogue.react(cx, ans).await,
+        Some(_) => match dialogue.current_state_or_default().await? {
+            State::Start => handle_start(bot, mes, dialogue).await,
+            State::ReceiveFullName => handle_receive_full_name(bot, mes, dialogue).await,
+            State::ReceiveAge { full_name } => {
+                handle_receive_age(bot, mes, dialogue, full_name).await
+            }
+            State::ReceiveLocation { full_name, age } => {
+                handle_receive_location(bot, mes, dialogue, full_name, age).await
+            }
+        },
     }
+}
+
+async fn handle_start(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {
+    bot.send_message(mes.chat_id(), "Let's start! What's your full name?").await?;
+    dialogue.next(State::ReceiveFullName).await?;
+    Ok(())
+}
+
+async fn handle_receive_full_name(
+    bot: MyBot,
+    mes: Message,
+    dialogue: BotDialogue,
+) -> anyhow::Result<()> {
+    bot.send_message(mes.chat_id(), "How old are you?").await?;
+    dialogue.next(State::ReceiveAge { full_name: mes.text().unwrap().into() }).await?;
+    Ok(())
+}
+
+async fn handle_receive_age(
+    bot: MyBot,
+    mes: Message,
+    dialogue: BotDialogue,
+    full_name: String,
+) -> anyhow::Result<()> {
+    match mes.text().unwrap().parse::<u8>() {
+        Ok(age) => {
+            bot.send_message(mes.chat_id(), "What's your location?").await?;
+            dialogue.next(State::ReceiveLocation { full_name, age }).await?;
+        }
+        _ => {
+            bot.send_message(mes.chat_id(), "Send me a number.").await?;
+        }
+    }
+    Ok(())
+}
+
+async fn handle_receive_location(
+    bot: MyBot,
+    mes: Message,
+    dialogue: BotDialogue,
+    full_name: String,
+    age: u8,
+) -> anyhow::Result<()> {
+    let location = mes.text().unwrap();
+    let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+    bot.send_message(mes.chat_id(), message).await?;
+    dialogue.exit().await?;
+    Ok(())
 }
