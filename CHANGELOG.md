@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145](pr145))
 - Deserialization of `MediaKind::Venue` ([#147][pr147])
 - Deserialization of `VoiceChat{Started,Ended}` messages ([#153][pr153])
+- Serialization of `BotCommandScope::Chat{,Administrators}` ([#154][pr154])
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
 [pr133]: https://github.com/teloxide/teloxide-core/pull/133
@@ -71,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr145]: https://github.com/teloxide/teloxide-core/pull/145
 [pr147]: https://github.com/teloxide/teloxide-core/pull/147
 [pr153]: https://github.com/teloxide/teloxide-core/pull/153
+[pr154]: https://github.com/teloxide/teloxide-core/pull/154
 [issue473]: https://github.com/teloxide/teloxide/issues/473
 [issue427]: https://github.com/teloxide/teloxide/issues/427
 
