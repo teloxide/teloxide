@@ -20,8 +20,9 @@ use futures::{stream::FuturesUnordered, Future, StreamExt};
 use teloxide_core::{
     requests::Requester,
     types::{
-        AllowedUpdate, CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
-        Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
+        AllowedUpdate, CallbackQuery, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult,
+        InlineQuery, Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update,
+        UpdateKind,
     },
 };
 use tokio::{
@@ -52,6 +53,7 @@ pub struct Dispatcher<R> {
     poll_answers_queue: Tx<R, PollAnswer>,
     my_chat_members_queue: Tx<R, ChatMemberUpdated>,
     chat_members_queue: Tx<R, ChatMemberUpdated>,
+    chat_join_requests_queue: Tx<R, ChatJoinRequest>,
 
     running_handlers: FuturesUnordered<JoinHandle<()>>,
 
@@ -81,6 +83,7 @@ where
             poll_answers_queue: None,
             my_chat_members_queue: None,
             chat_members_queue: None,
+            chat_join_requests_queue: None,
             running_handlers: FuturesUnordered::new(),
             state: <_>::default(),
             shutdown_notify_back: <_>::default(),
@@ -445,6 +448,12 @@ where
                     &self.chat_members_queue,
                     chat_member_updated,
                     "UpdateKind::MyChatMember",
+                ),
+                UpdateKind::ChatJoinRequest(chat_join_request) => send(
+                    &self.requester,
+                    &self.chat_join_requests_queue,
+                    chat_join_request,
+                    "UpdateKind::ChatJoinRequest",
                 ),
             }
         }

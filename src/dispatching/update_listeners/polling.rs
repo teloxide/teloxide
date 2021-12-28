@@ -170,7 +170,7 @@ where
         }
     };
 
-    let is_webhook_setup = !webhook_info.url.is_empty();
+    let is_webhook_setup = webhook_info.url.is_some();
 
     if is_webhook_setup {
         if let Err(e) = requester.delete_webhook().send().await {
