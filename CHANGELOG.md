@@ -40,10 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
 - How forwarded messages are represented ([#151][pr151])
+- `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
 [pr134]: https://github.com/teloxide/teloxide-core/pull/134
+[pr150]: https://github.com/teloxide/teloxide-core/pull/150
 
 ### Fixed
 
@@ -57,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type of response for `CopyMessage` method ([#141](pr141), [#142](pr142))
 - Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145](pr145))
 - Deserialization of `MediaKind::Venue` ([#147][pr147])
+- Deserialization of `VoiceChat{Started,Ended}` messages ([#153][pr153])
 
 [pr119]: https://github.com/teloxide/teloxide-core/pull/119
 [pr133]: https://github.com/teloxide/teloxide-core/pull/133
@@ -65,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
 [pr145]: https://github.com/teloxide/teloxide-core/pull/145
 [pr147]: https://github.com/teloxide/teloxide-core/pull/147
+[pr153]: https://github.com/teloxide/teloxide-core/pull/153
 [issue473]: https://github.com/teloxide/teloxide/issues/473
 [issue427]: https://github.com/teloxide/teloxide/issues/427
 

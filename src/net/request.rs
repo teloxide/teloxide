@@ -85,9 +85,12 @@ where
         tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
     }
 
-    serde_json::from_str::<TelegramResponse<T>>(
-        &response.text().await.map_err(RequestError::Network)?,
-    )
-    .map_err(RequestError::InvalidJson)?
-    .into()
+    let text = response.text().await.map_err(RequestError::Network)?;
+
+    serde_json::from_str::<TelegramResponse<T>>(&text)
+        .map_err(|source| RequestError::InvalidJson {
+            source,
+            raw: text.into(),
+        })?
+        .into()
 }
