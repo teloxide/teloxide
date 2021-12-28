@@ -493,6 +493,17 @@ pub enum ApiError {
     #[error("Bad Request: not enough rights to manage pinned messages in the chat")]
     NotEnoughRightsToManagePins,
 
+    /// Occurs when bot tries change default chat permissions without "Ban
+    /// Users" permission in this chat.
+    ///
+    /// May happen in methods:
+    /// 1. [`SetChatPermissions`]
+    ///
+    /// [`SetChatPermissions`]: crate::payloads::SetChatPermissions
+    #[serde(rename = "Bad Request: not enough rights to change chat permissions")]
+    #[error("Bad Request: not enough rights to change chat permissions")]
+    NotEnoughRightsToChangeChatPermissions,
+
     /// Occurs when bot tries to use method in group which is allowed only in a
     /// supergroup or channel.
     #[serde(rename = "Bad Request: method is available only for supergroups and channel")]

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ApiError::TooMuchInlineQueryResults` ([#135][pr135])
+- `ApiError::NotEnoughRightsToChangeChatPermissions` ([#155][pr155])
 - Support for 5.4 telegram bot API ([#133][pr133])
 - Support for 5.5 telegram bot API ([#143][pr143])
 - `EditedMessageIsTooLong` error ([#109][pr109])
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr140]: https://github.com/teloxide/teloxide-core/pull/140
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
 [pr151]: https://github.com/teloxide/teloxide-core/pull/151
+[pr155]: https://github.com/teloxide/teloxide-core/pull/155
 
 ### Changed
 
