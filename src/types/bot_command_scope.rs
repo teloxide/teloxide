@@ -49,7 +49,20 @@ pub enum BotCommandScope {
     AllPrivateChats,
     AllGroupChats,
     AllChatAdministrators,
-    Chat(#[serde(rename = "chat_id")] ChatId),
-    ChatAdministrators(#[serde(rename = "chat_id")] ChatId),
+    Chat { chat_id: ChatId },
+    ChatAdministrators { chat_id: ChatId },
     ChatMember { chat_id: ChatId, user_id: i64 },
+}
+
+#[test]
+fn issue_486() {
+    serde_json::to_string(&BotCommandScope::Chat {
+        chat_id: ChatId::Id(0),
+    })
+    .unwrap();
+
+    serde_json::to_string(&BotCommandScope::ChatAdministrators {
+        chat_id: ChatId::Id(0),
+    })
+    .unwrap();
 }
