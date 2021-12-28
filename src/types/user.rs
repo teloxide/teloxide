@@ -28,6 +28,8 @@ pub struct User {
 }
 
 impl User {
+    /// Returns full name of this user, ie first and last names joined with a
+    /// space.
     pub fn full_name(&self) -> String {
         match &self.last_name {
             Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
@@ -35,12 +37,52 @@ impl User {
         }
     }
 
+    /// Returns a username mention of this user. Returns `None` if
+    /// `self.username.is_none()`.
     pub fn mention(&self) -> Option<String> {
         Some(format!("@{}", self.username.as_ref()?))
     }
 
+    /// Returns an URL that links to this user in the form of
+    /// `tg://user/?id=<...>`
     pub fn url(&self) -> reqwest::Url {
-        reqwest::Url::parse(format!("tg://user/?id={}", self.id).as_str()).unwrap()
+        reqwest::Url::parse(&format!("tg://user/?id={}", self.id)).unwrap()
+    }
+
+    /// Returns `true` if this is special user used by telegram bot API to
+    /// denote an annonymous user that sends messages on behalf of a group.
+    pub fn is_anonymous(&self) -> bool {
+        // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4941-L4943
+        const ANON_ID: i64 = 1087968824;
+
+        // Sanity check
+        debug_assert!(
+            (self.id != ANON_ID)
+                || (self.is_bot
+                    && self.first_name == "Group"
+                    && self.last_name.is_none()
+                    && self.username.as_deref() == Some("GroupAnonymousBot"))
+        );
+
+        self.id == ANON_ID
+    }
+
+    /// Returns `true` if this is special user used by telegram bot API to
+    /// denote an annonymous user that sends messages on behalf of a channel.
+    pub fn is_channel(&self) -> bool {
+        // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4945-L4947
+        const ANON_CHANNEL_ID: i64 = 136817688;
+
+        // Sanity check
+        debug_assert!(
+            (self.id != ANON_CHANNEL_ID)
+                || (self.is_bot
+                    && self.first_name == "Group"
+                    && self.last_name.is_none()
+                    && self.username.as_deref() == Some("GroupAnonymousBot"))
+        );
+
+        self.id == ANON_CHANNEL_ID
     }
 }
 

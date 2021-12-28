@@ -75,8 +75,14 @@ pub struct MessageCommon {
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
 
+    /// For forwarded messages, information about the forward
     #[serde(flatten)]
-    pub forward_kind: ForwardKind,
+    pub forward: Option<Forward>,
+
+    /// For replies, the original message. Note that the Message object in this
+    /// field will not contain further `reply_to_message` fields even if it
+    /// itself is a reply.
+    pub reply_to_message: Option<Box<Message>>,
 
     /// Date the message was last edited in Unix time.
     #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
@@ -236,51 +242,44 @@ pub struct MessagePassportData {
     pub passport_data: PassportData,
 }
 
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub enum ForwardedFrom {
-    #[serde(rename = "forward_from")]
-    User(User),
-    #[serde(rename = "forward_sender_name")]
-    SenderName(String),
-}
-
+/// Information about forwarded message.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ForwardKind {
-    Channel(ForwardChannel),
-    NonChannel(ForwardNonChannel),
-    Origin(ForwardOrigin),
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ForwardChannel {
+pub struct Forward {
+    /// Date the original message was sent in Unix time.
     #[serde(rename = "forward_date")]
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
 
-    #[serde(rename = "forward_from_chat")]
-    pub chat: Chat,
-
-    #[serde(rename = "forward_from_message_id")]
-    pub message_id: i32,
-
-    #[serde(rename = "forward_signature")]
-    pub signature: Option<String>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ForwardNonChannel {
-    #[serde(rename = "forward_date")]
-    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub date: DateTime<Utc>,
-
+    /// The entity that sent the original message.
     #[serde(flatten)]
     pub from: ForwardedFrom,
+
+    /// For messages forwarded from channels, signature of the post author if
+    /// present. For messages forwarded from anonymous admins, authors title, if
+    /// present.
+    #[serde(rename = "forward_signature")]
+    pub signature: Option<String>,
+
+    /// For messages forwarded from channels, identifier of the original message
+    /// in the channel
+    #[serde(rename = "forward_from_message_id")]
+    pub message_id: Option<i32>,
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-pub struct ForwardOrigin {
-    pub reply_to_message: Option<Box<Message>>,
+/// The entity that sent the original message that later was forwarded.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub enum ForwardedFrom {
+    /// The message was sent by a user.
+    #[serde(rename = "forward_from")]
+    User(User),
+    /// The message was sent by an anonymous user on behalf of a group or
+    /// channel.
+    #[serde(rename = "forward_from_chat")]
+    Chat(Chat),
+    /// The message was sent by a user who disallow adding a link to their
+    /// account in forwarded messages.
+    #[serde(rename = "forward_sender_name")]
+    SenderName(String),
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -521,17 +520,14 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self,
-        message::{ForwardKind::NonChannel, MessageKind::*},
-        Chat, ChatMigration, ForwardChannel, ForwardKind, ForwardNonChannel, ForwardOrigin,
-        ForwardedFrom, MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame,
-        MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue,
-        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
-        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
-        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        PhotoSize, True, User,
+        self, message::MessageKind::*, Chat, ChatMigration, Forward, ForwardedFrom, MediaAnimation,
+        MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPhoto,
+        MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
+        Message, MessageChannelChatCreated, MessageCommon, MessageConnectedWebsite,
+        MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated,
+        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
+        MessageNewChatTitle, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -566,73 +562,49 @@ mod getters {
             self.chat.id
         }
 
-        /// NOTE: this is getter for both `forward_from` and
-        /// `forward_sender_name`
+        pub fn forward(&self) -> Option<&Forward> {
+            self.common().and_then(|m| m.forward.as_ref())
+        }
+
+        pub fn forward_date(&self) -> Option<DateTime<Utc>> {
+            self.forward().map(|f| f.date)
+        }
+
         pub fn forward_from(&self) -> Option<&ForwardedFrom> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind: NonChannel(ForwardNonChannel { from, .. }),
-                    ..
-                }) => Some(from),
+            self.forward().map(|f| &f.from)
+        }
+
+        pub fn forward_from_user(&self) -> Option<&User> {
+            self.forward_from().and_then(|from| match from {
+                ForwardedFrom::User(user) => Some(user),
                 _ => None,
-            }
+            })
         }
 
         pub fn forward_from_chat(&self) -> Option<&Chat> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind: ForwardKind::Channel(ForwardChannel { chat, .. }),
-                    ..
-                }) => Some(chat),
+            self.forward_from().and_then(|from| match from {
+                ForwardedFrom::Chat(chat) => Some(chat),
                 _ => None,
-            }
+            })
         }
 
-        pub fn forward_from_message_id(&self) -> Option<&i32> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind: ForwardKind::Channel(ForwardChannel { message_id, .. }),
-                    ..
-                }) => Some(message_id),
+        pub fn forward_from_sender_name(&self) -> Option<&str> {
+            self.forward_from().and_then(|from| match from {
+                ForwardedFrom::SenderName(sender_name) => Some(&**sender_name),
                 _ => None,
-            }
+            })
+        }
+
+        pub fn forward_from_message_id(&self) -> Option<i32> {
+            self.forward().and_then(|f| f.message_id)
         }
 
         pub fn forward_signature(&self) -> Option<&str> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind: ForwardKind::Channel(ForwardChannel { signature, .. }),
-                    ..
-                }) => signature.as_ref().map(Deref::deref),
-                _ => None,
-            }
-        }
-
-        pub fn forward_date(&self) -> Option<&DateTime<Utc>> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind: ForwardKind::Channel(ForwardChannel { date, .. }),
-                    ..
-                })
-                | Common(MessageCommon {
-                    forward_kind: ForwardKind::NonChannel(ForwardNonChannel { date, .. }),
-                    ..
-                }) => Some(date),
-                _ => None,
-            }
+            self.forward().and_then(|f| f.signature.as_deref())
         }
 
         pub fn reply_to_message(&self) -> Option<&Message> {
-            match &self.kind {
-                Common(MessageCommon {
-                    forward_kind:
-                        ForwardKind::Origin(ForwardOrigin {
-                            reply_to_message, ..
-                        }),
-                    ..
-                }) => reply_to_message.as_ref().map(Deref::deref),
-                _ => None,
-            }
+            self.common().and_then(|m| m.reply_to_message.as_deref())
         }
 
         pub fn edit_date(&self) -> Option<&DateTime<Utc>> {
@@ -1060,6 +1032,14 @@ mod getters {
                 _ => false,
             }
         }
+
+        /// Common message (text, image, etc)
+        fn common(&self) -> Option<&MessageCommon> {
+            match &self.kind {
+                Common(message) => Some(message),
+                _ => None,
+            }
+        }
     }
 }
 
@@ -1305,6 +1285,75 @@ mod tests {
          }"#;
         let message = from_str::<Message>(json);
         assert!(message.is_ok());
+    }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/419>
+    #[test]
+    fn issue_419() {
+        let json = r#"{
+            "message_id": 1,
+            "from": {
+                "id": 1087968824,
+                "is_bot": true,
+                "first_name": "Group",
+                "username": "GroupAnonymousBot"
+            },
+            "author_signature": "TITLE2",
+            "sender_chat": {
+                "id": -1001160242915,
+                "title": "a",
+                "type": "supergroup"
+            },
+            "chat": {
+                "id": -1001160242915,
+                "title": "a",
+                "type": "supergroup"
+            },
+            "date": 1640359576,
+            "forward_from_chat": {
+                "id": -1001160242915,
+                "title": "a",
+                "type": "supergroup"
+            },
+            "forward_signature": "TITLE",
+            "forward_date": 1640359544,
+            "text": "text"
+        }"#;
+
+        // Anonymous admin with title "TITLE2" forwards a message from anonymous
+        // admin with title "TITLE" with text "a", everything is happening in
+        // the same group.
+        let message: Message = serde_json::from_str(json).unwrap();
+
+        let group = Chat {
+            id: -1001160242915,
+            kind: ChatKind::Public(ChatPublic {
+                title: Some("a".to_owned()),
+                kind: PublicChatKind::Supergroup(PublicChatSupergroup {
+                    username: None,
+                    sticker_set_name: None,
+                    can_set_sticker_set: None,
+                    permissions: None,
+                    slow_mode_delay: None,
+                    linked_chat_id: None,
+                    location: None,
+                }),
+                description: None,
+                invite_link: None,
+            }),
+            photo: None,
+            pinned_message: None,
+            message_auto_delete_time: None,
+        };
+
+        assert!(message.from().unwrap().is_anonymous());
+        assert_eq!(message.author_signature().unwrap(), "TITLE2");
+        assert_eq!(message.sender_chat().unwrap(), &group);
+        assert_eq!(&message.chat, &group);
+        assert_eq!(message.forward_from_chat().unwrap(), &group);
+        assert_eq!(message.forward_signature().unwrap(), "TITLE");
+        assert!(message.forward_date().is_some());
+        assert_eq!(message.text().unwrap(), "text");
     }
 
     /// Regression test for <https://github.com/teloxide/teloxide/issues/427>

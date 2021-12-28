@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Limits::messages_per_min_channel` ([#121][pr121])
 - `media_group_id` field to `MediaDocument` and `MediaAudio` ([#139][pr139])
 - `caption_entities` method to `InputMediaPhoto` ([#140][pr140])
+- `User::is_anonymous` and `User::is_channel` functions ([#151][pr151])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr116]: https://github.com/teloxide/teloxide-core/pull/116
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr139]: https://github.com/teloxide/teloxide-core/pull/139
 [pr140]: https://github.com/teloxide/teloxide-core/pull/140
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
+[pr151]: https://github.com/teloxide/teloxide-core/pull/151
 
 ### Changed
 
@@ -37,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
+- How forwarded messages are represented ([#151][pr151])
 - `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
