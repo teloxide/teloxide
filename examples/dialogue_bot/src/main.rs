@@ -17,6 +17,7 @@ use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage},
     prelude::*,
 };
+use teloxide::dispatching2::HandlerFactory;
 
 // FIXME: naming
 type MyBot = AutoSend<Bot>;
@@ -27,8 +28,49 @@ type BotDialogue = Dialogue<State, Store>;
 pub enum State {
     Start,
     ReceiveFullName,
-    ReceiveAge { full_name: String },
-    ReceiveLocation { full_name: String, age: u8 },
+    ReceiveAge(String),
+    ReceiveLocation(ReceiveLocation),
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub struct ReceiveLocation { full_name: String, age: u8 }
+
+impl HandlerFactory for State {
+    type Out = anyhow::Result<()>;
+
+    fn handler() -> dptree::Handler<'static, DependencyMap, anyhow::Result<()>> {
+        dptree::entry()
+            .branch(
+                dptree::filter(|dialogue: Dialogue<State, Store>| async move {
+                    let state = match dialogue.current_state_or_default().await {
+                        Ok(state) => state,
+                        Err(_) => return false,
+                    };
+                    match state { State::Start => true, _ => false }
+                }).endpoint(handle_start)
+            )
+            .branch(
+                dptree::filter(|dialogue: Dialogue<State, Store>| async move {
+                    let state = match dialogue.current_state_or_default().await {
+                        Ok(state) => state,
+                        Err(_) => return false,
+                    };
+                    match state { State::ReceiveFullName => true, _ => false }
+                }).endpoint(handle_receive_full_name)
+            )
+            .branch(
+                dptree::filter_map(|dialogue: Dialogue<State, Store>| async move {
+                    let state = dialogue.current_state_or_default().await.ok()?;
+                    match state { State::ReceiveAge(arg) => Some(arg), _ => None }
+                }).endpoint(handle_receive_age)
+            )
+            .branch(
+                dptree::filter_map(|dialogue: Dialogue<State, Store>| async move {
+                    let state = dialogue.current_state_or_default().await.ok()?;
+                    match state { State::ReceiveLocation(arg) => Some(arg), _ => None }
+                }).endpoint(handle_receive_location)
+            )
+    }
 }
 
 impl Default for State {
@@ -48,29 +90,10 @@ async fn main() {
     Dispatcher::new(bot)
         .dependencies(dptree::deps![storage])
         .messages_handler(|h| {
-            h.add_dialogue::<Message, Store, State>().branch(dptree::endpoint(handle_message))
+            h.add_dialogue::<Message, Store, State>().dispatch_by::<State>()
         })
         .dispatch()
         .await;
-}
-
-async fn handle_message(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {
-    match mes.text().map(ToOwned::to_owned) {
-        None => {
-            bot.send_message(mes.chat_id(), "Send me a text message.").await?;
-            Ok(())
-        }
-        Some(_) => match dialogue.current_state_or_default().await? {
-            State::Start => handle_start(bot, mes, dialogue).await,
-            State::ReceiveFullName => handle_receive_full_name(bot, mes, dialogue).await,
-            State::ReceiveAge { full_name } => {
-                handle_receive_age(bot, mes, dialogue, full_name).await
-            }
-            State::ReceiveLocation { full_name, age } => {
-                handle_receive_location(bot, mes, dialogue, full_name, age).await
-            }
-        },
-    }
 }
 
 async fn handle_start(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {
@@ -85,7 +108,7 @@ async fn handle_receive_full_name(
     dialogue: BotDialogue,
 ) -> anyhow::Result<()> {
     bot.send_message(mes.chat_id(), "How old are you?").await?;
-    dialogue.next(State::ReceiveAge { full_name: mes.text().unwrap().into() }).await?;
+    dialogue.next(State::ReceiveAge(mes.text().unwrap().into())).await?;
     Ok(())
 }
 
@@ -98,7 +121,7 @@ async fn handle_receive_age(
     match mes.text().unwrap().parse::<u8>() {
         Ok(age) => {
             bot.send_message(mes.chat_id(), "What's your location?").await?;
-            dialogue.next(State::ReceiveLocation { full_name, age }).await?;
+            dialogue.next(State::ReceiveLocation(ReceiveLocation { full_name, age })).await?;
         }
         _ => {
             bot.send_message(mes.chat_id(), "Send me a number.").await?;
@@ -111,11 +134,10 @@ async fn handle_receive_location(
     bot: MyBot,
     mes: Message,
     dialogue: BotDialogue,
-    full_name: String,
-    age: u8,
+    state: ReceiveLocation
 ) -> anyhow::Result<()> {
     let location = mes.text().unwrap();
-    let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+    let message = format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, location);
     bot.send_message(mes.chat_id(), message).await?;
     dialogue.exit().await?;
     Ok(())
