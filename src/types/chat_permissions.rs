@@ -109,17 +109,17 @@ struct ChatPermissionsRaw {
     can_pin_messages: bool,
 }
 
-impl Into<ChatPermissionsRaw> for ChatPermissions {
-    fn into(self) -> ChatPermissionsRaw {
-        ChatPermissionsRaw {
-            can_send_messages: self.contains(ChatPermissions::SEND_MESSAGES),
-            can_send_media_messages: self.contains(ChatPermissions::SEND_MEDIA_MESSAGES),
-            can_send_polls: self.contains(ChatPermissions::SEND_POLLS),
-            can_send_other_messages: self.contains(ChatPermissions::SEND_OTHER_MESSAGES),
-            can_add_web_page_previews: self.contains(ChatPermissions::ADD_WEB_PAGE_PREVIEWS),
-            can_change_info: self.contains(ChatPermissions::CHANGE_INFO),
-            can_invite_users: self.contains(ChatPermissions::INVITE_USERS),
-            can_pin_messages: self.contains(ChatPermissions::PIN_MESSAGES),
+impl From<ChatPermissions> for ChatPermissionsRaw {
+    fn from(this: ChatPermissions) -> Self {
+        Self {
+            can_send_messages: this.contains(ChatPermissions::SEND_MESSAGES),
+            can_send_media_messages: this.contains(ChatPermissions::SEND_MEDIA_MESSAGES),
+            can_send_polls: this.contains(ChatPermissions::SEND_POLLS),
+            can_send_other_messages: this.contains(ChatPermissions::SEND_OTHER_MESSAGES),
+            can_add_web_page_previews: this.contains(ChatPermissions::ADD_WEB_PAGE_PREVIEWS),
+            can_change_info: this.contains(ChatPermissions::CHANGE_INFO),
+            can_invite_users: this.contains(ChatPermissions::INVITE_USERS),
+            can_pin_messages: this.contains(ChatPermissions::PIN_MESSAGES),
         }
     }
 }
