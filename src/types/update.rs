@@ -1,12 +1,11 @@
 #![allow(clippy::large_enum_variant)]
-
-use serde::{Deserialize, Serialize};
+use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
+use serde_json::Value;
 
 use crate::types::{
     CallbackQuery, Chat, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery,
     Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
-use serde_json::Value;
 
 /// This [object] represents an incoming update.
 ///
@@ -30,28 +29,33 @@ pub struct Update {
 }
 
 impl Update {
-    /// Tries to parse `value` into `Update`, logging an error on failure.
-    ///
-    /// It is used to implement update listeners.
-    pub fn try_parse(value: &Value) -> Result<Self, serde_json::Error> {
-        match serde_json::from_value(value.clone()) {
-            Ok(update) => Ok(update),
-            Err(error) => {
-                log::error!(
-                    "Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                    This is a bug in teloxide-core, please open an issue here: \
-                    https://github.com/teloxide/teloxide-core/issues.",
-                    error,
-                    value
-                );
-                Err(error)
-            }
+    pub fn user(&self) -> Option<&User> {
+        match &self.kind {
+            UpdateKind::Message(m) => m.from(),
+            UpdateKind::EditedMessage(m) => m.from(),
+            UpdateKind::CallbackQuery(query) => Some(&query.from),
+            UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
+            UpdateKind::InlineQuery(query) => Some(&query.from),
+            UpdateKind::ShippingQuery(query) => Some(&query.from),
+            UpdateKind::PreCheckoutQuery(query) => Some(&query.from),
+            UpdateKind::PollAnswer(answer) => Some(&answer.user),
+            _ => None,
+        }
+    }
+
+    pub fn chat(&self) -> Option<&Chat> {
+        match &self.kind {
+            UpdateKind::Message(m) => Some(&m.chat),
+            UpdateKind::EditedMessage(m) => Some(&m.chat),
+            UpdateKind::ChannelPost(p) => Some(&p.chat),
+            UpdateKind::EditedChannelPost(p) => Some(&p.chat),
+            UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
+            _ => None,
         }
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[derive(Clone, Debug, PartialEq)]
 pub enum UpdateKind {
     /// New incoming message of any kind — text, photo, sticker, etc.
     Message(Message),
@@ -113,31 +117,173 @@ pub enum UpdateKind {
     /// can_invite_users administrator right in the chat to receive these
     /// updates.
     ChatJoinRequest(ChatJoinRequest),
+
+    /// An error that happened during deserialization.
+    ///
+    /// This allows `teloxide` to continue working even if telegram adds a new
+    /// kind of updates.
+    Error(Value),
 }
 
-impl Update {
-    pub fn user(&self) -> Option<&User> {
-        match &self.kind {
-            UpdateKind::Message(m) => m.from(),
-            UpdateKind::EditedMessage(m) => m.from(),
-            UpdateKind::CallbackQuery(query) => Some(&query.from),
-            UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
-            UpdateKind::InlineQuery(query) => Some(&query.from),
-            UpdateKind::ShippingQuery(query) => Some(&query.from),
-            UpdateKind::PreCheckoutQuery(query) => Some(&query.from),
-            UpdateKind::PollAnswer(answer) => Some(&answer.user),
-            _ => None,
-        }
-    }
+impl<'de> Deserialize<'de> for UpdateKind {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct Visitor;
 
-    pub fn chat(&self) -> Option<&Chat> {
-        match &self.kind {
-            UpdateKind::Message(m) => Some(&m.chat),
-            UpdateKind::EditedMessage(m) => Some(&m.chat),
-            UpdateKind::ChannelPost(p) => Some(&p.chat),
-            UpdateKind::EditedChannelPost(p) => Some(&p.chat),
-            UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
-            _ => None,
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = UpdateKind;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a map")
+            }
+
+            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+            where
+                A: MapAccess<'de>,
+            {
+                let mut tmp = None;
+
+                // Try to deserialize a borrowed-str key, or else try deserializing an owned
+                // string key
+                let k = map.next_key::<&str>().or_else(|_| {
+                    map.next_key::<String>().map(|k| {
+                        tmp = k;
+                        tmp.as_deref()
+                    })
+                });
+
+                if let Ok(Some(k)) = k {
+                    let res = match k {
+                        "message" => dbg!(map
+                            .next_value::<Message>()
+                            .map(UpdateKind::Message)
+                            .map_err(|_| false)),
+                        "edited_message" => map
+                            .next_value::<Message>()
+                            .map(UpdateKind::EditedMessage)
+                            .map_err(|_| false),
+                        "channel_post" => map
+                            .next_value::<Message>()
+                            .map(UpdateKind::ChannelPost)
+                            .map_err(|_| false),
+                        "edited_channel_post" => map
+                            .next_value::<Message>()
+                            .map(UpdateKind::EditedChannelPost)
+                            .map_err(|_| false),
+                        "inline_query" => map
+                            .next_value::<InlineQuery>()
+                            .map(UpdateKind::InlineQuery)
+                            .map_err(|_| false),
+                        "chosen_inline_result" => map
+                            .next_value::<ChosenInlineResult>()
+                            .map(UpdateKind::ChosenInlineResult)
+                            .map_err(|_| false),
+                        "callback_query" => map
+                            .next_value::<CallbackQuery>()
+                            .map(UpdateKind::CallbackQuery)
+                            .map_err(|_| false),
+                        "shipping_query" => map
+                            .next_value::<ShippingQuery>()
+                            .map(UpdateKind::ShippingQuery)
+                            .map_err(|_| false),
+                        "pre_checkout_query" => map
+                            .next_value::<PreCheckoutQuery>()
+                            .map(UpdateKind::PreCheckoutQuery)
+                            .map_err(|_| false),
+                        "poll" => map
+                            .next_value::<Poll>()
+                            .map(UpdateKind::Poll)
+                            .map_err(|_| false),
+                        "poll_answer" => map
+                            .next_value::<PollAnswer>()
+                            .map(UpdateKind::PollAnswer)
+                            .map_err(|_| false),
+                        "my_chat_member" => map
+                            .next_value::<ChatMemberUpdated>()
+                            .map(UpdateKind::MyChatMember)
+                            .map_err(|_| false),
+                        "chat_member" => map
+                            .next_value::<ChatMemberUpdated>()
+                            .map(UpdateKind::ChatMember)
+                            .map_err(|_| false),
+                        "chat_join_request" => map
+                            .next_value::<ChatJoinRequest>()
+                            .map(UpdateKind::ChatJoinRequest)
+                            .map_err(|_| false),
+
+                        _ => Err(true),
+                    };
+
+                    let value_available = match res {
+                        Ok(ok) => return Ok(ok),
+                        Err(e) => e,
+                    };
+
+                    let mut value = serde_json::Map::new();
+                    value.insert(
+                        k.to_owned(),
+                        if value_available {
+                            map.next_value::<Value>().unwrap_or(Value::Null)
+                        } else {
+                            Value::Null
+                        },
+                    );
+
+                    while let Ok(Some((k, v))) = map.next_entry::<_, Value>() {
+                        value.insert(k, v);
+                    }
+
+                    return Ok(UpdateKind::Error(Value::Object(value)));
+                }
+
+                Ok(UpdateKind::Error(Value::Object(<_>::default())))
+            }
+        }
+
+        deserializer.deserialize_any(Visitor)
+    }
+}
+
+impl Serialize for UpdateKind {
+    fn serialize<S>(&self, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let name = "UpdateKind";
+        match self {
+            UpdateKind::Message(v) => s.serialize_newtype_variant(name, 0, "message", v),
+            UpdateKind::EditedMessage(v) => {
+                s.serialize_newtype_variant(name, 1, "edited_message", v)
+            }
+            UpdateKind::ChannelPost(v) => s.serialize_newtype_variant(name, 2, "channel_post", v),
+            UpdateKind::EditedChannelPost(v) => {
+                s.serialize_newtype_variant(name, 3, "edited_channel_post", v)
+            }
+            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 4, "inline_query", v),
+            UpdateKind::ChosenInlineResult(v) => {
+                s.serialize_newtype_variant(name, 5, "chosen_inline_result", v)
+            }
+            UpdateKind::CallbackQuery(v) => {
+                s.serialize_newtype_variant(name, 6, "callback_query", v)
+            }
+            UpdateKind::ShippingQuery(v) => {
+                s.serialize_newtype_variant(name, 7, "shipping_query", v)
+            }
+            UpdateKind::PreCheckoutQuery(v) => {
+                s.serialize_newtype_variant(name, 8, "pre_checkout_query", v)
+            }
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 9, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 10, "poll_answer", v),
+            UpdateKind::MyChatMember(v) => {
+                s.serialize_newtype_variant(name, 11, "my_chat_member", v)
+            }
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 12, "chat_member", v),
+            UpdateKind::ChatJoinRequest(v) => {
+                s.serialize_newtype_variant(name, 13, "chat_join_request", v)
+            }
+            UpdateKind::Error(v) => v.serialize(s),
         }
     }
 }
@@ -329,5 +475,21 @@ mod test {
         "#;
 
         serde_json::from_str::<Update>(json).unwrap();
+    }
+
+    #[test]
+    fn new_update_kind_error() {
+        let json = r#"{
+            "new_update_kind": {"some_field_idk": 1},
+            "update_id": 1
+        }"#;
+
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+
+        match kind {
+            // Deserialization failed successfully
+            UpdateKind::Error(_) => {}
+            _ => panic!("Expected error"),
+        }
     }
 }
