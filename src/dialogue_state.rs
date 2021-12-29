@@ -157,7 +157,8 @@ fn parse_out_type(
     }
     Err(syn::Error::new(
         span,
-        "There are must be 2 attributes: `out` and `store`",
+        "You must specify #[out()] argument in which declare output type of \
+         handlers. For example, #[out(Result<(), Error>)]",
     ))
 }
 
