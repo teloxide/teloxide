@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `media_group_id` field to `MediaDocument` and `MediaAudio` ([#139][pr139])
 - `caption_entities` method to `InputMediaPhoto` ([#140][pr140])
 - `User::is_anonymous` and `User::is_channel` functions ([#151][pr151])
+- `UpdateKind::Error` ([#156][pr156])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
 [pr116]: https://github.com/teloxide/teloxide-core/pull/116
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr143]: https://github.com/teloxide/teloxide-core/pull/143
 [pr151]: https://github.com/teloxide/teloxide-core/pull/151
 [pr155]: https://github.com/teloxide/teloxide-core/pull/155
+[pr156]: https://github.com/teloxide/teloxide-core/pull/156
 
 ### Changed
 
@@ -75,6 +77,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr154]: https://github.com/teloxide/teloxide-core/pull/154
 [issue473]: https://github.com/teloxide/teloxide/issues/473
 [issue427]: https://github.com/teloxide/teloxide/issues/427
+
+### Removed
+
+- `get_updates_fault_tolerant` method and `SemiparsedVec` ([#156][pr156])
 
 ## 0.3.3 - 2021-08-03
 
