@@ -1,9 +1,5 @@
-use crate::{types::Message, utils::command::BotCommand};
-use dptree::{
-    Handler,
-};
-use crate::dispatching2::HandlerFactory;
-use dptree::di::DependencyMap;
+use crate::{dispatching2::HandlerFactory, types::Message, utils::command::BotCommand};
+use dptree::{di::DependencyMap, Handler};
 
 pub trait HandlerExt<Output> {
     fn add_command<C>(self, bot_name: String) -> Self
@@ -11,7 +7,8 @@ pub trait HandlerExt<Output> {
         C: BotCommand + Send + Sync + 'static;
 
     fn dispatch_by<F>(self) -> Self
-        where F: HandlerFactory<Out = Output>;
+    where
+        F: HandlerFactory<Out = Output>;
 }
 
 impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output>
@@ -28,7 +25,10 @@ where
         }))
     }
 
-    fn dispatch_by<F>(self) -> Self where F: HandlerFactory<Out = Output> {
+    fn dispatch_by<F>(self) -> Self
+    where
+        F: HandlerFactory<Out = Output>,
+    {
         self.chain(F::handler())
     }
 }

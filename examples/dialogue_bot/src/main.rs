@@ -15,62 +15,36 @@
 // ```
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage},
+    macros::DialogueState,
     prelude::*,
 };
-use teloxide::dispatching2::HandlerFactory;
 
 // FIXME: naming
 type MyBot = AutoSend<Bot>;
 type Store = SqliteStorage<Json>;
 type BotDialogue = Dialogue<State, Store>;
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
+#[out(anyhow::Result<()>)]
+#[store(SqliteStorage<Json>)]
 pub enum State {
+    #[handler(handle_start)]
     Start,
+
+    #[handler(handle_receive_full_name)]
     ReceiveFullName,
+
+    #[handler(handle_receive_age)]
     ReceiveAge(String),
+
+    #[handler(handle_receive_location)]
     ReceiveLocation(ReceiveLocation),
 }
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
-pub struct ReceiveLocation { full_name: String, age: u8 }
-
-impl HandlerFactory for State {
-    type Out = anyhow::Result<()>;
-
-    fn handler() -> dptree::Handler<'static, DependencyMap, anyhow::Result<()>> {
-        dptree::entry()
-            .branch(
-                dptree::filter(|dialogue: Dialogue<State, Store>| async move {
-                    let state = match dialogue.current_state_or_default().await {
-                        Ok(state) => state,
-                        Err(_) => return false,
-                    };
-                    match state { State::Start => true, _ => false }
-                }).endpoint(handle_start)
-            )
-            .branch(
-                dptree::filter(|dialogue: Dialogue<State, Store>| async move {
-                    let state = match dialogue.current_state_or_default().await {
-                        Ok(state) => state,
-                        Err(_) => return false,
-                    };
-                    match state { State::ReceiveFullName => true, _ => false }
-                }).endpoint(handle_receive_full_name)
-            )
-            .branch(
-                dptree::filter_map(|dialogue: Dialogue<State, Store>| async move {
-                    let state = dialogue.current_state_or_default().await.ok()?;
-                    match state { State::ReceiveAge(arg) => Some(arg), _ => None }
-                }).endpoint(handle_receive_age)
-            )
-            .branch(
-                dptree::filter_map(|dialogue: Dialogue<State, Store>| async move {
-                    let state = dialogue.current_state_or_default().await.ok()?;
-                    match state { State::ReceiveLocation(arg) => Some(arg), _ => None }
-                }).endpoint(handle_receive_location)
-            )
-    }
+pub struct ReceiveLocation {
+    full_name: String,
+    age: u8,
 }
 
 impl Default for State {
@@ -89,9 +63,7 @@ async fn main() {
 
     Dispatcher::new(bot)
         .dependencies(dptree::deps![storage])
-        .messages_handler(|h| {
-            h.add_dialogue::<Message, Store, State>().dispatch_by::<State>()
-        })
+        .messages_handler(|h| h.add_dialogue::<Message, Store, State>().dispatch_by::<State>())
         .dispatch()
         .await;
 }
@@ -134,10 +106,11 @@ async fn handle_receive_location(
     bot: MyBot,
     mes: Message,
     dialogue: BotDialogue,
-    state: ReceiveLocation
+    state: ReceiveLocation,
 ) -> anyhow::Result<()> {
     let location = mes.text().unwrap();
-    let message = format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, location);
+    let message =
+        format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, location);
     bot.send_message(mes.chat_id(), message).await?;
     dialogue.exit().await?;
     Ok(())

@@ -173,7 +173,7 @@ A dialogue is described by an enumeration where each variant is one of possible 
 
 Below is a bot that asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
 
-([dialogue_bot/src/dialogue/mod.rs](./examples/dialogue_bot/src/dialogue/mod.rs))
+([dialogue_bot/src/dialogue/mod.rs](examples/dialogue_bot/src/state/mod.rs))
 ```rust,ignore
 // Imports are omitted...
 
@@ -197,7 +197,7 @@ When a user sends a message to our bot and such a dialogue does not exist yet, a
 <details>
   <summary>Dialogue::Start</summary>
 
-([dialogue_bot/src/dialogue/states/start.rs](./examples/dialogue_bot/src/dialogue/states/start.rs))
+([dialogue_bot/src/dialogue/states/start.rs](examples/dialogue_bot/src/state/states/start.rs))
 ```rust,ignore
 // Imports are omitted...
 
@@ -219,7 +219,7 @@ async fn start(
 <details>
   <summary>Dialogue::ReceiveFullName</summary>
 
-([dialogue_bot/src/dialogue/states/receive_full_name.rs](./examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
+([dialogue_bot/src/dialogue/states/receive_full_name.rs](examples/dialogue_bot/src/state/states/receive_full_name.rs))
 ```rust,ignore
 // Imports are omitted...
 
@@ -242,7 +242,7 @@ async fn receive_full_name(
 <details>
   <summary>Dialogue::ReceiveAge</summary>
 
-([dialogue_bot/src/dialogue/states/receive_age.rs](./examples/dialogue_bot/src/dialogue/states/receive_age.rs))
+([dialogue_bot/src/dialogue/states/receive_age.rs](examples/dialogue_bot/src/state/states/receive_age.rs))
 ```rust,ignore
 // Imports are omitted...
 
@@ -275,7 +275,7 @@ async fn receive_age_state(
 <details>
     <summary>Dialogue::ReceiveLocation</summary>
 
-([dialogue_bot/src/dialogue/states/receive_location.rs](./examples/dialogue_bot/src/dialogue/states/receive_location.rs))
+([dialogue_bot/src/dialogue/states/receive_location.rs](examples/dialogue_bot/src/state/states/receive_location.rs))
 ```rust,ignore
 // Imports are omitted...
 

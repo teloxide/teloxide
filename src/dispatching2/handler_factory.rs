@@ -1,5 +1,4 @@
-use dptree::di::DependencyMap;
-use dptree::Handler;
+use dptree::{di::DependencyMap, Handler};
 
 pub trait HandlerFactory {
     type Out;

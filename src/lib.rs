@@ -91,6 +91,9 @@ pub use teloxide_core::*;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros as macros;
 
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "new-dispatching")))]
+#[cfg(feature = "new-dispatching")]
+pub use dptree;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
 pub use teloxide_macros::teloxide;

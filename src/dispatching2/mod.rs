@@ -6,5 +6,5 @@ mod handler_ext;
 mod handler_factory;
 
 pub use dispatcher::Dispatcher;
-pub use handler_factory::HandlerFactory;
 pub use handler_ext::HandlerExt;
+pub use handler_factory::HandlerFactory;
