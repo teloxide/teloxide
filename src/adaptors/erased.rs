@@ -182,8 +182,7 @@ where
         set_sticker_set_thumb, send_invoice, answer_shipping_query,
         answer_pre_checkout_query, set_passport_data_errors, send_game,
         set_game_score, set_game_score_inline, get_game_high_scores,
-        approve_chat_join_request, decline_chat_join_request,
-        get_updates_fault_tolerant => fwd_erased, fty
+        approve_chat_join_request, decline_chat_join_request => fwd_erased, fty
     }
 }
 
@@ -692,8 +691,6 @@ trait ErasableRequester<'a> {
         user_id: i64,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
-
-    fn get_updates_fault_tolerant(&self) -> ErasedRequest<'a, GetUpdatesFaultTolerant, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -1400,9 +1397,5 @@ where
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err> {
         Requester::get_game_high_scores(self, user_id, target).erase()
-    }
-
-    fn get_updates_fault_tolerant(&self) -> ErasedRequest<'a, GetUpdatesFaultTolerant, Self::Err> {
-        Requester::get_updates_fault_tolerant(self).erase()
     }
 }
