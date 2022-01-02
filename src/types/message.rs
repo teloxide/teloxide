@@ -363,7 +363,7 @@ pub struct MediaDocument {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(default)]
     pub caption_entities: Vec<MessageEntity>,
 
     /// The unique identifier of a media message group this message belongs
