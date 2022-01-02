@@ -21,8 +21,7 @@ pub struct ChatInviteLink {
     pub name: Option<String>,
     /// Point in time when the link will expire or has been
     /// expired
-    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub expire_date: Option<DateTime<Utc>>,
     /// Maximum number of users that can be members of the chat simultaneously
     /// after joining the chat via this invite link; 1-99999

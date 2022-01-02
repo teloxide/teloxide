@@ -85,8 +85,7 @@ pub struct MessageCommon {
     pub reply_to_message: Option<Box<Message>>,
 
     /// Date the message was last edited in Unix time.
-    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub edit_date: Option<DateTime<Utc>>,
 
     #[serde(flatten)]

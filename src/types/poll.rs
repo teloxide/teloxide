@@ -51,8 +51,7 @@ pub struct Poll {
     pub open_period: Option<u16>,
 
     /// Point in time when the poll will be automatically closed.
-    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub close_date: Option<DateTime<Utc>>,
 }
 
