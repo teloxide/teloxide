@@ -29,7 +29,7 @@ pub struct Document {
     pub file_name: Option<String>,
 
     /// A MIME type of the file as defined by a sender.
-    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[serde(default, with = "crate::types::non_telegram_types::mime::opt_deser")]
     pub mime_type: Option<Mime>,
 
     /// A size of a file.
