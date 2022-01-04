@@ -29,7 +29,8 @@ pub struct SuccessfulPayment {
     pub shipping_option_id: Option<String>,
 
     /// Order info provided by the user.
-    pub order_info: Option<OrderInfo>,
+    #[serde(default)]
+    pub order_info: OrderInfo,
 
     /// Telegram payment identifier.
     pub telegram_payment_charge_id: String,
