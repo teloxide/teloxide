@@ -35,5 +35,5 @@ pub struct PreCheckoutQuery {
     pub shipping_option_id: Option<String>,
 
     /// Order info provided by the user.
-    pub order_info: Option<OrderInfo>,
+    pub order_info: OrderInfo,
 }
