@@ -103,13 +103,12 @@ where
             async move {
                 let chat_id = cx.update.chat_id();
                 let mut dialogue_exists = true;
-                let dialogue =
-                    Arc::clone(&storage).get_dialogue(chat_id).await.map(|x| {
-                        x.unwrap_or_else(|| {
-                            dialogue_exists = false;
-                            D::default()
-                        })
-                    });
+                let dialogue = Arc::clone(&storage).get_dialogue(chat_id).await.map(|x| {
+                    x.unwrap_or_else(|| {
+                        dialogue_exists = false;
+                        D::default()
+                    })
+                });
 
                 match handler.handle(DialogueWithCx { cx, dialogue }).await {
                     DialogueStage::Next(new_dialogue) => {
