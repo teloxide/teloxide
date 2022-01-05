@@ -263,4 +263,125 @@ where
         let handler = make_handler(parser);
         self.handler(handler)
     }
+
+    pub fn channel_posts_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::ChannelPost);
+
+        let parser = make_parser!(ChannelPost);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn edited_channel_posts_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::EditedChannelPost);
+
+        let parser = make_parser!(EditedChannelPost);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn inline_queries_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::InlineQuery);
+
+        let parser = make_parser!(InlineQuery);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn chosen_inline_results_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::ChosenInlineResult);
+
+        let parser = make_parser!(ChosenInlineResult);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn callback_queries_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::CallbackQuery);
+
+        let parser = make_parser!(EditedMessage);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn shipping_queries_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::ShippingQuery);
+
+        let parser = make_parser!(ShippingQuery);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn pre_checkout_queries_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::PreCheckoutQuery);
+
+        let parser = make_parser!(PreCheckoutQuery);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn polls_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::Poll);
+
+        let parser = make_parser!(Poll);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn poll_answers_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::PollAnswer);
+
+        let parser = make_parser!(PollAnswer);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn my_chat_members_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::MyChatMember);
+
+        let parser = make_parser!(MyChatMember);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
+
+    pub fn chat_members_handler(
+        mut self,
+        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
+    ) -> Self {
+        self.allowed_updates.insert(AllowedUpdate::ChatMember);
+
+        let parser = make_parser!(ChatMember);
+        let handler = make_handler(parser);
+        self.handler(handler)
+    }
 }
