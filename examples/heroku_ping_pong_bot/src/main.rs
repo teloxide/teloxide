@@ -24,14 +24,13 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let cloned_bot = bot.clone();
     teloxide::repl_with_listener(
-        bot,
-        |message| async move {
-            message.answer("pong").await?;
+        bot.clone(),
+        |mes: Message, bot: AutoSend<Bot>| async move {
+            bot.send_message(mes.chat.id, "pong").await?;
             respond(())
         },
-        webhook(cloned_bot).await,
+        webhook(bot).await,
     )
     .await;
 }
