@@ -25,7 +25,7 @@ type Store = SqliteStorage<Json>;
 type BotDialogue = Dialogue<State, Store>;
 
 #[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
-#[out(anyhow::Result<()>)]
+#[handler_out(anyhow::Result<()>)]
 pub enum State {
     #[handler(handle_start)]
     Start,

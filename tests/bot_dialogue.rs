@@ -8,8 +8,7 @@ use teloxide::macros::DialogueState;
 fn compile_test() {
     #[allow(dead_code)]
     #[derive(DialogueState, Clone)]
-    #[out(Result<(), teloxide::RequestError>)]
-    #[store(teloxide::dispatching2::dialogue::InMemStorage<State>)]
+    #[handler_out(Result<(), teloxide::RequestError>)]
     enum State {
         #[handler(handle_start)]
         Start,
@@ -38,8 +37,7 @@ fn compile_test() {
 fn compile_test_generics() {
     #[allow(dead_code)]
     #[derive(DialogueState, Clone)]
-    #[out(Result<(), teloxide::RequestError>)]
-    #[store(teloxide::dispatching2::dialogue::InMemStorage<State<X>>)]
+    #[handler_out(Result<(), teloxide::RequestError>)]
     enum State<X: Clone + Send + Sync + 'static> {
         #[handler(handle_start)]
         Start,
