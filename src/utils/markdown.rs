@@ -89,36 +89,36 @@ pub fn code_inline(s: &str) -> String {
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
-    s.replace("_", r"\_")
-        .replace("*", r"\*")
-        .replace("[", r"\[")
-        .replace("]", r"\]")
-        .replace("(", r"\(")
-        .replace(")", r"\)")
-        .replace("~", r"\~")
-        .replace("`", r"\`")
-        .replace(">", r"\>")
-        .replace("#", r"\#")
-        .replace("+", r"\+")
-        .replace("-", r"\-")
-        .replace("=", r"\=")
-        .replace("|", r"\|")
-        .replace("{", r"\{")
-        .replace("}", r"\}")
-        .replace(".", r"\.")
-        .replace("!", r"\!")
+    s.replace('_', r"\_")
+        .replace('*', r"\*")
+        .replace('[', r"\[")
+        .replace(']', r"\]")
+        .replace('(', r"\(")
+        .replace(')', r"\)")
+        .replace('~', r"\~")
+        .replace('`', r"\`")
+        .replace('>', r"\>")
+        .replace('#', r"\#")
+        .replace('+', r"\+")
+        .replace('-', r"\-")
+        .replace('=', r"\=")
+        .replace('|', r"\|")
+        .replace('{', r"\{")
+        .replace('}', r"\}")
+        .replace('.', r"\.")
+        .replace('!', r"\!")
 }
 
 /// Escapes all markdown special characters specific for the inline link URL
 /// (``` and `)`).
 pub fn escape_link_url(s: &str) -> String {
-    s.replace("`", r"\`").replace(")", r"\)")
+    s.replace('`', r"\`").replace(')', r"\)")
 }
 
 /// Escapes all markdown special characters specific for the code block (``` and
 /// `\`).
 pub fn escape_code(s: &str) -> String {
-    s.replace(r"\", r"\\").replace("`", r"\`")
+    s.replace('\\', r"\\").replace('`', r"\`")
 }
 
 pub fn user_mention_or_link(user: &User) -> String {

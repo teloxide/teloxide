@@ -107,6 +107,7 @@ where
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "ctrlc_handler")))]
+    #[must_use]
     pub fn setup_ctrlc_handler(self) -> Self {
         let state = Arc::clone(&self.state);
         tokio::spawn(async move {

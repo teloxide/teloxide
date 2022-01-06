@@ -3,6 +3,7 @@ use dptree::{di::DependencyMap, Handler};
 use std::sync::Arc;
 
 pub trait DialogueHandlerExt {
+    #[must_use]
     fn add_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + Send + Sync + 'static,

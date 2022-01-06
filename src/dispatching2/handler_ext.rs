@@ -2,10 +2,12 @@ use crate::{dispatching2::HandlerFactory, types::Message, utils::command::BotCom
 use dptree::{di::DependencyMap, Handler};
 
 pub trait HandlerExt<Output> {
+    #[must_use]
     fn add_command<C>(self, bot_name: String) -> Self
     where
         C: BotCommand + Send + Sync + 'static;
 
+    #[must_use]
     fn dispatch_by<F>(self) -> Self
     where
         F: HandlerFactory<Out = Output>;

@@ -65,6 +65,7 @@ where
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn setup_ctrlc_handler(self) -> Self {
         let state = Arc::clone(&self.state);
         tokio::spawn(async move {
@@ -227,21 +228,25 @@ where
         }
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn handler(self, handler: UpdateHandler<Err>) -> Self {
         Dispatcher { handler: self.handler.branch(handler), ..self }
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     // Specify handler that will be called if other handlers was not handle the
     // update.
     pub fn default_handler(self, handler: UpdateHandler<Err>) -> Self {
         Dispatcher { handler: self.handler.branch(handler), ..self }
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     // Specify dependencies that can be used inside of handlers.
     pub fn dependencies(self, dependencies: DependencyMap) -> Self {
         Dispatcher { dependencies, ..self }
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn messages_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -253,6 +258,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn edited_messages_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -264,6 +270,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn channel_posts_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -275,6 +282,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn edited_channel_posts_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -286,6 +294,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn inline_queries_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -297,6 +306,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn chosen_inline_results_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -308,6 +318,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn callback_queries_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -319,6 +330,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn shipping_queries_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -330,6 +342,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn pre_checkout_queries_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -341,6 +354,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn polls_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -352,6 +366,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn poll_answers_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -363,6 +378,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn my_chat_members_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
@@ -374,6 +390,7 @@ where
         self.handler(handler)
     }
 
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     pub fn chat_members_handler(
         mut self,
         make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,

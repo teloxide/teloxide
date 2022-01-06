@@ -28,11 +28,7 @@ pub struct Dialogue<D, S> {
 // but `S` wrapped around Arc, and `D` wrapped around PhantomData.
 impl<D, S> Clone for Dialogue<D, S> {
     fn clone(&self) -> Self {
-        Dialogue {
-            storage: self.storage.clone(),
-            chat_id: self.chat_id.clone(),
-            _phantom: PhantomData,
-        }
+        Dialogue { storage: self.storage.clone(), chat_id: self.chat_id, _phantom: PhantomData }
     }
 }
 
