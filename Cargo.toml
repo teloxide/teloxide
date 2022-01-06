@@ -12,10 +12,9 @@ license = "MIT"
 exclude = ["media"]
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "new-dispatching"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "dispatching2"]
 
-old-dispatching = []
-new-dispatching = ["dptree"]
+dispatching2 = ["dptree"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]

@@ -1,6 +1,6 @@
 // This bot throws a dice on each incoming message.
 
-use teloxide::prelude::*;
+use teloxide::prelude2::*;
 
 type TeleBot = AutoSend<Bot>;
 
@@ -11,7 +11,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl(bot, |message: Message, bot: TeleBot| async move {
+    teloxide::repls2::repl(bot, |message: Message, bot: TeleBot| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })

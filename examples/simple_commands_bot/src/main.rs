@@ -1,4 +1,4 @@
-use teloxide::{prelude::*, utils::command::BotCommand};
+use teloxide::{prelude2::*, utils::command::BotCommand};
 
 use std::error::Error;
 use teloxide::types::Me;
@@ -46,5 +46,5 @@ async fn main() {
     let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
     let bot_name = bot_user.username.expect("Bots must have usernames");
 
-    teloxide::commands_repl(bot, bot_name, answer, Command::ty()).await;
+    teloxide::repls2::commands_repl(bot, bot_name, answer, Command::ty()).await;
 }

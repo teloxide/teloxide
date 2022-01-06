@@ -60,28 +60,26 @@
 // https://github.com/rust-lang/rust-clippy/issues/7422
 #![allow(clippy::nonstandard_macro_braces)]
 
-#[cfg(all(feature = "new-dispatching", feature = "old-dispatching"))]
-compile_error!("You can use only one of еру dispatching systems, not both.");
-
-#[cfg(feature = "old-dispatching")]
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
 
-#[cfg(feature = "new-dispatching")]
-pub use dispatching2::repls::{
-    commands_repl, commands_repl_with_listener, repl, repl_with_listener,
-};
+#[cfg(feature = "dispatching2")]
+pub use dispatching2::repls as repls2;
 
 mod logging;
 
 // Things from this module is also used for the dispatching2 module.
 pub mod dispatching;
-#[cfg(feature = "new-dispatching")]
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
 pub mod dispatching2;
 pub mod error_handlers;
 pub mod prelude;
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
+pub mod prelude2;
 pub mod utils;
 
 #[doc(inline)]
@@ -91,8 +89,8 @@ pub use teloxide_core::*;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros as macros;
 
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "new-dispatching")))]
-#[cfg(feature = "new-dispatching")]
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
 pub use dptree;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]

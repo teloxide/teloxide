@@ -2,7 +2,7 @@ use std::{error::Error, str::FromStr};
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 use teloxide::{
-    prelude::*,
+    prelude2::*,
     types::{ChatPermissions, Me},
     utils::command::BotCommand,
 };
@@ -162,5 +162,5 @@ async fn main() {
 
     let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
     let bot_name = bot_user.username.expect("Bots must have usernames");
-    teloxide::commands_repl(bot, bot_name, action, Command::ty()).await;
+    teloxide::repls2::commands_repl(bot, bot_name, action, Command::ty()).await;
 }

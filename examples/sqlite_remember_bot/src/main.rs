@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage, Storage},
-    prelude::*,
+    prelude2::*,
     RequestError,
 };
 use thiserror::Error;

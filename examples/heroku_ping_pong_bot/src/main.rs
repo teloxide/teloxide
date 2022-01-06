@@ -6,7 +6,7 @@ use teloxide::{
         stop_token::AsyncStopToken,
         update_listeners::{self, StatefulListener},
     },
-    prelude::*,
+    prelude2::*,
     types::Update,
 };
 
@@ -24,7 +24,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl_with_listener(
+    teloxide::repls2::repl_with_listener(
         bot.clone(),
         |mes: Message, bot: AutoSend<Bot>| async move {
             bot.send_message(mes.chat.id, "pong").await?;

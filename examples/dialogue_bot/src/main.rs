@@ -16,7 +16,7 @@
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage},
     macros::DialogueState,
-    prelude::*,
+    prelude2::*,
 };
 
 // FIXME: naming

@@ -3,7 +3,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use lazy_static::lazy_static;
-use teloxide::prelude::*;
+use teloxide::prelude2::*;
 
 lazy_static! {
     static ref MESSAGES_TOTAL: AtomicU64 = AtomicU64::new(0);

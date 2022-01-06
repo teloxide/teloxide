@@ -1,6 +1,6 @@
 use teloxide::{
     dispatching2::dialogue::{serializer::Bincode, RedisStorage, Storage},
-    prelude::*,
+    prelude2::*,
     RequestError,
 };
 use thiserror::Error;

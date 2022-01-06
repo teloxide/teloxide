@@ -1,16 +1,13 @@
-//! Commonly used items.
+//! Commonly used items (dispatching2 version).
 
 pub use crate::{
     error_handlers::{LoggingErrorHandler, OnError},
     respond,
 };
 
-pub use crate::dispatching::{
-    dialogue::{
-        exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
-        TransitionIn, TransitionOut,
-    },
-    Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
+pub use crate::dispatching2::{
+    dialogue::{Dialogue, DialogueHandlerExt as _},
+    Dispatcher, HandlerExt as _,
 };
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
@@ -28,10 +25,4 @@ pub use crate::adaptors::AutoSend;
 #[doc(no_inline)]
 pub use teloxide_core::prelude::*;
 
-#[cfg(feature = "frunk")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
-pub use crate::utils::UpState;
-
-pub use tokio::sync::mpsc::UnboundedReceiver;
-
-pub use futures::StreamExt;
+pub use dptree::{self, prelude::*};
