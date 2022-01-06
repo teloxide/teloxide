@@ -25,7 +25,7 @@ use syn::{
 
 use std::fmt::Write;
 
-#[proc_macro_derive(DialogueState, attributes(handler, out, store))]
+#[proc_macro_derive(DialogueState, attributes(handler, handler_out, store))]
 pub fn derive_dialogue_state(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     match dialogue_state::expand(input) {

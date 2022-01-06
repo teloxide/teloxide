@@ -148,7 +148,7 @@ fn parse_out_type(
 ) -> Result<Type, syn::Error> {
     let mut out = None;
     for x in attrs {
-        if x.path.is_ident("out") {
+        if x.path.is_ident("handler_out") {
             out = Some(x.parse_args::<Type>()?);
         }
     }
@@ -157,8 +157,8 @@ fn parse_out_type(
     }
     Err(syn::Error::new(
         span,
-        "You must specify #[out()] argument in which declare output type of \
-         handlers. For example, #[out(Result<(), Error>)]",
+        "You must specify #[handler_out()] argument in which declare output \
+         type of handlers. For example, #[handler_out(Result<(), Error>)]",
     ))
 }
 
