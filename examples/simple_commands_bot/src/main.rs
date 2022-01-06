@@ -1,8 +1,9 @@
 use teloxide::{prelude::*, utils::command::BotCommand};
 
-use std::{error::Error, sync::Arc};
+use std::error::Error;
+use teloxide::types::Me;
 
-#[derive(BotCommand)]
+#[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -14,11 +15,11 @@ enum Command {
 }
 
 async fn answer(
-    bot: Arc<AutoSend<Bot>>,
-    message: Arc<Message>,
-    command: Arc<Command>,
+    bot: AutoSend<Bot>,
+    message: Message,
+    command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command.as_ref() {
+    match command {
         Command::Help => bot.send_message(message.chat.id, Command::descriptions()).await?,
         Command::Username(username) => {
             bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
@@ -42,6 +43,8 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let bot_name: String = "".into(); // panic!("Your bot's name here");
+    let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
+    let bot_name = bot_user.username.expect("Bots must have usernames");
+
     teloxide::commands_repl(bot, bot_name, answer, Command::ty()).await;
 }
