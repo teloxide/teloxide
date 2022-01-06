@@ -79,7 +79,7 @@ impl<S, E>
         Thfn<S>,
     >
 where
-    S: Stream<Item = Result<Update, E>> + Unpin + 'static,
+    S: Stream<Item = Result<Update, E>> + Unpin + Send + 'static,
 {
     /// Creates a new update listener from a stream of updates which ignores
     /// stop signals.
@@ -109,6 +109,7 @@ impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a, E>
     for StatefulListener<St, Assf, Hauf, Sf, Thf>
 where
     (St, Strm): 'a,
+    Strm: Send,
     Assf: FnMut(&'a mut St) -> Strm,
     Strm: Stream<Item = Result<Update, E>>,
 {

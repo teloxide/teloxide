@@ -4,15 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## unreleased
 
-## [0.5.1] - 2021-08-05
+### Changed
+
+- Require that `AsUpdateStream::Stream` is `Send`
+
+## 0.5.3 - 2021-10-25
+
+### Fixed
+
+- Compilation when the `ctrlc_handler` feature is disabled ([issue 462](https://github.com/teloxide/teloxide/issues/462))
+
+## 0.5.2 - 2021-08-25
+
+### Fixed
+
+- Depend on a correct `futures` version (v0.3.15).
+
+## 0.5.1 - 2021-08-05
 
 ### Changed
 
 - Improved log messages when `^C` is received with `^C` handler set up
 
-## [0.5.0] - 2021-07-08
+## 0.5.0 - 2021-07-08
 
 ### Added
 
@@ -58,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Log errors from `Storage::{remove_dialogue, update_dialogue}` in `DialogueDispatcher` ([issue 302](https://github.com/teloxide/teloxide/issues/302)).
  - Mark all the functions of `Storage` as `#[must_use]`.
 
-## [0.4.0] - 2021-03-22
+## 0.4.0 - 2021-03-22
 
 ### Added
  - Integrate [teloxide-core].
@@ -95,28 +111,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [issue 253]: https://github.com/teloxide/teloxide/issues/253
 [pr 257]: https://github.com/teloxide/teloxide/pull/257
 
-## [0.3.4] - 2020-01-13
+## 0.3.4 - 2020-01-13
 
 ### Fixed
 
  - Failing compilation with `serde::export` ([issue 328](https://github.com/teloxide/teloxide/issues/328)).
 
-## [0.3.3] - 2020-10-30
+## 0.3.3 - 2020-10-30
 
 ### Fixed
  - The `dice` field from `MessageDice` is public now ([issue 306](https://github.com/teloxide/teloxide/issues/306))
 
-## [0.3.2] - 2020-10-23
+## 0.3.2 - 2020-10-23
 
 ### Added
  - `LoginUrl::new` ([issue 298](https://github.com/teloxide/teloxide/issues/298))
 
-## [0.3.1] - 2020-08-25
+## 0.3.1 - 2020-08-25
 
 ### Added
  - `Bot::builder` method ([PR 269](https://github.com/teloxide/teloxide/pull/269)).
 
-## [0.3.0] - 2020-07-31
+## 0.3.0 - 2020-07-31
 ### Added
  - Support for typed bot commands ([issue 152](https://github.com/teloxide/teloxide/issues/152)).
  - `BotBuilder`, which allows setting a default `ParseMode`.
@@ -153,7 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Now methods which can send file to Telegram returns `tokio::io::Result<T>`. Early its could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
  - If a bot wasn't triggered for several days, it stops responding ([issue 223](https://github.com/teloxide/teloxide/issues/223)).
 
-## [0.2.0] - 2020-02-25
+## 0.2.0 - 2020-02-25
 ### Added
  - The functionality to parse commands only with a correct bot's name (breaks backwards compatibility) ([Issue 168](https://github.com/teloxide/teloxide/issues/168)).
  - This `CHANGELOG.md`.
@@ -168,6 +184,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - [either](https://crates.io/crates/either) from the dependencies in `Cargo.toml`.
  - `teloxide-macros` migrated into [the separate repository](https://github.com/teloxide/teloxide-macros) to easier releases and testing.
 
-## [0.1.0] - 2020-02-19
+## 0.1.0 - 2020-02-19
 ### Added
  - This project.

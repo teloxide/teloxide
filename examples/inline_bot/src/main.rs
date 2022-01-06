@@ -33,7 +33,7 @@ async fn main() {
                 // While constructing them from the struct itself is possible, it is preferred
                 // to use the builder pattern if you wish to add more
                 // information to your result. Please refer to the documentation
-                // for more detailed information about each field. https://docs.rs/teloxide/0.5.1/teloxide/types/struct.InlineQueryResultArticle.html
+                // for more detailed information about each field. https://docs.rs/teloxide/latest/teloxide/types/struct.InlineQueryResultArticle.html
                 let ddg_search = InlineQueryResultArticle::new(
                     "02".to_string(),
                     "DuckDuckGo Search".to_string(),
