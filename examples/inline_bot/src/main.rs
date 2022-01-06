@@ -5,15 +5,17 @@ use teloxide::{
     },
     Bot,
 };
-use tokio_stream::wrappers::UnboundedReceiverStream;
 
 #[tokio::main]
 async fn main() {
+    teloxide::enable_logging!();
+    log::info!("Starting inline_bot...");
+
     let bot = Bot::from_env().auto_send();
-    // Create a new dispatcher to handle incoming queries
+
     Dispatcher::new(bot)
-        .inline_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, InlineQuery>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |query| async move {
+        .inline_queries_handler(|b| {
+            b.branch(dptree::endpoint(|query: InlineQuery, bot: AutoSend<Bot>| async move {
                 // First, create your actual response
                 let google_search = InlineQueryResultArticle::new(
                     // Each item needs a unique ID, as well as the response container for the
@@ -25,7 +27,7 @@ async fn main() {
                     // What message will be sent when clicked/tapped
                     InputMessageContent::Text(InputMessageContentText::new(format!(
                         "https://www.google.com/search?q={}",
-                        query.update.query,
+                        query.query,
                     ))),
                 );
                 // While constructing them from the struct itself is possible, it is preferred
@@ -37,7 +39,7 @@ async fn main() {
                     "DuckDuckGo Search".to_string(),
                     InputMessageContent::Text(InputMessageContentText::new(format!(
                         "https://duckduckgo.com/?q={}",
-                        query.update.query.to_string()
+                        query.query.to_string()
                     ))),
                 )
                 .description("DuckDuckGo Search")
@@ -51,12 +53,12 @@ async fn main() {
 
                 // Send it off! One thing to note -- the ID we use here must be of the query
                 // we're responding to.
-                let response =
-                    query.requester.answer_inline_query(&query.update.id, results).send().await;
+                let response = bot.answer_inline_query(&query.id, results).send().await;
                 if let Err(err) = response {
                     log::error!("Error in handler: {:?}", err);
                 }
-            })
+                respond(())
+            }))
         })
         .dispatch()
         .await;
