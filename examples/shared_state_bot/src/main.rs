@@ -4,7 +4,6 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use lazy_static::lazy_static;
 use teloxide::prelude::*;
-use tokio_stream::wrappers::UnboundedReceiverStream;
 
 lazy_static! {
     static ref MESSAGES_TOTAL: AtomicU64 = AtomicU64::new(0);
@@ -18,16 +17,16 @@ async fn main() {
     let bot = Bot::from_env().auto_send();
 
     Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, Message>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |message| async move {
+        .messages_handler(|h| {
+            h.branch(dptree::endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
                 let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
-
-                message
-                    .answer(format!("I received {} messages in total.", previous))
-                    .await
-                    .log_on_error()
-                    .await;
-            })
+                bot.send_message(
+                    mes.chat.id,
+                    format!("I received {} messages in total.", previous),
+                )
+                .await?;
+                respond(())
+            }))
         })
         .dispatch()
         .await;
