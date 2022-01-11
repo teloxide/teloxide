@@ -34,6 +34,12 @@ pub struct Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub message_auto_delete_time: Option<u32>,
+
+    /// `true`, if messages from the chat can't be forwarded to other chats.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub has_protected_content: Option<True>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -97,7 +103,7 @@ pub struct ChatPrivate {
     pub bio: Option<String>,
 
     /// `True`, if privacy settings of the other party in the private chat
-    /// allows to use tg://user?id=<user_id> links only in chats with the
+    /// allows to use `tg://user?id=<user_id>` links only in chats with the
     /// user. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
@@ -450,6 +456,7 @@ mod tests {
             photo: None,
             pinned_message: None,
             message_auto_delete_time: None,
+            has_protected_content: None,
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -471,6 +478,7 @@ mod tests {
                 photo: None,
                 pinned_message: None,
                 message_auto_delete_time: None,
+                has_protected_content: None,
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()

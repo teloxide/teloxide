@@ -1343,6 +1343,7 @@ mod tests {
             photo: None,
             pinned_message: None,
             message_auto_delete_time: None,
+            has_protected_content: None,
         };
 
         assert!(message.from().unwrap().is_anonymous());
