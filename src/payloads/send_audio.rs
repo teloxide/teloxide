@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{ChatId, InputFile, Message, MessageEntity, ParseMode, ReplyMarkup};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = audio, thumb]
     /// Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .MP3 or .M4A format. On success, the sent [`Message`] is returned. Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// For sending voice messages, use the [`SendVoice`] method instead.

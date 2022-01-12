@@ -135,7 +135,7 @@ macro_rules! calculated_doc {
 macro_rules! impl_payload {
     (
         $(
-            @[$multipart_attr:ident]
+            @[multipart = $($multipart_attr:ident),*]
         )?
         $(
             #[ $($method_meta:tt)* ]
@@ -241,7 +241,7 @@ macro_rules! impl_payload {
 
         impl<P> $Setters for P where P: crate::requests::HasPayload<Payload = $Method> {}
 
-        impl_payload! { @[$($multipart_attr)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
+        impl_payload! { @[$(multipart = $($multipart_attr),*)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
     };
     (@setter_opt $Method:ident $field:ident : $FTy:ty [into]) => {
         calculated_doc! {
@@ -387,7 +387,7 @@ macro_rules! impl_payload {
     (@convert_map ($e:expr)) => {
         $e
     };
-    (@[multipart] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
+    (@[multipart = $($multipart_attr:ident),*] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
         impl crate::requests::MultipartPayload for $Method {}
     };
     (@[] $($ignored:tt)*) => {}

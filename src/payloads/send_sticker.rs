@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{ChatId, InputFile, Message, ReplyMarkup};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = sticker]
     /// Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.
     ///
     /// [animated]: https://telegram.org/blog/animated-stickers

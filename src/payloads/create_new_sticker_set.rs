@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{InputSticker, MaskPosition, True};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = sticker]
     /// Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. You must use exactly one of the fields _png\_sticker_ or _tgs\_sticker_. Returns _True_ on success.
     #[derive(Debug, Clone, Serialize)]
     pub CreateNewStickerSet (CreateNewStickerSetSetters) => True {
