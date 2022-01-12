@@ -301,7 +301,10 @@ pub(crate) mod option_url_from_string {
     where
         S: Serializer,
     {
-        this.serialize(serializer)
+        match this {
+            Some(url) => url.serialize(serializer),
+            None => "".serialize(serializer),
+        }
     }
 
     pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
@@ -322,14 +325,22 @@ pub(crate) mod option_url_from_string {
 
         {
             let json = r#"{"url":""}"#;
-            let Struct { url } = serde_json::from_str(json).unwrap();
-            assert_eq!(url, None);
+            let url: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(url.url, None);
+            assert_eq!(
+                serde_json::to_string(&url).unwrap(),
+                r#"{"url":""}"#.to_string()
+            );
 
             let json = r#"{"url":"https://github.com/token"}"#;
-            let Struct { url } = serde_json::from_str(json).unwrap();
+            let url: Struct = serde_json::from_str(json).unwrap();
             assert_eq!(
-                url,
+                url.url,
                 Some(Url::from_str("https://github.com/token").unwrap())
+            );
+            assert_eq!(
+                serde_json::to_string(&url).unwrap(),
+                r#"{"url":"https://github.com/token"}"#.to_string()
             );
         }
     }
