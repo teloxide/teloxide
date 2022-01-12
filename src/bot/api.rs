@@ -1106,13 +1106,4 @@ impl Requester for Bot {
     {
         Self::UnpinAllChatMessages::new(self.clone(), payloads::UnpinAllChatMessages::new(chat_id))
     }
-
-    type GetUpdatesFaultTolerant = JsonRequest<payloads::GetUpdatesFaultTolerant>;
-
-    fn get_updates_fault_tolerant(&self) -> Self::GetUpdatesFaultTolerant {
-        Self::GetUpdatesFaultTolerant::new(
-            self.clone(),
-            payloads::GetUpdatesFaultTolerant(payloads::GetUpdates::new()),
-        )
-    }
 }

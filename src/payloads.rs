@@ -213,7 +213,3 @@ pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};
 
 // end of auto generated block
-
-mod get_updates_fault_tolerant;
-
-pub use get_updates_fault_tolerant::GetUpdatesFaultTolerant;

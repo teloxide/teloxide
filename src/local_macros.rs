@@ -1195,13 +1195,4 @@ macro_rules! requester_forward {
             $body!(get_game_high_scores this (user_id: i64, target: T))
         }
     };
-    (@method get_updates_fault_tolerant $body:ident $ty:ident) => {
-        type GetUpdatesFaultTolerant = $ty![GetUpdatesFaultTolerant];
-
-        fn get_updates_fault_tolerant(&self) -> Self::GetUpdatesFaultTolerant {
-            let this = self;
-            $body!(get_updates_fault_tolerant this ())
-        }
-    };
-
 }
