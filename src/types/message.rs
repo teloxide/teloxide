@@ -1339,10 +1339,11 @@ mod tests {
                 }),
                 description: None,
                 invite_link: None,
+                has_protected_content: None,
             }),
+            message_auto_delete_time: None,
             photo: None,
             pinned_message: None,
-            message_auto_delete_time: None,
         };
 
         assert!(message.from().unwrap().is_anonymous());

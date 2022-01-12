@@ -70,6 +70,12 @@ pub struct ChatPublic {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub invite_link: Option<String>,
+
+    /// `True`, if messages from the chat can't be forwarded to other chats.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub has_protected_content: Option<True>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -97,7 +103,7 @@ pub struct ChatPrivate {
     pub bio: Option<String>,
 
     /// `True`, if privacy settings of the other party in the private chat
-    /// allows to use tg://user?id=<user_id> links only in chats with the
+    /// allows to use `tg://user?id=<user_id>` links only in chats with the
     /// user. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
@@ -389,6 +395,17 @@ impl Chat {
         }
     }
 
+    /// `True`, if messages from the chat can't be forwarded to other chats.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub fn has_protected_content(&self) -> Option<True> {
+        match &self.kind {
+            ChatKind::Public(this) => this.has_protected_content,
+            _ => None,
+        }
+    }
+
     /// A first name of the other party in a private chat.
     pub fn first_name(&self) -> Option<&str> {
         match &self.kind {
@@ -446,6 +463,7 @@ mod tests {
                 }),
                 description: None,
                 invite_link: None,
+                has_protected_content: None,
             }),
             photo: None,
             pinned_message: None,
@@ -466,7 +484,7 @@ mod tests {
                     first_name: Some("Anon".into()),
                     last_name: None,
                     bio: None,
-                    has_private_forwards: None
+                    has_private_forwards: None,
                 }),
                 photo: None,
                 pinned_message: None,
