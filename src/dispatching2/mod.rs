@@ -4,6 +4,7 @@ pub mod dialogue;
 mod dispatcher;
 mod handler_ext;
 mod handler_factory;
+mod message_filter_ext;
 
 pub use dispatcher::Dispatcher;
 pub use handler_ext::HandlerExt;
