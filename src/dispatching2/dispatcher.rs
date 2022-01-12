@@ -3,7 +3,7 @@ use crate::{
         shutdown_check_timeout_for, shutdown_inner, stop_token::StopToken, update_listeners,
         update_listeners::UpdateListener, DispatcherState, ShutdownToken,
     },
-    error_handlers::{ErrorHandler, LoggingErrorHandler},
+    error_handlers::{ErrorHandler, IgnoringErrorHandler, LoggingErrorHandler},
     requests::Requester,
     types::{AllowedUpdate, Update, UpdateKind},
 };
@@ -18,6 +18,7 @@ pub struct Dispatcher<R, Err> {
 
     handler: UpdateHandler<Err>,
     default_handler: DefaultHandler,
+    error_handler: Arc<dyn ErrorHandler<Err>>,
     allowed_updates: HashSet<AllowedUpdate>,
 
     state: Arc<DispatcherState>,
@@ -46,7 +47,10 @@ where
     R: Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
-    pub fn new(requester: R) -> Self {
+    pub fn new(requester: R) -> Self
+    where
+        Err: Debug,
+    {
         Dispatcher {
             requester,
             dependencies: DependencyMap::new(),
@@ -54,6 +58,23 @@ where
             default_handler: dptree::endpoint(|update: Update| async move {
                 log::warn!("Unhandled update: {:?}", update)
             }),
+            error_handler: LoggingErrorHandler::new(),
+            allowed_updates: Default::default(),
+            state: Arc::new(Default::default()),
+            shutdown_notify_back: Arc::new(Default::default()),
+        }
+    }
+
+    /// Create empty dispatcher without error handler.
+    pub fn without_error_handler(requester: R) -> Self {
+        Dispatcher {
+            requester,
+            dependencies: DependencyMap::new(),
+            handler: dptree::entry(),
+            default_handler: dptree::endpoint(|update: Update| async move {
+                log::warn!("Unhandled update: {:?}", update)
+            }),
+            error_handler: IgnoringErrorHandler::new(),
             allowed_updates: Default::default(),
             state: Arc::new(Default::default()),
             shutdown_notify_back: Arc::new(Default::default()),
@@ -207,7 +228,9 @@ where
                 deps.insert(self.requester.clone());
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
-                    ControlFlow::Break(Err(_err)) => todo!("error handler"),
+                    ControlFlow::Break(Err(err)) => {
+                        self.error_handler.clone().handle_error(err).await
+                    }
                     ControlFlow::Continue(deps) => {
                         match self
                             .default_handler
@@ -236,8 +259,13 @@ where
     #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
     // Specify handler that will be called if other handlers was not handle the
     // update.
-    pub fn default_handler(self, handler: UpdateHandler<Err>) -> Self {
-        Dispatcher { handler: self.handler.branch(handler), ..self }
+    pub fn default_handler(self, handler: DefaultHandler) -> Self {
+        Dispatcher { default_handler: handler, ..self }
+    }
+
+    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
+    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err>>) -> Self {
+        Dispatcher { error_handler: handler, ..self }
     }
 
     #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]

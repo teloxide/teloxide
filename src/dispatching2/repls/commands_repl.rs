@@ -31,7 +31,7 @@ pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(
     N: Into<String> + Send + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
-    E: Send + Sync + 'static,
+    E: Debug + Send + Sync + 'static,
 {
     let cloned_requester = requester.clone();
 
@@ -71,7 +71,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
     ListenerE: Debug + Send + 'a,
     N: Into<String> + Send + 'static,
     R: Requester + Clone + Send + Sync + 'static,
-    E: Send + Sync + 'static,
+    E: Debug + Send + Sync + 'static,
 {
     let bot_name = bot_name.into();
 
