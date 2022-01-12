@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct WebhookInfo {
+    #[serde(deserialize_with = "empty_string_to_url")]
     /// Webhook URL, `None` if webhook is not set up.
     pub url: Option<reqwest::Url>,
 
@@ -36,4 +37,11 @@ pub struct WebhookInfo {
     /// A list of update types the bot is subscribed to. Defaults to all update
     /// types.
     pub allowed_updates: Option<Vec<String>>,
+}
+
+fn empty_string_to_url<'de, D>(deserializer: D) -> Result<Option<reqwest::Url>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    Ok(reqwest::Url::deserialize(deserializer).ok())
 }
