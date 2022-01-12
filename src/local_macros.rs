@@ -389,7 +389,6 @@ macro_rules! impl_payload {
     };
     (@[multipart] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
         impl crate::requests::MultipartPayload for $Method {}
-        impl crate::requests::multipart_payload::sealed::Sealed for $Method {}
     };
     (@[] $($ignored:tt)*) => {}
 }
