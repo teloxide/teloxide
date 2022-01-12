@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ApiError::TooMuchInlineQueryResults` ([#135][pr135])
 - `ApiError::NotEnoughRightsToChangeChatPermissions` ([#155][pr155])
 - Support for 5.4 telegram bot API ([#133][pr133])
-- Support for 5.5 telegram bot API ([#143][pr143])
+- Support for 5.5 telegram bot API ([#143][pr143], [#164][pr164])
 - `EditedMessageIsTooLong` error ([#109][pr109])
 - `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
 - `Limits::messages_per_min_channel` ([#121][pr121])
@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr151]: https://github.com/teloxide/teloxide-core/pull/151
 [pr155]: https://github.com/teloxide/teloxide-core/pull/155
 [pr156]: https://github.com/teloxide/teloxide-core/pull/156
+[pr164]: https://github.com/teloxide/teloxide-core/pull/164
 
 ### Changed
 
@@ -45,11 +46,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
 - How forwarded messages are represented ([#151][pr151])
 - `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
+- `ChatPermissions` is now bitflags ([#157][pr157])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
 [pr134]: https://github.com/teloxide/teloxide-core/pull/134
 [pr150]: https://github.com/teloxide/teloxide-core/pull/150
+[pr157]: https://github.com/teloxide/teloxide-core/pull/157
 
 ### Fixed
 

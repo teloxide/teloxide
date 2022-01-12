@@ -37,6 +37,8 @@ impl_payload! {
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
+            /// Protects the contents of sent messages from forwarding and saving
+            pub protect_content: bool,
             /// If the message is a reply, ID of the original message
             pub reply_to_message_id: i32,
             /// Pass _True_, if the message should be sent even if the specified replied-to message is not found

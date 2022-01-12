@@ -31,6 +31,7 @@ pub(crate) fn to_form<T: ?Sized + Serialize>(val: &T) -> impl Future<Output = Re
 }
 
 // https://github.com/teloxide/teloxide/issues/473
+#[cfg(test)]
 #[tokio::test]
 async fn issue_473() {
     use crate::{

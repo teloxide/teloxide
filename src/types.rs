@@ -244,16 +244,11 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
             .map(|timestamp| DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
     }
 
-    pub(crate) fn none<T>() -> Option<T> {
-        None
-    }
-
     #[test]
     fn test() {
         #[derive(Serialize, Deserialize)]
         struct Struct {
-            #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-            #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+            #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
             date: Option<DateTime<Utc>>,
         }
 

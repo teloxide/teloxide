@@ -22,8 +22,7 @@ pub struct WebhookInfo {
 
     /// Time of the most recent error that happened when trying to
     /// deliver an update via webhook.
-    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub last_error_date: Option<DateTime<Utc>>,
 
     /// Error message in human-readable format for the most recent error that

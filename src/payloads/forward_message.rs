@@ -29,6 +29,8 @@ impl_payload! {
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
+            /// Protects the contents of sent messages from forwarding and saving
+            pub protect_content: bool,
         }
     }
 }

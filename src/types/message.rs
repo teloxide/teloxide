@@ -85,8 +85,7 @@ pub struct MessageCommon {
     pub reply_to_message: Option<Box<Message>>,
 
     /// Date the message was last edited in Unix time.
-    #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
-    #[serde(default = "crate::types::serde_opt_date_from_unix_timestamp::none")]
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub edit_date: Option<DateTime<Utc>>,
 
     #[serde(flatten)]
@@ -363,7 +362,7 @@ pub struct MediaDocument {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(default)]
     pub caption_entities: Vec<MessageEntity>,
 
     /// The unique identifier of a media message group this message belongs
@@ -1340,10 +1339,11 @@ mod tests {
                 }),
                 description: None,
                 invite_link: None,
+                has_protected_content: None,
             }),
+            message_auto_delete_time: None,
             photo: None,
             pinned_message: None,
-            message_auto_delete_time: None,
         };
 
         assert!(message.from().unwrap().is_anonymous());
