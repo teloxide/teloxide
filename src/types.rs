@@ -292,3 +292,45 @@ pub(crate) mod serde_date_from_unix_timestamp {
         ))
     }
 }
+
+pub(crate) mod option_url_from_string {
+    use reqwest::Url;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(this: &Option<Url>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        this.serialize(serializer)
+    }
+
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(reqwest::Url::deserialize(deserializer).ok())
+    }
+
+    #[test]
+    fn test() {
+        use std::str::FromStr;
+        #[derive(Serialize, Deserialize)]
+        struct Struct {
+            #[serde(with = "crate::types::option_url_from_string")]
+            url: Option<Url>,
+        }
+
+        {
+            let json = r#"{"url":""}"#;
+            let Struct { url } = serde_json::from_str(json).unwrap();
+            assert_eq!(url, None);
+
+            let json = r#"{"url":"https://github.com/token"}"#;
+            let Struct { url } = serde_json::from_str(json).unwrap();
+            assert_eq!(
+                url,
+                Some(Url::from_str("https://github.com/token").unwrap())
+            );
+        }
+    }
+}
