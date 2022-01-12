@@ -29,7 +29,7 @@ where
     D: Clone + Default + Send + 'static,
     Fut: Future<Output = DialogueStage<D>> + Send + 'static,
     R: Requester + Send + Clone + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     let cloned_requester = requester.clone();
 

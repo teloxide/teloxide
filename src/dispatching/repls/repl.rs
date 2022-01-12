@@ -28,7 +28,7 @@ where
     Result<(), E>: OnError<E>,
     E: Debug + Send,
     R: Requester + Send + Clone + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     let cloned_requester = requester.clone();
     repl_with_listener(

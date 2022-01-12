@@ -266,7 +266,7 @@ where
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
-        <R as Requester>::GetUpdatesFaultTolerant: Send,
+        <R as Requester>::GetUpdates: Send,
     {
         let listener = update_listeners::polling_default(self.requester.clone()).await;
         let error_handler =
@@ -455,6 +455,14 @@ where
                     chat_join_request,
                     "UpdateKind::ChatJoinRequest",
                 ),
+                UpdateKind::Error(err) => {
+                    log::error!(
+                        "Cannot parse an update.\nError: {:?}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                        err,
+                    );
+                }
             }
         }
     }
