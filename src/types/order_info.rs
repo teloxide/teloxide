@@ -5,17 +5,17 @@ use crate::types::ShippingAddress;
 /// This object represents information about an order.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#orderinfo).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
 pub struct OrderInfo {
     /// User's name.
-    pub name: String,
+    pub name: Option<String>,
 
     /// User's phone number.
-    pub phone_number: String,
+    pub phone_number: Option<String>,
 
     /// User's email.
-    pub email: String,
+    pub email: Option<String>,
 
     /// User's shipping address.
-    pub shipping_address: ShippingAddress,
+    pub shipping_address: Option<ShippingAddress>,
 }
