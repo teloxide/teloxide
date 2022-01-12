@@ -1,15 +1,13 @@
 use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
-    prelude::*,
+    prelude2::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText,
     },
     utils::command::BotCommand,
 };
-
-use tokio_stream::wrappers::UnboundedReceiverStream;
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -45,23 +43,24 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
 async fn message_handler(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    m: Message,
+    bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match cx.update.text() {
+    match m.text() {
         Some(text) => {
             match BotCommand::parse(text, "buttons") {
                 Ok(Command::Help) => {
                     // Just send the description of all commands.
-                    cx.answer(Command::descriptions()).await?;
+                    bot.send_message(m.chat.id, Command::descriptions()).await?;
                 }
                 Ok(Command::Start) => {
                     // Create a list of buttons and send them.
                     let keyboard = make_keyboard();
-                    cx.answer("Debian versions:").reply_markup(keyboard).await?;
+                    bot.send_message(m.chat.id, "Debian versions:").reply_markup(keyboard).await?;
                 }
 
                 Err(_) => {
-                    cx.reply_to("Command not found!").await?;
+                    bot.send_message(m.chat.id, "Command not found!").await?;
                 }
             }
         }
@@ -72,10 +71,9 @@ async fn message_handler(
 }
 
 async fn inline_query_handler(
-    cx: UpdateWithCx<AutoSend<Bot>, InlineQuery>,
+    q: InlineQuery,
+    bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let UpdateWithCx { requester: bot, update: query } = cx;
-
     let choose_debian_version = InlineQueryResultArticle::new(
         "0",
         "Chose debian version",
@@ -83,28 +81,30 @@ async fn inline_query_handler(
     )
     .reply_markup(make_keyboard());
 
-    bot.answer_inline_query(query.id, vec![choose_debian_version.into()]).await?;
+    bot.answer_inline_query(q.id, vec![choose_debian_version.into()]).await?;
 
     Ok(())
 }
 
 /// When it receives a callback from a button it edits the message with all
 /// those buttons writing a text with the selected Debian version.
+///
+/// **IMPORTANT**: do not send privacy-sensitive data this way!!!
+/// Any can read data stored in the callback button.
 async fn callback_handler(
-    cx: UpdateWithCx<AutoSend<Bot>, CallbackQuery>,
+    q: CallbackQuery,
+    bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let UpdateWithCx { requester: bot, update: query } = cx;
-
-    if let Some(version) = query.data {
+    if let Some(version) = q.data {
         let text = format!("You chose: {}", version);
 
-        match query.message {
+        match q.message {
             Some(Message { id, chat, .. }) => {
                 bot.edit_message_text(chat.id, id, text).await?;
             }
             None => {
-                if let Some(id) = query.inline_message_id {
-                    bot.edit_message_text_inline(dbg!(id), text).await?;
+                if let Some(id) = q.inline_message_id {
+                    bot.edit_message_text_inline(id, text).await?;
                 }
             }
         }
@@ -123,21 +123,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let bot = Bot::from_env().auto_send();
 
     Dispatcher::new(bot)
-        .messages_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, Message>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
-                message_handler(cx).await.log_on_error().await;
-            })
-        })
-        .callback_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, CallbackQuery>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
-                callback_handler(cx).await.log_on_error().await;
-            })
-        })
-        .inline_queries_handler(|rx: DispatcherHandlerRx<AutoSend<Bot>, InlineQuery>| {
-            UnboundedReceiverStream::new(rx).for_each_concurrent(None, |cx| async move {
-                inline_query_handler(cx).await.log_on_error().await;
-            })
-        })
+        .messages_handler(|h| h.branch(dptree::endpoint(message_handler)))
+        .callback_queries_handler(|h| h.branch(dptree::endpoint(callback_handler)))
+        .inline_queries_handler(|h| h.branch(dptree::endpoint(inline_query_handler)))
         .dispatch()
         .await;
 
