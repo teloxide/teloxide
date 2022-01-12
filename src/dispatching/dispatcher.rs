@@ -20,8 +20,9 @@ use futures::{stream::FuturesUnordered, Future, StreamExt};
 use teloxide_core::{
     requests::Requester,
     types::{
-        AllowedUpdate, CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
-        Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
+        AllowedUpdate, CallbackQuery, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult,
+        InlineQuery, Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update,
+        UpdateKind,
     },
 };
 use tokio::{
@@ -52,6 +53,7 @@ pub struct Dispatcher<R> {
     poll_answers_queue: Tx<R, PollAnswer>,
     my_chat_members_queue: Tx<R, ChatMemberUpdated>,
     chat_members_queue: Tx<R, ChatMemberUpdated>,
+    chat_join_requests_queue: Tx<R, ChatJoinRequest>,
 
     running_handlers: FuturesUnordered<JoinHandle<()>>,
 
@@ -81,6 +83,7 @@ where
             poll_answers_queue: None,
             my_chat_members_queue: None,
             chat_members_queue: None,
+            chat_join_requests_queue: None,
             running_handlers: FuturesUnordered::new(),
             state: <_>::default(),
             shutdown_notify_back: <_>::default(),
@@ -263,7 +266,7 @@ where
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
-        <R as Requester>::GetUpdatesFaultTolerant: Send,
+        <R as Requester>::GetUpdates: Send,
     {
         let listener = update_listeners::polling_default(self.requester.clone()).await;
         let error_handler =
@@ -446,6 +449,20 @@ where
                     chat_member_updated,
                     "UpdateKind::MyChatMember",
                 ),
+                UpdateKind::ChatJoinRequest(chat_join_request) => send(
+                    &self.requester,
+                    &self.chat_join_requests_queue,
+                    chat_join_request,
+                    "UpdateKind::ChatJoinRequest",
+                ),
+                UpdateKind::Error(err) => {
+                    log::error!(
+                        "Cannot parse an update.\nError: {:?}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                        err,
+                    );
+                }
             }
         }
     }

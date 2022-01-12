@@ -44,8 +44,8 @@ async fn run() {
                     ))),
                 )
                 .description("DuckDuckGo Search")
-                .thumb_url("https://duckduckgo.com/assets/logo_header.v108.png")
-                .url("https://duckduckgo.com/about"); // Note: This is the url that will open if they click the thumbnail
+                .thumb_url("https://duckduckgo.com/assets/logo_header.v108.png".parse().unwrap())
+                .url("https://duckduckgo.com/about".parse().unwrap()); // Note: This is the url that will open if they click the thumbnail
 
                 let results = vec![
                     InlineQueryResult::Article(google_search),

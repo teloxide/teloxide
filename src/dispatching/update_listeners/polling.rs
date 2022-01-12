@@ -10,9 +10,9 @@ use crate::{
         stop_token::{AsyncStopFlag, AsyncStopToken},
         update_listeners::{stateful_listener::StatefulListener, UpdateListener},
     },
-    payloads::GetUpdates,
+    payloads::{GetUpdates, GetUpdatesSetters as _},
     requests::{HasPayload, Request, Requester},
-    types::{AllowedUpdate, SemiparsedVec, Update},
+    types::{AllowedUpdate, Update},
 };
 
 /// Returns a long polling update listener with `timeout` of 10 seconds.
@@ -25,7 +25,7 @@ use crate::{
 pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
     R: Requester + Send + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     delete_webhook_if_setup(&requester).await;
     polling(requester, Some(Duration::from_secs(10)), None, None)
@@ -51,7 +51,7 @@ pub fn polling<R>(
 ) -> impl UpdateListener<R::Err>
 where
     R: Requester + Send + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     struct State<B: Requester> {
         bot: B,
@@ -66,20 +66,14 @@ where
     fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + Send + '_
     where
         B: Requester + Send,
-        <B as Requester>::GetUpdatesFaultTolerant: Send,
+        <B as Requester>::GetUpdates: Send,
     {
         stream::unfold(st, move |state| async move {
             let State { timeout, limit, allowed_updates, bot, offset, flag, .. } = &mut *state;
 
             if flag.is_stopped() {
-                let mut req = bot.get_updates_fault_tolerant();
-
-                req.payload_mut().0 = GetUpdates {
-                    offset: Some(*offset),
-                    timeout: Some(0),
-                    limit: Some(1),
-                    allowed_updates: allowed_updates.take(),
-                };
+                let mut req = bot.get_updates().offset(*offset).timeout(0).limit(1);
+                req.payload_mut().allowed_updates = allowed_updates.take();
 
                 return match req.send().await {
                     Ok(_) => None,
@@ -87,48 +81,26 @@ where
                 };
             }
 
-            let mut req = bot.get_updates_fault_tolerant();
-            req.payload_mut().0 = GetUpdates {
+            let mut req = bot.get_updates();
+            *req.payload_mut() = GetUpdates {
                 offset: Some(*offset),
                 timeout: *timeout,
                 limit: *limit,
                 allowed_updates: allowed_updates.take(),
             };
 
-            let updates = match req.send().await {
-                Err(err) => return Some((Either::Left(stream::once(ready(Err(err)))), state)),
-                Ok(SemiparsedVec(updates)) => {
+            match req.send().await {
+                Ok(updates) => {
                     // Set offset to the last update's id + 1
                     if let Some(upd) = updates.last() {
-                        let id: i32 = match upd {
-                            Ok(ok) => ok.id,
-                            Err((value, _)) => value["update_id"]
-                                .as_i64()
-                                .expect("The 'update_id' field must always exist in Update")
-                                .try_into()
-                                .expect("update_id must be i32"),
-                        };
-
-                        *offset = id + 1;
+                        *offset = upd.id + 1;
                     }
 
-                    for update in &updates {
-                        if let Err((value, e)) = update {
-                            log::error!(
-                                "Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                            This is a bug in teloxide-core, please open an issue here: \
-                            https://github.com/teloxide/teloxide-core/issues.",
-                                e,
-                                value
-                            );
-                        }
-                    }
-
-                    updates.into_iter().filter_map(Result::ok).map(Ok)
+                    let updates = updates.into_iter().map(Ok);
+                    Some((Either::Right(stream::iter(updates)), state))
                 }
-            };
-
-            Some((Either::Right(stream::iter(updates)), state))
+                Err(err) => Some((Either::Left(stream::once(ready(Err(err)))), state)),
+            }
         })
         .flatten()
     }
@@ -170,7 +142,7 @@ where
         }
     };
 
-    let is_webhook_setup = !webhook_info.url.is_empty();
+    let is_webhook_setup = webhook_info.url.is_some();
 
     if is_webhook_setup {
         if let Err(e) = requester.delete_webhook().send().await {

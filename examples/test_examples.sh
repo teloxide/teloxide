@@ -1,9 +1,9 @@
-﻿##!/bin/sh
+#!/bin/sh
 
 for example in */; do
 	echo Testing $example...
 	cd $example
-	cargo check &
+	cargo check
 	cd ..
 done
 
