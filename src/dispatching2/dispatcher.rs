@@ -325,7 +325,7 @@ where
     ) -> Self {
         self.allowed_updates.insert(AllowedUpdate::CallbackQuery);
 
-        let parser = make_parser!(EditedMessage);
+        let parser = make_parser!(CallbackQuery);
         let handler = make_handler(parser);
         self.handler(handler)
     }
