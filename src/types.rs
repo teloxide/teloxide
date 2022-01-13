@@ -329,7 +329,7 @@ pub(crate) mod option_url_from_string {
             assert_eq!(url.url, None);
             assert_eq!(
                 serde_json::to_string(&url).unwrap(),
-                r#"{"url":""}"#.to_string()
+                json.to_owned()
             );
 
             let json = r#"{"url":"https://github.com/token"}"#;
@@ -340,7 +340,7 @@ pub(crate) mod option_url_from_string {
             );
             assert_eq!(
                 serde_json::to_string(&url).unwrap(),
-                r#"{"url":"https://github.com/token"}"#.to_string()
+                json.to_owned()
             );
         }
     }
