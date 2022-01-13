@@ -207,7 +207,7 @@ impl InputFile {
     pub(crate) fn into_part(mut self) -> Option<impl Future<Output = Part>> {
         let filename = self.take_or_guess_filename();
 
-        let file_part = match self.inner {
+        match self.inner {
             // Url and FileId are serialized just as strings, they don't need additional parts
             Url(_) | FileId(_) => None,
 
@@ -236,9 +236,7 @@ impl InputFile {
                 Some(Either::Right(Either::Left(ready(stream))))
             }
             Read(read) => Some(Either::Right(Either::Right(read.into_part(filename)))),
-        };
-
-        file_part
+        }
     }
 }
 
