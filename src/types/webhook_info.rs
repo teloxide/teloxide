@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct WebhookInfo {
     /// Webhook URL, `None` if webhook is not set up.
+    #[serde(with = "crate::types::option_url_from_string")]
     pub url: Option<reqwest::Url>,
 
     /// `true`, if a custom certificate was provided for webhook certificate
