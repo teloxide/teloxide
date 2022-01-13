@@ -9,14 +9,17 @@ pub enum InputSticker {
     /// dimensions must not exceed 512px, and either width or height must be
     /// exactly 512px.
     ///
-    /// Pass [`InputFile::File`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::Url`] for
+    /// Pass [`InputFile::file_id`] to send a file that exists on
+    /// the Telegram servers (recommended), pass an [`InputFile::url`] for
     /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::FileId`]. [More info on Sending Files »].
+    /// using [`InputFile::file`], [`InputFile::memory`] or [`InputFile::read`].
+    /// [More info on Sending Files »].
     ///
-    /// [`InputFile::File`]: crate::types::InputFile::File
-    /// [`InputFile::Url`]: crate::types::InputFile::Url
-    /// [`InputFile::FileId`]: crate::types::InputFile::FileId
+    /// [`InputFile::file_id`]: InputFile::file_id
+    /// [`InputFile::url`]: InputFile::url
+    /// [`InputFile::file`]: InputFile::file
+    /// [`InputFile::memory`]: InputFile::memory
+    /// [`InputFile::read`]: InputFile::read
     ///
     /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     #[serde(rename = "png_sticker")]
