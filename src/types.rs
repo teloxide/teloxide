@@ -327,10 +327,7 @@ pub(crate) mod option_url_from_string {
             let json = r#"{"url":""}"#;
             let url: Struct = serde_json::from_str(json).unwrap();
             assert_eq!(url.url, None);
-            assert_eq!(
-                serde_json::to_string(&url).unwrap(),
-                json.to_owned()
-            );
+            assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
 
             let json = r#"{"url":"https://github.com/token"}"#;
             let url: Struct = serde_json::from_str(json).unwrap();
@@ -338,10 +335,7 @@ pub(crate) mod option_url_from_string {
                 url.url,
                 Some(Url::from_str("https://github.com/token").unwrap())
             );
-            assert_eq!(
-                serde_json::to_string(&url).unwrap(),
-                json.to_owned()
-            );
+            assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
         }
     }
 }
