@@ -233,7 +233,7 @@ impl Bot {
 
     pub(crate) fn execute_multipart<P>(
         &self,
-        payload: &P,
+        payload: &mut P,
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
         P: MultipartPayload + Serialize,
@@ -247,7 +247,35 @@ impl Bot {
 
         // async move to capture client&token&api_url&params
         async move {
-            let params = params.await?;
+            let params = params?.await;
+            net::request_multipart(
+                &client,
+                token.as_ref(),
+                reqwest::Url::clone(&*api_url),
+                P::NAME,
+                params,
+            )
+            .await
+        }
+    }
+
+    pub(crate) fn execute_multipart_ref<P>(
+        &self,
+        payload: &P,
+    ) -> impl Future<Output = ResponseResult<P::Output>>
+    where
+        P: MultipartPayload + Serialize,
+        P::Output: DeserializeOwned,
+    {
+        let client = self.client.clone();
+        let token = Arc::clone(&self.token);
+        let api_url = self.api_url.clone();
+
+        let params = serde_multipart::to_form_ref(payload);
+
+        // async move to capture client&token&api_url&params
+        async move {
+            let params = params?.await;
             net::request_multipart(
                 &client,
                 token.as_ref(),

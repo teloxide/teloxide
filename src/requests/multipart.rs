@@ -90,7 +90,7 @@ where
 
 req_future! {
     def: |it: MultipartRequest<U>| {
-        it.bot.execute_multipart(&it.payload)
+        it.bot.execute_multipart(&mut {it.payload})
     }
     pub Send<U> (inner0) -> ResponseResult<U::Output>
     where
@@ -101,7 +101,7 @@ req_future! {
 
 req_future! {
     def: |it: &MultipartRequest<U>| {
-        it.bot.execute_multipart(&it.payload)
+        it.bot.execute_multipart_ref(&it.payload)
     }
     pub SendRef<U> (inner1) -> ResponseResult<U::Output>
     where
