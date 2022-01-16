@@ -31,6 +31,18 @@ pub struct Dispatcher<R, Err> {
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible>;
 
+macro_rules! define_handlers {
+    ($( ($func:ident, $update:ident) ,)*) => {
+        $(
+            #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
+            pub fn $func(mut self, make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>) -> Self {
+                self.allowed_updates.insert(AllowedUpdate::$update);
+                self.handler(make_handler(make_parser!($update)))
+            }
+        )*
+    }
+}
+
 macro_rules! make_parser {
     ($kind:ident) => {
         dptree::filter_map(|upd: Update| async move {
@@ -274,159 +286,19 @@ where
         Dispatcher { dependencies, ..self }
     }
 
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn messages_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::Message);
-
-        let parser = make_parser!(Message);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn edited_messages_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::EditedMessage);
-
-        let parser = make_parser!(EditedMessage);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn channel_posts_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::ChannelPost);
-
-        let parser = make_parser!(ChannelPost);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn edited_channel_posts_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::EditedChannelPost);
-
-        let parser = make_parser!(EditedChannelPost);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn inline_queries_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::InlineQuery);
-
-        let parser = make_parser!(InlineQuery);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn chosen_inline_results_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::ChosenInlineResult);
-
-        let parser = make_parser!(ChosenInlineResult);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn callback_queries_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::CallbackQuery);
-
-        let parser = make_parser!(CallbackQuery);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn shipping_queries_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::ShippingQuery);
-
-        let parser = make_parser!(ShippingQuery);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn pre_checkout_queries_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::PreCheckoutQuery);
-
-        let parser = make_parser!(PreCheckoutQuery);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn polls_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::Poll);
-
-        let parser = make_parser!(Poll);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn poll_answers_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::PollAnswer);
-
-        let parser = make_parser!(PollAnswer);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn my_chat_members_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::MyChatMember);
-
-        let parser = make_parser!(MyChatMember);
-        let handler = make_handler(parser);
-        self.handler(handler)
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn chat_members_handler(
-        mut self,
-        make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>,
-    ) -> Self {
-        self.allowed_updates.insert(AllowedUpdate::ChatMember);
-
-        let parser = make_parser!(ChatMember);
-        let handler = make_handler(parser);
-        self.handler(handler)
+    define_handlers! {
+        (messages_handler, Message),
+        (edited_messages_handler, EditedMessage),
+        (channel_posts_handler, ChannelPost),
+        (edited_channel_posts_handler, EditedChannelPost),
+        (inline_queries_handler, InlineQuery),
+        (chosen_inline_results_handler, ChosenInlineResult),
+        (callback_queries_handler, CallbackQuery),
+        (shipping_queries_handler, ShippingQuery),
+        (pre_checkout_queries_handler, PreCheckoutQuery),
+        (polls_handler, Poll),
+        (poll_answers_handler, PollAnswer),
+        (my_chat_members_handler, MyChatMember),
+        (chat_members_handler, ChatMember),
     }
 }
