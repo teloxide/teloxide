@@ -37,7 +37,7 @@ macro_rules! define_handlers {
             #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
             pub fn $func(mut self, make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>) -> Self {
                 self.allowed_updates.insert(AllowedUpdate::$update);
-                self.handler(make_handler(make_parser!($update)))
+                Dispatcher { handler: self.handler.branch(make_handler(make_parser!($update))), ..self }
             }
         )*
     }
@@ -261,11 +261,6 @@ where
             }
             Err(err) => err_handler.clone().handle_error(err).await,
         }
-    }
-
-    #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-    pub fn handler(self, handler: UpdateHandler<Err>) -> Self {
-        Dispatcher { handler: self.handler.branch(handler), ..self }
     }
 
     #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
