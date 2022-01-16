@@ -3,7 +3,7 @@ use crate::{
         shutdown_check_timeout_for, shutdown_inner, stop_token::StopToken, update_listeners,
         update_listeners::UpdateListener, DispatcherState, ShutdownToken,
     },
-    error_handlers::{ErrorHandler, IgnoringErrorHandler, LoggingErrorHandler},
+    error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::Requester,
     types::{AllowedUpdate, Update, UpdateKind},
 };
@@ -71,22 +71,6 @@ where
                 log::warn!("Unhandled update: {:?}", update)
             }),
             error_handler: LoggingErrorHandler::new(),
-            allowed_updates: Default::default(),
-            state: Arc::new(Default::default()),
-            shutdown_notify_back: Arc::new(Default::default()),
-        }
-    }
-
-    /// Create empty dispatcher without error handler.
-    pub fn without_error_handler(requester: R) -> Self {
-        Dispatcher {
-            requester,
-            dependencies: DependencyMap::new(),
-            handler: dptree::entry(),
-            default_handler: dptree::endpoint(|update: Update| async move {
-                log::warn!("Unhandled update: {:?}", update)
-            }),
-            error_handler: IgnoringErrorHandler::new(),
             allowed_updates: Default::default(),
             state: Arc::new(Default::default()),
             shutdown_notify_back: Arc::new(Default::default()),
