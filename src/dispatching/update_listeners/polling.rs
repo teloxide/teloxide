@@ -61,6 +61,7 @@ where
         offset: i32,
         flag: AsyncStopFlag,
         token: AsyncStopToken,
+        force_stop: bool,
     }
 
     fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + Send + '_
@@ -69,7 +70,12 @@ where
         <B as Requester>::GetUpdates: Send,
     {
         stream::unfold(st, move |state| async move {
-            let State { timeout, limit, allowed_updates, bot, offset, flag, .. } = &mut *state;
+            let State { timeout, limit, allowed_updates, bot, offset, flag, force_stop, .. } =
+                &mut *state;
+
+            if *force_stop {
+                return None;
+            }
 
             if flag.is_stopped() {
                 let mut req = bot.get_updates().offset(*offset).timeout(0).limit(1);
@@ -77,7 +83,12 @@ where
 
                 return match req.send().await {
                     Ok(_) => None,
-                    Err(err) => Some((Either::Left(stream::once(ready(Err(err)))), state)),
+                    Err(err) => {
+                        // Prevents infinite retries, see https://github.com/teloxide/teloxide/issues/496
+                        *force_stop = true;
+
+                        Some((Either::Left(stream::once(ready(Err(err)))), state))
+                    }
                 };
             }
 
@@ -115,6 +126,7 @@ where
         offset: 0,
         flag,
         token,
+        force_stop: false,
     };
 
     let stop_token = |st: &mut State<_>| st.token.clone();
