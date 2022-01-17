@@ -22,7 +22,7 @@ exclude = [
 
 [dependencies]
 futures = "0.3.5"
-tokio = { version = "1.8.0", features = ["fs"] }
+tokio = { version = "1.12.0", features = ["fs"] }
 tokio-util = "0.6.0"
 pin-project = "1.0.3"
 bytes = "1.0.0"
@@ -66,7 +66,7 @@ native-tls = ["reqwest/native-tls"]
 nightly = []
 
 # Throttling bot adaptor
-throttle = ["vecrem"]
+throttle = ["vecrem", "tokio/macros"]
 
 # Trace bot adaptor
 trace_adaptor = []
