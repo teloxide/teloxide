@@ -204,6 +204,7 @@ pub use teloxide_macros::BotCommand;
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
 /// [`BotCommand`]: crate::utils::command::BotCommand
 pub trait BotCommand: Sized {
+    fn bot_commands() -> Vec<teloxide_core::types::BotCommand>;
     fn descriptions() -> String;
     fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
     where

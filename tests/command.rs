@@ -196,3 +196,26 @@ fn descriptions_off() {
 
     assert_eq!(DefaultCommands::descriptions(), "/help\n".to_owned());
 }
+
+#[test]
+#[cfg(feature = "macros")]
+fn bot_commands() {
+    #[derive(BotCommand, Debug, PartialEq)]
+    #[command(rename = "lowercase")]
+    enum DefaultCommands {
+        #[command(description = "off")]
+        Start,
+        #[command(description = "stops it all")]
+        Stop,
+        Help,
+    }
+
+    {
+        use teloxide::types::BotCommand;
+
+        assert_eq!(
+            DefaultCommands::bot_commands(),
+            vec![BotCommand::new("/stop", "stops it all"), BotCommand::new("/help", "")]
+        );
+    }
+}
