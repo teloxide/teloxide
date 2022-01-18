@@ -57,7 +57,8 @@ full = [
 [dependencies]
 #teloxide-core = { version = "0.3.3", default-features = false }
 teloxide-core = { git = "https://github.com/teloxide/teloxide-core.git", rev = "3ccb8f0", default-features = false }
-teloxide-macros = { version = "0.4", optional = true }
+#teloxide-macros = { version = "0.4", optional = true }
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros.git", rev = "75e0577", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
