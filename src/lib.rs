@@ -192,7 +192,7 @@ macro_rules! get_or_return {
         match $($some)* {
             Ok(elem) => elem,
             Err(e) => return e
-        };
+        }
     }
 }
 
@@ -257,15 +257,38 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
 
     let fn_descriptions = impl_descriptions(&variant_infos, &command_enum);
     let fn_parse = impl_parse(&variant_infos, &command_enum, &vec_impl_create);
+    let fn_commands = impl_commands(&variant_infos, &command_enum);
 
     let trait_impl = quote! {
         impl BotCommand for #ident {
             #fn_descriptions
             #fn_parse
+            #fn_commands
         }
     };
 
     TokenStream::from(trait_impl)
+}
+
+fn impl_commands(
+    infos: &[Command],
+    global: &CommandEnum,
+) -> quote::__private::TokenStream {
+    let commands_to_list = infos.iter().filter_map(|command| {
+        if command.description == Some("off".into()) {
+            None
+        } else {
+            let c = command.get_matched_value(global);
+            let d = command.description.as_deref().unwrap_or_default();
+            Some(quote! { BotCommand::new(#c,#d) })
+        }
+    });
+    quote! {
+        fn bot_commands() -> Vec<teloxide::types::BotCommand> {
+            use teloxide::types::BotCommand;
+            vec![#(#commands_to_list),*]
+        }
+    }
 }
 
 fn impl_descriptions(
