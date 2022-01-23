@@ -264,20 +264,4 @@ where
     pub fn dependencies(self, dependencies: DependencyMap) -> Self {
         Dispatcher { dependencies, ..self }
     }
-
-    define_handlers! {
-        (messages_handler, Message),
-        (edited_messages_handler, EditedMessage),
-        (channel_posts_handler, ChannelPost),
-        (edited_channel_posts_handler, EditedChannelPost),
-        (inline_queries_handler, InlineQuery),
-        (chosen_inline_results_handler, ChosenInlineResult),
-        (callback_queries_handler, CallbackQuery),
-        (shipping_queries_handler, ShippingQuery),
-        (pre_checkout_queries_handler, PreCheckoutQuery),
-        (polls_handler, Poll),
-        (poll_answers_handler, PollAnswer),
-        (my_chat_members_handler, MyChatMember),
-        (chat_members_handler, ChatMember),
-    }
 }
