@@ -1,41 +1,27 @@
 use dptree::{di::DependencyMap, Handler};
-use futures::Future;
-use std::sync::Arc;
-use teloxide_core::{types, types::Message};
+use teloxide_core::types::Message;
 
 macro_rules! define_ext {
     ($ext_name:ident, $for_ty:ty => $( ($func:ident, $arg_ty:ty, $get_func:expr) ,)*) => {
         pub trait $ext_name<Out> {
-            $( define_ext!(@filter_sign $func, $arg_ty); )*
+            $( define_ext!(@sig $func, $arg_ty); )*
         }
+
         impl<Out> $ext_name<Out> for $for_ty
         where
             Out: Send + Sync + 'static,
         {
-            $( define_ext!(@filter_impl $for_ty, $func, $arg_ty, $get_func); )*
+            $( define_ext!(@impl $for_ty, $func, $arg_ty, $get_func); )*
         }
     };
-    (@filter_sign $func:ident, $arg_ty:ty) => {
-        fn $func<F, Fut>(f: F) -> Handler<'static, DependencyMap, Out>
-        where
-            F: Fn(&$arg_ty) -> Fut + Send + Sync + 'static,
-            Fut: Future<Output = bool> + Send,
-        ;
+    (@sig $func:ident, $arg_ty:ty) => {
+        fn $func<F, Fut>() -> Handler<'static, DependencyMap, Out>;
     };
-    (@filter_impl $for_ty:ty, $func:ident, $arg_ty:ty, $get_func:expr) => {
-        fn $func<F, Fut>(f: F) -> Handler<'static, DependencyMap, Out> where
-            F: Fn(&$arg_ty) -> Fut + Send + Sync + 'static,
-            Fut: Future<Output = bool> + Send,
-        {
-            let filter = Arc::new(f);
-            dptree::filter(move |mes: $for_ty| {
-                let filter = filter.clone();
-                async move {
-                    match $get_func(&mes) {
-                        Some(user) => filter(user).await,
-                        None => false,
-                    }
-                }
+    (@impl $for_ty:ty, $func:ident, $arg_ty:ty, $get_func:expr) => {
+        fn $func<F, Fut>() -> Handler<'static, DependencyMap, Out> {
+            dptree::filter_map(move |msg: $for_ty| {
+                let result = $get_func(&msg).map(ToOwned::to_owned);
+                async move { result }
             })
         }
     };
