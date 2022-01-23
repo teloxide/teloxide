@@ -1,7 +1,8 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::{handler_ext::HandlerExt, Dispatcher},
+    dispatching2::{Dispatcher, HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
+    types::Update,
     utils::command::BotCommand,
 };
 use dptree::di::{DependencyMap, Injectable};
@@ -75,8 +76,10 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
 {
     let bot_name = bot_name.into();
 
-    let dispatcher = Dispatcher::new(requester)
-        .messages_handler(|h| h.add_command::<Cmd>(bot_name).branch(dptree::endpoint(handler)));
+    let dispatcher = Dispatcher::new(
+        requester,
+        Update::filter_message().add_command::<Cmd>(bot_name).branch(dptree::endpoint(handler)),
+    );
 
     #[cfg(feature = "ctrlc_handler")]
     let dispatcher = dispatcher.setup_ctrlc_handler();

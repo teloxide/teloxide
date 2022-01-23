@@ -16,44 +16,49 @@ macro_rules! define_ext {
     };
 
     (@sig $func:ident, $arg_ty:ty) => {
-        fn $func<F, Fut>() -> Handler<'static, DependencyMap, Out>;
+        fn $func() -> Handler<'static, DependencyMap, Out>;
     };
 
     (@impl $for_ty:ty, $func:ident, $arg_ty:ty, $proj_fn:expr) => {
-        fn $func<F, Fut>() -> Handler<'static, DependencyMap, Out> {
+        fn $func() -> Handler<'static, DependencyMap, Out> {
             dptree::filter_map(move |input: $for_ty| {
-                let result = $proj_fn(&input).map(ToOwned::to_owned);
-                async move { result }
+                async move { $proj_fn(input) }
             })
         }
+    };
+}
+
+macro_rules! to_owned_fn {
+    ($fn_name:expr) => {
+        |x| $fn_name(&x).map(ToOwned::to_owned)
     };
 }
 
 // May be expanded in the future.
 define_ext! {
     MessageFilterExt, Message =>
-    (filter_from, types::User, Message::from),
-    (filter_animation, types::Animation, Message::animation),
-    (filter_audio, types::Audio, Message::audio),
-    (filter_contact, types::Contact, Message::contact),
-    (filter_document, types::Document, Message::document),
-    (filter_location, types::Location, Message::location),
-    (filter_photo, [types::PhotoSize], Message::photo),
-    (filter_poll, types::Poll, Message::poll),
-    (filter_sticker, types::Sticker, Message::sticker),
-    (filter_text, str, Message::text),
-    (filter_reply_to_message, Message, Message::reply_to_message),
-    (filter_forward_from, types::ForwardedFrom, Message::forward_from),
-    (filter_new_chat_members, [types::User], Message::new_chat_members),
-    (filter_left_chat_member, types::User, Message::left_chat_member),
-    (filter_pinned, Message, Message::pinned_message),
-    (filter_dice, types::Dice, Message::dice),
+    (filter_from, types::User, to_owned_fn![Message::from]),
+    (filter_animation, types::Animation, to_owned_fn![Message::animation]),
+    (filter_audio, types::Audio, to_owned_fn![Message::audio]),
+    (filter_contact, types::Contact, to_owned_fn![Message::contact]),
+    (filter_document, types::Document, to_owned_fn![Message::document]),
+    (filter_location, types::Location, to_owned_fn![Message::location]),
+    (filter_photo, [types::PhotoSize], to_owned_fn![Message::photo]),
+    (filter_poll, types::Poll, to_owned_fn![Message::poll]),
+    (filter_sticker, types::Sticker, to_owned_fn![Message::sticker]),
+    (filter_text, str, to_owned_fn![Message::text]),
+    (filter_reply_to_message, Message, to_owned_fn![Message::reply_to_message]),
+    (filter_forward_from, types::ForwardedFrom, to_owned_fn![Message::forward_from]),
+    (filter_new_chat_members, [types::User], to_owned_fn![Message::new_chat_members]),
+    (filter_left_chat_member, types::User, to_owned_fn![Message::left_chat_member]),
+    (filter_pinned, Message, to_owned_fn![Message::pinned_message]),
+    (filter_dice, types::Dice, to_owned_fn![Message::dice]),
 }
 
 macro_rules! kind {
     ($kind:ident) => {
-        |update: &Update| match update.kind {
-            UpdateKind::$kind(x) => Some(&x),
+        |update: Update| match update.kind {
+            UpdateKind::$kind(x) => Some(x),
             _ => None,
         }
     };

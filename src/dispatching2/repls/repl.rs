@@ -1,7 +1,8 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::Dispatcher,
+    dispatching2::{Dispatcher, UpdateFilterExt},
     error_handlers::{LoggingErrorHandler, OnError},
+    types::Update,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::fmt::Debug;
@@ -63,7 +64,7 @@ pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
 {
     #[allow(unused_mut)]
     let mut dispatcher =
-        Dispatcher::new(requester).messages_handler(|h| h.branch(dptree::endpoint(handler)));
+        Dispatcher::new(requester, Update::filter_message().branch(dptree::endpoint(handler)));
 
     #[cfg(feature = "ctrlc_handler")]
     let mut dispatcher = dispatcher.setup_ctrlc_handler();

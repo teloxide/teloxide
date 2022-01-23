@@ -5,7 +5,7 @@ use crate::{
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::Requester,
-    types::{AllowedUpdate, Update, UpdateKind},
+    types::{AllowedUpdate, Update},
 };
 use dptree::di::DependencyMap;
 use futures::StreamExt;
@@ -31,42 +31,19 @@ pub struct Dispatcher<R, Err> {
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible>;
 
-macro_rules! define_handlers {
-    ($( ($func:ident, $update:ident) ,)*) => {
-        $(
-            #[must_use = "Call .dispatch() or .dispatch_with_listener() function to start dispatching."]
-            pub fn $func(mut self, make_handler: impl FnOnce(UpdateHandler<Err>) -> UpdateHandler<Err>) -> Self {
-                self.allowed_updates.insert(AllowedUpdate::$update);
-                Dispatcher { handler: self.handler.branch(make_handler(make_parser!($update))), ..self }
-            }
-        )*
-    }
-}
-
-macro_rules! make_parser {
-    ($kind:ident) => {
-        dptree::filter_map(|upd: Update| async move {
-            match upd.kind {
-                UpdateKind::$kind(u) => Some(u),
-                _ => None,
-            }
-        })
-    };
-}
-
 impl<R, Err> Dispatcher<R, Err>
 where
     R: Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
-    pub fn new(requester: R) -> Self
+    pub fn new(requester: R, handler: UpdateHandler<Err>) -> Self
     where
         Err: Debug,
     {
         Dispatcher {
             requester,
             dependencies: DependencyMap::new(),
-            handler: dptree::entry(),
+            handler,
             default_handler: dptree::endpoint(|update: Update| async move {
                 log::warn!("Unhandled update: {:?}", update)
             }),
