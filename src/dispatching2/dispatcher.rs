@@ -199,18 +199,14 @@ where
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
                 deps.insert(self.requester.clone());
+
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
                     ControlFlow::Break(Err(err)) => {
                         self.error_handler.clone().handle_error(err).await
                     }
                     ControlFlow::Continue(deps) => {
-                        match self
-                            .default_handler
-                            .clone()
-                            .execute(deps, |next| async move { match next {} })
-                            .await
-                        {
+                        match self.default_handler.clone().dispatch(deps).await {
                             ControlFlow::Break(()) => {}
                             ControlFlow::Continue(_) => unreachable!(
                                 "This is unreachable due to Infallible type in the DefaultHandler \
