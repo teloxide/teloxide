@@ -55,7 +55,8 @@ where
 /// [`default_reqwest_settings`]: teloxide::net::default_reqwest_settings
 /// [`repl`]: fn@crate::repl
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`hint_allowed_updates`]: crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
+/// [`hint_allowed_updates`]:
+/// crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
 ///
 /// ## How it works
 ///
