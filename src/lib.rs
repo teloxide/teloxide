@@ -44,8 +44,6 @@
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
     html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
 )]
-#![allow(clippy::match_bool)]
-#![forbid(unsafe_code)]
 // We pass "--cfg docsrs" when building docs to add `This is supported on
 // feature="..." only.`
 //
@@ -56,6 +54,9 @@
 // $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
+#![forbid(unsafe_code)]
+#![warn(rustdoc::broken_intra_doc_links)]
+#![allow(clippy::match_bool)]
 #![allow(clippy::redundant_pattern_matching)]
 // https://github.com/rust-lang/rust-clippy/issues/7422
 #![allow(clippy::nonstandard_macro_braces)]
