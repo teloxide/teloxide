@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Infinite retries while stopping polling listener ([issue 496](https://github.com/teloxide/teloxide/issues/496))
+- `polling{,_default}` and it's `Stream` and `StopToken` not being `Send` (and by extension fix the same problem with `repl`s)
 
 ## 0.5.3 - 2021-10-25
 
