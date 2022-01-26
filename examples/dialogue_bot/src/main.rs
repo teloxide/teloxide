@@ -60,11 +60,13 @@ async fn main() {
     let bot = Bot::from_env().auto_send();
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
-    Dispatcher::new(bot)
-        .dependencies(dptree::deps![storage])
-        .messages_handler(|h| h.add_dialogue::<Message, Store, State>().dispatch_by::<State>())
-        .dispatch()
-        .await;
+    Dispatcher::new(
+        bot,
+        dptree::entry().add_dialogue::<Message, Store, State>().dispatch_by::<State>(),
+    )
+    .dependencies(dptree::deps![storage])
+    .dispatch()
+    .await;
 }
 
 async fn handle_start(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {

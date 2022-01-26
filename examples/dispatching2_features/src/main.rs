@@ -24,84 +24,86 @@ async fn main() {
         maintainer_username: None,
     };
 
-    // Start create dispatcher.
-    Dispatcher::new(bot)
-        // You can specify dependencies to that you have access inside of handlers. It may be
-        // configs, connection to Database, or dialogue storage (see more in the dialogue_bot example).
-        // It is similar to the `actix_web::Extensions`.
-        .dependencies(dptree::deps![parameters])
-        // Now handlers don't use streams. Instead handler is special constructs from `dptree` library.
-        // Any `*_handler` accepts function `Fn(UpdateHandler) -> UpdateHandler` which is builder
-        // for the handlers. Note that you _must_ use it instead of using `dptree` methods forward.
-        .messages_handler(|handler| {
-            // Branch is a special method that allow you to handle update several ways.
-            handler
-                .branch(
-                    // Filter allow you to filter updates by some condition.
-                    dptree::filter(
-                        // Note that `async move` is obligatory.
-                        |mes: Message| async move { mes.chat.is_group() || mes.chat.is_supergroup() }
-                    )
-                        // Endpoint is a last message handler.
-                        .endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
-                            log::info!("Received message from the group chat.");
-                            bot.send_message(mes.chat.id, "This is a group chat.").await?;
-                            respond(())
-                        })
-                )
-                // Note that we cannot filter messages from public chats in the next branch,
-                // because they all is handled by previous branch.
-                .branch(
-                    // There are some `filter` functions on message, that filters events. This
-                    // filter will filter only messages with dices.
-                    Message::filter_dice(|_dice| async { true })
-                        .endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
-                            bot.send_message(mes.chat.id, "This is a dice!")
-                                .reply_to_message_id(mes.id)
-                                .await?;
+    let handler = Update::filter_message()
+        // Branch is a special method that allow you to handle update several ways.
+        .branch(
+            // Filter allow you to filter updates by some condition.
+            dptree::filter(
+                // Note that `async move` is obligatory.
+                |mes: Message| async move { mes.chat.is_group() || mes.chat.is_supergroup() },
+            )
+            // Endpoint is a last message handler.
+            .endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
+                log::info!("Received message from the group chat.");
+                bot.send_message(mes.chat.id, "This is a group chat.").await?;
+                respond(())
+            }),
+        )
+        // Note that we cannot filter messages from public chats in the next branch,
+        // because they all is handled by previous branch.
+        .branch(
+            // There are some `filter` functions on message, that filters events. This
+            // filter will filter only messages with dices.
+            Message::filter_dice().endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
+                bot.send_message(mes.chat.id, "This is a dice!")
+                    .reply_to_message_id(mes.id)
+                    .await?;
+                Ok(())
+            }),
+        )
+        .branch(
+            // If you do not like photos, you can break their handling like that.
+            Message::filter_photo().endpoint(|| async move { Ok(()) }),
+        )
+        .branch(
+            dptree::entry()
+                // This method allows to parse text messages commands.
+                .add_command::<SimpleCommand>(bot_username.clone())
+                // Next we can add `SimpleCommand` in the argument of endpoint. If
+                // command parsing fails, this endpoint will not be called.
+                .endpoint(simple_commands_handler),
+        )
+        .branch(
+            // Filter maintainer by used ID.
+            dptree::filter(|mes: Message, cfg: ConfigParameters| async move {
+                mes.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
+            })
+            .add_command::<MaintainerCommands>(bot_username.clone())
+            .endpoint(
+                |mes: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
+                    match cmd {
+                        MaintainerCommands::Rand { from, to } => {
+                            let mut rng = rand::rngs::OsRng::default();
+                            let value: u64 = rng.gen_range(from..=to);
+                            std::mem::drop(rng);
+
+                            bot.send_message(mes.chat.id, value.to_string()).await?;
+
                             Ok(())
-                        })
-                )
-                .branch(
-                    // If you do not like photos, you can break their handling like that.
-                    Message::filter_photo(|_photo| async { true })
-                        .endpoint(|| async move { Ok(()) })
-                )
-                .branch(
-                    dptree::entry()
-                        // This method allows to parse text messages commands.
-                        .add_command::<SimpleCommand>(bot_username.clone())
-                        // Next we can add `SimpleCommand` in the argument of endpoint. If
-                        // command parsing fails, this endpoint will not be called.
-                        .endpoint(simple_commands_handler)
-                )
-                .branch(
-                    // Filter maintainer by used ID.
-                    dptree::filter(|mes: Message, cfg: ConfigParameters| async move {
-                        mes.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
-                    })
-                        .add_command::<MaintainerCommands>(bot_username.clone())
-                        .endpoint(|mes: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
-                            match cmd {
-                                MaintainerCommands::Rand { from, to } => {
-                                    let mut rng = rand::rngs::OsRng::default();
-                                    let value: u64 = rng.gen_range(from..=to);
-                                    std::mem::drop(rng);
+                        }
+                    }
+                },
+            ),
+        );
 
-                                    bot.send_message(mes.chat.id, value.to_string()).await?;
-
-                                    Ok(())
-                                }
-                            }
-                        })
-                )
-        })
+    // Start create dispatcher.
+    Dispatcher::new(bot, handler)
+        // You can specify dependencies to that you have access inside of handlers. It may be
+        // configs, connection to Database, or dialogue storage (see more in the dialogue_bot
+        // example). It is similar to the `actix_web::Extensions`.
+        .dependencies(dptree::deps![parameters])
+        // Now handlers don't use streams. Instead handler is special constructs from `dptree`
+        // library. Any `*_handler` accepts function `Fn(UpdateHandler) -> UpdateHandler`
+        // which is builder for the handlers. Note that you _must_ use it instead of using
+        // `dptree` methods forward.
         .default_handler(dptree::endpoint(|upd: Update| async move {
             // This handler handles updates that do not handled by other handlers.
             log::warn!("Unhandled update: {:?}", upd);
         }))
         // If `Result::Err` returns from the dispatcher, it goes here.
-        .error_handler(LoggingErrorHandler::with_custom_text("Error has occurred in the dispatcher"))
+        .error_handler(LoggingErrorHandler::with_custom_text(
+            "Error has occurred in the dispatcher",
+        ))
         .dispatch()
         .await;
 }

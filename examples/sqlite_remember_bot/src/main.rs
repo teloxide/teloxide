@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use teloxide::{
     dispatching2::dialogue::{serializer::Json, SqliteStorage, Storage},
     prelude2::*,
@@ -77,11 +76,9 @@ async fn main() {
     let bot = Bot::from_env().auto_send();
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
-    Dispatcher::new(bot)
-        .dependencies(dptree::deps![storage])
-        .messages_handler(|h| {
-            h.add_dialogue::<Message, Store, BotDialogue>().branch(dptree::endpoint(handle_message))
-        })
-        .dispatch()
-        .await;
+    let handler = dptree::entry()
+        .add_dialogue::<Message, Store, BotDialogue>()
+        .branch(dptree::endpoint(handle_message));
+
+    Dispatcher::new(bot, handler).dependencies(dptree::deps![storage]).dispatch().await;
 }

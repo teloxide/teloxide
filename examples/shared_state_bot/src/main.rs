@@ -16,18 +16,14 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    Dispatcher::new(bot)
-        .messages_handler(|h| {
-            h.branch(dptree::endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
-                let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
-                bot.send_message(
-                    mes.chat.id,
-                    format!("I received {} messages in total.", previous),
-                )
+    let handler = Update::filter_message().branch(dptree::endpoint(
+        |mes: Message, bot: AutoSend<Bot>| async move {
+            let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
+            bot.send_message(mes.chat.id, format!("I received {} messages in total.", previous))
                 .await?;
-                respond(())
-            }))
-        })
-        .dispatch()
-        .await;
+            respond(())
+        },
+    ));
+
+    Dispatcher::new(bot, handler).dispatch().await;
 }

@@ -80,11 +80,9 @@ async fn main() {
     // or "serializer-bincode"
     let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
-    Dispatcher::new(bot)
-        .dependencies(dptree::deps![storage])
-        .messages_handler(|h| {
-            h.add_dialogue::<Message, Store, BotDialogue>().branch(dptree::endpoint(handle_message))
-        })
-        .dispatch()
-        .await;
+    let handler = dptree::entry()
+        .add_dialogue::<Message, Store, BotDialogue>()
+        .branch(dptree::endpoint(handle_message));
+
+    Dispatcher::new(bot, handler).dependencies(dptree::deps![storage]).dispatch().await;
 }

@@ -122,12 +122,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let bot = Bot::from_env().auto_send();
 
-    Dispatcher::new(bot)
-        .messages_handler(|h| h.branch(dptree::endpoint(message_handler)))
-        .callback_queries_handler(|h| h.branch(dptree::endpoint(callback_handler)))
-        .inline_queries_handler(|h| h.branch(dptree::endpoint(inline_query_handler)))
-        .dispatch()
-        .await;
+    let handler = dptree::entry()
+        .branch(Update::filter_message().endpoint(message_handler))
+        .branch(Update::filter_callback_query().endpoint(callback_handler))
+        .branch(Update::filter_inline_query().endpoint(inline_query_handler));
+
+    Dispatcher::new(bot, handler).dispatch().await;
 
     log::info!("Closing bot... Goodbye!");
 
