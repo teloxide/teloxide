@@ -31,20 +31,100 @@ where
     polling(requester, Some(Duration::from_secs(10)), None, None)
 }
 
-/// Returns a long/short polling update listener with some additional options.
+#[cfg_attr(doc, aquamarine::aquamarine)]
+/// Returns a long polling update listener with some additional options.
 ///
 /// - `bot`: Using this bot, the returned update listener will receive updates.
-/// - `timeout`: A timeout for polling.
+/// - `timeout`: A timeout in seconds for polling.
 /// - `limit`: Limits the number of updates to be retrieved at once. Values
 ///   between 1—100 are accepted.
 /// - `allowed_updates`: A list the types of updates you want to receive.
+///
 /// See [`GetUpdates`] for defaults.
 ///
 /// See also: [`polling_default`](polling_default).
 ///
-/// [`GetUpdates`]: crate::payloads::GetUpdates
+/// ## Notes
+///
+/// - `timeout` should not be bigger than http client timeout, see
+///   [`default_reqwest_settings`] for default http client settings.
+/// - [`repl`]s and [`Dispatcher`] use [`hint_allowed_updates`] to set
+///   `allowed_updates`, so you rarely need to pass `allowed_updates`
+///   explicitly.
+///
+/// [`default_reqwest_settings`]: teloxide::net::default_reqwest_settings
+/// [`repl`]: fn@crate::repl
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
+/// [`hint_allowed_updates`]:
+/// crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
+///
+/// ## How it works
+///
+/// Long polling works by repeatedly calling [`Bot::get_updates`][get_updates].
+/// If telegram has any updates, it returns them immediately, otherwise it waits
+/// until either it has any updates or `timeout` expires.
+///
+/// Each [`get_updates`][get_updates] call includes an `offset` parameter equal
+/// to the latest update id + one, that allows to only receive updates that has
+/// not been received before.
+///
+/// When telegram receives a [`get_updates`][get_updates] request with `offset =
+/// N` it forgets any updates with id < `N`. When `polling` listener is stopped,
+/// it sends [`get_updates`][get_updates] with `timeout = 0, limit = 1` and
+/// appropriate `offset`, so future bot restarts won't see updates that were
+/// already seen.
+///
+/// Consumers of a `polling` update listener then need to repeatedly call
+/// [`futures::StreamExt::next`] to get the updates.
+///
+/// Here is an example diagram that shows these interactions between consumers
+/// like [`Dispatcher`], `polling` update listener and telegram.
+///
+/// ```mermaid
+/// sequenceDiagram    
+///     participant C as Consumer
+///     participant P as polling
+///     participant T as Telegram
+///
+///     link C: Dispatcher @ ../struct.Dispatcher.html
+///     link C: repl @ ../../fn.repl.html
+///     
+///     C->>P: next
+///
+///     P->>+T: Updates? (offset = 0)
+///     Note right of T: timeout
+///     T->>-P: None
+///     
+///     P->>+T: Updates? (offset = 0)
+///     Note right of T: <= timeout
+///     T->>-P: updates with ids [3, 4]
+///
+///     P->>C: update(3)
+///
+///     C->>P: next
+///     P->>C: update(4)
+///     
+///     C->>P: next
+///
+///     P->>+T: Updates? (offset = 5)    
+///     Note right of T: <= timeout
+///     T->>-P: updates with ids [5]
+///
+///     C->>P: stop signal
+///
+///     P->>C: update(5)
+///
+///     C->>P: next
+///
+///     P->>T: *Acknolegment of update(5)*
+///     T->>P: ok
+///
+///     P->>C: None
+/// ```
+///
+/// [get_updates]: crate::requests::Requester::get_updates
 pub fn polling<R>(
-    requester: R,
+    bot: R,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
@@ -119,7 +199,7 @@ where
     let (token, flag) = AsyncStopToken::new_pair();
 
     let state = State {
-        bot: requester,
+        bot,
         timeout: timeout.map(|t| t.as_secs().try_into().expect("timeout is too big")),
         limit,
         allowed_updates,
