@@ -1,7 +1,6 @@
 use teloxide::{prelude2::*, utils::command::BotCommand};
 
 use std::error::Error;
-use teloxide::types::Me;
 
 #[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -43,8 +42,5 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let Me { user: bot_user, .. } = bot.get_me().await.unwrap();
-    let bot_name = bot_user.username.expect("Bots must have usernames");
-
-    teloxide::repls2::commands_repl(bot, bot_name, answer, Command::ty()).await;
+    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
 }
