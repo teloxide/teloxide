@@ -12,7 +12,7 @@ license = "MIT"
 exclude = ["media"]
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "dispatching2"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "cache-me", "dispatching2"]
 
 dispatching2 = ["dptree"]
 

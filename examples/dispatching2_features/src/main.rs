@@ -5,10 +5,7 @@ use rand::Rng;
 /// Note that you need to import `prelude2` because `prelude` contains
 /// items from the old dispatching system (it may change in future versions).
 use teloxide::prelude2::*;
-use teloxide::{
-    types::{Me, Update},
-    utils::command::BotCommand,
-};
+use teloxide::{types::Update, utils::command::BotCommand};
 
 #[tokio::main]
 async fn main() {
@@ -16,8 +13,6 @@ async fn main() {
     teloxide::enable_logging!();
     log::info!("Starting dispatching2_features_bot...");
     let bot = Bot::from_env().auto_send();
-    let Me { user, .. } = bot.get_me().await.unwrap();
-    let bot_username = user.username.unwrap();
 
     let parameters = ConfigParameters {
         bot_maintainer: 268486177, // Paste your ID if you run this bot.
@@ -58,7 +53,7 @@ async fn main() {
         .branch(
             dptree::entry()
                 // This method allows to parse text messages commands.
-                .add_command::<SimpleCommand>(bot_username.clone())
+                .add_command::<SimpleCommand>()
                 // Next we can add `SimpleCommand` in the argument of endpoint. If
                 // command parsing fails, this endpoint will not be called.
                 .endpoint(simple_commands_handler),
@@ -68,7 +63,7 @@ async fn main() {
             dptree::filter(|mes: Message, cfg: ConfigParameters| async move {
                 mes.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
-            .add_command::<MaintainerCommands>(bot_username.clone())
+            .add_command::<MaintainerCommands>()
             .endpoint(
                 |mes: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
                     match cmd {

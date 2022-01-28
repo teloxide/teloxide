@@ -21,15 +21,10 @@ use teloxide_core::requests::Requester;
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(
-    requester: R,
-    bot_name: N,
-    handler: H,
-    cmd: PhantomData<Cmd>,
-) where
+pub async fn commands_repl<'a, R, Cmd, H, E, Args>(requester: R, handler: H, cmd: PhantomData<Cmd>)
+where
     Cmd: BotCommand + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    N: Into<String> + Send + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
     E: Debug + Send + Sync + 'static,
@@ -38,7 +33,6 @@ pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(
 
     commands_repl_with_listener(
         requester,
-        bot_name,
         handler,
         update_listeners::polling_default(cloned_requester).await,
         cmd,
@@ -59,9 +53,8 @@ pub async fn commands_repl<'a, R, Cmd, H, N, E, Args>(
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args>(
+pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     requester: R,
-    bot_name: N,
     handler: H,
     listener: L,
     _cmd: PhantomData<Cmd>,
@@ -70,15 +63,12 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, N, E, Args
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
-    N: Into<String> + Send + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     E: Debug + Send + Sync + 'static,
 {
-    let bot_name = bot_name.into();
-
     let dispatcher = Dispatcher::new(
         requester,
-        Update::filter_message().add_command::<Cmd>(bot_name).branch(dptree::endpoint(handler)),
+        Update::filter_message().add_command::<Cmd>().branch(dptree::endpoint(handler)),
     );
 
     #[cfg(feature = "ctrlc_handler")]

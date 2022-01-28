@@ -1,4 +1,5 @@
 use crate::{
+    adaptors::CacheMe,
     dispatching::{
         shutdown_check_timeout_for, shutdown_inner, stop_token::StopToken, update_listeners,
         update_listeners::UpdateListener, DispatcherState, ShutdownToken,
@@ -10,10 +11,12 @@ use crate::{
 use dptree::di::DependencyMap;
 use futures::StreamExt;
 use std::{collections::HashSet, convert::Infallible, fmt::Debug, ops::ControlFlow, sync::Arc};
+use teloxide_core::requests::{Request, RequesterExt};
 use tokio::{sync::Notify, time::timeout};
 
 pub struct Dispatcher<R, Err> {
     requester: R,
+    cache_me_requester: CacheMe<R>,
     dependencies: DependencyMap,
 
     handler: UpdateHandler<Err>,
@@ -33,7 +36,7 @@ pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible
 
 impl<R, Err> Dispatcher<R, Err>
 where
-    R: Clone + Send + Sync + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
     pub fn new(requester: R, handler: UpdateHandler<Err>) -> Self
@@ -41,7 +44,8 @@ where
         Err: Debug,
     {
         Dispatcher {
-            requester,
+            requester: requester.clone(),
+            cache_me_requester: requester.cache_me(),
             dependencies: DependencyMap::new(),
             handler,
             default_handler: dptree::endpoint(|update: Update| async move {
@@ -199,6 +203,9 @@ where
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
                 deps.insert(self.requester.clone());
+                deps.insert(
+                    self.cache_me_requester.get_me().send().await.expect("Failed to retrieve 'me'"),
+                );
 
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
