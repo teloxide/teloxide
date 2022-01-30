@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{ChatId, InputFile, Message, ReplyMarkup};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = video_note, thumb]
     /// As of [v.4.0], Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send video messages. On success, the sent [`Message`] is returned.
     ///
     /// [v.4.0]: https://core.telegram.org/bots/api#document

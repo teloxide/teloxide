@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{ChatId, InputFile, Message, MessageEntity, ParseMode, ReplyMarkup};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = photo]
     /// Use this method to send photos. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message

@@ -11,7 +11,7 @@ use serde::Serialize;
 use crate::types::{InputFile, True};
 
 impl_payload! {
-    @[multipart]
+    @[multipart = thumb]
     /// Use this method to set the thumbnail of a sticker set. Animated thumbnails can be set for animated sticker sets only. Returns _True_ on success.
     #[derive(Debug, Clone, Serialize)]
     pub SetStickerSetThumb (SetStickerSetThumbSetters) => True {

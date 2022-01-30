@@ -156,10 +156,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
 
                 if let Ok(Some(k)) = k {
                     let res = match k {
-                        "message" => dbg!(map
+                        "message" => map
                             .next_value::<Message>()
                             .map(UpdateKind::Message)
-                            .map_err(|_| false)),
+                            .map_err(|_| false),
                         "edited_message" => map
                             .next_value::<Message>()
                             .map(UpdateKind::EditedMessage)

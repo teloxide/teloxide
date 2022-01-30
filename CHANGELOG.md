@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactor `InputFile` ([#167][pr167])
+  - Make it an opaque structure, instead of enum
+  - Add `read` constructor, that allows creating `InputFile` from `impl AsyncRead`
+  - Internal changes
 - Refactor errors ([#134][pr134])
   - Rename `DownloadError::NetworkError` to `Network`
   - Rename `RequestError::ApiError` to `Api`
@@ -54,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr134]: https://github.com/teloxide/teloxide-core/pull/134
 [pr150]: https://github.com/teloxide/teloxide-core/pull/150
 [pr157]: https://github.com/teloxide/teloxide-core/pull/157
+[pr167]: https://github.com/teloxide/teloxide-core/pull/167
 [pr172]: https://github.com/teloxide/teloxide-core/pull/172
 
 ### Fixed

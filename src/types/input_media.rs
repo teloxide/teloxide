@@ -1,11 +1,13 @@
-use serde::{Deserialize, Serialize};
+use std::iter;
+
+use serde::Serialize;
 
 use crate::types::{InputFile, MessageEntity, ParseMode};
 
 /// This object represents the content of a media message to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmedia).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum InputMedia {
@@ -20,7 +22,7 @@ pub enum InputMedia {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct InputMediaPhoto {
     /// File to send.
     pub media: InputFile,
@@ -82,7 +84,7 @@ impl InputMediaPhoto {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct InputMediaVideo {
     // File to send.
     pub media: InputFile,
@@ -194,7 +196,7 @@ impl InputMediaVideo {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAnimation {
     /// File to send.
     pub media: InputFile,
@@ -296,7 +298,7 @@ impl InputMediaAnimation {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAudio {
     /// File to send.
     pub media: InputFile,
@@ -404,7 +406,7 @@ impl InputMediaAudio {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct InputMediaDocument {
     /// File to send.
     pub media: InputFile,
@@ -494,15 +496,34 @@ impl From<InputMedia> for InputFile {
 }
 
 impl InputMedia {
-    #[allow(dead_code)]
-    pub(crate) fn media(&self) -> &InputFile {
-        match self {
-            InputMedia::Photo(InputMediaPhoto { media, .. })
-            | InputMedia::Document(InputMediaDocument { media, .. })
-            | InputMedia::Audio(InputMediaAudio { media, .. })
-            | InputMedia::Animation(InputMediaAnimation { media, .. })
-            | InputMedia::Video(InputMediaVideo { media, .. }) => media,
-        }
+    /// Returns an iterator of all files in this input media
+    pub(crate) fn files(&self) -> impl Iterator<Item = &InputFile> {
+        use InputMedia::*;
+
+        let (media, thumb) = match self {
+            Photo(InputMediaPhoto { media, .. }) => (media, None),
+            Document(InputMediaDocument { media, thumb, .. })
+            | Audio(InputMediaAudio { media, thumb, .. })
+            | Animation(InputMediaAnimation { media, thumb, .. })
+            | Video(InputMediaVideo { media, thumb, .. }) => (media, thumb.as_ref()),
+        };
+
+        iter::once(media).chain(thumb)
+    }
+
+    /// Returns an iterator of all files in this input media
+    pub(crate) fn files_mut(&mut self) -> impl Iterator<Item = &mut InputFile> {
+        use InputMedia::*;
+
+        let (media, thumb) = match self {
+            Photo(InputMediaPhoto { media, .. }) => (media, None),
+            Document(InputMediaDocument { media, thumb, .. })
+            | Audio(InputMediaAudio { media, thumb, .. })
+            | Animation(InputMediaAnimation { media, thumb, .. })
+            | Video(InputMediaVideo { media, thumb, .. }) => (media, thumb.as_mut()),
+        };
+
+        iter::once(media).chain(thumb)
     }
 }
 
@@ -512,9 +533,9 @@ mod tests {
 
     #[test]
     fn photo_serialize() {
-        let expected_json = r#"{"type":"photo","media":{"FileId":"123456"}}"#;
+        let expected_json = r#"{"type":"photo","media":"123456"}"#;
         let photo = InputMedia::Photo(InputMediaPhoto {
-            media: InputFile::FileId(String::from("123456")),
+            media: InputFile::file_id("123456"),
             caption: None,
             parse_mode: None,
             caption_entities: None,
@@ -526,9 +547,9 @@ mod tests {
 
     #[test]
     fn video_serialize() {
-        let expected_json = r#"{"type":"video","media":{"FileId":"123456"}}"#;
+        let expected_json = r#"{"type":"video","media":"123456"}"#;
         let video = InputMedia::Video(InputMediaVideo {
-            media: InputFile::FileId(String::from("123456")),
+            media: InputFile::file_id("123456"),
             thumb: None,
             caption: None,
             parse_mode: None,
@@ -545,9 +566,9 @@ mod tests {
 
     #[test]
     fn animation_serialize() {
-        let expected_json = r#"{"type":"animation","media":{"FileId":"123456"}}"#;
+        let expected_json = r#"{"type":"animation","media":"123456"}"#;
         let video = InputMedia::Animation(InputMediaAnimation {
-            media: InputFile::FileId(String::from("123456")),
+            media: InputFile::file_id("123456"),
             thumb: None,
             caption: None,
             parse_mode: None,
@@ -563,9 +584,9 @@ mod tests {
 
     #[test]
     fn audio_serialize() {
-        let expected_json = r#"{"type":"audio","media":{"FileId":"123456"}}"#;
+        let expected_json = r#"{"type":"audio","media":"123456"}"#;
         let video = InputMedia::Audio(InputMediaAudio {
-            media: InputFile::FileId(String::from("123456")),
+            media: InputFile::file_id("123456"),
             thumb: None,
             caption: None,
             parse_mode: None,
@@ -581,9 +602,9 @@ mod tests {
 
     #[test]
     fn document_serialize() {
-        let expected_json = r#"{"type":"document","media":{"FileId":"123456"}}"#;
+        let expected_json = r#"{"type":"document","media":"123456"}"#;
         let video = InputMedia::Document(InputMediaDocument {
-            media: InputFile::FileId(String::from("123456")),
+            media: InputFile::file_id("123456"),
             thumb: None,
             caption: None,
             parse_mode: None,

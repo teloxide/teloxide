@@ -1,41 +1,3 @@
-macro_rules! forward_to_unsuported_ty {
-    (
-        supported: $supported:expr;
-        simple { $( $method:ident $arg:ty )* }
-        unit { $( $method1:ident $ty:expr )* }
-        compound {
-            $( $method2:ident $( <$T:ident: ?Sized + Serialize> )? ( $( $args:tt )* ) -> $ret:ty => $message:expr )*
-        }
-    ) => {
-        $(
-            fn $method(self, _: $arg) -> Result<Self::Ok, Self::Error> {
-                Err(Self::Error::UnsupportedType {
-                    ty: stringify!($arg),
-                    supported: $supported,
-                })
-            }
-        )+
-
-        $(
-            fn $method1(self) -> Result<Self::Ok, Self::Error> {
-                Err(Self::Error::UnsupportedType {
-                    ty: $ty,
-                    supported: $supported,
-                })
-            }
-        )+
-
-        $(
-            fn $method2 $( <$T: ?Sized + Serialize> )? (self, $( $args )*) -> Result<$ret, Self::Error> {
-                Err(Self::Error::UnsupportedType {
-                    ty: $message,
-                    supported: $supported,
-                })
-            }
-        )+
-    };
-}
-
 macro_rules! req_future {
     (
         $v2:vis def: | $( $arg:ident: $ArgTy:ty ),* $(,)? | $body:block
@@ -135,7 +97,7 @@ macro_rules! calculated_doc {
 macro_rules! impl_payload {
     (
         $(
-            @[$multipart_attr:ident]
+            @[multipart = $($multipart_attr:ident),*]
         )?
         $(
             #[ $($method_meta:tt)* ]
@@ -241,7 +203,7 @@ macro_rules! impl_payload {
 
         impl<P> $Setters for P where P: crate::requests::HasPayload<Payload = $Method> {}
 
-        impl_payload! { @[$($multipart_attr)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
+        impl_payload! { @[$(multipart = $($multipart_attr),*)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
     };
     (@setter_opt $Method:ident $field:ident : $FTy:ty [into]) => {
         calculated_doc! {
@@ -387,9 +349,20 @@ macro_rules! impl_payload {
     (@convert_map ($e:expr)) => {
         $e
     };
-    (@[multipart] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
-        impl crate::requests::MultipartPayload for $Method {}
-        impl crate::requests::multipart_payload::sealed::Sealed for $Method {}
+    (@[multipart = $($multipart_attr:ident),*] $Method:ident req { $($reqf:ident),* } opt { $($optf:ident),*} ) => {
+        impl crate::requests::MultipartPayload for $Method {
+            fn copy_files(&self, into: &mut dyn FnMut(crate::types::InputFile)) {
+                $(
+                    crate::types::InputFileLike::copy_into(&self.$multipart_attr, into);
+                )*
+            }
+
+            fn move_files(&mut self, into: &mut dyn FnMut(crate::types::InputFile)) {
+                $(
+                    crate::types::InputFileLike::move_into(&mut self.$multipart_attr, into);
+                )*
+            }
+        }
     };
     (@[] $($ignored:tt)*) => {}
 }
