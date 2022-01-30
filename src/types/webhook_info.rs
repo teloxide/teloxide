@@ -1,3 +1,5 @@
+use std::net::IpAddr;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +21,7 @@ pub struct WebhookInfo {
     pub pending_update_count: u32,
 
     /// Currently used webhook IP address.
-    pub ip_address: Option<String>,
+    pub ip_address: Option<IpAddr>,
 
     /// Time of the most recent error that happened when trying to
     /// deliver an update via webhook.
