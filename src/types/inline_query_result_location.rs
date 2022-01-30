@@ -137,7 +137,7 @@ impl InlineQueryResultLocation {
         self
     }
 
-    pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
+    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
         self.thumb_url = Some(val);
         self
     }

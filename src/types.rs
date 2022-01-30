@@ -292,3 +292,50 @@ pub(crate) mod serde_date_from_unix_timestamp {
         ))
     }
 }
+
+pub(crate) mod option_url_from_string {
+    use reqwest::Url;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(this: &Option<Url>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match this {
+            Some(url) => url.serialize(serializer),
+            None => "".serialize(serializer),
+        }
+    }
+
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(reqwest::Url::deserialize(deserializer).ok())
+    }
+
+    #[test]
+    fn test() {
+        use std::str::FromStr;
+        #[derive(Serialize, Deserialize)]
+        struct Struct {
+            #[serde(with = "crate::types::option_url_from_string")]
+            url: Option<Url>,
+        }
+
+        {
+            let json = r#"{"url":""}"#;
+            let url: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(url.url, None);
+            assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
+
+            let json = r#"{"url":"https://github.com/token"}"#;
+            let url: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(
+                url.url,
+                Some(Url::from_str("https://github.com/token").unwrap())
+            );
+            assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
+        }
+    }
+}

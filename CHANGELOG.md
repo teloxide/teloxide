@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for 5.4 telegram bot API ([#133][pr133])
 - Support for 5.5 telegram bot API ([#143][pr143], [#164][pr164])
 - `EditedMessageIsTooLong` error ([#109][pr109])
-- `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
+- `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#117][pr117])
 - `Limits::messages_per_min_channel` ([#121][pr121])
 - `media_group_id` field to `MediaDocument` and `MediaAudio` ([#139][pr139])
 - `caption_entities` method to `InputMediaPhoto` ([#140][pr140])
@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `UpdateKind::Error` ([#156][pr156])
 
 [pr109]: https://github.com/teloxide/teloxide-core/pull/109
-[pr116]: https://github.com/teloxide/teloxide-core/pull/116
+[pr117]: https://github.com/teloxide/teloxide-core/pull/117
 [pr121]: https://github.com/teloxide/teloxide-core/pull/121
 [pr135]: https://github.com/teloxide/teloxide-core/pull/135
 [pr139]: https://github.com/teloxide/teloxide-core/pull/139
@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - How forwarded messages are represented ([#151][pr151])
 - `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
 - `ChatPermissions` is now bitflags ([#157][pr157])
+- Type of `WebhookInfo::ip_address` from `String` to `std::net::IpAddr` ([#172][pr172])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
@@ -58,15 +59,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr150]: https://github.com/teloxide/teloxide-core/pull/150
 [pr157]: https://github.com/teloxide/teloxide-core/pull/157
 [pr167]: https://github.com/teloxide/teloxide-core/pull/167
+[pr172]: https://github.com/teloxide/teloxide-core/pull/172
 
 ### Fixed
 
 - Deserialization of chat migrations, see issue [#427][issue427] ([#143][pr143])
-- Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#116][pr116])
+- Type of `BanChatMember::until_date`: `u64` -> `chrono::DateTime<Utc>` ([#117][pr117])
 - Type of `Poll::correct_option_id`: `i32` -> `u8` ([#119][pr119])
 - Type of `Poll::open_period`: `i32` -> `u16` ([#119][pr119])
 - `Throttle` adaptor not honouring chat/min limits ([#121][pr121])
-- Make `SendPoll::poll_` optional ([#133][pr133])
+- Make `SendPoll::type_` optional ([#133][pr133])
 - Bug with `caption_entities`, see issue [#473][issue473]
 - Type of response for `CopyMessage` method ([#141](pr141), [#142](pr142))
 - Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145](pr145))

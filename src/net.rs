@@ -55,12 +55,12 @@ pub fn client_from_env() -> reqwest::Client {
 /// durations, see the [issue 223].
 ///
 /// The current settings are:
-///  - The `connection/keep-alive` default header.
 ///  - A connection timeout of 5 seconds.
 ///  - A timeout of 17 seconds.
 ///  - `tcp_nodelay` is on.
 ///
 /// ## Notes
+///
 /// 1. The settings may change in the future.
 /// 2. If you are using the polling mechanism to get updates, the timeout
 ///    configured in the client should be bigger than the polling timeout.
@@ -69,19 +69,10 @@ pub fn client_from_env() -> reqwest::Client {
 ///
 /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
 pub fn default_reqwest_settings() -> reqwest::ClientBuilder {
-    use reqwest::header::{HeaderMap, CONNECTION};
-
-    let mut headers = HeaderMap::new();
-    headers.insert(CONNECTION, "keep-alive".parse().unwrap());
-
-    let connect_timeout = Duration::from_secs(5);
-    let timeout = connect_timeout + Duration::from_secs(12);
-
     reqwest::Client::builder()
-        .connect_timeout(connect_timeout)
-        .timeout(timeout)
+        .connect_timeout(Duration::from_secs(5))
+        .timeout(Duration::from_secs(17))
         .tcp_nodelay(true)
-        .default_headers(headers)
 }
 
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].

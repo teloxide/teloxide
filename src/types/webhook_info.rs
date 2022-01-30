@@ -1,3 +1,5 @@
+use std::net::IpAddr;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -8,6 +10,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct WebhookInfo {
     /// Webhook URL, `None` if webhook is not set up.
+    #[serde(with = "crate::types::option_url_from_string")]
     pub url: Option<reqwest::Url>,
 
     /// `true`, if a custom certificate was provided for webhook certificate
@@ -18,7 +21,7 @@ pub struct WebhookInfo {
     pub pending_update_count: u32,
 
     /// Currently used webhook IP address.
-    pub ip_address: Option<String>,
+    pub ip_address: Option<IpAddr>,
 
     /// Time of the most recent error that happened when trying to
     /// deliver an update via webhook.
