@@ -51,7 +51,7 @@
 //! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
-//! - `full` — enables all features except `nigthly`
+//! - `full` — enables all features except `nigthly` and tls-related
 //! - `nightly` — enables nigthly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
@@ -74,8 +74,9 @@
 //
 // To properly build docs of this crate run
 // ```console
-// $ RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo doc --open --all-features
+// $ cargo docs
 // ```
+// (docs alias is defined in `.cargo/config.toml`)
 //
 // `dep_docsrs` is used for the same purpose, but when `teloxide-core` is built as a dependency
 // (see: `teloxide`). We can't use `docsrs` as it breaks tokio compilation in this case.
