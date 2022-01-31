@@ -1,8 +1,18 @@
-use crate::{dispatching2::HandlerFactory, types::Message, utils::command::BotCommand};
+use crate::{
+    dispatching2::HandlerFactory,
+    types::{Me, Message},
+    utils::command::BotCommand,
+};
 use dptree::{di::DependencyMap, Handler};
-use teloxide_core::types::Me;
 
+/// Extension methods for working with `dptree` handlers.
 pub trait HandlerExt<Output> {
+    /// Returns a handler that accepts a parsed command `C`.
+    ///
+    /// ## Dependency requirements
+    ///
+    ///  - [`crate::types::Message`]
+    ///  - [`crate::types::Me`]
     #[must_use]
     fn add_command<C>(self) -> Self
     where

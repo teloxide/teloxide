@@ -13,10 +13,14 @@ use teloxide_core::requests::Requester;
 ///
 /// All errors from an update listener and handler will be logged.
 ///
-/// # Caution
+/// ## Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
+///
+/// ## Dependency requirements
+///
+///  - Those of [`HandlerExt::add_command`].
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
@@ -44,10 +48,14 @@ where
 ///
 /// All errors from an update listener and handler will be logged.
 ///
-/// # Caution
+/// ## Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
+///
+/// ## Dependency requirements
+///
+///  - Those of [`HandlerExt::add_command`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()

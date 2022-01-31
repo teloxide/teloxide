@@ -1,4 +1,5 @@
-//mod commands_repl;
+//! REPLs for dispatching updates.
+
 //mod dialogues_repl;
 mod commands_repl;
 mod repl;
