@@ -3,6 +3,8 @@ use std::net::IpAddr;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+use crate::types::AllowedUpdate;
+
 /// Contains information about the current status of a webhook.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).
@@ -38,5 +40,5 @@ pub struct WebhookInfo {
 
     /// A list of update types the bot is subscribed to. Defaults to all update
     /// types.
-    pub allowed_updates: Option<Vec<String>>,
+    pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
