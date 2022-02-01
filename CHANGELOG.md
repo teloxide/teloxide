@@ -51,7 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - How forwarded messages are represented ([#151][pr151])
 - `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
 - `ChatPermissions` is now bitflags ([#157][pr157])
-- Type of `WebhookInfo::ip_address` from `String` to `std::net::IpAddr` ([#172][pr172])
+- Type of `WebhookInfo::ip_address` from `Option<String>` to `Option<std::net::IpAddr>` ([#172][pr172])
+- Type of `WebhookInfo::allowed_updates` from `Option<Vec<String>>` to `Option<Vec<AllowedUpdate>>` ([#174][pr174])
 
 [pr115]: https://github.com/teloxide/teloxide-core/pull/115
 [pr125]: https://github.com/teloxide/teloxide-core/pull/125
@@ -60,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr157]: https://github.com/teloxide/teloxide-core/pull/157
 [pr167]: https://github.com/teloxide/teloxide-core/pull/167
 [pr172]: https://github.com/teloxide/teloxide-core/pull/172
+[pr174]: https://github.com/teloxide/teloxide-core/pull/174
 
 ### Fixed
 
