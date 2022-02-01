@@ -18,6 +18,11 @@ pub struct StickerSet {
     /// [animates stickers]: https://telegram.org/blog/animated-stickers
     pub is_animated: bool,
 
+    /// `true`, if the sticker is a [video sticker].
+    ///
+    /// [video sticker]: https://telegram.org/blog/video-stickers-better-reactions
+    pub is_video: bool,
+
     /// `true`, if the sticker set contains masks.
     pub contains_masks: bool,
 
