@@ -25,7 +25,7 @@ use teloxide_core::requests::Requester;
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl<'a, R, Cmd, H, E, Args>(requester: R, handler: H, cmd: PhantomData<Cmd>)
+pub async fn commands_repl<'a, R, Cmd, H, E, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
     Cmd: BotCommand + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
@@ -33,12 +33,12 @@ where
     <R as Requester>::GetUpdatesFaultTolerant: Send,
     E: Debug + Send + Sync + 'static,
 {
-    let cloned_requester = requester.clone();
+    let cloned_bot = bot.clone();
 
     commands_repl_with_listener(
-        requester,
+        bot,
         handler,
-        update_listeners::polling_default(cloned_requester).await,
+        update_listeners::polling_default(cloned_bot).await,
         cmd,
     )
     .await;
@@ -62,7 +62,7 @@ where
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
-    requester: R,
+    bot: R,
     handler: H,
     listener: L,
     _cmd: PhantomData<Cmd>,
@@ -75,7 +75,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     E: Debug + Send + Sync + 'static,
 {
     let mut dispatcher = DispatcherBuilder::new(
-        requester,
+        bot,
         Update::filter_message().add_command::<Cmd>().branch(dptree::endpoint(handler)),
     )
     .build();

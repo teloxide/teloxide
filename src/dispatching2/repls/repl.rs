@@ -20,7 +20,7 @@ use teloxide_core::requests::Requester;
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl<R, H, E, Args>(requester: R, handler: H)
+pub async fn repl<R, H, E, Args>(bot: R, handler: H)
 where
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     Result<(), E>: OnError<E>,
@@ -28,13 +28,8 @@ where
     R: Requester + Send + Sync + Clone + 'static,
     <R as Requester>::GetUpdatesFaultTolerant: Send,
 {
-    let cloned_requester = requester.clone();
-    repl_with_listener(
-        requester,
-        handler,
-        update_listeners::polling_default(cloned_requester).await,
-    )
-    .await;
+    let cloned_bot = bot.clone();
+    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
 }
 
 /// Like [`repl`], but with a custom [`UpdateListener`].
@@ -50,11 +45,8 @@ where
 /// [`repl`]: crate::dispatching::repls::repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
-    requester: R,
-    handler: H,
-    listener: L,
-) where
+pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(bot: R, handler: H, listener: L)
+where
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug,
@@ -63,11 +55,9 @@ pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
     R: Requester + Clone + Send + Sync + 'static,
 {
     #[allow(unused_mut)]
-    let mut dispatcher = DispatcherBuilder::new(
-        requester,
-        Update::filter_message().branch(dptree::endpoint(handler)),
-    )
-    .build();
+    let mut dispatcher =
+        DispatcherBuilder::new(bot, Update::filter_message().branch(dptree::endpoint(handler)))
+            .build();
 
     #[cfg(feature = "ctrlc_handler")]
     dispatcher.setup_ctrlc_handler();

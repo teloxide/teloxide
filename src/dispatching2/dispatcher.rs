@@ -16,7 +16,7 @@ use tokio::{sync::Notify, time::timeout};
 
 /// The builder for [`Dispatcher`].
 pub struct DispatcherBuilder<R, Err> {
-    requester: R,
+    bot: R,
     dependencies: DependencyMap,
     handler: UpdateHandler<Err>,
     default_handler: DefaultHandler,
@@ -28,11 +28,11 @@ where
     R: Clone + Requester + Clone + Send + Sync + 'static,
     Err: Debug + Send + Sync + 'static,
 {
-    /// Constructs a new [`DispatcherBuilder`] with `requester` and `handler`.
+    /// Constructs a new [`DispatcherBuilder`] with `bot` and `handler`.
     #[must_use]
-    pub fn new(requester: R, handler: UpdateHandler<Err>) -> Self {
+    pub fn new(bot: R, handler: UpdateHandler<Err>) -> Self {
         Self {
-            requester,
+            bot,
             dependencies: DependencyMap::new(),
             handler,
             default_handler: dptree::endpoint(|update: Update| async move {
@@ -70,8 +70,8 @@ where
     #[must_use]
     pub fn build(self) -> Dispatcher<R, Err> {
         Dispatcher {
-            requester: self.requester.clone(),
-            cache_me_requester: self.requester.cache_me(),
+            bot: self.bot.clone(),
+            cache_me_bot: self.bot.cache_me(),
             dependencies: self.dependencies,
             handler: self.handler,
             default_handler: self.default_handler,
@@ -85,8 +85,8 @@ where
 
 /// The base for update dispatching.
 pub struct Dispatcher<R, Err> {
-    requester: R,
-    cache_me_requester: CacheMe<R>,
+    bot: R,
+    cache_me_bot: CacheMe<R>,
     dependencies: DependencyMap,
 
     handler: UpdateHandler<Err>,
@@ -121,7 +121,7 @@ where
         R: Requester + Clone,
         <R as Requester>::GetUpdatesFaultTolerant: Send,
     {
-        let listener = update_listeners::polling_default(self.requester.clone()).await;
+        let listener = update_listeners::polling_default(self.bot.clone()).await;
         let error_handler =
             LoggingErrorHandler::with_custom_text("An error from the update listener");
 
@@ -204,9 +204,9 @@ where
             Ok(upd) => {
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
-                deps.insert(self.requester.clone());
+                deps.insert(self.bot.clone());
                 deps.insert(
-                    self.cache_me_requester.get_me().send().await.expect("Failed to retrieve 'me'"),
+                    self.cache_me_bot.get_me().send().await.expect("Failed to retrieve 'me'"),
                 );
 
                 match self.handler.dispatch(deps).await {
