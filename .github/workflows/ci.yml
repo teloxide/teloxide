@@ -91,18 +91,6 @@ jobs:
 
   build-example:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        example: [
-            admin_bot, 
-            dialogue_bot, 
-            heroku_ping_pong_bot, 
-            ngrok_ping_pong_bot, 
-            dices_bot,
-            shared_state_bot,
-            simple_commands_bot,
-            redis_remember_bot,
-        ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -110,5 +98,5 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Check the example
-        run: cd examples && cd ${{ matrix.example }} && cargo check
+      - name: Check the examples
+        run: cargo check --examples
