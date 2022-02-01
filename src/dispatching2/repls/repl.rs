@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::{Dispatcher, UpdateFilterExt},
+    dispatching2::{DispatcherBuilder, UpdateFilterExt},
     error_handlers::{LoggingErrorHandler, OnError},
     types::Update,
 };
@@ -63,11 +63,14 @@ pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(
     R: Requester + Clone + Send + Sync + 'static,
 {
     #[allow(unused_mut)]
-    let mut dispatcher =
-        Dispatcher::new(requester, Update::filter_message().branch(dptree::endpoint(handler)));
+    let mut dispatcher = DispatcherBuilder::new(
+        requester,
+        Update::filter_message().branch(dptree::endpoint(handler)),
+    )
+    .build();
 
     #[cfg(feature = "ctrlc_handler")]
-    let mut dispatcher = dispatcher.setup_ctrlc_handler();
+    dispatcher.setup_ctrlc_handler();
 
     dispatcher
         .dispatch_with_listener(

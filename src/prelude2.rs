@@ -7,7 +7,7 @@ pub use crate::{
 
 pub use crate::dispatching2::{
     dialogue::{Dialogue, DialogueHandlerExt as _},
-    Dispatcher, HandlerExt as _, MessageFilterExt as _, UpdateFilterExt as _,
+    Dispatcher, DispatcherBuilder, HandlerExt as _, MessageFilterExt as _, UpdateFilterExt as _,
 };
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]

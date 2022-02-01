@@ -127,7 +127,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .branch(Update::filter_callback_query().endpoint(callback_handler))
         .branch(Update::filter_inline_query().endpoint(inline_query_handler));
 
-    Dispatcher::new(bot, handler).dispatch().await;
+    DispatcherBuilder::new(bot, handler).build().dispatch().await;
 
     log::info!("Closing bot... Goodbye!");
 

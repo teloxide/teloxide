@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::{Dispatcher, HandlerExt, UpdateFilterExt},
+    dispatching2::{DispatcherBuilder, HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
     types::Update,
     utils::command::BotCommand,
@@ -74,13 +74,14 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     R: Requester + Clone + Send + Sync + 'static,
     E: Debug + Send + Sync + 'static,
 {
-    let dispatcher = Dispatcher::new(
+    let mut dispatcher = DispatcherBuilder::new(
         requester,
         Update::filter_message().add_command::<Cmd>().branch(dptree::endpoint(handler)),
-    );
+    )
+    .build();
 
     #[cfg(feature = "ctrlc_handler")]
-    let dispatcher = dispatcher.setup_ctrlc_handler();
+    dispatcher.setup_ctrlc_handler();
 
     // To make mutable var from immutable.
     let mut dispatcher = dispatcher;

@@ -82,7 +82,7 @@ async fn main() {
         );
 
     // Start create dispatcher.
-    Dispatcher::new(bot, handler)
+    DispatcherBuilder::new(bot, handler)
         // You can specify dependencies to that you have access inside of handlers. It may be
         // configs, connection to Database, or dialogue storage (see more in the dialogue_bot
         // example). It is similar to the `actix_web::Extensions`.
@@ -99,6 +99,7 @@ async fn main() {
         .error_handler(LoggingErrorHandler::with_custom_text(
             "Error has occurred in the dispatcher",
         ))
+        .build()
         .dispatch()
         .await;
 }

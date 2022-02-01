@@ -60,5 +60,5 @@ async fn main() {
         },
     ));
 
-    Dispatcher::new(bot, handler).dispatch().await;
+    DispatcherBuilder::new(bot, handler).build().dispatch().await;
 }

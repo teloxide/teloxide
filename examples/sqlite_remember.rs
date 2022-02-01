@@ -80,5 +80,9 @@ async fn main() {
         .add_dialogue::<Message, Store, BotDialogue>()
         .branch(dptree::endpoint(handle_message));
 
-    Dispatcher::new(bot, handler).dependencies(dptree::deps![storage]).dispatch().await;
+    DispatcherBuilder::new(bot, handler)
+        .dependencies(dptree::deps![storage])
+        .build()
+        .dispatch()
+        .await;
 }

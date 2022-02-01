@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_closure_call)]
+
 use dptree::{di::DependencyMap, Handler};
 use teloxide_core::types::{Message, Update, UpdateKind};
 
