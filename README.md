@@ -417,6 +417,7 @@ Feel free to propose your own bot to our collection!
 
  - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) -- A bot that notifies about crate updates.
  - [mxseev/logram](https://github.com/mxseev/logram) -- Utility that takes logs from anywhere and sends them to Telegram.
+ - [alexkonovalov/PedigreeBot](https://github.com/alexkonovalov/PedigreeBot) -- A Telegram bot for building family trees.
  - [Hermitter/tepe](https://github.com/Hermitter/tepe) -- A CLI to command a bot to send messages and files over Telegram.
  - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A Telegram group manager bot with variety of extra features.
  - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
@@ -433,7 +434,6 @@ Feel free to propose your own bot to our collection!
  - [wa7sa34cx/the-black-box-bot](https://github.com/wa7sa34cx/the-black-box-bot) -- This is the Black Box Telegram bot. You can hold any items in it.
  - [crapstone/hsctt](https://codeberg.org/crapstones-bots/hsctt) -- A Telegram bot that searches for HTTP status codes in all messages and replies with the text form.
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) -- Telegram bot for searching AUR in inline mode.
- - [alexkonovalov/PedigreeBot](https://github.com/alexkonovalov/PedigreeBot) -- A Telegram bot for building family trees.
   
 ## Contributing
 See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
