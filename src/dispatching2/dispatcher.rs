@@ -100,8 +100,11 @@ pub struct Dispatcher<R, Err> {
 
 // TODO: it is allowed to return message as response on telegram request in
 // webhooks, so we can allow this too. See more there: https://core.telegram.org/bots/api#making-requests-when-getting-updates
-// FIXME: remove 'static lifetime?
+
+/// A handler that processes updates from Telegram.
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
+
+/// A handler that processes unhandled updates.
 pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible>;
 
 impl<R, Err> Dispatcher<R, Err>
