@@ -27,7 +27,12 @@ pub enum InputSticker {
 
     /// TGS animation with the sticker, uploaded using multipart/form-data.
     ///
-    /// See <https://core.telegram.org/animated_stickers#technical-requirements> for technical requirements
+    /// See <https://core.telegram.org/animated_stickers#technical-requirements> for technical requirements.
     #[serde(rename = "tgs_sticker")]
     Tgs(InputFile),
+
+    /// WEBM video with the sticker, uploaded using multipart/form-data.
+    ///
+    /// See <https://core.telegram.org/stickers#video-sticker-requirements> for technical requirements.
+    Webm(InputFile),
 }
