@@ -97,12 +97,19 @@ smart-default = "0.6.0"
 rand = "0.8.3"
 pretty_env_logger = "0.4.0"
 lazy_static = "1.4.0"
+anyhow = "1.0.52"
+serde = "1"
+serde_json = "1"
 tokio = { version = "1.8", features = ["fs", "rt-multi-thread", "macros"] }
+warp = "0.3.0"
+reqwest = "0.10.4"
+chrono = "0.4"
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 rustc-args = ["--cfg", "dep_docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
 
 [[test]]
 name = "redis"
@@ -113,3 +120,35 @@ required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
 name = "sqlite"
 path = "tests/sqlite.rs"
 required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
+
+[[example]]
+name = "dialogue"
+required-features = ["macros", "sqlite-storage"]
+
+[[example]]
+name = "sqlite_remember"
+required-features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros"]
+
+[[example]]
+name = "simple_commands"
+required-features = ["macros"]
+
+[[example]]
+name = "redis_remember"
+required-features = ["redis-storage", "bincode-serializer", "macros"]
+
+[[example]]
+name = "inline"
+required-features = ["macros"]
+
+[[example]]
+name = "buttons"
+required-features = ["macros"]
+
+[[example]]
+name = "admin"
+required-features = ["macros"]
+
+[[example]]
+name = "dispatching2_features"
+required-features = ["macros"]
