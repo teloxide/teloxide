@@ -25,12 +25,12 @@ async fn main() {
             // Filter allow you to filter updates by some condition.
             dptree::filter(
                 // Note that `async move` is obligatory.
-                |mes: Message| async move { mes.chat.is_group() || mes.chat.is_supergroup() },
+                |msg: Message| async move { msg.chat.is_group() || msg.chat.is_supergroup() },
             )
             // Endpoint is a last message handler.
-            .endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
+            .endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
                 log::info!("Received message from the group chat.");
-                bot.send_message(mes.chat.id, "This is a group chat.").await?;
+                bot.send_message(msg.chat.id, "This is a group chat.").await?;
                 respond(())
             }),
         )
@@ -39,9 +39,9 @@ async fn main() {
         .branch(
             // There are some `filter` functions on message, that filters events. This
             // filter will filter only messages with dices.
-            Message::filter_dice().endpoint(|mes: Message, bot: AutoSend<Bot>| async move {
-                bot.send_message(mes.chat.id, "This is a dice!")
-                    .reply_to_message_id(mes.id)
+            Message::filter_dice().endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
+                bot.send_message(msg.chat.id, "This is a dice!")
+                    .reply_to_message_id(msg.id)
                     .await?;
                 Ok(())
             }),
@@ -60,19 +60,19 @@ async fn main() {
         )
         .branch(
             // Filter maintainer by used ID.
-            dptree::filter(|mes: Message, cfg: ConfigParameters| async move {
-                mes.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
+            dptree::filter(|msg: Message, cfg: ConfigParameters| async move {
+                msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .add_command::<MaintainerCommands>()
             .endpoint(
-                |mes: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
+                |msg: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
                     match cmd {
                         MaintainerCommands::Rand { from, to } => {
                             let mut rng = rand::rngs::OsRng::default();
                             let value: u64 = rng.gen_range(from..=to);
                             std::mem::drop(rng);
 
-                            bot.send_message(mes.chat.id, value.to_string()).await?;
+                            bot.send_message(msg.chat.id, value.to_string()).await?;
 
                             Ok(())
                         }
@@ -130,21 +130,21 @@ enum MaintainerCommands {
 }
 
 async fn simple_commands_handler(
-    mes: Message,
+    msg: Message,
     bot: AutoSend<Bot>,
     cmd: SimpleCommand,
     cfg: ConfigParameters,
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {
-            if mes.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from().unwrap().id == cfg.bot_maintainer {
                 format!("{}\n{}", SimpleCommand::descriptions(), MaintainerCommands::descriptions())
             } else {
                 SimpleCommand::descriptions()
             }
         }
         SimpleCommand::Maintainer => {
-            if mes.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from().unwrap().id == cfg.bot_maintainer {
                 "Maintainer is you!".into()
             } else {
                 if let Some(username) = cfg.maintainer_username {
@@ -155,10 +155,10 @@ async fn simple_commands_handler(
             }
         }
         SimpleCommand::MyId => {
-            format!("{}", mes.from().unwrap().id)
+            format!("{}", msg.from().unwrap().id)
         }
     };
-    bot.send_message(mes.chat.id, text).await?;
+    bot.send_message(msg.chat.id, text).await?;
 
     Ok(())
 }

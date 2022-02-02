@@ -5,7 +5,7 @@ use teloxide::{
 };
 use thiserror::Error;
 
-type BotDialogue = Dialogue<DialogueState, RedisStorage<Bincode>>;
+type MyDialogue = Dialogue<DialogueState, RedisStorage<Bincode>>;
 type StorageError = <RedisStorage<Bincode> as Storage<DialogueState>>::Error;
 
 #[derive(Debug, Error)]
@@ -30,12 +30,12 @@ impl Default for DialogueState {
 
 async fn handle_message(
     bot: AutoSend<Bot>,
-    mes: Message,
-    dialogue: BotDialogue,
+    msg: Message,
+    dialogue: MyDialogue,
 ) -> Result<(), Error> {
-    match mes.text() {
+    match msg.text() {
         None => {
-            bot.send_message(mes.chat.id, "Send me a text message.").await?;
+            bot.send_message(msg.chat.id, "Send me a text message.").await?;
         }
         Some(ans) => {
             let state = dialogue.get_or_default().await?;
@@ -44,23 +44,23 @@ async fn handle_message(
                     if let Ok(number) = ans.parse() {
                         dialogue.update(DialogueState::HaveNumber(number)).await?;
                         bot.send_message(
-                            mes.chat.id,
+                            msg.chat.id,
                             format!("Remembered number {}. Now use /get or /reset", number),
                         )
                         .await?;
                     } else {
-                        bot.send_message(mes.chat.id, "Please, send me a number").await?;
+                        bot.send_message(msg.chat.id, "Please, send me a number").await?;
                     }
                 }
                 DialogueState::HaveNumber(num) => {
                     if ans.starts_with("/get") {
-                        bot.send_message(mes.chat.id, format!("Here is your number: {}", num))
+                        bot.send_message(msg.chat.id, format!("Here is your number: {}", num))
                             .await?;
                     } else if ans.starts_with("/reset") {
                         dialogue.reset().await?;
-                        bot.send_message(mes.chat.id, "Resetted number").await?;
+                        bot.send_message(msg.chat.id, "Resetted number").await?;
                     } else {
-                        bot.send_message(mes.chat.id, "Please, send /get or /reset").await?;
+                        bot.send_message(msg.chat.id, "Please, send /get or /reset").await?;
                     }
                 }
             }

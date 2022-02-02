@@ -5,10 +5,8 @@ use teloxide::{
 };
 use thiserror::Error;
 
-type Store = SqliteStorage<Json>;
-// FIXME: naming
-type MyDialogue = Dialogue<BotDialogue, Store>;
-type StorageError = <SqliteStorage<Json> as Storage<BotDialogue>>::Error;
+type MyDialogue = Dialogue<DialogueState, SqliteStorage<Json>>;
+type StorageError = <SqliteStorage<Json> as Storage<DialogueState>>::Error;
 
 #[derive(Debug, Error)]
 enum Error {
@@ -19,12 +17,12 @@ enum Error {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-pub enum BotDialogue {
+pub enum DialogueState {
     Start,
     GotNumber(i32),
 }
 
-impl Default for BotDialogue {
+impl Default for DialogueState {
     fn default() -> Self {
         Self::Start
     }
@@ -32,37 +30,37 @@ impl Default for BotDialogue {
 
 async fn handle_message(
     bot: AutoSend<Bot>,
-    mes: Message,
+    msg: Message,
     dialogue: MyDialogue,
 ) -> Result<(), Error> {
-    match mes.text() {
+    match msg.text() {
         None => {
-            bot.send_message(mes.chat.id, "Send me a text message.").await?;
+            bot.send_message(msg.chat.id, "Send me a text message.").await?;
         }
         Some(ans) => {
             let state = dialogue.get_or_default().await?;
             match state {
-                BotDialogue::Start => {
+                DialogueState::Start => {
                     if let Ok(number) = ans.parse() {
-                        dialogue.update(BotDialogue::GotNumber(number)).await?;
+                        dialogue.update(DialogueState::GotNumber(number)).await?;
                         bot.send_message(
-                            mes.chat.id,
+                            msg.chat.id,
                             format!("Remembered number {}. Now use /get or /reset", number),
                         )
                         .await?;
                     } else {
-                        bot.send_message(mes.chat.id, "Please, send me a number").await?;
+                        bot.send_message(msg.chat.id, "Please, send me a number").await?;
                     }
                 }
-                BotDialogue::GotNumber(num) => {
+                DialogueState::GotNumber(num) => {
                     if ans.starts_with("/get") {
-                        bot.send_message(mes.chat.id, format!("Here is your number: {}", num))
+                        bot.send_message(msg.chat.id, format!("Here is your number: {}", num))
                             .await?;
                     } else if ans.starts_with("/reset") {
                         dialogue.reset().await?;
-                        bot.send_message(mes.chat.id, "Resetted number").await?;
+                        bot.send_message(msg.chat.id, "Resetted number").await?;
                     } else {
-                        bot.send_message(mes.chat.id, "Please, send /get or /reset").await?;
+                        bot.send_message(msg.chat.id, "Please, send /get or /reset").await?;
                     }
                 }
             }
@@ -77,7 +75,7 @@ async fn main() {
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     let handler = dptree::entry()
-        .add_dialogue::<Message, Store, BotDialogue>()
+        .add_dialogue::<Message, SqliteStorage<Json>, DialogueState>()
         .branch(dptree::endpoint(handle_message));
 
     DispatcherBuilder::new(bot, handler)

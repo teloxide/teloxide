@@ -26,8 +26,8 @@ async fn main() {
 
     teloxide::repls2::repl_with_listener(
         bot.clone(),
-        |mes: Message, bot: AutoSend<Bot>| async move {
-            bot.send_message(mes.chat.id, "pong").await?;
+        |msg: Message, bot: AutoSend<Bot>| async move {
+            bot.send_message(msg.chat.id, "pong").await?;
             respond(())
         },
         webhook(bot).await,

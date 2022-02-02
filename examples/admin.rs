@@ -66,14 +66,14 @@ fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
 type MyBot = AutoSend<Bot>;
 
 // Kick a user with a replied message.
-async fn kick_user(bot: MyBot, mes: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match mes.reply_to_message() {
+async fn kick_user(bot: MyBot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            bot.unban_chat_member(mes.chat_id(), replied.from().unwrap().id).await?;
+            bot.unban_chat_member(msg.chat_id(), replied.from().unwrap().id).await?;
         }
         None => {
-            bot.send_message(mes.chat_id(), "Use this command in reply to another message").await?;
+            bot.send_message(msg.chat_id(), "Use this command in reply to another message").await?;
         }
     }
     Ok(())
@@ -82,24 +82,24 @@ async fn kick_user(bot: MyBot, mes: Message) -> Result<(), Box<dyn Error + Send 
 // Mute a user with a replied message.
 async fn mute_user(
     bot: MyBot,
-    mes: Message,
+    msg: Message,
     time: Duration,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match mes.reply_to_message() {
+    match msg.reply_to_message() {
         Some(replied) => {
             bot.restrict_chat_member(
-                mes.chat_id(),
+                msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
                 ChatPermissions::default(),
             )
             .until_date(
-                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(mes.date as i64, 0), Utc)
+                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(msg.date as i64, 0), Utc)
                     + time,
             )
             .await?;
         }
         None => {
-            bot.send_message(mes.chat_id(), "Use this command in a reply to another message!")
+            bot.send_message(msg.chat_id(), "Use this command in a reply to another message!")
                 .await?;
         }
     }
@@ -109,23 +109,23 @@ async fn mute_user(
 // Ban a user with replied message.
 async fn ban_user(
     bot: MyBot,
-    mes: Message,
+    msg: Message,
     time: Duration,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match mes.reply_to_message() {
+    match msg.reply_to_message() {
         Some(replied) => {
             bot.kick_chat_member(
-                mes.chat_id(),
+                msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
             )
             .until_date(
-                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(mes.date as i64, 0), Utc)
+                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(msg.date as i64, 0), Utc)
                     + time,
             )
             .await?;
         }
         None => {
-            bot.send_message(mes.chat_id(), "Use this command in a reply to another message!")
+            bot.send_message(msg.chat_id(), "Use this command in a reply to another message!")
                 .await?;
         }
     }
@@ -134,16 +134,16 @@ async fn ban_user(
 
 async fn action(
     bot: MyBot,
-    mes: Message,
+    msg: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => {
-            bot.send_message(mes.chat_id(), Command::descriptions()).await?;
+            bot.send_message(msg.chat_id(), Command::descriptions()).await?;
         }
-        Command::Kick => kick_user(bot, mes).await?,
-        Command::Ban { time, unit } => ban_user(bot, mes, calc_restrict_time(time, unit)).await?,
-        Command::Mute { time, unit } => mute_user(bot, mes, calc_restrict_time(time, unit)).await?,
+        Command::Kick => kick_user(bot, msg).await?,
+        Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
+        Command::Mute { time, unit } => mute_user(bot, msg, calc_restrict_time(time, unit)).await?,
     };
 
     Ok(())

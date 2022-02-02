@@ -19,7 +19,7 @@ use teloxide::{
     prelude2::*,
 };
 
-type BotDialogue = Dialogue<State, SqliteStorage<Json>>;
+type MyDialogue = Dialogue<State, SqliteStorage<Json>>;
 
 #[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
 #[handler_out(anyhow::Result<()>)]
@@ -71,37 +71,37 @@ async fn main() {
 
 async fn handle_start(
     bot: AutoSend<Bot>,
-    mes: Message,
-    dialogue: BotDialogue,
+    msg: Message,
+    dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
-    bot.send_message(mes.chat_id(), "Let's start! What's your full name?").await?;
+    bot.send_message(msg.chat_id(), "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
 async fn handle_receive_full_name(
     bot: AutoSend<Bot>,
-    mes: Message,
-    dialogue: BotDialogue,
+    msg: Message,
+    dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
-    bot.send_message(mes.chat_id(), "How old are you?").await?;
-    dialogue.update(State::ReceiveAge(mes.text().unwrap().into())).await?;
+    bot.send_message(msg.chat_id(), "How old are you?").await?;
+    dialogue.update(State::ReceiveAge(msg.text().unwrap().into())).await?;
     Ok(())
 }
 
 async fn handle_receive_age(
     bot: AutoSend<Bot>,
-    mes: Message,
-    dialogue: BotDialogue,
+    msg: Message,
+    dialogue: MyDialogue,
     full_name: String,
 ) -> anyhow::Result<()> {
-    match mes.text().unwrap().parse::<u8>() {
+    match msg.text().unwrap().parse::<u8>() {
         Ok(age) => {
-            bot.send_message(mes.chat_id(), "What's your location?").await?;
+            bot.send_message(msg.chat_id(), "What's your location?").await?;
             dialogue.update(State::ReceiveLocation(ReceiveLocation { full_name, age })).await?;
         }
         _ => {
-            bot.send_message(mes.chat_id(), "Send me a number.").await?;
+            bot.send_message(msg.chat_id(), "Send me a number.").await?;
         }
     }
     Ok(())
@@ -109,14 +109,14 @@ async fn handle_receive_age(
 
 async fn handle_receive_location(
     bot: AutoSend<Bot>,
-    mes: Message,
-    dialogue: BotDialogue,
+    msg: Message,
+    dialogue: MyDialogue,
     state: ReceiveLocation,
 ) -> anyhow::Result<()> {
-    let location = mes.text().unwrap();
+    let location = msg.text().unwrap();
     let message =
         format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, location);
-    bot.send_message(mes.chat_id(), message).await?;
+    bot.send_message(msg.chat_id(), message).await?;
     dialogue.exit().await?;
     Ok(())
 }
