@@ -99,4 +99,4 @@ jobs:
           toolchain: stable
           override: true
       - name: Check the examples
-        run: cargo check --examples
+        run: cargo check --examples --features="full"
