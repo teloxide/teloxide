@@ -27,16 +27,10 @@ pub enum State {
     ReceiveFullName,
 
     #[handler(handle_receive_age)]
-    ReceiveAge(String),
+    ReceiveAge { full_name: String },
 
     #[handler(handle_receive_location)]
-    ReceiveLocation(ReceiveLocation),
-}
-
-#[derive(Clone)]
-pub struct ReceiveLocation {
-    full_name: String,
-    age: u8,
+    ReceiveLocation { full_name: String, age: u8 },
 }
 
 impl Default for State {
@@ -80,7 +74,7 @@ async fn handle_receive_full_name(
     dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
     bot.send_message(msg.chat_id(), "How old are you?").await?;
-    dialogue.update(State::ReceiveAge(msg.text().unwrap().into())).await?;
+    dialogue.update(State::ReceiveAge { full_name: msg.text().unwrap().into() }).await?;
     Ok(())
 }
 
@@ -88,12 +82,12 @@ async fn handle_receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    full_name: String,
+    (full_name,): (String,),
 ) -> anyhow::Result<()> {
     match msg.text().unwrap().parse::<u8>() {
         Ok(age) => {
             bot.send_message(msg.chat_id(), "What's your location?").await?;
-            dialogue.update(State::ReceiveLocation(ReceiveLocation { full_name, age })).await?;
+            dialogue.update(State::ReceiveLocation { full_name, age }).await?;
         }
         _ => {
             bot.send_message(msg.chat_id(), "Send me a number.").await?;
@@ -106,11 +100,10 @@ async fn handle_receive_location(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    state: ReceiveLocation,
+    (full_name, age): (String, u8),
 ) -> anyhow::Result<()> {
     let location = msg.text().unwrap();
-    let message =
-        format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, location);
+    let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
     bot.send_message(msg.chat_id(), message).await?;
     dialogue.exit().await?;
     Ok(())
