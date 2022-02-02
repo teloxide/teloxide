@@ -27,5 +27,5 @@ pub struct ChatInviteLink {
     /// after joining the chat via this invite link; 1-99999
     pub member_limit: Option<u32>,
     /// Number of pending join requests created using this link
-    pub pending_join_request_count: u32,
+    pub pending_join_request_count: Option<u32>,
 }
