@@ -19,10 +19,7 @@ use teloxide::{
     prelude2::*,
 };
 
-// FIXME: naming
-type MyBot = AutoSend<Bot>;
-type Store = SqliteStorage<Json>;
-type BotDialogue = Dialogue<State, Store>;
+type BotDialogue = Dialogue<State, SqliteStorage<Json>>;
 
 #[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
 #[handler_out(anyhow::Result<()>)]
@@ -62,7 +59,9 @@ async fn main() {
 
     DispatcherBuilder::new(
         bot,
-        dptree::entry().add_dialogue::<Message, Store, State>().dispatch_by::<State>(),
+        dptree::entry()
+            .add_dialogue::<Message, SqliteStorage<Json>, State>()
+            .dispatch_by::<State>(),
     )
     .dependencies(dptree::deps![storage])
     .build()
@@ -70,14 +69,18 @@ async fn main() {
     .await;
 }
 
-async fn handle_start(bot: MyBot, mes: Message, dialogue: BotDialogue) -> anyhow::Result<()> {
+async fn handle_start(
+    bot: AutoSend<Bot>,
+    mes: Message,
+    dialogue: BotDialogue,
+) -> anyhow::Result<()> {
     bot.send_message(mes.chat_id(), "Let's start! What's your full name?").await?;
     dialogue.next(State::ReceiveFullName).await?;
     Ok(())
 }
 
 async fn handle_receive_full_name(
-    bot: MyBot,
+    bot: AutoSend<Bot>,
     mes: Message,
     dialogue: BotDialogue,
 ) -> anyhow::Result<()> {
@@ -87,7 +90,7 @@ async fn handle_receive_full_name(
 }
 
 async fn handle_receive_age(
-    bot: MyBot,
+    bot: AutoSend<Bot>,
     mes: Message,
     dialogue: BotDialogue,
     full_name: String,
@@ -105,7 +108,7 @@ async fn handle_receive_age(
 }
 
 async fn handle_receive_location(
-    bot: MyBot,
+    bot: AutoSend<Bot>,
     mes: Message,
     dialogue: BotDialogue,
     state: ReceiveLocation,

@@ -5,9 +5,7 @@ use teloxide::{
 };
 use thiserror::Error;
 
-type Store = RedisStorage<Bincode>;
-// FIXME: naming
-type MyDialogue = Dialogue<BotDialogue, Store>;
+type BotDialogue = Dialogue<BotDialogue, RedisStorage<Bincode>>;
 type StorageError = <RedisStorage<Bincode> as Storage<BotDialogue>>::Error;
 
 #[derive(Debug, Error)]
@@ -33,7 +31,7 @@ impl Default for BotDialogue {
 async fn handle_message(
     bot: AutoSend<Bot>,
     mes: Message,
-    dialogue: MyDialogue,
+    dialogue: BotDialogue,
 ) -> Result<(), Error> {
     match mes.text() {
         None => {
@@ -81,7 +79,7 @@ async fn main() {
     let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
     let handler = dptree::entry()
-        .add_dialogue::<Message, Store, BotDialogue>()
+        .add_dialogue::<Message, RedisStorage<Bincode>, BotDialogue>()
         .branch(dptree::endpoint(handle_message));
 
     DispatcherBuilder::new(bot, handler)

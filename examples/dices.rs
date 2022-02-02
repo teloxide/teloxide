@@ -2,8 +2,6 @@
 
 use teloxide::prelude2::*;
 
-type TeleBot = AutoSend<Bot>;
-
 #[tokio::main]
 async fn main() {
     teloxide::enable_logging!();
@@ -11,7 +9,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repls2::repl(bot, |message: Message, bot: TeleBot| async move {
+    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })
