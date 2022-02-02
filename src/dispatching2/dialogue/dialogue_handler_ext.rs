@@ -27,10 +27,10 @@ where
         self.chain(
             dptree::filter_map(|storage: Arc<S>, upd: Upd| async move {
                 let chat_id = upd.chat_id()?;
-                Dialogue::new(storage, chat_id).ok()
+                Some(Dialogue::new(storage, chat_id))
             })
             .chain(dptree::filter_map(|dialogue: Dialogue<D, S>| async move {
-                dialogue.current_state_or_default().await.ok()
+                dialogue.get_or_default().await.ok()
             })),
         )
     }

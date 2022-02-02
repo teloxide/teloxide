@@ -5,8 +5,8 @@ use teloxide::{
 };
 use thiserror::Error;
 
-type BotDialogue = Dialogue<BotDialogue, RedisStorage<Bincode>>;
-type StorageError = <RedisStorage<Bincode> as Storage<BotDialogue>>::Error;
+type BotDialogue = Dialogue<DialogueState, RedisStorage<Bincode>>;
+type StorageError = <RedisStorage<Bincode> as Storage<DialogueState>>::Error;
 
 #[derive(Debug, Error)]
 enum Error {
@@ -17,12 +17,12 @@ enum Error {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-pub enum BotDialogue {
+pub enum DialogueState {
     Start,
     HaveNumber(i32),
 }
 
-impl Default for BotDialogue {
+impl Default for DialogueState {
     fn default() -> Self {
         Self::Start
     }
@@ -38,11 +38,11 @@ async fn handle_message(
             bot.send_message(mes.chat.id, "Send me a text message.").await?;
         }
         Some(ans) => {
-            let state = dialogue.current_state_or_default().await?;
+            let state = dialogue.get_or_default().await?;
             match state {
-                BotDialogue::Start => {
+                DialogueState::Start => {
                     if let Ok(number) = ans.parse() {
-                        dialogue.next(BotDialogue::HaveNumber(number)).await?;
+                        dialogue.update(DialogueState::HaveNumber(number)).await?;
                         bot.send_message(
                             mes.chat.id,
                             format!("Remembered number {}. Now use /get or /reset", number),
@@ -52,7 +52,7 @@ async fn handle_message(
                         bot.send_message(mes.chat.id, "Please, send me a number").await?;
                     }
                 }
-                BotDialogue::HaveNumber(num) => {
+                DialogueState::HaveNumber(num) => {
                     if ans.starts_with("/get") {
                         bot.send_message(mes.chat.id, format!("Here is your number: {}", num))
                             .await?;
@@ -79,7 +79,7 @@ async fn main() {
     let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
     let handler = dptree::entry()
-        .add_dialogue::<Message, RedisStorage<Bincode>, BotDialogue>()
+        .add_dialogue::<Message, RedisStorage<Bincode>, DialogueState>()
         .branch(dptree::endpoint(handle_message));
 
     DispatcherBuilder::new(bot, handler)

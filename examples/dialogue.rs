@@ -75,7 +75,7 @@ async fn handle_start(
     dialogue: BotDialogue,
 ) -> anyhow::Result<()> {
     bot.send_message(mes.chat_id(), "Let's start! What's your full name?").await?;
-    dialogue.next(State::ReceiveFullName).await?;
+    dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
@@ -85,7 +85,7 @@ async fn handle_receive_full_name(
     dialogue: BotDialogue,
 ) -> anyhow::Result<()> {
     bot.send_message(mes.chat_id(), "How old are you?").await?;
-    dialogue.next(State::ReceiveAge(mes.text().unwrap().into())).await?;
+    dialogue.update(State::ReceiveAge(mes.text().unwrap().into())).await?;
     Ok(())
 }
 
@@ -98,7 +98,7 @@ async fn handle_receive_age(
     match mes.text().unwrap().parse::<u8>() {
         Ok(age) => {
             bot.send_message(mes.chat_id(), "What's your location?").await?;
-            dialogue.next(State::ReceiveLocation(ReceiveLocation { full_name, age })).await?;
+            dialogue.update(State::ReceiveLocation(ReceiveLocation { full_name, age })).await?;
         }
         _ => {
             bot.send_message(mes.chat_id(), "Send me a number.").await?;

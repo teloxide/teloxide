@@ -21,7 +21,7 @@ enum Error {
 #[derive(serde::Serialize, serde::Deserialize)]
 pub enum BotDialogue {
     Start,
-    HaveNumber(i32),
+    GotNumber(i32),
 }
 
 impl Default for BotDialogue {
@@ -40,11 +40,11 @@ async fn handle_message(
             bot.send_message(mes.chat.id, "Send me a text message.").await?;
         }
         Some(ans) => {
-            let state = dialogue.current_state_or_default().await?;
+            let state = dialogue.get_or_default().await?;
             match state {
                 BotDialogue::Start => {
                     if let Ok(number) = ans.parse() {
-                        dialogue.next(BotDialogue::HaveNumber(number)).await?;
+                        dialogue.update(BotDialogue::GotNumber(number)).await?;
                         bot.send_message(
                             mes.chat.id,
                             format!("Remembered number {}. Now use /get or /reset", number),
@@ -54,7 +54,7 @@ async fn handle_message(
                         bot.send_message(mes.chat.id, "Please, send me a number").await?;
                     }
                 }
-                BotDialogue::HaveNumber(num) => {
+                BotDialogue::GotNumber(num) => {
                     if ans.starts_with("/get") {
                         bot.send_message(mes.chat.id, format!("Here is your number: {}", num))
                             .await?;
