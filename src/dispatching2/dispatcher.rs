@@ -92,6 +92,7 @@ pub struct Dispatcher<R, Err> {
     handler: UpdateHandler<Err>,
     default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err>>,
+    // TODO: respect allowed_udpates
     allowed_updates: HashSet<AllowedUpdate>,
 
     state: Arc<DispatcherState>,

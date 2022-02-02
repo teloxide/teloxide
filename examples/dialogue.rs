@@ -13,15 +13,11 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
-use teloxide::{
-    dispatching2::dialogue::{serializer::Json, SqliteStorage},
-    macros::DialogueState,
-    prelude2::*,
-};
+use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
 
-type MyDialogue = Dialogue<State, SqliteStorage<Json>>;
+type MyDialogue = Dialogue<State, InMemStorage<State>>;
 
-#[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(DialogueState, Clone)]
 #[handler_out(anyhow::Result<()>)]
 pub enum State {
     #[handler(handle_start)]
@@ -37,7 +33,7 @@ pub enum State {
     ReceiveLocation(ReceiveLocation),
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Clone)]
 pub struct ReceiveLocation {
     full_name: String,
     age: u8,
@@ -55,15 +51,14 @@ async fn main() {
     log::info!("Starting dialogue_bot...");
 
     let bot = Bot::from_env().auto_send();
-    let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     DispatcherBuilder::new(
         bot,
-        dptree::entry()
-            .add_dialogue::<Message, SqliteStorage<Json>, State>()
+        Update::filter_message()
+            .add_dialogue::<Message, InMemStorage<State>, State>()
             .dispatch_by::<State>(),
     )
-    .dependencies(dptree::deps![storage])
+    .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
     .dispatch()
     .await;

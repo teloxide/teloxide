@@ -74,7 +74,7 @@ async fn main() {
     let bot = Bot::from_env().auto_send();
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
-    let handler = dptree::entry()
+    let handler = Update::filter_message()
         .add_dialogue::<Message, SqliteStorage<Json>, DialogueState>()
         .branch(dptree::endpoint(handle_message));
 

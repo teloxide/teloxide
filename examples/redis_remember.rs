@@ -78,7 +78,7 @@ async fn main() {
     // or "serializer-bincode"
     let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
-    let handler = dptree::entry()
+    let handler = Update::filter_message()
         .add_dialogue::<Message, RedisStorage<Bincode>, DialogueState>()
         .branch(dptree::endpoint(handle_message));
 
