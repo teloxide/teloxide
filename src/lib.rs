@@ -194,7 +194,7 @@ macro_rules! get_or_return {
         match $($some)* {
             Ok(elem) => elem,
             Err(e) => return e
-        };
+        }
     }
 }
 
