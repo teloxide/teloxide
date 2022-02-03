@@ -54,6 +54,7 @@ async fn main() {
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
+    .setup_ctrlc_handler()
     .dispatch()
     .await;
 }

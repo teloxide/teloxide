@@ -50,6 +50,7 @@ async fn main() {
     DispatcherBuilder::new(bot, handler)
         .dependencies(dptree::deps![storage])
         .build()
+        .setup_ctrlc_handler()
         .dispatch()
         .await;
 }

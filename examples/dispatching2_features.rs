@@ -100,6 +100,7 @@ async fn main() {
             "Error has occurred in the dispatcher",
         ))
         .build()
+        .setup_ctrlc_handler()
         .dispatch()
         .await;
 }
