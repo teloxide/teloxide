@@ -38,7 +38,7 @@ async fn main() {
                 "DuckDuckGo Search".to_string(),
                 InputMessageContent::Text(InputMessageContentText::new(format!(
                     "https://duckduckgo.com/?q={}",
-                    query.query.to_string()
+                    query.query
                 ))),
             )
             .description("DuckDuckGo Search")

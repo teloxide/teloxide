@@ -46,25 +46,22 @@ async fn message_handler(
     m: Message,
     bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match m.text() {
-        Some(text) => {
-            match BotCommand::parse(text, "buttons") {
-                Ok(Command::Help) => {
-                    // Just send the description of all commands.
-                    bot.send_message(m.chat.id, Command::descriptions()).await?;
-                }
-                Ok(Command::Start) => {
-                    // Create a list of buttons and send them.
-                    let keyboard = make_keyboard();
-                    bot.send_message(m.chat.id, "Debian versions:").reply_markup(keyboard).await?;
-                }
+    if let Some(text) = m.text() {
+        match BotCommand::parse(text, "buttons") {
+            Ok(Command::Help) => {
+                // Just send the description of all commands.
+                bot.send_message(m.chat.id, Command::descriptions()).await?;
+            }
+            Ok(Command::Start) => {
+                // Create a list of buttons and send them.
+                let keyboard = make_keyboard();
+                bot.send_message(m.chat.id, "Debian versions:").reply_markup(keyboard).await?;
+            }
 
-                Err(_) => {
-                    bot.send_message(m.chat.id, "Command not found!").await?;
-                }
+            Err(_) => {
+                bot.send_message(m.chat.id, "Command not found!").await?;
             }
         }
-        None => {}
     }
 
     Ok(())

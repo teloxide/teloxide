@@ -70,7 +70,6 @@ async fn main() {
                         MaintainerCommands::Rand { from, to } => {
                             let mut rng = rand::rngs::OsRng::default();
                             let value: u64 = rng.gen_range(from..=to);
-                            std::mem::drop(rng);
 
                             bot.send_message(msg.chat.id, value.to_string()).await?;
 
@@ -147,12 +146,10 @@ async fn simple_commands_handler(
         SimpleCommand::Maintainer => {
             if msg.from().unwrap().id == cfg.bot_maintainer {
                 "Maintainer is you!".into()
+            } else if let Some(username) = cfg.maintainer_username {
+                format!("Maintainer is @{}", username)
             } else {
-                if let Some(username) = cfg.maintainer_username {
-                    format!("Maintainer is @{}", username)
-                } else {
-                    format!("Maintainer ID is {}", cfg.bot_maintainer)
-                }
+                format!("Maintainer ID is {}", cfg.bot_maintainer)
             }
         }
         SimpleCommand::MyId => {
