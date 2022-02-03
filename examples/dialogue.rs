@@ -73,8 +73,16 @@ async fn handle_receive_full_name(
     msg: Message,
     dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
-    bot.send_message(msg.chat_id(), "How old are you?").await?;
-    dialogue.update(State::ReceiveAge { full_name: msg.text().unwrap().into() }).await?;
+    match msg.text() {
+        Some(text) => {
+            bot.send_message(msg.chat_id(), "How old are you?").await?;
+            dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
+        }
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+        }
+    }
+
     Ok(())
 }
 
@@ -84,15 +92,21 @@ async fn handle_receive_age(
     dialogue: MyDialogue,
     (full_name,): (String,),
 ) -> anyhow::Result<()> {
-    match msg.text().unwrap().parse::<u8>() {
-        Ok(age) => {
-            bot.send_message(msg.chat_id(), "What's your location?").await?;
-            dialogue.update(State::ReceiveLocation { full_name, age }).await?;
-        }
-        _ => {
-            bot.send_message(msg.chat_id(), "Send me a number.").await?;
+    match msg.text() {
+        Some(number) => match number.parse::<u8>() {
+            Ok(age) => {
+                bot.send_message(msg.chat_id(), "What's your location?").await?;
+                dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+            }
+            _ => {
+                bot.send_message(msg.chat_id(), "Send me a number.").await?;
+            }
+        },
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
         }
     }
+
     Ok(())
 }
 
@@ -102,9 +116,16 @@ async fn handle_receive_location(
     dialogue: MyDialogue,
     (full_name, age): (String, u8),
 ) -> anyhow::Result<()> {
-    let location = msg.text().unwrap();
-    let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
-    bot.send_message(msg.chat_id(), message).await?;
-    dialogue.exit().await?;
+    match msg.text() {
+        Some(location) => {
+            let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+            bot.send_message(msg.chat_id(), message).await?;
+            dialogue.exit().await?;
+        }
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+        }
+    }
+
     Ok(())
 }
