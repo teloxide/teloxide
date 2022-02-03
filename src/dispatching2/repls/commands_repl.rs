@@ -30,7 +30,7 @@ where
     Cmd: BotCommand + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
     E: Debug + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();

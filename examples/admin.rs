@@ -1,6 +1,6 @@
 use std::{error::Error, str::FromStr};
 
-use chrono::{DateTime, Duration, NaiveDateTime, Utc};
+use chrono::Duration;
 use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommand};
 
 // Derive BotCommand to parse text with a command into this enumeration.
@@ -90,12 +90,9 @@ async fn mute_user(
             bot.restrict_chat_member(
                 msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
-                ChatPermissions::default(),
+                ChatPermissions::empty(),
             )
-            .until_date(
-                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(msg.date as i64, 0), Utc)
-                    + time,
-            )
+            .until_date(msg.date + time)
             .await?;
         }
         None => {
@@ -118,10 +115,7 @@ async fn ban_user(
                 msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
             )
-            .until_date(
-                DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(msg.date as i64, 0), Utc)
-                    + time,
-            )
+            .until_date(msg.date + time)
             .await?;
         }
         None => {

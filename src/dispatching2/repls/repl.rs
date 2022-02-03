@@ -26,7 +26,7 @@ where
     Result<(), E>: OnError<E>,
     E: Debug + Send + Sync + 'static,
     R: Requester + Send + Sync + Clone + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     let cloned_bot = bot.clone();
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;

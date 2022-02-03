@@ -51,10 +51,8 @@ pub async fn webhook(bot: AutoSend<Bot>) -> impl update_listeners::UpdateListene
 
     let server = warp::post()
         .and(warp::body::json())
-        .map(move |json: serde_json::Value| {
-            if let Ok(update) = Update::try_parse(&json) {
-                tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
-            }
+        .map(move |update: Update| {
+            tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook");
 
             StatusCode::OK
         })

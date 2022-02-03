@@ -7,12 +7,12 @@ use futures::{
 
 use crate::{
     dispatching::{
-        stop_token::{AsyncStopFlag, AsyncStopToken},
+        stop_token::{AsyncStopFlag, AsyncStopToken, StopToken},
         update_listeners::{stateful_listener::StatefulListener, UpdateListener},
     },
-    payloads::GetUpdates,
+    payloads::{GetUpdates, GetUpdatesSetters as _},
     requests::{HasPayload, Request, Requester},
-    types::{AllowedUpdate, SemiparsedVec, Update},
+    types::{AllowedUpdate, Update},
 };
 
 /// Returns a long polling update listener with `timeout` of 10 seconds.
@@ -22,36 +22,118 @@ use crate::{
 /// ## Notes
 ///
 /// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
+pub async fn polling_default<R>(
+    requester: R,
+) -> impl UpdateListener<R::Err, StopToken = impl Send + StopToken>
 where
     R: Requester + Send + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     delete_webhook_if_setup(&requester).await;
     polling(requester, Some(Duration::from_secs(10)), None, None)
 }
 
-/// Returns a long/short polling update listener with some additional options.
+#[cfg_attr(doc, aquamarine::aquamarine)]
+/// Returns a long polling update listener with some additional options.
 ///
 /// - `bot`: Using this bot, the returned update listener will receive updates.
-/// - `timeout`: A timeout for polling.
+/// - `timeout`: A timeout in seconds for polling.
 /// - `limit`: Limits the number of updates to be retrieved at once. Values
 ///   between 1—100 are accepted.
 /// - `allowed_updates`: A list the types of updates you want to receive.
+///
 /// See [`GetUpdates`] for defaults.
 ///
 /// See also: [`polling_default`](polling_default).
 ///
-/// [`GetUpdates`]: crate::payloads::GetUpdates
+/// ## Notes
+///
+/// - `timeout` should not be bigger than http client timeout, see
+///   [`default_reqwest_settings`] for default http client settings.
+/// - [`repl`]s and [`Dispatcher`] use [`hint_allowed_updates`] to set
+///   `allowed_updates`, so you rarely need to pass `allowed_updates`
+///   explicitly.
+///
+/// [`default_reqwest_settings`]: teloxide::net::default_reqwest_settings
+/// [`repl`]: fn@crate::repl
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
+/// [`hint_allowed_updates`]:
+/// crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
+///
+/// ## How it works
+///
+/// Long polling works by repeatedly calling [`Bot::get_updates`][get_updates].
+/// If telegram has any updates, it returns them immediately, otherwise it waits
+/// until either it has any updates or `timeout` expires.
+///
+/// Each [`get_updates`][get_updates] call includes an `offset` parameter equal
+/// to the latest update id + one, that allows to only receive updates that has
+/// not been received before.
+///
+/// When telegram receives a [`get_updates`][get_updates] request with `offset =
+/// N` it forgets any updates with id < `N`. When `polling` listener is stopped,
+/// it sends [`get_updates`][get_updates] with `timeout = 0, limit = 1` and
+/// appropriate `offset`, so future bot restarts won't see updates that were
+/// already seen.
+///
+/// Consumers of a `polling` update listener then need to repeatedly call
+/// [`futures::StreamExt::next`] to get the updates.
+///
+/// Here is an example diagram that shows these interactions between consumers
+/// like [`Dispatcher`], `polling` update listener and telegram.
+///
+/// ```mermaid
+/// sequenceDiagram    
+///     participant C as Consumer
+///     participant P as polling
+///     participant T as Telegram
+///
+///     link C: Dispatcher @ ../struct.Dispatcher.html
+///     link C: repl @ ../../fn.repl.html
+///     
+///     C->>P: next
+///
+///     P->>+T: Updates? (offset = 0)
+///     Note right of T: timeout
+///     T->>-P: None
+///     
+///     P->>+T: Updates? (offset = 0)
+///     Note right of T: <= timeout
+///     T->>-P: updates with ids [3, 4]
+///
+///     P->>C: update(3)
+///
+///     C->>P: next
+///     P->>C: update(4)
+///     
+///     C->>P: next
+///
+///     P->>+T: Updates? (offset = 5)    
+///     Note right of T: <= timeout
+///     T->>-P: updates with ids [5]
+///
+///     C->>P: stop signal
+///
+///     P->>C: update(5)
+///
+///     C->>P: next
+///
+///     P->>T: *Acknolegment of update(5)*
+///     T->>P: ok
+///
+///     P->>C: None
+/// ```
+///
+/// [get_updates]: crate::requests::Requester::get_updates
 pub fn polling<R>(
-    requester: R,
+    bot: R,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<R::Err>
+) -> impl UpdateListener<R::Err, StopToken = impl Send + StopToken>
 where
     R: Requester + Send + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     struct State<B: Requester> {
         bot: B,
@@ -61,74 +143,57 @@ where
         offset: i32,
         flag: AsyncStopFlag,
         token: AsyncStopToken,
+        force_stop: bool,
     }
 
     fn stream<B>(st: &mut State<B>) -> impl Stream<Item = Result<Update, B::Err>> + Send + '_
     where
         B: Requester + Send,
-        <B as Requester>::GetUpdatesFaultTolerant: Send,
+        <B as Requester>::GetUpdates: Send,
     {
         stream::unfold(st, move |state| async move {
-            let State { timeout, limit, allowed_updates, bot, offset, flag, .. } = &mut *state;
+            let State { timeout, limit, allowed_updates, bot, offset, flag, force_stop, .. } =
+                &mut *state;
+
+            if *force_stop {
+                return None;
+            }
 
             if flag.is_stopped() {
-                let mut req = bot.get_updates_fault_tolerant();
-
-                req.payload_mut().0 = GetUpdates {
-                    offset: Some(*offset),
-                    timeout: Some(0),
-                    limit: Some(1),
-                    allowed_updates: allowed_updates.take(),
-                };
+                let mut req = bot.get_updates().offset(*offset).timeout(0).limit(1);
+                req.payload_mut().allowed_updates = allowed_updates.take();
 
                 return match req.send().await {
                     Ok(_) => None,
-                    Err(err) => Some((Either::Left(stream::once(ready(Err(err)))), state)),
+                    Err(err) => {
+                        // Prevents infinite retries, see https://github.com/teloxide/teloxide/issues/496
+                        *force_stop = true;
+
+                        Some((Either::Left(stream::once(ready(Err(err)))), state))
+                    }
                 };
             }
 
-            let mut req = bot.get_updates_fault_tolerant();
-            req.payload_mut().0 = GetUpdates {
+            let mut req = bot.get_updates();
+            *req.payload_mut() = GetUpdates {
                 offset: Some(*offset),
                 timeout: *timeout,
                 limit: *limit,
                 allowed_updates: allowed_updates.take(),
             };
 
-            let updates = match req.send().await {
-                Err(err) => return Some((Either::Left(stream::once(ready(Err(err)))), state)),
-                Ok(SemiparsedVec(updates)) => {
+            match req.send().await {
+                Ok(updates) => {
                     // Set offset to the last update's id + 1
                     if let Some(upd) = updates.last() {
-                        let id: i32 = match upd {
-                            Ok(ok) => ok.id,
-                            Err((value, _)) => value["update_id"]
-                                .as_i64()
-                                .expect("The 'update_id' field must always exist in Update")
-                                .try_into()
-                                .expect("update_id must be i32"),
-                        };
-
-                        *offset = id + 1;
+                        *offset = upd.id + 1;
                     }
 
-                    for update in &updates {
-                        if let Err((value, e)) = update {
-                            log::error!(
-                                "Cannot parse an update.\nError: {:?}\nValue: {}\n\
-                            This is a bug in teloxide-core, please open an issue here: \
-                            https://github.com/teloxide/teloxide-core/issues.",
-                                e,
-                                value
-                            );
-                        }
-                    }
-
-                    updates.into_iter().filter_map(Result::ok).map(Ok)
+                    let updates = updates.into_iter().map(Ok);
+                    Some((Either::Right(stream::iter(updates)), state))
                 }
-            };
-
-            Some((Either::Right(stream::iter(updates)), state))
+                Err(err) => Some((Either::Left(stream::once(ready(Err(err)))), state)),
+            }
         })
         .flatten()
     }
@@ -136,13 +201,14 @@ where
     let (token, flag) = AsyncStopToken::new_pair();
 
     let state = State {
-        bot: requester,
+        bot,
         timeout: timeout.map(|t| t.as_secs().try_into().expect("timeout is too big")),
         limit,
         allowed_updates,
         offset: 0,
         flag,
         token,
+        force_stop: false,
     };
 
     let stop_token = |st: &mut State<_>| st.token.clone();
@@ -170,7 +236,7 @@ where
         }
     };
 
-    let is_webhook_setup = !webhook_info.url.is_empty();
+    let is_webhook_setup = webhook_info.url.is_some();
 
     if is_webhook_setup {
         if let Err(e) = requester.delete_webhook().send().await {
@@ -188,6 +254,7 @@ fn polling_is_send() {
 
     assert_send(&polling);
     assert_send(&polling.as_stream());
+    assert_send(&polling.stop_token());
 
     fn assert_send(_: &impl Send) {}
 }

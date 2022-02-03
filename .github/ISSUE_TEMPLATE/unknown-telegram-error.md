@@ -19,11 +19,6 @@ When using `<...>` method I've got  `ApiError::Unknown` error with the following
 ## Meta
 
 - `teloxide` version: <!-- (e.g.: `0.3.1`) -->
-- rustc version:
-  ```
-  <version>
-  ```
-  <!-- use `rustc --version --verbose` to get it -->
 
 ### Additional context
 

@@ -132,7 +132,7 @@ where
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
-        <R as Requester>::GetUpdatesFaultTolerant: Send,
+        <R as Requester>::GetUpdates: Send,
     {
         let listener = update_listeners::polling_default(self.bot.clone()).await;
         let error_handler =

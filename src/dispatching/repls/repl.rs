@@ -28,7 +28,7 @@ where
     Result<(), E>: OnError<E>,
     E: Debug + Send,
     R: Requester + Send + Clone + 'static,
-    <R as Requester>::GetUpdatesFaultTolerant: Send,
+    <R as Requester>::GetUpdates: Send,
 {
     let cloned_requester = requester.clone();
     repl_with_listener(
@@ -82,4 +82,13 @@ pub async fn repl_with_listener<'a, R, H, Fut, E, L, ListenerE>(
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
         .await;
+}
+
+#[test]
+fn repl_is_send() {
+    let bot = crate::Bot::new("");
+    let repl = crate::repl(bot, |_| async { crate::respond(()) });
+    assert_send(&repl);
+
+    fn assert_send(_: &impl Send) {}
 }

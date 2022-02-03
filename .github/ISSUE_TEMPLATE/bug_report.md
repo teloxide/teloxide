@@ -18,8 +18,3 @@ Instead, this happened: _explanation_
 ## Meta
 
 - `teloxide` version: <!-- (e.g.: `0.3.1`) -->
-- rustc version:
-  ```
-  <version>
-  ```
-  <!-- use `rustc --version --verbose` to get it -->
