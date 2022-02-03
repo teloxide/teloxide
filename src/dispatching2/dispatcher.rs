@@ -238,7 +238,7 @@ where
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
-    pub fn setup_ctrlc_handler(&mut self) {
+    pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
         let state = Arc::clone(&self.state);
         tokio::spawn(async move {
             loop {
@@ -258,6 +258,8 @@ where
                 }
             }
         });
+
+        self
     }
 
     /// Returns a shutdown token, which can later be used to shutdown
