@@ -1,4 +1,94 @@
 //! Support for user dialogues.
+//!
+//! The main type is (surprise!) [`Dialogue`]. Under the hood, it is just a
+//! wrapper over [`Storage`] and a chat ID. All it does is provides convenient
+//! method for manipulating the dialogue state. [`Storage`] is where all
+//! dialogue states are stored; it can be either [`InMemStorage`], which is a
+//! simple hash map, or database wrappers such as [`SqliteStorage`]. In the
+//! latter case, your dialogues are _persistent_, meaning that you can safely
+//! restart your bot and all dialogues will remain in the database -- this is a
+//! preferred method for production bots.
+//!
+//! [`examples/dialogue.rs`] clearly demonstrates the typical usage of
+//! dialogues. Your dialogue state can be represented as an enumeration:
+//!
+//! ```ignore
+//! #[derive(DialogueState, Clone)]
+//! #[handler_out(anyhow::Result<()>)]
+//! pub enum State {
+//!     #[handler(handle_start)]
+//!     Start,
+//!
+//!     #[handler(handle_receive_full_name)]
+//!     ReceiveFullName,
+//!
+//!     #[handler(handle_receive_age)]
+//!     ReceiveAge { full_name: String },
+//!
+//!     #[handler(handle_receive_location)]
+//!     ReceiveLocation { full_name: String, age: u8 },
+//! }
+//! ```
+//!
+//! Each state is associated with its respective handler: e.g., when a dialogue
+//! state is `ReceiveAge`, `handle_receive_age` is invoked:
+//!
+//! ```ignore
+//! async fn handle_receive_age(
+//!     bot: AutoSend<Bot>,
+//!     msg: Message,
+//!     dialogue: MyDialogue,
+//!     (full_name,): (String,),
+//! ) -> anyhow::Result<()> {
+//!     match msg.text() {
+//!         Some(number) => match number.parse::<u8>() {
+//!             Ok(age) => {
+//!                 bot.send_message(msg.chat_id(), "What's your location?").await?;
+//!                 dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+//!             }
+//!             _ => {
+//!                 bot.send_message(msg.chat_id(), "Send me a number.").await?;
+//!             }
+//!         },
+//!         None => {
+//!             bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+//!         }
+//!     }
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! Variant's fields are passed to state handlers as tuples: `(full_name,):
+//! (String,)`. Using [`Dialogue::update`], you can update the dialogue with a
+//! new state, in our case -- `State::ReceiveLocation { full_name, age }`. To
+//! exit the dialogue, just call [`Dialogue::exit`] and it will be removed from
+//! the inner storage:
+//!
+//! ```ignore
+//! async fn handle_receive_location(
+//!     bot: AutoSend<Bot>,
+//!     msg: Message,
+//!     dialogue: MyDialogue,
+//!     (full_name, age): (String, u8),
+//! ) -> anyhow::Result<()> {
+//!     match msg.text() {
+//!         Some(location) => {
+//!             let message =
+//!                 format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+//!             bot.send_message(msg.chat_id(), message).await?;
+//!             dialogue.exit().await?;
+//!         }
+//!         None => {
+//!             bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+//!         }
+//!     }
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
 #[cfg(feature = "redis-storage")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]

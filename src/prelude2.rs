@@ -1,4 +1,4 @@
-//! Commonly used items (dispatching2 version).
+//! Commonly used items (`dispatching2`).
 
 pub use crate::{
     error_handlers::{LoggingErrorHandler, OnError},

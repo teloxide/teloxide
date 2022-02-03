@@ -118,8 +118,17 @@ where
     /// The default parameters are a long polling update listener and log all
     /// errors produced by this listener.
     ///
+    /// Each time a handler is invoked, [`Dispatcher`] adds the following
+    /// dependencies (in addition to those passed to
+    /// [`DispatcherBuilder::dependencies`]):
+    ///
+    ///  - Your bot passed to [`DispatcherBuilder::new`];
+    ///  - An update from Telegram;
+    ///  - [`crate::types::Me`] (can be used in [`HandlerExt::add_command`]).
+    ///
     /// [`shutdown`]: ShutdownToken::shutdown
     /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
+    /// [`HandlerExt::add_command`]: crate::dispatching2::HandlerExt::add_command
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
@@ -134,6 +143,8 @@ where
 
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
+    ///
+    /// This method adds the same dependencies as [`Dispatcher::dispatch`].
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
