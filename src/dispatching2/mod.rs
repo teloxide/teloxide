@@ -1,3 +1,5 @@
+//! A new dispatching model based on [`dptree`].
+
 pub mod repls;
 
 pub mod dialogue;
