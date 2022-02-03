@@ -1222,6 +1222,7 @@ mod tests {
            "emoji": "😡",
            "set_name": "AdvenTimeAnim",
            "is_animated": true,
+           "is_video": false,
            "thumb": {
             "file_id": "AAQCAAMjAAOw0PgMaabKAcaXKCBLubkPAAQBAAdtAAPGKwACFgQ",
             "file_unique_id":"",
@@ -1234,8 +1235,7 @@ mod tests {
            "file_size": 16639
           }
          }"#;
-        let message = from_str::<Message>(json);
-        assert!(message.is_ok());
+        from_str::<Message>(json).unwrap();
     }
 
     #[test]
