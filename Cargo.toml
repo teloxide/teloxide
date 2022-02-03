@@ -80,11 +80,15 @@ cache_me = []
 # AutoSend bot adaptor
 auto_send = []
 
+# All features except nightly and tls-related
 full = ["throttle", "trace_adaptor", "erased", "cache_me", "auto_send"]
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["full", "nightly", "tokio/macros", "tokio/rt-multi-thread"]
 rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
+
+# https://github.com/rust-lang/rust/issues/88791
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
 
 [[example]]
 name = "self_info"
