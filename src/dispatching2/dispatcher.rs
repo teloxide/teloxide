@@ -232,10 +232,7 @@ where
                     ControlFlow::Continue(deps) => {
                         match self.default_handler.clone().dispatch(deps).await {
                             ControlFlow::Break(()) => {}
-                            ControlFlow::Continue(_) => unreachable!(
-                                "This is unreachable due to Infallible type in the DefaultHandler \
-                                 type"
-                            ),
+                            ControlFlow::Continue(inf) => match inf {},
                         }
                     }
                 }
