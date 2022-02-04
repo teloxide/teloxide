@@ -1,5 +1,22 @@
 // The version of Heroku ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
+//
+// You will need to configure the buildpack for heroku. We will be using Heroku
+// rust buildpack [1]. Configuration was done by using heroku CLI.
+//
+// If you're creating a new Heroku application, run this:
+//
+// ```
+// heroku create --buildpack emk/rust
+// ```
+//
+// To set buildpack for existing applicaton:
+//
+// ```
+// heroku buildpacks:set emk/rust
+// ```
+//
+// [1] https://github.com/emk/heroku-buildpack-rust
 
 use teloxide::{
     dispatching::{
