@@ -125,11 +125,11 @@ where
     ///
     ///  - Your bot passed to [`DispatcherBuilder::new`];
     ///  - An update from Telegram;
-    ///  - [`crate::types::Me`] (can be used in [`HandlerExt::add_command`]).
+    ///  - [`crate::types::Me`] (can be used in [`HandlerExt::filter_command`]).
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
-    /// [`HandlerExt::add_command`]: crate::dispatching2::HandlerExt::add_command
+    /// [`HandlerExt::filter_command`]: crate::dispatching2::HandlerExt::filter_command
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,

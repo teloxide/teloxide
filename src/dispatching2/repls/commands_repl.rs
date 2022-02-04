@@ -20,7 +20,7 @@ use teloxide_core::requests::Requester;
 ///
 /// ## Dependency requirements
 ///
-///  - Those of [`HandlerExt::add_command`].
+///  - Those of [`HandlerExt::filter_command`].
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
@@ -55,7 +55,7 @@ where
 ///
 /// ## Dependency requirements
 ///
-///  - Those of [`HandlerExt::add_command`].
+///  - Those of [`HandlerExt::filter_command`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
@@ -76,7 +76,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
 {
     let mut dispatcher = DispatcherBuilder::new(
         bot,
-        Update::filter_message().add_command::<Cmd>().branch(dptree::endpoint(handler)),
+        Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
     )
     .build();
 

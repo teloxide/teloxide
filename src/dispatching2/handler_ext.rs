@@ -14,7 +14,7 @@ pub trait HandlerExt<Output> {
     ///  - [`crate::types::Message`]
     ///  - [`crate::types::Me`]
     #[must_use]
-    fn add_command<C>(self) -> Self
+    fn filter_command<C>(self) -> Self
     where
         C: BotCommand + Send + Sync + 'static;
 
@@ -28,7 +28,7 @@ impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output>
 where
     Output: Send + Sync + 'static,
 {
-    fn add_command<C>(self) -> Self
+    fn filter_command<C>(self) -> Self
     where
         C: BotCommand + Send + Sync + 'static,
     {

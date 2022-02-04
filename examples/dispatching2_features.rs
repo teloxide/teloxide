@@ -53,7 +53,7 @@ async fn main() {
         .branch(
             dptree::entry()
                 // This method allows to parse text messages commands.
-                .add_command::<SimpleCommand>()
+                .filter_command::<SimpleCommand>()
                 // Next we can add `SimpleCommand` in the argument of endpoint. If
                 // command parsing fails, this endpoint will not be called.
                 .endpoint(simple_commands_handler),
@@ -63,7 +63,7 @@ async fn main() {
             dptree::filter(|msg: Message, cfg: ConfigParameters| async move {
                 msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
-            .add_command::<MaintainerCommands>()
+            .filter_command::<MaintainerCommands>()
             .endpoint(
                 |msg: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
                     match cmd {
