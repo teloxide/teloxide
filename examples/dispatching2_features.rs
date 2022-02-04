@@ -81,7 +81,7 @@ async fn main() {
         );
 
     // Start create dispatcher.
-    DispatcherBuilder::new(bot, handler)
+    Dispatcher::builder(bot, handler)
         // You can specify dependencies to that you have access inside of handlers. It may be
         // configs, connection to Database, or dialogue storage (see more in the dialogue_bot
         // example). It is similar to the `actix_web::Extensions`.

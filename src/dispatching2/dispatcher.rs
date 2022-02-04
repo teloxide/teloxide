@@ -28,20 +28,6 @@ where
     R: Clone + Requester + Clone + Send + Sync + 'static,
     Err: Debug + Send + Sync + 'static,
 {
-    /// Constructs a new [`DispatcherBuilder`] with `bot` and `handler`.
-    #[must_use]
-    pub fn new(bot: R, handler: UpdateHandler<Err>) -> Self {
-        Self {
-            bot,
-            dependencies: DependencyMap::new(),
-            handler,
-            default_handler: dptree::endpoint(|update: Update| async move {
-                log::warn!("Unhandled update: {:?}", update);
-            }),
-            error_handler: LoggingErrorHandler::new(),
-        }
-    }
-
     /// Specifies a handler that will be called for an unhandled update.
     ///
     /// By default, it is a mere [`log::warn`]. Note that it **must** always
@@ -114,6 +100,23 @@ where
     R: Requester + Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
+    /// Constructs a new [`DispatcherBuilder`] with `bot` and `handler`.
+    #[must_use]
+    pub fn builder(bot: R, handler: UpdateHandler<Err>) -> DispatcherBuilder<R, Err>
+    where
+        Err: Debug,
+    {
+        DispatcherBuilder {
+            bot,
+            dependencies: DependencyMap::new(),
+            handler,
+            default_handler: dptree::endpoint(|update: Update| async move {
+                log::warn!("Unhandled update: {:?}", update);
+            }),
+            error_handler: LoggingErrorHandler::new(),
+        }
+    }
+
     /// Starts your bot with the default parameters.
     ///
     /// The default parameters are a long polling update listener and log all
@@ -123,7 +126,7 @@ where
     /// dependencies (in addition to those passed to
     /// [`DispatcherBuilder::dependencies`]):
     ///
-    ///  - Your bot passed to [`DispatcherBuilder::new`];
+    ///  - Your bot passed to [`Dispatcher::builder`];
     ///  - An update from Telegram;
     ///  - [`crate::types::Me`] (can be used in [`HandlerExt::filter_command`]).
     ///

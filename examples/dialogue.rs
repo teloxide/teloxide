@@ -46,7 +46,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    DispatcherBuilder::new(
+    Dispatcher::builder(
         bot,
         Update::filter_message()
             .enter_dialogue::<Message, InMemStorage<State>, State>()

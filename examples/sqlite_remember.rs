@@ -43,7 +43,7 @@ async fn main() {
         .enter_dialogue::<Message, SqliteStorage<Json>, State>()
         .dispatch_by::<State>();
 
-    DispatcherBuilder::new(bot, handler)
+    Dispatcher::builder(bot, handler)
         .dependencies(dptree::deps![storage])
         .build()
         .setup_ctrlc_handler()

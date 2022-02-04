@@ -25,5 +25,5 @@ async fn main() {
         },
     ));
 
-    DispatcherBuilder::new(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
 }

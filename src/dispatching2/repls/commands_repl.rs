@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::{DispatcherBuilder, HandlerExt, UpdateFilterExt},
+    dispatching2::{HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
     types::Update,
     utils::command::BotCommand,
@@ -74,7 +74,9 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     R: Requester + Clone + Send + Sync + 'static,
     E: Debug + Send + Sync + 'static,
 {
-    let mut dispatcher = DispatcherBuilder::new(
+    use crate::dispatching2::Dispatcher;
+
+    let mut dispatcher = Dispatcher::builder(
         bot,
         Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
     )

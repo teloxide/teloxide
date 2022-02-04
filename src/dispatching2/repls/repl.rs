@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener},
-    dispatching2::{DispatcherBuilder, UpdateFilterExt},
+    dispatching2::UpdateFilterExt,
     error_handlers::{LoggingErrorHandler, OnError},
     types::Update,
 };
@@ -54,9 +54,11 @@ where
     E: Debug + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
 {
+    use crate::dispatching2::Dispatcher;
+
     #[allow(unused_mut)]
     let mut dispatcher =
-        DispatcherBuilder::new(bot, Update::filter_message().branch(dptree::endpoint(handler)))
+        Dispatcher::builder(bot, Update::filter_message().branch(dptree::endpoint(handler)))
             .build();
 
     #[cfg(feature = "ctrlc_handler")]

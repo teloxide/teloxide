@@ -21,7 +21,7 @@
 //! The [`Dispatcher`] type puts all these things together: it only provides
 //! [`Dispatcher::dispatch`] and a handful of other methods. Once you call
 //! `.dispatch()`, it will retrieve updates from the Telegram server and pass
-//! them to your handler, which is a parameter of [`DispatcherBuilder::new`].
+//! them to your handler, which is a parameter of [`Dispatcher::builder`].
 //!
 //! Let us look at a simple example:
 //!
@@ -54,7 +54,7 @@
 //!     },
 //! ));
 //!
-//! DispatcherBuilder::new(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+//! Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
 //! # }
 //! ```
 //!
