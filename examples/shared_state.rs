@@ -2,12 +2,10 @@
 
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use teloxide::prelude2::*;
 
-lazy_static! {
-    static ref MESSAGES_TOTAL: AtomicU64 = AtomicU64::new(0);
-}
+static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
 
 #[tokio::main]
 async fn main() {
