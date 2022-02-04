@@ -238,7 +238,7 @@ async fn handle_start(
     msg: Message,
     dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
-    bot.send_message(msg.chat_id, "Let's start! What's your full name?").await?;
+    bot.send_message(msg.chat_id(), "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
@@ -250,11 +250,11 @@ async fn handle_receive_full_name(
 ) -> anyhow::Result<()> {
     match msg.text() {
         Some(text) => {
-            bot.send_message(msg.chat_id, "How old are you?").await?;
+            bot.send_message(msg.chat_id(), "How old are you?").await?;
             dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
         }
         None => {
-            bot.send_message(msg.chat_id, "Send me plain text.").await?;
+            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
         }
     }
 
@@ -269,11 +269,11 @@ async fn handle_receive_age(
 ) -> anyhow::Result<()> {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
-            bot.send_message(msg.chat_id, "What's your location?").await?;
+            bot.send_message(msg.chat_id(), "What's your location?").await?;
             dialogue.update(State::ReceiveLocation { full_name, age }).await?;
         }
         _ => {
-            bot.send_message(msg.chat_id, "Send me a number.").await?;
+            bot.send_message(msg.chat_id(), "Send me a number.").await?;
         }
     }
 
@@ -289,11 +289,11 @@ async fn handle_receive_location(
     match msg.text() {
         Some(location) => {
             let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
-            bot.send_message(msg.chat_id, message).await?;
+            bot.send_message(msg.chat_id(), message).await?;
             dialogue.exit().await?;
         }
         None => {
-            bot.send_message(msg.chat_id, "Send me plain text.").await?;
+            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
         }
     }
 
@@ -313,7 +313,15 @@ async fn handle_receive_location(
 
 **Q: Where I can ask questions?**
 
-A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions about the library design, enhancements, and bug reports. If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
+A:
+
+ - [Issues] is a good place for well-formed questions about the library design, enhancements, and bug reports.
+ - [GitHub Discussions] is a place where you can ask us for help in a less formal manner.
+ - If you need quick help in real-time, you should ask a question in [our official Telegram group].
+
+[Issues]: https://github.com/teloxide/teloxide/issues
+[our official Telegram group]: https://t.me/teloxide
+[GitHub Discussions]: https://github.com/teloxide/teloxide/discussions
 
 **Q: Do you support the Telegram API for clients?**
 
