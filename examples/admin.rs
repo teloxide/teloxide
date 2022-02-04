@@ -62,11 +62,10 @@ fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
     }
 }
 
-// FIXME: naming
-type MyBot = AutoSend<Bot>;
+type Bot = AutoSend<teloxide::Bot>;
 
 // Kick a user with a replied message.
-async fn kick_user(bot: MyBot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
     match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
@@ -81,7 +80,7 @@ async fn kick_user(bot: MyBot, msg: Message) -> Result<(), Box<dyn Error + Send 
 
 // Mute a user with a replied message.
 async fn mute_user(
-    bot: MyBot,
+    bot: Bot,
     msg: Message,
     time: Duration,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -105,7 +104,7 @@ async fn mute_user(
 
 // Ban a user with replied message.
 async fn ban_user(
-    bot: MyBot,
+    bot: Bot,
     msg: Message,
     time: Duration,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -127,7 +126,7 @@ async fn ban_user(
 }
 
 async fn action(
-    bot: MyBot,
+    bot: Bot,
     msg: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -148,7 +147,7 @@ async fn main() {
     teloxide::enable_logging!();
     log::info!("Starting admin_bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = teloxide::Bot::from_env().auto_send();
 
     teloxide::repls2::commands_repl(bot, action, Command::ty()).await;
 }

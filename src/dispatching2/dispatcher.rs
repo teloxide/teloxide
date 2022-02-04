@@ -10,7 +10,7 @@ use crate::{
 };
 use dptree::di::DependencyMap;
 use futures::StreamExt;
-use std::{collections::HashSet, convert::Infallible, fmt::Debug, ops::ControlFlow, sync::Arc};
+use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
 use teloxide_core::requests::{Request, RequesterExt};
 use tokio::{sync::Notify, time::timeout};
 
@@ -36,7 +36,7 @@ where
             dependencies: DependencyMap::new(),
             handler,
             default_handler: dptree::endpoint(|update: Update| async move {
-                log::warn!("Unhandled update: {:?}", update)
+                log::warn!("Unhandled update: {:?}", update);
             }),
             error_handler: LoggingErrorHandler::new(),
         }
@@ -44,7 +44,8 @@ where
 
     /// Specifies a handler that will be called for an unhandled update.
     ///
-    /// By default, it is a mere [`log::warn`].
+    /// By default, it is a mere [`log::warn`]. Note that it **must** always
+    /// return [`ControlFlow::Break`], otherwise the dispatcher will panic.
     #[must_use]
     pub fn default_handler(self, handler: DefaultHandler) -> Self {
         Self { default_handler: handler, ..self }
@@ -106,7 +107,7 @@ pub struct Dispatcher<R, Err> {
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 
 /// A handler that processes unhandled updates.
-pub type DefaultHandler = dptree::Handler<'static, DependencyMap, (), Infallible>;
+pub type DefaultHandler = dptree::Endpoint<'static, DependencyMap, ()>;
 
 impl<R, Err> Dispatcher<R, Err>
 where
@@ -230,9 +231,10 @@ where
                         self.error_handler.clone().handle_error(err).await
                     }
                     ControlFlow::Continue(deps) => {
-                        match self.default_handler.clone().dispatch(deps).await {
-                            ControlFlow::Break(()) => {}
-                            ControlFlow::Continue(inf) => match inf {},
+                        if let ControlFlow::Continue(_) =
+                            self.default_handler.clone().dispatch(deps).await
+                        {
+                            panic!("The default handler returned ControlFlow::Continue");
                         }
                     }
                 }
