@@ -6,7 +6,7 @@ use teloxide_core::types::{Message, Update, UpdateKind};
 macro_rules! define_ext {
     ($ext_name:ident, $for_ty:ty => $( ($func:ident, $proj_fn:expr, $fn_doc:expr) ,)*) => {
         #[doc = concat!("Filter methods for [`", stringify!($for_ty), "`].")]
-        pub trait $ext_name<Out> {
+        pub trait $ext_name<Out>: private::Sealed {
             $( define_ext!(@sig $func, $fn_doc); )*
         }
 
@@ -30,6 +30,15 @@ macro_rules! define_ext {
             })
         }
     };
+}
+
+mod private {
+    use teloxide_core::types::{Message, Update};
+
+    pub trait Sealed {}
+
+    impl Sealed for Update {}
+    impl Sealed for Message {}
 }
 
 macro_rules! define_message_ext {
