@@ -24,7 +24,6 @@ async fn main() {
         .branch(
             // Filter allow you to filter updates by some condition.
             dptree::filter(
-                // Note that `async move` is obligatory.
                 |msg: Message| msg.chat.is_group() || msg.chat.is_supergroup(),
             )
             // Endpoint is a last message handler.
