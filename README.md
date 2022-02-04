@@ -81,11 +81,12 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ## API overview
 
 ### The dices bot
+
 This bot replies with a dice throw to each received message:
 
-([Full](./examples/dices_bot/src/main.rs))
+([Full](./examples/dices.rs))
 ```rust,no_run
-use teloxide::prelude::*;
+use teloxide::prelude2::*;
 
 #[tokio::main]
 async fn main() {
@@ -94,8 +95,8 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl(bot, |message| async move {
-        message.answer_dice().await?;
+    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+        bot.send_dice(message.chat.id).await?;
         respond(())
     })
     .await;
@@ -109,6 +110,7 @@ async fn main() {
 </div>
 
 ### Commands
+
 Commands are strongly typed and defined declaratively, similar to how we define CLI using [structopt] and JSON structures in [serde-json]. The following bot accepts these commands:
 
  - `/username <your username>`
@@ -118,13 +120,14 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](./examples/simple_commands_bot/src/main.rs))
+([Full](./examples/simple_commands.rs))
+
 ```rust,no_run
-use teloxide::{prelude::*, utils::command::BotCommand};
+use teloxide::{prelude2::*, utils::command::BotCommand};
 
 use std::error::Error;
 
-#[derive(BotCommand)]
+#[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -136,16 +139,21 @@ enum Command {
 }
 
 async fn answer(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    bot: AutoSend<Bot>,
+    message: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).await?,
+        Command::Help => bot.send_message(message.chat.id, Command::descriptions()).await?,
         Command::Username(username) => {
-            cx.answer(format!("Your username is @{}.", username)).await?
+            bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
         }
         Command::UsernameAndAge { username, age } => {
-            cx.answer(format!("Your username is @{} and age is {}.", username, age)).await?
+            bot.send_message(
+                message.chat.id,
+                format!("Your username is @{} and age is {}.", username, age),
+            )
+            .await?
         }
     };
 
@@ -159,8 +167,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let bot_name: String = panic!("Your bot's name here");
-    teloxide::commands_repl(bot, bot_name, answer).await;
+    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
 }
 ```
 
@@ -171,145 +178,41 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
+
+A dialogue is typically described by an enumeration where each variant is one of possible dialogue's states. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-Below is a bot that asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
+Below is a bot that asks you three questions and then sends the answers back to you:
 
-([dialogue_bot/src/dialogue/mod.rs](examples/dialogue_bot/src/state/mod.rs))
+([Full](examples/dialogue.rs))
+
 ```rust,ignore
-// Imports are omitted...
+use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
 
-#[derive(Transition, From)]
-pub enum Dialogue {
-    Start(StartState),
-    ReceiveFullName(ReceiveFullNameState),
-    ReceiveAge(ReceiveAgeState),
-    ReceiveLocation(ReceiveLocationState),
+type MyDialogue = Dialogue<State, InMemStorage<State>>;
+
+#[derive(DialogueState, Clone)]
+#[handler_out(anyhow::Result<()>)]
+pub enum State {
+    #[handler(handle_start)]
+    Start,
+
+    #[handler(handle_receive_full_name)]
+    ReceiveFullName,
+
+    #[handler(handle_receive_age)]
+    ReceiveAge { full_name: String },
+
+    #[handler(handle_receive_location)]
+    ReceiveLocation { full_name: String, age: u8 },
 }
 
-impl Default for Dialogue {
+impl Default for State {
     fn default() -> Self {
-        Self::Start(StartState)
+        Self::Start
     }
 }
-```
-
-When a user sends a message to our bot and such a dialogue does not exist yet, a `Dialogue::default()` is invoked, which is a `Dialogue::Start` in this case. Every time a message is received, an associated dialogue is extracted and then passed to a corresponding subtransition function:
-
-<details>
-  <summary>Dialogue::Start</summary>
-
-([dialogue_bot/src/dialogue/states/start.rs](examples/dialogue_bot/src/state/states/start.rs))
-```rust,ignore
-// Imports are omitted...
-
-pub struct StartState;
-
-#[teloxide(subtransition)]
-async fn start(
-    _state: StartState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    _ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer("Let's start! What's your full name?").await?;
-    next(ReceiveFullNameState)
-}
-```
-
-</details>
-
-<details>
-  <summary>Dialogue::ReceiveFullName</summary>
-
-([dialogue_bot/src/dialogue/states/receive_full_name.rs](examples/dialogue_bot/src/state/states/receive_full_name.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveFullNameState;
-
-#[teloxide(subtransition)]
-async fn receive_full_name(
-    state: ReceiveFullNameState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer("How old are you?").await?;
-    next(ReceiveAgeState::up(state, ans))
-}
-```
-
-</details>
-
-<details>
-  <summary>Dialogue::ReceiveAge</summary>
-
-([dialogue_bot/src/dialogue/states/receive_age.rs](examples/dialogue_bot/src/state/states/receive_age.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveAgeState {
-    pub full_name: String,
-}
-
-#[teloxide(subtransition)]
-async fn receive_age_state(
-    state: ReceiveAgeState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    match ans.parse::<u8>() {
-        Ok(ans) => {
-            cx.answer("What's your location?").await?;
-            next(ReceiveLocationState::up(state, ans))
-        }
-        _ => {
-            cx.answer("Send me a number.").await?;
-            next(state)
-        }
-    }
-}
-```
-
-</details>
-
-<details>
-    <summary>Dialogue::ReceiveLocation</summary>
-
-([dialogue_bot/src/dialogue/states/receive_location.rs](examples/dialogue_bot/src/state/states/receive_location.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveLocationState {
-    pub full_name: String,
-    pub age: u8,
-}
-
-#[teloxide(subtransition)]
-async fn receive_location(
-    state: ReceiveLocationState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
-        .await?;
-    exit()
-}
-```
-
-</details>
-
-All these subtransition functions accept a corresponding state (one of the many variants of `Dialogue`), a context, and a textual message. They return `TransitionOut<Dialogue>`, e.g. a mapping from `<your state type>` to `Dialogue`.
-
-Finally, the `main` function looks like this:
-
-([dialogue_bot/src/main.rs](./examples/dialogue_bot/src/main.rs))
-```rust,ignore
-// Imports are omitted...
 
 #[tokio::main]
 async fn main() {
@@ -318,23 +221,89 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::dialogues_repl(bot, |message, dialogue| async move {
-        handle_message(message, dialogue).await.expect("Something wrong with the bot!")
-    })
+    DispatcherBuilder::new(
+        bot,
+        Update::filter_message()
+            .add_dialogue::<Message, InMemStorage<State>, State>()
+            .dispatch_by::<State>(),
+    )
+    .dependencies(dptree::deps![InMemStorage::<State>::new()])
+    .build()
+    .setup_ctrlc_handler()
+    .dispatch()
     .await;
 }
 
-async fn handle_message(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
-    match cx.update.text().map(ToOwned::to_owned) {
-        None => {
-            cx.answer("Send me a text message.").await?;
-            next(dialogue)
+async fn handle_start(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+) -> anyhow::Result<()> {
+    bot.send_message(msg.chat_id(), "Let's start! What's your full name?").await?;
+    dialogue.update(State::ReceiveFullName).await?;
+    Ok(())
+}
+
+async fn handle_receive_full_name(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+) -> anyhow::Result<()> {
+    match msg.text() {
+        Some(text) => {
+            bot.send_message(msg.chat_id(), "How old are you?").await?;
+            dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
         }
-        Some(ans) => dialogue.react(cx, ans).await,
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+        }
     }
+
+    Ok(())
+}
+
+async fn handle_receive_age(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+    (full_name,): (String,),
+) -> anyhow::Result<()> {
+    match msg.text() {
+        Some(number) => match number.parse::<u8>() {
+            Ok(age) => {
+                bot.send_message(msg.chat_id(), "What's your location?").await?;
+                dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+            }
+            _ => {
+                bot.send_message(msg.chat_id(), "Send me a number.").await?;
+            }
+        },
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn handle_receive_location(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+    (full_name, age): (String, u8),
+) -> anyhow::Result<()> {
+    match msg.text() {
+        Some(location) => {
+            let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+            bot.send_message(msg.chat_id(), message).await?;
+            dialogue.exit().await?;
+        }
+        None => {
+            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+        }
+    }
+
+    Ok(())
 }
 ```
 
@@ -344,7 +313,7 @@ async fn handle_message(
   </kbd>
 </div>
 
-[More examples!](./examples)
+[More examples >>](./examples)
 
 ## FAQ
 **Q: Where I can ask questions?**
