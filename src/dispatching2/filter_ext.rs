@@ -26,7 +26,7 @@ macro_rules! define_ext {
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr) => {
         fn $func() -> Handler<'static, DependencyMap, Out> {
             dptree::filter_map(move |input: $for_ty| {
-                async move { $proj_fn(input) }
+                $proj_fn(input)
             })
         }
     };

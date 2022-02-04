@@ -25,7 +25,7 @@ async fn main() {
             // Filter allow you to filter updates by some condition.
             dptree::filter(
                 // Note that `async move` is obligatory.
-                |msg: Message| async move { msg.chat.is_group() || msg.chat.is_supergroup() },
+                |msg: Message| msg.chat.is_group() || msg.chat.is_supergroup(),
             )
             // Endpoint is a last message handler.
             .endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
@@ -60,7 +60,7 @@ async fn main() {
         )
         .branch(
             // Filter maintainer by used ID.
-            dptree::filter(|msg: Message, cfg: ConfigParameters| async move {
+            dptree::filter(|msg: Message, cfg: ConfigParameters| {
                 msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .filter_command::<MaintainerCommands>()

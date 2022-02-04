@@ -47,7 +47,7 @@ where
     {
         self.chain(dptree::filter_map(move |message: Message, me: Me| {
             let bot_name = me.user.username.expect("Bots must have a username");
-            async move { message.text().and_then(|text| C::parse(text, bot_name).ok()) }
+            message.text().and_then(|text| C::parse(text, bot_name).ok())
         }))
     }
 
@@ -58,11 +58,11 @@ where
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
-        self.chain(dptree::filter_map(|storage: Arc<S>, upd: Upd| async move {
+        self.chain(dptree::filter_map(|storage: Arc<S>, upd: Upd| {
             let chat_id = upd.chat_id()?;
             Some(Dialogue::new(storage, chat_id))
         }))
-        .chain(dptree::filter_map(|dialogue: Dialogue<D, S>| async move {
+        .chain(dptree::filter_map_async(|dialogue: Dialogue<D, S>| async move {
             dialogue.get_or_default().await.ok()
         }))
     }
