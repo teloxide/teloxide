@@ -8,11 +8,13 @@ use crate::{
     requests::Requester,
     types::{AllowedUpdate, Update},
 };
-use dptree::di::DependencyMap;
-use futures::StreamExt;
+use dptree::di::{DependencyMap, DependencySupplier};
+use futures::{future::BoxFuture, StreamExt};
 use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
 use teloxide_core::requests::{Request, RequesterExt};
 use tokio::{sync::Notify, time::timeout};
+
+use std::future::Future;
 
 /// The builder for [`Dispatcher`].
 pub struct DispatcherBuilder<R, Err> {
@@ -30,11 +32,22 @@ where
 {
     /// Specifies a handler that will be called for an unhandled update.
     ///
-    /// By default, it is a mere [`log::warn`]. Note that it **must** always
-    /// return [`ControlFlow::Break`], otherwise the dispatcher will panic.
+    /// By default, it is a mere [`log::warn`].
     #[must_use]
-    pub fn default_handler(self, handler: DefaultHandler) -> Self {
-        Self { default_handler: handler, ..self }
+    pub fn default_handler<H, Fut>(self, handler: H) -> Self
+    where
+        H: Fn(Arc<Update>) -> Fut + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
+    {
+        let handler = Arc::new(handler);
+
+        Self {
+            default_handler: Box::new(move |upd| {
+                let handler = Arc::clone(&handler);
+                Box::pin(handler(upd))
+            }),
+            ..self
+        }
     }
 
     /// Specifies a handler that will be called on a handler error.
@@ -92,8 +105,7 @@ pub struct Dispatcher<R, Err> {
 /// A handler that processes updates from Telegram.
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 
-/// A handler that processes unhandled updates.
-pub type DefaultHandler = dptree::Endpoint<'static, DependencyMap, ()>;
+type DefaultHandler = Box<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()>>;
 
 impl<R, Err> Dispatcher<R, Err>
 where
@@ -110,8 +122,9 @@ where
             bot,
             dependencies: DependencyMap::new(),
             handler,
-            default_handler: dptree::endpoint(|update: Update| async move {
-                log::warn!("Unhandled update: {:?}", update);
+            default_handler: Box::new(|upd| {
+                log::warn!("Unhandled update: {:?}", upd);
+                Box::pin(async {})
             }),
             error_handler: LoggingErrorHandler::new(),
         }
@@ -234,11 +247,8 @@ where
                         self.error_handler.clone().handle_error(err).await
                     }
                     ControlFlow::Continue(deps) => {
-                        if let ControlFlow::Continue(_) =
-                            self.default_handler.clone().dispatch(deps).await
-                        {
-                            panic!("The default handler returned ControlFlow::Continue");
-                        }
+                        let upd = deps.get();
+                        (self.default_handler)(upd).await;
                     }
                 }
             }

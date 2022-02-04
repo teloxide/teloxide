@@ -90,10 +90,10 @@ async fn main() {
         // library. Any `*_handler` accepts function `Fn(UpdateHandler) -> UpdateHandler`
         // which is builder for the handlers. Note that you _must_ use it instead of using
         // `dptree` methods forward.
-        .default_handler(dptree::endpoint(|upd: Update| async move {
+        .default_handler(|upd| async move {
             // This handler handles updates that do not handled by other handlers.
             log::warn!("Unhandled update: {:?}", upd);
-        }))
+        })
         // If `Result::Err` returns from the dispatcher, it goes here.
         .error_handler(LoggingErrorHandler::with_custom_text(
             "Error has occurred in the dispatcher",
