@@ -64,7 +64,7 @@ async fn handle_start(
     msg: Message,
     dialogue: MyDialogue,
 ) -> anyhow::Result<()> {
-    bot.send_message(msg.chat_id(), "Let's start! What's your full name?").await?;
+    bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
@@ -76,11 +76,11 @@ async fn handle_receive_full_name(
 ) -> anyhow::Result<()> {
     match msg.text() {
         Some(text) => {
-            bot.send_message(msg.chat_id(), "How old are you?").await?;
+            bot.send_message(msg.chat.id, "How old are you?").await?;
             dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
         }
         None => {
-            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
+            bot.send_message(msg.chat.id, "Send me plain text.").await?;
         }
     }
 
@@ -95,11 +95,11 @@ async fn handle_receive_age(
 ) -> anyhow::Result<()> {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
-            bot.send_message(msg.chat_id(), "What's your location?").await?;
+            bot.send_message(msg.chat.id, "What's your location?").await?;
             dialogue.update(State::ReceiveLocation { full_name, age }).await?;
         }
         _ => {
-            bot.send_message(msg.chat_id(), "Send me a number.").await?;
+            bot.send_message(msg.chat.id, "Send me a number.").await?;
         }
     }
 
@@ -115,11 +115,11 @@ async fn handle_receive_location(
     match msg.text() {
         Some(location) => {
             let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
-            bot.send_message(msg.chat_id(), message).await?;
+            bot.send_message(msg.chat.id, message).await?;
             dialogue.exit().await?;
         }
         None => {
-            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
+            bot.send_message(msg.chat.id, "Send me plain text.").await?;
         }
     }
 
