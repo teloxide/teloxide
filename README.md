@@ -1,5 +1,3 @@
-[_v0.4.0 => v0.5.0 migration guide >>_](MIGRATION_GUIDE.md#04---05)
-
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
@@ -27,23 +25,24 @@
 
 ## Highlights
 
- - **Functional reactive design.** teloxide follows [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
+ - **Declarative design.** teloxide is based upon [`dptree`], a functional-style [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
 
-[functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
-[other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
+[`dptree`]: https://github.com/p0lunin/dptree
+[chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
- - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Dialogues management subsystem.** Our dialogues management subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org
 
- - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
+ - **Strongly typed commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
 
-[structopt]: https://github.com/TeXitoi/structopt
-[serde-json]: https://github.com/serde-rs/json
+[`structopt`]: https://github.com/TeXitoi/structopt
+[`serde-json`]: https://github.com/serde-rs/json
 
 ## Setting up your environment
+
  1. [Download Rust](http://rustup.rs/).
  2. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  3. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
@@ -81,11 +80,13 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ## API overview
 
 ### The dices bot
+
 This bot replies with a dice throw to each received message:
 
-([Full](./examples/dices_bot/src/main.rs))
+([Full](examples/dices.rs))
+
 ```rust,no_run
-use teloxide::prelude::*;
+use teloxide::prelude2::*;
 
 #[tokio::main]
 async fn main() {
@@ -94,8 +95,8 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl(bot, |message| async move {
-        message.answer_dice().await?;
+    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+        bot.send_dice(message.chat.id).await?;
         respond(())
     })
     .await;
@@ -109,6 +110,7 @@ async fn main() {
 </div>
 
 ### Commands
+
 Commands are strongly typed and defined declaratively, similar to how we define CLI using [structopt] and JSON structures in [serde-json]. The following bot accepts these commands:
 
  - `/username <your username>`
@@ -118,13 +120,14 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](./examples/simple_commands_bot/src/main.rs))
+([Full](examples/simple_commands.rs))
+
 ```rust,no_run
-use teloxide::{prelude::*, utils::command::BotCommand};
+use teloxide::{prelude2::*, utils::command::BotCommand};
 
 use std::error::Error;
 
-#[derive(BotCommand)]
+#[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -136,16 +139,21 @@ enum Command {
 }
 
 async fn answer(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    bot: AutoSend<Bot>,
+    message: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => cx.answer(Command::descriptions()).await?,
+        Command::Help => bot.send_message(message.chat.id, Command::descriptions()).await?,
         Command::Username(username) => {
-            cx.answer(format!("Your username is @{}.", username)).await?
+            bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
         }
         Command::UsernameAndAge { username, age } => {
-            cx.answer(format!("Your username is @{} and age is {}.", username, age)).await?
+            bot.send_message(
+                message.chat.id,
+                format!("Your username is @{} and age is {}.", username, age),
+            )
+            .await?
         }
     };
 
@@ -159,8 +167,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let bot_name: String = panic!("Your bot's name here");
-    teloxide::commands_repl(bot, bot_name, answer).await;
+    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
 }
 ```
 
@@ -171,145 +178,41 @@ async fn main() {
 </div>
 
 ### Dialogues management
-A dialogue is described by an enumeration where each variant is one of possible dialogue's states. There are also _subtransition functions_, which turn a dialogue from one state to another, thereby forming an [FSM].
+
+A dialogue is typically described by an enumeration where each variant is one of possible dialogue's states. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
-Below is a bot that asks you three questions and then sends the answers back to you. First, let's start with an enumeration (a collection of our dialogue's states):
+Below is a bot that asks you three questions and then sends the answers back to you:
 
-([dialogue_bot/src/dialogue/mod.rs](./examples/dialogue_bot/src/dialogue/mod.rs))
+([Full](examples/dialogue.rs))
+
 ```rust,ignore
-// Imports are omitted...
+use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
 
-#[derive(Transition, From)]
-pub enum Dialogue {
-    Start(StartState),
-    ReceiveFullName(ReceiveFullNameState),
-    ReceiveAge(ReceiveAgeState),
-    ReceiveLocation(ReceiveLocationState),
+type MyDialogue = Dialogue<State, InMemStorage<State>>;
+
+#[derive(DialogueState, Clone)]
+#[handler_out(anyhow::Result<()>)]
+pub enum State {
+    #[handler(handle_start)]
+    Start,
+
+    #[handler(handle_receive_full_name)]
+    ReceiveFullName,
+
+    #[handler(handle_receive_age)]
+    ReceiveAge { full_name: String },
+
+    #[handler(handle_receive_location)]
+    ReceiveLocation { full_name: String, age: u8 },
 }
 
-impl Default for Dialogue {
+impl Default for State {
     fn default() -> Self {
-        Self::Start(StartState)
+        Self::Start
     }
 }
-```
-
-When a user sends a message to our bot and such a dialogue does not exist yet, a `Dialogue::default()` is invoked, which is a `Dialogue::Start` in this case. Every time a message is received, an associated dialogue is extracted and then passed to a corresponding subtransition function:
-
-<details>
-  <summary>Dialogue::Start</summary>
-
-([dialogue_bot/src/dialogue/states/start.rs](./examples/dialogue_bot/src/dialogue/states/start.rs))
-```rust,ignore
-// Imports are omitted...
-
-pub struct StartState;
-
-#[teloxide(subtransition)]
-async fn start(
-    _state: StartState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    _ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer("Let's start! What's your full name?").await?;
-    next(ReceiveFullNameState)
-}
-```
-
-</details>
-
-<details>
-  <summary>Dialogue::ReceiveFullName</summary>
-
-([dialogue_bot/src/dialogue/states/receive_full_name.rs](./examples/dialogue_bot/src/dialogue/states/receive_full_name.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveFullNameState;
-
-#[teloxide(subtransition)]
-async fn receive_full_name(
-    state: ReceiveFullNameState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer("How old are you?").await?;
-    next(ReceiveAgeState::up(state, ans))
-}
-```
-
-</details>
-
-<details>
-  <summary>Dialogue::ReceiveAge</summary>
-
-([dialogue_bot/src/dialogue/states/receive_age.rs](./examples/dialogue_bot/src/dialogue/states/receive_age.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveAgeState {
-    pub full_name: String,
-}
-
-#[teloxide(subtransition)]
-async fn receive_age_state(
-    state: ReceiveAgeState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    match ans.parse::<u8>() {
-        Ok(ans) => {
-            cx.answer("What's your location?").await?;
-            next(ReceiveLocationState::up(state, ans))
-        }
-        _ => {
-            cx.answer("Send me a number.").await?;
-            next(state)
-        }
-    }
-}
-```
-
-</details>
-
-<details>
-    <summary>Dialogue::ReceiveLocation</summary>
-
-([dialogue_bot/src/dialogue/states/receive_location.rs](./examples/dialogue_bot/src/dialogue/states/receive_location.rs))
-```rust,ignore
-// Imports are omitted...
-
-#[derive(Generic)]
-pub struct ReceiveLocationState {
-    pub full_name: String,
-    pub age: u8,
-}
-
-#[teloxide(subtransition)]
-async fn receive_location(
-    state: ReceiveLocationState,
-    cx: TransitionIn<AutoSend<Bot>>,
-    ans: String,
-) -> TransitionOut<Dialogue> {
-    cx.answer(format!("Full name: {}\nAge: {}\nLocation: {}", state.full_name, state.age, ans))
-        .await?;
-    exit()
-}
-```
-
-</details>
-
-All these subtransition functions accept a corresponding state (one of the many variants of `Dialogue`), a context, and a textual message. They return `TransitionOut<Dialogue>`, e.g. a mapping from `<your state type>` to `Dialogue`.
-
-Finally, the `main` function looks like this:
-
-([dialogue_bot/src/main.rs](./examples/dialogue_bot/src/main.rs))
-```rust,ignore
-// Imports are omitted...
 
 #[tokio::main]
 async fn main() {
@@ -318,23 +221,84 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::dialogues_repl(bot, |message, dialogue| async move {
-        handle_message(message, dialogue).await.expect("Something wrong with the bot!")
-    })
+    Dispatcher::builder(
+        bot,
+        Update::filter_message()
+            .enter_dialogue::<Message, InMemStorage<State>, State>()
+            .dispatch_by::<State>(),
+    )
+    .dependencies(dptree::deps![InMemStorage::<State>::new()])
+    .build()
+    .setup_ctrlc_handler()
+    .dispatch()
     .await;
 }
 
-async fn handle_message(
-    cx: UpdateWithCx<AutoSend<Bot>, Message>,
-    dialogue: Dialogue,
-) -> TransitionOut<Dialogue> {
-    match cx.update.text().map(ToOwned::to_owned) {
-        None => {
-            cx.answer("Send me a text message.").await?;
-            next(dialogue)
+async fn handle_start(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+) -> anyhow::Result<()> {
+    bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
+    dialogue.update(State::ReceiveFullName).await?;
+    Ok(())
+}
+
+async fn handle_receive_full_name(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+) -> anyhow::Result<()> {
+    match msg.text() {
+        Some(text) => {
+            bot.send_message(msg.chat.id, "How old are you?").await?;
+            dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
         }
-        Some(ans) => dialogue.react(cx, ans).await,
+        None => {
+            bot.send_message(msg.chat.id, "Send me plain text.").await?;
+        }
     }
+
+    Ok(())
+}
+
+async fn handle_receive_age(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+    (full_name,): (String,), // Available from `State::ReceiveAge`.
+) -> anyhow::Result<()> {
+    match msg.text().map(|text| text.parse::<u8>()) {
+        Some(Ok(age)) => {
+            bot.send_message(msg.chat.id, "What's your location?").await?;
+            dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+        }
+        _ => {
+            bot.send_message(msg.chat.id, "Send me a number.").await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn handle_receive_location(
+    bot: AutoSend<Bot>,
+    msg: Message,
+    dialogue: MyDialogue,
+    (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+) -> anyhow::Result<()> {
+    match msg.text() {
+        Some(location) => {
+            let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+            bot.send_message(msg.chat.id, message).await?;
+            dialogue.exit().await?;
+        }
+        None => {
+            bot.send_message(msg.chat.id, "Send me plain text.").await?;
+        }
+    }
+
+    Ok(())
 }
 ```
 
@@ -344,60 +308,29 @@ async fn handle_message(
   </kbd>
 </div>
 
-[More examples!](./examples)
-
-## Recommendations
- - Use this pattern:
- 
- ```rust
- #[tokio::main]
- async fn main() {
-     run().await;
- }
- 
- async fn run() {
-     // Your logic here...
- }
- ```
- 
- Instead of this:
- 
- ```rust
-#[tokio::main]
- async fn main() {
-     // Your logic here...
- }
- ```
-
-The second one produces very strange compiler messages due to the `#[tokio::main]` macro. However, the examples in this README use the second variant for brevity.
+[More examples >>](examples/)
 
 ## FAQ
+
 **Q: Where I can ask questions?**
 
-A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about:
+A:
 
- - the library design;
- - enhancements;
- - bug reports;
- - ...
+ - [Issues] is a good place for well-formed questions about the library design, enhancements, and bug reports.
+ - [GitHub Discussions] is a place where you can ask us for help in a less formal manner.
+ - If you need quick help in real-time, you should ask a question in [our official Telegram group].
 
-If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
+[Issues]: https://github.com/teloxide/teloxide/issues
+[our official Telegram group]: https://t.me/teloxide
+[GitHub Discussions]: https://github.com/teloxide/teloxide/discussions
 
 **Q: Do you support the Telegram API for clients?**
 
 A: No, only the bots API.
 
-**Q: Why Rust?**
-
-A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides a good enough ecosystem and the language for it to be suitable for writing bots.
-
-UPD: The current design relies on wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently. Furthermore, the [mux-stream] could help to make a library out of teloxide, not a framework, since the design in this case could be defined by just combining streams of updates.
-
-[mux-stream]: https://github.com/Hirrolot/mux-stream
-
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
+A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
@@ -413,6 +346,7 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 [`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
+
 Feel free to propose your own bot to our collection!
 
  - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) -- A bot that notifies about crate updates.
@@ -436,4 +370,5 @@ Feel free to propose your own bot to our collection!
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) -- Telegram bot for searching AUR in inline mode.
   
 ## Contributing
-See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
+
+See [`CONRIBUTING.md`](CONTRIBUTING.md).

@@ -9,6 +9,7 @@ use teloxide_core::requests::Requester;
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
 #[derive(Debug)]
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct DialogueWithCx<R, Upd, D, E> {
     pub cx: UpdateWithCx<R, Upd>,
     pub dialogue: Result<D, E>,

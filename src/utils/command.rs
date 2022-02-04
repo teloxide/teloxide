@@ -51,6 +51,7 @@ use std::{
     fmt::{Display, Formatter},
 };
 
+use std::marker::PhantomData;
 #[cfg(feature = "macros")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
@@ -208,6 +209,10 @@ pub trait BotCommand: Sized {
     fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
     where
         N: Into<String>;
+    fn ty() -> PhantomData<Self> {
+        PhantomData
+    }
+    fn bot_commands() -> Vec<crate::types::BotCommand>;
 }
 
 pub type PrefixedBotCommand = String;

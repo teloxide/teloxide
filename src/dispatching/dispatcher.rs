@@ -37,6 +37,7 @@ type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
 ///
 /// See the [module-level documentation](crate::dispatching) for the design
 /// overview.
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct Dispatcher<R> {
     requester: R,
 
@@ -110,6 +111,7 @@ where
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "ctrlc_handler")))]
+    #[must_use]
     pub fn setup_ctrlc_handler(self) -> Self {
         let state = Arc::clone(&self.state);
         tokio::spawn(async move {
@@ -561,8 +563,8 @@ impl std::error::Error for IdleShutdownError {}
 /// A token which used to shutdown [`Dispatcher`].
 #[derive(Clone)]
 pub struct ShutdownToken {
-    dispatcher_state: Arc<DispatcherState>,
-    shutdown_notify_back: Arc<Notify>,
+    pub(crate) dispatcher_state: Arc<DispatcherState>,
+    pub(crate) shutdown_notify_back: Arc<Notify>,
 }
 
 impl ShutdownToken {
@@ -583,20 +585,20 @@ impl ShutdownToken {
     }
 }
 
-struct DispatcherState {
+pub(crate) struct DispatcherState {
     inner: AtomicU8,
 }
 
 impl DispatcherState {
-    fn load(&self) -> ShutdownState {
+    pub(crate) fn load(&self) -> ShutdownState {
         ShutdownState::from_u8(self.inner.load(Ordering::SeqCst))
     }
 
-    fn store(&self, new: ShutdownState) {
+    pub(crate) fn store(&self, new: ShutdownState) {
         self.inner.store(new as _, Ordering::SeqCst)
     }
 
-    fn compare_exchange(
+    pub(crate) fn compare_exchange(
         &self,
         current: ShutdownState,
         new: ShutdownState,
@@ -616,7 +618,7 @@ impl Default for DispatcherState {
 
 #[repr(u8)]
 #[derive(Debug)]
-enum ShutdownState {
+pub(crate) enum ShutdownState {
     Running,
     ShuttingDown,
     Idle,
@@ -637,21 +639,17 @@ impl ShutdownState {
     }
 }
 
-fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Duration {
+pub(crate) fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Duration {
     const MIN_SHUTDOWN_CHECK_TIMEOUT: Duration = Duration::from_secs(1);
-
-    // FIXME: replace this by just Duration::ZERO once 1.53 will be released
-    const DZERO: Duration = Duration::from_secs(0);
+    const DZERO: Duration = Duration::ZERO;
 
     let shutdown_check_timeout = update_listener.timeout_hint().unwrap_or(DZERO);
-
-    // FIXME: replace this by just saturating_add once 1.53 will be released
-    shutdown_check_timeout.checked_add(MIN_SHUTDOWN_CHECK_TIMEOUT).unwrap_or(shutdown_check_timeout)
+    shutdown_check_timeout.saturating_add(MIN_SHUTDOWN_CHECK_TIMEOUT)
 }
 
-struct AlreadyShuttingDown;
+pub(crate) struct AlreadyShuttingDown;
 
-fn shutdown_inner(
+pub(crate) fn shutdown_inner(
     state: &DispatcherState,
 ) -> Result<(), Result<AlreadyShuttingDown, IdleShutdownError>> {
     use ShutdownState::*;

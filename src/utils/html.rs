@@ -61,7 +61,7 @@ pub fn code_block(code: &str) -> String {
 pub fn code_block_with_lang(code: &str, lang: &str) -> String {
     format!(
         "<pre><code class=\"language-{}\">{}</code></pre>",
-        escape(lang).replace("\"", "&quot;"),
+        escape(lang).replace('"', "&quot;"),
         escape(code)
     )
 }
@@ -81,7 +81,7 @@ pub fn code_inline(s: &str) -> String {
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 pub fn escape(s: &str) -> String {
-    s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
 }
 
 pub fn user_mention_or_link(user: &User) -> String {

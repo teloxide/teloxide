@@ -1,15 +1,19 @@
 //! Commonly used items.
 
+#![deprecated(note = "Use dispatching2 instead")]
+#![allow(deprecated)]
+
 pub use crate::{
-    dispatching::{
-        dialogue::{
-            exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
-            TransitionIn, TransitionOut,
-        },
-        Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
-    },
     error_handlers::{LoggingErrorHandler, OnError},
     respond,
+};
+
+pub use crate::dispatching::{
+    dialogue::{
+        exit, next, DialogueDispatcher, DialogueStage, DialogueWithCx, GetChatId, Transition,
+        TransitionIn, TransitionOut,
+    },
+    Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
 };
 
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
