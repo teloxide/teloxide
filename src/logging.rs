@@ -43,7 +43,7 @@ macro_rules! enable_logging_with_filter {
     ($filter:expr) => {
         pretty_env_logger::formatted_builder()
             .write_style(pretty_env_logger::env_logger::WriteStyle::Auto)
-            .filter(Some(&env!("CARGO_PKG_NAME").replace("-", "_")), $filter)
+            .filter(Some(&env!("CARGO_CRATE_NAME").replace("-", "_")), $filter)
             .filter(Some("teloxide"), log::LevelFilter::Info)
             .init();
     };
