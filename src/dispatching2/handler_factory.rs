@@ -1,6 +1,6 @@
 use dptree::{di::DependencyMap, Handler};
 
-/// Something that can construct a handler (for internal usage only).
+/// Something that can construct a handler.
 pub trait HandlerFactory {
     type Out;
 
