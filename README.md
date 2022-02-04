@@ -84,6 +84,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 This bot replies with a dice throw to each received message:
 
 ([Full](examples/dices.rs))
+
 ```rust,no_run
 use teloxide::prelude2::*;
 
