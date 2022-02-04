@@ -3,6 +3,7 @@
 mod attr;
 mod command;
 mod command_enum;
+mod dialogue_state;
 mod fields_parse;
 mod rename_rules;
 
@@ -23,6 +24,15 @@ use syn::{
 };
 
 use std::fmt::Write;
+
+#[proc_macro_derive(DialogueState, attributes(handler, handler_out, store))]
+pub fn derive_dialogue_state(item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as ItemEnum);
+    match dialogue_state::expand(input) {
+        Ok(s) => s.into(),
+        Err(e) => e.into_compile_error().into(),
+    }
+}
 
 /// The docs is below.
 ///
