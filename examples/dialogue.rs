@@ -80,7 +80,7 @@ async fn handle_receive_full_name(
             dialogue.update(State::ReceiveAge { full_name: text.into() }).await?;
         }
         None => {
-            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
         }
     }
 
@@ -93,18 +93,13 @@ async fn handle_receive_age(
     dialogue: MyDialogue,
     (full_name,): (String,),
 ) -> anyhow::Result<()> {
-    match msg.text() {
-        Some(number) => match number.parse::<u8>() {
-            Ok(age) => {
-                bot.send_message(msg.chat_id(), "What's your location?").await?;
-                dialogue.update(State::ReceiveLocation { full_name, age }).await?;
-            }
-            _ => {
-                bot.send_message(msg.chat_id(), "Send me a number.").await?;
-            }
-        },
-        None => {
-            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+    match msg.text().map(|text| text.parse::<u8>()) {
+        Some(Ok(age)) => {
+            bot.send_message(msg.chat_id(), "What's your location?").await?;
+            dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+        }
+        _ => {
+            bot.send_message(msg.chat_id(), "Send me a number.").await?;
         }
     }
 
@@ -124,7 +119,7 @@ async fn handle_receive_location(
             dialogue.exit().await?;
         }
         None => {
-            bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+            bot.send_message(msg.chat_id(), "Send me plain text.").await?;
         }
     }
 
