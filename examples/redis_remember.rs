@@ -2,6 +2,8 @@ use teloxide::{
     dispatching2::dialogue::{serializer::Bincode, RedisStorage, Storage},
     macros::DialogueState,
     prelude2::*,
+    types::Me,
+    utils::command::BotCommand,
     RequestError,
 };
 use thiserror::Error;
@@ -34,6 +36,14 @@ impl Default for State {
     }
 }
 
+#[derive(BotCommand)]
+#[command(rename = "lowercase", description = "These commands are supported:")]
+pub enum Command {
+    #[command(description = "get your number.")]
+    Get,
+    #[command(description = "reset your number.")]
+    Reset,
+}
 #[tokio::main]
 async fn main() {
     let bot = Bot::from_env().auto_send();
@@ -82,16 +92,24 @@ async fn handle_got_number(
     msg: Message,
     dialogue: MyDialogue,
     num: i32,
+    me: Me,
 ) -> anyhow::Result<()> {
     let ans = msg.text().unwrap();
+    let bot_name = me.user.username.unwrap();
 
-    if ans.starts_with("/get") {
-        bot.send_message(msg.chat.id, format!("Here is your number: {}", num)).await?;
-    } else if ans.starts_with("/reset") {
-        dialogue.reset().await?;
-        bot.send_message(msg.chat.id, "Resetted number").await?;
-    } else {
-        bot.send_message(msg.chat.id, "Please, send /get or /reset").await?;
+    match Command::parse(ans, bot_name) {
+        Ok(cmd) => match cmd {
+            Command::Get => {
+                bot.send_message(msg.chat.id, format!("Here is your number: {}", num)).await?;
+            }
+            Command::Reset => {
+                dialogue.reset().await?;
+                bot.send_message(msg.chat.id, "Number resetted").await?;
+            }
+        },
+        Err(_) => {
+            bot.send_message(msg.chat.id, "Please, send /get or /reset").await?;
+        }
     }
 
     Ok(())
