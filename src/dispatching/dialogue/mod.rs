@@ -148,7 +148,6 @@ mod dialogue_dispatcher_handler;
 mod dialogue_stage;
 mod dialogue_with_cx;
 mod get_chat_id;
-mod storage;
 mod transition;
 
 pub use dialogue_dispatcher::DialogueDispatcher;
@@ -166,9 +165,11 @@ pub use teloxide_macros::Transition;
 
 #[cfg(feature = "redis-storage")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
-pub use storage::{RedisStorage, RedisStorageError};
+pub use crate::dispatching2::dialogue::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
-pub use storage::{SqliteStorage, SqliteStorageError};
+pub use crate::dispatching2::dialogue::{SqliteStorage, SqliteStorageError};
 
-pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
+pub use crate::dispatching2::dialogue::{
+    serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage,
+};
