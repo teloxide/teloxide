@@ -313,7 +313,15 @@ async fn handle_receive_location(
 
 **Q: Where I can ask questions?**
 
-A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions about the library design, enhancements, and bug reports. If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
+A:
+
+ - [Issues] is a good place for well-formed questions about the library design, enhancements, and bug reports.
+ - [GitHub Discussions] is a place where you can ask us for help in a less formal manner.
+ - If you need quick help in real-time, you should ask a question in [our official Telegram group].
+
+[Issues]: https://github.com/teloxide/teloxide/issues
+[our official Telegram group]: https://t.me/teloxide
+[GitHub Discussions]: https://github.com/teloxide/teloxide/discussions
 
 **Q: Do you support the Telegram API for clients?**
 
