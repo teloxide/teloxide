@@ -69,10 +69,10 @@ async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + 
     match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            bot.unban_chat_member(msg.chat_id, replied.from().unwrap().id).await?;
+            bot.unban_chat_member(msg.chat_id(), replied.from().unwrap().id).await?;
         }
         None => {
-            bot.send_message(msg.chat_id, "Use this command in reply to another message").await?;
+            bot.send_message(msg.chat_id(), "Use this command in reply to another message").await?;
         }
     }
     Ok(())
@@ -87,7 +87,7 @@ async fn mute_user(
     match msg.reply_to_message() {
         Some(replied) => {
             bot.restrict_chat_member(
-                msg.chat_id,
+                msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
                 ChatPermissions::empty(),
             )
@@ -95,7 +95,7 @@ async fn mute_user(
             .await?;
         }
         None => {
-            bot.send_message(msg.chat_id, "Use this command in a reply to another message!")
+            bot.send_message(msg.chat_id(), "Use this command in a reply to another message!")
                 .await?;
         }
     }
@@ -111,14 +111,14 @@ async fn ban_user(
     match msg.reply_to_message() {
         Some(replied) => {
             bot.kick_chat_member(
-                msg.chat_id,
+                msg.chat_id(),
                 replied.from().expect("Must be MessageKind::Common").id,
             )
             .until_date(msg.date + time)
             .await?;
         }
         None => {
-            bot.send_message(msg.chat_id, "Use this command in a reply to another message!")
+            bot.send_message(msg.chat_id(), "Use this command in a reply to another message!")
                 .await?;
         }
     }
@@ -132,7 +132,7 @@ async fn action(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => {
-            bot.send_message(msg.chat_id, Command::descriptions()).await?;
+            bot.send_message(msg.chat_id(), Command::descriptions()).await?;
         }
         Command::Kick => kick_user(bot, msg).await?,
         Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
