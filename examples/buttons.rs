@@ -87,7 +87,7 @@ async fn inline_query_handler(
 /// those buttons writing a text with the selected Debian version.
 ///
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
-/// Any can read data stored in the callback button.
+/// Anyone can read data stored in the callback button.
 async fn callback_handler(
     q: CallbackQuery,
     bot: AutoSend<Bot>,
