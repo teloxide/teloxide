@@ -1,5 +1,3 @@
-[_v0.4.0 => v0.5.0 migration guide >>_](MIGRATION_GUIDE.md#04---05)
-
 <div align="center">
   <img src="ICON.png" width="250"/>
   <h1>teloxide</h1>
@@ -27,23 +25,24 @@
 
 ## Highlights
 
- - **Functional reactive design.** teloxide follows [functional reactive design], allowing you to declaratively manipulate streams of updates from Telegram using filters, maps, folds, zips, and a lot of [other adaptors].
+ - **Declarative design.** teloxide is based upon [`dptree`], a functional-style [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
 
-[functional reactive design]: https://en.wikipedia.org/wiki/Functional_reactive_programming
-[other adaptors]: https://docs.rs/futures/latest/futures/stream/trait.StreamExt.html
+[`dptree`]: https://github.com/p0lunin/dptree
+[chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
- - **Dialogues management subsystem.** We have designed our dialogues management subsystem to be easy-to-use, and, furthermore, to be agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Dialogues management subsystem.** Our dialogues management subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org
 
- - **Strongly typed bot commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [serde-json] and command-line arguments in [structopt].
+ - **Strongly typed commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
 
-[structopt]: https://github.com/TeXitoi/structopt
-[serde-json]: https://github.com/serde-rs/json
+[`structopt`]: https://github.com/TeXitoi/structopt
+[`serde-json`]: https://github.com/serde-rs/json
 
 ## Setting up your environment
+
  1. [Download Rust](http://rustup.rs/).
  2. Create a new bot using [@Botfather](https://t.me/botfather) to get a token in the format `123456789:blablabla`.
  3. Initialise the `TELOXIDE_TOKEN` environmental variable to your token:
@@ -316,28 +315,14 @@ async fn handle_receive_location(
 [More examples >>](./examples)
 
 ## FAQ
+
 **Q: Where I can ask questions?**
 
-A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions, for example, about:
-
- - the library design;
- - enhancements;
- - bug reports;
- - ...
-
-If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
+A: [Issues](https://github.com/teloxide/teloxide/issues) is a good place for well-formed questions about the library design, enhancements, and bug reports. If you can't compile your bot due to compilation errors and need quick help, feel free to ask in [our official Telegram group](https://t.me/teloxide).
 
 **Q: Do you support the Telegram API for clients?**
 
 A: No, only the bots API.
-
-**Q: Why Rust?**
-
-A: Most programming languages have their own implementations of Telegram bots frameworks, so why not Rust? We think Rust provides a good enough ecosystem and the language for it to be suitable for writing bots.
-
-UPD: The current design relies on wide and deep trait bounds, thereby increasing cognitive complexity. It can be avoided using [mux-stream], but currently the stable Rust channel doesn't support necessary features to use [mux-stream] conveniently. Furthermore, the [mux-stream] could help to make a library out of teloxide, not a framework, since the design in this case could be defined by just combining streams of updates.
-
-[mux-stream]: https://github.com/Hirrolot/mux-stream
 
 **Q: Can I use webhooks?**
 
@@ -357,6 +342,7 @@ A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no spec
 [`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
+
 Feel free to propose your own bot to our collection!
 
  - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) -- A bot that notifies about crate updates.
@@ -380,4 +366,5 @@ Feel free to propose your own bot to our collection!
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) -- Telegram bot for searching AUR in inline mode.
   
 ## Contributing
-See [CONRIBUTING.md](https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md).
+
+See [`CONRIBUTING.md`](CONTRIBUTING.md).
