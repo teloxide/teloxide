@@ -1,5 +1,8 @@
 //! Commonly used items.
 
+#![deprecated(note = "Use dispatching2 instead")]
+#![allow(deprecated)]
+
 pub use crate::{
     error_handlers::{LoggingErrorHandler, OnError},
     respond,

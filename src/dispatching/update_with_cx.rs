@@ -17,6 +17,7 @@ use teloxide_core::{
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct UpdateWithCx<R, Upd> {
     pub requester: R,
     pub update: Upd,

@@ -3,6 +3,7 @@ use futures::future::BoxFuture;
 use teloxide_core::types::Message;
 
 /// Represents a transition function of a dialogue FSM.
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait Transition: Sized {
     type Aux;
     type Error;
@@ -21,6 +22,7 @@ pub trait Transition: Sized {
 /// Like [`Transition`], but from `StateN` -> `Dialogue`.
 ///
 /// [`Transition`]: crate::dispatching::dialogue::Transition
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait Subtransition
 where
     Self::Dialogue: Transition<Aux = Self::Aux>,
@@ -45,6 +47,7 @@ where
 ///
 /// Now it is used only inside `#[teloxide(subtransition)]` for type inference.
 #[doc(hidden)]
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait SubtransitionOutputType {
     type Output;
     type Error;
@@ -56,7 +59,9 @@ impl<D, E> SubtransitionOutputType for TransitionOut<D, E> {
 }
 
 /// An input passed into a FSM (sub)transition function.
+#[deprecated(note = "Use dispatching2 instead")]
 pub type TransitionIn<R> = UpdateWithCx<R, Message>;
 
 /// A type returned from a FSM (sub)transition function.
+#[deprecated(note = "Use dispatching2 instead")]
 pub type TransitionOut<D, E = crate::RequestError> = Result<DialogueStage<D>, E>;

@@ -37,6 +37,7 @@ type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
 ///
 /// See the [module-level documentation](crate::dispatching) for the design
 /// overview.
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct Dispatcher<R> {
     requester: R,
 

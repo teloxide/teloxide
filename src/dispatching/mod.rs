@@ -1,4 +1,5 @@
-//! Updates dispatching.
+//! Old updates dispatching (**DEPRECATED**: use [`crate::dispatching2`]
+//! instead).
 //!
 //! The key type here is [`Dispatcher`]. It encapsulates [`Bot`] and handlers
 //! for [all the update kinds].
@@ -45,6 +46,8 @@
 //! [`tokio::sync::mpsc::UnboundedReceiver`]: https://docs.rs/tokio/0.2.11/tokio/sync/mpsc/struct.UnboundedReceiver.html
 //! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
 
+#![allow(deprecated)]
+
 pub mod dialogue;
 pub mod stop_token;
 pub mod update_listeners;
@@ -70,4 +73,5 @@ pub(crate) use dispatcher::{
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[deprecated(note = "Use dispatching2 instead")]
 pub type DispatcherHandlerRx<R, Upd> = UnboundedReceiver<UpdateWithCx<R, Upd>>;
