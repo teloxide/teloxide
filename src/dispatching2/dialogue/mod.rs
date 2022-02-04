@@ -43,15 +43,15 @@
 //!     match msg.text() {
 //!         Some(number) => match number.parse::<u8>() {
 //!             Ok(age) => {
-//!                 bot.send_message(msg.chat_id(), "What's your location?").await?;
+//!                 bot.send_message(msg.chat_id, "What's your location?").await?;
 //!                 dialogue.update(State::ReceiveLocation { full_name, age }).await?;
 //!             }
 //!             _ => {
-//!                 bot.send_message(msg.chat_id(), "Send me a number.").await?;
+//!                 bot.send_message(msg.chat_id, "Send me a number.").await?;
 //!             }
 //!         },
 //!         None => {
-//!             bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+//!             bot.send_message(msg.chat_id, "Send me a text message.").await?;
 //!         }
 //!     }
 //!
@@ -76,11 +76,11 @@
 //!         Some(location) => {
 //!             let message =
 //!                 format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
-//!             bot.send_message(msg.chat_id(), message).await?;
+//!             bot.send_message(msg.chat_id, message).await?;
 //!             dialogue.exit().await?;
 //!         }
 //!         None => {
-//!             bot.send_message(msg.chat_id(), "Send me a text message.").await?;
+//!             bot.send_message(msg.chat_id, "Send me a text message.").await?;
 //!         }
 //!     }
 //!
