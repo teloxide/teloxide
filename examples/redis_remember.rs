@@ -44,7 +44,7 @@ async fn main() {
     let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
     let handler = Update::filter_message()
-        .add_dialogue::<Message, RedisStorage<Bincode>, State>()
+        .enter_dialogue::<Message, RedisStorage<Bincode>, State>()
         .dispatch_by::<State>();
 
     DispatcherBuilder::new(bot, handler)

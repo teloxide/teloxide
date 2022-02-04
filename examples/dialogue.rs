@@ -49,7 +49,7 @@ async fn main() {
     DispatcherBuilder::new(
         bot,
         Update::filter_message()
-            .add_dialogue::<Message, InMemStorage<State>, State>()
+            .enter_dialogue::<Message, InMemStorage<State>, State>()
             .dispatch_by::<State>(),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])

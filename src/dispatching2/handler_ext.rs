@@ -24,7 +24,7 @@ pub trait HandlerExt<Output> {
         C: BotCommand + Send + Sync + 'static;
 
     #[must_use]
-    fn add_dialogue<Upd, S, D>(self) -> Self
+    fn enter_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + Send + Sync + 'static,
         <S as Storage<D>>::Error: Send,
@@ -51,7 +51,7 @@ where
         }))
     }
 
-    fn add_dialogue<Upd, S, D>(self) -> Self
+    fn enter_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + Send + Sync + 'static,
         <S as Storage<D>>::Error: Send,

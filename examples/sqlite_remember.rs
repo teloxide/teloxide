@@ -40,7 +40,7 @@ async fn main() {
     let storage = SqliteStorage::open("db.sqlite", Json).await.unwrap();
 
     let handler = Update::filter_message()
-        .add_dialogue::<Message, SqliteStorage<Json>, State>()
+        .enter_dialogue::<Message, SqliteStorage<Json>, State>()
         .dispatch_by::<State>();
 
     DispatcherBuilder::new(bot, handler)
