@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+ - `BotCommand::bot_commands` to obtain Telegram API commands ([issue 262](https://github.com/teloxide/teloxide/issues/262)).
+
 ### Changed
 
 - Require that `AsUpdateStream::Stream` is `Send`

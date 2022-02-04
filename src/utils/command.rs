@@ -212,6 +212,7 @@ pub trait BotCommand: Sized {
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
+    fn bot_commands() -> Vec<crate::types::BotCommand>;
 }
 
 pub type PrefixedBotCommand = String;
