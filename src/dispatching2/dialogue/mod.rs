@@ -40,18 +40,13 @@
 //!     dialogue: MyDialogue,
 //!     (full_name,): (String,), // Available from `State::ReceiveAge`.
 //! ) -> anyhow::Result<()> {
-//!     match msg.text() {
-//!         Some(number) => match number.parse::<u8>() {
-//!             Ok(age) => {
-//!                 bot.send_message(msg.chat.id, "What's your location?").await?;
-//!                 dialogue.update(State::ReceiveLocation { full_name, age }).await?;
-//!             }
-//!             _ => {
-//!                 bot.send_message(msg.chat.id, "Send me a number.").await?;
-//!             }
-//!         },
-//!         None => {
-//!             bot.send_message(msg.chat.id, "Send me a text message.").await?;
+//!     match msg.text().map(|text| text.parse::<u8>()) {
+//!         Some(Ok(age)) => {
+//!             bot.send_message(msg.chat.id, "What's your location?").await?;
+//!             dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+//!         }
+//!         _ => {
+//!             bot.send_message(msg.chat.id, "Send me a number.").await?;
 //!         }
 //!     }
 //!
