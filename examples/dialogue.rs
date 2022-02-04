@@ -91,7 +91,7 @@ async fn handle_receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,),
+    (full_name,): (String,), // Available from `State::ReceiveAge`.
 ) -> anyhow::Result<()> {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -110,7 +110,7 @@ async fn handle_receive_location(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name, age): (String, u8),
+    (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
 ) -> anyhow::Result<()> {
     match msg.text() {
         Some(location) => {

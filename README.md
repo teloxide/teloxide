@@ -83,7 +83,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 This bot replies with a dice throw to each received message:
 
-([Full](./examples/dices.rs))
+([Full](examples/dices.rs))
 ```rust,no_run
 use teloxide::prelude2::*;
 
@@ -119,7 +119,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](./examples/simple_commands.rs))
+([Full](examples/simple_commands.rs))
 
 ```rust,no_run
 use teloxide::{prelude2::*, utils::command::BotCommand};
@@ -265,7 +265,7 @@ async fn handle_receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,),
+    (full_name,): (String,), // Available from `State::ReceiveAge`.
 ) -> anyhow::Result<()> {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -284,7 +284,7 @@ async fn handle_receive_location(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name, age): (String, u8),
+    (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
 ) -> anyhow::Result<()> {
     match msg.text() {
         Some(location) => {
@@ -307,7 +307,7 @@ async fn handle_receive_location(
   </kbd>
 </div>
 
-[More examples >>](./examples)
+[More examples >>](examples/)
 
 ## FAQ
 
@@ -329,7 +329,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](./examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](./examples/heroku_ping_pong_bot/src/main.rs).
+A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong_bot/src/main.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)

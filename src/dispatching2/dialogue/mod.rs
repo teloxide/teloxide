@@ -38,7 +38,7 @@
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
-//!     (full_name,): (String,),
+//!     (full_name,): (String,), // Available from `State::ReceiveAge`.
 //! ) -> anyhow::Result<()> {
 //!     match msg.text() {
 //!         Some(number) => match number.parse::<u8>() {
@@ -70,7 +70,7 @@
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
-//!     (full_name, age): (String, u8),
+//!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
 //! ) -> anyhow::Result<()> {
 //!     match msg.text() {
 //!         Some(location) => {
