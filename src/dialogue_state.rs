@@ -10,7 +10,7 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
     let enum_ident = &item.ident;
     let self_params_with_bounds = {
         let params = &item.generics.params;
-        if params.len() != 0 {
+        if !params.is_empty() {
             quote! { < #params > }
         } else {
             quote! {}
@@ -18,7 +18,7 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
     };
     let self_params = {
         let params = &item.generics.params;
-        if params.len() != 0 {
+        if !params.is_empty() {
             let mut params = quote! { < };
             item.generics.params.iter().for_each(|param| match param {
                 GenericParam::Type(ty) => {
@@ -65,7 +65,7 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
 
         branches.extend(match &variant.fields {
             Fields::Named(fields) => create_branch_multiple_fields_named(
-                &enum_ident,
+                enum_ident,
                 &self_params,
                 &variant.ident,
                 &handler.func,
@@ -73,13 +73,13 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
             ),
             Fields::Unnamed(fields) => match fields.unnamed.len() {
                 1 => create_branch_one_field(
-                    &enum_ident,
+                    enum_ident,
                     &self_params,
                     &variant.ident,
                     &handler.func,
                 ),
                 len => create_branch_multiple_fields(
-                    &enum_ident,
+                    enum_ident,
                     &self_params,
                     &variant.ident,
                     &handler.func,
@@ -87,7 +87,7 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
                 ),
             },
             Fields::Unit => create_branch_no_fields(
-                &enum_ident,
+                enum_ident,
                 &self_params,
                 &variant.ident,
                 &handler.func,
@@ -170,7 +170,7 @@ fn gen_variant_field_names(len: usize) -> TokenStream {
         fields.extend(quote! { #idx, });
     }
 
-    return fields;
+    fields
 }
 
 fn create_branch_multiple_fields_named(

@@ -29,10 +29,7 @@ use std::fmt::Write;
 pub fn derive_dialogue_state(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     match dialogue_state::expand(input) {
-        Ok(s) => {
-            let s = s.into();
-            s
-        }
+        Ok(s) => s.into(),
         Err(e) => e.into_compile_error().into(),
     }
 }

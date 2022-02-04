@@ -89,7 +89,7 @@ fn create_parser<'a>(
             count_args,
         ),
         ParserType::Custom(s) => {
-            let ident = syn::Ident::new(&s, Span::call_site());
+            let ident = syn::Ident::new(s, Span::call_site());
             quote! { #ident }
         }
     };
