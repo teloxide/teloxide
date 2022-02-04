@@ -10,6 +10,8 @@ use crate::{
 };
 use dptree::{di::DependencyMap, Handler};
 
+use std::fmt::Debug;
+
 /// Extension methods for working with `dptree` handlers.
 pub trait HandlerExt<Output> {
     /// Returns a handler that accepts a parsed command `C`.
@@ -23,11 +25,28 @@ pub trait HandlerExt<Output> {
     where
         C: BotCommand + Send + Sync + 'static;
 
+    /// Passes [`Dialogue<D, S>`] and `D` as handler dependencies.
+    ///
+    /// It does so by the following steps:
+    ///
+    ///  1. If an incoming update has no chat ID ([`GetChatId::chat_id`] returns
+    /// `None`), the rest of the chain will not be executed. Otherwise, passes
+    /// `Dialogue::new(storage, chat_id)` forwards.
+    ///  2. If [`Dialogue::get_or_default`] on the passed dialogue returns `Ok`,
+    /// passes the dialogue state forwards. Otherwise, logs an error and the
+    /// rest of the chain is not executed.
+    ///
+    /// ## Dependency requirements
+    ///
+    ///  - `Arc<S>`
+    ///  - `Upd`
+    ///
+    /// [`Dialogue<D, S>`]: Dialogue
     #[must_use]
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + Send + Sync + 'static,
-        <S as Storage<D>>::Error: Send,
+        <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
 
@@ -54,7 +73,7 @@ where
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + Send + Sync + 'static,
-        <S as Storage<D>>::Error: Send,
+        <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
@@ -63,7 +82,13 @@ where
             Some(Dialogue::new(storage, chat_id))
         }))
         .chain(dptree::filter_map_async(|dialogue: Dialogue<D, S>| async move {
-            dialogue.get_or_default().await.ok()
+            match dialogue.get_or_default().await {
+                Ok(dialogue) => Some(dialogue),
+                Err(err) => {
+                    log::error!("dialogue.get_or_default() failed: {:?}", err);
+                    None
+                }
+            }
         }))
     }
 
