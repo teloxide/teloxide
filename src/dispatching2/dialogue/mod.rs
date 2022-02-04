@@ -87,18 +87,19 @@
 
 #[cfg(feature = "redis-storage")]
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
-pub use storage::{RedisStorage, RedisStorageError};
+pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
-pub use storage::{SqliteStorage, SqliteStorageError};
+pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
+pub use crate::dispatching::dialogue::{
+    serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage,
+};
 pub use get_chat_id::GetChatId;
-pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
 
 use std::{marker::PhantomData, sync::Arc};
 
 mod get_chat_id;
-mod storage;
 
 /// A handle for controlling dialogue state.
 #[derive(Debug)]
