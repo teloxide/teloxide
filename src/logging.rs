@@ -3,12 +3,8 @@
 /// A logger will **only** print errors, warnings, and general information from
 /// teloxide and **all** logs from your program.
 ///
-/// # Example
-/// ```no_compile
-/// teloxide::enable_logging!();
-/// ```
-///
 /// # Note
+///
 /// Calling this macro **is not mandatory**; you can setup if your own logger if
 /// you want.
 ///
@@ -27,6 +23,7 @@ macro_rules! enable_logging {
 /// teloxide and restrict logs from your program by the specified filter.
 ///
 /// # Example
+///
 /// Allow printing all logs from your program up to [`LevelFilter::Debug`] (i.e.
 /// do not print traces):
 ///
@@ -35,6 +32,7 @@ macro_rules! enable_logging {
 /// ```
 ///
 /// # Note
+///
 /// Calling this macro **is not mandatory**; you can setup if your own logger if
 /// you want.
 ///
