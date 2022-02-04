@@ -122,7 +122,7 @@ fn create_branch_no_fields(
 ) -> TokenStream {
     quote! {
         .branch(
-            dptree::filter(|state: #state #state_generics| async move {
+            dptree::filter(|state: #state #state_generics| {
                 match state { #state::#kind => true, _ => false }
             }).endpoint(#handler)
         )
@@ -137,7 +137,7 @@ fn create_branch_one_field(
 ) -> TokenStream {
     quote! {
         .branch(
-            dptree::filter_map(|state: #state #state_generics| async move {
+            dptree::filter_map(|state: #state #state_generics| {
                 match state { #state::#kind(arg) => Some(arg), _ => None }
             }).endpoint(#handler)
         )
@@ -155,7 +155,7 @@ fn create_branch_multiple_fields(
 
     quote! {
         .branch(
-            dptree::filter_map(|state: #state #state_generics| async move {
+            dptree::filter_map(|state: #state #state_generics| {
                 match state { #state::#kind(#fields) => Some((#fields)), _ => None }
             }).endpoint(#handler)
         )
@@ -190,7 +190,7 @@ fn create_branch_multiple_fields_named(
 
     quote! {
         .branch(
-            dptree::filter_map(|state: #state #state_generics| async move {
+            dptree::filter_map(|state: #state #state_generics| {
                 match state { #state::#kind { #fields } => Some((#fields)), _ => None }
             }).endpoint(#handler)
         )
