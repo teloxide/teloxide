@@ -97,13 +97,11 @@ pub use storage::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use storage::{SqliteStorage, SqliteStorageError};
 
+pub use get_chat_id::GetChatId;
 pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
-
-pub use dialogue_handler_ext::DialogueHandlerExt;
 
 use std::{marker::PhantomData, sync::Arc};
 
-mod dialogue_handler_ext;
 mod get_chat_id;
 mod storage;
 

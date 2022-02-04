@@ -1,7 +1,7 @@
 use crate::types::CallbackQuery;
 use teloxide_core::types::Message;
 
-/// Something that maybe has a chat ID.
+/// Something that may has a chat ID.
 pub trait GetChatId {
     #[must_use]
     fn chat_id(&self) -> Option<i64>;
