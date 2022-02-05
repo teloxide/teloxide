@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 ### Added
-- `BotCommand::bot_commands()` method that return `Vec<BotCommand>` ([PR #13](https://github.com/teloxide/teloxide-macros/pull/13))
+
+- The `BotCommand::bot_commands()` method that returns `Vec<BotCommand>` ([PR #13](https://github.com/teloxide/teloxide-macros/pull/13)).
+- `#[derive(DialogueState)]`, `#[handler_out(...)]`, `#[handler(...)]`.
 
 ## [0.4.1] - 2021-07-11
 
