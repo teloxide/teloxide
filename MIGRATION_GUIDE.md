@@ -13,7 +13,7 @@ Secondly, `Dispatcher` has been split into two separate abstractions: `Dispatche
 
 Lastly, the dialogue management system has been greatly simplified. Just compare the [new `examples/dialogue.rs`](https://github.com/teloxide/teloxide/blob/25f863402d4f377f573ce2ba394f5b768ee8052e/examples/dialogue.rs) with the [old one](https://github.com/teloxide/teloxide/tree/2a6067fe94773a0015627a6aaa1930b8f88b6da0/examples/dialogue_bot/src) to see the difference. Now you don't need `TransitionIn`, `TransitionOut`, `#[teloxide(subtransition)]`, etc. All you need is to derive `DialogueState` for your FSM enumeration, call `.enter_dialogue()` and write handlers for each of a dialogue's states. Instead of supplying dependencies in the `aux` parameter of `Transition::react`, you can just call `.dependencies()` while setting up the dispatcher and all the dependencies will be passed to your handler functions as parameters.
 
-For more information, please look at the appropriate documentation pages and the [updated examples](https://github.com/teloxide/teloxide/tree/master/examples).
+For more information, please look at the appropriate documentation pages and the [updated examples](https://github.com/teloxide/teloxide/tree/master/examples). Note that, in one of the upcoming releases, the old dispatching model will be removed, so we highly encourage you to migrate your bots to the new one.
 
 Thanks for using teloxide!
 
