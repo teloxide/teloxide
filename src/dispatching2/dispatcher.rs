@@ -1,18 +1,18 @@
 use crate::{
     adaptors::CacheMe,
     dispatching::{
-        shutdown_check_timeout_for, shutdown_inner, stop_token::StopToken, update_listeners,
-        update_listeners::UpdateListener, DispatcherState, ShutdownToken,
+        stop_token::StopToken, update_listeners, update_listeners::UpdateListener, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::Requester,
     types::{AllowedUpdate, Update},
+    utils::shutdown_token::shutdown_check_timeout_for,
 };
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, StreamExt};
 use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
 use teloxide_core::requests::{Request, RequesterExt};
-use tokio::{sync::Notify, time::timeout};
+use tokio::time::timeout;
 
 use std::future::Future;
 
@@ -77,8 +77,7 @@ where
             default_handler: self.default_handler,
             error_handler: self.error_handler,
             allowed_updates: Default::default(),
-            state: Arc::new(Default::default()),
-            shutdown_notify_back: Arc::new(Default::default()),
+            state: ShutdownToken::new(),
         }
     }
 }
@@ -95,8 +94,7 @@ pub struct Dispatcher<R, Err> {
     // TODO: respect allowed_udpates
     allowed_updates: HashSet<AllowedUpdate>,
 
-    state: Arc<DispatcherState>,
-    shutdown_notify_back: Arc<Notify>,
+    state: ShutdownToken,
 }
 
 // TODO: it is allowed to return message as response on telegram request in
@@ -174,19 +172,12 @@ where
         Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
     {
-        use crate::dispatching::ShutdownState::*;
-
         update_listener.hint_allowed_updates(&mut self.allowed_updates.clone().into_iter());
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
 
-        if let Err(actual) = self.state.compare_exchange(Idle, Running) {
-            unreachable!(
-                "Dispatching is already running: expected `{:?}` state, found `{:?}`",
-                Idle, actual
-            );
-        }
+        self.state.start_dispatching();
 
         {
             let stream = update_listener.as_stream();
@@ -202,7 +193,7 @@ where
                     }
                 }
 
-                if let ShuttingDown = self.state.load() {
+                if self.state.is_shutting_down() {
                     if let Some(token) = stop_token.take() {
                         log::debug!("Start shutting down dispatching...");
                         token.stop();
@@ -212,17 +203,9 @@ where
             }
         }
 
-        if let ShuttingDown = self.state.load() {
-            // Stopped because of a `shutdown` call.
+        // TODO: wait for executing handlers?
 
-            // Notify `shutdown`s that we finished
-            self.shutdown_notify_back.notify_waiters();
-            log::info!("Dispatching has been shut down.");
-        } else {
-            log::info!("Dispatching has been stopped (listener returned `None`).");
-        }
-
-        self.state.store(Idle);
+        self.state.done();
     }
 
     async fn process_update<LErr, LErrHandler>(
@@ -262,20 +245,18 @@ where
     #[cfg(feature = "ctrlc_handler")]
     #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
     pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
-        let state = Arc::clone(&self.state);
+        let token = self.state.clone();
         tokio::spawn(async move {
             loop {
                 tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
 
-                match shutdown_inner(&state) {
-                    Ok(()) => log::info!("^C received, trying to shutdown the dispatcher..."),
-                    Err(Ok(_)) => {
-                        log::info!(
-                            "^C received, the dispatcher is already shutting down, ignoring the \
-                             signal"
-                        )
+                match token.shutdown() {
+                    Ok(f) => {
+                        log::info!("^C received, trying to shutdown the dispatcher...");
+                        f.await;
+                        log::info!("dispatcher is shutdown...");
                     }
-                    Err(Err(_)) => {
+                    Err(_) => {
                         log::info!("^C received, the dispatcher isn't running, ignoring the signal")
                     }
                 }
@@ -288,9 +269,6 @@ where
     /// Returns a shutdown token, which can later be used to shutdown
     /// dispatching.
     pub fn shutdown_token(&self) -> ShutdownToken {
-        ShutdownToken {
-            dispatcher_state: Arc::clone(&self.state),
-            shutdown_notify_back: Arc::clone(&self.shutdown_notify_back),
-        }
+        self.state.clone()
     }
 }

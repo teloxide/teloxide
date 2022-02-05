@@ -59,16 +59,12 @@ mod dispatcher_handler;
 mod dispatcher_handler_rx_ext;
 mod update_with_cx;
 
-pub use dispatcher::{Dispatcher, IdleShutdownError, ShutdownToken};
+pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
+pub use dispatcher::Dispatcher;
 pub use dispatcher_handler::DispatcherHandler;
 pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
 use tokio::sync::mpsc::UnboundedReceiver;
 pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
-
-#[cfg(feature = "dispatching2")]
-pub(crate) use dispatcher::{
-    shutdown_check_timeout_for, shutdown_inner, DispatcherState, ShutdownState,
-};
 
 /// A type of a stream, consumed by [`Dispatcher`]'s handlers.
 ///
