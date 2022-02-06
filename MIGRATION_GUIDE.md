@@ -7,7 +7,7 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
  - `InputFile` now can't be created like `InputFile::Url(url)` or matched on, use constructors like `InputFile::url`, `InputFile::file`, etc.
  - `RequestError` and `DownloadError` error variants were slightly renamed
-`ChatPermissions` is now bitflags.
+- `ChatPermissions` is now bitflags.
 
 ### teloxide
 
