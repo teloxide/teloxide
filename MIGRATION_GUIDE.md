@@ -3,6 +3,14 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## 0.5 -> 0.6
 
+### core
+
+ - `InputFile` now can't be created like `InputFile::Url(url)` or matched on, use constructors like `InputFile::url`, `InputFile::file`, etc.
+ - `RequestError` and `DownloadError` error variants were slightly renamed
+`ChatPermissions` is now bitflags.
+
+### teloxide
+
 v0.6 of teloxide introduces a new dispatching model based on the [chain of responsibility pattern]. To use it, you need to replace `prelude` with `prelude2` and `dispatching` with `dispatching2`. Instead of using old REPLs, you should now use `teloxide::repls2`.
 
 The whole design is different than the previous one based on Tokio streams. In this section, we are only to address the most common usage scenarios.
