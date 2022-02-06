@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - `BotCommand::bot_commands` to obtain Telegram API commands ([issue 262](https://github.com/teloxide/teloxide/issues/262)).
+ - The `dispatching2` and `prelude2` modules. They presents a new dispatching model based on `dptree`.
 
 ### Changed
 
-- Require that `AsUpdateStream::Stream` is `Send`
+- Require that `AsUpdateStream::Stream` is `Send`.
 - Restrict a user crate by `CARGO_CRATE_NAME` instead of `CARGO_PKG_NAME` in `enable_logging!` and `enable_logging_with_filter!`.
+- Updated `teloxide-core` to v0.4.0, see [its changelog](https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md#040---2022-02-03).
+
+### Deprecated
+
+ - The `dispatching` and `prelude` modules.
 
 ### Fixed
 

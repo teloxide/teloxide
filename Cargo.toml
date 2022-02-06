@@ -58,12 +58,12 @@ full = [
 
 [dependencies]
 teloxide-core = { version = "0.4", default-features = false }
-teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros.git", optional = true }
+teloxide-macros = { version = "0.5", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = { git = "https://github.com/p0lunin/dptree", rev = "9abc500782e55ed18909e223551f3b6998c9e1f4", optional = true }
+dptree = { version = "0.1.0", optional = true }
 
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.6"
