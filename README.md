@@ -1,4 +1,4 @@
-> [v0.5 -> v0.6 migration guide >>](MIGRATION_GUIDE.md)
+> [v0.5 -> v0.6 migration guide >>](MIGRATION_GUIDE.md#05---06)
 
 <div align="center">
   <img src="ICON.png" width="250"/>
