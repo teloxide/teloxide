@@ -1,4 +1,4 @@
-use crate::prelude::{DialogueStage, DialogueWithCx};
+use crate::dispatching::dialogue::{DialogueStage, DialogueWithCx};
 use futures::future::BoxFuture;
 use std::{future::Future, sync::Arc};
 
@@ -8,6 +8,7 @@ use std::{future::Future, sync::Arc};
 /// overview](crate::dispatching::dialogue).
 ///
 /// [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait DialogueDispatcherHandler<R, Upd, D, E> {
     #[must_use]
     fn handle(

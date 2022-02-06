@@ -80,10 +80,6 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     run().await;
-//! }
-//!
-//! async fn run() {
 //!     teloxide::enable_logging!();
 //!     log::info!("Starting dialogue_bot!");
 //!

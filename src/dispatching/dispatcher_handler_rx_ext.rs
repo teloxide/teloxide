@@ -8,6 +8,7 @@ use teloxide_core::types::Message;
 /// overview.
 ///
 /// [`DispatcherHandlerRx`]: crate::dispatching::DispatcherHandlerRx
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait DispatcherHandlerRxExt<R> {
     /// Extracts only text messages from this stream of arbitrary messages.
     fn text_messages(self) -> BoxStream<'static, (UpdateWithCx<R, Message>, String)>

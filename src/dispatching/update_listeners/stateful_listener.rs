@@ -25,25 +25,23 @@ pub struct StatefulListener<St, Assf, Sf, Hauf, Thf> {
 
     /// The function used as [`AsUpdateStream::as_stream`].
     ///
-    /// Must be of type `for<'a> &'a mut St -> impl Stream + 'a` and callable by
-    /// `&mut`.
+    /// Must implement `for<'a> FnMut(&'a mut St) -> impl Stream + 'a`.
     pub stream: Assf,
 
     /// The function used as [`UpdateListener::stop_token`].
     ///
-    /// Must be of type `for<'a> &'a mut St -> impl StopToken`.
+    /// Must implement `FnMut(&mut St) -> impl StopToken`.
     pub stop_token: Sf,
 
     /// The function used as [`UpdateListener::hint_allowed_updates`].
     ///
-    /// Must be of type `for<'a, 'b> &'a mut St, &'b mut dyn Iterator<Item =
-    /// AllowedUpdate>  -> ()`.
+    /// Must implement `FnMut(&mut St, &mut dyn Iterator<Item =
+    /// AllowedUpdate>)`.
     pub hint_allowed_updates: Option<Hauf>,
 
     /// The function used as [`UpdateListener::timeout_hint`].
     ///
-    /// Must be of type `for<'a> &'a St -> Option<Duration>` and callable by
-    /// `&`.
+    /// Must implement `Fn(&St) -> Option<Duration>`.
     pub timeout_hint: Option<Thf>,
 }
 
@@ -79,7 +77,7 @@ impl<S, E>
         Thfn<S>,
     >
 where
-    S: Stream<Item = Result<Update, E>> + Unpin + 'static,
+    S: Stream<Item = Result<Update, E>> + Unpin + Send + 'static,
 {
     /// Creates a new update listener from a stream of updates which ignores
     /// stop signals.
@@ -109,6 +107,7 @@ impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a, E>
     for StatefulListener<St, Assf, Hauf, Sf, Thf>
 where
     (St, Strm): 'a,
+    Strm: Send,
     Assf: FnMut(&'a mut St) -> Strm,
     Strm: Stream<Item = Result<Update, E>>,
 {

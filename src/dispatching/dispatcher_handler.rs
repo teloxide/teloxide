@@ -9,6 +9,7 @@ use futures::future::BoxFuture;
 /// overview.
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[deprecated(note = "Use dispatching2 instead")]
 pub trait DispatcherHandler<R, Upd> {
     #[must_use]
     fn handle(self, updates: DispatcherHandlerRx<R, Upd>) -> BoxFuture<'static, ()>

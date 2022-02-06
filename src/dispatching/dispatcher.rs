@@ -1,11 +1,4 @@
-use std::{
-    fmt::{self, Debug},
-    sync::{
-        atomic::{AtomicU8, Ordering},
-        Arc,
-    },
-    time::Duration,
-};
+use std::{fmt::Debug, sync::Arc};
 
 use crate::{
     dispatching::{
@@ -14,21 +7,21 @@ use crate::{
         DispatcherHandler, UpdateWithCx,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
+    utils::shutdown_token::shutdown_check_timeout_for,
 };
 
-use futures::{stream::FuturesUnordered, Future, StreamExt};
+use futures::{stream::FuturesUnordered, StreamExt};
 use teloxide_core::{
     requests::Requester,
     types::{
-        AllowedUpdate, CallbackQuery, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
-        Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update, UpdateKind,
+        AllowedUpdate, CallbackQuery, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult,
+        InlineQuery, Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update,
+        UpdateKind,
     },
 };
-use tokio::{
-    sync::{mpsc, Notify},
-    task::JoinHandle,
-    time::timeout,
-};
+use tokio::{sync::mpsc, task::JoinHandle, time::timeout};
+
+use crate::utils::shutdown_token::ShutdownToken;
 
 type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
 
@@ -36,6 +29,7 @@ type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
 ///
 /// See the [module-level documentation](crate::dispatching) for the design
 /// overview.
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct Dispatcher<R> {
     requester: R,
 
@@ -52,11 +46,11 @@ pub struct Dispatcher<R> {
     poll_answers_queue: Tx<R, PollAnswer>,
     my_chat_members_queue: Tx<R, ChatMemberUpdated>,
     chat_members_queue: Tx<R, ChatMemberUpdated>,
+    chat_join_requests_queue: Tx<R, ChatJoinRequest>,
 
     running_handlers: FuturesUnordered<JoinHandle<()>>,
 
-    state: Arc<DispatcherState>,
-    shutdown_notify_back: Arc<Notify>,
+    state: ShutdownToken,
 }
 
 impl<R> Dispatcher<R>
@@ -81,9 +75,9 @@ where
             poll_answers_queue: None,
             my_chat_members_queue: None,
             chat_members_queue: None,
+            chat_join_requests_queue: None,
             running_handlers: FuturesUnordered::new(),
-            state: <_>::default(),
-            shutdown_notify_back: <_>::default(),
+            state: ShutdownToken::new(),
         }
     }
 
@@ -106,22 +100,21 @@ where
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
+    #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "ctrlc_handler")))]
+    #[must_use]
     pub fn setup_ctrlc_handler(self) -> Self {
-        let state = Arc::clone(&self.state);
+        let token = self.state.clone();
         tokio::spawn(async move {
             loop {
                 tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
 
-                match shutdown_inner(&state) {
-                    Ok(()) => log::info!("^C received, trying to shutdown the dispatcher..."),
-                    Err(Ok(AlreadyShuttingDown)) => {
-                        log::info!(
-                            "^C received, the dispatcher is already shutting down, ignoring the \
-                             signal"
-                        )
+                match token.shutdown() {
+                    Ok(f) => {
+                        log::info!("^C received, trying to shutdown the dispatcher...");
+                        f.await;
+                        log::info!("dispatcher is shutdown...");
                     }
-                    Err(Err(IdleShutdownError)) => {
+                    Err(_) => {
                         log::info!("^C received, the dispatcher isn't running, ignoring the signal")
                     }
                 }
@@ -263,7 +256,7 @@ where
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
-        <R as Requester>::GetUpdatesFaultTolerant: Send,
+        <R as Requester>::GetUpdates: Send,
     {
         let listener = update_listeners::polling_default(self.requester.clone()).await;
         let error_handler =
@@ -292,19 +285,12 @@ where
         ListenerE: Debug,
         R: Requester + Clone,
     {
-        use ShutdownState::*;
-
         self.hint_allowed_updates(&mut update_listener);
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
 
-        if let Err(actual) = self.state.compare_exchange(Idle, Running) {
-            unreachable!(
-                "Dispatching is already running: expected `{:?}` state, found `{:?}`",
-                Idle, actual
-            );
-        }
+        self.state.start_dispatching();
 
         {
             let stream = update_listener.as_stream();
@@ -320,7 +306,7 @@ where
                     }
                 }
 
-                if let ShuttingDown = self.state.load() {
+                if self.state.is_shutting_down() {
                     if let Some(token) = stop_token.take() {
                         log::debug!("Start shutting down dispatching...");
                         token.stop();
@@ -330,27 +316,13 @@ where
         }
 
         self.wait_for_handlers().await;
-
-        if let ShuttingDown = self.state.load() {
-            // Stopped because of a `shutdown` call.
-
-            // Notify `shutdown`s that we finished
-            self.shutdown_notify_back.notify_waiters();
-            log::info!("Dispatching has been shut down.");
-        } else {
-            log::info!("Dispatching has been stopped (listener returned `None`).");
-        }
-
-        self.state.store(Idle);
+        self.state.done();
     }
 
     /// Returns a shutdown token, which can later be used to shutdown
     /// dispatching.
     pub fn shutdown_token(&self) -> ShutdownToken {
-        ShutdownToken {
-            dispatcher_state: Arc::clone(&self.state),
-            shutdown_notify_back: Arc::clone(&self.shutdown_notify_back),
-        }
+        self.state.clone()
     }
 
     async fn process_update<ListenerE, Eh>(
@@ -446,6 +418,20 @@ where
                     chat_member_updated,
                     "UpdateKind::MyChatMember",
                 ),
+                UpdateKind::ChatJoinRequest(chat_join_request) => send(
+                    &self.requester,
+                    &self.chat_join_requests_queue,
+                    chat_join_request,
+                    "UpdateKind::ChatJoinRequest",
+                ),
+                UpdateKind::Error(err) => {
+                    log::error!(
+                        "Cannot parse an update.\nError: {:?}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                        err,
+                    );
+                }
             }
         }
     }
@@ -525,127 +511,6 @@ where
 
         // Wait untill all handlers finish
         self.running_handlers.by_ref().for_each(|_| async {}).await;
-    }
-}
-
-/// This error is returned from [`ShutdownToken::shutdown`] when trying to
-/// shutdown an idle [`Dispatcher`].
-#[derive(Debug)]
-pub struct IdleShutdownError;
-
-impl fmt::Display for IdleShutdownError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Dispatcher was idle and as such couldn't be shut down")
-    }
-}
-
-impl std::error::Error for IdleShutdownError {}
-
-/// A token which used to shutdown [`Dispatcher`].
-#[derive(Clone)]
-pub struct ShutdownToken {
-    dispatcher_state: Arc<DispatcherState>,
-    shutdown_notify_back: Arc<Notify>,
-}
-
-impl ShutdownToken {
-    /// Tries to shutdown dispatching.
-    ///
-    /// Returns an error if the dispatcher is idle at the moment.
-    ///
-    /// If you don't need to wait for shutdown, the returned future can be
-    /// ignored.
-    pub fn shutdown(&self) -> Result<impl Future<Output = ()> + '_, IdleShutdownError> {
-        match shutdown_inner(&self.dispatcher_state) {
-            Ok(()) | Err(Ok(AlreadyShuttingDown)) => Ok(async move {
-                log::info!("Trying to shutdown the dispatcher...");
-                self.shutdown_notify_back.notified().await
-            }),
-            Err(Err(err)) => Err(err),
-        }
-    }
-}
-
-struct DispatcherState {
-    inner: AtomicU8,
-}
-
-impl DispatcherState {
-    fn load(&self) -> ShutdownState {
-        ShutdownState::from_u8(self.inner.load(Ordering::SeqCst))
-    }
-
-    fn store(&self, new: ShutdownState) {
-        self.inner.store(new as _, Ordering::SeqCst)
-    }
-
-    fn compare_exchange(
-        &self,
-        current: ShutdownState,
-        new: ShutdownState,
-    ) -> Result<ShutdownState, ShutdownState> {
-        self.inner
-            .compare_exchange(current as _, new as _, Ordering::SeqCst, Ordering::SeqCst)
-            .map(ShutdownState::from_u8)
-            .map_err(ShutdownState::from_u8)
-    }
-}
-
-impl Default for DispatcherState {
-    fn default() -> Self {
-        Self { inner: AtomicU8::new(ShutdownState::Idle as _) }
-    }
-}
-
-#[repr(u8)]
-#[derive(Debug)]
-enum ShutdownState {
-    Running,
-    ShuttingDown,
-    Idle,
-}
-
-impl ShutdownState {
-    fn from_u8(n: u8) -> Self {
-        const RUNNING: u8 = ShutdownState::Running as u8;
-        const SHUTTING_DOWN: u8 = ShutdownState::ShuttingDown as u8;
-        const IDLE: u8 = ShutdownState::Idle as u8;
-
-        match n {
-            RUNNING => ShutdownState::Running,
-            SHUTTING_DOWN => ShutdownState::ShuttingDown,
-            IDLE => ShutdownState::Idle,
-            _ => unreachable!(),
-        }
-    }
-}
-
-fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Duration {
-    const MIN_SHUTDOWN_CHECK_TIMEOUT: Duration = Duration::from_secs(1);
-
-    // FIXME: replace this by just Duration::ZERO once 1.53 will be released
-    const DZERO: Duration = Duration::from_secs(0);
-
-    let shutdown_check_timeout = update_listener.timeout_hint().unwrap_or(DZERO);
-
-    // FIXME: replace this by just saturating_add once 1.53 will be released
-    shutdown_check_timeout.checked_add(MIN_SHUTDOWN_CHECK_TIMEOUT).unwrap_or(shutdown_check_timeout)
-}
-
-struct AlreadyShuttingDown;
-
-fn shutdown_inner(
-    state: &DispatcherState,
-) -> Result<(), Result<AlreadyShuttingDown, IdleShutdownError>> {
-    use ShutdownState::*;
-
-    let res = state.compare_exchange(Running, ShuttingDown);
-
-    match res {
-        Ok(_) => Ok(()),
-        Err(ShuttingDown) => Err(Ok(AlreadyShuttingDown)),
-        Err(Idle) => Err(Err(IdleShutdownError)),
-        Err(Running) => unreachable!(),
     }
 }
 

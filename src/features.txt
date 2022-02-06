@@ -10,8 +10,11 @@
 | `native-tls` | Enables the [`native-tls`] TLS implementation (enabled by default). |
 | `rustls` | Enables the [`rustls`] TLS implementation. |
 | `ctrlc_handler` | Enables the [`Dispatcher::setup_ctrlc_handler`](dispatching::Dispatcher::setup_ctrlc_handler) function. |
-| `auto-send` | Enables the `AutoSend` bot adaptor. |
-| `cache-me` | Enables the `CacheMe` bot adaptor. |
+| `auto-send` | Enables the [`AutoSend`](adaptors::AutoSend) bot adaptor. |
+| `throttle` | Enables the [`Throttle`](adaptors::Throttle) bot adaptor. |
+| `cache-me` | Enables the [`CacheMe`](adaptors::CacheMe) bot adaptor. |
+| `trace-adaptor` | Enables the [`Trace`](adaptors::Trace) bot adaptor. |
+| `erased` | Enables the [`ErasedRequester`](adaptors::ErasedRequester) bot adaptor. |
 | `frunk` | Enables [`teloxide::utils::UpState`]. |
 | `full` | Enables all the features except `nightly`. |
 | `nightly` | Enables nightly-only features (see the [teloxide-core features]). |

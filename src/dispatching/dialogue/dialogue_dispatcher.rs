@@ -30,6 +30,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
+#[deprecated(note = "Use dispatching2 instead")]
 pub struct DialogueDispatcher<R, D, S, H, Upd> {
     storage: Arc<S>,
     handler: Arc<H>,

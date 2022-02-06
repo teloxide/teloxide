@@ -6,17 +6,17 @@
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
 //! ```no_run
-//! use teloxide::prelude::*;
+//! use teloxide::prelude2::*;
 //!
 //! # #[tokio::main]
-//! # async fn main_() {
+//! # async fn main() {
 //! teloxide::enable_logging!();
 //! log::info!("Starting dices_bot...");
 //!
 //! let bot = Bot::from_env().auto_send();
 //!
-//! teloxide::repl(bot, |message| async move {
-//!     message.answer_dice().await?;
+//! teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+//!     bot.send_dice(message.chat.id).await?;
 //!     respond(())
 //! })
 //! .await;
@@ -44,8 +44,6 @@
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
     html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
 )]
-#![allow(clippy::match_bool)]
-#![forbid(unsafe_code)]
 // We pass "--cfg docsrs" when building docs to add `This is supported on
 // feature="..." only.`
 //
@@ -56,21 +54,33 @@
 // $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
+#![forbid(unsafe_code)]
+#![warn(rustdoc::broken_intra_doc_links)]
+#![allow(clippy::match_bool)]
 #![allow(clippy::redundant_pattern_matching)]
 // https://github.com/rust-lang/rust-clippy/issues/7422
 #![allow(clippy::nonstandard_macro_braces)]
 
-#[cfg(feature = "ctrlc_handler")]
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
 
+#[cfg(feature = "dispatching2")]
+pub use dispatching2::repls as repls2;
+
 mod logging;
 
+// Things from this module is also used for the dispatching2 module.
 pub mod dispatching;
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
+pub mod dispatching2;
 pub mod error_handlers;
 pub mod prelude;
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
+pub mod prelude2;
 pub mod utils;
 
 #[doc(inline)]
@@ -80,6 +90,9 @@ pub use teloxide_core::*;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros as macros;
 
+#[cfg(feature = "dispatching2")]
+#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
+pub use dptree;
 #[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
 pub use teloxide_macros::teloxide;
