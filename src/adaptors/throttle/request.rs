@@ -5,7 +5,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use either::Either;
 use futures::{
     future::BoxFuture,
     task::{Context, Poll},
@@ -18,6 +17,7 @@ use crate::{
     requests::{HasPayload, Output, Request},
 };
 
+/// Request returned by [`Throttling`](crate::adaptors::Throttle) methods.
 #[must_use = "Requests are lazy and do nothing unless sent"]
 pub struct ThrottlingRequest<R: HasPayload> {
     pub(super) request: Arc<R>,
@@ -25,14 +25,21 @@ pub struct ThrottlingRequest<R: HasPayload> {
     pub(super) worker: mpsc::Sender<(ChatIdHash, RequestLock)>,
 }
 
+/// Future returned by [`ThrottlingRequest`]s.
 #[pin_project::pin_project]
 pub struct ThrottlingSend<R: Request>(#[pin] BoxFuture<'static, Result<Output<R>, R::Err>>);
+
+enum ShareableRequest<R> {
+    Shared(Arc<R>),
+    // Option is used to `take` ownership
+    Owned(Option<R>),
+}
 
 impl<R: HasPayload + Clone> HasPayload for ThrottlingRequest<R> {
     type Payload = R::Payload;
 
     /// Note that if this request was already executed via `send_ref` and it
-    /// didn't yet completed, this method will clone the underlying request
+    /// didn't yet completed, this method will clone the underlying request.
     fn payload_mut(&mut self) -> &mut Self::Payload {
         Arc::make_mut(&mut self.request).payload_mut()
     }
@@ -54,16 +61,21 @@ where
 
     fn send(self) -> Self::Send {
         let chat = (self.chat_id)(self.payload_ref());
-        let request = Either::from(Arc::try_unwrap(self.request));
+        let request = match Arc::try_unwrap(self.request) {
+            Ok(owned) => ShareableRequest::Owned(Some(owned)),
+            Err(shared) => ShareableRequest::Shared(shared),
+        };
+        let fut = send(request, chat, self.worker);
 
-        ThrottlingSend(Box::pin(send(request, chat, self.worker)))
+        ThrottlingSend(Box::pin(fut))
     }
 
     fn send_ref(&self) -> Self::SendRef {
         let chat = (self.chat_id)(self.payload_ref());
-        let request = Either::Left(Arc::clone(&self.request));
+        let request = ShareableRequest::Shared(Arc::clone(&self.request));
+        let fut = send(request, chat, self.worker.clone());
 
-        ThrottlingSend(Box::pin(send(request, chat, self.worker.clone())))
+        ThrottlingSend(Box::pin(fut))
     }
 }
 
@@ -80,7 +92,7 @@ where
 
 /// Actual implementation of the `ThrottlingSend` future
 async fn send<R>(
-    request: Either<Arc<R>, R>,
+    mut request: ShareableRequest<R>,
     chat: ChatIdHash,
     worker: mpsc::Sender<(ChatIdHash, RequestLock)>,
 ) -> Result<Output<R>, R::Err>
@@ -89,11 +101,10 @@ where
     R::Err: AsResponseParameters + Send,
     Output<R>: Send,
 {
-    // We use option to `take` when sending by value.
+    // We use option in `ShareableRequest` to `take` when sending by value.
     //
     // All unwraps down below will succed because we always return immediately after
     // taking.
-    let mut request: Either<Arc<R>, Option<R>> = request.map_right(Some);
 
     loop {
         let (lock, wait) = channel();
@@ -102,29 +113,36 @@ where
         // but just in case it has dropped the queue, we want to just send the
         // request.
         if let Err(_) = worker.send((chat, lock)).await {
-            return match &mut request {
-                Either::Left(shared) => shared.send_ref().await,
-                Either::Right(owned) => owned.take().unwrap().send().await,
+            log::error!("Worker dropped the queue before sending all requests");
+
+            let res = match &mut request {
+                ShareableRequest::Shared(shared) => shared.send_ref().await,
+                ShareableRequest::Owned(owned) => owned.take().unwrap().send().await,
             };
+
+            return res;
         };
 
         let (retry, freeze) = wait.await;
 
         let res = match (retry, &mut request) {
+            // Retries are turned on, use `send_ref` even if we have owned access
             (true, request) => {
-                request
-                    .as_ref()
-                    .either(|r| &**r, |r| r.as_ref().unwrap())
-                    .send_ref()
-                    .await
+                let request = match request {
+                    ShareableRequest::Shared(shared) => &**shared,
+                    ShareableRequest::Owned(owned) => owned.as_ref().unwrap(),
+                };
+
+                request.send_ref().await
             }
-            (false, Either::Left(shared)) => shared.send_ref().await,
-            (false, Either::Right(owned)) => owned.take().unwrap().send().await,
+            (false, ShareableRequest::Shared(shared)) => shared.send_ref().await,
+            (false, ShareableRequest::Owned(owned)) => owned.take().unwrap().send().await,
         };
 
         let retry_after = res.as_ref().err().and_then(<_>::retry_after);
         if let Some(retry_after) = retry_after {
             let after = Duration::from_secs(retry_after.into());
+            let until = Instant::now() + after;
 
             if retry {
                 log::warn!("Freezing, before retrying: {}", retry_after);
@@ -132,26 +150,34 @@ where
 
             let (lock, wait) = channel();
 
-            // Error here means that the worker died, so we can't really do anything about
-            // it
-            let _ = freeze
+            let r = freeze
                 .send(FreezeUntil {
-                    until: Instant::now(), // TODO: this is obviously wrong
+                    until,
                     after,
                     chat,
                     retry: Some(lock),
                 })
                 .await;
 
-            wait.await;
+            if retry {
+                match r {
+                    Ok(()) => {
+                        // TODO: do we need `_retry` or `_freeze_tx`?
+                        let (_retry, _freeze_tx) = wait.await;
+                    }
+                    // The worker has died, sleep until we may retry
+                    Err(_) => {
+                        log::error!("Worker has died while request w");
+                        tokio::time::sleep_until(until.into()).await;
+                    }
+                }
+            }
         }
 
         match res {
             res @ Ok(_) => break res,
-            res @ Err(_) if !retry => break res,
-            Err(_) => {
-                // Next iteration will retry
-            }
+            Err(_) if retry && retry_after.is_some() => continue,
+            res @ Err(_) => break res,
         };
     }
 }
