@@ -272,3 +272,27 @@ where
         self.state.clone()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::convert::Infallible;
+
+    use teloxide_core::Bot;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_tokio_spawn() {
+        tokio::spawn(async {
+            // Just check that this code compiles.
+            if false {
+                Dispatcher::<_, Infallible>::builder(Bot::new(""), dptree::entry())
+                    .build()
+                    .dispatch()
+                    .await;
+            }
+        })
+        .await
+        .unwrap();
+    }
+}
