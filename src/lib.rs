@@ -4,7 +4,7 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices_bot/src/main.rs))
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices.rs))
 //! ```no_run
 //! use teloxide::prelude2::*;
 //!
