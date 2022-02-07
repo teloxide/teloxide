@@ -15,6 +15,7 @@ type BoxedFuture = Pin<Box<dyn Future<Output = ()> + Send>>;
 ///
 /// let settings = throttle::Settings::default()
 ///     .on_queue_full(|pending| async move { /* do something when internal queue is full */ });
+///
 /// // use settings in `Throttle::with_settings` or other constructors
 /// # let _ = settings;
 /// ```

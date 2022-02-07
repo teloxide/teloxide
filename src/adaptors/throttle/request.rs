@@ -144,40 +144,19 @@ where
             let after = Duration::from_secs(retry_after.into());
             let until = Instant::now() + after;
 
+            // If we'll retry, we check that worker hasn't died at the start of the loop
+            // otherwise we don't care if the worker is alive or not
+            let _ = freeze.send(FreezeUntil { until, after, chat }).await;
+
             if retry {
                 log::warn!("Freezing, before retrying: {}", retry_after);
-            }
-
-            let (lock, wait) = channel();
-
-            let r = freeze
-                .send(FreezeUntil {
-                    until,
-                    after,
-                    chat,
-                    retry: Some(lock),
-                })
-                .await;
-
-            if retry {
-                match r {
-                    Ok(()) => {
-                        // TODO: do we need `_retry` or `_freeze_tx`?
-                        let (_retry, _freeze_tx) = wait.await;
-                    }
-                    // The worker has died, sleep until we may retry
-                    Err(_) => {
-                        log::error!("Worker has died while request w");
-                        tokio::time::sleep_until(until.into()).await;
-                    }
-                }
+                tokio::time::sleep_until(until.into()).await;
             }
         }
 
         match res {
-            res @ Ok(_) => break res,
             Err(_) if retry && retry_after.is_some() => continue,
-            res @ Err(_) => break res,
+            res => break res,
         };
     }
 }

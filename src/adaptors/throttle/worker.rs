@@ -45,7 +45,6 @@ pub(super) struct FreezeUntil {
     pub(super) until: Instant,
     pub(super) after: Duration,
     pub(super) chat: ChatIdHash,
-    pub(super) retry: Option<RequestLock>,
 }
 
 // Throttling is quite complicated. This comment describes the algorithm of the
@@ -135,30 +134,18 @@ pub(super) async fn worker<B>(
         // *blocked in asyncronous way
         answer_info(&mut info_rx, &mut limits);
 
-        freeze(
-            &mut freeze_rx,
-            &freeze_tx,
-            slow_mode.as_mut(),
-            &mut queue,
-            &bot,
-            None,
-        )
-        .await;
-
         loop {
             tokio::select! {
-                () = read_from_rx(&mut rx, &mut queue, &mut rx_is_closed) => break,
                 freeze_until = freeze_rx.recv() => {
                     freeze(
                         &mut freeze_rx,
-                        &freeze_tx,
                         slow_mode.as_mut(),
-                        &mut queue,
                         &bot,
                         freeze_until
                     )
                     .await;
                 },
+                () = read_from_rx(&mut rx, &mut queue, &mut rx_is_closed) => break,
             }
         }
         //debug_assert_eq!(queue.capacity(), limits.messages_per_sec_overall as usize);
@@ -316,19 +303,12 @@ fn answer_info(rx: &mut mpsc::Receiver<InfoMessage>, limits: &mut Limits) {
 
 async fn freeze(
     rx: &mut mpsc::Receiver<FreezeUntil>,
-    tx: &mpsc::Sender<FreezeUntil>,
     mut slow_mode: Option<&mut HashMap<ChatIdHash, (Duration, Instant)>>,
-    queue: &mut Vec<(ChatIdHash, RequestLock)>,
     bot: &impl Requester,
     mut imm: Option<FreezeUntil>,
 ) {
     while let Some(freeze_until) = imm.take().or_else(|| rx.try_recv().ok()) {
-        let FreezeUntil {
-            until,
-            after,
-            chat,
-            mut retry,
-        } = freeze_until;
+        let FreezeUntil { until, after, chat } = freeze_until;
 
         if let Some(slow_mode) = slow_mode.as_deref_mut() {
             // TODO: do something with channels?...
@@ -359,9 +339,7 @@ async fn freeze(
 
         // Do not sleep if slow mode is enabled since the freeze is most likely caused
         // by the said slow mode and not by the global limits.
-        if slow_mode_enabled_and_likely_the_cause {
-            queue.extend(Some(chat).zip(retry.take()));
-        } else {
+        if !slow_mode_enabled_and_likely_the_cause {
             log::warn!(
                 "freezing the bot for approximately {:?} due to `RetryAfter` error from telegram",
                 after
@@ -370,12 +348,6 @@ async fn freeze(
             tokio::time::sleep_until(until.into()).await;
 
             log::warn!("unfreezing the bot");
-
-            if let Some(lock) = retry {
-                // Since we are already retrying the request, retries are obviously turned on.
-                let retry = true;
-                let _ = lock.unlock(retry, tx.clone());
-            }
         }
     }
 }
