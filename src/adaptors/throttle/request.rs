@@ -90,6 +90,53 @@ where
     }
 }
 
+// This diagram explains how `ThrottlingRequest` works/what `send` does
+//
+//                                          │
+//                      ThrottlingRequest   │   worker()
+//                                          │
+//                      ┌───────────────┐   │  ┌────────────────────────┐
+//  ┌──────────────────►│request is sent│   │  │see worker documentation│
+//  │                   └───────┬───────┘   │  │and comments for more   │
+//  │                           │           │  │information on how it   │
+//  │                           ▼           │  │actually works          │
+//  │                      ┌─────────┐      │  └────────────────────────┘
+//  │ ┌────────────────┐   │send lock│      │
+//  │ │has worker died?│◄──┤to worker├─────►:───────────┐
+//  │ └─┬─────────────┬┘   └─────────┘      │           ▼
+//  │   │             │                     │  ┌──────────────────┐
+//  │   Y             └─N───────┐           │  │     *magic*      │
+//  │   │                       │           │  └────────┬─────────┘
+//  │   ▼                       ▼           │           │
+//  │ ┌───────────┐    ┌────────────────┐   │           ▼
+//  │ │send inner │    │wait for worker │   │  ┌─────────────────┐
+//  │ │request    │    │to allow sending│◄──:◄─┤ `lock.unlock()` │
+//  │ └───┬───────┘    │this request    │   │  └─────────────────┘
+//  │     │            └────────┬───────┘   │
+//  │     │                     │           │
+//  │     ▼                     ▼           │
+//  │    ┌──────┐  ┌────────────────────┐   │
+//  │    │return│  │send inner request  │   │
+//  │    │result│  │and check its result│   │
+//  │    └──────┘  └─┬─────────┬────────┘   │
+//  │     ▲    ▲     │         │            │
+//  │     │    │     │ Err(RetryAfter(n))   │
+//  │     │    │   else        │            │
+//  │     │    │     │         ▼            │
+//  │     │    └─────┘  ┌───────────────┐   │
+//  │     │             │are retries on?│   │
+//  │     │             └┬─────────────┬┘   │
+//  │     │              │             │    │
+//  │     └────────────N─┘             Y    │
+//  │                                  │    │  ┌──────────────────┐
+//  │                                  ▼    │  │     *magic*      │
+//  │                ┌──────────────────┐   │  └──────────────────┘
+// ┌┴────────────┐   │notify worker that│   │           ▲
+// │retry request│◄──┤RetryAfter error  ├──►:───────────┘
+// └─────────────┘   │has happened      │   │
+//                   └──────────────────┘   │
+//                                          │
+
 /// Actual implementation of the `ThrottlingSend` future
 async fn send<R>(
     mut request: ShareableRequest<R>,
