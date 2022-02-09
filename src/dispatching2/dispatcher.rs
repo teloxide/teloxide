@@ -22,7 +22,7 @@ pub struct DispatcherBuilder<R, Err> {
     dependencies: DependencyMap,
     handler: UpdateHandler<Err>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err>>,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 }
 
 impl<R, Err> DispatcherBuilder<R, Err>
@@ -36,7 +36,7 @@ where
     #[must_use]
     pub fn default_handler<H, Fut>(self, handler: H) -> Self
     where
-        H: Fn(Arc<Update>) -> Fut + 'static,
+        H: Fn(Arc<Update>) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let handler = Arc::new(handler);
@@ -54,7 +54,7 @@ where
     ///
     /// By default, it is [`LoggingErrorHandler`].
     #[must_use]
-    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err>>) -> Self {
+    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err> + Send + Sync>) -> Self {
         Self { error_handler: handler, ..self }
     }
 
@@ -90,7 +90,7 @@ pub struct Dispatcher<R, Err> {
 
     handler: UpdateHandler<Err>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err>>,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
     // TODO: respect allowed_udpates
     allowed_updates: HashSet<AllowedUpdate>,
 
@@ -103,7 +103,7 @@ pub struct Dispatcher<R, Err> {
 /// A handler that processes updates from Telegram.
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 
-type DefaultHandler = Box<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()>>;
+type DefaultHandler = Box<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
 impl<R, Err> Dispatcher<R, Err>
 where
@@ -270,5 +270,29 @@ where
     /// dispatching.
     pub fn shutdown_token(&self) -> ShutdownToken {
         self.state.clone()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::convert::Infallible;
+
+    use teloxide_core::Bot;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_tokio_spawn() {
+        tokio::spawn(async {
+            // Just check that this code compiles.
+            if false {
+                Dispatcher::<_, Infallible>::builder(Bot::new(""), dptree::entry())
+                    .build()
+                    .dispatch()
+                    .await;
+            }
+        })
+        .await
+        .unwrap();
     }
 }
