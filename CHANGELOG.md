@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.0 - 2022-02-09
+
 ### Changed
 
 - Make `DispatcherBuilder::{default_handler, error_handler}` accept a handler that implements `Send + Sync` ([PR 517](https://github.com/teloxide/teloxide/pull/517)).
