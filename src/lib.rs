@@ -53,7 +53,7 @@
 // ```console
 // $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
 // ```
-#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg))]
+#![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_auto_cfg))]
 #![forbid(unsafe_code)]
 #![warn(rustdoc::broken_intra_doc_links)]
 #![allow(clippy::match_bool)]
@@ -74,12 +74,10 @@ mod logging;
 // Things from this module is also used for the dispatching2 module.
 pub mod dispatching;
 #[cfg(feature = "dispatching2")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
 pub mod dispatching2;
 pub mod error_handlers;
 pub mod prelude;
 #[cfg(feature = "dispatching2")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
 pub mod prelude2;
 pub mod utils;
 
@@ -87,13 +85,10 @@ pub mod utils;
 pub use teloxide_core::*;
 
 #[cfg(feature = "macros")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros as macros;
 
 #[cfg(feature = "dispatching2")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "dispatching2")))]
 pub use dptree;
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
 pub use teloxide_macros::teloxide;
 

@@ -243,7 +243,6 @@ where
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "ctrlc_handler")))]
     pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
         let token = self.state.clone();
         tokio::spawn(async move {
