@@ -53,7 +53,6 @@ use std::{
 
 use std::marker::PhantomData;
 #[cfg(feature = "macros")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 pub use teloxide_macros::BotCommand;
 
 /// An enumeration of bot's commands.

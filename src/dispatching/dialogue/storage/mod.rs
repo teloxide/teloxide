@@ -17,7 +17,6 @@ pub use self::{
 };
 
 #[cfg(feature = "redis-storage")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use redis_storage::{RedisStorage, RedisStorageError};
 pub use serializer::Serializer;
 use std::sync::Arc;

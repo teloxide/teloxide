@@ -86,7 +86,6 @@
 //! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
 #[cfg(feature = "redis-storage")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "redis-storage")))]
 pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]

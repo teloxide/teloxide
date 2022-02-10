@@ -16,7 +16,6 @@ pub use crate::dispatching::{
     Dispatcher, DispatcherHandlerRx, DispatcherHandlerRxExt, UpdateWithCx,
 };
 
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "macros")))]
 #[cfg(feature = "macros")]
 pub use crate::teloxide;
 
@@ -32,7 +31,6 @@ pub use crate::adaptors::AutoSend;
 pub use teloxide_core::prelude::*;
 
 #[cfg(feature = "frunk")]
-#[cfg_attr(all(docsrs, feature = "nightly"), doc(cfg(feature = "frunk")))]
 pub use crate::utils::UpState;
 
 pub use tokio::sync::mpsc::UnboundedReceiver;
