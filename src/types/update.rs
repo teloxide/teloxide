@@ -400,7 +400,11 @@ mod test {
   }
 "#;
 
-        assert!(serde_json::from_str::<Update>(text).is_ok());
+        let Update { kind, .. } = serde_json::from_str::<Update>(text).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
@@ -442,7 +446,11 @@ mod test {
     "update_id": 845402291
 }"#;
 
-        serde_json::from_str::<Update>(json).unwrap();
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
@@ -474,7 +482,11 @@ mod test {
 }
         "#;
 
-        serde_json::from_str::<Update>(json).unwrap();
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
@@ -490,6 +502,27 @@ mod test {
             // Deserialization failed successfully
             UpdateKind::Error(_) => {}
             _ => panic!("Expected error"),
+        }
+    }
+
+    #[test]
+    fn issue_523() {
+        let json = r#"{
+            "update_id":0,
+            "my_chat_member": {
+                "chat":{"id":0,"first_name":"FN","last_name":"LN","username":"UN","type":"private"},
+                "from":{"id":0,"is_bot":false,"first_name":"FN","last_name":"LN","username":"UN"},
+                "date":1644677726,
+                "old_chat_member":{"user":{"id":1,"is_bot":true,"first_name":"bot","username":"unBot"},"status":"member"},
+                "new_chat_member":{"user":{"id":1,"is_bot":true,"first_name":"bot","username":"unBot"},"status":"kicked","until_date":0}
+            }
+        }"#;
+
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+
+        match kind {
+            UpdateKind::MyChatMember(_) => {}
+            _ => panic!("Expected `MyChatMember`"),
         }
     }
 }

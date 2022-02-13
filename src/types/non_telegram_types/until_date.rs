@@ -37,6 +37,13 @@ impl<'de> Deserialize<'de> for UntilDate {
                     ))),
                 }
             }
+
+            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                self.visit_i64(v as _)
+            }
         }
 
         deserializer.deserialize_i64(UntilDateVisitor)
