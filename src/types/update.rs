@@ -400,7 +400,11 @@ mod test {
   }
 "#;
 
-        assert!(serde_json::from_str::<Update>(text).is_ok());
+        let Update { kind, .. } = serde_json::from_str::<Update>(text).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
@@ -442,7 +446,11 @@ mod test {
     "update_id": 845402291
 }"#;
 
-        serde_json::from_str::<Update>(json).unwrap();
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
@@ -474,7 +482,11 @@ mod test {
 }
         "#;
 
-        serde_json::from_str::<Update>(json).unwrap();
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
     }
 
     #[test]
