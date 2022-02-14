@@ -214,6 +214,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = Arc::clone(&self.api_url);
 
+        let timeout_hint = payload.timeout_hint();
         let params = serde_json::to_vec(payload)
             // this `expect` should be ok since we don't write request those may trigger error here
             .expect("serialization of request to be infallible");
@@ -226,6 +227,7 @@ impl Bot {
                 reqwest::Url::clone(&*api_url),
                 P::NAME,
                 params,
+                timeout_hint,
             )
             .await
         }
@@ -243,6 +245,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = Arc::clone(&self.api_url);
 
+        let timeout_hint = payload.timeout_hint();
         let params = serde_multipart::to_form(payload);
 
         // async move to capture client&token&api_url&params
@@ -254,6 +257,7 @@ impl Bot {
                 reqwest::Url::clone(&*api_url),
                 P::NAME,
                 params,
+                timeout_hint,
             )
             .await
         }
@@ -271,6 +275,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = self.api_url.clone();
 
+        let timeout_hint = payload.timeout_hint();
         let params = serde_multipart::to_form_ref(payload);
 
         // async move to capture client&token&api_url&params
@@ -282,6 +287,7 @@ impl Bot {
                 reqwest::Url::clone(&*api_url),
                 P::NAME,
                 params,
+                timeout_hint,
             )
             .await
         }

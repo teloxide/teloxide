@@ -16,6 +16,7 @@ pub async fn request_multipart<T>(
     api_url: reqwest::Url,
     method_name: &str,
     params: reqwest::multipart::Form,
+    timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
@@ -33,10 +34,18 @@ where
     // [#460]: https://github.com/teloxide/teloxide/issues/460
     let method_name = method_name.trim_end_matches("Inline");
 
-    let response = client
+    let mut request = client
         .post(crate::net::method_url(api_url, token, method_name))
         .multipart(params)
-        .send()
+        .build()
+        .map_err(RequestError::Network)?;
+
+    if let Some(timeout) = timeout_hint {
+        *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    }
+
+    let response = client
+        .execute(request)
         .await
         .map_err(RequestError::Network)?;
 
@@ -49,6 +58,7 @@ pub async fn request_json<T>(
     api_url: reqwest::Url,
     method_name: &str,
     params: Vec<u8>,
+    timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
@@ -66,11 +76,19 @@ where
     // [#460]: https://github.com/teloxide/teloxide/issues/460
     let method_name = method_name.trim_end_matches("Inline");
 
-    let response = client
+    let mut request = client
         .post(crate::net::method_url(api_url, token, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
         .body(params)
-        .send()
+        .build()
+        .map_err(RequestError::Network)?;
+
+    if let Some(timeout) = timeout_hint {
+        *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    }
+
+    let response = client
+        .execute(request)
         .await
         .map_err(RequestError::Network)?;
 

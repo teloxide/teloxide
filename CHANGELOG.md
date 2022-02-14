@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `Payload::timeout_hint` method to properly handle long running requests like `GetUpdates` ([#180][pr180])
+
+[pr180]: https://github.com/teloxide/teloxide-core/pull/180
+
 ## 0.4.1 - 2022-02-13
 
 ### Fixed
