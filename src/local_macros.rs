@@ -100,6 +100,9 @@ macro_rules! impl_payload {
             @[multipart = $($multipart_attr:ident),*]
         )?
         $(
+            @[timeout_secs = $timeout_secs:ident]
+        )?
+        $(
             #[ $($method_meta:tt)* ]
         )*
         $vi:vis $Method:ident ($Setters:ident) => $Ret:ty {
@@ -179,6 +182,12 @@ macro_rules! impl_payload {
             type Output = $Ret;
 
             const NAME: &'static str = stringify!($Method);
+
+            $(
+                fn timeout_hint(&self) -> Option<std::time::Duration> {
+                    self.$timeout_secs.map(<_>::into).map(std::time::Duration::from_secs)
+                }
+            )?
         }
 
         calculated_doc! {

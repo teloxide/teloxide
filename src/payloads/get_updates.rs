@@ -11,6 +11,7 @@ use serde::Serialize;
 use crate::types::{AllowedUpdate, Update};
 
 impl_payload! {
+    @[timeout_secs = timeout]
     /// Use this method to receive incoming updates using long polling ([wiki]). An Array of [`Update`] objects is returned.
     ///
     /// [wiki]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
