@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.4.2 - 2022-02-17
+
 ### Deprecated
 
 - `Message::chat_id` use `.chat.id` field instead ([#182][pr182])
