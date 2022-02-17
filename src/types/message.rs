@@ -557,6 +557,7 @@ mod getters {
             }
         }
 
+        #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]
         pub fn chat_id(&self) -> i64 {
             self.chat.id
         }
