@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Serialization of `SendPoll::type_` (it's now possible to send quiz polls) ([#181][pr181])
+
+[pr181]: https://github.com/teloxide/teloxide-core/pull/181
+
 ### Added
 
 - `Payload::timeout_hint` method to properly handle long running requests like `GetUpdates` ([#180][pr180])

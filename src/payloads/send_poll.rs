@@ -29,6 +29,7 @@ impl_payload! {
             /// True, if the poll needs to be anonymous, defaults to True
             pub is_anonymous: bool,
             /// Poll type, “quiz” or “regular”, defaults to “regular”
+            #[serde(rename = "type")]
             pub type_: PollType,
             /// True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
             pub allows_multiple_answers: bool,
