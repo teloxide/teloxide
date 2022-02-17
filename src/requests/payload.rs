@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 /// Payload of a request.
 ///
 /// Simply speaking, structures implementing this trait represent arguments of
@@ -21,4 +23,12 @@ pub trait Payload {
     /// It is case insensitive, though must not include underscores. (e.g.
     /// `GetMe`, `GETME`, `getme`, `getMe` are ok, but `get_me` is not ok).
     const NAME: &'static str;
+
+    /// If this payload may take long time to execute (e.g. [`GetUpdates`] with
+    /// big `timeout`), the **minimum** timeout that should be used.
+    ///
+    /// [`GetUpdates`]: crate::payloads::GetUpdates
+    fn timeout_hint(&self) -> Option<Duration> {
+        None
+    }
 }
