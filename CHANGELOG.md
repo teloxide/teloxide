@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Deprecated
+
+- `Message::chat_id` use `.chat.id` field instead ([#182][pr182])
+
+[pr182]: https://github.com/teloxide/teloxide-core/pull/182
+
 ### Fixed
 
 - Serialization of `SendPoll::type_` (it's now possible to send quiz polls) ([#181][pr181])
