@@ -50,6 +50,9 @@ impl Update {
             UpdateKind::ChannelPost(p) => Some(&p.chat),
             UpdateKind::EditedChannelPost(p) => Some(&p.chat),
             UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
+            UpdateKind::ChatMember(m) => Some(&m.chat),
+            UpdateKind::MyChatMember(m) => Some(&m.chat),
+            UpdateKind::ChatJoinRequest(c) => Some(&c.chat),
             _ => None,
         }
     }
