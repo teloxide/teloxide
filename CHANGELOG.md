@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- `Update::chat()` now returns `Some(&Chat)` for `UpdateKind::ChatMember`, `UpdateKind::MyChatMember`,
+  `UpdateKind::ChatJoinRequest` ([#184][pr184])
+
+[pr184]: https://github.com/teloxide/teloxide-core/pull/184
+
 ## 0.4.2 - 2022-02-17
 
 ### Deprecated
