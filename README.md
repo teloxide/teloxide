@@ -181,7 +181,7 @@ async fn main() {
 
 ### Dialogues management
 
-A dialogue is typically described by an enumeration where each variant is one of possible dialogue's states. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
+A dialogue is typically described by an enumeration where each variant is one possible state of the dialogue. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
@@ -332,7 +332,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
+A: teloxide doesn't provide a special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
@@ -340,7 +340,7 @@ Associated links:
 
 **Q: Can I use different loggers?**
 
-A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
+A: Yes. You can setup any logger, for example [fern]. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
 
 [fern]: https://crates.io/crates/fern
 [log]: https://crates.io/crates/log
