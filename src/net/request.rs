@@ -27,7 +27,7 @@ where
     // the used arguments we model this as `...` and `..._inline` pairs of methods.
     //
     // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
-    // sufix). This removes the sufix allowing to call the right telegram method.
+    // suffix). This removes the suffix allowing to call the right telegram method.
     // Note that currently there are no normal telegram methods ending in "Inline",
     // so this is fine.
     //
@@ -70,7 +70,7 @@ where
     // the used arguments we model this as `...` and `..._inline` pairs of methods.
     //
     // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
-    // sufix). This removes the sufix allowing to call the right telegram method.
+    // suffix). This removes the suffix allowing to call the right telegram method.
     // Note that currently there are no normal telegram methods ending in "Inline",
     // so this is fine.
     //
