@@ -84,6 +84,26 @@ impl User {
 
         self.id == ANON_CHANNEL_ID
     }
+
+    /// Returns `true` if this is special user used by telegram itself.
+    ///
+    /// It is sometimes also used as a fallback, for example when a channel post
+    /// is automatically forwarded to a group, bots in a group will get a
+    /// message where `from` is the Telegram user.
+    pub fn is_telegram(&self) -> bool {
+        const TELEGRAM_USER_ID: i64 = 777000;
+
+        // Sanity check
+        debug_assert!(
+            (self.id != TELEGRAM_USER_ID)
+                || (!self.is_bot
+                    && self.first_name == "Telegram"
+                    && self.last_name.is_none()
+                    && self.username.is_none())
+        );
+
+        self.id == TELEGRAM_USER_ID
+    }
 }
 
 #[cfg(test)]
