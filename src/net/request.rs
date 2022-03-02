@@ -16,7 +16,7 @@ pub async fn request_multipart<T>(
     api_url: reqwest::Url,
     method_name: &str,
     params: reqwest::multipart::Form,
-    timeout_hint: Option<Duration>,
+    _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
@@ -40,9 +40,10 @@ where
         .build()
         .map_err(RequestError::Network)?;
 
-    if let Some(timeout) = timeout_hint {
-        *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
-    }
+    // FIXME: uncomment this, when reqwest starts setting default timeout early
+    // if let Some(timeout) = timeout_hint {
+    //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    // }
 
     let response = client
         .execute(request)
@@ -58,7 +59,7 @@ pub async fn request_json<T>(
     api_url: reqwest::Url,
     method_name: &str,
     params: Vec<u8>,
-    timeout_hint: Option<Duration>,
+    _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
@@ -83,9 +84,10 @@ where
         .build()
         .map_err(RequestError::Network)?;
 
-    if let Some(timeout) = timeout_hint {
-        *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
-    }
+    // FIXME: uncomment this, when reqwest starts setting default timeout early
+    // if let Some(timeout) = timeout_hint {
+    //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    // }
 
     let response = client
         .execute(request)
