@@ -50,7 +50,7 @@ impl User {
     }
 
     /// Returns `true` if this is special user used by telegram bot API to
-    /// denote an annonymous user that sends messages on behalf of a group.
+    /// denote an anonymous user that sends messages on behalf of a group.
     pub fn is_anonymous(&self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4941-L4943
         const ANON_ID: i64 = 1087968824;
@@ -68,7 +68,7 @@ impl User {
     }
 
     /// Returns `true` if this is special user used by telegram bot API to
-    /// denote an annonymous user that sends messages on behalf of a channel.
+    /// denote an anonymous user that sends messages on behalf of a channel.
     pub fn is_channel(&self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4945-L4947
         const ANON_CHANNEL_ID: i64 = 136817688;
