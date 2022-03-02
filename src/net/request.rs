@@ -34,7 +34,7 @@ where
     // [#460]: https://github.com/teloxide/teloxide/issues/460
     let method_name = method_name.trim_end_matches("Inline");
 
-    let mut request = client
+    let request = client
         .post(crate::net::method_url(api_url, token, method_name))
         .multipart(params)
         .build()
@@ -77,7 +77,7 @@ where
     // [#460]: https://github.com/teloxide/teloxide/issues/460
     let method_name = method_name.trim_end_matches("Inline");
 
-    let mut request = client
+    let request = client
         .post(crate::net::method_url(api_url, token, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
         .body(params)
