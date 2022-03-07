@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `User::is_telegram` function ([#186][pr186])
+
+[pr186]: https://github.com/teloxide/teloxide-core/pull/186
+
 ### Fixed
 
 - `Update::chat()` now returns `Some(&Chat)` for `UpdateKind::ChatMember`, `UpdateKind::MyChatMember`,
