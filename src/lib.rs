@@ -61,12 +61,13 @@
 // https://github.com/rust-lang/rust-clippy/issues/7422
 #![allow(clippy::nonstandard_macro_braces)]
 
+#[cfg(feature = "ctrlc_handler")]
 pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
     repl_with_listener,
 };
 
-#[cfg(feature = "dispatching2")]
+#[cfg(all(feature = "dispatching2", feature = "ctrlc_handler"))]
 pub use dispatching2::repls as repls2;
 
 mod logging;
