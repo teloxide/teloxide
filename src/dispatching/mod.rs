@@ -52,6 +52,7 @@ pub mod dialogue;
 pub mod stop_token;
 pub mod update_listeners;
 
+#[cfg(feature = "ctrlc_handler")]
 pub(crate) mod repls;
 
 mod dispatcher;

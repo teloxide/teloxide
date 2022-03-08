@@ -12,9 +12,10 @@ license = "MIT"
 exclude = ["media"]
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "cache-me", "dispatching2"]
+# FIXME: remove "cache-me" that was added by mistake here
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "dispatching2", "cache-me"]
 
-dispatching2 = ["dptree"]
+dispatching2 = ["dptree", "cache-me"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
