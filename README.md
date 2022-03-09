@@ -10,7 +10,7 @@
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
   <a href="https://teloxide.netlify.com">
-    <img src="https://img.shields.io/badge/docs-dev-blue)">
+    <img src="https://img.shields.io/badge/docs-dev-blue">
   </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/crates/v/teloxide.svg">
@@ -181,7 +181,7 @@ async fn main() {
 
 ### Dialogues management
 
-A dialogue is typically described by an enumeration where each variant is one of possible dialogue's states. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
+A dialogue is typically described by an enumeration where each variant is one possible state of the dialogue. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
 
 [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
 
@@ -332,7 +332,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong_bot/src/main.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong_bot/src/main.rs).
+A: teloxide doesn't provide a special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
 
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
@@ -340,7 +340,7 @@ Associated links:
 
 **Q: Can I use different loggers?**
 
-A: Yes. You can setup any logger, for example, [fern], e.g. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
+A: Yes. You can setup any logger, for example [fern]. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
 
 [fern]: https://crates.io/crates/fern
 [log]: https://crates.io/crates/log
@@ -355,6 +355,7 @@ Feel free to propose your own bot to our collection!
  - [mxseev/logram](https://github.com/mxseev/logram) -- Utility that takes logs from anywhere and sends them to Telegram.
  - [alexkonovalov/PedigreeBot](https://github.com/alexkonovalov/PedigreeBot) -- A Telegram bot for building family trees.
  - [Hermitter/tepe](https://github.com/Hermitter/tepe) -- A CLI to command a bot to send messages and files over Telegram.
+ - [mattrighetti/GroupActivityBot](https://github.com/mattrighetti/group-activity-bot-rs) -- Telegram bot that keeps track of user activity in groups.
  - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A Telegram group manager bot with variety of extra features.
  - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
  - [myblackbeard/basketball-betting-bot](https://github.com/myblackbeard/basketball-betting-bot) -- The bot lets you bet on NBA games against your buddies.

@@ -95,6 +95,7 @@
 //! [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 //! [dependency injection (DI)]: https://en.wikipedia.org/wiki/Dependency_injection
 
+#[cfg(all(feature = "dispatching2", feature = "ctrlc_handler"))]
 pub mod repls;
 
 pub mod dialogue;
