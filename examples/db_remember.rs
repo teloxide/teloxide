@@ -1,24 +1,9 @@
-use teloxide::{
-    dispatching2::dialogue::{serializer::Bincode, RedisStorage, Storage},
-    macros::DialogueState,
-    prelude2::*,
-    types::Me,
-    utils::command::BotCommand,
-    RequestError,
-};
-use thiserror::Error;
+use teloxide::{macros::DialogueState, prelude2::*, types::Me, utils::command::BotCommand};
 
-type MyDialogue = Dialogue<State, RedisStorage<Bincode>>;
-type StorageError = <RedisStorage<Bincode> as Storage<State>>::Error;
+// include!("redis_config.in");
+include!("sqlite_config.in");
 
-#[derive(Debug, Error)]
-enum Error {
-    #[error("error from Telegram: {0}")]
-    TelegramError(#[from] RequestError),
-
-    #[error("error from storage: {0}")]
-    StorageError(#[from] StorageError),
-}
+type MyDialogue = Dialogue<State, MyStorage>;
 
 #[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
 #[handler_out(anyhow::Result<()>)]
@@ -44,17 +29,14 @@ pub enum Command {
     #[command(description = "reset your number.")]
     Reset,
 }
+
 #[tokio::main]
 async fn main() {
     let bot = Bot::from_env().auto_send();
-    // You can also choose serializer::JSON or serializer::CBOR
-    // All serializers but JSON require enabling feature
-    // "serializer-<name>", e. g. "serializer-cbor"
-    // or "serializer-bincode"
-    let storage = RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap();
 
+    let storage = open_storage().await;
     let handler = Update::filter_message()
-        .enter_dialogue::<Message, RedisStorage<Bincode>, State>()
+        .enter_dialogue::<Message, MyStorage, State>()
         .dispatch_by::<State>();
 
     Dispatcher::builder(bot, handler)

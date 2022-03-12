@@ -1,0 +1,7 @@
+use teloxide::dispatching2::dialogue::{SqliteStorage, serializer::Json};
+
+type MyStorage = SqliteStorage<Json>;
+
+async fn open_storage() -> std::sync::Arc<MyStorage> {
+    SqliteStorage::open("db.sqlite", Json).await.unwrap()
+}
