@@ -206,14 +206,31 @@ pub use teloxide_macros::BotCommand;
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
 /// [`BotCommand`]: crate::utils::command::BotCommand
 pub trait BotCommand: Sized {
-    fn descriptions() -> String;
-    fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
+    /// Parses a command.
+    ///
+    /// `bot_username` is required to parse commands like
+    /// `/cmd@username_of_the_bot`.
+    fn parse<N>(s: &str, bot_username: N) -> Result<Self, ParseError>
     where
         N: Into<String>;
+
+    /// Returns descriptions of the commands suitable to be shown to the user
+    /// (for example when `/help` command is used).
+    fn descriptions() -> String;
+
+    /// Returns a vector of [`types::BotCommand`] that can be used with
+    /// [`set_my_commands`].
+    ///
+    /// [`types::BotCommand`]: crate::types::BotCommand
+    /// [`set_my_commands`]: crate::requests::Requester::set_my_commands
+    fn bot_commands() -> Vec<crate::types::BotCommand>;
+
+    /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
+    ///
+    /// [`commands_repl`]: (crate::repls2::commands_repl)
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
-    fn bot_commands() -> Vec<crate::types::BotCommand>;
 }
 
 pub type PrefixedBotCommand = String;
