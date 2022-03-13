@@ -206,7 +206,7 @@ macro_rules! get_or_return {
     }
 }
 
-#[proc_macro_derive(BotCommand, attributes(command))]
+#[proc_macro_derive(BotCommands, attributes(command))]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as DeriveInput);
 
@@ -270,7 +270,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let fn_commands = impl_commands(&variant_infos, &command_enum);
 
     let trait_impl = quote! {
-        impl BotCommand for #ident {
+        impl BotCommands for #ident {
             #fn_descriptions
             #fn_parse
             #fn_commands
