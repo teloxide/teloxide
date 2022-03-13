@@ -1,4 +1,4 @@
-use crate::{dispatching::UpdateWithCx, utils::command::BotCommand};
+use crate::{dispatching::UpdateWithCx, utils::command::BotCommands};
 use futures::{stream::BoxStream, Stream, StreamExt};
 use teloxide_core::types::Message;
 
@@ -21,7 +21,7 @@ pub trait DispatcherHandlerRxExt<R> {
     fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<R, Message>, C)>
     where
         Self: Stream<Item = UpdateWithCx<R, Message>>,
-        C: BotCommand,
+        C: BotCommands,
         N: Into<String> + Send,
         R: Send + 'static;
 }
@@ -45,7 +45,7 @@ where
     fn commands<C, N>(self, bot_name: N) -> BoxStream<'static, (UpdateWithCx<R, Message>, C)>
     where
         Self: Stream<Item = UpdateWithCx<R, Message>>,
-        C: BotCommand,
+        C: BotCommands,
         N: Into<String> + Send,
         R: Send + 'static,
     {

@@ -6,10 +6,10 @@ use teloxide::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText,
     },
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
-#[derive(BotCommand)]
+#[derive(BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "Display this text")]
@@ -47,7 +47,7 @@ async fn message_handler(
     bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(text) = m.text() {
-        match BotCommand::parse(text, "buttons") {
+        match BotCommands::parse(text, "buttons") {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
                 bot.send_message(m.chat.id, Command::descriptions()).await?;

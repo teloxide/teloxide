@@ -4,7 +4,7 @@ use crate::{
         DispatcherHandlerRxExt, UpdateWithCx,
     },
     error_handlers::{LoggingErrorHandler, OnError},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 use futures::StreamExt;
 use std::{fmt::Debug, future::Future, sync::Arc};
@@ -25,7 +25,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl<R, Cmd, H, Fut, HandlerE, N>(requester: R, bot_name: N, handler: H)
 where
-    Cmd: BotCommand + Send + 'static,
+    Cmd: BotCommands + Send + 'static,
     H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     Result<(), HandlerE>: OnError<HandlerE>,
@@ -64,7 +64,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, Fut, L, ListenerE, Handl
     handler: H,
     listener: L,
 ) where
-    Cmd: BotCommand + Send + 'static,
+    Cmd: BotCommands + Send + 'static,
     H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,

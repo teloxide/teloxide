@@ -52,8 +52,9 @@ use std::{
 };
 
 use std::marker::PhantomData;
+use teloxide_core::types::BotCommand;
 #[cfg(feature = "macros")]
-pub use teloxide_macros::BotCommand;
+pub use teloxide_macros::BotCommands;
 
 /// An enumeration of bot's commands.
 ///
@@ -205,7 +206,7 @@ pub use teloxide_macros::BotCommand;
 ///
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
 /// [`BotCommand`]: crate::utils::command::BotCommand
-pub trait BotCommand: Sized {
+pub trait BotCommands: Sized {
     /// Parses a command.
     ///
     /// `bot_username` is required to parse commands like
@@ -218,12 +219,12 @@ pub trait BotCommand: Sized {
     /// (for example when `/help` command is used).
     fn descriptions() -> String;
 
-    /// Returns a vector of [`types::BotCommand`] that can be used with
+    /// Returns a vector of [`BotCommand`] that can be used with
     /// [`set_my_commands`].
     ///
-    /// [`types::BotCommand`]: crate::types::BotCommand
+    /// [`BotCommand`]: crate::types::BotCommand
     /// [`set_my_commands`]: crate::requests::Requester::set_my_commands
-    fn bot_commands() -> Vec<crate::types::BotCommand>;
+    fn bot_commands() -> Vec<BotCommand>;
 
     /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
     ///

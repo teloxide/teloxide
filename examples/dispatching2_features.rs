@@ -8,7 +8,7 @@ use rand::Rng;
 use teloxide::{
     prelude2::*,
     types::{Dice, Update},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
 #[tokio::main]
@@ -101,7 +101,7 @@ struct ConfigParameters {
     maintainer_username: Option<String>,
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "Simple commands")]
 enum SimpleCommand {
     #[command(description = "shows this message.")]
@@ -112,7 +112,7 @@ enum SimpleCommand {
     MyId,
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "Maintainer commands")]
 enum MaintainerCommands {
     #[command(parse_with = "split", description = "generate a number within range")]

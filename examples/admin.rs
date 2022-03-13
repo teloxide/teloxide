@@ -1,7 +1,7 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::Duration;
-use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommand};
+use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommands};
 
 // Derive BotCommand to parse text with a command into this enumeration.
 //
@@ -12,7 +12,7 @@ use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommand};
 // your commands in this format:
 // %GENERAL-DESCRIPTION%
 // %PREFIX%%COMMAND% - %DESCRIPTION%
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(
     rename = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
