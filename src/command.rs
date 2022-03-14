@@ -44,6 +44,24 @@ impl Command {
             String::from(prefix) + &self.name
         }
     }
+
+    pub fn get_matched_value2(
+        &self,
+        global_parameters: &CommandEnum,
+    ) -> (String, String) {
+        let prefix = if let Some(prefix) = &self.prefix {
+            prefix
+        } else if let Some(prefix) = &global_parameters.prefix {
+            prefix
+        } else {
+            "/"
+        };
+        if let Some(rule) = &global_parameters.rename_rule {
+            (String::from(prefix), rename_by_rule(&self.name, rule.as_str()))
+        } else {
+            (String::from(prefix), self.name.clone())
+        }
+    }
 }
 
 pub struct CommandAttrs {
