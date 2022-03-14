@@ -1,17 +1,18 @@
 //! Command parsers.
 //!
-//! You can either create an `enum` with derived [`BotCommand`], containing
+//! You can either create an `enum` with derived [`BotCommands`], containing
 //! commands of your bot, or use functions, which split input text into a string
 //! command with its arguments.
 //!
-//! # Using BotCommand
+//! # Using BotCommands
+//!
 //! ```
 //! # #[cfg(feature = "macros")] {
-//! use teloxide::utils::command::BotCommand;
+//! use teloxide::utils::command::BotCommands;
 //!
 //! type UnitOfTime = u8;
 //!
-//! #[derive(BotCommand, PartialEq, Debug)]
+//! #[derive(BotCommands, PartialEq, Debug)]
 //! #[command(rename = "lowercase", parse_with = "split")]
 //! enum AdminCommand {
 //!     Mute(UnitOfTime, char),
@@ -24,6 +25,7 @@
 //! ```
 //!
 //! # Using parse_command
+//!
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
@@ -33,6 +35,7 @@
 //! ```
 //!
 //! # Using parse_command_with_prefix
+//!
 //! ```
 //! use teloxide::utils::command::parse_command_with_prefix;
 //!
@@ -66,11 +69,11 @@ pub use teloxide_macros::BotCommands;
 /// # Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
 /// type UnitOfTime = u8;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split")]
 /// enum AdminCommand {
 ///     Mute(UnitOfTime, char),
@@ -104,9 +107,9 @@ pub use teloxide_macros::BotCommands;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
 /// enum Command {
 ///     Text(String),
@@ -124,9 +127,9 @@ pub use teloxide_macros::BotCommands;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
@@ -144,9 +147,9 @@ pub use teloxide_macros::BotCommands;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split", separator = "|")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
@@ -177,7 +180,7 @@ pub use teloxide_macros::BotCommands;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::{BotCommand, ParseError};
+/// use teloxide::utils::command::{BotCommands, ParseError};
 ///
 /// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
 ///     match input.len() {
@@ -189,7 +192,7 @@ pub use teloxide_macros::BotCommands;
 ///     }
 /// }
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
 /// enum Command {
 ///     #[command(parse_with = "accept_two_digits")]
@@ -242,9 +245,9 @@ pub trait BotCommands: Sized {
 pub type PrefixedBotCommand = String;
 pub type BotName = String;
 
-/// Errors returned from [`BotCommand::parse`].
+/// Errors returned from [`BotCommands::parse`].
 ///
-/// [`BotCommand::parse`]: crate::utils::command::BotCommand::parse
+/// [`BotCommands::parse`]: BotCommands::parse
 #[derive(Debug)]
 pub enum ParseError {
     TooFewArguments {
@@ -313,6 +316,8 @@ impl<'a> CommandDescriptions<'a> {
     /// ## Examples
     ///
     /// ```
+    /// use teloxide::utils::command::{CommandDescription, CommandDescriptions};
+    ///
     /// let descriptions = CommandDescriptions::new(&[
     ///     CommandDescription { prefix: "/", command: "start", description: "start this bot" },
     ///     CommandDescription { prefix: "/", command: "help", description: "show this message" },
