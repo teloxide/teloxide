@@ -50,7 +50,7 @@ async fn message_handler(
         match BotCommands::parse(text, "buttons") {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
-                bot.send_message(m.chat.id, Command::descriptions()).await?;
+                bot.send_message(m.chat.id, Command::descriptions().to_string()).await?;
             }
             Ok(Command::Start) => {
                 // Create a list of buttons and send them.

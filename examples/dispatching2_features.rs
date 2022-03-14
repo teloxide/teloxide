@@ -128,9 +128,15 @@ async fn simple_commands_handler(
     let text = match cmd {
         SimpleCommand::Help => {
             if msg.from().unwrap().id == cfg.bot_maintainer {
-                format!("{}\n{}", SimpleCommand::descriptions(), MaintainerCommands::descriptions())
+                format!(
+                    "{}\n\n{}",
+                    SimpleCommand::descriptions(),
+                    MaintainerCommands::descriptions()
+                )
+            } else if msg.chat.is_group() || msg.chat.is_supergroup() {
+                SimpleCommand::descriptions().username("USERNAME_BOT").to_string()
             } else {
-                SimpleCommand::descriptions()
+                SimpleCommand::descriptions().to_string()
             }
         }
         SimpleCommand::Maintainer => {

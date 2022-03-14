@@ -68,7 +68,7 @@ fn many_attributes() {
     }
 
     assert_eq!(DefaultCommands::Start, DefaultCommands::parse("!start", "").unwrap());
-    assert_eq!(DefaultCommands::descriptions(), "!start - desc\n/help\n");
+    assert_eq!(DefaultCommands::descriptions().to_string(), "!start — desc\n/help");
 }
 
 #[test]
@@ -84,7 +84,7 @@ fn global_attributes() {
 
     assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/start", "MyNameBot").unwrap());
     assert_eq!(DefaultCommands::Help, DefaultCommands::parse("!help", "MyNameBot").unwrap());
-    assert_eq!(DefaultCommands::descriptions(), "Bot commands\n/start\n!help\n");
+    assert_eq!(DefaultCommands::descriptions().to_string(), "Bot commands\n\n/start\n!help");
 }
 
 #[test]
@@ -194,7 +194,7 @@ fn descriptions_off() {
         Help,
     }
 
-    assert_eq!(DefaultCommands::descriptions(), "/help\n".to_owned());
+    assert_eq!(DefaultCommands::descriptions().to_string(), "/help".to_owned());
 }
 
 #[test]

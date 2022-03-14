@@ -46,13 +46,18 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
+use core::fmt;
 use std::{
+    borrow::Cow,
     error::Error,
-    fmt::{Display, Formatter},
+    fmt::{Display, Formatter, Write},
 };
 
 use std::marker::PhantomData;
-use teloxide_core::types::BotCommand;
+use teloxide_core::{
+    requests::{Request, Requester},
+    types::{BotCommand, Me},
+};
 #[cfg(feature = "macros")]
 pub use teloxide_macros::BotCommands;
 
@@ -217,7 +222,7 @@ pub trait BotCommands: Sized {
 
     /// Returns descriptions of the commands suitable to be shown to the user
     /// (for example when `/help` command is used).
-    fn descriptions() -> String;
+    fn descriptions() -> CommandDescriptions<'static>;
 
     /// Returns a vector of [`BotCommand`] that can be used with
     /// [`set_my_commands`].
@@ -265,28 +270,79 @@ pub enum ParseError {
     Custom(Box<dyn Error + Send + Sync + 'static>),
 }
 
-impl Display for ParseError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-        match self {
-            ParseError::TooFewArguments { expected, found, message } => write!(
-                f,
-                "Too few arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
-            ),
-            ParseError::TooManyArguments { expected, found, message } => write!(
-                f,
-                "Too many arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
-            ),
-            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
-            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
-            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
-            ParseError::Custom(e) => write!(f, "{}", e),
+/// Command descriptions that can be shown to the user (e.g. as a part of
+/// `/help` message)
+///
+/// Most of the time you don't need to create this struct yourself as it's
+/// returned from [`BotCommands::descriptions`].
+#[derive(Debug, Clone)]
+pub struct CommandDescriptions<'a> {
+    global_description: Option<&'a str>,
+    descriptions: &'a [CommandDescription<'a>],
+    bot_username: Option<Cow<'a, str>>,
+}
+
+/// Description of a particular command, used in [`CommandDescriptions`].
+#[derive(Debug, Clone)]
+pub struct CommandDescription<'a> {
+    /// Prefix of the command, usually `/`.
+    pub prefix: &'a str,
+    /// The command itself, e.g. `start`.
+    pub command: &'a str,
+    /// Human-readable description of the command.
+    pub description: &'a str,
+}
+
+impl<'a> CommandDescriptions<'a> {
+    /// Creates new [`CommandDescriptions`] from a list of command descriptions.
+    pub fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
+        Self { global_description: None, descriptions, bot_username: None }
+    }
+
+    /// Sets the global description of these commands.
+    pub fn global_description(self, global_description: &'a str) -> Self {
+        Self { global_description: Some(global_description), ..self }
+    }
+
+    /// Sets the username of the bot.
+    ///
+    /// After this method is called, returned instance of
+    /// [`CommandDescriptions`] will append `@bot_username` to all commands.
+    /// This is useful in groups, to disambiguate commands for different bots.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// let descriptions = CommandDescriptions::new(&[
+    ///     CommandDescription { prefix: "/", command: "start", description: "start this bot" },
+    ///     CommandDescription { prefix: "/", command: "help", description: "show this message" },
+    /// ]);
+    ///
+    /// assert_eq!(descriptions.to_string(), "/start — start this bot\n/help — show this message");
+    /// assert_eq!(
+    ///     descriptions.username("username_of_the_bot").to_string(),
+    ///     "/start@username_of_the_bot — start this bot\n/help@username_of_the_bot — show this \
+    ///          message"
+    /// );
+    /// ```
+    pub fn username(self, bot_username: &'a str) -> Self {
+        Self { bot_username: Some(Cow::Borrowed(bot_username)), ..self }
+    }
+
+    /// Sets the username of the bot.
+    ///
+    /// This is the same as [`username`], but uses `get_me` method of the bot to
+    /// get the username.
+    ///
+    /// [`username`]: self::CommandDescriptions::username
+    pub async fn username_from_bot(self, bot: &impl Requester) -> CommandDescriptions<'a> {
+        let Me { user, .. } = bot.get_me().send().await.expect("get_me failed");
+        Self {
+            bot_username: Some(Cow::Owned(user.username.expect("Bots must have usernames"))),
+            ..self
         }
     }
 }
-
-impl std::error::Error for ParseError {}
 
 /// Parses a string into a command with args.
 ///
@@ -362,6 +418,68 @@ where
         _ => return None,
     }
     Some((command, words.collect()))
+}
+
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        match self {
+            ParseError::TooFewArguments { expected, found, message } => write!(
+                f,
+                "Too few arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::TooManyArguments { expected, found, message } => write!(
+                f,
+                "Too many arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
+            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
+            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
+            ParseError::Custom(e) => write!(f, "{}", e),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
+
+impl Display for CommandDescriptions<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(global_description) = self.global_description {
+            f.write_str(global_description)?;
+            f.write_str("\n\n")?;
+        }
+
+        let mut write = |&CommandDescription { prefix, command, description }, nls| {
+            if nls {
+                f.write_char('\n')?;
+            }
+
+            f.write_str(prefix)?;
+            f.write_str(command)?;
+
+            if let Some(username) = self.bot_username.as_deref() {
+                f.write_char('@')?;
+                f.write_str(username)?;
+            }
+
+            if !description.is_empty() {
+                f.write_str(" — ")?;
+                f.write_str(description)?;
+            }
+
+            fmt::Result::Ok(())
+        };
+
+        if let Some(descr) = self.descriptions.first() {
+            write(descr, false)?;
+            for descr in &self.descriptions[1..] {
+                write(descr, true)?;
+            }
+        }
+
+        Ok(())
+    }
 }
 
 // The rest of tests are integrational due to problems with macro expansion in
