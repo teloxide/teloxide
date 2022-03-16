@@ -406,6 +406,18 @@ pub enum ApiError {
     #[error("Bad Request: wrong file id")]
     WrongFileId,
 
+    /// Occurs when bot tries to send files with wrong file identifier or HTTP
+    /// url
+    #[serde(rename = "Bad Request: wrong file identifier/HTTP URL specified")]
+    #[error("Bad Request: wrong file identifier/HTTP URL specified")]
+    WrongFileIdOrUrl,
+
+    /// Occurs when When sending files with an url to a site that doesn't
+    /// respond.
+    #[serde(rename = "Bad Request: failed to get HTTP URL content")]
+    #[error("Bad Request: failed to get HTTP URL content")]
+    FailedToGetUrlContent,
+
     /// Occurs when bot tries to do some with group which was deactivated.
     #[serde(rename = "Bad Request: group is deactivated")]
     #[error("Bad Request: group is deactivated")]
