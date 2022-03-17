@@ -23,6 +23,9 @@
 //! [long polling]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 //! [webhooks]: https://en.wikipedia.org/wiki/Webhook
 
+#[cfg(any(feature = "webhooks-axum"))]
+pub mod webhooks;
+
 use futures::Stream;
 
 use std::time::Duration;
