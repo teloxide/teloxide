@@ -1,6 +1,10 @@
 use std::{convert::Infallible, net::SocketAddr};
 
-use crate::{dispatching::update_listeners::UpdateListener, requests::Requester, types::InputFile};
+use crate::{
+    dispatching::{stop_token::StopToken, update_listeners::UpdateListener},
+    requests::Requester,
+    types::InputFile,
+};
 
 /// Options related to setting up webhooks.
 pub struct Options {
@@ -68,38 +72,92 @@ impl Options {
 ///
 /// If `set_webhook()` fails.
 #[cfg(feature = "webhooks-axum")]
-pub async fn axum<R>(bot: R, options: Options) -> Result<impl UpdateListener<Infallible>, R::Err>
+pub async fn axum<R>(
+    bot: R,
+    options: Options,
+) -> Result<impl UpdateListener<Infallible, StopToken = impl Send + StopToken>, R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::DeleteWebhook: Send,
 {
+    let Options { address, .. } = options;
+
+    let (mut update_listener, stop_flag, app) = axum_to_router(bot, options).await?;
+    let stop_token = update_listener.stop_token();
+
+    tokio::spawn(async move {
+        axum::Server::bind(&address)
+            .serve(app.into_make_service())
+            .with_graceful_shutdown(stop_flag)
+            .await
+            .map_err(|err| {
+                stop_token.stop();
+                err
+            })
+            .expect("Axum server error");
+    });
+
+    Ok(update_listener)
+}
+
+#[cfg(feature = "webhooks-axum")]
+pub async fn axum_to_router<R>(
+    bot: R,
+    mut options: Options,
+) -> Result<
+    (
+        impl UpdateListener<Infallible, StopToken = impl Send + StopToken>,
+        impl std::future::Future<Output = ()> + Send,
+        axum::Router,
+    ),
+    R::Err,
+>
+where
+    R: Requester + Send,
+    <R as Requester>::DeleteWebhook: Send,
+{
+    use crate::requests::Request;
+    use futures::FutureExt;
+
+    setup_webhook(&bot, &mut options).await?;
+
+    let (listener, stop_flag, router) = axum_no_setup(options);
+
+    let stop_flag = stop_flag.then(move |()| async move {
+        // This assignment is needed to not require `R: Sync` since without it `&bot`
+        // temporary lives across `.await` points.
+        let req = bot.delete_webhook().send();
+        let res = req.await;
+        if let Err(err) = res {
+            log::error!("Couldn't delete webhook: {}", err);
+        }
+    });
+
+    Ok((listener, stop_flag, router))
+}
+
+#[cfg(feature = "webhooks-axum")]
+pub fn axum_no_setup(
+    options: Options,
+) -> (
+    impl UpdateListener<Infallible, StopToken = impl Send + StopToken>,
+    impl std::future::Future<Output = ()>,
+    axum::Router,
+) {
     use crate::{
         dispatching::{stop_token::AsyncStopToken, update_listeners},
-        requests::Request,
         types::Update,
     };
     use axum::{
         extract::Extension, http::StatusCode, response::IntoResponse, routing::post,
         AddExtensionLayer,
     };
-    use futures::FutureExt;
-    use teloxide_core::requests::HasPayload;
     use tokio::sync::mpsc;
     use tokio_stream::wrappers::UnboundedReceiverStream;
     use tower::ServiceBuilder;
     use tower_http::trace::TraceLayer;
 
     type Sender = mpsc::UnboundedSender<Result<Update, std::convert::Infallible>>;
-
-    let Options { address, url, certificate, drop_pending_updates } = options;
-
-    {
-        let mut req = bot.set_webhook(url.clone());
-        req.payload_mut().certificate = certificate;
-        req.payload_mut().drop_pending_updates = drop_pending_updates;
-
-        req.send().await?;
-    }
 
     let (tx, rx): (Sender, _) = mpsc::unbounded_channel();
 
@@ -122,7 +180,7 @@ where
         StatusCode::OK
     }
 
-    let app = axum::Router::new().route(url.path(), post(telegram_request)).layer(
+    let app = axum::Router::new().route(options.url.path(), post(telegram_request)).layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())
             .layer(AddExtensionLayer::new(tx))
@@ -131,33 +189,35 @@ where
 
     let (stop_token, stop_flag) = AsyncStopToken::new_pair();
 
-    tokio::spawn(async move {
-        axum::Server::bind(&address)
-            .serve(app.into_make_service())
-            .with_graceful_shutdown(stop_flag.then(move |()| async move {
-                // This assignment is needed to not require `R: Sync` since without it `&bot`
-                // temporary lives across `.await` points.
-                let req = bot.delete_webhook().send();
-                let res = req.await;
-                if let Err(err) = res {
-                    log::error!("Couldn't delete webhook: {}", err);
-                }
-            }))
-            .await
-            .expect("Axum server error")
-    });
-
     let stream = UnboundedReceiverStream::new(rx);
-
-    fn streamf<S, T>(state: &mut (S, T)) -> &mut S {
-        &mut state.0
-    }
 
     let listener = update_listeners::StatefulListener::new(
         (stream, stop_token),
-        streamf,
+        tuple_first_mut,
         |state: &mut (_, AsyncStopToken)| state.1.clone(),
     );
 
-    Ok(listener)
+    (listener, stop_flag, app)
+}
+
+async fn setup_webhook<R>(bot: R, options: &mut Options) -> Result<(), R::Err>
+where
+    R: Requester,
+{
+    use crate::requests::Request;
+    use teloxide_core::requests::HasPayload;
+
+    let &mut Options { ref url, ref mut certificate, drop_pending_updates, .. } = options;
+
+    let mut req = bot.set_webhook(url.clone());
+    req.payload_mut().certificate = certificate.take();
+    req.payload_mut().drop_pending_updates = drop_pending_updates;
+
+    req.send().await?;
+
+    Ok(())
+}
+
+fn tuple_first_mut<A, B>(tuple: &mut (A, B)) -> &mut A {
+    &mut tuple.0
 }
