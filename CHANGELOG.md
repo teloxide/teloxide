@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `HasPayload::with_payload_mut` function ([#189][pr189])
+
+[pr189]: https://github.com/teloxide/teloxide-core/pull/189
+
 ## 0.4.3 - 2022-03-08
 
 ### Added
