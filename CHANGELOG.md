@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `WrongFileIdOrUrl` and `FailedToGetUrlContent` errors ([#188][pr188])
+
+[pr188]: https://github.com/teloxide/teloxide-core/pull/188
+
 ## 0.4.3 - 2022-03-08
 
 ### Added
