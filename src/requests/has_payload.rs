@@ -28,6 +28,16 @@ pub trait HasPayload {
 
     /// Gain immutable access to the underlying payload.
     fn payload_ref(&self) -> &Self::Payload;
+
+    /// Update payload with a function
+    fn with_payload_mut<F>(mut self, f: F) -> Self
+    where
+        Self: Sized,
+        F: FnOnce(&mut Self::Payload),
+    {
+        f(self.payload_mut());
+        self
+    }
 }
 
 impl<P> HasPayload for P
