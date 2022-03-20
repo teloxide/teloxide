@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- The `StorageExt` trait with a single function `erase` that returns `ErasedStorage`.
+- `ErasedStorage`, a storage with an erased error type.
+
 ## 0.7.1 - 2022-03-09
 
 ### Fixed
