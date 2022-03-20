@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `WrongFileIdOrUrl` and `FailedToGetUrlContent` errors ([#188][pr188])
 - `HasPayload::with_payload_mut` function ([#189][pr189])
 
+[pr188]: https://github.com/teloxide/teloxide-core/pull/188
 [pr189]: https://github.com/teloxide/teloxide-core/pull/189
 
 ## 0.4.3 - 2022-03-08
