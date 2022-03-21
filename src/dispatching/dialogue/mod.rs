@@ -169,4 +169,4 @@ pub use storage::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use storage::{SqliteStorage, SqliteStorageError};
 
-pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
+pub use storage::*;
