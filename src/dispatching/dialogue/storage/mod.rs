@@ -72,23 +72,13 @@ pub trait Storage<D> {
         self: Arc<Self>,
         chat_id: i64,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>;
-}
 
-/// A storage with an erased error type.
-pub type ErasedStorage<D> = Arc<dyn Storage<D, Error = Box<dyn std::error::Error>>>;
-
-/// Extension methods for working with [`Storage`].
-pub trait StorageExt<D> {
-    /// Returns [`ErasedStorage`].
-    fn erase(self: Arc<Self>) -> ErasedStorage<D>;
-}
-
-impl<S, D> StorageExt<D> for S
-where
-    S: Storage<D> + Send + Sync + 'static,
-    S::Error: std::error::Error + 'static,
-{
-    fn erase(self: Arc<Self>) -> ErasedStorage<D> {
+    /// Erases [`Self::Error`] to [`std::error::Error`].
+    fn erase(self: Arc<Self>) -> ErasedStorage<D>
+    where
+        Self: Sized + Send + Sync + 'static,
+        Self::Error: std::error::Error + 'static,
+    {
         struct Eraser<S>(Arc<S>);
 
         impl<D, S> Storage<D> for Eraser<S>
@@ -139,6 +129,9 @@ where
         Arc::new(Eraser(self))
     }
 }
+
+/// A storage with an erased error type.
+pub type ErasedStorage<D> = Arc<dyn Storage<D, Error = Box<dyn std::error::Error>>>;
 
 #[cfg(test)]
 mod tests {
