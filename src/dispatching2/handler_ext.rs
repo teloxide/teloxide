@@ -45,7 +45,7 @@ pub trait HandlerExt<Output> {
     #[must_use]
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
-        S: Storage<D> + Send + Sync + 'static,
+        S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
@@ -72,7 +72,7 @@ where
 
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
-        S: Storage<D> + Send + Sync + 'static,
+        S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,

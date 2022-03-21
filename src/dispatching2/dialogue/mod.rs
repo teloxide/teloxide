@@ -102,7 +102,10 @@ mod get_chat_id;
 
 /// A handle for controlling dialogue state.
 #[derive(Debug)]
-pub struct Dialogue<D, S> {
+pub struct Dialogue<D, S>
+where
+    S: ?Sized,
+{
     storage: Arc<S>,
     chat_id: i64,
     _phantom: PhantomData<D>,
@@ -110,7 +113,10 @@ pub struct Dialogue<D, S> {
 
 // `#[derive]` requires generics to implement `Clone`, but `S` is wrapped around
 // `Arc`, and `D` is wrapped around PhantomData.
-impl<D, S> Clone for Dialogue<D, S> {
+impl<D, S> Clone for Dialogue<D, S>
+where
+    S: ?Sized,
+{
     fn clone(&self) -> Self {
         Dialogue { storage: self.storage.clone(), chat_id: self.chat_id, _phantom: PhantomData }
     }
@@ -119,7 +125,7 @@ impl<D, S> Clone for Dialogue<D, S> {
 impl<D, S> Dialogue<D, S>
 where
     D: Send + 'static,
-    S: Storage<D>,
+    S: Storage<D> + ?Sized,
 {
     /// Constructs a new dialogue with `storage` (where dialogues are stored)
     /// and `chat_id` of a current dialogue.
