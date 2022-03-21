@@ -92,7 +92,7 @@ pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
 pub use crate::dispatching::dialogue::{
-    serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage,
+    serializer, ErasedStorage, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage,
 };
 pub use get_chat_id::GetChatId;
 

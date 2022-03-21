@@ -337,7 +337,7 @@ where
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name.as_ref() => {}
+        Some(name) if name.eq_ignore_ascii_case(bot_name.as_ref()) => {}
         None => {}
         _ => return None,
     }
