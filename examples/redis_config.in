@@ -1,7 +1,0 @@
-use teloxide::dispatching2::dialogue::{RedisStorage, serializer::Bincode};
-
-type MyStorage = RedisStorage<Bincode>;
-
-async fn open_storage() -> std::sync::Arc<MyStorage> {
-    RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap()
-}
