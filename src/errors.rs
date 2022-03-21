@@ -66,6 +66,11 @@ pub enum ApiError {
     #[error("Forbidden: bot was blocked by the user")]
     BotBlocked,
 
+    /// Occurs when the bot token is incorrect.
+    #[serde(rename = "Forbidden: bot was blocked by the user")]
+    #[error("Forbidden: bot was blocked by the user")]
+    NotFound,
+
     /// Occurs when bot tries to modify a message without modification content.
     ///
     /// May happen in methods:
