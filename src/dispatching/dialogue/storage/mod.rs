@@ -24,6 +24,10 @@ use std::sync::Arc;
 #[cfg(feature = "sqlite-storage")]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 
+/// A storage with an erased error type.
+pub type ErasedStorage<D> =
+    dyn Storage<D, Error = Box<dyn std::error::Error + Send + Sync>> + Send + Sync;
+
 /// A storage of dialogues.
 ///
 /// You can implement this trait for a structure that communicates with a DB and
@@ -124,9 +128,6 @@ where
         )
     }
 }
-
-pub type ErasedStorage<D> =
-    dyn Storage<D, Error = Box<dyn std::error::Error + Send + Sync>> + Send + Sync;
 
 #[cfg(test)]
 mod tests {
