@@ -80,7 +80,7 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     teloxide::enable_logging!();
+//!     pretty_env_logger::init();
 //!     log::info!("Starting dialogue_bot!");
 //!
 //!     let bot = Bot::from_env().auto_send();

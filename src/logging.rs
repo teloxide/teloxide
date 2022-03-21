@@ -10,8 +10,10 @@
 ///
 /// [pretty-env-logger]: https://crates.io/crates/pretty_env_logger
 #[macro_export]
+#[deprecated = "Choose logging implementation yourself"]
 macro_rules! enable_logging {
     () => {
+        #[allow(deprecated)]
         teloxide::enable_logging_with_filter!(log::LevelFilter::Trace);
     };
 }
@@ -39,6 +41,7 @@ macro_rules! enable_logging {
 /// [pretty-env-logger]: https://crates.io/crates/pretty_env_logger
 /// [`LevelFilter::Debug`]: https://docs.rs/log/0.4.10/log/enum.LevelFilter.html
 #[macro_export]
+#[deprecated = "Choose logging implementation yourself"]
 macro_rules! enable_logging_with_filter {
     ($filter:expr) => {
         pretty_env_logger::formatted_builder()

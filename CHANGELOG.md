@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ErasedStorage`, a storage with an erased error type.
 - Allow the storage generic `S` be `?Sized` in `Dialogue` and `HandlerExt::enter_dialogue`.
 
+### Deprecated
+
+- `enable_logging!` and `enable_logging_with_filter!` macros
+
 ### Fixed
 
 - Log `UpdateKind::Error` in `teloxide::dispatching2::Dispatcher`.
