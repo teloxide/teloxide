@@ -224,7 +224,7 @@ where
                     log::error!(
                         "Cannot parse an update.\nError: {:?}\n\
                             This is a bug in teloxide-core, please open an issue here: \
-                            https://github.com/teloxide/teloxide-core/issues.",
+                            https://github.com/teloxide/teloxide/issues.",
                         err,
                     );
                     return;
