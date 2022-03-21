@@ -56,9 +56,14 @@ where
 {
     use crate::dispatching2::Dispatcher;
 
+    // Other update types are of no interest to use since this REPL is only for
+    // messages. See <https://github.com/teloxide/teloxide/issues/557>.
+    let ignore_update = |_upd| Box::pin(async {});
+
     #[allow(unused_mut)]
     let mut dispatcher =
         Dispatcher::builder(bot, Update::filter_message().branch(dptree::endpoint(handler)))
+            .default_handler(ignore_update)
             .build();
 
     #[cfg(feature = "ctrlc_handler")]

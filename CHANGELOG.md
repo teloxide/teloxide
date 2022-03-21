@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Log `UpdateKind::Error` in `teloxide::dispatching2::Dispatcher`.
+- Don't warn about unhandled updates in `repls2` ([issue 557](https://github.com/teloxide/teloxide/issues/557)).
 
 ## 0.7.1 - 2022-03-09
 
