@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The `Storage::erase` default function that returns `Arc<ErasedStorage>`.
 - `ErasedStorage`, a storage with an erased error type.
-- Allow the storage generic `S` be `?Sized` in `Dialogue`.
+- Allow the storage generic `S` be `?Sized` in `Dialogue` and `HandlerExt::enter_dialogue`.
 
 ## 0.7.1 - 2022-03-09
 
