@@ -11,7 +11,10 @@ use crate::{
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, StreamExt};
 use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
-use teloxide_core::requests::{Request, RequesterExt};
+use teloxide_core::{
+    requests::{Request, RequesterExt},
+    types::UpdateKind,
+};
 use tokio::time::timeout;
 
 use std::future::Future;
@@ -217,6 +220,16 @@ where
     {
         match update {
             Ok(upd) => {
+                if let UpdateKind::Error(err) = upd.kind {
+                    log::error!(
+                        "Cannot parse an update.\nError: {:?}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide-core/issues.",
+                        err,
+                    );
+                    return;
+                }
+
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
                 deps.insert(self.bot.clone());
