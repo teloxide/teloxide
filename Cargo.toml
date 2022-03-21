@@ -129,16 +129,12 @@ name = "dialogue"
 required-features = ["macros"]
 
 [[example]]
-name = "sqlite_remember"
-required-features = ["sqlite-storage", "bincode-serializer", "redis-storage", "macros"]
-
-[[example]]
 name = "simple_commands"
 required-features = ["macros"]
 
 [[example]]
-name = "redis_remember"
-required-features = ["redis-storage", "bincode-serializer", "macros"]
+name = "db_remember"
+required-features = ["sqlite-storage", "redis-storage", "bincode-serializer", "macros"]
 
 [[example]]
 name = "inline"
