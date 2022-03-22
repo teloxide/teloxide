@@ -360,7 +360,7 @@ fn impl_parse(
               let bot = splited.next();
               let bot_name = bot_name.into();
               match bot {
-                  Some(name) if name == bot_name => {}
+                  Some(name) if name.eq_ignore_ascii_case(&bot_name) => {}
                   None => {}
                   Some(n) => return Err(ParseError::WrongBotName(n.to_string())),
               }
