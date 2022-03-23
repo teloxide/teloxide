@@ -114,7 +114,7 @@ async fn callback_handler(
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting bot...");
 
     let bot = Bot::from_env().auto_send();

@@ -9,7 +9,7 @@ static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting shared_state_bot...");
 
     let bot = Bot::from_env().auto_send();

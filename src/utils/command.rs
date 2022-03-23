@@ -78,8 +78,10 @@ pub use teloxide_macros::BotCommand;
 ///
 /// # Enum attributes
 ///  1. `#[command(rename = "rule")]`
-/// Rename all commands by `rule`. Allowed rules are `lowercase`. If you will
-/// not use this attribute, commands will be parsed by their original names.
+/// Rename all commands by `rule`. If you will not use this attribute, commands
+/// will be parsed by their original names. Allowed rules are `lowercase`,
+/// `UPPERCASE`, `PascalCase`, `camelCase`, `snake_case`,
+/// `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE`.
 ///
 ///  2. `#[command(prefix = "prefix")]`
 /// Change a prefix for all commands (the default is `/`).
@@ -337,7 +339,7 @@ where
     let command = splited.next()?;
     let bot = splited.next();
     match bot {
-        Some(name) if name == bot_name.as_ref() => {}
+        Some(name) if name.eq_ignore_ascii_case(bot_name.as_ref()) => {}
         None => {}
         _ => return None,
     }

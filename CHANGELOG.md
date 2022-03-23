@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.2 - 2022-03-23
+
+### Added
+
+- The `Storage::erase` default function that returns `Arc<ErasedStorage>`.
+- `ErasedStorage`, a storage with an erased error type.
+- Allow the storage generic `S` be `?Sized` in `Dialogue` and `HandlerExt::enter_dialogue`.
+
+### Deprecated
+
+- `enable_logging!` and `enable_logging_with_filter!` macros
+
+### Fixed
+
+- Log `UpdateKind::Error` in `teloxide::dispatching2::Dispatcher`.
+- Don't warn about unhandled updates in `repls2` ([issue 557](https://github.com/teloxide/teloxide/issues/557)).
+
 ## 0.7.1 - 2022-03-09
 
 ### Fixed

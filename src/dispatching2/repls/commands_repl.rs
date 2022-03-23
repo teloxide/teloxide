@@ -76,10 +76,15 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
 {
     use crate::dispatching2::Dispatcher;
 
+    // Other update types are of no interest to use since this REPL is only for
+    // commands. See <https://github.com/teloxide/teloxide/issues/557>.
+    let ignore_update = |_upd| Box::pin(async {});
+
     let mut dispatcher = Dispatcher::builder(
         bot,
         Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
     )
+    .default_handler(ignore_update)
     .build();
 
     #[cfg(feature = "ctrlc_handler")]

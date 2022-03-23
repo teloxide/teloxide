@@ -80,7 +80,7 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     teloxide::enable_logging!();
+//!     pretty_env_logger::init();
 //!     log::info!("Starting dialogue_bot!");
 //!
 //!     let bot = Bot::from_env().auto_send();
@@ -169,4 +169,4 @@ pub use storage::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use storage::{SqliteStorage, SqliteStorageError};
 
-pub use storage::{serializer, InMemStorage, InMemStorageError, Serializer, Storage, TraceStorage};
+pub use storage::*;

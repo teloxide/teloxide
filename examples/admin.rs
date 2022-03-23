@@ -144,7 +144,7 @@ async fn action(
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting admin_bot...");
 
     let bot = teloxide::Bot::from_env().auto_send();

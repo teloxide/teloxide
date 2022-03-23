@@ -19,7 +19,7 @@ use reqwest::{StatusCode, Url};
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting heroku_ping_pong_bot...");
 
     let bot = Bot::from_env().auto_send();

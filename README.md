@@ -75,7 +75,7 @@ $ rustup override set nightly
 [dependencies]
 teloxide = { version = "0.7", features = ["macros", "auto-send"] }
 log = "0.4"
-pretty_env_logger = "0.4.0"
+pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ```
 
@@ -92,7 +92,7 @@ use teloxide::prelude2::*;
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting dices_bot...");
 
     let bot = Bot::from_env().auto_send();
@@ -164,7 +164,7 @@ async fn answer(
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting simple_commands_bot...");
 
     let bot = Bot::from_env().auto_send();
@@ -218,7 +218,7 @@ impl Default for State {
 
 #[tokio::main]
 async fn main() {
-    teloxide::enable_logging!();
+    pretty_env_logger::init();
     log::info!("Starting dialogue_bot...");
 
     let bot = Bot::from_env().auto_send();
@@ -337,15 +337,6 @@ A: teloxide doesn't provide a special API for working with webhooks due to their
 Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
-
-**Q: Can I use different loggers?**
-
-A: Yes. You can setup any logger, for example [fern]. teloxide has no specific requirements as it depends only on [log]. Remember that [`enable_logging!`] and [`enable_logging_with_filter!`] are just **optional** utilities.
-
-[fern]: https://crates.io/crates/fern
-[log]: https://crates.io/crates/log
-[`enable_logging!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging.html
-[`enable_logging_with_filter!`]: https://docs.rs/teloxide/latest/teloxide/macro.enable_logging_with_filter.html
 
 ## Community bots
 
