@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
  - Make bot name check case-insensitive ([PR #16](https://github.com/teloxide/teloxide-macros/pull/16)).
- - Add more command rename rules: `UPPERCASE`, `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE` ([PR #18](https://github.com/teloxide/teloxide-macros/pull/18)).
+
+### Added
+
+ - More command rename rules: `UPPERCASE`, `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE` ([PR #18](https://github.com/teloxide/teloxide-macros/pull/18)).
 
 ## 0.5.0 - 2022-02-05
 
