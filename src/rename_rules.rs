@@ -1,6 +1,9 @@
 // Some concepts are from Serde.
 
-use heck::{ToPascalCase, ToLowerCamelCase, ToSnakeCase, ToShoutySnakeCase, ToKebabCase, ToShoutyKebabCase};
+use heck::{
+    ToKebabCase, ToLowerCamelCase, ToPascalCase, ToShoutyKebabCase,
+    ToShoutySnakeCase, ToSnakeCase,
+};
 
 /// Apply a renaming rule to an enum variant,
 /// returning the version expected in the source.
