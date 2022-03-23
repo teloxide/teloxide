@@ -196,3 +196,41 @@ fn descriptions_off() {
 
     assert_eq!(DefaultCommands::descriptions(), "/help\n".to_owned());
 }
+
+#[test]
+#[cfg(feature = "macros")]
+fn rename_rules() {
+    #[derive(BotCommand, Debug, PartialEq)]
+    enum DefaultCommands {
+        #[command(rename = "lowercase")]
+        AaaAaa,
+        #[command(rename = "UPPERCASE")]
+        BbbBbb,
+        #[command(rename = "PascalCase")]
+        CccCcc,
+        #[command(rename = "camelCase")]
+        DddDdd,
+        #[command(rename = "snake_case")]
+        EeeEee,
+        #[command(rename = "SCREAMING_SNAKE_CASE")]
+        FffFff,
+        #[command(rename = "kebab-case")]
+        GggGgg,
+        #[command(rename = "SCREAMING-KEBAB-CASE")]
+        HhhHhh,
+    }
+
+    assert_eq!(DefaultCommands::AaaAaa, DefaultCommands::parse("/aaaaaa", "").unwrap());
+    assert_eq!(DefaultCommands::BbbBbb, DefaultCommands::parse("/BBBBBB", "").unwrap());
+    assert_eq!(DefaultCommands::CccCcc, DefaultCommands::parse("/CccCcc", "").unwrap());
+    assert_eq!(DefaultCommands::DddDdd, DefaultCommands::parse("/dddDdd", "").unwrap());
+    assert_eq!(DefaultCommands::EeeEee, DefaultCommands::parse("/eee_eee", "").unwrap());
+    assert_eq!(DefaultCommands::FffFff, DefaultCommands::parse("/FFF_FFF", "").unwrap());
+    assert_eq!(DefaultCommands::GggGgg, DefaultCommands::parse("/ggg-ggg", "").unwrap());
+    assert_eq!(DefaultCommands::HhhHhh, DefaultCommands::parse("/HHH-HHH", "").unwrap());
+
+    assert_eq!(
+        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH\n",
+        DefaultCommands::descriptions()
+    );
+}
