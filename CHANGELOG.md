@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Removed
+
+ - The old dispatching system and related stuff: `dispatching`, `utils::UpState`, `prelude`, `repls2`, `crate::{dialogues_repl, dialogues_repl_with_listener}`, and `#[teloxide(...)]`.
+
+### Changed
+
+ - Rename `dispatching2` => `dispatching`.
+ - Rename `prelude2` => `prelude`.
+ - Move `update_listeners`, `stop_token`, `IdleShutdownError`, and `ShutdownToken` from the old `dispatching` to the new `dispatching`.
+ - Replace `crate::{commands_repl, commands_repl_with_listener, repl, repl_with_listener}` with those of the new `dispatching`.
+
 ## 0.7.2 - 2022-03-23
 
 ### Added

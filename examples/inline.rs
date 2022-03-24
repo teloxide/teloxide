@@ -1,5 +1,5 @@
 use teloxide::{
-    prelude2::*,
+    prelude::*,
     types::{
         InlineQueryResult, InlineQueryResultArticle, InputMessageContent, InputMessageContentText,
     },

@@ -13,7 +13,7 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
-use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
+use teloxide::{dispatching::dialogue::InMemStorage, macros::DialogueState, prelude::*};
 
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 

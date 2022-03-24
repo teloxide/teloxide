@@ -1,7 +1,7 @@
 use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
-    prelude2::*,
+    prelude::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText,
