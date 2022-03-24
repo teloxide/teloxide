@@ -12,6 +12,12 @@ use crate::types::UserId;
 #[serde(transparent)]
 pub struct ChatId(pub i64);
 
+impl From<UserId> for ChatId {
+    fn from(UserId(id): UserId) -> Self {
+        Self(id as _)
+    }
+}
+
 impl ChatId {
     pub(crate) fn is_channel(self) -> bool {
         matches!(self.unmark(), UnmarkedChatId::Channel(_))

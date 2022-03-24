@@ -1,7 +1,7 @@
 use derive_more::{Display, From};
 use serde::{Deserialize, Serialize};
 
-use crate::types::ChatId;
+use crate::types::{ChatId, UserId};
 
 /// A unique identifier for the target chat or username of the target channel
 /// (in the format `@channelusername`).
@@ -26,6 +26,12 @@ impl Recipient {
             Recipient::Id(id) => id.is_channel(),
             Recipient::ChannelUsername(_) => true,
         }
+    }
+}
+
+impl From<UserId> for Recipient {
+    fn from(id: UserId) -> Self {
+        Self::Id(id.into())
     }
 }
 
