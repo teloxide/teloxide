@@ -7,7 +7,7 @@ use futures::{
 
 use crate::{
     dispatching::{
-        stop_token::{AsyncStopFlag, AsyncStopToken, StopToken},
+        stop_token::{AsyncStopFlag, AsyncStopToken},
         update_listeners::{stateful_listener::StatefulListener, UpdateListener},
     },
     payloads::{GetUpdates, GetUpdatesSetters as _},
@@ -22,9 +22,7 @@ use crate::{
 /// ## Notes
 ///
 /// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(
-    requester: R,
-) -> impl UpdateListener<R::Err, StopToken = impl Send + StopToken>
+pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
@@ -130,7 +128,7 @@ pub fn polling<R>(
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<R::Err, StopToken = impl Send + StopToken>
+) -> impl UpdateListener<R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
