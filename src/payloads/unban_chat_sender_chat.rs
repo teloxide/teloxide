@@ -18,7 +18,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Unique identifier of the target sender chat
-            pub sender_chat_id: ChatId,
+            pub sender_chat_id: ChatId [into],
         }
     }
 }

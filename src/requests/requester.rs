@@ -376,24 +376,22 @@ pub trait Requester {
     type BanChatSenderChat: Request<Payload = BanChatSenderChat, Err = Self::Err>;
 
     /// For Telegram documentation see [`BanChatSenderChat`].
-    fn ban_chat_sender_chat<C>(
-        &self,
-        chat_id: C,
-        sender_chat_id: ChatId,
-    ) -> Self::BanChatSenderChat
+    fn ban_chat_sender_chat<C, S>(&self, chat_id: C, sender_chat_id: S) -> Self::BanChatSenderChat
     where
-        C: Into<Recipient>;
+        C: Into<Recipient>,
+        S: Into<ChatId>;
 
     type UnbanChatSenderChat: Request<Payload = UnbanChatSenderChat, Err = Self::Err>;
 
     /// For Telegram documentation see [`UnbanChatSenderChat`].
-    fn unban_chat_sender_chat<C>(
+    fn unban_chat_sender_chat<C, S>(
         &self,
         chat_id: C,
-        sender_chat_id: ChatId,
+        sender_chat_id: S,
     ) -> Self::UnbanChatSenderChat
     where
-        C: Into<Recipient>;
+        C: Into<Recipient>,
+        S: Into<ChatId>;
 
     type SetChatPermissions: Request<Payload = SetChatPermissions, Err = Self::Err>;
 

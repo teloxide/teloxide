@@ -401,9 +401,10 @@ impl Requester for Bot {
 
     type BanChatSenderChat = JsonRequest<payloads::BanChatSenderChat>;
 
-    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: ChatId) -> Self::BanChatSenderChat
+    fn ban_chat_sender_chat<C, S>(&self, chat_id: C, sender_chat_id: S) -> Self::BanChatSenderChat
     where
         C: Into<Recipient>,
+        S: Into<ChatId>,
     {
         Self::BanChatSenderChat::new(
             self.clone(),
@@ -413,13 +414,14 @@ impl Requester for Bot {
 
     type UnbanChatSenderChat = JsonRequest<payloads::UnbanChatSenderChat>;
 
-    fn unban_chat_sender_chat<C>(
+    fn unban_chat_sender_chat<C, S>(
         &self,
         chat_id: C,
-        sender_chat_id: ChatId,
+        sender_chat_id: S,
     ) -> Self::UnbanChatSenderChat
     where
         C: Into<Recipient>,
+        S: Into<ChatId>,
     {
         Self::UnbanChatSenderChat::new(
             self.clone(),
