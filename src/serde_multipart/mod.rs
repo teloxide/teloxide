@@ -90,7 +90,7 @@ mod tests {
         types::{
             InputFile, InputMedia, InputMediaAnimation, InputMediaAudio, InputMediaDocument,
             InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity, MessageEntityKind,
-            ParseMode,
+            ParseMode, UserId,
         },
     };
 
@@ -151,7 +151,7 @@ mod tests {
     #[tokio::test]
     async fn test_add_sticker_to_set() {
         to_form_ref(&payloads::AddStickerToSet::new(
-            0,
+            UserId(0),
             "name",
             InputSticker::Png(InputFile::file("./media/logo.png")),
             "✈️⚙️",

@@ -6,10 +6,7 @@ use reqwest::Url;
 use crate::{
     payloads::*,
     requests::{HasPayload, Output, Payload, Request, Requester},
-    types::{
-        BotCommand, ChatAction, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, Recipient, TargetMessage,
-    },
+    types::*,
 };
 
 /// [`Requester`] with erased type.
@@ -343,7 +340,7 @@ trait ErasableRequester<'a> {
 
     fn get_user_profile_photos(
         &self,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
 
     fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err>;
@@ -351,38 +348,38 @@ trait ErasableRequester<'a> {
     fn ban_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, BanChatMember, Self::Err>;
 
     fn kick_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, KickChatMember, Self::Err>;
 
     fn unban_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, UnbanChatMember, Self::Err>;
 
     fn restrict_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, RestrictChatMember, Self::Err>;
 
     fn promote_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, PromoteChatMember, Self::Err>;
 
     fn set_chat_administrator_custom_title(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err>;
 
@@ -430,14 +427,14 @@ trait ErasableRequester<'a> {
     fn approve_chat_join_request(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err>;
 
     /// For Telegram documentation see [`DeclineChatJoinRequest`].
     fn decline_chat_join_request(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err>;
 
     fn set_chat_photo(
@@ -500,7 +497,7 @@ trait ErasableRequester<'a> {
     fn get_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, GetChatMember, Self::Err>;
 
     fn set_chat_sticker_set(
@@ -604,13 +601,13 @@ trait ErasableRequester<'a> {
 
     fn upload_sticker_file(
         &self,
-        user_id: i64,
+        user_id: UserId,
         png_sticker: InputFile,
     ) -> ErasedRequest<'a, UploadStickerFile, Self::Err>;
 
     fn create_new_sticker_set(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: String,
         title: String,
         sticker: InputSticker,
@@ -619,7 +616,7 @@ trait ErasableRequester<'a> {
 
     fn add_sticker_to_set(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: String,
         sticker: InputSticker,
         emojis: String,
@@ -639,7 +636,7 @@ trait ErasableRequester<'a> {
     fn set_sticker_set_thumb(
         &self,
         name: String,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, SetStickerSetThumb, Self::Err>;
 
     // we can't change telegram API
@@ -669,7 +666,7 @@ trait ErasableRequester<'a> {
 
     fn set_passport_data_errors(
         &self,
-        user_id: i64,
+        user_id: UserId,
         errors: Vec<PassportElementError>,
     ) -> ErasedRequest<'a, SetPassportDataErrors, Self::Err>;
 
@@ -681,7 +678,7 @@ trait ErasableRequester<'a> {
 
     fn set_game_score(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         chat_id: u32,
         message_id: i64,
@@ -689,14 +686,14 @@ trait ErasableRequester<'a> {
 
     fn set_game_score_inline(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         inline_message_id: String,
     ) -> ErasedRequest<'a, SetGameScoreInline, Self::Err>;
 
     fn get_game_high_scores(
         &self,
-        user_id: i64,
+        user_id: UserId,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
 }
@@ -919,7 +916,7 @@ where
 
     fn get_user_profile_photos(
         &self,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err> {
         Requester::get_user_profile_photos(self, user_id).erase()
     }
@@ -931,7 +928,7 @@ where
     fn ban_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, BanChatMember, Self::Err> {
         Requester::ban_chat_member(self, chat_id, user_id).erase()
     }
@@ -939,7 +936,7 @@ where
     fn kick_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, KickChatMember, Self::Err> {
         Requester::kick_chat_member(self, chat_id, user_id).erase()
     }
@@ -947,7 +944,7 @@ where
     fn unban_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, UnbanChatMember, Self::Err> {
         Requester::unban_chat_member(self, chat_id, user_id).erase()
     }
@@ -955,7 +952,7 @@ where
     fn restrict_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, RestrictChatMember, Self::Err> {
         Requester::restrict_chat_member(self, chat_id, user_id, permissions).erase()
@@ -964,7 +961,7 @@ where
     fn promote_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, PromoteChatMember, Self::Err> {
         Requester::promote_chat_member(self, chat_id, user_id).erase()
     }
@@ -972,7 +969,7 @@ where
     fn set_chat_administrator_custom_title(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err> {
         Requester::set_chat_administrator_custom_title(self, chat_id, user_id, custom_title).erase()
@@ -1036,7 +1033,7 @@ where
     fn approve_chat_join_request(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err> {
         Requester::approve_chat_join_request(self, chat_id, user_id).erase()
     }
@@ -1045,7 +1042,7 @@ where
     fn decline_chat_join_request(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err> {
         Requester::decline_chat_join_request(self, chat_id, user_id).erase()
     }
@@ -1134,7 +1131,7 @@ where
     fn get_chat_member(
         &self,
         chat_id: Recipient,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, GetChatMember, Self::Err> {
         Requester::get_chat_member(self, chat_id, user_id).erase()
     }
@@ -1278,7 +1275,7 @@ where
 
     fn upload_sticker_file(
         &self,
-        user_id: i64,
+        user_id: UserId,
         png_sticker: InputFile,
     ) -> ErasedRequest<'a, UploadStickerFile, Self::Err> {
         Requester::upload_sticker_file(self, user_id, png_sticker).erase()
@@ -1286,7 +1283,7 @@ where
 
     fn create_new_sticker_set(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: String,
         title: String,
         sticker: InputSticker,
@@ -1297,7 +1294,7 @@ where
 
     fn add_sticker_to_set(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: String,
         sticker: InputSticker,
         emojis: String,
@@ -1323,7 +1320,7 @@ where
     fn set_sticker_set_thumb(
         &self,
         name: String,
-        user_id: i64,
+        user_id: UserId,
     ) -> ErasedRequest<'a, SetStickerSetThumb, Self::Err> {
         Requester::set_sticker_set_thumb(self, name, user_id).erase()
     }
@@ -1369,7 +1366,7 @@ where
 
     fn set_passport_data_errors(
         &self,
-        user_id: i64,
+        user_id: UserId,
         errors: Vec<PassportElementError>,
     ) -> ErasedRequest<'a, SetPassportDataErrors, Self::Err> {
         Requester::set_passport_data_errors(self, user_id, errors).erase()
@@ -1385,7 +1382,7 @@ where
 
     fn set_game_score(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         chat_id: u32,
         message_id: i64,
@@ -1395,7 +1392,7 @@ where
 
     fn set_game_score_inline(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         inline_message_id: String,
     ) -> ErasedRequest<'a, SetGameScoreInline, Self::Err> {
@@ -1404,7 +1401,7 @@ where
 
     fn get_game_high_scores(
         &self,
-        user_id: i64,
+        user_id: UserId,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err> {
         Requester::get_game_high_scores(self, user_id, target).erase()

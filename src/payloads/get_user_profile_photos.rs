@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::UserProfilePhotos;
+use crate::types::{UserId, UserProfilePhotos};
 
 impl_payload! {
     /// Use this method to get a list of profile pictures for a user. Returns a [`UserProfilePhotos`] object.
@@ -18,7 +18,7 @@ impl_payload! {
     pub GetUserProfilePhotos (GetUserProfilePhotosSetters) => UserProfilePhotos {
         required {
             /// Unique identifier of the target user
-            pub user_id: i64,
+            pub user_id: UserId,
         }
         optional {
             /// Sequential number of the first photo to be returned. By default, all photos are returned.

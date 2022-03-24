@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::Recipient;
+use crate::types::{Recipient, UserId};
 
 /// This object represents the scope to which bot commands are applied.
 ///
@@ -51,7 +51,7 @@ pub enum BotCommandScope {
     AllChatAdministrators,
     Chat { chat_id: Recipient },
     ChatAdministrators { chat_id: Recipient },
-    ChatMember { chat_id: Recipient, user_id: i64 },
+    ChatMember { chat_id: Recipient, user_id: UserId },
 }
 
 #[test]

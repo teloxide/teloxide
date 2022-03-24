@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{TargetMessage, True};
+use crate::types::{TargetMessage, True, UserId};
 
 impl_payload! {
     /// Use this method to get data for high score tables. Will return the score of the specified user and several of their neighbors in a game. On success, returns an Array of [`GameHighScore`] objects.
@@ -20,7 +20,7 @@ impl_payload! {
     pub GetGameHighScores (GetGameHighScoresSetters) => True {
         required {
             /// User identifier
-            pub user_id: i64,
+            pub user_id: UserId,
             /// Target message
             #[serde(flatten)]
             pub target: TargetMessage [into],

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::UserId;
+
 /// This object represents a phone contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#contact).
@@ -16,7 +18,7 @@ pub struct Contact {
     pub last_name: Option<String>,
 
     /// A contact's user identifier in Telegram.
-    pub user_id: Option<i32>,
+    pub user_id: Option<UserId>,
 
     /// Additional data about the contact in the form of a [vCard].
     ///

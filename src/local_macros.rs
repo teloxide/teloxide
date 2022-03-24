@@ -659,9 +659,9 @@ macro_rules! requester_forward {
     (@method get_user_profile_photos $body:ident $ty:ident) => {
         type GetUserProfilePhotos = $ty![GetUserProfilePhotos];
 
-        fn get_user_profile_photos(&self, user_id: i64) -> Self::GetUserProfilePhotos {
+        fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos {
             let this = self;
-            $body!(get_user_profile_photos this (user_id: i64))
+            $body!(get_user_profile_photos this (user_id: UserId))
         }
     };
     (@method get_file $body:ident $ty:ident) => {
@@ -675,50 +675,50 @@ macro_rules! requester_forward {
     (@method ban_chat_member $body:ident $ty:ident) => {
         type BanChatMember = $ty![BanChatMember];
 
-        fn ban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::BanChatMember where C: Into<Recipient> {
+        fn ban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::BanChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(ban_chat_member this (chat_id: C, user_id: i64))
+            $body!(ban_chat_member this (chat_id: C, user_id: UserId))
         }
     };
     (@method kick_chat_member $body:ident $ty:ident) => {
         type KickChatMember = $ty![KickChatMember];
 
-        fn kick_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::KickChatMember where C: Into<Recipient> {
+        fn kick_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::KickChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(kick_chat_member this (chat_id: C, user_id: i64))
+            $body!(kick_chat_member this (chat_id: C, user_id: UserId))
         }
     };
     (@method unban_chat_member $body:ident $ty:ident) => {
         type UnbanChatMember = $ty![UnbanChatMember];
 
-        fn unban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::UnbanChatMember where C: Into<Recipient> {
+        fn unban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::UnbanChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(unban_chat_member this (chat_id: C, user_id: i64))
+            $body!(unban_chat_member this (chat_id: C, user_id: UserId))
         }
     };
     (@method restrict_chat_member $body:ident $ty:ident) => {
         type RestrictChatMember = $ty![RestrictChatMember];
 
-        fn restrict_chat_member<C>(&self, chat_id: C, user_id: i64, permissions: ChatPermissions) -> Self::RestrictChatMember where C: Into<Recipient> {
+        fn restrict_chat_member<C>(&self, chat_id: C, user_id: UserId, permissions: ChatPermissions) -> Self::RestrictChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(restrict_chat_member this (chat_id: C, user_id: i64, permissions: ChatPermissions))
+            $body!(restrict_chat_member this (chat_id: C, user_id: UserId, permissions: ChatPermissions))
         }
     };
     (@method promote_chat_member $body:ident $ty:ident) => {
         type PromoteChatMember = $ty![PromoteChatMember];
 
-        fn promote_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::PromoteChatMember where C: Into<Recipient> {
+        fn promote_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::PromoteChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(promote_chat_member this (chat_id: C, user_id: i64))
+            $body!(promote_chat_member this (chat_id: C, user_id: UserId))
         }
     };
     (@method set_chat_administrator_custom_title $body:ident $ty:ident) => {
         type SetChatAdministratorCustomTitle = $ty![SetChatAdministratorCustomTitle];
 
-        fn set_chat_administrator_custom_title<Ch, Cu>(&self, chat_id: Ch, user_id: i64, custom_title: Cu) -> Self::SetChatAdministratorCustomTitle where Ch: Into<Recipient>,
+        fn set_chat_administrator_custom_title<Ch, Cu>(&self, chat_id: Ch, user_id: UserId, custom_title: Cu) -> Self::SetChatAdministratorCustomTitle where Ch: Into<Recipient>,
         Cu: Into<String> {
             let this = self;
-            $body!(set_chat_administrator_custom_title this (chat_id: Ch, user_id: i64, custom_title: Cu))
+            $body!(set_chat_administrator_custom_title this (chat_id: Ch, user_id: UserId, custom_title: Cu))
         }
     };
     (@method ban_chat_sender_chat $body:ident $ty:ident) => {
@@ -782,17 +782,17 @@ macro_rules! requester_forward {
     (@method approve_chat_join_request $body:ident $ty:ident) => {
         type ApproveChatJoinRequest = $ty![ApproveChatJoinRequest];
 
-        fn approve_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::ApproveChatJoinRequest where C: Into<Recipient> {
+        fn approve_chat_join_request<C>(&self, chat_id: C, user_id: UserId) -> Self::ApproveChatJoinRequest where C: Into<Recipient> {
             let this = self;
-            $body!(approve_chat_join_request this (chat_id: C, user_id: i64))
+            $body!(approve_chat_join_request this (chat_id: C, user_id: UserId))
         }
     };
     (@method decline_chat_join_request $body:ident $ty:ident) => {
         type DeclineChatJoinRequest = $ty![DeclineChatJoinRequest];
 
-        fn decline_chat_join_request<C>(&self, chat_id: C, user_id: i64) -> Self::DeclineChatJoinRequest where C: Into<Recipient> {
+        fn decline_chat_join_request<C>(&self, chat_id: C, user_id: UserId) -> Self::DeclineChatJoinRequest where C: Into<Recipient> {
             let this = self;
-            $body!(decline_chat_join_request this (chat_id: C, user_id: i64))
+            $body!(decline_chat_join_request this (chat_id: C, user_id: UserId))
         }
     };
     (@method set_chat_photo $body:ident $ty:ident) => {
@@ -895,9 +895,9 @@ macro_rules! requester_forward {
     (@method get_chat_member $body:ident $ty:ident) => {
         type GetChatMember = $ty![GetChatMember];
 
-        fn get_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::GetChatMember where C: Into<Recipient> {
+        fn get_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::GetChatMember where C: Into<Recipient> {
             let this = self;
-            $body!(get_chat_member this (chat_id: C, user_id: i64))
+            $body!(get_chat_member this (chat_id: C, user_id: UserId))
         }
     };
     (@method set_chat_sticker_set $body:ident $ty:ident) => {
@@ -1059,28 +1059,28 @@ macro_rules! requester_forward {
     (@method upload_sticker_file $body:ident $ty:ident) => {
         type UploadStickerFile = $ty![UploadStickerFile];
 
-        fn upload_sticker_file(&self, user_id: i64, png_sticker: InputFile) -> Self::UploadStickerFile {
+        fn upload_sticker_file(&self, user_id: UserId, png_sticker: InputFile) -> Self::UploadStickerFile {
             let this = self;
-            $body!(upload_sticker_file this (user_id: i64, png_sticker: InputFile))
+            $body!(upload_sticker_file this (user_id: UserId, png_sticker: InputFile))
         }
     };
     (@method create_new_sticker_set $body:ident $ty:ident) => {
         type CreateNewStickerSet = $ty![CreateNewStickerSet];
 
-        fn create_new_sticker_set<N, T, E>(&self, user_id: i64, name: N, title: T, sticker: InputSticker, emojis: E) -> Self::CreateNewStickerSet where N: Into<String>,
+        fn create_new_sticker_set<N, T, E>(&self, user_id: UserId, name: N, title: T, sticker: InputSticker, emojis: E) -> Self::CreateNewStickerSet where N: Into<String>,
         T: Into<String>,
         E: Into<String> {
             let this = self;
-            $body!(create_new_sticker_set this (user_id: i64, name: N, title: T, sticker: InputSticker, emojis: E))
+            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, sticker: InputSticker, emojis: E))
         }
     };
     (@method add_sticker_to_set $body:ident $ty:ident) => {
         type AddStickerToSet = $ty![AddStickerToSet];
 
-        fn add_sticker_to_set<N, E>(&self, user_id: i64, name: N, sticker: InputSticker, emojis: E) -> Self::AddStickerToSet where N: Into<String>,
+        fn add_sticker_to_set<N, E>(&self, user_id: UserId, name: N, sticker: InputSticker, emojis: E) -> Self::AddStickerToSet where N: Into<String>,
         E: Into<String> {
             let this = self;
-            $body!(add_sticker_to_set this (user_id: i64, name: N, sticker: InputSticker, emojis: E))
+            $body!(add_sticker_to_set this (user_id: UserId, name: N, sticker: InputSticker, emojis: E))
         }
     };
     (@method set_sticker_position_in_set $body:ident $ty:ident) => {
@@ -1102,9 +1102,9 @@ macro_rules! requester_forward {
     (@method set_sticker_set_thumb $body:ident $ty:ident) => {
         type SetStickerSetThumb = $ty![SetStickerSetThumb];
 
-        fn set_sticker_set_thumb<N>(&self, name: N, user_id: i64) -> Self::SetStickerSetThumb where N: Into<String> {
+        fn set_sticker_set_thumb<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumb where N: Into<String> {
             let this = self;
-            $body!(set_sticker_set_thumb this (name: N, user_id: i64))
+            $body!(set_sticker_set_thumb this (name: N, user_id: UserId))
         }
     };
     (@method send_invoice $body:ident $ty:ident) => {
@@ -1140,9 +1140,9 @@ macro_rules! requester_forward {
     (@method set_passport_data_errors $body:ident $ty:ident) => {
         type SetPassportDataErrors = $ty![SetPassportDataErrors];
 
-        fn set_passport_data_errors<E>(&self, user_id: i64, errors: E) -> Self::SetPassportDataErrors where E: IntoIterator<Item = PassportElementError> {
+        fn set_passport_data_errors<E>(&self, user_id: UserId, errors: E) -> Self::SetPassportDataErrors where E: IntoIterator<Item = PassportElementError> {
             let this = self;
-            $body!(set_passport_data_errors this (user_id: i64, errors: E))
+            $body!(set_passport_data_errors this (user_id: UserId, errors: E))
         }
     };
     (@method send_game $body:ident $ty:ident) => {
@@ -1156,25 +1156,25 @@ macro_rules! requester_forward {
     (@method set_game_score $body:ident $ty:ident) => {
         type SetGameScore = $ty![SetGameScore];
 
-        fn set_game_score(&self, user_id: i64, score: u64, chat_id: u32, message_id: i64) -> Self::SetGameScore {
+        fn set_game_score(&self, user_id: UserId, score: u64, chat_id: u32, message_id: i64) -> Self::SetGameScore {
             let this = self;
-            $body!(set_game_score this (user_id: i64, score: u64, chat_id: u32, message_id: i64))
+            $body!(set_game_score this (user_id: UserId, score: u64, chat_id: u32, message_id: i64))
         }
     };
     (@method set_game_score_inline $body:ident $ty:ident) => {
         type SetGameScoreInline = $ty![SetGameScoreInline];
 
-        fn set_game_score_inline<I>(&self, user_id: i64, score: u64, inline_message_id: I) -> Self::SetGameScoreInline where I: Into<String> {
+        fn set_game_score_inline<I>(&self, user_id: UserId, score: u64, inline_message_id: I) -> Self::SetGameScoreInline where I: Into<String> {
             let this = self;
-            $body!(set_game_score_inline this (user_id: i64, score: u64, inline_message_id: I))
+            $body!(set_game_score_inline this (user_id: UserId, score: u64, inline_message_id: I))
         }
     };
     (@method get_game_high_scores $body:ident $ty:ident) => {
         type GetGameHighScores = $ty![GetGameHighScores];
 
-        fn get_game_high_scores<T>(&self, user_id: i64, target: T) -> Self::GetGameHighScores where T: Into<TargetMessage> {
+        fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores where T: Into<TargetMessage> {
             let this = self;
-            $body!(get_game_high_scores this (user_id: i64, target: T))
+            $body!(get_game_high_scores this (user_id: UserId, target: T))
         }
     };
 }

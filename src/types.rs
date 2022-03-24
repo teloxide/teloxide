@@ -221,8 +221,10 @@ mod non_telegram_types {
 }
 
 mod recipient;
+mod user_id;
 
 pub use recipient::*;
+pub use user_id::*;
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
     use chrono::{DateTime, NaiveDateTime, Utc};

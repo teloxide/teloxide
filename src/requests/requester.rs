@@ -8,7 +8,7 @@ use crate::{
     requests::Request,
     types::{
         BotCommand, ChatAction, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, Recipient, TargetMessage,
+        InputSticker, LabeledPrice, PassportElementError, Recipient, TargetMessage, UserId,
     },
 };
 
@@ -303,7 +303,7 @@ pub trait Requester {
     type GetUserProfilePhotos: Request<Payload = GetUserProfilePhotos, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetUserProfilePhotos`].
-    fn get_user_profile_photos(&self, user_id: i64) -> Self::GetUserProfilePhotos;
+    fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos;
 
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
@@ -315,21 +315,21 @@ pub trait Requester {
     type BanChatMember: Request<Payload = BanChatMember, Err = Self::Err>;
 
     /// For Telegram documentation see [`BanChatMember`].
-    fn ban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::BanChatMember
+    fn ban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::BanChatMember
     where
         C: Into<Recipient>;
 
     type KickChatMember: Request<Payload = KickChatMember, Err = Self::Err>;
 
     /// For Telegram documentation see [`KickChatMember`].
-    fn kick_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::KickChatMember
+    fn kick_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::KickChatMember
     where
         C: Into<Recipient>;
 
     type UnbanChatMember: Request<Payload = UnbanChatMember, Err = Self::Err>;
 
     /// For Telegram documentation see [`UnbanChatMember`].
-    fn unban_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::UnbanChatMember
+    fn unban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::UnbanChatMember
     where
         C: Into<Recipient>;
 
@@ -339,7 +339,7 @@ pub trait Requester {
     fn restrict_chat_member<C>(
         &self,
         chat_id: C,
-        user_id: i64,
+        user_id: UserId,
         permissions: ChatPermissions,
     ) -> Self::RestrictChatMember
     where
@@ -348,7 +348,7 @@ pub trait Requester {
     type PromoteChatMember: Request<Payload = PromoteChatMember, Err = Self::Err>;
 
     /// For Telegram documentation see [`PromoteChatMember`].
-    fn promote_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::PromoteChatMember
+    fn promote_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::PromoteChatMember
     where
         C: Into<Recipient>;
 
@@ -361,7 +361,7 @@ pub trait Requester {
     fn set_chat_administrator_custom_title<Ch, Cu>(
         &self,
         chat_id: Ch,
-        user_id: i64,
+        user_id: UserId,
         custom_title: Cu,
     ) -> Self::SetChatAdministratorCustomTitle
     where
@@ -437,7 +437,7 @@ pub trait Requester {
     fn approve_chat_join_request<C>(
         &self,
         chat_id: C,
-        user_id: i64,
+        user_id: UserId,
     ) -> Self::ApproveChatJoinRequest
     where
         C: Into<Recipient>;
@@ -448,7 +448,7 @@ pub trait Requester {
     fn decline_chat_join_request<C>(
         &self,
         chat_id: C,
-        user_id: i64,
+        user_id: UserId,
     ) -> Self::DeclineChatJoinRequest
     where
         C: Into<Recipient>;
@@ -541,7 +541,7 @@ pub trait Requester {
     type GetChatMember: Request<Payload = GetChatMember, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetChatMember`].
-    fn get_chat_member<C>(&self, chat_id: C, user_id: i64) -> Self::GetChatMember
+    fn get_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::GetChatMember
     where
         C: Into<Recipient>;
 
@@ -716,14 +716,18 @@ pub trait Requester {
     type UploadStickerFile: Request<Payload = UploadStickerFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`UploadStickerFile`].
-    fn upload_sticker_file(&self, user_id: i64, png_sticker: InputFile) -> Self::UploadStickerFile;
+    fn upload_sticker_file(
+        &self,
+        user_id: UserId,
+        png_sticker: InputFile,
+    ) -> Self::UploadStickerFile;
 
     type CreateNewStickerSet: Request<Payload = CreateNewStickerSet, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateNewStickerSet`].
     fn create_new_sticker_set<N, T, E>(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: N,
         title: T,
         sticker: InputSticker,
@@ -739,7 +743,7 @@ pub trait Requester {
     /// For Telegram documentation see [`AddStickerToSet`].
     fn add_sticker_to_set<N, E>(
         &self,
-        user_id: i64,
+        user_id: UserId,
         name: N,
         sticker: InputSticker,
         emojis: E,
@@ -769,7 +773,7 @@ pub trait Requester {
     type SetStickerSetThumb: Request<Payload = SetStickerSetThumb, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetStickerSetThumb`].
-    fn set_sticker_set_thumb<N>(&self, name: N, user_id: i64) -> Self::SetStickerSetThumb
+    fn set_sticker_set_thumb<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumb
     where
         N: Into<String>;
 
@@ -816,7 +820,11 @@ pub trait Requester {
     type SetPassportDataErrors: Request<Payload = SetPassportDataErrors, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetPassportDataErrors`].
-    fn set_passport_data_errors<E>(&self, user_id: i64, errors: E) -> Self::SetPassportDataErrors
+    fn set_passport_data_errors<E>(
+        &self,
+        user_id: UserId,
+        errors: E,
+    ) -> Self::SetPassportDataErrors
     where
         E: IntoIterator<Item = PassportElementError>;
 
@@ -832,7 +840,7 @@ pub trait Requester {
     /// For Telegram documentation see [`SetGameScore`].
     fn set_game_score(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         chat_id: u32,
         message_id: i64,
@@ -843,7 +851,7 @@ pub trait Requester {
     /// For Telegram documentation see [`SetGameScoreInline`].
     fn set_game_score_inline<I>(
         &self,
-        user_id: i64,
+        user_id: UserId,
         score: u64,
         inline_message_id: I,
     ) -> Self::SetGameScoreInline
@@ -853,7 +861,7 @@ pub trait Requester {
     type GetGameHighScores: Request<Payload = GetGameHighScores, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetGameHighScores`].
-    fn get_game_high_scores<T>(&self, user_id: i64, target: T) -> Self::GetGameHighScores
+    fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores
     where
         T: Into<TargetMessage>;
 }

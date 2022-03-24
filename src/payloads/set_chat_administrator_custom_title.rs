@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{Recipient, True};
+use crate::types::{Recipient, True, UserId};
 
 impl_payload! {
     /// Use this method to set a custom title for an administrator in a supergroup promoted by the bot. Returns _True_on success.
@@ -18,7 +18,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Unique identifier of the target user
-            pub user_id: i64,
+            pub user_id: UserId,
             /// New custom title for the administrator; 0-16 characters, emoji are not allowed
             pub custom_title: String [into],
         }

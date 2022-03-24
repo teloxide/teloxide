@@ -591,6 +591,8 @@ pub enum ChatMemberStatus {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::UserId;
+
     use super::*;
 
     #[test]
@@ -618,7 +620,7 @@ mod tests {
         }"#;
         let expected = ChatMember {
             user: User {
-                id: 1029940401,
+                id: UserId(1029940401),
                 is_bot: false,
                 first_name: "First".to_string(),
                 last_name: Some("Last".to_string()),

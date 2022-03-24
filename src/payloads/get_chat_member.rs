@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatMember, Recipient};
+use crate::types::{ChatMember, Recipient, UserId};
 
 impl_payload! {
     /// Use this method to get information about a member of a chat. Returns a [`ChatMember`] object on success.
@@ -20,7 +20,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Unique identifier of the target user
-            pub user_id: i64,
+            pub user_id: UserId,
         }
     }
 }
