@@ -1,10 +1,10 @@
-use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 /// Identifier of a user.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Display, Serialize, Deserialize,
-)]
+#[derive(Clone, Copy)]
+#[derive(Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct UserId(pub u64);
 

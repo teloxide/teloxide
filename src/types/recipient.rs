@@ -5,7 +5,9 @@ use crate::types::ChatId;
 
 /// A unique identifier for the target chat or username of the target channel
 /// (in the format `@channelusername`).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Display, From)]
+#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Display, From)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Recipient {
     /// A chat identifier.

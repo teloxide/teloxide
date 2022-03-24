@@ -1,4 +1,3 @@
-use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 use crate::types::UserId;
@@ -6,9 +5,10 @@ use crate::types::UserId;
 /// Identifier of a chat.
 ///
 /// Note that "a chat" here means any of group, supergroup, channel or user PM.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Display, Serialize, Deserialize,
-)]
+#[derive(Clone, Copy)]
+#[derive(Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ChatId(pub i64);
 
