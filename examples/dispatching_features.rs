@@ -1,20 +1,18 @@
 // This example provide a quick overview of the new features in the
-// `dispatching2` module.
+// `dispatching` module.
 
 use rand::Rng;
 
-// You need to import `prelude2` because `prelude` contains items from the old
-// dispatching system, which will be deprecated in the future.
 use teloxide::{
-    prelude2::*,
-    types::{Dice, Me, Update},
-    utils::command::BotCommands,
+    prelude::*,
+    types::{Dice, Update},
+    utils::command::BotCommand,
 };
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dispatching2_features_bot...");
+    log::info!("Starting dispatching_features_bot...");
 
     let bot = Bot::from_env().auto_send();
 

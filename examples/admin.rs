@@ -1,7 +1,7 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::Duration;
-use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommands};
+use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
 
 // Derive BotCommands to parse text with a command into this enumeration.
 //
@@ -149,5 +149,5 @@ async fn main() {
 
     let bot = teloxide::Bot::from_env().auto_send();
 
-    teloxide::repls2::commands_repl(bot, action, Command::ty()).await;
+    teloxide::commands_repl(bot, action, Command::ty()).await;
 }

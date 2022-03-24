@@ -1,8 +1,18 @@
-use teloxide::{prelude2::*, utils::command::BotCommands};
+use teloxide::{prelude::*, utils::command::BotCommand};
 
 use std::error::Error;
 
-#[derive(BotCommands, Clone)]
+#[tokio::main]
+async fn main() {
+    pretty_env_logger::init();
+    log::info!("Starting simple_commands_bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    teloxide::commands_repl(bot, answer, Command::ty()).await;
+}
+
+#[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -35,14 +45,4 @@ async fn answer(
     };
 
     Ok(())
-}
-
-#[tokio::main]
-async fn main() {
-    pretty_env_logger::init();
-    log::info!("Starting simple_commands_bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
 }

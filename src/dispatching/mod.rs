@@ -1,74 +1,113 @@
-//! Old updates dispatching (**DEPRECATED**: use [`crate::dispatching2`]
-//! instead).
+//! An update dispatching model based on [`dptree`].
 //!
-//! The key type here is [`Dispatcher`]. It encapsulates [`Bot`] and handlers
-//! for [all the update kinds].
+//! In teloxide, updates are dispatched by a pipleine. The central type is
+//! [`dptree::Handler`] -- it represents a handler of an update; since the API
+//! is highly declarative, you can combine handlers with each other via such
+//! methods as [`dptree::Handler::chain`] and [`dptree::Handler::branch`]. The
+//! former method pipes one handler to another one, whilst the latter creates a
+//! new node, as communicated by the name. For more information, please refer to
+//! the documentation of [`dptree`].
 //!
-//! Every handler accept [`tokio::sync::mpsc::UnboundedReceiver`] (the RX halve
-//! of an asynchronous channel). Inside a body of your handler, you typically
-//! asynchronously concurrently iterate through updates like this:
+//! The pattern itself is called [chain of responsibility], a well-known design
+//! technique across OOP developers. But unlike typical object-oriented design,
+//! we employ declarative FP-style functions like [`dptree::filter`],
+//! [`dptree::filter_map`], and [`dptree::endpoint`]; these functions create
+//! special forms of [`dptree::Handler`]; for more information, please refer to
+//! their respective documentation. Each of these higher-order functions accept
+//! a closure that is made into a handler -- this closure can take any
+//! additional parameters, which must be supplied while creating [`Dispatcher`]
+//! (see [`DispatcherBuilder::dependencies`]).
 //!
-//! ```
+//! The [`Dispatcher`] type puts all these things together: it only provides
+//! [`Dispatcher::dispatch`] and a handful of other methods. Once you call
+//! `.dispatch()`, it will retrieve updates from the Telegram server and pass
+//! them to your handler, which is a parameter of [`Dispatcher::builder`].
+//!
+//! Let us look at a simple example:
+//!
+//!
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/shared_state.rs))
+//!
+//! ```no_run
+//! use std::sync::atomic::{AtomicU64, Ordering};
+//!
+//! use once_cell::sync::Lazy;
 //! use teloxide::prelude::*;
-//! use tokio_stream::wrappers::UnboundedReceiverStream;
 //!
-//! async fn handle_messages(rx: DispatcherHandlerRx<AutoSend<Bot>, Message>) {
-//!     UnboundedReceiverStream::new(rx)
-//!         .for_each_concurrent(None, |message| async move {
-//!             dbg!(message.update);
-//!         })
-//!         .await;
-//! }
+//! static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
+//!
+//! # #[tokio::main]
+//! # async fn main() {
+//! pretty_env_logger::init();
+//! log::info!("Starting shared_state_bot...");
+//!
+//! let bot = Bot::from_env().auto_send();
+//!
+//! let handler = Update::filter_message().branch(dptree::endpoint(
+//!     |msg: Message, bot: AutoSend<Bot>| async move {
+//!         let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
+//!         bot.send_message(msg.chat.id, format!("I received {} messages in total.", previous))
+//!             .await?;
+//!         respond(())
+//!     },
+//! ));
+//!
+//! Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+//! # }
 //! ```
 //!
-//! When [`Update`] is received from Telegram, [`Dispatcher`] pushes it into an
-//! appropriate handler, depending on its kind. That's simple!
+//!  1. First, we create the bot: `let bot = Bot::from_env().auto_send()`.
+//!  2. Then we construct an update handler. While it is possible to handle all
+//! kinds of [`crate::types::Update`], here we are only interested in
+//! [`crate::types::Message`]: [`UpdateFilterExt::filter_message`] create a
+//! handler object which filters all messages out of a generic update.
+//!  3. By doing `.branch(dptree::endpoint(...))`, we set up a custom handling
+//! closure that receives `msg: Message` and `bot: AutoSend<Bot>`. There are
+//! called dependencies: `msg` is supplied by
+//! [`UpdateFilterExt::filter_message`], while `bot` is supplied by
+//! [`Dispatcher`].
 //!
-//! **Note** that handlers must implement [`DispatcherHandler`], which means
-//! that:
-//!  - You are able to supply [`DialogueDispatcher`] as a handler.
-//!  - You are able to supply functions that accept
-//!    [`tokio::sync::mpsc::UnboundedReceiver`] and return `Future<Output = ()>`
-//!    as a handler.
+//! That being said, if we receive a message, the dispatcher will call our
+//! handler, but if we receive something other than a message (e.g., a channel
+//! post), you will see an unhandled update notice in your terminal.
 //!
-//! Since they implement [`DispatcherHandler`] too.
+//! This is a very limited example of update pipelining facilities. In more
+//! involved scenarios, there are multiple branches and chains; if one element
+//! of a chain fails to handle an update, the update will be passed forwards; if
+//! no handler succeeds at handling the update, [`Dispatcher`] will invoke a
+//! default handler set up via [`DispatcherBuilder::default_handler`].
 //!
-//! [See the examples](https://github.com/teloxide/teloxide/tree/master/examples).
+//! Update pipelining provides several advantages over the typical `match
+//! (update.kind) { ... }` approach:
 //!
-//! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [all the update kinds]: crate::types::UpdateKind
-//! [`Update`]: crate::types::Update
-//! [`ErrorHandler`]: crate::dispatching::ErrorHandler
-//! [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-//! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
-//! [`DispatcherHandlerResult`]: crate::dispatching::DispatcherHandlerResult
-//! [`Bot`]: crate::Bot
-//! [`tokio::sync::mpsc::UnboundedReceiver`]: https://docs.rs/tokio/0.2.11/tokio/sync/mpsc/struct.UnboundedReceiver.html
-//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
+//!  1. It supports _extension_: e.g., you
+//! can define extension filters or some other handlers and then combine them in
+//! a single place, thus facilitating loose coupling.
+//!  2. Pipelining exhibits a natural syntax for expressing message processing.
+//!  3. Lastly, it provides a primitive form of [dependency injection (DI)],
+//! which allows you to deal with such objects as a bot and various update types
+//! easily.
+//!
+//! For a more involved example, see [`examples/dispatching_features.rs`](https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs).
+//!
+//! TODO: explain a more involved example with multiple branches.
+//!
+//! [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
+//! [dependency injection (DI)]: https://en.wikipedia.org/wiki/Dependency_injection
 
-#![allow(deprecated)]
+#[cfg(all(feature = "ctrlc_handler"))]
+pub mod repls;
 
 pub mod dialogue;
+mod dispatcher;
+mod filter_ext;
+mod handler_ext;
+mod handler_factory;
 pub mod stop_token;
 pub mod update_listeners;
 
-#[cfg(feature = "ctrlc_handler")]
-pub(crate) mod repls;
-
-mod dispatcher;
-mod dispatcher_handler;
-mod dispatcher_handler_rx_ext;
-mod update_with_cx;
-
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
-pub use dispatcher::Dispatcher;
-pub use dispatcher_handler::DispatcherHandler;
-pub use dispatcher_handler_rx_ext::DispatcherHandlerRxExt;
-use tokio::sync::mpsc::UnboundedReceiver;
-pub use update_with_cx::{UpdateWithCx, UpdateWithCxRequesterType};
-
-/// A type of a stream, consumed by [`Dispatcher`]'s handlers.
-///
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
-#[deprecated(note = "Use dispatching2 instead")]
-pub type DispatcherHandlerRx<R, Upd> = UnboundedReceiver<UpdateWithCx<R, Upd>>;
+pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
+pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
+pub use handler_ext::HandlerExt;
+pub use handler_factory::HandlerFactory;

@@ -88,7 +88,7 @@ This bot replies with a dice throw to each received message:
 ([Full](examples/dices.rs))
 
 ```rust,no_run
-use teloxide::prelude2::*;
+use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -97,7 +97,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })
@@ -125,11 +125,21 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 ([Full](examples/simple_commands.rs))
 
 ```rust,no_run
-use teloxide::{prelude2::*, utils::command::BotCommands};
+use teloxide::{prelude::*, utils::command::BotCommand};
 
 use std::error::Error;
 
-#[derive(BotCommands, Clone)]
+#[tokio::main]
+async fn main() {
+    pretty_env_logger::init();
+    log::info!("Starting simple_commands_bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    teloxide::commands_repl(bot, answer, Command::ty()).await;
+}
+
+#[derive(BotCommand, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -161,16 +171,6 @@ async fn answer(
 
     Ok(())
 }
-
-#[tokio::main]
-async fn main() {
-    pretty_env_logger::init();
-    log::info!("Starting simple_commands_bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
-}
 ```
 
 <div align="center">
@@ -190,7 +190,7 @@ Below is a bot that asks you three questions and then sends the answers back to 
 ([Full](examples/dialogue.rs))
 
 ```rust,ignore
-use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
+use teloxide::{dispatching::dialogue::InMemStorage, macros::DialogueState, prelude::*};
 
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 
