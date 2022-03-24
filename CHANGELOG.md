@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Removed
+
+ - Support for the old dispatching: `#[teloxide(subtransition)]`.
+
 ## 0.5.1 - 2022-03-23
 
 ### Fixed
