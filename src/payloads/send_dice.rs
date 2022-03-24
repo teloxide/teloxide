@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, DiceEmoji, Message, ReplyMarkup};
+use crate::types::{DiceEmoji, Message, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send an animated emoji that will display a random value. On success, the sent [`Message`] is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SendDice (SendDiceSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
         }
         optional {
             /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”

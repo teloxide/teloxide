@@ -9,7 +9,7 @@
 use serde::Serialize;
 use url::Url;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, LabeledPrice, Message};
+use crate::types::{InlineKeyboardMarkup, LabeledPrice, Message, Recipient};
 
 impl_payload! {
     /// Use this method to send invoices. On success, the sent [`Message`] is returned.
@@ -19,7 +19,7 @@ impl_payload! {
     pub SendInvoice (SendInvoiceSetters) => Message {
         required {
             /// Unique identifier for the target private chat
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Product name, 1-32 characters
             pub title: String [into],
             /// Product description, 1-255 characters

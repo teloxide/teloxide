@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InputFile, Message, ReplyMarkup};
+use crate::types::{InputFile, Message, Recipient, ReplyMarkup};
 
 impl_payload! {
     @[multipart = video_note, thumb]
@@ -20,7 +20,7 @@ impl_payload! {
     pub SendVideoNote (SendVideoNoteSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported
             ///
             /// [More info on Sending Files »]: crate::types::InputFile

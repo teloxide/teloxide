@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, True};
+use crate::types::{Recipient, True};
 
 impl_payload! {
     /// Use this method to ban a channel chat in a supergroup or a channel. The owner of the chat will not be able to send messages and join live streams on behalf of the chat, unless it is unbanned first. The bot must be an administrator in the supergroup or channel for this to work and must have the appropriate administrator rights.
@@ -16,7 +16,7 @@ impl_payload! {
     pub BanChatSenderChat (BanChatSenderChatSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Unique identifier of the target sender chat
             pub sender_chat_id: i64,
         }

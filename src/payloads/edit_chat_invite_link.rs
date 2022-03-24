@@ -9,7 +9,7 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::types::ChatId;
+use crate::types::Recipient;
 
 impl_payload! {
     /// Use this method to edit a non-primary invite link created by the bot. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the edited invite link as a [`ChatInviteLink`] object.
@@ -19,7 +19,7 @@ impl_payload! {
     pub EditChatInviteLink (EditChatInviteLinkSetters) => String {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// The invite link to edit
             pub invite_link: String [into],
         }

@@ -9,7 +9,7 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::types::{ChatId, ChatPermissions, True};
+use crate::types::{ChatPermissions, Recipient, True};
 
 impl_payload! {
     /// Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights. Pass _True_ for all permissions to lift restrictions from a user. Returns _True_ on success.
@@ -17,7 +17,7 @@ impl_payload! {
     pub RestrictChatMember (RestrictChatMemberSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Unique identifier of the target user
             pub user_id: i64,
             /// A JSON-serialized object for new user permissions

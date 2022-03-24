@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, True};
+use crate::types::{Recipient, True};
 
 impl_payload! {
     /// Use this method for your bot to leave a group, supergroup or channel. Returns _True_ on success.
@@ -16,7 +16,7 @@ impl_payload! {
     pub LeaveChat (LeaveChatSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
         }
     }
 }

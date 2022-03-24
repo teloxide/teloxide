@@ -9,7 +9,7 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, MessageEntity, ParseMode, PollType, ReplyMarkup};
+use crate::types::{Message, MessageEntity, ParseMode, PollType, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
@@ -19,7 +19,7 @@ impl_payload! {
     pub SendPoll (SendPollSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Poll question, 1-300 characters
             pub question: String [into],
             /// A JSON-serialized list of answer options, 2-10 strings 1-100 characters each

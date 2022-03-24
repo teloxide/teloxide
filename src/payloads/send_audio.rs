@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InputFile, Message, MessageEntity, ParseMode, ReplyMarkup};
+use crate::types::{InputFile, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup};
 
 impl_payload! {
     @[multipart = audio, thumb]
@@ -22,7 +22,7 @@ impl_payload! {
     pub SendAudio (SendAudioSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile

@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ReplyMarkup};
+use crate::types::{Message, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send information about a venue. On success, the sent [`Message`] is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SendVenue (SendVenueSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Latitude of new location
             pub latitude: f64,
             /// Longitude of new location

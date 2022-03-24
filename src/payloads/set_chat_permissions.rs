@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, ChatPermissions, True};
+use crate::types::{ChatPermissions, Recipient, True};
 
 impl_payload! {
     /// Use this method to set default chat permissions for all members. The bot must be an administrator in the group or a supergroup for this to work and must have the _can_restrict_members_ admin rights. Returns _True_ on success.
@@ -16,7 +16,7 @@ impl_payload! {
     pub SetChatPermissions (SetChatPermissionsSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// New default chat permissions
             pub permissions: ChatPermissions,
         }

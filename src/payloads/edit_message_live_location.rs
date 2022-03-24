@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ReplyMarkup};
+use crate::types::{Message, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [`StopMessageLiveLocation`]. On success, the edited Message is returned.
@@ -20,7 +20,7 @@ impl_payload! {
     pub EditMessageLiveLocation (EditMessageLiveLocationSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Identifier of the message to edit
             pub message_id: i32,
             /// Latitude of new location

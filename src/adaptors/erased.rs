@@ -7,8 +7,8 @@ use crate::{
     payloads::*,
     requests::{HasPayload, Output, Payload, Request, Requester},
     types::{
-        BotCommand, ChatAction, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, TargetMessage,
+        BotCommand, ChatAction, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
+        InputSticker, LabeledPrice, PassportElementError, Recipient, TargetMessage,
     },
 };
 
@@ -207,82 +207,82 @@ trait ErasableRequester<'a> {
 
     fn send_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         text: String,
     ) -> ErasedRequest<'a, SendMessage, Self::Err>;
 
     fn forward_message(
         &self,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, ForwardMessage, Self::Err>;
 
     fn copy_message(
         &self,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err>;
 
     fn send_photo(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         photo: InputFile,
     ) -> ErasedRequest<'a, SendPhoto, Self::Err>;
 
     fn send_audio(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         audio: InputFile,
     ) -> ErasedRequest<'a, SendAudio, Self::Err>;
 
     fn send_document(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         document: InputFile,
     ) -> ErasedRequest<'a, SendDocument, Self::Err>;
 
     fn send_video(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         video: InputFile,
     ) -> ErasedRequest<'a, SendVideo, Self::Err>;
 
     fn send_animation(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         animation: InputFile,
     ) -> ErasedRequest<'a, SendAnimation, Self::Err>;
 
     fn send_voice(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         voice: InputFile,
     ) -> ErasedRequest<'a, SendVoice, Self::Err>;
 
     fn send_video_note(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         video_note: InputFile,
     ) -> ErasedRequest<'a, SendVideoNote, Self::Err>;
 
     fn send_media_group(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         media: Vec<InputMedia>,
     ) -> ErasedRequest<'a, SendMediaGroup, Self::Err>;
 
     fn send_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, SendLocation, Self::Err>;
 
     fn edit_message_live_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         latitude: f64,
         longitude: f64,
@@ -297,7 +297,7 @@ trait ErasableRequester<'a> {
 
     fn stop_message_live_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         latitude: f64,
         longitude: f64,
@@ -312,7 +312,7 @@ trait ErasableRequester<'a> {
 
     fn send_venue(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         latitude: f64,
         longitude: f64,
         title: String,
@@ -321,23 +321,23 @@ trait ErasableRequester<'a> {
 
     fn send_contact(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         phone_number: String,
         first_name: String,
     ) -> ErasedRequest<'a, SendContact, Self::Err>;
 
     fn send_poll(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         question: String,
         options: Vec<String>,
     ) -> ErasedRequest<'a, SendPoll, Self::Err>;
 
-    fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err>;
+    fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err>;
 
     fn send_chat_action(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         action: ChatAction,
     ) -> ErasedRequest<'a, SendChatAction, Self::Err>;
 
@@ -350,163 +350,168 @@ trait ErasableRequester<'a> {
 
     fn ban_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, BanChatMember, Self::Err>;
 
     fn kick_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, KickChatMember, Self::Err>;
 
     fn unban_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, UnbanChatMember, Self::Err>;
 
     fn restrict_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, RestrictChatMember, Self::Err>;
 
     fn promote_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, PromoteChatMember, Self::Err>;
 
     fn set_chat_administrator_custom_title(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err>;
 
     fn ban_chat_sender_chat(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sender_chat_id: i64,
     ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err>;
 
     fn unban_chat_sender_chat(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sender_chat_id: i64,
     ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err>;
 
     fn set_chat_permissions(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, SetChatPermissions, Self::Err>;
 
     fn export_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, ExportChatInviteLink, Self::Err>;
 
     fn create_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, CreateChatInviteLink, Self::Err>;
 
     fn edit_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err>;
 
     fn revoke_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err>;
 
     /// For Telegram documentation see [`ApproveChatJoinRequest`].
     fn approve_chat_join_request(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err>;
 
     /// For Telegram documentation see [`DeclineChatJoinRequest`].
     fn decline_chat_join_request(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err>;
 
     fn set_chat_photo(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         photo: InputFile,
     ) -> ErasedRequest<'a, SetChatPhoto, Self::Err>;
 
-    fn delete_chat_photo(&self, chat_id: ChatId) -> ErasedRequest<'a, DeleteChatPhoto, Self::Err>;
+    fn delete_chat_photo(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteChatPhoto, Self::Err>;
 
     fn set_chat_title(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         title: String,
     ) -> ErasedRequest<'a, SetChatTitle, Self::Err>;
 
     fn set_chat_description(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, SetChatDescription, Self::Err>;
 
     fn pin_chat_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, PinChatMessage, Self::Err>;
 
-    fn unpin_chat_message(&self, chat_id: ChatId)
-        -> ErasedRequest<'a, UnpinChatMessage, Self::Err>;
+    fn unpin_chat_message(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, UnpinChatMessage, Self::Err>;
 
     fn unpin_all_chat_messages(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, UnpinAllChatMessages, Self::Err>;
 
-    fn leave_chat(&self, chat_id: ChatId) -> ErasedRequest<'a, LeaveChat, Self::Err>;
+    fn leave_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, LeaveChat, Self::Err>;
 
-    fn get_chat(&self, chat_id: ChatId) -> ErasedRequest<'a, GetChat, Self::Err>;
+    fn get_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, GetChat, Self::Err>;
 
     fn get_chat_administrators(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatAdministrators, Self::Err>;
 
     fn get_chat_member_count(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatMemberCount, Self::Err>;
 
     fn get_chat_members_count(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatMembersCount, Self::Err>;
 
     fn get_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, GetChatMember, Self::Err>;
 
     fn set_chat_sticker_set(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sticker_set_name: String,
     ) -> ErasedRequest<'a, SetChatStickerSet, Self::Err>;
 
     fn delete_chat_sticker_set(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, DeleteChatStickerSet, Self::Err>;
 
     fn answer_callback_query(
@@ -531,7 +536,7 @@ trait ErasableRequester<'a> {
 
     fn edit_message_text(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         text: String,
     ) -> ErasedRequest<'a, EditMessageText, Self::Err>;
@@ -544,7 +549,7 @@ trait ErasableRequester<'a> {
 
     fn edit_message_caption(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, EditMessageCaption, Self::Err>;
 
@@ -555,7 +560,7 @@ trait ErasableRequester<'a> {
 
     fn edit_message_media(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         media: InputMedia,
     ) -> ErasedRequest<'a, EditMessageMedia, Self::Err>;
@@ -568,7 +573,7 @@ trait ErasableRequester<'a> {
 
     fn edit_message_reply_markup(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, EditMessageReplyMarkup, Self::Err>;
 
@@ -577,18 +582,21 @@ trait ErasableRequester<'a> {
         inline_message_id: String,
     ) -> ErasedRequest<'a, EditMessageReplyMarkupInline, Self::Err>;
 
-    fn stop_poll(&self, chat_id: ChatId, message_id: i32)
-        -> ErasedRequest<'a, StopPoll, Self::Err>;
+    fn stop_poll(
+        &self,
+        chat_id: Recipient,
+        message_id: i32,
+    ) -> ErasedRequest<'a, StopPoll, Self::Err>;
 
     fn delete_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err>;
 
     fn send_sticker(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sticker: InputFile,
     ) -> ErasedRequest<'a, SendSticker, Self::Err>;
 
@@ -638,7 +646,7 @@ trait ErasableRequester<'a> {
     #[allow(clippy::too_many_arguments)]
     fn send_invoice(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         title: String,
         description: String,
         payload: String,
@@ -729,7 +737,7 @@ where
 
     fn send_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         text: String,
     ) -> ErasedRequest<'a, SendMessage, Self::Err> {
         Requester::send_message(self, chat_id, text).erase()
@@ -737,8 +745,8 @@ where
 
     fn forward_message(
         &self,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, ForwardMessage, Self::Err> {
         Requester::forward_message(self, chat_id, from_chat_id, message_id).erase()
@@ -746,8 +754,8 @@ where
 
     fn copy_message(
         &self,
-        chat_id: ChatId,
-        from_chat_id: ChatId,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err> {
         Requester::copy_message(self, chat_id, from_chat_id, message_id).erase()
@@ -755,7 +763,7 @@ where
 
     fn send_photo(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         photo: InputFile,
     ) -> ErasedRequest<'a, SendPhoto, Self::Err> {
         Requester::send_photo(self, chat_id, photo).erase()
@@ -763,7 +771,7 @@ where
 
     fn send_audio(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         audio: InputFile,
     ) -> ErasedRequest<'a, SendAudio, Self::Err> {
         Requester::send_audio(self, chat_id, audio).erase()
@@ -771,7 +779,7 @@ where
 
     fn send_document(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         document: InputFile,
     ) -> ErasedRequest<'a, SendDocument, Self::Err> {
         Requester::send_document(self, chat_id, document).erase()
@@ -779,7 +787,7 @@ where
 
     fn send_video(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         video: InputFile,
     ) -> ErasedRequest<'a, SendVideo, Self::Err> {
         Requester::send_video(self, chat_id, video).erase()
@@ -787,7 +795,7 @@ where
 
     fn send_animation(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         animation: InputFile,
     ) -> ErasedRequest<'a, SendAnimation, Self::Err> {
         Requester::send_animation(self, chat_id, animation).erase()
@@ -795,7 +803,7 @@ where
 
     fn send_voice(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         voice: InputFile,
     ) -> ErasedRequest<'a, SendVoice, Self::Err> {
         Requester::send_voice(self, chat_id, voice).erase()
@@ -803,7 +811,7 @@ where
 
     fn send_video_note(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         video_note: InputFile,
     ) -> ErasedRequest<'a, SendVideoNote, Self::Err> {
         Requester::send_video_note(self, chat_id, video_note).erase()
@@ -811,7 +819,7 @@ where
 
     fn send_media_group(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         media: Vec<InputMedia>,
     ) -> ErasedRequest<'a, SendMediaGroup, Self::Err> {
         Requester::send_media_group(self, chat_id, media).erase()
@@ -819,7 +827,7 @@ where
 
     fn send_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, SendLocation, Self::Err> {
@@ -828,7 +836,7 @@ where
 
     fn edit_message_live_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         latitude: f64,
         longitude: f64,
@@ -849,7 +857,7 @@ where
 
     fn stop_message_live_location(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         latitude: f64,
         longitude: f64,
@@ -870,7 +878,7 @@ where
 
     fn send_venue(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         latitude: f64,
         longitude: f64,
         title: String,
@@ -881,7 +889,7 @@ where
 
     fn send_contact(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         phone_number: String,
         first_name: String,
     ) -> ErasedRequest<'a, SendContact, Self::Err> {
@@ -890,20 +898,20 @@ where
 
     fn send_poll(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         question: String,
         options: Vec<String>,
     ) -> ErasedRequest<'a, SendPoll, Self::Err> {
         Requester::send_poll(self, chat_id, question, options).erase()
     }
 
-    fn send_dice(&self, chat_id: ChatId) -> ErasedRequest<'a, SendDice, Self::Err> {
+    fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err> {
         Requester::send_dice(self, chat_id).erase()
     }
 
     fn send_chat_action(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         action: ChatAction,
     ) -> ErasedRequest<'a, SendChatAction, Self::Err> {
         Requester::send_chat_action(self, chat_id, action).erase()
@@ -922,7 +930,7 @@ where
 
     fn ban_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, BanChatMember, Self::Err> {
         Requester::ban_chat_member(self, chat_id, user_id).erase()
@@ -930,7 +938,7 @@ where
 
     fn kick_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, KickChatMember, Self::Err> {
         Requester::kick_chat_member(self, chat_id, user_id).erase()
@@ -938,7 +946,7 @@ where
 
     fn unban_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, UnbanChatMember, Self::Err> {
         Requester::unban_chat_member(self, chat_id, user_id).erase()
@@ -946,7 +954,7 @@ where
 
     fn restrict_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, RestrictChatMember, Self::Err> {
@@ -955,7 +963,7 @@ where
 
     fn promote_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, PromoteChatMember, Self::Err> {
         Requester::promote_chat_member(self, chat_id, user_id).erase()
@@ -963,7 +971,7 @@ where
 
     fn set_chat_administrator_custom_title(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
         custom_title: String,
     ) -> ErasedRequest<'a, SetChatAdministratorCustomTitle, Self::Err> {
@@ -972,7 +980,7 @@ where
 
     fn ban_chat_sender_chat(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sender_chat_id: i64,
     ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err> {
         Requester::ban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
@@ -980,7 +988,7 @@ where
 
     fn unban_chat_sender_chat(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sender_chat_id: i64,
     ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err> {
         Requester::unban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
@@ -988,7 +996,7 @@ where
 
     fn set_chat_permissions(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         permissions: ChatPermissions,
     ) -> ErasedRequest<'a, SetChatPermissions, Self::Err> {
         Requester::set_chat_permissions(self, chat_id, permissions).erase()
@@ -996,21 +1004,21 @@ where
 
     fn export_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, ExportChatInviteLink, Self::Err> {
         Requester::export_chat_invite_link(self, chat_id).erase()
     }
 
     fn create_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, CreateChatInviteLink, Self::Err> {
         Requester::create_chat_invite_link(self, chat_id).erase()
     }
 
     fn edit_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err> {
         Requester::edit_chat_invite_link(self, chat_id, invite_link).erase()
@@ -1018,7 +1026,7 @@ where
 
     fn revoke_chat_invite_link(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err> {
         Requester::revoke_chat_invite_link(self, chat_id, invite_link).erase()
@@ -1027,7 +1035,7 @@ where
     /// For Telegram documentation see [`ApproveChatJoinRequest`].
     fn approve_chat_join_request(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, ApproveChatJoinRequest, Self::Err> {
         Requester::approve_chat_join_request(self, chat_id, user_id).erase()
@@ -1036,7 +1044,7 @@ where
     /// For Telegram documentation see [`DeclineChatJoinRequest`].
     fn decline_chat_join_request(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, DeclineChatJoinRequest, Self::Err> {
         Requester::decline_chat_join_request(self, chat_id, user_id).erase()
@@ -1044,19 +1052,22 @@ where
 
     fn set_chat_photo(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         photo: InputFile,
     ) -> ErasedRequest<'a, SetChatPhoto, Self::Err> {
         Requester::set_chat_photo(self, chat_id, photo).erase()
     }
 
-    fn delete_chat_photo(&self, chat_id: ChatId) -> ErasedRequest<'a, DeleteChatPhoto, Self::Err> {
+    fn delete_chat_photo(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteChatPhoto, Self::Err> {
         Requester::delete_chat_photo(self, chat_id).erase()
     }
 
     fn set_chat_title(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         title: String,
     ) -> ErasedRequest<'a, SetChatTitle, Self::Err> {
         Requester::set_chat_title(self, chat_id, title).erase()
@@ -1064,14 +1075,14 @@ where
 
     fn set_chat_description(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, SetChatDescription, Self::Err> {
         Requester::set_chat_description(self, chat_id).erase()
     }
 
     fn pin_chat_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, PinChatMessage, Self::Err> {
         Requester::pin_chat_message(self, chat_id, message_id).erase()
@@ -1079,50 +1090,50 @@ where
 
     fn unpin_chat_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, UnpinChatMessage, Self::Err> {
         Requester::unpin_chat_message(self, chat_id).erase()
     }
 
     fn unpin_all_chat_messages(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, UnpinAllChatMessages, Self::Err> {
         Requester::unpin_all_chat_messages(self, chat_id).erase()
     }
 
-    fn leave_chat(&self, chat_id: ChatId) -> ErasedRequest<'a, LeaveChat, Self::Err> {
+    fn leave_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, LeaveChat, Self::Err> {
         Requester::leave_chat(self, chat_id).erase()
     }
 
-    fn get_chat(&self, chat_id: ChatId) -> ErasedRequest<'a, GetChat, Self::Err> {
+    fn get_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, GetChat, Self::Err> {
         Requester::get_chat(self, chat_id).erase()
     }
 
     fn get_chat_administrators(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatAdministrators, Self::Err> {
         Requester::get_chat_administrators(self, chat_id).erase()
     }
 
     fn get_chat_member_count(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatMemberCount, Self::Err> {
         Requester::get_chat_member_count(self, chat_id).erase()
     }
 
     fn get_chat_members_count(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, GetChatMembersCount, Self::Err> {
         Requester::get_chat_members_count(self, chat_id).erase()
     }
 
     fn get_chat_member(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         user_id: i64,
     ) -> ErasedRequest<'a, GetChatMember, Self::Err> {
         Requester::get_chat_member(self, chat_id, user_id).erase()
@@ -1130,7 +1141,7 @@ where
 
     fn set_chat_sticker_set(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sticker_set_name: String,
     ) -> ErasedRequest<'a, SetChatStickerSet, Self::Err> {
         Requester::set_chat_sticker_set(self, chat_id, sticker_set_name).erase()
@@ -1138,7 +1149,7 @@ where
 
     fn delete_chat_sticker_set(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
     ) -> ErasedRequest<'a, DeleteChatStickerSet, Self::Err> {
         Requester::delete_chat_sticker_set(self, chat_id).erase()
     }
@@ -1175,7 +1186,7 @@ where
 
     fn edit_message_text(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         text: String,
     ) -> ErasedRequest<'a, EditMessageText, Self::Err> {
@@ -1192,7 +1203,7 @@ where
 
     fn edit_message_caption(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, EditMessageCaption, Self::Err> {
         Requester::edit_message_caption(self, chat_id, message_id).erase()
@@ -1207,7 +1218,7 @@ where
 
     fn edit_message_media(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
         media: InputMedia,
     ) -> ErasedRequest<'a, EditMessageMedia, Self::Err> {
@@ -1224,7 +1235,7 @@ where
 
     fn edit_message_reply_markup(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, EditMessageReplyMarkup, Self::Err> {
         Requester::edit_message_reply_markup(self, chat_id, message_id).erase()
@@ -1239,7 +1250,7 @@ where
 
     fn stop_poll(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, StopPoll, Self::Err> {
         Requester::stop_poll(self, chat_id, message_id).erase()
@@ -1247,7 +1258,7 @@ where
 
     fn delete_message(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         message_id: i32,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err> {
         Requester::delete_message(self, chat_id, message_id).erase()
@@ -1255,7 +1266,7 @@ where
 
     fn send_sticker(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         sticker: InputFile,
     ) -> ErasedRequest<'a, SendSticker, Self::Err> {
         Requester::send_sticker(self, chat_id, sticker).erase()
@@ -1319,7 +1330,7 @@ where
 
     fn send_invoice(
         &self,
-        chat_id: ChatId,
+        chat_id: Recipient,
         title: String,
         description: String,
         payload: String,

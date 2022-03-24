@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, ChatMember};
+use crate::types::{ChatMember, Recipient};
 
 impl_payload! {
     /// Use this method to get a list of administrators in a chat. On success, returns an Array of [`ChatMember`] objects that contains information about all chat administrators except other bots. If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub GetChatAdministrators (GetChatAdministratorsSetters) => Vec<ChatMember> {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
         }
     }
 }

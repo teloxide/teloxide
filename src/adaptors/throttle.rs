@@ -645,17 +645,17 @@ enum ChatIdHash {
 impl ChatIdHash {
     fn is_channel(&self) -> bool {
         match self {
-            &Self::Id(id) => ChatId::Id(id).is_channel(),
+            &Self::Id(id) => Recipient::Id(id).is_channel(),
             Self::ChannelUsernameHash(_) => true,
         }
     }
 }
 
-impl From<&ChatId> for ChatIdHash {
-    fn from(value: &ChatId) -> Self {
+impl From<&Recipient> for ChatIdHash {
+    fn from(value: &Recipient) -> Self {
         match value {
-            ChatId::Id(id) => ChatIdHash::Id(*id),
-            ChatId::ChannelUsername(username) => {
+            Recipient::Id(id) => ChatIdHash::Id(*id),
+            Recipient::ChannelUsername(username) => {
                 let mut hasher = std::collections::hash_map::DefaultHasher::new();
                 username.hash(&mut hasher);
                 let hash = hasher.finish();

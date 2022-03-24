@@ -12,7 +12,7 @@ use url::Url;
 use crate::{
     payloads::GetMe,
     requests::{HasPayload, Request, Requester},
-    types::{ChatId, Me, *},
+    types::{Me, Recipient, *},
 };
 
 /// `get_me` cache.
