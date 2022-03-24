@@ -5,8 +5,8 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, ChatPermissions, InlineQueryResult, InputFile, InputMedia, InputSticker,
-        LabeledPrice, Recipient, UserId,
+        BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
+        InputSticker, LabeledPrice, Recipient, UserId,
     },
     Bot,
 };
@@ -401,7 +401,7 @@ impl Requester for Bot {
 
     type BanChatSenderChat = JsonRequest<payloads::BanChatSenderChat>;
 
-    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat
+    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: ChatId) -> Self::BanChatSenderChat
     where
         C: Into<Recipient>,
     {
@@ -416,7 +416,7 @@ impl Requester for Bot {
     fn unban_chat_sender_chat<C>(
         &self,
         chat_id: C,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> Self::UnbanChatSenderChat
     where
         C: Into<Recipient>,

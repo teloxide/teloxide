@@ -638,14 +638,14 @@ download_forward! {
 /// usernames. (It is just a hashed username.)
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 enum ChatIdHash {
-    Id(i64),
+    Id(ChatId),
     ChannelUsernameHash(u64),
 }
 
 impl ChatIdHash {
     fn is_channel(&self) -> bool {
         match self {
-            &Self::Id(id) => Recipient::Id(id).is_channel(),
+            &Self::Id(id) => id.is_channel(),
             Self::ChannelUsernameHash(_) => true,
         }
     }

@@ -56,13 +56,15 @@ pub enum BotCommandScope {
 
 #[test]
 fn issue_486() {
+    use crate::types::ChatId;
+
     serde_json::to_string(&BotCommandScope::Chat {
-        chat_id: Recipient::Id(0),
+        chat_id: Recipient::Id(ChatId(0)),
     })
     .unwrap();
 
     serde_json::to_string(&BotCommandScope::ChatAdministrators {
-        chat_id: Recipient::Id(0),
+        chat_id: Recipient::Id(ChatId(0)),
     })
     .unwrap();
 }

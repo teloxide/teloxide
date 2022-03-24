@@ -724,17 +724,17 @@ macro_rules! requester_forward {
     (@method ban_chat_sender_chat $body:ident $ty:ident) => {
         type BanChatSenderChat = $ty![BanChatSenderChat];
 
-        fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat where C: Into<Recipient> {
+        fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: ChatId) -> Self::BanChatSenderChat where C: Into<Recipient> {
             let this = self;
-            $body!(ban_chat_sender_chat this (chat_id: C, sender_chat_id: i64))
+            $body!(ban_chat_sender_chat this (chat_id: C, sender_chat_id: ChatId))
         }
     };
     (@method unban_chat_sender_chat $body:ident $ty:ident) => {
         type UnbanChatSenderChat = $ty![UnbanChatSenderChat];
 
-        fn unban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::UnbanChatSenderChat where C: Into<Recipient> {
+        fn unban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: ChatId) -> Self::UnbanChatSenderChat where C: Into<Recipient> {
             let this = self;
-            $body!(unban_chat_sender_chat this (chat_id: C, sender_chat_id: i64))
+            $body!(unban_chat_sender_chat this (chat_id: C, sender_chat_id: ChatId))
         }
     };
     (@method set_chat_permissions $body:ident $ty:ident) => {

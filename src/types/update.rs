@@ -294,8 +294,8 @@ impl Serialize for UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon, MessageKind,
-        Update, UpdateKind, User, UserId,
+        Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
+        MessageKind, Update, UpdateKind, User, UserId,
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
@@ -335,7 +335,7 @@ mod test {
                 id: 6557,
                 date,
                 chat: Chat {
-                    id: 218_485_655,
+                    id: ChatId(218_485_655),
                     kind: ChatKind::Private(ChatPrivate {
                         type_: (),
                         username: Some(String::from("WaffleLapkin")),

@@ -6,10 +6,7 @@ use url::Url;
 use crate::{
     payloads::{GetMe, SendMessage, *},
     requests::Request,
-    types::{
-        BotCommand, ChatAction, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, PassportElementError, Recipient, TargetMessage, UserId,
-    },
+    types::*,
 };
 
 /// Methods for building requests.
@@ -22,27 +19,35 @@ use crate::{
 ///
 /// ```
 /// # async {
-/// use teloxide_core::{prelude::*, types::ParseMode};
+/// # let chat_id = ChatId(-1);
+/// use teloxide_core::{
+///     prelude::*,
+///     types::{ChatId, ParseMode},
+/// };
 ///
 /// // Bot implements `Requester`
 /// let bot = Bot::new("TOKEN");
 ///
 /// // Required parameters are supplied to the `Requester` methods:
-/// bot.send_message(0, "<b>Text</b>")
+/// bot.send_message(chat_id, "<b>Text</b>")
 ///     // Optional parameters can be supplied by calling setters
 ///     .parse_mode(ParseMode::Html)
 ///     // To send request to telegram you need to call `.send()` and await the resulting future
 ///     .send()
 ///     .await?;
-/// # Ok::<_, teloxide_core::RequestError>(()) };
+/// # Ok::<_, teloxide_core::RequestError>(())
+/// # };
 /// ```
 ///
 /// Using `Requester` in a generic context:
 ///
 /// ```
-/// use teloxide_core::{prelude::*, types::Message};
+/// use teloxide_core::{
+///     prelude::*,
+///     types::{ChatId, Message},
+/// };
 ///
-/// async fn send_hi<R>(bot: R, chat: i64) -> Message
+/// async fn send_hi<R>(bot: R, chat: ChatId) -> Message
 /// where
 ///     R: Requester,
 /// {
@@ -371,7 +376,11 @@ pub trait Requester {
     type BanChatSenderChat: Request<Payload = BanChatSenderChat, Err = Self::Err>;
 
     /// For Telegram documentation see [`BanChatSenderChat`].
-    fn ban_chat_sender_chat<C>(&self, chat_id: C, sender_chat_id: i64) -> Self::BanChatSenderChat
+    fn ban_chat_sender_chat<C>(
+        &self,
+        chat_id: C,
+        sender_chat_id: ChatId,
+    ) -> Self::BanChatSenderChat
     where
         C: Into<Recipient>;
 
@@ -381,7 +390,7 @@ pub trait Requester {
     fn unban_chat_sender_chat<C>(
         &self,
         chat_id: C,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> Self::UnbanChatSenderChat
     where
         C: Into<Recipient>;

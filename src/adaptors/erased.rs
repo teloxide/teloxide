@@ -386,13 +386,13 @@ trait ErasableRequester<'a> {
     fn ban_chat_sender_chat(
         &self,
         chat_id: Recipient,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err>;
 
     fn unban_chat_sender_chat(
         &self,
         chat_id: Recipient,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err>;
 
     fn set_chat_permissions(
@@ -978,7 +978,7 @@ where
     fn ban_chat_sender_chat(
         &self,
         chat_id: Recipient,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> ErasedRequest<'a, BanChatSenderChat, Self::Err> {
         Requester::ban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
     }
@@ -986,7 +986,7 @@ where
     fn unban_chat_sender_chat(
         &self,
         chat_id: Recipient,
-        sender_chat_id: i64,
+        sender_chat_id: ChatId,
     ) -> ErasedRequest<'a, UnbanChatSenderChat, Self::Err> {
         Requester::unban_chat_sender_chat(self, chat_id, sender_chat_id).erase()
     }

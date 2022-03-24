@@ -220,9 +220,11 @@ mod non_telegram_types {
     pub(super) mod until_date;
 }
 
+mod chat_id;
 mod recipient;
 mod user_id;
 
+pub use chat_id::*;
 pub use recipient::*;
 pub use user_id::*;
 
