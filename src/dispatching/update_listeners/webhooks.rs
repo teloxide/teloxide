@@ -1,3 +1,4 @@
+//!
 use std::net::SocketAddr;
 
 use crate::{requests::Requester, types::InputFile};
@@ -62,6 +63,9 @@ pub use self::axum::{axum, axum_no_setup, axum_to_router};
 #[cfg(feature = "webhooks-axum")]
 mod axum;
 
+/// Calls `set_webhook` with arguments from `options`.
+///
+/// Note: this takes out `certificate`.
 async fn setup_webhook<R>(bot: R, options: &mut Options) -> Result<(), R::Err>
 where
     R: Requester,
@@ -80,6 +84,16 @@ where
     Ok(())
 }
 
+/// Returns first (`.0`) field from a tuple as a `&mut` reference.
+///
+/// This hack is needed because there isn't currently a way to easily force a
+/// closure to be higher-ranked (`for<'a> &'a mut _ -> &'a mut _`) which causes
+/// problems when using [`StatefulListener`] to implement update listener.
+///
+/// This could be probably removed once [rfc#3216] is implemented.
+///
+/// [`StatefulListener`]:
+/// [rfc#3216]: https://github.com/rust-lang/rfcs/pull/3216
 fn tuple_first_mut<A, B>(tuple: &mut (A, B)) -> &mut A {
     &mut tuple.0
 }

@@ -11,7 +11,16 @@ use crate::{
     requests::Requester,
 };
 
-/// Webhook implementation based on the [axum] framework.
+/// Webhook implementation based on the [mod@axum] framework.
+///
+/// This function does all the work necessary for webhook to work, it:
+/// - Calls [`set_webhook`], so telegram starts sending updates our way
+/// - Spawns [mod@axum] server listening for updates
+/// - When the update listener is [`stop`]ped, calls [`delete_webhook`]
+///
+/// [`set_webhook`]: crate::payloads::SetWebhook
+/// [`delete_webhook`]: crate::payloads::DeleteWebhook
+/// [`stop`]: StopToken::stop
 ///
 /// ## Panics
 ///
@@ -19,9 +28,14 @@ use crate::{
 ///
 /// [address]: Options.address
 ///
-/// ## Errors
+/// ## Fails
 ///
 /// If `set_webhook()` fails.
+///
+/// ## See also
+///
+/// [`axum_to_router`] and [`axum_no_setup`] for lower-level versions of this
+/// function.
 pub async fn axum<R>(
     bot: R,
     options: Options,
@@ -50,6 +64,47 @@ where
     Ok(update_listener)
 }
 
+/// Webhook implementation based on the [mod@axum] framework that can reuse
+/// existing [mod@axum] server.
+///
+/// This function does most of the work necessary for webhook to work, it:
+/// - Calls [`set_webhook`], so telegram starts sending updates our way
+/// - When the update listener is [`stop`]ped, calls [`delete_webhook`]
+///
+/// The only missing part is running [mod@axum] server with a returned
+/// [`axum::Router`].
+///
+/// This function is intended to be used in cases when you already have an
+/// [mod@axum] server running and can reuse it for webhooks.
+///
+/// **Note**: in order for webhooks to work, you need to use returned
+/// [`axum::Router`] in an [mod@axum] server that is bound to
+/// [`options.address`].
+///
+/// It may also be desired to use [`with_graceful_shutdown`] with the returned
+/// future in order to shutdown the server with the [`stop`] of the listener.
+///
+/// [`set_webhook`]: crate::payloads::SetWebhook
+/// [`delete_webhook`]: crate::payloads::DeleteWebhook
+/// [`stop`]: StopToken::stop
+/// [`options.address`]: Options.address
+/// [`with_graceful_shutdown`]: axum::Server::with_graceful_shutdown
+///
+/// ## Returns
+///
+/// A update listener, stop-future, axum router triplet on success.
+///
+/// The "stop-future" is resolved after [`stop`] is called on the stop token of
+/// the returned update listener.
+///
+/// ## Fails
+///
+/// If `set_webhook()` fails.
+///
+/// ## See also
+///
+/// [`fn@axum`] for higher-level and [`axum_no_setup`] for lower-level
+/// versions of this function.
 pub async fn axum_to_router<R>(
     bot: R,
     mut options: Options,
@@ -85,6 +140,13 @@ where
     Ok((listener, stop_flag, router))
 }
 
+/// Webhook implementation based on the [mod@axum] framework that doesn't
+/// perform any setup work.
+///
+/// ## See also
+///
+/// [`fn@axum`] and [`axum_to_router`] for higher-level versions of this
+/// function.
 pub fn axum_no_setup(
     options: Options,
 ) -> (
@@ -110,6 +172,10 @@ pub fn axum_no_setup(
     let (tx, rx): (Sender, _) = mpsc::unbounded_channel();
 
     async fn telegram_request(input: String, tx: Extension<Sender>) -> impl IntoResponse {
+        // FIXME: this should probably start returning an error response after `.stop()`
+        // is called to account for cases when update listener is stopped without
+        // stopping the server
+
         match serde_json::from_str(&input) {
             Ok(update) => {
                 tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
@@ -139,6 +205,7 @@ pub fn axum_no_setup(
 
     let stream = UnboundedReceiverStream::new(rx);
 
+    // FIXME: this should support `hint_allowed_updates()`
     let listener = update_listeners::StatefulListener::new(
         (stream, stop_token),
         tuple_first_mut,
