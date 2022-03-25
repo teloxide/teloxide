@@ -1,5 +1,5 @@
 [build] 
-command = "rustup install nightly --profile minimal && cargo +nightly doc --all-features --no-deps -Zunstable-options -Zrustdoc-scrape-examples=examples && cp -r target/doc _netlify_out"
+command = "rustup install nightly-2022-02-02 --profile minimal && cargo +nightly doc --all-features --no-deps -Zunstable-options -Zrustdoc-scrape-examples=examples && cp -r target/doc _netlify_out"
 publish = "_netlify_out" 
 
 [build.environment] 
