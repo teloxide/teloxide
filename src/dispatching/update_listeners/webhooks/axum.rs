@@ -26,7 +26,7 @@ use crate::{
 ///
 /// If binding to the [address] fails.
 ///
-/// [address]: Options.address
+/// [address]: Options::address
 ///
 /// ## Fails
 ///
@@ -87,7 +87,7 @@ where
 /// [`set_webhook`]: crate::payloads::SetWebhook
 /// [`delete_webhook`]: crate::payloads::DeleteWebhook
 /// [`stop`]: StopToken::stop
-/// [`options.address`]: Options.address
+/// [`options.address`]: Options::address
 /// [`with_graceful_shutdown`]: axum::Server::with_graceful_shutdown
 ///
 /// ## Returns

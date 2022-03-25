@@ -30,6 +30,14 @@ pub struct Options {
     /// Default - None.
     pub certificate: Option<InputFile>,
 
+    /// Maximum allowed number of simultaneous HTTPS connections to the webhook
+    /// for update delivery, 1-100. Defaults to 40. Use lower values to limit
+    /// the load on your bot's server, and higher values to increase your bot's
+    /// throughput.
+    ///
+    /// Default - None.
+    pub max_connections: Option<u8>,
+
     /// Pass `true` to drop all pending updates.
     ///
     /// Default - None.
@@ -37,10 +45,10 @@ pub struct Options {
 }
 
 impl Options {
-    /// Construct a new webhook options, see [`Options.address`] and
-    /// [`Options.url`] for details.
+    /// Construct a new webhook options, see [`Options::address`] and
+    /// [`Options::url`] for details.
     pub fn new(address: SocketAddr, url: url::Url) -> Self {
-        Self { address, url, certificate: None, drop_pending_updates: None }
+        Self { address, url, certificate: None, max_connections: None, drop_pending_updates: None }
     }
 
     /// Upload your public key certificate so that the root certificate in use
@@ -49,6 +57,14 @@ impl Options {
     /// [self-signed guide]: https://core.telegram.org/bots/self-signed
     pub fn certificate(self, v: InputFile) -> Self {
         Self { certificate: Some(v), ..self }
+    }
+
+    /// Maximum allowed number of simultaneous HTTPS connections to the webhook
+    /// for update delivery, 1-100. Defaults to 40. Use lower values to limit
+    /// the load on your bot's server, and higher values to increase your bot's
+    /// throughput.
+    pub fn max_connections(self, v: u8) -> Self {
+        Self { max_connections: Some(v), ..self }
     }
 
     /// Drop all pending updates before setting up webhook.
@@ -73,10 +89,13 @@ where
     use crate::requests::Request;
     use teloxide_core::requests::HasPayload;
 
-    let &mut Options { ref url, ref mut certificate, drop_pending_updates, .. } = options;
+    let &mut Options {
+        ref url, ref mut certificate, max_connections, drop_pending_updates, ..
+    } = options;
 
     let mut req = bot.set_webhook(url.clone());
     req.payload_mut().certificate = certificate.take();
+    req.payload_mut().max_connections = max_connections;
     req.payload_mut().drop_pending_updates = drop_pending_updates;
 
     req.send().await?;
