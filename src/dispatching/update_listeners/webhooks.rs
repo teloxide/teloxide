@@ -40,15 +40,15 @@ pub struct Options {
 
     /// Pass `true` to drop all pending updates.
     ///
-    /// Default - None.
-    pub drop_pending_updates: Option<bool>,
+    /// Default - false.
+    pub drop_pending_updates: bool,
 }
 
 impl Options {
     /// Construct a new webhook options, see [`Options::address`] and
     /// [`Options::url`] for details.
     pub fn new(address: SocketAddr, url: url::Url) -> Self {
-        Self { address, url, certificate: None, max_connections: None, drop_pending_updates: None }
+        Self { address, url, certificate: None, max_connections: None, drop_pending_updates: false }
     }
 
     /// Upload your public key certificate so that the root certificate in use
@@ -69,7 +69,7 @@ impl Options {
 
     /// Drop all pending updates before setting up webhook.
     pub fn drop_pending_updates(self) -> Self {
-        Self { drop_pending_updates: Some(true), ..self }
+        Self { drop_pending_updates: true, ..self }
     }
 }
 
@@ -96,7 +96,7 @@ where
     let mut req = bot.set_webhook(url.clone());
     req.payload_mut().certificate = certificate.take();
     req.payload_mut().max_connections = max_connections;
-    req.payload_mut().drop_pending_updates = drop_pending_updates;
+    req.payload_mut().drop_pending_updates = Some(drop_pending_updates);
 
     req.send().await?;
 
