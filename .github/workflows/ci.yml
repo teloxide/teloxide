@@ -51,14 +51,14 @@ jobs:
         rust: 
           - stable
           - beta
-          - nightly
+          - nightly-2022-01-17
     
         include:
           - rust: stable
             features: "--features full"
           - rust: beta
             features: "--features full"
-          - rust: nightly
+          - rust: nightly-2022-01-17
             features: "--all-features"
 
     steps:
