@@ -51,14 +51,17 @@ jobs:
         rust: 
           - stable
           - beta
-          - nightly-2022-01-17
+          - nightly
     
         include:
           - rust: stable
+            toolchain: stable
             features: "--features full"
           - rust: beta
+            toolchain: beta
             features: "--features full"
-          - rust: nightly-2022-01-17
+          - rust: nightly
+            toolchain: nightly-2022-01-17
             features: "--all-features"
 
     steps:
@@ -67,7 +70,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: ${{ matrix.toolchain }}
           override: true
       
       - name: build 
