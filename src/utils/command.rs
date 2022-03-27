@@ -51,16 +51,12 @@
 
 use core::fmt;
 use std::{
-    borrow::Cow,
     error::Error,
     fmt::{Display, Formatter, Write},
 };
 
 use std::marker::PhantomData;
-use teloxide_core::{
-    requests::{Request, Requester},
-    types::{BotCommand, Me},
-};
+use teloxide_core::types::{BotCommand, Me};
 #[cfg(feature = "macros")]
 pub use teloxide_macros::BotCommands;
 
@@ -282,7 +278,7 @@ pub enum ParseError {
 pub struct CommandDescriptions<'a> {
     global_description: Option<&'a str>,
     descriptions: &'a [CommandDescription<'a>],
-    bot_username: Option<Cow<'a, str>>,
+    bot_username: Option<&'a str>,
 }
 
 /// Description of a particular command, used in [`CommandDescriptions`].
@@ -331,21 +327,17 @@ impl<'a> CommandDescriptions<'a> {
     /// );
     /// ```
     pub fn username(self, bot_username: &'a str) -> Self {
-        Self { bot_username: Some(Cow::Borrowed(bot_username)), ..self }
+        Self { bot_username: Some(bot_username), ..self }
     }
 
     /// Sets the username of the bot.
     ///
-    /// This is the same as [`username`], but uses `get_me` method of the bot to
-    /// get the username.
+    /// This is the same as [`username`], but uses value returned from `get_me`
+    /// method to get the username.
     ///
     /// [`username`]: self::CommandDescriptions::username
-    pub async fn username_from_bot(self, bot: &impl Requester) -> CommandDescriptions<'a> {
-        let Me { user, .. } = bot.get_me().send().await.expect("get_me failed");
-        Self {
-            bot_username: Some(Cow::Owned(user.username.expect("Bots must have usernames"))),
-            ..self
-        }
+    pub fn username_from_me(self, me: &'a Me) -> CommandDescriptions<'a> {
+        self.username(me.user.username.as_deref().expect("Bots must have usernames"))
     }
 }
 
