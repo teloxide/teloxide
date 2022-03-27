@@ -455,7 +455,7 @@ impl Display for CommandDescriptions<'_> {
             f.write_str(prefix)?;
             f.write_str(command)?;
 
-            if let Some(username) = self.bot_username.as_deref() {
+            if let Some(username) = self.bot_username {
                 f.write_char('@')?;
                 f.write_str(username)?;
             }
