@@ -123,7 +123,7 @@ impl<St, Assf, Sf, Hauf, Stt, Thf, E> UpdateListener<E>
 where
     Self: for<'a> AsUpdateStream<'a, E>,
     Sf: FnMut(&mut St) -> Stt,
-    Stt: StopToken,
+    Stt: StopToken + Send,
     Hauf: FnMut(&mut St, &mut dyn Iterator<Item = AllowedUpdate>),
     Thf: Fn(&St) -> Option<Duration>,
 {

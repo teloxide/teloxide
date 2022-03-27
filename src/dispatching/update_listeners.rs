@@ -53,7 +53,7 @@ pub use self::{
 /// [module-level documentation]: mod@self
 pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
     /// The type of token which allows to stop this listener.
-    type StopToken: StopToken;
+    type StopToken: StopToken + Send;
 
     /// Returns a token which stops this listener.
     ///  
