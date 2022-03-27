@@ -9,7 +9,7 @@ use teloxide::{
     macros::DialogueState,
     prelude2::*,
     types::Me,
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
 type MyDialogue = Dialogue<State, ErasedStorage<State>>;
@@ -32,7 +32,7 @@ impl Default for State {
     }
 }
 
-#[derive(BotCommand)]
+#[derive(BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]

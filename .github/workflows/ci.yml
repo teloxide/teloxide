@@ -6,6 +6,9 @@ on:
 
 name: Continuous integration
 
+env:
+  RUSTFLAGS: "--cfg CI_REDIS"
+
 jobs:
   style:
     runs-on: ubuntu-latest

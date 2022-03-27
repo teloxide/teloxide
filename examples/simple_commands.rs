@@ -1,8 +1,8 @@
-use teloxide::{prelude2::*, utils::command::BotCommand};
+use teloxide::{prelude2::*, utils::command::BotCommands};
 
 use std::error::Error;
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -19,7 +19,9 @@ async fn answer(
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => bot.send_message(message.chat.id, Command::descriptions()).await?,
+        Command::Help => {
+            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
+        }
         Command::Username(username) => {
             bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
         }

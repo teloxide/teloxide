@@ -3,7 +3,7 @@ use crate::{
     dispatching2::{HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
     types::Update,
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, marker::PhantomData};
@@ -27,7 +27,7 @@ use teloxide_core::requests::Requester;
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl<'a, R, Cmd, H, E, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
-    Cmd: BotCommand + Send + Sync + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
@@ -67,7 +67,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     listener: L,
     _cmd: PhantomData<Cmd>,
 ) where
-    Cmd: BotCommand + Send + Sync + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
