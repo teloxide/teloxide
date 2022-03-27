@@ -200,7 +200,7 @@ fn descriptions_off() {
 #[test]
 #[cfg(feature = "macros")]
 fn rename_rules() {
-    #[derive(BotCommand, Debug, PartialEq)]
+    #[derive(BotCommands, Debug, PartialEq)]
     enum DefaultCommands {
         #[command(rename = "lowercase")]
         AaaAaa,
@@ -230,7 +230,7 @@ fn rename_rules() {
     assert_eq!(DefaultCommands::HhhHhh, DefaultCommands::parse("/HHH-HHH", "").unwrap());
 
     assert_eq!(
-        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH\n",
-        DefaultCommands::descriptions()
+        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH",
+        DefaultCommands::descriptions().to_string()
     );
 }

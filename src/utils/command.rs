@@ -209,7 +209,7 @@ pub use teloxide_macros::BotCommands;
 /// specific variant.
 ///
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
-/// [`BotCommand`]: crate::utils::command::BotCommand
+/// [`BotCommands`]: crate::utils::command::BotCommands
 pub trait BotCommands: Sized {
     /// Parses a command.
     ///

@@ -3,7 +3,7 @@ use std::{error::Error, str::FromStr};
 use chrono::Duration;
 use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommands};
 
-// Derive BotCommand to parse text with a command into this enumeration.
+// Derive BotCommands to parse text with a command into this enumeration.
 //
 //  1. rename = "lowercase" turns all the commands into lowercase letters.
 //  2. `description = "..."` specifies a text before all the commands.
