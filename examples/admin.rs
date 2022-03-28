@@ -143,33 +143,6 @@ async fn mute_user(
     Ok(())
 }
 
-<<<<<<< HEAD
-async fn action(
-    bot: Bot,
-    msg: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command {
-        Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
-        }
-        Command::Kick => kick_user(bot, msg).await?,
-        Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
-        Command::Mute { time, unit } => mute_user(bot, msg, calc_restrict_time(time, unit)).await?,
-    };
-
-    Ok(())
-}
-
-#[tokio::main]
-async fn main() {
-    pretty_env_logger::init();
-    log::info!("Starting admin_bot...");
-
-    let bot = teloxide::Bot::from_env().auto_send();
-
-    teloxide::commands_repl(bot, action, Command::ty()).await;
-=======
 // Calculates time of user restriction.
 fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
     match unit {
@@ -177,5 +150,4 @@ fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
         UnitOfTime::Minutes => Duration::minutes(time as i64),
         UnitOfTime::Seconds => Duration::seconds(time as i64),
     }
->>>>>>> Refactor `examples/admin.rs` and `buttons.rs`
 }
