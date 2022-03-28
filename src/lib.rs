@@ -38,7 +38,7 @@ macro_rules! get_or_return {
     }
 }
 
-#[proc_macro_derive(BotCommand, attributes(command))]
+#[proc_macro_derive(BotCommands, attributes(command))]
 pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as DeriveInput);
 
@@ -102,7 +102,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     let fn_commands = impl_commands(&variant_infos, &command_enum);
 
     let trait_impl = quote! {
-        impl BotCommand for #ident {
+        impl BotCommands for #ident {
             #fn_descriptions
             #fn_parse
             #fn_commands
@@ -137,36 +137,26 @@ fn impl_descriptions(
     infos: &[Command],
     global: &CommandEnum,
 ) -> quote::__private::TokenStream {
-    let global_description = if let Some(s) = &global.description {
-        quote! { #s, "\n", }
-    } else {
-        quote! {}
-    };
-    let command = infos.iter().map(|c| c.get_matched_value(global));
-    let description =
-        infos.iter().map(|info| {
-            info.description
-                .as_deref()
-                .map(|e| {
-                    if e != "off" {
-                        format!(" - {}", e)
-                    } else {
-                        e.to_string()
-                    }
-                })
-                .unwrap_or_default()
-        });
-    let result_iter = command.zip(description).map(|(c, d)| {
-        if &d == "off" {
-            quote! {}
-        } else {
-            quote! { #c, #d, '\n', }
-        }
+    let command_descriptions = infos.iter().filter_map(|c| {
+        let (prefix, command) = c.get_matched_value2(global);
+        let description = c.description.clone().unwrap_or_default();
+        (description != "off").then(|| quote! { CommandDescription { prefix: #prefix, command: #command, description: #description } })
     });
 
+    let global_description = match global.description.as_deref() {
+        Some(gd) => quote! { .global_description(#gd) },
+        None => quote! {},
+    };
+
     quote! {
-        fn descriptions() -> String {
-            std::concat!(#global_description #(#result_iter)*).to_string()
+        fn descriptions() -> teloxide::utils::command::CommandDescriptions<'static> {
+            use teloxide::utils::command::{CommandDescriptions, CommandDescription};
+            use std::borrow::Cow;
+
+            CommandDescriptions::new(&[
+                #(#command_descriptions),*
+            ])
+            #global_description
         }
     }
 }
