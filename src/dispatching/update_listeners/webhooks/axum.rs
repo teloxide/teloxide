@@ -2,7 +2,7 @@ use std::convert::Infallible;
 
 use crate::{
     dispatching::{
-        stop_token::StopToken,
+        stop_token::{AsyncStopFlag, StopToken},
         update_listeners::{
             webhooks::{setup_webhook, tuple_first_mut, Options},
             UpdateListener,
@@ -143,6 +143,13 @@ where
 /// Webhook implementation based on the [mod@axum] framework that doesn't
 /// perform any setup work.
 ///
+/// ## Note about the stop-future
+///
+/// This function returns a future that is resolved when `.stop()` is called on
+/// a stop token of the update listener. Note that even if the future is not
+/// used, after `.stop()` is called, update listener will not produce new
+/// updates.
+///
 /// ## See also
 ///
 /// [`fn@axum`] and [`axum_to_router`] for higher-level versions of this
@@ -168,13 +175,25 @@ pub fn axum_no_setup(
     use tower_http::trace::TraceLayer;
 
     type Sender = mpsc::UnboundedSender<Result<Update, std::convert::Infallible>>;
+    type CSender = ClosableSender<Result<Update, std::convert::Infallible>>;
 
     let (tx, rx): (Sender, _) = mpsc::unbounded_channel();
 
-    async fn telegram_request(input: String, tx: Extension<Sender>) -> impl IntoResponse {
-        // FIXME: this should probably start returning an error response after `.stop()`
-        // is called to account for cases when update listener is stopped without
-        // stopping the server
+    async fn telegram_request(
+        input: String,
+        tx: Extension<CSender>,
+        flag: Extension<AsyncStopFlag>,
+    ) -> impl IntoResponse {
+        let tx = match tx.get() {
+            None => return StatusCode::SERVICE_UNAVAILABLE,
+            // Do not process updates after `.stop()` is called even if the server is still
+            // running (useful for when you need to stop the bot but can't stop the server).
+            _ if flag.is_stopped() => {
+                { tx.0 }.close();
+                return StatusCode::SERVICE_UNAVAILABLE;
+            }
+            Some(tx) => tx,
+        };
 
         match serde_json::from_str(&input) {
             Ok(update) => {
@@ -194,14 +213,15 @@ pub fn axum_no_setup(
         StatusCode::OK
     }
 
+    let (stop_token, stop_flag) = AsyncStopToken::new_pair();
+
     let app = axum::Router::new().route(options.url.path(), post(telegram_request)).layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())
-            .layer(AddExtensionLayer::new(tx))
+            .layer(AddExtensionLayer::new(ClosableSender::new(tx)))
+            .layer(AddExtensionLayer::new(stop_flag.clone()))
             .into_inner(),
     );
-
-    let (stop_token, stop_flag) = AsyncStopToken::new_pair();
 
     let stream = UnboundedReceiverStream::new(rx);
 
@@ -213,4 +233,29 @@ pub fn axum_no_setup(
     );
 
     (listener, stop_flag, app)
+}
+
+/// A terrible workaround to drop axum extension
+struct ClosableSender<T> {
+    origin: std::sync::Arc<std::sync::RwLock<Option<tokio::sync::mpsc::UnboundedSender<T>>>>,
+}
+
+impl<T> Clone for ClosableSender<T> {
+    fn clone(&self) -> Self {
+        Self { origin: self.origin.clone() }
+    }
+}
+
+impl<T> ClosableSender<T> {
+    fn new(sender: tokio::sync::mpsc::UnboundedSender<T>) -> Self {
+        Self { origin: std::sync::Arc::new(std::sync::RwLock::new(Some(sender))) }
+    }
+
+    fn get(&self) -> Option<tokio::sync::mpsc::UnboundedSender<T>> {
+        self.origin.read().unwrap().clone()
+    }
+
+    fn close(&mut self) {
+        self.origin.write().unwrap().take();
+    }
 }
