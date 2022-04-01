@@ -36,10 +36,7 @@ use crate::{
 ///
 /// [`axum_to_router`] and [`axum_no_setup`] for lower-level versions of this
 /// function.
-pub async fn axum<R>(
-    bot: R,
-    options: Options,
-) -> Result<impl UpdateListener<Infallible, StopToken = impl Send + StopToken>, R::Err>
+pub async fn axum<R>(bot: R, options: Options) -> Result<impl UpdateListener<Infallible>, R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::DeleteWebhook: Send,
@@ -109,11 +106,7 @@ pub async fn axum_to_router<R>(
     bot: R,
     mut options: Options,
 ) -> Result<
-    (
-        impl UpdateListener<Infallible, StopToken = impl Send + StopToken>,
-        impl std::future::Future<Output = ()> + Send,
-        axum::Router,
-    ),
+    (impl UpdateListener<Infallible>, impl std::future::Future<Output = ()> + Send, axum::Router),
     R::Err,
 >
 where
@@ -156,11 +149,7 @@ where
 /// function.
 pub fn axum_no_setup(
     options: Options,
-) -> (
-    impl UpdateListener<Infallible, StopToken = impl Send + StopToken>,
-    impl std::future::Future<Output = ()>,
-    axum::Router,
-) {
+) -> (impl UpdateListener<Infallible>, impl std::future::Future<Output = ()>, axum::Router) {
     use crate::{
         dispatching::{stop_token::AsyncStopToken, update_listeners},
         types::Update,
