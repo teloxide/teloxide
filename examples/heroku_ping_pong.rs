@@ -18,6 +18,8 @@
 //
 // [1] https://github.com/emk/heroku-buildpack-rust
 
+// TODO: use built-in webhook support
+
 use teloxide::{
     dispatching::{
         stop_token::AsyncStopToken,
