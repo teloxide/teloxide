@@ -31,9 +31,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .branch(Update::filter_inline_query().endpoint(inline_query_handler));
 
     Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
-
-    log::info!("Closing bot... Goodbye!");
-
     Ok(())
 }
 
