@@ -2,7 +2,7 @@
 //!
 //! This library provides tools for making requests to the [Telegram Bot API]
 //! (Currently, version `5.3` is supported) with ease. The library is fully
-//! asynchronouns and built using [`tokio`].
+//! asynchronous and built using [`tokio`].
 //!
 //!```toml
 //! teloxide_core = "0.4"
@@ -51,8 +51,8 @@
 //! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
-//! - `full` — enables all features except `nigthly` and tls-related
-//! - `nightly` — enables nigthly-only features, currently:
+//! - `full` — enables all features except `nightly` and tls-related
+//! - `nightly` — enables nightly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
 //!
