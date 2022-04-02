@@ -7,7 +7,6 @@ use teloxide::{
         ErasedStorage, RedisStorage, SqliteStorage, Storage,
     },
     prelude::*,
-    types::Me,
     utils::command::BotCommands,
 };
 
@@ -27,7 +26,7 @@ impl Default for State {
     }
 }
 
-#[derive(BotCommands)]
+#[derive(Clone, BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]
