@@ -202,22 +202,22 @@ where
 #[macro_export]
 macro_rules! handler {
     ($($variant:ident)::+) => {
-        dptree::filter(|state| matches!(state, $($variant)::+))
+        $crate::dptree::filter(|state| matches!(state, $($variant)::+))
     };
     ($($variant:ident)::+ ($param:ident)) => {
-        dptree::filter_map(|state| match state {
+        $crate::dptree::filter_map(|state| match state {
             $($variant)::+($param) => Some($param),
             _ => None,
         })
     };
     ($($variant:ident)::+ ($($param:ident),+ $(,)?)) => {
-        dptree::filter_map(|state| match state {
+        $crate::dptree::filter_map(|state| match state {
             $($variant)::+($($param),+) => Some(($($param),+ ,)),
             _ => None,
         })
     };
     ($($variant:ident)::+ {$($param:ident),+ $(,)?}) => {
-        dptree::filter_map(|state| match state {
+        $crate::dptree::filter_map(|state| match state {
             $($variant)::+ { $($param),+ } => Some(($($param),+ ,)),
             _ => None,
         })
