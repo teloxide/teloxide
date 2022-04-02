@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` [**BC**]
 
+### Fixed
+
+- A bug in `Message::url` implementation ([#198][pr198])
+
 ## 0.4.5 - 2022-04-03
 
 ### Fixed
