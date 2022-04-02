@@ -1,21 +1,20 @@
 use crate::{
     dispatching::{
-        update_listeners, update_listeners::UpdateListener, Dispatcher, DispatcherHandlerRx,
-        DispatcherHandlerRxExt, UpdateWithCx,
+        update_listeners, update_listeners::UpdateListener, HandlerExt, UpdateFilterExt,
     },
-    error_handlers::{LoggingErrorHandler, OnError},
+    error_handlers::LoggingErrorHandler,
+    types::Update,
     utils::command::BotCommands,
 };
-use futures::StreamExt;
-use std::{fmt::Debug, future::Future, sync::Arc};
-use teloxide_core::{requests::Requester, types::Message};
-use tokio_stream::wrappers::UnboundedReceiverStream;
+use dptree::di::{DependencyMap, Injectable};
+use std::{fmt::Debug, marker::PhantomData};
+use teloxide_core::requests::Requester;
 
 /// A [REPL] for commands.
 ///
 /// All errors from an update listener and handler will be logged.
 ///
-/// # Caution
+/// ## Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
@@ -23,24 +22,21 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl<R, Cmd, H, Fut, HandlerE, N>(requester: R, bot_name: N, handler: H)
+pub async fn commands_repl<'a, R, Cmd, H, E, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
-    Cmd: BotCommands + Send + 'static,
-    H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
-    Result<(), HandlerE>: OnError<HandlerE>,
-    HandlerE: Debug + Send,
-    N: Into<String> + Send + 'static,
-    R: Requester + Send + Clone + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
+    E: Debug + Send + Sync + 'static,
 {
-    let cloned_requester = requester.clone();
+    let cloned_bot = bot.clone();
 
     commands_repl_with_listener(
-        requester,
-        bot_name,
+        bot,
         handler,
-        update_listeners::polling_default(cloned_requester).await,
+        update_listeners::polling_default(cloned_bot).await,
+        cmd,
     )
     .await;
 }
@@ -49,7 +45,7 @@ where
 ///
 /// All errors from an update listener and handler will be logged.
 ///
-/// # Caution
+/// ## Caution
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
@@ -58,41 +54,35 @@ where
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl_with_listener<'a, R, Cmd, H, Fut, L, ListenerE, HandlerE, N>(
-    requester: R,
-    bot_name: N,
+pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
+    bot: R,
     handler: H,
     listener: L,
+    _cmd: PhantomData<Cmd>,
 ) where
-    Cmd: BotCommands + Send + 'static,
-    H: Fn(UpdateWithCx<R, Message>, Cmd) -> Fut + Send + Sync + 'static,
-    Fut: Future<Output = Result<(), HandlerE>> + Send + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
-    Result<(), HandlerE>: OnError<HandlerE>,
-    HandlerE: Debug + Send,
-    N: Into<String> + Send + 'static,
-    R: Requester + Clone + Send + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
+    E: Debug + Send + Sync + 'static,
 {
-    let handler = Arc::new(handler);
+    use crate::dispatching::Dispatcher;
 
-    Dispatcher::<R>::new(requester)
-        .messages_handler(move |rx: DispatcherHandlerRx<R, Message>| {
-            UnboundedReceiverStream::new(rx).commands::<Cmd, N>(bot_name).for_each_concurrent(
-                None,
-                move |(cx, cmd)| {
-                    let handler = Arc::clone(&handler);
+    // Other update types are of no interest to use since this REPL is only for
+    // commands. See <https://github.com/teloxide/teloxide/issues/557>.
+    let ignore_update = |_upd| Box::pin(async {});
 
-                    async move {
-                        handler(cx, cmd).await.log_on_error().await;
-                    }
-                },
-            )
-        })
-        .setup_ctrlc_handler()
-        .dispatch_with_listener(
-            listener,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
-        )
-        .await
+    Dispatcher::builder(
+        bot,
+        Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
+    )
+    .default_handler(ignore_update)
+    .build()
+    .setup_ctrlc_handler()
+    .dispatch_with_listener(
+        listener,
+        LoggingErrorHandler::with_custom_text("An error from the update listener"),
+    )
+    .await;
 }

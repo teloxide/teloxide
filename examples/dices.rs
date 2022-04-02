@@ -1,6 +1,6 @@
 // This bot throws a dice on each incoming message.
 
-use teloxide::prelude2::*;
+use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -9,7 +9,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })

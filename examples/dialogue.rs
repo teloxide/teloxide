@@ -13,12 +13,13 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
-use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
+use teloxide::{dispatching::dialogue::InMemStorage, macros::DialogueState, prelude::*};
 
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
+type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
 #[derive(DialogueState, Clone)]
-#[handler_out(anyhow::Result<()>)]
+#[handler_out(HandlerResult)]
 pub enum State {
     #[handler(handle_start)]
     Start,
@@ -59,11 +60,7 @@ async fn main() {
     .await;
 }
 
-async fn handle_start(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> anyhow::Result<()> {
+async fn handle_start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
@@ -73,7 +70,7 @@ async fn handle_receive_full_name(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-) -> anyhow::Result<()> {
+) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -92,7 +89,7 @@ async fn handle_receive_age(
     msg: Message,
     dialogue: MyDialogue,
     (full_name,): (String,), // Available from `State::ReceiveAge`.
-) -> anyhow::Result<()> {
+) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
             bot.send_message(msg.chat.id, "What's your location?").await?;
@@ -111,7 +108,7 @@ async fn handle_receive_location(
     msg: Message,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
-) -> anyhow::Result<()> {
+) -> HandlerResult {
     match msg.text() {
         Some(location) => {
             let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);

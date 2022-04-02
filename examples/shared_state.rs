@@ -3,7 +3,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use once_cell::sync::Lazy;
-use teloxide::prelude2::*;
+use teloxide::prelude::*;
 
 static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
 

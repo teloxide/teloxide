@@ -6,11 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Removed
+
+ - The old dispatching system and related stuff: `dispatching`, `utils::UpState`, `prelude`, `repls2`, `crate::{dialogues_repl, dialogues_repl_with_listener}`, and `#[teloxide(subtransition)]` [**BC**].
+
 ### Changed
 
-- `UpdateListener::StopToken` is now always `Send`
-- Rename `BotCommand` trait to `BotCommands`
-- `BotCommands::descriptions` now returns `CommandDescriptions` instead of `String`
+ - Rename `dispatching2` => `dispatching` [**BC**].
+ - Rename `prelude2` => `prelude` [**BC**].
+ - Move `update_listeners`, `stop_token`, `IdleShutdownError`, and `ShutdownToken` from the old `dispatching` to the new `dispatching` (previously `dispatching2`).
+ - Replace `crate::{commands_repl, commands_repl_with_listener, repl, repl_with_listener}` with those of the new `dispatching` [**BC**].
+ - `UpdateListener::StopToken` is now always `Send` [**BC**].
+ - Rename `BotCommand` trait to `BotCommands` [**BC**].
+ - `BotCommands::descriptions` now returns `CommandDescriptions` instead of `String` [**BC**].
 
 ## 0.7.2 - 2022-03-23
 

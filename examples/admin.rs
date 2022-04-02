@@ -1,7 +1,7 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::Duration;
-use teloxide::{prelude2::*, types::ChatPermissions, utils::command::BotCommands};
+use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 
 // Derive BotCommands to parse text with a command into this enumeration.
 //
@@ -53,16 +53,34 @@ impl FromStr for UnitOfTime {
     }
 }
 
-// Calculates time of user restriction.
-fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
-    match unit {
-        UnitOfTime::Hours => Duration::hours(time as i64),
-        UnitOfTime::Minutes => Duration::minutes(time as i64),
-        UnitOfTime::Seconds => Duration::seconds(time as i64),
-    }
+#[tokio::main]
+async fn main() {
+    pretty_env_logger::init();
+    log::info!("Starting admin_bot...");
+
+    let bot = teloxide::Bot::from_env().auto_send();
+
+    teloxide::commands_repl(bot, action, Command::ty()).await;
 }
 
 type Bot = AutoSend<teloxide::Bot>;
+
+async fn action(
+    bot: Bot,
+    msg: Message,
+    command: Command,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match command {
+        Command::Help => {
+            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
+        }
+        Command::Kick => kick_user(bot, msg).await?,
+        Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
+        Command::Mute { time, unit } => mute_user(bot, msg, calc_restrict_time(time, unit)).await?,
+    };
+
+    Ok(())
+}
 
 // Kick a user with a replied message.
 async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -73,6 +91,29 @@ async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + 
         }
         None => {
             bot.send_message(msg.chat.id, "Use this command in reply to another message").await?;
+        }
+    }
+    Ok(())
+}
+
+// Ban a user with replied message.
+async fn ban_user(
+    bot: Bot,
+    msg: Message,
+    time: Duration,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    match msg.reply_to_message() {
+        Some(replied) => {
+            bot.kick_chat_member(
+                msg.chat.id,
+                replied.from().expect("Must be MessageKind::Common").id,
+            )
+            .until_date(msg.date + time)
+            .await?;
+        }
+        None => {
+            bot.send_message(msg.chat.id, "Use this command in a reply to another message!")
+                .await?;
         }
     }
     Ok(())
@@ -102,52 +143,11 @@ async fn mute_user(
     Ok(())
 }
 
-// Ban a user with replied message.
-async fn ban_user(
-    bot: Bot,
-    msg: Message,
-    time: Duration,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match msg.reply_to_message() {
-        Some(replied) => {
-            bot.kick_chat_member(
-                msg.chat.id,
-                replied.from().expect("Must be MessageKind::Common").id,
-            )
-            .until_date(msg.date + time)
-            .await?;
-        }
-        None => {
-            bot.send_message(msg.chat.id, "Use this command in a reply to another message!")
-                .await?;
-        }
+// Calculates time of user restriction.
+fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
+    match unit {
+        UnitOfTime::Hours => Duration::hours(time as i64),
+        UnitOfTime::Minutes => Duration::minutes(time as i64),
+        UnitOfTime::Seconds => Duration::seconds(time as i64),
     }
-    Ok(())
-}
-
-async fn action(
-    bot: Bot,
-    msg: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command {
-        Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
-        }
-        Command::Kick => kick_user(bot, msg).await?,
-        Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
-        Command::Mute { time, unit } => mute_user(bot, msg, calc_restrict_time(time, unit)).await?,
-    };
-
-    Ok(())
-}
-
-#[tokio::main]
-async fn main() {
-    pretty_env_logger::init();
-    log::info!("Starting admin_bot...");
-
-    let bot = teloxide::Bot::from_env().auto_send();
-
-    teloxide::repls2::commands_repl(bot, action, Command::ty()).await;
 }

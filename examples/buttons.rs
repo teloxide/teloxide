@@ -1,7 +1,7 @@
 use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
-    prelude2::*,
+    prelude::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText,
@@ -16,6 +16,22 @@ enum Command {
     Help,
     #[command(description = "Start")]
     Start,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    pretty_env_logger::init();
+    log::info!("Starting bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    let handler = dptree::entry()
+        .branch(Update::filter_message().endpoint(message_handler))
+        .branch(Update::filter_callback_query().endpoint(callback_handler))
+        .branch(Update::filter_inline_query().endpoint(inline_query_handler));
+
+    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+    Ok(())
 }
 
 /// Creates a keyboard made by buttons in a big column.
@@ -108,25 +124,6 @@ async fn callback_handler(
 
         log::info!("You chose: {}", version);
     }
-
-    Ok(())
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    pretty_env_logger::init();
-    log::info!("Starting bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    let handler = dptree::entry()
-        .branch(Update::filter_message().endpoint(message_handler))
-        .branch(Update::filter_callback_query().endpoint(callback_handler))
-        .branch(Update::filter_inline_query().endpoint(inline_query_handler));
-
-    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
-
-    log::info!("Closing bot... Goodbye!");
 
     Ok(())
 }

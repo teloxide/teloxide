@@ -1,14 +1,20 @@
+use crate::types::CallbackQuery;
 use teloxide_core::types::Message;
 
-/// Something that has a chat ID.
-#[deprecated(note = "Use dispatching2 instead")]
+/// Something that may has a chat ID.
 pub trait GetChatId {
     #[must_use]
-    fn chat_id(&self) -> i64;
+    fn chat_id(&self) -> Option<i64>;
 }
 
 impl GetChatId for Message {
-    fn chat_id(&self) -> i64 {
-        self.chat.id
+    fn chat_id(&self) -> Option<i64> {
+        Some(self.chat.id)
+    }
+}
+
+impl GetChatId for CallbackQuery {
+    fn chat_id(&self) -> Option<i64> {
+        self.message.as_ref().map(|mes| mes.chat.id)
     }
 }

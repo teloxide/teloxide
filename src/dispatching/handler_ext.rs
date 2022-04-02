@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-    dispatching2::{
+    dispatching::{
         dialogue::{Dialogue, GetChatId, Storage},
         HandlerFactory,
     },

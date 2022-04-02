@@ -1,172 +1,181 @@
-//! Dealing with dialogues.
+//! Support for user dialogues.
 //!
-//! There are three main components:
+//! The main type is (surprise!) [`Dialogue`]. Under the hood, it is just a
+//! wrapper over [`Storage`] and a chat ID. All it does is provides convenient
+//! method for manipulating the dialogue state. [`Storage`] is where all
+//! dialogue states are stored; it can be either [`InMemStorage`], which is a
+//! simple hash map, or database wrappers such as [`SqliteStorage`]. In the
+//! latter case, your dialogues are _persistent_, meaning that you can safely
+//! restart your bot and all dialogues will remain in the database -- this is a
+//! preferred method for production bots.
 //!
-//!  1. Your type `D` (typically an enumeration), implementing [`Transition`].
-//! It is essentially a [FSM]: its variants are possible dialogue states and
-//! [`Transition::react`] is a transition function.
+//! [`examples/dialogue.rs`] clearly demonstrates the typical usage of
+//! dialogues. Your dialogue state can be represented as an enumeration:
 //!
-//!  2. State types, forming `D`. They implement [`Subtransition`].
+//! ```ignore
+//! #[derive(DialogueState, Clone)]
+//! #[handler_out(anyhow::Result<()>)]
+//! pub enum State {
+//!     #[handler(handle_start)]
+//!     Start,
 //!
-//!  2. [`Storage<D>`], which encapsulates all the dialogues.
+//!     #[handler(handle_receive_full_name)]
+//!     ReceiveFullName,
 //!
-//!  3. [`DialogueDispatcher`], which encapsulates your handler, [`Storage<D>`],
-//! and implements [`DispatcherHandler`].
+//!     #[handler(handle_receive_age)]
+//!     ReceiveAge { full_name: String },
 //!
-//! You pass [`DialogueDispatcher`] into [`Dispatcher`]. Every time
-//! [`Dispatcher`] sees an incoming input, it is transferred into
-//! [`DialogueDispatcher`], and the following steps are executed:
-//!
-//!  1. If a storage doesn't contain a dialogue from this chat, supply
-//! `D::default()` into you handler, otherwise, supply the saved dialogue
-//! from this chat.
-//!  2. If a handler has returned [`DialogueStage::Exit`], remove the dialogue
-//! from the storage, otherwise ([`DialogueStage::Next`]) force the storage to
-//! update the dialogue.
-//!
-//! To avoid boilerplate, teloxide exports these convenient things: the [`next`]
-//! and [`exit`] functions, and `#[derive(BotDialogue)]` with
-//! `#[teloxide(subtransition)]`. Here's how your dialogues management code
-//! skeleton should look like:
-//!
-//! ```no_run
-//! # #[cfg(feature = "macros")] {
-//! use std::convert::Infallible;
-//!
-//! use teloxide::{
-//!     dispatching::dialogue::{InMemStorageError, Transition},
-//!     prelude::*,
-//!     teloxide, RequestError,
-//! };
-//!
-//! #[derive(Clone)]
-//! struct _1State;
-//! #[derive(Clone)]
-//! struct _2State;
-//! #[derive(Clone)]
-//! struct _3State;
-//!
-//! type Out = TransitionOut<D, RequestError>;
-//!
-//! #[teloxide(subtransition)]
-//! async fn _1_transition(_state: _1State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
-//!     todo!()
+//!     #[handler(handle_receive_location)]
+//!     ReceiveLocation { full_name: String, age: u8 },
 //! }
-//!
-//! #[teloxide(subtransition)]
-//! async fn _2_transition(_state: _2State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
-//!     todo!()
-//! }
-//!
-//! #[teloxide(subtransition)]
-//! async fn _3_transition(_state: _3State, _cx: TransitionIn<AutoSend<Bot>>) -> Out {
-//!     todo!()
-//! }
-//!
-//! #[derive(Clone, Transition)]
-//! enum D {
-//!     _1(_1State),
-//!     _2(_2State),
-//!     _3(_3State),
-//! }
-//!
-//! impl Default for D {
-//!     fn default() -> Self {
-//!         Self::_1(_1State)
-//!     }
-//! }
-//!
-//! type In = DialogueWithCx<AutoSend<Bot>, Message, D, InMemStorageError>;
-//!
-//! #[tokio::main]
-//! async fn main() {
-//!     pretty_env_logger::init();
-//!     log::info!("Starting dialogue_bot!");
-//!
-//!     let bot = Bot::from_env().auto_send();
-//!
-//!     Dispatcher::new(bot)
-//!         .messages_handler(DialogueDispatcher::new(
-//!             |DialogueWithCx { cx, dialogue }: In| async move {
-//!                 // No panic because of std::convert::Infallible.
-//!                 let dialogue = dialogue.unwrap();
-//!                 dialogue
-//!                     // Instead of () you can pass an arbitrary value, see below.
-//!                     .react(cx, ())
-//!                     .await
-//!                     .expect("Something wrong with the bot!")
-//!             },
-//!         ))
-//!         .dispatch()
-//!         .await;
-//! }
-//! # }
 //! ```
 //!
-//!  - `#[teloxide(subtransition)]` implements [`Subtransition`] for the first
-//!    argument of a function.
-//!  - `#[derive(Transition)]` implements [`Transition`] for `D`, if all the
-//!    variants implement [`Subtransition`].
+//! Each state is associated with its respective handler: e.g., when a dialogue
+//! state is `ReceiveAge`, `handle_receive_age` is invoked:
 //!
-//! `()` in `.react(cx, ())` is an arbitrary value, which you can pass into
-//! Subtransitions. Just append `ans: T` to the parameters of the
-//! Subtransitions to pass a differen type.
+//! ```ignore
+//! async fn handle_receive_age(
+//!     bot: AutoSend<Bot>,
+//!     msg: Message,
+//!     dialogue: MyDialogue,
+//!     (full_name,): (String,), // Available from `State::ReceiveAge`.
+//! ) -> anyhow::Result<()> {
+//!     match msg.text().map(|text| text.parse::<u8>()) {
+//!         Some(Ok(age)) => {
+//!             bot.send_message(msg.chat.id, "What's your location?").await?;
+//!             dialogue.update(State::ReceiveLocation { full_name, age }).await?;
+//!         }
+//!         _ => {
+//!             bot.send_message(msg.chat.id, "Send me a number.").await?;
+//!         }
+//!     }
 //!
-//! See [examples/dialogue_bot] as a real example.
+//!     Ok(())
+//! }
+//! ```
 //!
-//! [`Transition`]: crate::dispatching::dialogue::Transition
-//! [`Subtransition`]: crate::dispatching::dialogue::Subtransition
-//! [`Transition::react`]:
-//! crate::dispatching::dialogue::Transition::react
-//! [FSM]: https://en.wikipedia.org/wiki/Finite-state_machine
+//! Variant's fields are passed to state handlers as tuples: `(full_name,):
+//! (String,)`. Using [`Dialogue::update`], you can update the dialogue with a
+//! new state, in our case -- `State::ReceiveLocation { full_name, age }`. To
+//! exit the dialogue, just call [`Dialogue::exit`] and it will be removed from
+//! the inner storage:
 //!
-//! [`Storage<D>`]: crate::dispatching::dialogue::Storage
+//! ```ignore
+//! async fn handle_receive_location(
+//!     bot: AutoSend<Bot>,
+//!     msg: Message,
+//!     dialogue: MyDialogue,
+//!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+//! ) -> anyhow::Result<()> {
+//!     match msg.text() {
+//!         Some(location) => {
+//!             let message =
+//!                 format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+//!             bot.send_message(msg.chat.id, message).await?;
+//!             dialogue.exit().await?;
+//!         }
+//!         None => {
+//!             bot.send_message(msg.chat.id, "Send me a text message.").await?;
+//!         }
+//!     }
 //!
-//! [`DialogueStage<D>`]: crate::dispatching::dialogue::DialogueStage
-//! [`DialogueDispatcher`]: crate::dispatching::dialogue::DialogueDispatcher
+//!     Ok(())
+//! }
+//! ```
 //!
-//! [`DialogueStage::Exit`]:
-//! crate::dispatching::dialogue::DialogueStage::Exit
-//! [`DialogueStage::Next`]: crate::dispatching::dialogue::DialogueStage::Next
-//!
-//! [`up!`]: crate::up
-//! [`next`]: crate::dispatching::dialogue::next
-//! [`exit`]: crate::dispatching::dialogue::exit
-//!
-//! [`DispatcherHandler`]: crate::dispatching::DispatcherHandler
-//! [`Dispatcher`]: crate::dispatching::Dispatcher
-//! [`Dispatcher::messages_handler`]:
-//! crate::dispatching::Dispatcher::messages_handler
-//! [`UpdateKind::Message(message)`]: crate::types::UpdateKind::Message
-//!
-//! [examples/dialogue_bot]: https://github.com/teloxide/teloxide/tree/master/examples/dialogue_bot
-
-#![allow(clippy::type_complexity)]
-
-mod dialogue_dispatcher;
-mod dialogue_dispatcher_handler;
-mod dialogue_stage;
-mod dialogue_with_cx;
-mod get_chat_id;
-mod storage;
-mod transition;
-
-pub use dialogue_dispatcher::DialogueDispatcher;
-pub use dialogue_dispatcher_handler::DialogueDispatcherHandler;
-pub use dialogue_stage::{exit, next, DialogueStage};
-pub use dialogue_with_cx::DialogueWithCx;
-pub use get_chat_id::GetChatId;
-pub use transition::{
-    Subtransition, SubtransitionOutputType, Transition, TransitionIn, TransitionOut,
-};
-
-#[cfg(feature = "macros")]
-pub use teloxide_macros::Transition;
+//! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
 #[cfg(feature = "redis-storage")]
-pub use storage::{RedisStorage, RedisStorageError};
+pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
-pub use storage::{SqliteStorage, SqliteStorageError};
+pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
+pub use get_chat_id::GetChatId;
 pub use storage::*;
+
+use std::{marker::PhantomData, sync::Arc};
+
+mod get_chat_id;
+mod storage;
+
+/// A handle for controlling dialogue state.
+#[derive(Debug)]
+pub struct Dialogue<D, S>
+where
+    S: ?Sized,
+{
+    storage: Arc<S>,
+    chat_id: i64,
+    _phantom: PhantomData<D>,
+}
+
+// `#[derive]` requires generics to implement `Clone`, but `S` is wrapped around
+// `Arc`, and `D` is wrapped around PhantomData.
+impl<D, S> Clone for Dialogue<D, S>
+where
+    S: ?Sized,
+{
+    fn clone(&self) -> Self {
+        Dialogue { storage: self.storage.clone(), chat_id: self.chat_id, _phantom: PhantomData }
+    }
+}
+
+impl<D, S> Dialogue<D, S>
+where
+    D: Send + 'static,
+    S: Storage<D> + ?Sized,
+{
+    /// Constructs a new dialogue with `storage` (where dialogues are stored)
+    /// and `chat_id` of a current dialogue.
+    pub fn new(storage: Arc<S>, chat_id: i64) -> Self {
+        Self { storage, chat_id, _phantom: PhantomData }
+    }
+
+    /// Retrieves the current state of the dialogue or `None` if there is no
+    /// dialogue.
+    pub async fn get(&self) -> Result<Option<D>, S::Error> {
+        self.storage.clone().get_dialogue(self.chat_id).await
+    }
+
+    /// Like [`Dialogue::get`] but returns a default value if there is no
+    /// dialogue.
+    pub async fn get_or_default(&self) -> Result<D, S::Error>
+    where
+        D: Default,
+    {
+        match self.get().await? {
+            Some(d) => Ok(d),
+            None => {
+                self.storage.clone().update_dialogue(self.chat_id, D::default()).await?;
+                Ok(D::default())
+            }
+        }
+    }
+
+    /// Updates the dialogue state.
+    ///
+    /// The dialogue type `D` must implement `From<State>` to allow implicit
+    /// conversion from `State` to `D`.
+    pub async fn update<State>(&self, state: State) -> Result<(), S::Error>
+    where
+        D: From<State>,
+    {
+        let new_dialogue = state.into();
+        self.storage.clone().update_dialogue(self.chat_id, new_dialogue).await?;
+        Ok(())
+    }
+
+    /// Updates the dialogue with a default value.
+    pub async fn reset(&self) -> Result<(), S::Error>
+    where
+        D: Default,
+    {
+        self.update(D::default()).await
+    }
+
+    /// Removes the dialogue from the storage provided to [`Dialogue::new`].
+    pub async fn exit(&self) -> Result<(), S::Error> {
+        self.storage.clone().remove_dialogue(self.chat_id).await
+    }
+}

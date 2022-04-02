@@ -2,12 +2,12 @@
 // Otherwise, the default is Sqlite.
 
 use teloxide::{
-    dispatching2::dialogue::{
+    dispatching::dialogue::{
         serializer::{Bincode, Json},
         ErasedStorage, RedisStorage, SqliteStorage, Storage,
     },
     macros::DialogueState,
-    prelude2::*,
+    prelude::*,
     types::Me,
     utils::command::BotCommands,
 };
