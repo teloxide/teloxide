@@ -13,28 +13,20 @@
 //! dialogues. Your dialogue state can be represented as an enumeration:
 //!
 //! ```ignore
-//! #[derive(DialogueState, Clone)]
-//! #[handler_out(anyhow::Result<()>)]
+//! #[derive(Clone)]
 //! pub enum State {
-//!     #[handler(handle_start)]
 //!     Start,
-//!
-//!     #[handler(handle_receive_full_name)]
 //!     ReceiveFullName,
-//!
-//!     #[handler(handle_receive_age)]
 //!     ReceiveAge { full_name: String },
-//!
-//!     #[handler(handle_receive_location)]
 //!     ReceiveLocation { full_name: String, age: u8 },
 //! }
 //! ```
 //!
 //! Each state is associated with its respective handler: e.g., when a dialogue
-//! state is `ReceiveAge`, `handle_receive_age` is invoked:
+//! state is `ReceiveAge`, `receive_age` is invoked:
 //!
 //! ```ignore
-//! async fn handle_receive_age(
+//! async fn receive_age(
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
@@ -61,7 +53,7 @@
 //! the inner storage:
 //!
 //! ```ignore
-//! async fn handle_receive_location(
+//! async fn receive_location(
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,

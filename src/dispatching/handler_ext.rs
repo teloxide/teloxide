@@ -6,7 +6,7 @@ use crate::{
         HandlerFactory,
     },
     types::{Me, Message},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 use dptree::{di::DependencyMap, Handler};
 
@@ -23,7 +23,7 @@ pub trait HandlerExt<Output> {
     #[must_use]
     fn filter_command<C>(self) -> Self
     where
-        C: BotCommand + Send + Sync + 'static;
+        C: BotCommands + Send + Sync + 'static;
 
     /// Passes [`Dialogue<D, S>`] and `D` as handler dependencies.
     ///
@@ -62,7 +62,7 @@ where
 {
     fn filter_command<C>(self) -> Self
     where
-        C: BotCommand + Send + Sync + 'static,
+        C: BotCommands + Send + Sync + 'static,
     {
         self.chain(dptree::filter_map(move |message: Message, me: Me| {
             let bot_name = me.user.username.expect("Bots must have a username");

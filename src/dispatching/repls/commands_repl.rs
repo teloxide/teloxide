@@ -4,7 +4,7 @@ use crate::{
     },
     error_handlers::LoggingErrorHandler,
     types::Update,
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, marker::PhantomData};
@@ -28,7 +28,7 @@ use teloxide_core::requests::Requester;
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl<'a, R, Cmd, H, E, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
-    Cmd: BotCommand + Send + Sync + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
@@ -68,7 +68,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     listener: L,
     _cmd: PhantomData<Cmd>,
 ) where
-    Cmd: BotCommand + Send + Sync + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
     L: UpdateListener<ListenerE> + Send + 'a,
     ListenerE: Debug + Send + 'a,
@@ -81,23 +81,16 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     // commands. See <https://github.com/teloxide/teloxide/issues/557>.
     let ignore_update = |_upd| Box::pin(async {});
 
-    let mut dispatcher = Dispatcher::builder(
+    Dispatcher::builder(
         bot,
         Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
     )
     .default_handler(ignore_update)
-    .build();
-
-    #[cfg(feature = "ctrlc_handler")]
-    dispatcher.setup_ctrlc_handler();
-
-    // To make mutable var from immutable.
-    let mut dispatcher = dispatcher;
-
-    dispatcher
-        .dispatch_with_listener(
-            listener,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
-        )
-        .await;
+    .build()
+    .setup_ctrlc_handler()
+    .dispatch_with_listener(
+        listener,
+        LoggingErrorHandler::with_custom_text("An error from the update listener"),
+    )
+    .await;
 }

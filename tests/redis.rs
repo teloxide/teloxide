@@ -5,6 +5,7 @@ use std::{
 use teloxide::dispatching::dialogue::{RedisStorage, RedisStorageError, Serializer, Storage};
 
 #[tokio::test]
+#[cfg_attr(not(CI_REDIS), ignore)]
 async fn test_redis_json() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7777",
@@ -16,6 +17,7 @@ async fn test_redis_json() {
 }
 
 #[tokio::test]
+#[cfg_attr(not(CI_REDIS), ignore)]
 async fn test_redis_bincode() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7778",
@@ -27,6 +29,7 @@ async fn test_redis_bincode() {
 }
 
 #[tokio::test]
+#[cfg_attr(not(CI_REDIS), ignore)]
 async fn test_redis_cbor() {
     let storage = RedisStorage::open(
         "redis://127.0.0.1:7779",

@@ -1,9 +1,9 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::Duration;
-use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
+use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 
-// Derive BotCommand to parse text with a command into this enumeration.
+// Derive BotCommands to parse text with a command into this enumeration.
 //
 //  1. rename = "lowercase" turns all the commands into lowercase letters.
 //  2. `description = "..."` specifies a text before all the commands.
@@ -12,7 +12,7 @@ use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
 // your commands in this format:
 // %GENERAL-DESCRIPTION%
 // %PREFIX%%COMMAND% - %DESCRIPTION%
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(
     rename = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
@@ -72,7 +72,7 @@ async fn action(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions()).await?;
+            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
         }
         Command::Kick => kick_user(bot, msg).await?,
         Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,

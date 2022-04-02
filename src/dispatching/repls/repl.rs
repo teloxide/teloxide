@@ -59,19 +59,22 @@ where
     // messages. See <https://github.com/teloxide/teloxide/issues/557>.
     let ignore_update = |_upd| Box::pin(async {});
 
-    #[allow(unused_mut)]
-    let mut dispatcher =
-        Dispatcher::builder(bot, Update::filter_message().branch(dptree::endpoint(handler)))
-            .default_handler(ignore_update)
-            .build();
-
-    #[cfg(feature = "ctrlc_handler")]
-    dispatcher.setup_ctrlc_handler();
-
-    dispatcher
+    Dispatcher::builder(bot, Update::filter_message().branch(dptree::endpoint(handler)))
+        .default_handler(ignore_update)
+        .build()
+        .setup_ctrlc_handler()
         .dispatch_with_listener(
             listener,
             LoggingErrorHandler::with_custom_text("An error from the update listener"),
         )
         .await;
+}
+
+#[test]
+fn repl_is_send() {
+    let bot = crate::Bot::new("");
+    let repl = crate::repl(bot, || async { crate::respond(()) });
+    assert_send(&repl);
+
+    fn assert_send(_: &impl Send) {}
 }

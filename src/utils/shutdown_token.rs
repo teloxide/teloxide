@@ -12,7 +12,9 @@ use tokio::sync::Notify;
 
 use crate::dispatching::update_listeners::UpdateListener;
 
-/// A token which used to shutdown [`crate::dispatching::Dispatcher`].
+/// A token which used to shutdown [`Dispatcher`].
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Clone)]
 pub struct ShutdownToken {
     dispatcher_state: Arc<DispatcherState>,
@@ -20,7 +22,9 @@ pub struct ShutdownToken {
 }
 
 /// This error is returned from [`ShutdownToken::shutdown`] when trying to
-/// shutdown an idle [`crate::dispatching::Dispatcher`].
+/// shutdown an idle [`Dispatcher`].
+///
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Debug)]
 pub struct IdleShutdownError;
 

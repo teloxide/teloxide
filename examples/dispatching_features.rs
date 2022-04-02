@@ -6,7 +6,7 @@ use rand::Rng;
 use teloxide::{
     prelude::*,
     types::{Dice, Update},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
 #[tokio::main]
@@ -24,28 +24,6 @@ async fn main() {
     let handler = Update::filter_message()
         // You can use branching to define multiple ways in which an update will be handled. If the
         // first branch fails, an update will be passed to the second branch, and so on.
-        .branch(
-            // Filtering allow you to filter updates by some condition.
-            dptree::filter(|msg: Message| msg.chat.is_group() || msg.chat.is_supergroup())
-                // An endpoint is the last update handler.
-                .endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
-                    log::info!("Received a message from a group chat.");
-                    bot.send_message(msg.chat.id, "This is a group chat.").await?;
-                    respond(())
-                }),
-        )
-        .branch(
-            // There are some extension filtering functions on `Message`. The following filter will
-            // filter only messages with dices.
-            Message::filter_dice().endpoint(
-                |msg: Message, dice: Dice, bot: AutoSend<Bot>| async move {
-                    bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                    Ok(())
-                },
-            ),
-        )
         .branch(
             dptree::entry()
                 // Filter commands: the next handlers will receive a parsed `SimpleCommand`.
@@ -70,6 +48,28 @@ async fn main() {
                             Ok(())
                         }
                     }
+                },
+            ),
+        )
+        .branch(
+            // Filtering allow you to filter updates by some condition.
+            dptree::filter(|msg: Message| msg.chat.is_group() || msg.chat.is_supergroup())
+                // An endpoint is the last update handler.
+                .endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
+                    log::info!("Received a message from a group chat.");
+                    bot.send_message(msg.chat.id, "This is a group chat.").await?;
+                    respond(())
+                }),
+        )
+        .branch(
+            // There are some extension filtering functions on `Message`. The following filter will
+            // filter only messages with dices.
+            Message::filter_dice().endpoint(
+                |msg: Message, dice: Dice, bot: AutoSend<Bot>| async move {
+                    bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
+                        .reply_to_message_id(msg.id)
+                        .await?;
+                    Ok(())
                 },
             ),
         );
@@ -99,7 +99,7 @@ struct ConfigParameters {
     maintainer_username: Option<String>,
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "Simple commands")]
 enum SimpleCommand {
     #[command(description = "shows this message.")]
@@ -110,7 +110,7 @@ enum SimpleCommand {
     MyId,
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "Maintainer commands")]
 enum MaintainerCommands {
     #[command(parse_with = "split", description = "generate a number within range")]
@@ -122,13 +122,20 @@ async fn simple_commands_handler(
     bot: AutoSend<Bot>,
     cmd: SimpleCommand,
     cfg: ConfigParameters,
+    me: teloxide::types::Me,
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {
             if msg.from().unwrap().id == cfg.bot_maintainer {
-                format!("{}\n{}", SimpleCommand::descriptions(), MaintainerCommands::descriptions())
+                format!(
+                    "{}\n\n{}",
+                    SimpleCommand::descriptions(),
+                    MaintainerCommands::descriptions()
+                )
+            } else if msg.chat.is_group() || msg.chat.is_supergroup() {
+                SimpleCommand::descriptions().username_from_me(&me).to_string()
             } else {
-                SimpleCommand::descriptions()
+                SimpleCommand::descriptions().to_string()
             }
         }
         SimpleCommand::Maintainer => {

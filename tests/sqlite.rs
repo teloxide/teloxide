@@ -1,36 +1,47 @@
 use std::{
     fmt::{Debug, Display},
+    fs,
     sync::Arc,
 };
 use teloxide::dispatching::dialogue::{Serializer, SqliteStorage, SqliteStorageError, Storage};
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_json() {
-    let storage =
-        SqliteStorage::open("./test_db1.sqlite", teloxide::dispatching::dialogue::serializer::Json)
-            .await
-            .unwrap();
+    fs::create_dir("./test_db1").unwrap();
+    let storage = SqliteStorage::open(
+        "./test_db1/test_db1.sqlite",
+        teloxide::dispatching::dialogue::serializer::Json,
+    )
+    .await
+    .unwrap();
     test_sqlite(storage).await;
+    fs::remove_dir_all("./test_db1").unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_bincode() {
+    fs::create_dir("./test_db2").unwrap();
     let storage = SqliteStorage::open(
-        "./test_db2.sqlite",
+        "./test_db2/test_db2.sqlite",
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
     .await
     .unwrap();
     test_sqlite(storage).await;
+    fs::remove_dir_all("./test_db2").unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_sqlite_cbor() {
-    let storage =
-        SqliteStorage::open("./test_db3.sqlite", teloxide::dispatching::dialogue::serializer::Cbor)
-            .await
-            .unwrap();
+    fs::create_dir("./test_db3").unwrap();
+    let storage = SqliteStorage::open(
+        "./test_db3/test_db3.sqlite",
+        teloxide::dispatching::dialogue::serializer::Cbor,
+    )
+    .await
+    .unwrap();
     test_sqlite(storage).await;
+    fs::remove_dir_all("./test_db3").unwrap();
 }
 
 type Dialogue = String;

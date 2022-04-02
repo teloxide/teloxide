@@ -7,7 +7,8 @@ use teloxide::{
         ErasedStorage, RedisStorage, SqliteStorage, Storage,
     },
     prelude::*,
-    utils::command::BotCommand,
+    types::Me,
+    utils::command::BotCommands,
 };
 
 type MyDialogue = Dialogue<State, ErasedStorage<State>>;
@@ -26,7 +27,7 @@ impl Default for State {
     }
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]

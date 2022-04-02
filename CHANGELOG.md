@@ -6,20 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Removed
+
+ - The old dispatching system and related stuff: `dispatching`, `utils::UpState`, `prelude`, `repls2`, `crate::{dialogues_repl, dialogues_repl_with_listener}`, and `#[teloxide(subtransition)]` [**BC**].
+
 ### Added
 
  - The new API for dialogue handlers: `teloxide::handler!` ([issue 567](https://github.com/teloxide/teloxide/issues/567)).
 
-### Removed
-
- - The old dispatching system and related stuff: `dispatching`, `utils::UpState`, `prelude`, `repls2`, `crate::{dialogues_repl, dialogues_repl_with_listener}`, and `#[teloxide(...)]`.
-
 ### Changed
 
- - Rename `dispatching2` => `dispatching`.
- - Rename `prelude2` => `prelude`.
- - Move `update_listeners`, `stop_token`, `IdleShutdownError`, and `ShutdownToken` from the old `dispatching` to the new `dispatching`.
- - Replace `crate::{commands_repl, commands_repl_with_listener, repl, repl_with_listener}` with those of the new `dispatching`.
+ - Rename `dispatching2` => `dispatching` [**BC**].
+ - Rename `prelude2` => `prelude` [**BC**].
+ - Move `update_listeners`, `stop_token`, `IdleShutdownError`, and `ShutdownToken` from the old `dispatching` to the new `dispatching` (previously `dispatching2`).
+ - Replace `crate::{commands_repl, commands_repl_with_listener, repl, repl_with_listener}` with those of the new `dispatching` [**BC**].
+ - `UpdateListener::StopToken` is now always `Send` [**BC**].
+ - Rename `BotCommand` trait to `BotCommands` [**BC**].
+ - `BotCommands::descriptions` now returns `CommandDescriptions` instead of `String` [**BC**].
 
 ## 0.7.2 - 2022-03-23
 
@@ -37,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Log `UpdateKind::Error` in `teloxide::dispatching2::Dispatcher`.
 - Don't warn about unhandled updates in `repls2` ([issue 557](https://github.com/teloxide/teloxide/issues/557)).
+- `parse_command` and `parse_command_with_prefix` now ignores case of the bot username
 
 ## 0.7.1 - 2022-03-09
 
