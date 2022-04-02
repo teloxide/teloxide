@@ -192,6 +192,8 @@ where
 ///
 ///  - For `State::MyVariant(param)` and `State::MyVariant { param }`, the
 ///    payload is `param`.
+///  - For `State::MyVariant(param,)` and `State::MyVariant { param, }`, the
+///    payload is `(param,)`.
 ///  - For `State::MyVariant(param1, ..., paramN)` and `State::MyVariant {
 ///    param1, ..., paramN }`, the payload is `(param1, ..., paramN)` (where `N`
 ///    > 1).
