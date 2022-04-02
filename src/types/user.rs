@@ -51,6 +51,22 @@ impl User {
         self.id.url()
     }
 
+    /// Returns an URL that links to this user in the form of `t.me/<...>`.
+    /// Returns `None` if `self.username.is_none()`.
+    pub fn tme_url(&self) -> Option<reqwest::Url> {
+        Some(
+            format!("https://t.me/{}", self.username.as_ref()?)
+                .parse()
+                .unwrap(),
+        )
+    }
+
+    /// Returns an URL that links to this user in the form of `t.me/<...>` or
+    /// `tg://user/?id=<...>`, preferring `t.me` one when possible.
+    pub fn preferably_tme_url(&self) -> reqwest::Url {
+        self.tme_url().unwrap_or_else(|| self.url())
+    }
+
     /// Returns `true` if this is the special user used by telegram bot API to
     /// denote an anonymous user that sends messages on behalf of a group.
     pub fn is_anonymous(&self) -> bool {
