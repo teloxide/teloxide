@@ -86,7 +86,7 @@ async fn receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,), // Available from `State::ReceiveAge`.
+    full_name: String, // Available from `State::ReceiveAge`.
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
