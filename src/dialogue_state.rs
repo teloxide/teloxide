@@ -99,9 +99,9 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
         fn assert_clone<T: Clone>() {}
 
         use teloxide::dptree;
-        use teloxide::dispatching2::dialogue::Dialogue;
+        use teloxide::dispatching::dialogue::Dialogue;
 
-        impl #self_params_with_bounds teloxide::dispatching2::HandlerFactory for #enum_ident #self_params #where_clause {
+        impl #self_params_with_bounds teloxide::dispatching::HandlerFactory for #enum_ident #self_params #where_clause {
         type Out = #out;
 
         fn handler() -> dptree::Handler<'static, dptree::di::DependencyMap, Self::Out> {
