@@ -32,6 +32,16 @@ impl Me {
             .as_deref()
             .expect("Bots must have usernames")
     }
+
+    /// Returns a username mention of this bot.
+    pub fn mention(&self) -> String {
+        format!("@{}", self.username())
+    }
+
+    /// Returns an URL that links to this bot in the form of `t.me/<...>`.
+    pub fn tme_url(&self) -> reqwest::Url {
+        format!("https://t.me/{}", self.username()).parse().unwrap()
+    }
 }
 
 impl Deref for Me {
