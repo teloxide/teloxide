@@ -88,9 +88,9 @@ mod tests {
     use crate::{
         payloads::{self, setters::*},
         types::{
-            InputFile, InputMedia, InputMediaAnimation, InputMediaAudio, InputMediaDocument,
-            InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity, MessageEntityKind,
-            ParseMode,
+            ChatId, InputFile, InputMedia, InputMediaAnimation, InputMediaAudio,
+            InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity,
+            MessageEntityKind, ParseMode, UserId,
         },
     };
 
@@ -98,7 +98,7 @@ mod tests {
     #[tokio::test]
     async fn issue_473() {
         to_form_ref(
-            &payloads::SendPhoto::new(0, InputFile::file_id("0")).caption_entities([
+            &payloads::SendPhoto::new(ChatId(0), InputFile::file_id("0")).caption_entities([
                 MessageEntity {
                     kind: MessageEntityKind::Url,
                     offset: 0,
@@ -115,7 +115,7 @@ mod tests {
         const CAPTION: &str = "caption";
 
         to_form_ref(&payloads::SendMediaGroup::new(
-            0,
+            ChatId(0),
             [
                 InputMedia::Photo(
                     InputMediaPhoto::new(InputFile::file("./media/logo.png"))
@@ -151,7 +151,7 @@ mod tests {
     #[tokio::test]
     async fn test_add_sticker_to_set() {
         to_form_ref(&payloads::AddStickerToSet::new(
-            0,
+            UserId(0),
             "name",
             InputSticker::Png(InputFile::file("./media/logo.png")),
             "✈️⚙️",
@@ -163,7 +163,7 @@ mod tests {
     #[tokio::test]
     async fn test_send_animation() {
         to_form_ref(
-            &payloads::SendAnimation::new(0, InputFile::file("./media/logo.png"))
+            &payloads::SendAnimation::new(ChatId(0), InputFile::file("./media/logo.png"))
                 .caption_entities(entities())
                 .thumb(InputFile::read(
                     File::open("./media/logo.png").await.unwrap(),

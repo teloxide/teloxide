@@ -4,8 +4,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    Animation, Audio, Chat, Contact, Dice, Document, Game, InlineKeyboardMarkup, Invoice, Location,
-    MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
+    Animation, Audio, Chat, ChatId, Contact, Dice, Document, Game, InlineKeyboardMarkup, Invoice,
+    Location, MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
     ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote,
     Voice, VoiceChatEnded, VoiceChatParticipantsInvited, VoiceChatScheduled, VoiceChatStarted,
 };
@@ -187,14 +187,14 @@ pub enum ChatMigration {
     /// identifier `chat_id`.
     To {
         #[serde(rename = "migrate_to_chat_id")]
-        chat_id: i64,
+        chat_id: ChatId,
     },
 
     /// The supergroup has been migrated from a group with the specified
     /// identifier `chat_id`.
     From {
         #[serde(rename = "migrate_from_chat_id")]
-        chat_id: i64,
+        chat_id: ChatId,
     },
 }
 
@@ -519,14 +519,15 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatMigration, Forward, ForwardedFrom, MediaAnimation,
-        MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPhoto,
-        MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
-        Message, MessageChannelChatCreated, MessageCommon, MessageConnectedWebsite,
-        MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated,
-        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
-        MessageNewChatTitle, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, PhotoSize, True, User,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
+        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
+        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
+        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
+        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
+        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
+        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
+        PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -558,7 +559,7 @@ mod getters {
         }
 
         #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]
-        pub fn chat_id(&self) -> i64 {
+        pub fn chat_id(&self) -> ChatId {
             self.chat.id
         }
 
@@ -931,7 +932,7 @@ mod getters {
             }
         }
 
-        pub fn migrate_to_chat_id(&self) -> Option<i64> {
+        pub fn migrate_to_chat_id(&self) -> Option<ChatId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(ChatMigration::To { chat_id }),
@@ -941,7 +942,7 @@ mod getters {
             }
         }
 
-        pub fn migrate_from_chat_id(&self) -> Option<i64> {
+        pub fn migrate_from_chat_id(&self) -> Option<ChatId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(ChatMigration::From { chat_id }),
@@ -1069,7 +1070,8 @@ impl Message {
             // accessible to the group members.
             None => format!(
                 "https://t.me/c/{0}/{1}/",
-                (-self.chat.id) - 1000000000000,
+                // FIXME: this may be wrong for private channels
+                (-self.chat.id.0) - 1000000000000,
                 self.id
             ),
         };
@@ -1326,7 +1328,7 @@ mod tests {
         let message: Message = serde_json::from_str(json).unwrap();
 
         let group = Chat {
-            id: -1001160242915,
+            id: ChatId(-1001160242915),
             kind: ChatKind::Public(ChatPublic {
                 title: Some("a".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
@@ -1360,8 +1362,8 @@ mod tests {
     /// Regression test for <https://github.com/teloxide/teloxide/issues/427>
     #[test]
     fn issue_427() {
-        let old = -599075523;
-        let new = -1001555296434;
+        let old = ChatId(-599075523);
+        let new = ChatId(-1001555296434);
 
         // Migration to a supergroup
         let json = r#"{"chat":{"all_members_are_administrators":false,"id":-599075523,"title":"test","type":"group"},"date":1629404938,"from":{"first_name":"nullptr","id":729497414,"is_bot":false,"language_code":"en","username":"hex0x0000"},"message_id":16,"migrate_to_chat_id":-1001555296434}"#;

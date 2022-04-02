@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, MessageEntity, ParseMode, ReplyMarkup};
+use crate::types::{Message, MessageEntity, ParseMode, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send text messages. On success, the sent [`Message`] is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SendMessage (SendMessageSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Text of the message to be sent, 1-4096 characters after entities parsing
             pub text: String [into],
         }

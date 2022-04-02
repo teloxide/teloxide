@@ -3,3 +3,4 @@ wrap_comments = true
 format_strings = true
 imports_granularity = "Crate"
 use_field_init_shorthand = true
+merge_derives = false

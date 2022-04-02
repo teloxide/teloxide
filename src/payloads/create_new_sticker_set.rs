@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{InputSticker, MaskPosition, True};
+use crate::types::{InputSticker, MaskPosition, True, UserId};
 
 impl_payload! {
     @[multipart = sticker]
@@ -17,7 +17,7 @@ impl_payload! {
     pub CreateNewStickerSet (CreateNewStickerSetSetters) => True {
         required {
             /// User identifier of sticker file owner
-            pub user_id: i64,
+            pub user_id: UserId,
             /// Short name of sticker set, to be used in `t.me/addstickers/` URLs (e.g., _animals_). Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in _“\_by\_<bot username>”. <bot\_username>_ is case insensitive. 1-64 characters.
             pub name: String [into],
             /// Sticker set title, 1-64 characters

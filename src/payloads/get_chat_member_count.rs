@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::ChatId;
+use crate::types::Recipient;
 
 impl_payload! {
     /// Use this method to get the number of members in a chat. Returns _Int_ on success.
@@ -16,7 +16,7 @@ impl_payload! {
     pub GetChatMemberCount (GetChatMemberCountSetters) => u32 {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
         }
     }
 }

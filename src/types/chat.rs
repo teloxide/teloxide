@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatLocation, ChatPermissions, ChatPhoto, Message, True};
+use crate::types::{ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, True};
 
 /// This object represents a chat.
 ///
@@ -8,12 +8,8 @@ use crate::types::{ChatLocation, ChatPermissions, ChatPhoto, Message, True};
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chat {
-    /// A unique identifier for this chat. This number may be greater than 32
-    /// bits and some programming languages may have difficulty/silent defects
-    /// in interpreting it. But it is smaller than 52 bits, so a signed 64 bit
-    /// integer or double-precision float type are safe for storing this
-    /// identifier.
-    pub id: i64,
+    /// A unique identifier for this chat.
+    pub id: ChatId,
 
     #[serde(flatten)]
     pub kind: ChatKind,
@@ -454,11 +450,11 @@ mod tests {
     #[test]
     fn channel_de() {
         let expected = Chat {
-            id: -1,
+            id: ChatId(-1),
             kind: ChatKind::Public(ChatPublic {
                 title: None,
                 kind: PublicChatKind::Channel(PublicChatChannel {
-                    username: Some("channelname".into()),
+                    username: Some("channel_name".into()),
                     linked_chat_id: None,
                 }),
                 description: None,
@@ -469,7 +465,7 @@ mod tests {
             pinned_message: None,
             message_auto_delete_time: None,
         };
-        let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
+        let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
         assert_eq!(expected, actual);
     }
 
@@ -477,7 +473,7 @@ mod tests {
     fn private_chat_de() {
         assert_eq!(
             Chat {
-                id: 0,
+                id: ChatId(0),
                 kind: ChatKind::Private(ChatPrivate {
                     type_: (),
                     username: Some("username".into()),

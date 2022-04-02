@@ -12,7 +12,7 @@
 //! ```
 //! # #[cfg(feature = "auto_send")]
 //! # async {
-//! # let chat_id = 0;
+//! # let chat_id = teloxide_core::types::ChatId(-1);
 //! use teloxide_core::{
 //!     prelude::*,
 //!     types::{DiceEmoji, ParseMode},

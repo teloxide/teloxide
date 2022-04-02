@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InputFile, True};
+use crate::types::{InputFile, Recipient, True};
 
 impl_payload! {
     @[multipart = photo]
@@ -17,7 +17,7 @@ impl_payload! {
     pub SetChatPhoto (SetChatPhotoSetters) => True {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// New chat photo, uploaded using multipart/form-data
             pub photo: InputFile,
         }
