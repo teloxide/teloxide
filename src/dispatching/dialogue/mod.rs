@@ -201,24 +201,24 @@ where
 ///  - Your dialogue state enumeration `State`.
 #[macro_export]
 macro_rules! handler {
-    ($($variant:ident)::*) => {
-        dptree::filter(|state| matches!(state, $($variant)::*))
+    ($($variant:ident)::+) => {
+        dptree::filter(|state| matches!(state, $($variant)::+))
     };
-    ($($variant:ident)::* ($param:ident)) => {
+    ($($variant:ident)::+ ($param:ident)) => {
         dptree::filter_map(|state| match state {
-            $($variant)::*($param) => Some($param),
+            $($variant)::+($param) => Some($param),
             _ => None,
         })
     };
-    ($($variant:ident)::* ($($param:ident),+ $(,)?)) => {
+    ($($variant:ident)::+ ($($param:ident),+ $(,)?)) => {
         dptree::filter_map(|state| match state {
-            $($variant)::*($($param),+) => Some(($($param),+ ,)),
+            $($variant)::+($($param),+) => Some(($($param),+ ,)),
             _ => None,
         })
     };
-    ($($variant:ident)::* {$($param:ident),+ $(,)?}) => {
+    ($($variant:ident)::+ {$($param:ident),+ $(,)?}) => {
         dptree::filter_map(|state| match state {
-            $($variant)::* { $($param),+ } => Some(($($param),+ ,)),
+            $($variant)::+ { $($param),+ } => Some(($($param),+ ,)),
             _ => None,
         })
     };
