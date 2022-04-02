@@ -1,4 +1,4 @@
-//! Telergam API types.
+//! Telegram API types.
 
 pub use allowed_update::*;
 pub use animation::*;
