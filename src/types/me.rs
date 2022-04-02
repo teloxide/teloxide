@@ -1,5 +1,8 @@
-use crate::types::User;
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
+
+use crate::types::User;
 
 /// Returned only in [`GetMe`].
 ///
@@ -19,4 +22,22 @@ pub struct Me {
 
     /// `true`, if the bot supports inline queries.
     pub supports_inline_queries: bool,
+}
+
+impl Me {
+    /// Returns the username of the bot.
+    pub fn username(&self) -> &str {
+        self.user
+            .username
+            .as_deref()
+            .expect("Bots must have usernames")
+    }
+}
+
+impl Deref for Me {
+    type Target = User;
+
+    fn deref(&self) -> &Self::Target {
+        &self.user
+    }
 }
