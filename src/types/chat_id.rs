@@ -34,12 +34,16 @@ impl ChatId {
         matches!(self.to_bare(), BareChatId::User(_))
     }
 
-    /// Returns `true` if this is an id of a group or supergroup.
+    /// Returns `true` if this is an id of a group.
+    ///
+    /// Note: supergroup is **not** considered a group.
     pub fn is_group(self) -> bool {
         matches!(self.to_bare(), BareChatId::Group(_))
     }
 
     /// Returns `true` if this is an id of a channel.
+    ///
+    /// Note: supergroup is considered a channel.
     pub fn is_channel(self) -> bool {
         matches!(self.to_bare(), BareChatId::Channel(_))
     }
@@ -138,6 +142,8 @@ mod tests {
             51,
             777000,
             1000000,
+            617136926,
+            1666111087,
             1 << 20,
             (1 << 35) | 123456,
             1 << 40 - 1,
