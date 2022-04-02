@@ -46,65 +46,57 @@ impl User {
     }
 
     /// Returns an URL that links to this user in the form of
-    /// `tg://user/?id=<...>`
+    /// `tg://user/?id=<...>`.
     pub fn url(&self) -> reqwest::Url {
-        reqwest::Url::parse(&format!("tg://user/?id={}", self.id)).unwrap()
+        self.id.url()
     }
 
-    /// Returns `true` if this is special user used by telegram bot API to
+    /// Returns `true` if this is the special user used by telegram bot API to
     /// denote an anonymous user that sends messages on behalf of a group.
     pub fn is_anonymous(&self) -> bool {
-        // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4941-L4943
-        const ANON_ID: UserId = UserId(1087968824);
-
         // Sanity check
         debug_assert!(
-            (self.id != ANON_ID)
+            !self.id.is_anonymous()
                 || (self.is_bot
                     && self.first_name == "Group"
                     && self.last_name.is_none()
                     && self.username.as_deref() == Some("GroupAnonymousBot"))
         );
 
-        self.id == ANON_ID
+        self.id.is_anonymous()
     }
 
-    /// Returns `true` if this is special user used by telegram bot API to
+    /// Returns `true` if this is the special user used by telegram bot API to
     /// denote an anonymous user that sends messages on behalf of a channel.
     pub fn is_channel(&self) -> bool {
-        // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4945-L4947
-        const ANON_CHANNEL_ID: UserId = UserId(136817688);
-
         // Sanity check
         debug_assert!(
-            (self.id != ANON_CHANNEL_ID)
+            !self.id.is_channel()
                 || (self.is_bot
                     && self.first_name == "Group"
                     && self.last_name.is_none()
                     && self.username.as_deref() == Some("GroupAnonymousBot"))
         );
 
-        self.id == ANON_CHANNEL_ID
+        self.id.is_channel()
     }
 
-    /// Returns `true` if this is special user used by telegram itself.
+    /// Returns `true` if this is the special user used by telegram itself.
     ///
     /// It is sometimes also used as a fallback, for example when a channel post
     /// is automatically forwarded to a group, bots in a group will get a
     /// message where `from` is the Telegram user.
     pub fn is_telegram(&self) -> bool {
-        const TELEGRAM_USER_ID: UserId = UserId(777000);
-
         // Sanity check
         debug_assert!(
-            (self.id != TELEGRAM_USER_ID)
+            !self.id.is_telegram()
                 || (!self.is_bot
                     && self.first_name == "Telegram"
                     && self.last_name.is_none()
                     && self.username.is_none())
         );
 
-        self.id == TELEGRAM_USER_ID
+        self.id.is_telegram()
     }
 }
 
