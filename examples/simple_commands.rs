@@ -1,4 +1,4 @@
-use teloxide::{prelude::*, utils::command::BotCommand};
+use teloxide::{prelude::*, utils::command::BotCommands};
 
 use std::error::Error;
 
@@ -12,7 +12,7 @@ async fn main() {
     teloxide::commands_repl(bot, answer, Command::ty()).await;
 }
 
-#[derive(BotCommand, Clone)]
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]

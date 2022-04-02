@@ -6,7 +6,7 @@ use rand::Rng;
 use teloxide::{
     prelude::*,
     types::{Dice, Update},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
 #[tokio::main]
@@ -122,7 +122,7 @@ async fn simple_commands_handler(
     bot: AutoSend<Bot>,
     cmd: SimpleCommand,
     cfg: ConfigParameters,
-    me: Me,
+    me: teloxide::types::Me,
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {

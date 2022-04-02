@@ -1,7 +1,7 @@
 use std::{error::Error, str::FromStr};
 
 use chrono::Duration;
-use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommand};
+use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 
 // Derive BotCommands to parse text with a command into this enumeration.
 //
@@ -72,7 +72,7 @@ async fn action(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions()).await?;
+            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
         }
         Command::Kick => kick_user(bot, msg).await?,
         Command::Ban { time, unit } => ban_user(bot, msg, calc_restrict_time(time, unit)).await?,
