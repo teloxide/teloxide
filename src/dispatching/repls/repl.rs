@@ -73,7 +73,7 @@ where
 #[test]
 fn repl_is_send() {
     let bot = crate::Bot::new("");
-    let repl = crate::repl(bot, |_| async { crate::respond(()) });
+    let repl = crate::repl(bot, || async { crate::respond(()) });
     assert_send(&repl);
 
     fn assert_send(_: &impl Send) {}
