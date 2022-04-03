@@ -1,4 +1,4 @@
-//! Telergam API types.
+//! Telegram API types.
 
 pub use allowed_update::*;
 pub use animation::*;
@@ -9,7 +9,6 @@ pub use callback_game::*;
 pub use callback_query::*;
 pub use chat::*;
 pub use chat_action::*;
-pub use chat_id::*;
 pub use chat_invite_link::*;
 pub use chat_join_request::*;
 pub use chat_location::*;
@@ -115,7 +114,6 @@ mod callback_game;
 mod callback_query;
 mod chat;
 mod chat_action;
-mod chat_id;
 mod chat_invite_link;
 mod chat_join_request;
 mod chat_location;
@@ -221,6 +219,14 @@ mod non_telegram_types {
     pub(crate) mod mime;
     pub(super) mod until_date;
 }
+
+mod chat_id;
+mod recipient;
+mod user_id;
+
+pub use chat_id::*;
+pub use recipient::*;
+pub use user_id::*;
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
     use chrono::{DateTime, NaiveDateTime, Utc};

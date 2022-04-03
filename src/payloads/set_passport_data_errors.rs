@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{PassportElementError, True};
+use crate::types::{PassportElementError, True, UserId};
 
 impl_payload! {
     /// Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns _True_ on success.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SetPassportDataErrors (SetPassportDataErrorsSetters) => True {
         required {
             /// User identifier
-            pub user_id: i64,
+            pub user_id: UserId,
             /// A JSON-serialized array describing the errors
             pub errors: Vec<PassportElementError> [collect],
         }

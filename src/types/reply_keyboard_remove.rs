@@ -13,7 +13,8 @@ use crate::types::True;
 ///
 /// [`KeyboardMarkup`]: crate::types::KeyboardMarkup
 #[serde_with_macros::skip_serializing_none]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Eq, Hash, PartialEq)]
 pub struct KeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
     /// to summon this keyboard; if you want to hide the keyboard from sight

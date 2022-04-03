@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, Poll};
+use crate::types::{InlineKeyboardMarkup, Poll, Recipient};
 
 impl_payload! {
     /// Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
@@ -16,7 +16,7 @@ impl_payload! {
     pub StopPoll (StopPollSetters) => Poll {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Identifier of the message to edit
             pub message_id: i32,
         }

@@ -108,7 +108,7 @@ impl<B> Throttle<B> {
     ///
     /// [`RequesterExt::throttle`]: crate::requests::RequesterExt::throttle
     pub fn new_spawn(bot: B, limits: Limits) -> Self {
-        // new/with_settings copypasted here to avoid [rust-lang/#76882]
+        // new/with_settings copy-pasted here to avoid [rust-lang/#76882]
         //
         // [rust-lang/#76882]: https://github.com/rust-lang/rust/issues/76882
 
@@ -132,7 +132,7 @@ impl<B> Throttle<B> {
 
     /// Creates new [`Throttle`] spawning the worker with `tokio::spawn`
     pub fn spawn_with_settings(bot: B, settings: Settings) -> Self {
-        // with_settings copypasted here to avoid [rust-lang/#76882]
+        // with_settings copy-pasted here to avoid [rust-lang/#76882]
         //
         // [rust-lang/#76882]: https://github.com/rust-lang/rust/issues/76882
 
@@ -174,7 +174,7 @@ impl<B> Throttle<B> {
 
     /// Sets new limits.
     ///
-    /// Note: changes may not be applied imidiately.
+    /// Note: changes may not be applied immediately.
     pub async fn set_limits(&self, new: Limits) {
         let (tx, rx) = oneshot::channel();
 
@@ -286,7 +286,7 @@ const SECOND: Duration = Duration::from_secs(1);
 // want to change this.
 const DELAY: Duration = Duration::from_millis(250);
 
-/// Minimal time beetween calls to queue_full function
+/// Minimal time between calls to queue_full function
 const QUEUE_FULL_DELAY: Duration = Duration::from_secs(4);
 
 #[derive(Debug)]
@@ -375,12 +375,12 @@ async fn worker(
     while !rx_is_closed || !queue.is_empty() {
         // FIXME(waffle):
         // 1. If the `queue` is empty, `read_from_rx` call down below will 'block'
-        //    execution untill a request is sent. While the execution is 'blocked' no
+        //    execution until a request is sent. While the execution is 'blocked' no
         //    `InfoMessage`s could be answered.
         //
-        // 2. If limits are descreased, ideally we want to shrink queue.
+        // 2. If limits are decreased, ideally we want to shrink queue.
         //
-        // *blocked in asyncronous way
+        // *blocked in asynchronous way
         answer_info(&mut info_rx, &mut limits);
 
         read_from_rx(&mut rx, &mut queue, &mut rx_is_closed).await;
@@ -428,7 +428,7 @@ async fn worker(
         let min_back = now - MINUTE;
         let sec_back = now - SECOND;
 
-        // make history and hchats up-to-date
+        // make history and requests_sent up-to-date
         while let Some((_, time)) = history.front() {
             // history is sorted, we found first up-to-date thing
             if time >= &min_back {
@@ -529,7 +529,7 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
         }
     }
 
-    // Don't grow queue bigger than the capacity to limit DOS posibility
+    // Don't grow queue bigger than the capacity to limit DOS possibility
     while queue.len() < queue.capacity() {
         // FIXME(waffle): https://github.com/tokio-rs/tokio/issues/3350
         match tokio::task::unconstrained(rx.recv()).now_or_never() {
@@ -638,24 +638,24 @@ download_forward! {
 /// usernames. (It is just a hashed username.)
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 enum ChatIdHash {
-    Id(i64),
+    Id(ChatId),
     ChannelUsernameHash(u64),
 }
 
 impl ChatIdHash {
     fn is_channel(&self) -> bool {
         match self {
-            &Self::Id(id) => ChatId::Id(id).is_channel(),
+            &Self::Id(id) => id.is_channel(),
             Self::ChannelUsernameHash(_) => true,
         }
     }
 }
 
-impl From<&ChatId> for ChatIdHash {
-    fn from(value: &ChatId) -> Self {
+impl From<&Recipient> for ChatIdHash {
+    fn from(value: &Recipient) -> Self {
         match value {
-            ChatId::Id(id) => ChatIdHash::Id(*id),
-            ChatId::ChannelUsername(username) => {
+            Recipient::Id(id) => ChatIdHash::Id(*id),
+            Recipient::ChannelUsername(username) => {
                 let mut hasher = std::collections::hash_map::DefaultHasher::new();
                 username.hash(&mut hasher);
                 let hash = hasher.finish();

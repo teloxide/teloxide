@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ReplyMarkup};
+use crate::types::{Message, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SendContact (SendContactSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Contact's phone number
             pub phone_number: String [into],
             /// Contact's first name

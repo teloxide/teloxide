@@ -51,6 +51,8 @@ pub struct CallbackQuery {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::UserId;
+
     use super::*;
 
     #[test]
@@ -70,7 +72,7 @@ mod tests {
         let expected = CallbackQuery {
             id: "id".to_string(),
             from: User {
-                id: 12345,
+                id: UserId(12345),
                 is_bot: false,
                 first_name: "firstName".to_string(),
                 last_name: None,

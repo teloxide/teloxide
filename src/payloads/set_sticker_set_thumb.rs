@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{InputFile, True};
+use crate::types::{InputFile, True, UserId};
 
 impl_payload! {
     @[multipart = thumb]
@@ -19,7 +19,7 @@ impl_payload! {
             /// Name of the sticker set
             pub name: String [into],
             /// User identifier of sticker file owner
-            pub user_id: i64,
+            pub user_id: UserId,
         }
         optional {
             /// A **PNG** image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a **TGS** animation with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/animated_stickers#technical-requirements for animated sticker technical requirements. Pass a _file\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]. Animated sticker set thumbnail can't be uploaded via HTTP URL.

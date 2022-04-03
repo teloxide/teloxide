@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::UserId;
+
 /// This object represents a Telegram user or bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#user).
@@ -7,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct User {
     /// Unique identifier for this user or bot.
-    pub id: i64,
+    pub id: UserId,
 
     /// `true`, if this user is a bot.
     pub is_bot: bool,
@@ -53,7 +55,7 @@ impl User {
     /// denote an anonymous user that sends messages on behalf of a group.
     pub fn is_anonymous(&self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4941-L4943
-        const ANON_ID: i64 = 1087968824;
+        const ANON_ID: UserId = UserId(1087968824);
 
         // Sanity check
         debug_assert!(
@@ -71,7 +73,7 @@ impl User {
     /// denote an anonymous user that sends messages on behalf of a channel.
     pub fn is_channel(&self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4945-L4947
-        const ANON_CHANNEL_ID: i64 = 136817688;
+        const ANON_CHANNEL_ID: UserId = UserId(136817688);
 
         // Sanity check
         debug_assert!(
@@ -91,7 +93,7 @@ impl User {
     /// is automatically forwarded to a group, bots in a group will get a
     /// message where `from` is the Telegram user.
     pub fn is_telegram(&self) -> bool {
-        const TELEGRAM_USER_ID: i64 = 777000;
+        const TELEGRAM_USER_ID: UserId = UserId(777000);
 
         // Sanity check
         debug_assert!(
@@ -121,7 +123,7 @@ mod tests {
             "language_code":"ru"
         }"#;
         let expected = User {
-            id: 12345,
+            id: UserId(12345),
             is_bot: false,
             first_name: "firstName".to_string(),
             last_name: Some("lastName".to_string()),

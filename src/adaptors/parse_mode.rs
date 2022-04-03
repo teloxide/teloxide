@@ -3,7 +3,7 @@ use url::Url;
 use crate::{
     prelude::Requester,
     requests::HasPayload,
-    types::{ChatId, InputFile, ParseMode, *},
+    types::{InputFile, ParseMode, Recipient, *},
 };
 
 /// Default parse mode adaptor, see
@@ -86,7 +86,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
 
     fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
     where
-        C: Into<ChatId>,
+        C: Into<Recipient>,
         Q: Into<String>,
         O: IntoIterator<Item = String>,
     {

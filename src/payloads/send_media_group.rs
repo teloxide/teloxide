@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InputMedia, Message};
+use crate::types::{InputMedia, Message, Recipient};
 
 impl_payload! {
     /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub SendMediaGroup (SendMediaGroupSetters) => Vec<Message> {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// A JSON-serialized array describing messages to be sent, must include 2-10 items
             pub media: Vec<InputMedia> [collect],
         }

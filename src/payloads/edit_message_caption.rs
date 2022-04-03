@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, Message, MessageEntity, ParseMode};
+use crate::types::{InlineKeyboardMarkup, Message, MessageEntity, ParseMode, Recipient};
 
 impl_payload! {
     /// Use this method to edit captions of messages. On success, the edited Message is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub EditMessageCaption (EditMessageCaptionSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Identifier of the message to edit
             pub message_id: i32,
         }

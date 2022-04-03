@@ -8,7 +8,7 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{ChatId, InlineKeyboardMarkup, InputMedia, Message};
+use crate::types::{InlineKeyboardMarkup, InputMedia, Message, Recipient};
 
 impl_payload! {
     /// Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned.
@@ -18,7 +18,7 @@ impl_payload! {
     pub EditMessageMedia (EditMessageMediaSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
-            pub chat_id: ChatId [into],
+            pub chat_id: Recipient [into],
             /// Identifier of the message to edit
             pub message_id: i32,
             /// A JSON-serialized object for a new media content of the message
