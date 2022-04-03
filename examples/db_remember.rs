@@ -6,9 +6,7 @@ use teloxide::{
         serializer::{Bincode, Json},
         ErasedStorage, RedisStorage, SqliteStorage, Storage,
     },
-    macros::DialogueState,
     prelude::*,
-    types::Me,
     utils::command::BotCommands,
 };
 
@@ -16,13 +14,9 @@ type MyDialogue = Dialogue<State, ErasedStorage<State>>;
 type MyStorage = std::sync::Arc<ErasedStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(DialogueState, Clone, serde::Serialize, serde::Deserialize)]
-#[handler_out(HandlerResult)]
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub enum State {
-    #[handler(handle_start)]
     Start,
-
-    #[handler(handle_got_number)]
     GotNumber(i32),
 }
 
@@ -32,7 +26,7 @@ impl Default for State {
     }
 }
 
-#[derive(BotCommands)]
+#[derive(Clone, BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]
@@ -56,7 +50,12 @@ async fn main() {
 
     let handler = Update::filter_message()
         .enter_dialogue::<Message, ErasedStorage<State>, State>()
-        .dispatch_by::<State>();
+        .branch(teloxide::handler![State::Start].endpoint(start))
+        .branch(
+            teloxide::handler![State::GotNumber(n)]
+                .branch(dptree::entry().filter_command::<Command>().endpoint(got_number))
+                .branch(dptree::endpoint(invalid_command)),
+        );
 
     Dispatcher::builder(bot, handler)
         .dependencies(dptree::deps![storage])
@@ -66,48 +65,44 @@ async fn main() {
         .await;
 }
 
-async fn handle_start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
-    match msg.text().unwrap().parse() {
-        Ok(number) => {
-            dialogue.update(State::GotNumber(number)).await?;
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    match msg.text().map(|text| text.parse::<i32>()) {
+        Some(Ok(n)) => {
+            dialogue.update(State::GotNumber(n)).await?;
             bot.send_message(
                 msg.chat.id,
-                format!("Remembered number {}. Now use /get or /reset", number),
+                format!("Remembered number {}. Now use /get or /reset.", n),
             )
             .await?;
         }
         _ => {
-            bot.send_message(msg.chat.id, "Please, send me a number").await?;
+            bot.send_message(msg.chat.id, "Please, send me a number.").await?;
         }
     }
 
     Ok(())
 }
 
-async fn handle_got_number(
+async fn got_number(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
     num: i32,
-    me: Me,
+    cmd: Command,
 ) -> HandlerResult {
-    let ans = msg.text().unwrap();
-    let bot_name = me.user.username.unwrap();
-
-    match Command::parse(ans, bot_name) {
-        Ok(cmd) => match cmd {
-            Command::Get => {
-                bot.send_message(msg.chat.id, format!("Here is your number: {}", num)).await?;
-            }
-            Command::Reset => {
-                dialogue.reset().await?;
-                bot.send_message(msg.chat.id, "Number resetted").await?;
-            }
-        },
-        Err(_) => {
-            bot.send_message(msg.chat.id, "Please, send /get or /reset").await?;
+    match cmd {
+        Command::Get => {
+            bot.send_message(msg.chat.id, format!("Here is your number: {}.", num)).await?;
+        }
+        Command::Reset => {
+            dialogue.reset().await?;
+            bot.send_message(msg.chat.id, "Number resetted.").await?;
         }
     }
+    Ok(())
+}
 
+async fn invalid_command(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Please, send /get or /reset.").await?;
     Ok(())
 }

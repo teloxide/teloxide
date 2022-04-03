@@ -13,24 +13,16 @@
 //    Age: 223
 //    Location: Middle-earth
 // ```
-use teloxide::{dispatching::dialogue::InMemStorage, macros::DialogueState, prelude::*};
+use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(DialogueState, Clone)]
-#[handler_out(HandlerResult)]
+#[derive(Clone)]
 pub enum State {
-    #[handler(handle_start)]
     Start,
-
-    #[handler(handle_receive_full_name)]
     ReceiveFullName,
-
-    #[handler(handle_receive_age)]
     ReceiveAge { full_name: String },
-
-    #[handler(handle_receive_location)]
     ReceiveLocation { full_name: String, age: u8 },
 }
 
@@ -51,7 +43,13 @@ async fn main() {
         bot,
         Update::filter_message()
             .enter_dialogue::<Message, InMemStorage<State>, State>()
-            .dispatch_by::<State>(),
+            .branch(teloxide::handler![State::Start].endpoint(start))
+            .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
+            .branch(teloxide::handler![State::ReceiveAge { full_name }].endpoint(receive_age))
+            .branch(
+                teloxide::handler![State::ReceiveLocation { full_name, age }]
+                    .endpoint(receive_location),
+            ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
@@ -60,13 +58,13 @@ async fn main() {
     .await;
 }
 
-async fn handle_start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn handle_receive_full_name(
+async fn receive_full_name(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
@@ -84,11 +82,11 @@ async fn handle_receive_full_name(
     Ok(())
 }
 
-async fn handle_receive_age(
+async fn receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,), // Available from `State::ReceiveAge`.
+    full_name: String, // Available from `State::ReceiveAge`.
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -103,7 +101,7 @@ async fn handle_receive_age(
     Ok(())
 }
 
-async fn handle_receive_location(
+async fn receive_location(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,

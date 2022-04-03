@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - The old dispatching system and related stuff: `dispatching`, `utils::UpState`, `prelude`, `repls2`, `crate::{dialogues_repl, dialogues_repl_with_listener}`, and `#[teloxide(subtransition)]` [**BC**].
 
+### Added
+
+ - The new API for dialogue handlers: `teloxide::handler!` ([issue 567](https://github.com/teloxide/teloxide/issues/567)).
+
 ### Changed
 
  - Rename `dispatching2` => `dispatching` [**BC**].

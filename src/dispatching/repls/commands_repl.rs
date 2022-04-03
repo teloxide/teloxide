@@ -19,6 +19,10 @@ use teloxide_core::requests::Requester;
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
 ///
+/// ## Dependency requirements
+///
+///  - Those of [`HandlerExt::filter_command`].
+///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[cfg(feature = "ctrlc_handler")]
@@ -49,6 +53,10 @@ where
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
+///
+/// ## Dependency requirements
+///
+///  - Those of [`HandlerExt::filter_command`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
