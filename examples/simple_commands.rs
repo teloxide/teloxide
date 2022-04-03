@@ -33,12 +33,12 @@ async fn answer(
             bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
         }
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
+            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
             bot.send_message(
                 message.chat.id,
-                format!("Your username is @{} and age is {}.", username, age),
+                format!("Your username is @{username} and age is {age}."),
             )
             .await?
         }

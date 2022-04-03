@@ -142,7 +142,7 @@ async fn simple_commands_handler(
             if msg.from().unwrap().id == cfg.bot_maintainer {
                 "Maintainer is you!".into()
             } else if let Some(username) = cfg.maintainer_username {
-                format!("Maintainer is @{}", username)
+                format!("Maintainer is @{username}")
             } else {
                 format!("Maintainer ID is {}", cfg.bot_maintainer)
             }
