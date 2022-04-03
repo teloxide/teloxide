@@ -37,18 +37,14 @@ where
     let request = client
         .post(crate::net::method_url(api_url, token, method_name))
         .multipart(params)
-        .build()
-        .map_err(RequestError::Network)?;
+        .build()?;
 
     // FIXME: uncomment this, when reqwest starts setting default timeout early
     // if let Some(timeout) = timeout_hint {
     //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
     // }
 
-    let response = client
-        .execute(request)
-        .await
-        .map_err(RequestError::Network)?;
+    let response = client.execute(request).await?;
 
     process_response(response).await
 }
@@ -81,18 +77,14 @@ where
         .post(crate::net::method_url(api_url, token, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
         .body(params)
-        .build()
-        .map_err(RequestError::Network)?;
+        .build()?;
 
     // FIXME: uncomment this, when reqwest starts setting default timeout early
     // if let Some(timeout) = timeout_hint {
     //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
     // }
 
-    let response = client
-        .execute(request)
-        .await
-        .map_err(RequestError::Network)?;
+    let response = client.execute(request).await?;
 
     process_response(response).await
 }
@@ -105,7 +97,7 @@ where
         tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
     }
 
-    let text = response.text().await.map_err(RequestError::Network)?;
+    let text = response.text().await?;
 
     serde_json::from_str::<TelegramResponse<T>>(&text)
         .map_err(|source| RequestError::InvalidJson {
