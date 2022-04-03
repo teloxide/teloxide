@@ -109,7 +109,7 @@ async fn callback_handler(
     bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
-        let text = format!("You chose: {}", version);
+        let text = format!("You chose: {version}");
 
         match q.message {
             Some(Message { id, chat, .. }) => {

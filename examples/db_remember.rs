@@ -71,7 +71,7 @@ async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> Handle
             dialogue.update(State::GotNumber(n)).await?;
             bot.send_message(
                 msg.chat.id,
-                format!("Remembered number {}. Now use /get or /reset.", n),
+                format!("Remembered number {n}. Now use /get or /reset."),
             )
             .await?;
         }
@@ -92,7 +92,7 @@ async fn got_number(
 ) -> HandlerResult {
     match cmd {
         Command::Get => {
-            bot.send_message(msg.chat.id, format!("Here is your number: {}.", num)).await?;
+            bot.send_message(msg.chat.id, format!("Here is your number: {num}.")).await?;
         }
         Command::Reset => {
             dialogue.reset().await?;

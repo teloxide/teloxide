@@ -160,12 +160,12 @@ async fn answer(
             bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
         }
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
+            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
             bot.send_message(
                 message.chat.id,
-                format!("Your username is @{} and age is {}.", username, age),
+                format!("Your username is @{username} and age is {age}."),
             )
             .await?
         }
@@ -265,7 +265,7 @@ async fn receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,), // Available from `State::ReceiveAge`.
+    full_name: String, // Available from `State::ReceiveAge`.
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -288,7 +288,7 @@ async fn receive_location(
 ) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
             bot.send_message(msg.chat.id, message).await?;
             dialogue.exit().await?;
         }
