@@ -51,3 +51,32 @@ impl Deref for Me {
         &self.user
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::types::{Me, User, UserId};
+
+    #[test]
+    fn convenience_methods_work() {
+        let me = Me {
+            user: User {
+                id: UserId(42),
+                is_bot: true,
+                first_name: "First".to_owned(),
+                last_name: None,
+                username: Some("SomethingSomethingBot".to_owned()),
+                language_code: None,
+            },
+            can_join_groups: false,
+            can_read_all_group_messages: false,
+            supports_inline_queries: false,
+        };
+
+        assert_eq!(me.username(), "SomethingSomethingBot");
+        assert_eq!(me.mention(), "@SomethingSomethingBot");
+        assert_eq!(
+            me.tme_url(),
+            "https://t.me/SomethingSomethingBot".parse().unwrap()
+        );
+    }
+}

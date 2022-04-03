@@ -70,4 +70,11 @@ mod tests {
         assert_eq!(serde_json::to_string(&user_id).unwrap(), json);
         assert_eq!(user_id, serde_json::from_str(json).unwrap());
     }
+
+    #[test]
+    fn url_works() {
+        let id = UserId(17);
+
+        assert_eq!(id.url(), "tg://user/?id=17".parse().unwrap());
+    }
 }

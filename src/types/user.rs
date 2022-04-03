@@ -141,4 +141,46 @@ mod tests {
         let actual = serde_json::from_str::<User>(json).unwrap();
         assert_eq!(actual, expected)
     }
+
+    #[test]
+    fn convenience_methods_work() {
+        let user_a = User {
+            id: UserId(43),
+            is_bot: false,
+            first_name: "First".to_owned(),
+            last_name: Some("Last".to_owned()),
+            username: Some("aaaaaaaaaaaaaaaa".to_owned()),
+            language_code: None,
+        };
+
+        let user_b = User {
+            id: UserId(44),
+            is_bot: false,
+            first_name: ".".to_owned(),
+            last_name: None,
+            username: None,
+            language_code: None,
+        };
+
+        assert_eq!(user_a.full_name(), "First Last");
+        assert_eq!(user_b.full_name(), ".");
+
+        assert_eq!(user_a.mention(), Some("@aaaaaaaaaaaaaaaa".to_owned()));
+        assert_eq!(user_b.mention(), None);
+
+        assert_eq!(
+            user_a.tme_url(),
+            Some("https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap())
+        );
+        assert_eq!(user_b.tme_url(), None);
+
+        assert_eq!(
+            user_a.preferably_tme_url(),
+            "https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap()
+        );
+        assert_eq!(
+            user_b.preferably_tme_url(),
+            "tg://user/?id=44".parse().unwrap()
+        );
+    }
 }
