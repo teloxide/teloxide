@@ -41,6 +41,7 @@ impl<'w> Download<'w> for Bot {
             &self.token,
             path,
         )
+        .map(|res| res.map_err(crate::errors::hide_token))
         .boxed()
     }
 }

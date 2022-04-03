@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.4.5 - 2022-04-03
+
+### Fixed
+
+- Hide bot token in errors ([#200][200])
+
+[200]: https://github.com/teloxide/teloxide-core/pull/200
+
 ## 0.4.4 - 2022-04-21
 
 ### Added
