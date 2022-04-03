@@ -1,6 +1,6 @@
 > [v0.5 -> v0.6 migration guide >>](MIGRATION_GUIDE.md#05---06)
 
-> `teloxide-core` versions less that `0.4.5` has a low-severity security vulnerability, [see more >>](./CHANGELOG.md#073---2022-04-03)
+> `teloxide-core` versions less that `0.4.5` (`teloxide` versions less than 0.7.3) have a low-severity security vulnerability, [learn more >>](https://github.com/teloxide/teloxide/discussions/574)
 
 <div align="center">
   <img src="ICON.png" width="250"/>
