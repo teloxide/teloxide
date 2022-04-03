@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.3 - 2022-04-03
+
+### Fixed
+
+- Update `teloxide-core` to version `0.4.5` to fix a security vulnerability. See more in `teloxide-core` [release notes](https://github.com/teloxide/teloxide-core/releases/tag/v0.4.5).
+
 ## 0.7.2 - 2022-03-23
 
 ### Added
