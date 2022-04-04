@@ -230,12 +230,13 @@ where
                     return;
                 }
 
-                let mut deps = self.dependencies.clone();
-                deps.insert(upd);
-                deps.insert(self.bot.clone());
-                deps.insert(
-                    self.cache_me_bot.get_me().send().await.expect("Failed to retrieve 'me'"),
-                );
+                let mut deps = DependencyMap::new();
+                deps.insert_container(self.dependencies.clone());
+                deps.insert_container(dptree::deps![
+                    upd,
+                    self.bot.clone(),
+                    self.cache_me_bot.get_me().send().await.expect("Failed to retrieve 'me'")
+                ]);
 
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
