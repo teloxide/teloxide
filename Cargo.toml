@@ -67,6 +67,7 @@ dptree = { version = "0.1.0" }
 
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.6"
+tokio-stream = "0.1.8"
 
 url = "2.2.2"
 log = "0.4"

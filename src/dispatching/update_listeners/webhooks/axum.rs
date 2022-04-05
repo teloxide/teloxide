@@ -154,10 +154,7 @@ pub fn axum_no_setup(
         dispatching::{stop_token::AsyncStopToken, update_listeners},
         types::Update,
     };
-    use axum::{
-        extract::Extension, http::StatusCode, response::IntoResponse, routing::post,
-        AddExtensionLayer,
-    };
+    use axum::{extract::Extension, http::StatusCode, response::IntoResponse, routing::post};
     use tokio::sync::mpsc;
     use tokio_stream::wrappers::UnboundedReceiverStream;
     use tower::ServiceBuilder;
@@ -207,8 +204,8 @@ pub fn axum_no_setup(
     let app = axum::Router::new().route(options.url.path(), post(telegram_request)).layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())
-            .layer(AddExtensionLayer::new(ClosableSender::new(tx)))
-            .layer(AddExtensionLayer::new(stop_flag.clone()))
+            .layer(Extension(ClosableSender::new(tx)))
+            .layer(Extension(stop_flag.clone()))
             .into_inner(),
     );
 
