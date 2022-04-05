@@ -1,5 +1,4 @@
 use crate::{
-    adaptors::CacheMe,
     dispatching::{
         stop_token::StopToken, update_listeners, update_listeners::UpdateListener, ShutdownToken,
     },
@@ -8,13 +7,11 @@ use crate::{
     types::{AllowedUpdate, Update},
     utils::shutdown_token::shutdown_check_timeout_for,
 };
+
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, StreamExt};
 use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
-use teloxide_core::{
-    requests::{Request, RequesterExt},
-    types::UpdateKind,
-};
+use teloxide_core::{requests::Request, types::UpdateKind};
 use tokio::time::timeout;
 
 use std::future::Future;
@@ -74,7 +71,6 @@ where
     pub fn build(self) -> Dispatcher<R, Err> {
         Dispatcher {
             bot: self.bot.clone(),
-            cache_me_bot: self.bot.cache_me(),
             dependencies: self.dependencies,
             handler: self.handler,
             default_handler: self.default_handler,
@@ -88,7 +84,6 @@ where
 /// The base for update dispatching.
 pub struct Dispatcher<R, Err> {
     bot: R,
-    cache_me_bot: CacheMe<R>,
     dependencies: DependencyMap,
 
     handler: UpdateHandler<Err>,
@@ -175,6 +170,11 @@ where
         Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
     {
+        // FIXME: there should be a way to check if dependency is already inserted
+        let me = self.bot.get_me().send().await.expect("Failed to retrieve 'me'");
+        self.dependencies.insert(me);
+        self.dependencies.insert(self.bot.clone());
+
         update_listener.hint_allowed_updates(&mut self.allowed_updates.clone().into_iter());
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
@@ -232,10 +232,6 @@ where
 
                 let mut deps = self.dependencies.clone();
                 deps.insert(upd);
-                deps.insert(self.bot.clone());
-                deps.insert(
-                    self.cache_me_bot.get_me().send().await.expect("Failed to retrieve 'me'"),
-                );
 
                 match self.handler.dispatch(deps).await {
                     ControlFlow::Break(Ok(())) => {}
