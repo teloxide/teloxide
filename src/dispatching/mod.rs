@@ -110,4 +110,5 @@ pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_ext::HandlerExt;
+#[allow(deprecated)]
 pub use handler_factory::HandlerFactory;
