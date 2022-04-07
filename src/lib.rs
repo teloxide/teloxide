@@ -21,6 +21,7 @@ use quote::{quote, ToTokens};
 use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
 
 #[proc_macro_derive(DialogueState, attributes(handler, handler_out, store))]
+#[deprecated(note = "Use teloxide::handler! instead")]
 pub fn derive_dialogue_state(item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemEnum);
     match dialogue_state::expand(input) {
