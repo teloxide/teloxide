@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `UpdateListener::StopToken` is now always `Send` [**BC**].
  - Rename `BotCommand` trait to `BotCommands` [**BC**].
  - `BotCommands::descriptions` now returns `CommandDescriptions` instead of `String` [**BC**].
+ - Mark `Dialogue::new` as `#[must_use]`.
 
 ## 0.7.2 - 2022-03-23
 
