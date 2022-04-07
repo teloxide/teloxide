@@ -1,18 +1,20 @@
 //! Receiving updates from Telegram.
 //!
 //! The key trait here is [`UpdateListener`]. You can get its implementation
-//! using one these functions:
+//! from:
 //!
-//! - [`polling_default`], which returns a default long polling listener.
-//! - [`polling`], which returns a long polling listener with your
+//! - [`polling_default`] function, which returns a default long polling
+//!   listener.
+//! - [`polling`] function, which returns a long polling listener with your
 //!   configuration.
+//! - Various functions in the [`webhooks`] module that return webhook listeners
 //!
 //! And then you can extract updates from it or pass them directly to a
 //! [`Dispatcher`].
 //!
 //! Telegram supports two ways of [getting updates]: [long polling] and
-//! [webhooks]. Currently, only the former one is implemented (see [`polling()`]
-//! and [`polling_default`]). See also [README FAQ about webhooks](https://github.com/teloxide/teloxide/blob/master/README.md#faq).
+//! [webhooks]. For the former see [`polling`] and [`polling_default`], for the
+//! latter see the [`webhooks`] module.
 //!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
@@ -22,6 +24,11 @@
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
 //! [long polling]: https://en.wikipedia.org/wiki/Push_technology#Long_polling
 //! [webhooks]: https://en.wikipedia.org/wiki/Webhook
+
+/// Implementations of webhook update listeners - an alternative (to
+/// [`fn@polling`]) way of receiving updates from telegram.
+#[cfg(any(feature = "webhooks-axum"))]
+pub mod webhooks;
 
 use futures::Stream;
 
