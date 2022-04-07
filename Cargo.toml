@@ -12,8 +12,7 @@ license = "MIT"
 exclude = ["media"]
 
 [features]
-# FIXME: remove "cache-me" that was added by mistake here
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send", "cache-me"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
