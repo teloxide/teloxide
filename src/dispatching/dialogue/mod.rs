@@ -124,6 +124,11 @@ where
         Self { storage, chat_id, _phantom: PhantomData }
     }
 
+    /// Returns a chat ID associated with this dialogue.
+    pub fn chat_id(&self) -> i64 {
+        self.chat_id
+    }
+
     /// Retrieves the current state of the dialogue or `None` if there is no
     /// dialogue.
     pub async fn get(&self) -> Result<Option<D>, S::Error> {

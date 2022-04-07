@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - The new API for dialogue handlers: `teloxide::handler!` ([issue 567](https://github.com/teloxide/teloxide/issues/567)).
-- Built-in webhooks support via `teloxide::dispatching::update_listeners::webhooks` module
+ - Built-in webhooks support via `teloxide::dispatching::update_listeners::webhooks` module.
+ - `Dialogue::chat_id` for retrieving a chat ID from a dialogue.
 
 ### Changed
 
