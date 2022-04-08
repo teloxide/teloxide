@@ -1,6 +1,6 @@
 [package]
 name = "teloxide-macros"
-version = "0.5.1"
+version = "0.6.0"
 description = "The teloxide's procedural macros"
 authors = ["p0lunin <dmytro.polunin@gmail.com>"]
 license = "MIT"
