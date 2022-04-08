@@ -200,7 +200,6 @@ where
                     if let Some(token) = stop_token.take() {
                         log::debug!("Start shutting down dispatching...");
                         token.stop();
-                        break;
                     }
                 }
             }
