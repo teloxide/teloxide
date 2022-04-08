@@ -16,4 +16,5 @@ pub enum AllowedUpdate {
     PollAnswer,
     MyChatMember,
     ChatMember,
+    ChatJoinRequest,
 }
