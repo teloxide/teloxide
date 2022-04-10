@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Retry requests that previously returned `RetryAfter(_)` error
 - `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
 
+### Fixed
+
+- Fix never ending loop that caused programs that used `Throttling` to never stop, see issue [#535][issue535]
+
+[issue535]: https://github.com/teloxide/teloxide/issues/535
+
 ### Added
 
 - `UserId::{url, is_anonymous, is_channel, is_telegram}` convenience functions ([#197][pr197]) 

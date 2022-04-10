@@ -365,9 +365,26 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
     while queue.len() < queue.capacity() {
         match rx.try_recv() {
             Ok(req) => queue.push(req),
-            Err(TryRecvError::Disconnected) => *rx_is_closed = true,
+            Err(TryRecvError::Disconnected) => {
+                *rx_is_closed = true;
+                break;
+            }
             // There are no items in queue.
             Err(TryRecvError::Empty) => break,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[tokio::test]
+    async fn issue_535() {
+        let (tx, mut rx) = tokio::sync::mpsc::channel(1);
+
+        // Close channel
+        drop(tx);
+
+        // Previously this caused an infinite loop
+        super::read_from_rx::<()>(&mut rx, &mut Vec::new(), &mut false).await;
     }
 }
