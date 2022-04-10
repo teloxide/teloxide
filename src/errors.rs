@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, time::Duration};
 
 use serde::Deserialize;
 use thiserror::Error;
@@ -19,8 +19,8 @@ pub enum RequestError {
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
-    #[error("Retry after {0} seconds")]
-    RetryAfter(u32),
+    #[error("Retry after {0:?}")]
+    RetryAfter(Duration),
 
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
@@ -62,7 +62,7 @@ pub enum DownloadError {
 pub trait AsResponseParameters {
     fn response_parameters(&self) -> Option<ResponseParameters>;
 
-    fn retry_after(&self) -> Option<u32> {
+    fn retry_after(&self) -> Option<Duration> {
         self.response_parameters().and_then(|rp| match rp {
             ResponseParameters::RetryAfter(n) => Some(n),
             _ => None,

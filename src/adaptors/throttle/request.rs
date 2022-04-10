@@ -1,9 +1,4 @@
-use std::{
-    future::Future,
-    pin::Pin,
-    sync::Arc,
-    time::{Duration, Instant},
-};
+use std::{future::Future, pin::Pin, sync::Arc, time::Instant};
 
 use futures::{
     future::BoxFuture,
@@ -188,7 +183,7 @@ where
 
         let retry_after = res.as_ref().err().and_then(<_>::retry_after);
         if let Some(retry_after) = retry_after {
-            let after = Duration::from_secs(retry_after.into());
+            let after = retry_after;
             let until = Instant::now() + after;
 
             // If we'll retry, we check that worker hasn't died at the start of the loop
@@ -196,7 +191,7 @@ where
             let _ = freeze.send(FreezeUntil { until, after, chat }).await;
 
             if retry {
-                log::warn!("Freezing, before retrying: {}", retry_after);
+                log::warn!("Freezing, before retrying: {:?}", retry_after);
                 tokio::time::sleep_until(until.into()).await;
             }
         }
