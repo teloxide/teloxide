@@ -154,7 +154,7 @@ where
         // The worker is unlikely to drop queue before sending all requests,
         // but just in case it has dropped the queue, we want to just send the
         // request.
-        if let Err(_) = worker.send((chat, lock)).await {
+        if worker.send((chat, lock)).await.is_err() {
             log::error!("Worker dropped the queue before sending all requests");
 
             let res = match &mut request {

@@ -79,9 +79,9 @@ pub trait AsResponseParameters {
 
 impl AsResponseParameters for crate::RequestError {
     fn response_parameters(&self) -> Option<ResponseParameters> {
-        match self {
-            &Self::RetryAfter(n) => Some(ResponseParameters::RetryAfter(n)),
-            &Self::MigrateToChatId(id) => Some(ResponseParameters::MigrateToChatId(id)),
+        match *self {
+            Self::RetryAfter(n) => Some(ResponseParameters::RetryAfter(n)),
+            Self::MigrateToChatId(id) => Some(ResponseParameters::MigrateToChatId(id)),
             _ => None,
         }
     }

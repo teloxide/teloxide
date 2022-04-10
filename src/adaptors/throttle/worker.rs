@@ -310,6 +310,11 @@ async fn freeze(
     while let Some(freeze_until) = imm.take().or_else(|| rx.try_recv().ok()) {
         let FreezeUntil { until, after, chat } = freeze_until;
 
+        // Clippy thinks that this `.as_deref_mut()` doesn't change the type (&mut
+        // HashMap -> &mut HashMap), but it's actually a reborrow (the lifetimes
+        // differ), since we are in a loop, simply using `slow_mode` would produce a
+        // moved-out error.
+        #[allow(clippy::needless_option_as_deref)]
         if let Some(slow_mode) = slow_mode.as_deref_mut() {
             // TODO: do something with channels?...
             if let hash @ ChatIdHash::Id(id) = chat {
