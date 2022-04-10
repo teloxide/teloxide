@@ -7,32 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-### Added
-
-- `errors` module and `errors::AsResponseParameters` trait
-- `EditedMessageIsTooLong` error [#109][pr109]
-- `UntilDate` enum and use it for `{Restricted, Banned}::until_date` ([#116][pr116])
-- `Limits::messages_per_min_channel` ([#121][pr121])
-
-[pr109]: https://github.com/teloxide/teloxide-core/pull/109
-[pr116]: https://github.com/teloxide/teloxide-core/pull/116
-[pr121]: https://github.com/teloxide/teloxide-core/pull/121
-
-### Changed
-
-- Improve `Throttling` adoptor
-  - Freeze when getting `RetryAfter(_)` error
-  - Retry requests that previously returned `RetryAfter(_)` error
-- `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
-
 ### Fixed
 
-- Fix never ending loop that caused programs that used `Throttling` to never stop, see issue [#535][issue535]
+- Fix never ending loop that caused programs that used `Throttling` to never stop, see issue [#535][issue535] ([#130][pr130])
 
 [issue535]: https://github.com/teloxide/teloxide/issues/535
+[pr130]: https://github.com/teloxide/teloxide-core/pull/130
 
 ### Added
 
+- `errors` module and `errors::AsResponseParameters` trait ([#130][pr130])
 - `UserId::{url, is_anonymous, is_channel, is_telegram}` convenience functions ([#197][pr197]) 
 - `User::{tme_url, preferably_tme_url}` convenience functions ([#197][pr197])
 - `Me::username` and `Deref<Target = User>` implementation for `Me` ([#197][pr197])
@@ -43,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` [**BC**]
+- Improve `Throttling` adoptor ([#130][pr130])
+  - Freeze when getting `RetryAfter(_)` error
+  - Retry requests that previously returned `RetryAfter(_)` error
+- `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
 
 ## 0.4.5 - 2022-04-03
 
