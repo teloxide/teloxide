@@ -21,7 +21,7 @@ const SECOND: Duration = Duration::from_secs(1);
 // want to change this.
 const DELAY: Duration = Duration::from_millis(250);
 
-/// Minimal time beetween calls to queue_full function
+/// Minimal time between calls to queue_full function
 const QUEUE_FULL_DELAY: Duration = Duration::from_secs(4);
 
 #[derive(Debug)]
@@ -126,12 +126,12 @@ pub(super) async fn worker<B>(
     while !rx_is_closed || !queue.is_empty() {
         // FIXME(waffle):
         // 1. If the `queue` is empty, `read_from_rx` call down below will 'block'
-        //    execution untill a request is sent. While the execution is 'blocked' no
+        //    execution until a request is sent. While the execution is 'blocked' no
         //    `InfoMessage`s could be answered.
         //
-        // 2. If limits are descreased, ideally we want to shrink queue.
+        // 2. If limits are decreased, ideally we want to shrink queue.
         //
-        // *blocked in asyncronous way
+        // *blocked in asynchronous way
         answer_info(&mut info_rx, &mut limits);
 
         loop {
@@ -192,7 +192,7 @@ pub(super) async fn worker<B>(
         let min_back = now - MINUTE;
         let sec_back = now - SECOND;
 
-        // make history and hchats up-to-date
+        // make history and requests_sent up-to-date
         while let Some((_, time)) = history.front() {
             // history is sorted, we found first up-to-date thing
             if time >= &min_back {
@@ -361,7 +361,7 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
         }
     }
 
-    // Don't grow queue bigger than the capacity to limit DOS posibility
+    // Don't grow queue bigger than the capacity to limit DOS possibility
     while queue.len() < queue.capacity() {
         match rx.try_recv() {
             Ok(req) => queue.push(req),

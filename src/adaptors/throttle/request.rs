@@ -145,8 +145,8 @@ where
 {
     // We use option in `ShareableRequest` to `take` when sending by value.
     //
-    // All unwraps down below will succed because we always return immediately after
-    // taking.
+    // All unwraps down below will succeed because we always return immediately
+    // after taking.
 
     loop {
         let (lock, wait) = channel();

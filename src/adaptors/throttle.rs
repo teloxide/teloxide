@@ -33,15 +33,17 @@ pub use settings::{Limits, Settings};
 ///
 /// Telegram has strict [limits], which, if exceeded will sooner or later cause
 /// `RequestError::RetryAfter(_)` errors. These errors can cause users of your
-/// bot to never receive responds from the bot or receive them in wrong order.
+/// bot to never receive responses from the bot or receive them in a wrong
+/// order.
 ///
 /// This bot wrapper automatically checks for limits, suspending requests until
 /// they could be sent without exceeding limits (request order in chats is not
 /// changed).
 ///
 /// It's recommended to use this wrapper before other wrappers (i.e.:
-/// `SomeWrapper<Throttle<Bot>>`) because if done otherwise inner wrappers may
-/// cause `Throttle` to miscalculate limits usage.
+/// `SomeWrapper<Throttle<Bot>>` not `Throttle<SomeWrapper<Bot>>`) because if
+/// done otherwise inner wrappers may cause `Throttle` to miscalculate limits
+/// usage.
 ///
 /// [limits]: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
 ///
@@ -209,6 +211,8 @@ impl From<&Recipient> for ChatIdHash {
         match value {
             Recipient::Id(id) => ChatIdHash::Id(*id),
             Recipient::ChannelUsername(username) => {
+                // FIXME: this could probably use a faster hasher, `DefaultHasher` is known to
+                //        be slow (it's not like we _need_ this to be fast, but still)
                 let mut hasher = std::collections::hash_map::DefaultHasher::new();
                 username.hash(&mut hasher);
                 let hash = hasher.finish();
