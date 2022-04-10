@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use crate::{
-    dispatching::{
-        dialogue::{Dialogue, GetChatId, Storage},
-        HandlerFactory,
-    },
+    dispatching::dialogue::{Dialogue, GetChatId, Storage},
     types::{Me, Message},
     utils::command::BotCommands,
 };
 use dptree::{di::DependencyMap, Handler};
+
+#[allow(deprecated)]
+use crate::dispatching::HandlerFactory;
 
 use std::fmt::Debug;
 
@@ -51,6 +51,8 @@ pub trait HandlerExt<Output> {
         Upd: GetChatId + Clone + Send + Sync + 'static;
 
     #[must_use]
+    #[deprecated(note = "Use the teloxide::handler! API")]
+    #[allow(deprecated)]
     fn dispatch_by<F>(self) -> Self
     where
         F: HandlerFactory<Out = Output>;
@@ -92,6 +94,7 @@ where
         }))
     }
 
+    #[allow(deprecated)]
     fn dispatch_by<F>(self) -> Self
     where
         F: HandlerFactory<Out = Output>,

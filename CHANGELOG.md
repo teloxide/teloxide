@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - `BotCommands::descriptions` now returns `CommandDescriptions` instead of `String` [**BC**].
  - Mark `Dialogue::new` as `#[must_use]`.
 
+### Deprecated
+
+ - `HandlerFactory` and `HandlerExt::dispatch_by` in favour of `teloxide::handler!`.
+
 ## 0.7.2 - 2022-03-23
 
 ### Added
