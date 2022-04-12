@@ -10,9 +10,15 @@ use crate::{
 
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, StreamExt};
-use std::{collections::HashSet, fmt::Debug, ops::ControlFlow, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Debug,
+    ops::{ControlFlow, Deref},
+    sync::Arc,
+};
 use teloxide_core::{requests::Request, types::UpdateKind};
 use tokio::time::timeout;
+use tokio_stream::wrappers::ReceiverStream;
 
 use std::future::Future;
 
@@ -20,8 +26,8 @@ use std::future::Future;
 pub struct DispatcherBuilder<R, Err> {
     bot: R,
     dependencies: DependencyMap,
-    handler: UpdateHandler<Err>,
-    default_handler: DefaultHandler,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: Arc<DefaultHandler>,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 }
 
@@ -42,10 +48,10 @@ where
         let handler = Arc::new(handler);
 
         Self {
-            default_handler: Box::new(move |upd| {
+            default_handler: Arc::new(Box::new(move |upd| {
                 let handler = Arc::clone(&handler);
                 Box::pin(handler(upd))
-            }),
+            })),
             ..self
         }
     }
@@ -72,28 +78,39 @@ where
         Dispatcher {
             bot: self.bot.clone(),
             dependencies: self.dependencies,
-            handler: self.handler,
-            default_handler: self.default_handler,
-            error_handler: self.error_handler,
+            handler: Arc::clone(&self.handler),
+            default_handler: Arc::clone(&self.default_handler),
+            error_handler: Arc::clone(&self.error_handler),
             allowed_updates: Default::default(),
             state: ShutdownToken::new(),
+            workers: HashMap::new(),
+            default_worker: None,
         }
     }
 }
 
 /// The base for update dispatching.
+///
+/// Updates from different chats are handles concurrently, whereas updates from
+/// the same chats are handled sequentially. If the dispatcher is unable to
+/// determine a chat ID of an incoming update, it will be handled concurrently.
 pub struct Dispatcher<R, Err> {
     bot: R,
     dependencies: DependencyMap,
 
-    handler: UpdateHandler<Err>,
-    default_handler: DefaultHandler,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: Arc<DefaultHandler>,
+    workers: HashMap<i64, WorkerTx>,
+    default_worker: Option<WorkerTx>,
+
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
     // TODO: respect allowed_udpates
     allowed_updates: HashSet<AllowedUpdate>,
 
     state: ShutdownToken,
 }
+
+type WorkerTx = tokio::sync::mpsc::Sender<Update>;
 
 // TODO: it is allowed to return message as response on telegram request in
 // webhooks, so we can allow this too. See more there: https://core.telegram.org/bots/api#making-requests-when-getting-updates
@@ -117,11 +134,11 @@ where
         DispatcherBuilder {
             bot,
             dependencies: DependencyMap::new(),
-            handler,
-            default_handler: Box::new(|upd| {
+            handler: Arc::new(handler),
+            default_handler: Arc::new(Box::new(|upd| {
                 log::warn!("Unhandled update: {:?}", upd);
                 Box::pin(async {})
-            }),
+            })),
             error_handler: LoggingErrorHandler::new(),
         }
     }
@@ -205,13 +222,13 @@ where
             }
         }
 
-        // TODO: wait for executing handlers?
-
+        self.workers.drain();
+        self.default_worker.take();
         self.state.done();
     }
 
     async fn process_update<LErr, LErrHandler>(
-        &self,
+        &mut self,
         update: Result<Update, LErr>,
         err_handler: &Arc<LErrHandler>,
     ) where
@@ -229,19 +246,21 @@ where
                     return;
                 }
 
-                let mut deps = self.dependencies.clone();
-                deps.insert(upd);
+                let deps = self.dependencies.clone();
+                let handler = Arc::clone(&self.handler);
+                let default_handler = Arc::clone(&self.default_handler);
+                let error_handler = Arc::clone(&self.error_handler);
 
-                match self.handler.dispatch(deps).await {
-                    ControlFlow::Break(Ok(())) => {}
-                    ControlFlow::Break(Err(err)) => {
-                        self.error_handler.clone().handle_error(err).await
-                    }
-                    ControlFlow::Continue(deps) => {
-                        let upd = deps.get();
-                        (self.default_handler)(upd).await;
-                    }
-                }
+                let tx = match upd.chat() {
+                    Some(chat) => self.workers.entry(chat.id).or_insert_with(|| {
+                        spawn_worker(deps, handler, default_handler, error_handler)
+                    }),
+                    None => self.default_worker.get_or_insert_with(|| {
+                        spawn_default_worker(deps, handler, default_handler, error_handler)
+                    }),
+                };
+
+                tx.send(upd).await.expect("TX is dead");
             }
             Err(err) => err_handler.clone().handle_error(err).await,
         }
@@ -277,6 +296,92 @@ where
     /// dispatching.
     pub fn shutdown_token(&self) -> ShutdownToken {
         self.state.clone()
+    }
+}
+
+const WORKER_QUEUE_SIZE: usize = 64;
+
+fn spawn_worker<Err>(
+    deps: DependencyMap,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: Arc<DefaultHandler>,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+) -> WorkerTx
+where
+    Err: Send + Sync + 'static,
+{
+    let (tx, rx) = tokio::sync::mpsc::channel(WORKER_QUEUE_SIZE);
+
+    let deps = Arc::new(deps);
+
+    tokio::spawn(async move {
+        ReceiverStream::new(rx)
+            .for_each_concurrent(None, |update| {
+                let deps = Arc::clone(&deps);
+                let handler = Arc::clone(&handler);
+                let default_handler = Arc::clone(&default_handler);
+                let error_handler = Arc::clone(&error_handler);
+
+                async move {
+                    handle_update(update, deps, handler, default_handler, error_handler).await;
+                }
+            })
+            .await;
+    });
+
+    tx
+}
+
+fn spawn_default_worker<Err>(
+    deps: DependencyMap,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: Arc<DefaultHandler>,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+) -> WorkerTx
+where
+    Err: Send + Sync + 'static,
+{
+    let (tx, rx) = tokio::sync::mpsc::channel(WORKER_QUEUE_SIZE);
+
+    let deps = Arc::new(deps);
+
+    tokio::spawn(async move {
+        ReceiverStream::new(rx)
+            .for_each(|update| {
+                let deps = Arc::clone(&deps);
+                let handler = Arc::clone(&handler);
+                let default_handler = Arc::clone(&default_handler);
+                let error_handler = Arc::clone(&error_handler);
+
+                async move {
+                    handle_update(update, deps, handler, default_handler, error_handler).await;
+                }
+            })
+            .await;
+    });
+
+    tx
+}
+
+async fn handle_update<Err>(
+    update: Update,
+    deps: Arc<DependencyMap>,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: Arc<DefaultHandler>,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+) where
+    Err: Send + Sync + 'static,
+{
+    let mut deps = deps.deref().clone();
+    deps.insert(update);
+
+    match handler.dispatch(deps).await {
+        ControlFlow::Break(Ok(())) => {}
+        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err).await,
+        ControlFlow::Continue(deps) => {
+            let update = deps.get();
+            (default_handler)(update).await;
+        }
     }
 }
 
