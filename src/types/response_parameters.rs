@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 
 /// Contains information about why a request was unsuccessful.
@@ -16,7 +18,7 @@ pub enum ResponseParameters {
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
-    RetryAfter(i32),
+    RetryAfter(#[serde(with = "crate::types::duration_secs")] Duration),
 }
 
 #[cfg(test)]
@@ -34,7 +36,7 @@ mod tests {
 
     #[test]
     fn retry_after_deserialization() {
-        let expected = ResponseParameters::RetryAfter(123_456);
+        let expected = ResponseParameters::RetryAfter(Duration::from_secs(123_456));
         let actual: ResponseParameters = serde_json::from_str(r#"{"retry_after":123456}"#).unwrap();
 
         assert_eq!(expected, actual);

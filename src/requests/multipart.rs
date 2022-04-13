@@ -11,6 +11,7 @@ use crate::{
 ///
 /// [multipart/form-data]: https://core.telegram.org/bots/api#making-requests
 #[must_use = "Requests are lazy and do nothing unless sent"]
+#[derive(Clone)]
 pub struct MultipartRequest<P> {
     bot: Bot,
     payload: P,

@@ -1,4 +1,6 @@
-use crate::{adaptors::DefaultParseMode, requests::Requester, types::ParseMode};
+use crate::{
+    adaptors::DefaultParseMode, errors::AsResponseParameters, requests::Requester, types::ParseMode,
+};
 
 #[cfg(feature = "cache_me")]
 use crate::adaptors::CacheMe;
@@ -60,7 +62,9 @@ pub trait RequesterExt: Requester {
     #[cfg(feature = "throttle")]
     fn throttle(self, limits: Limits) -> Throttle<Self>
     where
-        Self: Sized,
+        Self: Sized + Clone + Send + Sync + 'static,
+        Self::Err: AsResponseParameters,
+        Self::GetChat: Send,
     {
         Throttle::new_spawn(self, limits)
     }

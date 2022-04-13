@@ -1,20 +1,9 @@
-use std::io;
+use std::{io, time::Duration};
 
 use serde::Deserialize;
 use thiserror::Error;
 
-/// An error caused by downloading a file.
-#[derive(Debug, Error)]
-pub enum DownloadError {
-    /// A network error while downloading a file from Telegram.
-    #[error("A network error: {0}")]
-    // NOTE: this variant must not be created by anything except the From impl
-    Network(#[source] reqwest::Error),
-
-    /// An I/O error while writing a file to destination.
-    #[error("An I/O error: {0}")]
-    Io(#[from] std::io::Error),
-}
+use crate::types::ResponseParameters;
 
 /// An error caused by sending a request to Telegram.
 #[derive(Debug, Error)]
@@ -30,8 +19,8 @@ pub enum RequestError {
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
-    #[error("Retry after {0} seconds")]
-    RetryAfter(i32),
+    #[error("Retry after {0:?}")]
+    RetryAfter(Duration),
 
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
@@ -55,6 +44,47 @@ pub enum RequestError {
     /// Occurs when trying to send a file to Telegram.
     #[error("An I/O error: {0}")]
     Io(#[source] io::Error),
+}
+
+/// An error caused by downloading a file.
+#[derive(Debug, Error)]
+pub enum DownloadError {
+    /// A network error while downloading a file from Telegram.
+    #[error("A network error: {0}")]
+    // NOTE: this variant must not be created by anything except the From impl
+    Network(#[source] reqwest::Error),
+
+    /// An I/O error while writing a file to destination.
+    #[error("An I/O error: {0}")]
+    Io(#[from] std::io::Error),
+}
+
+pub trait AsResponseParameters {
+    fn response_parameters(&self) -> Option<ResponseParameters>;
+
+    fn retry_after(&self) -> Option<Duration> {
+        self.response_parameters().and_then(|rp| match rp {
+            ResponseParameters::RetryAfter(n) => Some(n),
+            _ => None,
+        })
+    }
+
+    fn migrate_to_chat_id(&self) -> Option<i64> {
+        self.response_parameters().and_then(|rp| match rp {
+            ResponseParameters::MigrateToChatId(id) => Some(id),
+            _ => None,
+        })
+    }
+}
+
+impl AsResponseParameters for crate::RequestError {
+    fn response_parameters(&self) -> Option<ResponseParameters> {
+        match *self {
+            Self::RetryAfter(n) => Some(ResponseParameters::RetryAfter(n)),
+            Self::MigrateToChatId(id) => Some(ResponseParameters::MigrateToChatId(id)),
+            _ => None,
+        }
+    }
 }
 
 /// A kind of an API error.
