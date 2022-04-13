@@ -14,8 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Me::username` and `Deref<Target = User>` implementation for `Me` ([#197][pr197])
 - `Me::{mention, tme_url}` ([#197][pr197])
 - `AllowedUpdate::ChatJoinRequest` ([#201][pr201])
-- `ChatId::{is_user, is_group, is_channel, to_bare}` functions and `BareChatId` type [#198][pr198]
-
+- `ChatId::{is_user, is_group, is_channel_or_supergroup}` functions [#198][pr198]
 
 [pr197]: https://github.com/teloxide/teloxide-core/pull/197
 [pr198]: https://github.com/teloxide/teloxide-core/pull/198

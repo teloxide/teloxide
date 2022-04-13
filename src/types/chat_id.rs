@@ -22,9 +22,10 @@ pub struct ChatId(pub i64);
 ///
 /// `BareChatId` can be created by [`ChatId::to_bare`].
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum BareChatId {
+pub(crate) enum BareChatId {
     User(UserId),
     Group(u64),
+    /// Note: supergroups are considered channels.
     Channel(u64),
 }
 
@@ -42,16 +43,14 @@ impl ChatId {
     }
 
     /// Returns `true` if this is an id of a channel.
-    ///
-    /// Note: supergroup is considered a channel.
-    pub fn is_channel(self) -> bool {
+    pub fn is_channel_or_supergroup(self) -> bool {
         matches!(self.to_bare(), BareChatId::Channel(_))
     }
 
     /// Converts this id to "bare" MTProto peer id.
     ///
     /// See [`BareChatId`] for more.
-    pub fn to_bare(self) -> BareChatId {
+    pub(crate) fn to_bare(self) -> BareChatId {
         use BareChatId::*;
 
         match self.0 {
@@ -73,7 +72,8 @@ impl From<UserId> for ChatId {
 
 impl BareChatId {
     /// Converts bare chat id back to normal bot API [`ChatId`].
-    pub fn to_bot_api(self) -> ChatId {
+    #[allow(unused)]
+    pub(crate) fn to_bot_api(self) -> ChatId {
         use BareChatId::*;
 
         match self {
@@ -146,7 +146,6 @@ mod tests {
             1666111087,
             1 << 20,
             (1 << 35) | 123456,
-            (1 << 40) - 1,
         ];
 
         // rust 2021 when :(

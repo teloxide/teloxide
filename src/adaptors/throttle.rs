@@ -645,7 +645,7 @@ enum ChatIdHash {
 impl ChatIdHash {
     fn is_channel(&self) -> bool {
         match self {
-            &Self::Id(id) => id.is_channel(),
+            &Self::Id(id) => id.is_channel_or_supergroup(),
             Self::ChannelUsernameHash(_) => true,
         }
     }
