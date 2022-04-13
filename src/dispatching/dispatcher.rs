@@ -1,10 +1,11 @@
 use crate::{
     dispatching::{
-        stop_token::StopToken, update_listeners, update_listeners::UpdateListener, ShutdownToken,
+        distribution::default_distribution_function, stop_token::StopToken, update_listeners,
+        update_listeners::UpdateListener, DefaultKey, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
-    requests::Requester,
-    types::{AllowedUpdate, Update},
+    requests::{Request, Requester},
+    types::{AllowedUpdate, Update, UpdateKind},
     utils::shutdown_token::shutdown_check_timeout_for,
 };
 
@@ -13,12 +14,9 @@ use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
 use std::{
     collections::{HashMap, HashSet},
     fmt::Debug,
+    hash::Hash,
     ops::{ControlFlow, Deref},
     sync::Arc,
-};
-use teloxide_core::{
-    requests::Request,
-    types::{ChatId, UpdateKind},
 };
 use tokio::time::timeout;
 use tokio_stream::wrappers::ReceiverStream;
@@ -26,16 +24,17 @@ use tokio_stream::wrappers::ReceiverStream;
 use std::future::Future;
 
 /// The builder for [`Dispatcher`].
-pub struct DispatcherBuilder<R, Err> {
+pub struct DispatcherBuilder<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    distribution_f: fn(&Update) -> Option<Key>,
     worker_queue_size: usize,
 }
 
-impl<R, Err> DispatcherBuilder<R, Err>
+impl<R, Err, Key> DispatcherBuilder<R, Err, Key>
 where
     R: Clone + Requester + Clone + Send + Sync + 'static,
     Err: Debug + Send + Sync + 'static,
@@ -84,18 +83,59 @@ where
         Self { worker_queue_size: size, ..self }
     }
 
+    /// Specifies the distribution function that decides how updates are grouped
+    /// before execution.
+    pub fn distribution_function<K>(
+        self,
+        f: fn(&Update) -> Option<K>,
+    ) -> DispatcherBuilder<R, Err, K>
+    where
+        K: Hash + Eq,
+    {
+        let Self {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f: _,
+            worker_queue_size,
+        } = self;
+
+        DispatcherBuilder {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f: f,
+            worker_queue_size,
+        }
+    }
+
     /// Constructs [`Dispatcher`].
     #[must_use]
-    pub fn build(self) -> Dispatcher<R, Err> {
+    pub fn build(self) -> Dispatcher<R, Err, Key> {
+        let Self {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f,
+            worker_queue_size,
+        } = self;
+
         Dispatcher {
-            bot: self.bot.clone(),
-            dependencies: self.dependencies,
-            handler: self.handler,
-            default_handler: self.default_handler,
-            error_handler: self.error_handler,
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
             allowed_updates: Default::default(),
             state: ShutdownToken::new(),
-            worker_queue_size: self.worker_queue_size,
+            distribution_f,
+            worker_queue_size,
             workers: HashMap::new(),
             default_worker: None,
         }
@@ -107,16 +147,20 @@ where
 /// Updates from different chats are handles concurrently, whereas updates from
 /// the same chats are handled sequentially. If the dispatcher is unable to
 /// determine a chat ID of an incoming update, it will be handled concurrently.
-pub struct Dispatcher<R, Err> {
+/// Note that this behaviour can be altered with [`distribution_function`].
+///
+/// [`distribution_function`]: DispatcherBuilder::distribution_function
+pub struct Dispatcher<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
 
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
 
+    distribution_f: fn(&Update) -> Option<Key>,
     worker_queue_size: usize,
     // Tokio TX channel parts associated with chat IDs that consume updates sequentially.
-    workers: HashMap<ChatId, Worker>,
+    workers: HashMap<Key, Worker>,
     // The default TX part that consume updates concurrently.
     default_worker: Option<Worker>,
 
@@ -140,14 +184,14 @@ pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(),
 
 type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
-impl<R, Err> Dispatcher<R, Err>
+impl<R, Err> Dispatcher<R, Err, DefaultKey>
 where
     R: Requester + Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
 {
     /// Constructs a new [`DispatcherBuilder`] with `bot` and `handler`.
     #[must_use]
-    pub fn builder(bot: R, handler: UpdateHandler<Err>) -> DispatcherBuilder<R, Err>
+    pub fn builder(bot: R, handler: UpdateHandler<Err>) -> DispatcherBuilder<R, Err, DefaultKey>
     where
         Err: Debug,
     {
@@ -163,9 +207,17 @@ where
             }),
             error_handler: LoggingErrorHandler::new(),
             worker_queue_size: DEFAULT_WORKER_QUEUE_SIZE,
+            distribution_f: default_distribution_function,
         }
     }
+}
 
+impl<R, Err, Key> Dispatcher<R, Err, Key>
+where
+    R: Requester + Clone + Send + Sync + 'static,
+    Err: Send + Sync + 'static,
+    Key: Hash + Eq,
+{
     /// Starts your bot with the default parameters.
     ///
     /// The default parameters are a long polling update listener and log all
@@ -277,8 +329,8 @@ where
                     return;
                 }
 
-                let worker = match upd.chat() {
-                    Some(chat) => self.workers.entry(chat.id).or_insert_with(|| {
+                let worker = match (self.distribution_f)(&upd) {
+                    Some(key) => self.workers.entry(key).or_insert_with(|| {
                         let deps = self.dependencies.clone();
                         let handler = Arc::clone(&self.handler);
                         let default_handler = Arc::clone(&self.default_handler);
@@ -434,7 +486,7 @@ mod tests {
         tokio::spawn(async {
             // Just check that this code compiles.
             if false {
-                Dispatcher::<_, Infallible>::builder(Bot::new(""), dptree::entry())
+                Dispatcher::<_, Infallible, _>::builder(Bot::new(""), dptree::entry())
                     .build()
                     .dispatch()
                     .await;
