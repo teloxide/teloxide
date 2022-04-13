@@ -228,9 +228,10 @@ where
             }
         }
 
-        self.workers.drain()
+        self.workers
+            .drain()
             .map(|(_chat_id, worker)| worker.handle)
-            .chain(self.default_worker.take().map(|worker| worker.handle))        
+            .chain(self.default_worker.take().map(|worker| worker.handle))
             .collect::<FuturesUnordered<_>>()
             .for_each(|()| ())
             .await;
