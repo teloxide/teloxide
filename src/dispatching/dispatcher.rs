@@ -100,7 +100,10 @@ pub struct Dispatcher<R, Err> {
 
     handler: Arc<UpdateHandler<Err>>,
     default_handler: Arc<DefaultHandler>,
+
+    // Tokio TX channel parts associated with chat IDs that consume updates sequentially.
     workers: HashMap<i64, WorkerTx>,
+    // The default TX part that consume updates concurrently.
     default_worker: Option<WorkerTx>,
 
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
