@@ -98,6 +98,7 @@
 #[cfg(all(feature = "ctrlc_handler"))]
 pub mod repls;
 
+mod allowed_updates;
 pub mod dialogue;
 mod dispatcher;
 mod distribution;
@@ -108,6 +109,7 @@ pub mod stop_token;
 pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
+pub use allowed_updates::AllowedUpdates;
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};

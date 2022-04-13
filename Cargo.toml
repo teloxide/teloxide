@@ -62,7 +62,8 @@ teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros.git", rev
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = { version = "0.1.0" }
+#dptree = { version = "0.1.0" }
+dptree = { git = "https://github.com/WaffleLapkin/dptree", rev = "192f3fe" }
 
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.6"

@@ -1,18 +1,18 @@
 use crate::{
     dispatching::{
         distribution::default_distribution_function, stop_token::StopToken, update_listeners,
-        update_listeners::UpdateListener, DefaultKey, ShutdownToken,
+        update_listeners::UpdateListener, AllowedUpdates, DefaultKey, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::{Request, Requester},
-    types::{AllowedUpdate, Update, UpdateKind},
+    types::{Update, UpdateKind},
     utils::shutdown_token::shutdown_check_timeout_for,
 };
 
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     fmt::Debug,
     hash::Hash,
     ops::{ControlFlow, Deref},
@@ -132,7 +132,6 @@ where
             handler,
             default_handler,
             error_handler,
-            allowed_updates: Default::default(),
             state: ShutdownToken::new(),
             distribution_f,
             worker_queue_size,
@@ -165,8 +164,6 @@ pub struct Dispatcher<R, Err, Key> {
     default_worker: Option<Worker>,
 
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
-    // TODO: respect allowed_udpates
-    allowed_updates: HashSet<AllowedUpdate>,
 
     state: ShutdownToken,
 }
@@ -180,7 +177,8 @@ struct Worker {
 // webhooks, so we can allow this too. See more there: https://core.telegram.org/bots/api#making-requests-when-getting-updates
 
 /// A handler that processes updates from Telegram.
-pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
+pub type UpdateHandler<Err> =
+    dptree::Handler<'static, DependencyMap, Result<(), Err>, AllowedUpdates>;
 
 type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
@@ -267,7 +265,9 @@ where
         self.dependencies.insert(me);
         self.dependencies.insert(self.bot.clone());
 
-        update_listener.hint_allowed_updates(&mut self.allowed_updates.clone().into_iter());
+        update_listener.hint_allowed_updates(
+            &mut self.handler.required_update_kinds_set().get_param().into_iter(),
+        );
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());

@@ -1,10 +1,14 @@
 #![allow(clippy::redundant_closure_call)]
 
 use dptree::{di::DependencyMap, Handler};
-use teloxide_core::types::{Message, Update, UpdateKind};
+
+use crate::{
+    dispatching::AllowedUpdates,
+    types::{AllowedUpdate, Message, Update, UpdateKind},
+};
 
 macro_rules! define_ext {
-    ($ext_name:ident, $for_ty:ty => $( ($func:ident, $proj_fn:expr, $fn_doc:expr) ,)*) => {
+    ($ext_name:ident, $for_ty:ty => $( ($func:ident, $proj_fn:expr, $fn_doc:expr $(, $Allowed:ident)? ) ,)*) => {
         #[doc = concat!("Filter methods for [`", stringify!($for_ty), "`].")]
         pub trait $ext_name<Out>: private::Sealed {
             $( define_ext!(@sig $func, $fn_doc); )*
@@ -14,17 +18,25 @@ macro_rules! define_ext {
         where
             Out: Send + Sync + 'static,
         {
-            $( define_ext!(@impl $for_ty, $func, $proj_fn); )*
+            $( define_ext!(@impl $for_ty, $func, $proj_fn $(, $Allowed )? ); )*
         }
     };
 
     (@sig $func:ident, $fn_doc:expr) => {
         #[doc = $fn_doc]
-        fn $func() -> Handler<'static, DependencyMap, Out>;
+        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates>;
+    };
+
+    (@impl $for_ty:ty, $func:ident, $proj_fn:expr, $Allowed:ident) => {
+        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates> {
+            dptree::filter_map_with_requirements(AllowedUpdates::of(AllowedUpdate::$Allowed), move |input: $for_ty| {
+                $proj_fn(input)
+            })
+        }
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr) => {
-        fn $func() -> Handler<'static, DependencyMap, Out> {
+        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates> {
             dptree::filter_map(move |input: $for_ty| {
                 $proj_fn(input)
             })
@@ -75,7 +87,7 @@ define_message_ext! {
 }
 
 macro_rules! define_update_ext {
-    ($( ($func:ident, $kind:path) ,)*) => {
+    ($( ($func:ident, $kind:path, $Allowed:ident) ,)*) => {
         define_ext! {
             UpdateFilterExt, crate::types::Update =>
             $((
@@ -84,7 +96,8 @@ macro_rules! define_update_ext {
                     $kind(x) => Some(x),
                     _ => None,
                 },
-                concat!("Filters out [`crate::types::", stringify!($kind), "`] objects.")
+                concat!("Filters out [`crate::types::", stringify!($kind), "`] objects."),
+                $Allowed
             ),)*
         }
     }
@@ -92,17 +105,17 @@ macro_rules! define_update_ext {
 
 // May be expanded in the future.
 define_update_ext! {
-    (filter_message, UpdateKind::Message),
-    (filter_edited_message, UpdateKind::EditedMessage),
-    (filter_channel_post, UpdateKind::ChannelPost),
-    (filter_edited_channel_post, UpdateKind::EditedChannelPost),
-    (filter_inline_query, UpdateKind::InlineQuery),
-    (filter_chosen_inline_result, UpdateKind::ChosenInlineResult),
-    (filter_callback_query, UpdateKind::CallbackQuery),
-    (filter_shipping_query, UpdateKind::ShippingQuery),
-    (filter_pre_checkout_query, UpdateKind::PreCheckoutQuery),
-    (filter_poll, UpdateKind::Poll),
-    (filter_poll_answer, UpdateKind::PollAnswer),
-    (filter_my_chat_member, UpdateKind::MyChatMember),
-    (filter_chat_member, UpdateKind::ChatMember),
+    (filter_message, UpdateKind::Message, Message),
+    (filter_edited_message, UpdateKind::EditedMessage, EditedMessage),
+    (filter_channel_post, UpdateKind::ChannelPost, ChannelPost),
+    (filter_edited_channel_post, UpdateKind::EditedChannelPost, EditedChannelPost),
+    (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),
+    (filter_chosen_inline_result, UpdateKind::ChosenInlineResult, ChosenInlineResult),
+    (filter_callback_query, UpdateKind::CallbackQuery, CallbackQuery),
+    (filter_shipping_query, UpdateKind::ShippingQuery, ShippingQuery),
+    (filter_pre_checkout_query, UpdateKind::PreCheckoutQuery, PreCheckoutQuery),
+    (filter_poll, UpdateKind::Poll, Poll),
+    (filter_poll_answer, UpdateKind::PollAnswer, PollAnswer),
+    (filter_my_chat_member, UpdateKind::MyChatMember, MyChatMember),
+    (filter_chat_member, UpdateKind::ChatMember, ChatMember),
 }

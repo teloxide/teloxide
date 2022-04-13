@@ -59,7 +59,7 @@ where
     // messages. See <https://github.com/teloxide/teloxide/issues/557>.
     let ignore_update = |_upd| Box::pin(async {});
 
-    Dispatcher::builder(bot, Update::filter_message().branch(dptree::endpoint(handler)))
+    Dispatcher::builder(bot, Update::filter_message().chain(dptree::endpoint(handler)))
         .default_handler(ignore_update)
         .build()
         .setup_ctrlc_handler()
