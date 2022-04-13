@@ -93,6 +93,8 @@ pub fn user_mention_or_link(user: &User) -> String {
 
 #[cfg(test)]
 mod tests {
+    use teloxide_core::types::UserId;
+
     use super::*;
 
     #[test]
@@ -183,7 +185,7 @@ mod tests {
     #[test]
     fn user_mention_link() {
         let user_with_username = User {
-            id: 0,
+            id: UserId(0),
             is_bot: false,
             first_name: "".to_string(),
             last_name: None,
@@ -192,7 +194,7 @@ mod tests {
         };
         assert_eq!(user_mention_or_link(&user_with_username), "@abcd");
         let user_without_username = User {
-            id: 123_456_789,
+            id: UserId(123_456_789),
             is_bot: false,
             first_name: "Name".to_string(),
             last_name: None,

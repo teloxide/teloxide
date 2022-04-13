@@ -5,7 +5,7 @@ use rand::Rng;
 
 use teloxide::{
     prelude::*,
-    types::{Dice, Update},
+    types::{Dice, Update, UserId},
     utils::command::BotCommands,
 };
 
@@ -17,7 +17,7 @@ async fn main() {
     let bot = Bot::from_env().auto_send();
 
     let parameters = ConfigParameters {
-        bot_maintainer: 268486177, // Paste your ID to run this bot.
+        bot_maintainer: UserId(0), // Paste your ID to run this bot.
         maintainer_username: None,
     };
 
@@ -95,7 +95,7 @@ async fn main() {
 
 #[derive(Clone)]
 struct ConfigParameters {
-    bot_maintainer: i64,
+    bot_maintainer: UserId,
     maintainer_username: Option<String>,
 }
 

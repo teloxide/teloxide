@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+ - Updated `teloxide-core` from version `0.4.5` to version [`0.5.0`](https://github.com/teloxide/teloxide-core/releases/tag/v0.5.0) [**BC**]
  - Rename `dispatching2` => `dispatching` [**BC**].
  - Rename `prelude2` => `prelude` [**BC**].
  - Move `update_listeners`, `stop_token`, `IdleShutdownError`, and `ShutdownToken` from the old `dispatching` to the new `dispatching` (previously `dispatching2`).

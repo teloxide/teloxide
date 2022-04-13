@@ -16,7 +16,10 @@ use std::{
     ops::{ControlFlow, Deref},
     sync::Arc,
 };
-use teloxide_core::{requests::Request, types::UpdateKind};
+use teloxide_core::{
+    requests::Request,
+    types::{ChatId, UpdateKind},
+};
 use tokio::time::timeout;
 use tokio_stream::wrappers::ReceiverStream;
 
@@ -102,7 +105,7 @@ pub struct Dispatcher<R, Err> {
     default_handler: DefaultHandler,
 
     // Tokio TX channel parts associated with chat IDs that consume updates sequentially.
-    workers: HashMap<i64, Worker>,
+    workers: HashMap<ChatId, Worker>,
     // The default TX part that consume updates concurrently.
     default_worker: Option<Worker>,
 

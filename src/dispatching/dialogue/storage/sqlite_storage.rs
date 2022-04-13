@@ -8,6 +8,7 @@ use std::{
     str,
     sync::Arc,
 };
+use teloxide_core::types::ChatId;
 use thiserror::Error;
 
 /// A persistent dialogue storage based on [SQLite](https://www.sqlite.org/).
@@ -66,7 +67,7 @@ where
     /// Returns [`sqlx::Error::RowNotFound`] if a dialogue does not exist.
     fn remove_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        ChatId(chat_id): ChatId,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let deleted_rows_count =
@@ -86,7 +87,7 @@ where
 
     fn update_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        ChatId(chat_id): ChatId,
         dialogue: D,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
@@ -112,7 +113,7 @@ where
 
     fn get_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
             get_dialogue(&self.pool, chat_id)
@@ -123,7 +124,10 @@ where
     }
 }
 
-async fn get_dialogue(pool: &SqlitePool, chat_id: i64) -> Result<Option<Vec<u8>>, sqlx::Error> {
+async fn get_dialogue(
+    pool: &SqlitePool,
+    ChatId(chat_id): ChatId,
+) -> Result<Option<Vec<u8>>, sqlx::Error> {
     #[derive(sqlx::FromRow)]
     struct DialogueDbRow {
         dialogue: Vec<u8>,

@@ -85,6 +85,7 @@ pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
 pub use get_chat_id::GetChatId;
 pub use storage::*;
+use teloxide_core::types::ChatId;
 
 use std::{marker::PhantomData, sync::Arc};
 
@@ -98,7 +99,7 @@ where
     S: ?Sized,
 {
     storage: Arc<S>,
-    chat_id: i64,
+    chat_id: ChatId,
     _phantom: PhantomData<D>,
 }
 
@@ -121,13 +122,13 @@ where
     /// Constructs a new dialogue with `storage` (where dialogues are stored)
     /// and `chat_id` of a current dialogue.
     #[must_use]
-    pub fn new(storage: Arc<S>, chat_id: i64) -> Self {
+    pub fn new(storage: Arc<S>, chat_id: ChatId) -> Self {
         Self { storage, chat_id, _phantom: PhantomData }
     }
 
     /// Returns a chat ID associated with this dialogue.
     #[must_use]
-    pub fn chat_id(&self) -> i64 {
+    pub fn chat_id(&self) -> ChatId {
         self.chat_id
     }
 

@@ -1,6 +1,7 @@
 use super::Storage;
 use futures::future::BoxFuture;
 use std::{collections::HashMap, sync::Arc};
+use teloxide_core::types::ChatId;
 use thiserror::Error;
 use tokio::sync::Mutex;
 
@@ -20,7 +21,7 @@ pub enum InMemStorageError {
 /// [`super::SqliteStorage`] or implement your own.
 #[derive(Debug)]
 pub struct InMemStorage<D> {
-    map: Mutex<HashMap<i64, D>>,
+    map: Mutex<HashMap<ChatId, D>>,
 }
 
 impl<S> InMemStorage<S> {
@@ -37,7 +38,10 @@ where
 {
     type Error = InMemStorageError;
 
-    fn remove_dialogue(self: Arc<Self>, chat_id: i64) -> BoxFuture<'static, Result<(), Self::Error>>
+    fn remove_dialogue(
+        self: Arc<Self>,
+        chat_id: ChatId,
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
@@ -52,7 +56,7 @@ where
 
     fn update_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
         dialogue: D,
     ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
@@ -66,7 +70,7 @@ where
 
     fn get_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move { Ok(self.map.lock().await.get(&chat_id).map(ToOwned::to_owned)) })
     }

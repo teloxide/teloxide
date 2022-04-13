@@ -10,6 +10,7 @@ mod redis_storage;
 mod sqlite_storage;
 
 use futures::future::BoxFuture;
+use teloxide_core::types::ChatId;
 
 pub use self::{
     in_mem_storage::{InMemStorage, InMemStorageError},
@@ -55,7 +56,7 @@ pub trait Storage<D> {
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn remove_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
     ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static;
@@ -64,7 +65,7 @@ pub trait Storage<D> {
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn update_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
         dialogue: D,
     ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
@@ -74,7 +75,7 @@ pub trait Storage<D> {
     #[must_use = "Futures are lazy and do nothing unless polled with .await"]
     fn get_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>;
 
     /// Erases [`Self::Error`] to [`std::error::Error`].
@@ -97,7 +98,10 @@ where
 {
     type Error = Box<dyn std::error::Error + Send + Sync>;
 
-    fn remove_dialogue(self: Arc<Self>, chat_id: i64) -> BoxFuture<'static, Result<(), Self::Error>>
+    fn remove_dialogue(
+        self: Arc<Self>,
+        chat_id: ChatId,
+    ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
         D: Send + 'static,
     {
@@ -108,7 +112,7 @@ where
 
     fn update_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
         dialogue: D,
     ) -> BoxFuture<'static, Result<(), Self::Error>>
     where
@@ -121,7 +125,7 @@ where
 
     fn get_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(
             async move { Arc::clone(&self.0).get_dialogue(chat_id).await.map_err(|e| e.into()) },
@@ -135,7 +139,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_erased() {
-        let chat_id = 123;
+        let chat_id = ChatId(123);
 
         let erased = InMemStorage::new().erase();
         Arc::clone(&erased).update_dialogue(chat_id, 1).await.unwrap();
