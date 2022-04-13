@@ -8,6 +8,7 @@ use std::{
     ops::DerefMut,
     sync::Arc,
 };
+use teloxide_core::types::ChatId;
 use thiserror::Error;
 use tokio::sync::Mutex;
 
@@ -56,7 +57,7 @@ where
 
     fn remove_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        ChatId(chat_id): ChatId,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
             let deleted_rows_count = redis::pipe()
@@ -82,7 +83,7 @@ where
 
     fn update_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        ChatId(chat_id): ChatId,
         dialogue: D,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
@@ -95,7 +96,7 @@ where
 
     fn get_dialogue(
         self: Arc<Self>,
-        chat_id: i64,
+        ChatId(chat_id): ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move {
             self.conn
