@@ -78,9 +78,9 @@ where
         Dispatcher {
             bot: self.bot.clone(),
             dependencies: self.dependencies,
-            handler: Arc::clone(&self.handler),
-            default_handler: Arc::clone(&self.default_handler),
-            error_handler: Arc::clone(&self.error_handler),
+            handler: self.handler,
+            default_handler: self.default_handler,
+            error_handler: self.error_handler,
             allowed_updates: Default::default(),
             state: ShutdownToken::new(),
             workers: HashMap::new(),
