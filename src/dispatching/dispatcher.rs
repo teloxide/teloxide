@@ -27,7 +27,7 @@ pub struct DispatcherBuilder<R, Err> {
     bot: R,
     dependencies: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
-    default_handler: Arc<DefaultHandler>,
+    default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 }
 
@@ -48,10 +48,10 @@ where
         let handler = Arc::new(handler);
 
         Self {
-            default_handler: Arc::new(Box::new(move |upd| {
+            default_handler: Arc::new(move |upd| {
                 let handler = Arc::clone(&handler);
                 Box::pin(handler(upd))
-            })),
+            }),
             ..self
         }
     }
@@ -99,7 +99,7 @@ pub struct Dispatcher<R, Err> {
     dependencies: DependencyMap,
 
     handler: Arc<UpdateHandler<Err>>,
-    default_handler: Arc<DefaultHandler>,
+    default_handler: DefaultHandler,
 
     // Tokio TX channel parts associated with chat IDs that consume updates sequentially.
     workers: HashMap<i64, WorkerTx>,
@@ -121,7 +121,7 @@ type WorkerTx = tokio::sync::mpsc::Sender<Update>;
 /// A handler that processes updates from Telegram.
 pub type UpdateHandler<Err> = dptree::Handler<'static, DependencyMap, Result<(), Err>>;
 
-type DefaultHandler = Box<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
+type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
 impl<R, Err> Dispatcher<R, Err>
 where
@@ -138,10 +138,10 @@ where
             bot,
             dependencies: DependencyMap::new(),
             handler: Arc::new(handler),
-            default_handler: Arc::new(Box::new(|upd| {
+            default_handler: Arc::new(|upd| {
                 log::warn!("Unhandled update: {:?}", upd);
                 Box::pin(async {})
-            })),
+            }),
             error_handler: LoggingErrorHandler::new(),
         }
     }
@@ -307,7 +307,7 @@ const WORKER_QUEUE_SIZE: usize = 64;
 fn spawn_worker<Err>(
     deps: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
-    default_handler: Arc<DefaultHandler>,
+    default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 ) -> WorkerTx
 where
@@ -338,7 +338,7 @@ where
 fn spawn_default_worker<Err>(
     deps: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
-    default_handler: Arc<DefaultHandler>,
+    default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 ) -> WorkerTx
 where
@@ -370,7 +370,7 @@ async fn handle_update<Err>(
     update: Update,
     deps: Arc<DependencyMap>,
     handler: Arc<UpdateHandler<Err>>,
-    default_handler: Arc<DefaultHandler>,
+    default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 ) where
     Err: Send + Sync + 'static,
