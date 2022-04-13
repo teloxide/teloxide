@@ -4,10 +4,11 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    Animation, Audio, Chat, ChatId, Contact, Dice, Document, Game, InlineKeyboardMarkup, Invoice,
-    Location, MessageAutoDeleteTimerChanged, MessageEntity, PassportData, PhotoSize, Poll,
-    ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video, VideoNote,
-    Voice, VoiceChatEnded, VoiceChatParticipantsInvited, VoiceChatScheduled, VoiceChatStarted,
+    Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
+    InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
+    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User,
+    Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
+    VoiceChatScheduled, VoiceChatStarted,
 };
 
 /// This object represents a message.
@@ -1050,30 +1051,35 @@ impl Message {
     /// Note that for private groups the link will only be accessible for group
     /// members.
     ///
-    /// Returns `None` for private chats (i.e.: DMs).
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
     pub fn url(&self) -> Option<reqwest::Url> {
-        if self.chat.is_private() {
+        use BareChatId::*;
+
+        // Note: `t.me` links use bare chat ids
+        let chat_id = match self.chat.id.to_bare() {
             // For private chats (i.e.: DMs) we can't produce "normal" t.me link.
             //
             // There are "tg://openmessage?user_id={0}&message_id={1}" links, which are
             // supposed to open any chat, including private messages, but they
             // are only supported by some telegram clients (e.g. Plus Messenger,
             // Telegram for Android 4.9+).
-            return None;
-        }
+            User(_) => return None,
+            // Similarly to user chats, there is no way to create a link to a message in a normal,
+            // private group.
+            //
+            // (public groups are always supergroup which are in turn channels).
+            Group(_) => return None,
+            Channel(id) => id,
+        };
 
         let url = match self.chat.username() {
             // If it's public group (i.e. not DM, not private group), we can produce
             // "normal" t.me link (accessible to everyone).
             Some(username) => format!("https://t.me/{0}/{1}/", username, self.id),
-            // For private groups we produce "private" t.me/c links. These are only
-            // accessible to the group members.
-            None => format!(
-                "https://t.me/c/{0}/{1}/",
-                // FIXME: this may be wrong for private channels
-                (-self.chat.id.0) - 1000000000000,
-                self.id
-            ),
+            // For private supergroups and channels we produce "private" t.me/c links. These are
+            // only accessible to the group members.
+            None => format!("https://t.me/c/{0}/{1}/", chat_id, self.id),
         };
 
         // UNWRAP:

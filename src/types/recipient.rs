@@ -19,16 +19,6 @@ pub enum Recipient {
     ChannelUsername(String),
 }
 
-impl Recipient {
-    #[allow(unused)]
-    pub(crate) fn is_channel(&self) -> bool {
-        match self {
-            Recipient::Id(id) => id.is_channel(),
-            Recipient::ChannelUsername(_) => true,
-        }
-    }
-}
-
 impl From<UserId> for Recipient {
     fn from(id: UserId) -> Self {
         Self::Id(id.into())

@@ -12,27 +12,46 @@ use crate::types::UserId;
 #[serde(transparent)]
 pub struct ChatId(pub i64);
 
-impl From<UserId> for ChatId {
-    fn from(UserId(id): UserId) -> Self {
-        Self(id as _)
-    }
+/// Bare chat id as represented in MTProto API.
+///
+/// In MTProto API peer ids can have different types, for example `User(1)` and
+/// `Group(1)` are different chats. For bot API these peer ids are encoded in
+/// such a way that they can be stored in a simple integer (ie bot API chat ids
+/// have the type encoded in them). This type exposes the "bare" "peer id" of a
+/// chat.
+///
+/// `BareChatId` can be created by [`ChatId::to_bare`].
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(crate) enum BareChatId {
+    User(UserId),
+    Group(u64),
+    /// Note: supergroups are considered channels.
+    Channel(u64),
 }
 
 impl ChatId {
-    pub(crate) fn is_channel(self) -> bool {
-        matches!(self.unmark(), UnmarkedChatId::Channel(_))
+    /// Returns `true` if this is an id of a user.
+    pub fn is_user(self) -> bool {
+        matches!(self.to_bare(), BareChatId::User(_))
     }
 
-    pub(crate) fn unmark(self) -> UnmarkedChatId {
-        use UnmarkedChatId::*;
+    /// Returns `true` if this is an id of a group.
+    ///
+    /// Note: supergroup is **not** considered a group.
+    pub fn is_group(self) -> bool {
+        matches!(self.to_bare(), BareChatId::Group(_))
+    }
 
-        // https://github.com/mtcute/mtcute/blob/6933ecc3f82dd2e9100f52b0afec128af564713b/packages/core/src/utils/peer-utils.ts#L4
-        const MIN_MARKED_CHANNEL_ID: i64 = -1997852516352;
-        const MAX_MARKED_CHANNEL_ID: i64 = -1000000000000;
-        const MIN_MARKED_CHAT_ID: i64 = MAX_MARKED_CHANNEL_ID + 1;
-        const MAX_MARKED_CHAT_ID: i64 = MIN_USER_ID - 1;
-        const MIN_USER_ID: i64 = 0;
-        const MAX_USER_ID: i64 = (1 << 40) - 1;
+    /// Returns `true` if this is an id of a channel.
+    pub fn is_channel_or_supergroup(self) -> bool {
+        matches!(self.to_bare(), BareChatId::Channel(_))
+    }
+
+    /// Converts this id to "bare" MTProto peer id.
+    ///
+    /// See [`BareChatId`] for more.
+    pub(crate) fn to_bare(self) -> BareChatId {
+        use BareChatId::*;
 
         match self.0 {
             id @ MIN_MARKED_CHAT_ID..=MAX_MARKED_CHAT_ID => Group(-id as _),
@@ -45,17 +64,39 @@ impl ChatId {
     }
 }
 
-pub(crate) enum UnmarkedChatId {
-    User(UserId),
-    Group(u64),
-    Channel(u64),
+impl From<UserId> for ChatId {
+    fn from(UserId(id): UserId) -> Self {
+        Self(id as _)
+    }
 }
+
+impl BareChatId {
+    /// Converts bare chat id back to normal bot API [`ChatId`].
+    #[allow(unused)]
+    pub(crate) fn to_bot_api(self) -> ChatId {
+        use BareChatId::*;
+
+        match self {
+            User(UserId(id)) => ChatId(id as _),
+            Group(id) => ChatId(-(id as i64)),
+            Channel(id) => ChatId(MAX_MARKED_CHANNEL_ID - (id as i64)),
+        }
+    }
+}
+
+// https://github.com/mtcute/mtcute/blob/6933ecc3f82dd2e9100f52b0afec128af564713b/packages/core/src/utils/peer-utils.ts#L4
+const MIN_MARKED_CHANNEL_ID: i64 = -1997852516352;
+const MAX_MARKED_CHANNEL_ID: i64 = -1000000000000;
+const MIN_MARKED_CHAT_ID: i64 = MAX_MARKED_CHANNEL_ID + 1;
+const MAX_MARKED_CHAT_ID: i64 = MIN_USER_ID - 1;
+const MIN_USER_ID: i64 = 0;
+const MAX_USER_ID: i64 = (1 << 40) - 1;
 
 #[cfg(test)]
 mod tests {
     use serde::{Deserialize, Serialize};
 
-    use crate::types::{ChatId, UnmarkedChatId, UserId};
+    use crate::types::{BareChatId, ChatId, UserId};
 
     /// Test that `ChatId` is serialized as the underlying integer
     #[test]
@@ -75,10 +116,44 @@ mod tests {
     }
 
     #[test]
-    fn user_id_unmark() {
+    fn chonky_user_id_to_bare() {
         assert!(matches!(
-            ChatId(5298363099).unmark(),
-            UnmarkedChatId::User(UserId(5298363099))
+            ChatId(5298363099).to_bare(),
+            BareChatId::User(UserId(5298363099))
         ));
+    }
+
+    #[test]
+    fn to_bare_to_bot_api_identity() {
+        fn assert_identity(x: u64) {
+            use BareChatId::*;
+
+            assert_eq!(User(UserId(x)), User(UserId(x)).to_bot_api().to_bare());
+            assert_eq!(Group(x), Group(x).to_bot_api().to_bare());
+            assert_eq!(Channel(x), Channel(x).to_bot_api().to_bare());
+        }
+
+        // Somewhat random numbers
+        let ids = [
+            1,
+            4,
+            17,
+            34,
+            51,
+            777000,
+            1000000,
+            617136926,
+            1666111087,
+            1 << 20,
+            (1 << 35) | 123456,
+        ];
+
+        // rust 2021 when :(
+        ids.iter().copied().for_each(assert_identity);
+    }
+
+    #[test]
+    fn display() {
+        assert_eq!(ChatId(1).to_string(), "1");
     }
 }
