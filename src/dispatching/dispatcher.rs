@@ -316,7 +316,7 @@ where
 
     tokio::spawn(async move {
         ReceiverStream::new(rx)
-            .for_each_concurrent(None, |update| {
+            .for_each(|update| {
                 let deps = Arc::clone(&deps);
                 let handler = Arc::clone(&handler);
                 let default_handler = Arc::clone(&default_handler);
@@ -347,7 +347,7 @@ where
 
     tokio::spawn(async move {
         ReceiverStream::new(rx)
-            .for_each(|update| {
+            .for_each_concurrent(None, |update| {
                 let deps = Arc::clone(&deps);
                 let handler = Arc::clone(&handler);
                 let default_handler = Arc::clone(&default_handler);
