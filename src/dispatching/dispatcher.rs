@@ -277,13 +277,13 @@ where
                     return;
                 }
 
-                let deps = self.dependencies.clone();
-                let handler = Arc::clone(&self.handler);
-                let default_handler = Arc::clone(&self.default_handler);
-                let error_handler = Arc::clone(&self.error_handler);
-
                 let worker = match upd.chat() {
                     Some(chat) => self.workers.entry(chat.id).or_insert_with(|| {
+                        let deps = self.dependencies.clone();
+                        let handler = Arc::clone(&self.handler);
+                        let default_handler = Arc::clone(&self.default_handler);
+                        let error_handler = Arc::clone(&self.error_handler);
+
                         spawn_worker(
                             deps,
                             handler,
@@ -293,6 +293,11 @@ where
                         )
                     }),
                     None => self.default_worker.get_or_insert_with(|| {
+                        let deps = self.dependencies.clone();
+                        let handler = Arc::clone(&self.handler);
+                        let default_handler = Arc::clone(&self.default_handler);
+                        let error_handler = Arc::clone(&self.error_handler);
+
                         spawn_default_worker(
                             deps,
                             handler,
