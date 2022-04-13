@@ -9,7 +9,7 @@ use crate::{
 };
 
 use dptree::di::{DependencyMap, DependencySupplier};
-use futures::{future::BoxFuture, StreamExt};
+use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
 use std::{
     collections::{HashMap, HashSet},
     fmt::Debug,
@@ -233,7 +233,9 @@ where
             .map(|(_chat_id, worker)| worker.handle)
             .chain(self.default_worker.take().map(|worker| worker.handle))
             .collect::<FuturesUnordered<_>>()
-            .for_each(|()| ())
+            .for_each(|res| async {
+                res.expect("Failed to wait for a worker.");
+            })
             .await;
 
         self.state.done();
