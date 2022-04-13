@@ -7,12 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-### Fixed
-
-- Fix never ending loop that caused programs that used `Throttling` to never stop, see issue [#535][issue535] ([#130][pr130])
-
-[issue535]: https://github.com/teloxide/teloxide/issues/535
-[pr130]: https://github.com/teloxide/teloxide-core/pull/130
+## 0.5.0 - 2022-04-13
 
 ### Added
 
@@ -39,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - A bug in `Message::url` implementation ([#198][pr198])
+- Fix never ending loop that caused programs that used `Throttling` to never stop, see issue [#535][issue535] ([#130][pr130])
+
+[issue535]: https://github.com/teloxide/teloxide/issues/535
+[pr130]: https://github.com/teloxide/teloxide-core/pull/130
 
 ## 0.4.5 - 2022-04-03
 
