@@ -1,6 +1,35 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.7 -> 0.8
+
+### core
+
+`user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` (if they allow for channel usernames).
+
+If you used to work with chat/user ids (for example saving them to a database), you may need to change your code to account for new types. Some examples how that may look like:
+```diff,
+-let user_id: i64 = user.id;
++let UserId(user_id) = user.id;
+db.save(user_id, ...);
+
+-let chat_id: i64 = db.get();
++let chat_id = ChatId(db.get());
+bot.send_message(chat_id, "Hi!").await?;
+```
+
+`RequestError::RetryAfter` now has a field of type `Duration`, instead of `i32`.
+
+### teloxide
+
+The old dispatching system was removed. If you still hasn't moved to the new one, read the [0.5 -> 0.6 migration guide] for more information on this topic. Note that since the old dispatching was removed, the new dispatching system now lives in the `dispatching` module, **not** `dispatching2` module.
+
+If you implement `UpdateListener` yourself, note that `StopToken` is now required to be `Send`.
+
+`BotCommand` trait was renamed to `BotCommands`. `BotCommands::descriptions` not returns `CommandDescriptions` instead of `String`. To get string, you can call `.to_string()`.
+
+[0.5 -> 0.6 migration guide]: #05---06
+
 ## 0.6 -> 0.7
 
 ### teloxide
