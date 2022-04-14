@@ -9,9 +9,6 @@
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
   </a>
-  <a href="https://teloxide.netlify.com">
-    <img src="https://img.shields.io/badge/docs-dev-blue">
-  </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
