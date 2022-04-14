@@ -1,6 +1,12 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.6 -> 0.7
+
+### teloxide
+
+In order to make `Dispatcher` implement `Send`, `DispatcherBuilder::{default_handler, error_handler}` now accept handlers that implements `Send + Sync`. If you used `!Send` or `!Sync` handlers here, you may need to change that.
+
 ## 0.5 -> 0.6
 
 ### core
