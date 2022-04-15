@@ -267,6 +267,7 @@ where
 
         let description = self.handler.description();
         let allowed_updates = description.allowed_updates();
+        log::debug!("hinting allowed updates: {:?}", allowed_updates);
         update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
