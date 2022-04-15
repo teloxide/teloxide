@@ -3,7 +3,7 @@
 use dptree::{di::DependencyMap, Handler};
 
 use crate::{
-    dispatching::AllowedUpdates,
+    dispatching::DpHandlerDescription,
     types::{AllowedUpdate, Message, Update, UpdateKind},
 };
 
@@ -24,19 +24,19 @@ macro_rules! define_ext {
 
     (@sig $func:ident, $fn_doc:expr) => {
         #[doc = $fn_doc]
-        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates>;
+        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription>;
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr, $Allowed:ident) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates> {
-            dptree::filter_map_with_requirements(AllowedUpdates::of(AllowedUpdate::$Allowed), move |input: $for_ty| {
+        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
+            dptree::filter_map_with_description(DpHandlerDescription::of(AllowedUpdate::$Allowed), move |input: $for_ty| {
                 $proj_fn(input)
             })
         }
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, AllowedUpdates> {
+        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
             dptree::filter_map(move |input: $for_ty| {
                 $proj_fn(input)
             })

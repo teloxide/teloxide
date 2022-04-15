@@ -244,8 +244,6 @@ macro_rules! handler {
 mod tests {
     use std::ops::ControlFlow;
 
-    use crate::dispatching::UpdateHandler;
-
     #[derive(Debug, Copy, Clone, Eq, PartialEq)]
     enum State {
         A,

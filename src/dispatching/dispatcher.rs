@@ -1,7 +1,7 @@
 use crate::{
     dispatching::{
         distribution::default_distribution_function, stop_token::StopToken, update_listeners,
-        update_listeners::UpdateListener, AllowedUpdates, DefaultKey, ShutdownToken,
+        update_listeners::UpdateListener, DefaultKey, DpHandlerDescription, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::{Request, Requester},
@@ -178,7 +178,7 @@ struct Worker {
 
 /// A handler that processes updates from Telegram.
 pub type UpdateHandler<Err> =
-    dptree::Handler<'static, DependencyMap, Result<(), Err>, AllowedUpdates>;
+    dptree::Handler<'static, DependencyMap, Result<(), Err>, DpHandlerDescription>;
 
 type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
@@ -265,9 +265,9 @@ where
         self.dependencies.insert(me);
         self.dependencies.insert(self.bot.clone());
 
-        update_listener.hint_allowed_updates(
-            &mut self.handler.required_update_kinds_set().get_param().into_iter(),
-        );
+        let description = self.handler.description();
+        let allowed_updates = description.allowed_updates();
+        update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
