@@ -14,14 +14,14 @@ impl DpHandlerDescription {
     pub(crate) fn of(allowed: AllowedUpdate) -> Self {
         let mut set = HashSet::with_capacity(1);
         set.insert(allowed);
-        Self { allowed: EventKindDescription::InterestingEventKinds(set) }
+        Self { allowed: EventKindDescription::InterestList(set) }
     }
 
     pub(crate) fn allowed_updates(&self) -> Vec<AllowedUpdate> {
         use AllowedUpdate::*;
 
         match &self.allowed {
-            EventKindDescription::InterestingEventKinds(set) => set.iter().copied().collect(),
+            EventKindDescription::InterestList(set) => set.iter().copied().collect(),
             EventKindDescription::Entry => panic!("No updates were allowed"),
             EventKindDescription::UserDefined => vec![
                 Message,
