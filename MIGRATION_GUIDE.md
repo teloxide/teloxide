@@ -28,6 +28,8 @@ If you implement `UpdateListener` yourself, note that `StopToken` is now require
 
 `BotCommand` trait was renamed to `BotCommands`. `BotCommands::descriptions` not returns `CommandDescriptions` instead of `String`. To get string, you can call `.to_string()`.
 
+`#[derive(DialogueState)]` is deprecated in favour of `teloxide::handler!`, a more flexible API for dealing with dialogues. [`examples/dialogue.rs`](https://github.com/teloxide/teloxide/blob/03521bfd3d68f6f576dcc44b5473aaa5ce9b553f/examples/dialogue.rs) shows how to use it.
+
 [0.5 -> 0.6 migration guide]: #05---06
 
 ## 0.6 -> 0.7
