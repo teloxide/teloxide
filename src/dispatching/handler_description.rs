@@ -1,29 +1,29 @@
 use std::collections::HashSet;
 
-use dptree::{EventKindDescription, HandlerDescription};
+use dptree::{description::EventKind, HandlerDescription};
 use teloxide_core::types::AllowedUpdate;
 
 /// Handler description that is used by [`Dispatcher`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct DpHandlerDescription {
-    allowed: EventKindDescription<AllowedUpdate>,
+    allowed: EventKind<AllowedUpdate>,
 }
 
 impl DpHandlerDescription {
     pub(crate) fn of(allowed: AllowedUpdate) -> Self {
         let mut set = HashSet::with_capacity(1);
         set.insert(allowed);
-        Self { allowed: EventKindDescription::InterestList(set) }
+        Self { allowed: EventKind::InterestList(set) }
     }
 
     pub(crate) fn allowed_updates(&self) -> Vec<AllowedUpdate> {
         use AllowedUpdate::*;
 
         match &self.allowed {
-            EventKindDescription::InterestList(set) => set.iter().copied().collect(),
-            EventKindDescription::Entry => panic!("No updates were allowed"),
-            EventKindDescription::UserDefined => vec![
+            EventKind::InterestList(set) => set.iter().copied().collect(),
+            EventKind::Entry => panic!("No updates were allowed"),
+            EventKind::UserDefined => vec![
                 Message,
                 EditedMessage,
                 ChannelPost,
