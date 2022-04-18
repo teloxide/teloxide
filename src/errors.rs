@@ -1,3 +1,5 @@
+//! Possible error types.
+
 use std::{io, time::Duration};
 
 use serde::Deserialize;
