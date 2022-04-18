@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+ - Document the `errors` module.
+
 ## 0.5.0 - 2022-04-13
 
 ### Added
