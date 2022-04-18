@@ -1,4 +1,4 @@
-> [v0.5 -> v0.6 migration guide >>](MIGRATION_GUIDE.md#05---06)
+> [v0.7 -> v0.8 migration guide >>](MIGRATION_GUIDE.md#07---08)
 
 <div align="center">
   <img src="ICON.png" width="250"/>
@@ -70,7 +70,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.7", features = ["macros", "auto-send"] }
+teloxide = { version = "0.8", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
