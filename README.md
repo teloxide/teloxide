@@ -8,9 +8,6 @@
   <a href="https://docs.rs/teloxide_core/">
     <img src="https://docs.rs/teloxide-core/badge.svg">
   </a>
-  <a href="https://teloxide-core.netlify.com">
-    <img src="https://img.shields.io/badge/docs-master-blue">
-  </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
