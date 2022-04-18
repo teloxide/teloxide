@@ -1,7 +1,0 @@
-[build] 
-command = "rustup install nightly --profile minimal && cargo +nightly docs --no-deps && cp -r target/doc _netlify_out"
-publish = "_netlify_out" 
-
-[[redirects]]
-from = "/" 
-to = "/teloxide_core"
