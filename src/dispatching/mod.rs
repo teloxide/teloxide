@@ -102,6 +102,7 @@ pub mod dialogue;
 mod dispatcher;
 mod distribution;
 mod filter_ext;
+mod handler_description;
 mod handler_ext;
 mod handler_factory;
 pub mod stop_token;
@@ -111,6 +112,7 @@ pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
+pub use handler_description::DpHandlerDescription;
 pub use handler_ext::HandlerExt;
 #[allow(deprecated)]
 pub use handler_factory::HandlerFactory;

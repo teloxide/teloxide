@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use crate::{
-    dispatching::dialogue::{Dialogue, GetChatId, Storage},
+    dispatching::{
+        dialogue::{Dialogue, GetChatId, Storage},
+        DpHandlerDescription,
+    },
     types::{Me, Message},
     utils::command::BotCommands,
 };
@@ -58,7 +61,7 @@ pub trait HandlerExt<Output> {
         F: HandlerFactory<Out = Output>;
 }
 
-impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output>
+impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     Output: Send + Sync + 'static,
 {

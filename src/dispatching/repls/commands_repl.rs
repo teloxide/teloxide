@@ -83,7 +83,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
 
     Dispatcher::builder(
         bot,
-        Update::filter_message().filter_command::<Cmd>().branch(dptree::endpoint(handler)),
+        Update::filter_message().filter_command::<Cmd>().chain(dptree::endpoint(handler)),
     )
     .default_handler(ignore_update)
     .build()
