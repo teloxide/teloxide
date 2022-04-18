@@ -27,7 +27,7 @@
 ```toml
 teloxide-core = "0.5"
 ```
-_Compiler support: requires rustc 1.49+_.
+_Compiler support: requires rustc 1.58+_.
 
 [`teloxide`]: https://docs.rs/teloxide
 [Telegram Bot API]: https://core.telegram.org/bots/api

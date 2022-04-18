@@ -7,7 +7,7 @@
 //!```toml
 //! teloxide_core = "0.5"
 //! ```
-//! _Compiler support: requires rustc 1.49+_
+//! _Compiler support: requires rustc 1.58+_.
 //!
 //! ```
 //! # #[cfg(feature = "auto_send")]
