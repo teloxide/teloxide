@@ -1,263 +1,243 @@
-use std::{fmt::Debug, sync::Arc};
-
 use crate::{
     dispatching::{
-        stop_token::StopToken,
-        update_listeners::{self, UpdateListener},
-        DispatcherHandler, UpdateWithCx,
+        distribution::default_distribution_function, stop_token::StopToken, update_listeners,
+        update_listeners::UpdateListener, DefaultKey, DpHandlerDescription, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
+    requests::{Request, Requester},
+    types::{Update, UpdateKind},
     utils::shutdown_token::shutdown_check_timeout_for,
 };
 
-use futures::{stream::FuturesUnordered, StreamExt};
-use teloxide_core::{
-    requests::Requester,
-    types::{
-        AllowedUpdate, CallbackQuery, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult,
-        InlineQuery, Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, Update,
-        UpdateKind,
-    },
+use dptree::di::{DependencyMap, DependencySupplier};
+use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+    hash::Hash,
+    ops::{ControlFlow, Deref},
+    sync::Arc,
 };
-use tokio::{sync::mpsc, task::JoinHandle, time::timeout};
+use tokio::time::timeout;
+use tokio_stream::wrappers::ReceiverStream;
 
-use crate::utils::shutdown_token::ShutdownToken;
+use std::future::Future;
 
-type Tx<Upd, R> = Option<mpsc::UnboundedSender<UpdateWithCx<Upd, R>>>;
+/// The builder for [`Dispatcher`].
+pub struct DispatcherBuilder<R, Err, Key> {
+    bot: R,
+    dependencies: DependencyMap,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: DefaultHandler,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    distribution_f: fn(&Update) -> Option<Key>,
+    worker_queue_size: usize,
+}
 
-/// One dispatcher to rule them all.
+impl<R, Err, Key> DispatcherBuilder<R, Err, Key>
+where
+    R: Clone + Requester + Clone + Send + Sync + 'static,
+    Err: Debug + Send + Sync + 'static,
+{
+    /// Specifies a handler that will be called for an unhandled update.
+    ///
+    /// By default, it is a mere [`log::warn`].
+    #[must_use]
+    pub fn default_handler<H, Fut>(self, handler: H) -> Self
+    where
+        H: Fn(Arc<Update>) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
+    {
+        let handler = Arc::new(handler);
+
+        Self {
+            default_handler: Arc::new(move |upd| {
+                let handler = Arc::clone(&handler);
+                Box::pin(handler(upd))
+            }),
+            ..self
+        }
+    }
+
+    /// Specifies a handler that will be called on a handler error.
+    ///
+    /// By default, it is [`LoggingErrorHandler`].
+    #[must_use]
+    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err> + Send + Sync>) -> Self {
+        Self { error_handler: handler, ..self }
+    }
+
+    /// Specifies dependencies that can be used inside of handlers.
+    ///
+    /// By default, there is no dependencies.
+    #[must_use]
+    pub fn dependencies(self, dependencies: DependencyMap) -> Self {
+        Self { dependencies, ..self }
+    }
+
+    /// Specifies size of the queue for workers.
+    ///
+    /// By default it's 64.
+    #[must_use]
+    pub fn worker_queue_size(self, size: usize) -> Self {
+        Self { worker_queue_size: size, ..self }
+    }
+
+    /// Specifies the distribution function that decides how updates are grouped
+    /// before execution.
+    pub fn distribution_function<K>(
+        self,
+        f: fn(&Update) -> Option<K>,
+    ) -> DispatcherBuilder<R, Err, K>
+    where
+        K: Hash + Eq,
+    {
+        let Self {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f: _,
+            worker_queue_size,
+        } = self;
+
+        DispatcherBuilder {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f: f,
+            worker_queue_size,
+        }
+    }
+
+    /// Constructs [`Dispatcher`].
+    #[must_use]
+    pub fn build(self) -> Dispatcher<R, Err, Key> {
+        let Self {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            distribution_f,
+            worker_queue_size,
+        } = self;
+
+        Dispatcher {
+            bot,
+            dependencies,
+            handler,
+            default_handler,
+            error_handler,
+            state: ShutdownToken::new(),
+            distribution_f,
+            worker_queue_size,
+            workers: HashMap::new(),
+            default_worker: None,
+        }
+    }
+}
+
+/// The base for update dispatching.
 ///
-/// See the [module-level documentation](crate::dispatching) for the design
-/// overview.
-#[deprecated(note = "Use dispatching2 instead")]
-pub struct Dispatcher<R> {
-    requester: R,
+/// Updates from different chats are handles concurrently, whereas updates from
+/// the same chats are handled sequentially. If the dispatcher is unable to
+/// determine a chat ID of an incoming update, it will be handled concurrently.
+/// Note that this behaviour can be altered with [`distribution_function`].
+///
+/// [`distribution_function`]: DispatcherBuilder::distribution_function
+pub struct Dispatcher<R, Err, Key> {
+    bot: R,
+    dependencies: DependencyMap,
 
-    messages_queue: Tx<R, Message>,
-    edited_messages_queue: Tx<R, Message>,
-    channel_posts_queue: Tx<R, Message>,
-    edited_channel_posts_queue: Tx<R, Message>,
-    inline_queries_queue: Tx<R, InlineQuery>,
-    chosen_inline_results_queue: Tx<R, ChosenInlineResult>,
-    callback_queries_queue: Tx<R, CallbackQuery>,
-    shipping_queries_queue: Tx<R, ShippingQuery>,
-    pre_checkout_queries_queue: Tx<R, PreCheckoutQuery>,
-    polls_queue: Tx<R, Poll>,
-    poll_answers_queue: Tx<R, PollAnswer>,
-    my_chat_members_queue: Tx<R, ChatMemberUpdated>,
-    chat_members_queue: Tx<R, ChatMemberUpdated>,
-    chat_join_requests_queue: Tx<R, ChatJoinRequest>,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: DefaultHandler,
 
-    running_handlers: FuturesUnordered<JoinHandle<()>>,
+    distribution_f: fn(&Update) -> Option<Key>,
+    worker_queue_size: usize,
+    // Tokio TX channel parts associated with chat IDs that consume updates sequentially.
+    workers: HashMap<Key, Worker>,
+    // The default TX part that consume updates concurrently.
+    default_worker: Option<Worker>,
+
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
 
     state: ShutdownToken,
 }
 
-impl<R> Dispatcher<R>
+struct Worker {
+    tx: tokio::sync::mpsc::Sender<Update>,
+    handle: tokio::task::JoinHandle<()>,
+}
+
+// TODO: it is allowed to return message as response on telegram request in
+// webhooks, so we can allow this too. See more there: https://core.telegram.org/bots/api#making-requests-when-getting-updates
+
+/// A handler that processes updates from Telegram.
+pub type UpdateHandler<Err> =
+    dptree::Handler<'static, DependencyMap, Result<(), Err>, DpHandlerDescription>;
+
+type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
+
+impl<R, Err> Dispatcher<R, Err, DefaultKey>
 where
-    R: Send + 'static,
+    R: Requester + Clone + Send + Sync + 'static,
+    Err: Send + Sync + 'static,
 {
-    /// Constructs a new dispatcher with the specified `requester`.
+    /// Constructs a new [`DispatcherBuilder`] with `bot` and `handler`.
     #[must_use]
-    pub fn new(requester: R) -> Self {
-        Self {
-            requester,
-            messages_queue: None,
-            edited_messages_queue: None,
-            channel_posts_queue: None,
-            edited_channel_posts_queue: None,
-            inline_queries_queue: None,
-            chosen_inline_results_queue: None,
-            callback_queries_queue: None,
-            shipping_queries_queue: None,
-            pre_checkout_queries_queue: None,
-            polls_queue: None,
-            poll_answers_queue: None,
-            my_chat_members_queue: None,
-            chat_members_queue: None,
-            chat_join_requests_queue: None,
-            running_handlers: FuturesUnordered::new(),
-            state: ShutdownToken::new(),
+    pub fn builder(bot: R, handler: UpdateHandler<Err>) -> DispatcherBuilder<R, Err, DefaultKey>
+    where
+        Err: Debug,
+    {
+        const DEFAULT_WORKER_QUEUE_SIZE: usize = 64;
+
+        DispatcherBuilder {
+            bot,
+            dependencies: DependencyMap::new(),
+            handler: Arc::new(handler),
+            default_handler: Arc::new(|upd| {
+                log::warn!("Unhandled update: {:?}", upd);
+                Box::pin(async {})
+            }),
+            error_handler: LoggingErrorHandler::new(),
+            worker_queue_size: DEFAULT_WORKER_QUEUE_SIZE,
+            distribution_f: default_distribution_function,
         }
     }
+}
 
-    #[must_use]
-    fn new_tx<H, Upd>(&mut self, h: H) -> Tx<R, Upd>
-    where
-        H: DispatcherHandler<R, Upd> + Send + 'static,
-        Upd: Send + 'static,
-        R: Send + 'static,
-    {
-        let (tx, rx) = mpsc::unbounded_channel();
-        let join_handle = tokio::spawn(h.handle(rx));
-
-        self.running_handlers.push(join_handle);
-
-        Some(tx)
-    }
-
-    /// Setup the `^C` handler which [`shutdown`]s dispatching.
-    ///
-    /// [`shutdown`]: ShutdownToken::shutdown
-    #[cfg(feature = "ctrlc_handler")]
-    #[must_use]
-    pub fn setup_ctrlc_handler(self) -> Self {
-        let token = self.state.clone();
-        tokio::spawn(async move {
-            loop {
-                tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
-
-                match token.shutdown() {
-                    Ok(f) => {
-                        log::info!("^C received, trying to shutdown the dispatcher...");
-                        f.await;
-                        log::info!("dispatcher is shutdown...");
-                    }
-                    Err(_) => {
-                        log::info!("^C received, the dispatcher isn't running, ignoring the signal")
-                    }
-                }
-            }
-        });
-
-        self
-    }
-
-    #[must_use]
-    pub fn messages_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, Message> + 'static + Send,
-    {
-        self.messages_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn edited_messages_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, Message> + 'static + Send,
-    {
-        self.edited_messages_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn channel_posts_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, Message> + 'static + Send,
-    {
-        self.channel_posts_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn edited_channel_posts_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, Message> + 'static + Send,
-    {
-        self.edited_channel_posts_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn inline_queries_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, InlineQuery> + 'static + Send,
-    {
-        self.inline_queries_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn chosen_inline_results_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, ChosenInlineResult> + 'static + Send,
-    {
-        self.chosen_inline_results_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn callback_queries_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, CallbackQuery> + 'static + Send,
-    {
-        self.callback_queries_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn shipping_queries_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, ShippingQuery> + 'static + Send,
-    {
-        self.shipping_queries_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn pre_checkout_queries_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, PreCheckoutQuery> + 'static + Send,
-    {
-        self.pre_checkout_queries_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn polls_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, Poll> + 'static + Send,
-    {
-        self.polls_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn poll_answers_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, PollAnswer> + 'static + Send,
-    {
-        self.poll_answers_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn my_chat_members_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, ChatMemberUpdated> + 'static + Send,
-    {
-        self.my_chat_members_queue = self.new_tx(h);
-        self
-    }
-
-    #[must_use]
-    pub fn chat_members_handler<H>(mut self, h: H) -> Self
-    where
-        H: DispatcherHandler<R, ChatMemberUpdated> + 'static + Send,
-    {
-        self.chat_members_queue = self.new_tx(h);
-        self
-    }
-
+impl<R, Err, Key> Dispatcher<R, Err, Key>
+where
+    R: Requester + Clone + Send + Sync + 'static,
+    Err: Send + Sync + 'static,
+    Key: Hash + Eq,
+{
     /// Starts your bot with the default parameters.
     ///
     /// The default parameters are a long polling update listener and log all
-    /// errors produced by this listener).
+    /// errors produced by this listener.
     ///
-    /// Please note that after shutting down (either because of [`shutdown`],
-    /// [a ctrlc signal], or [`UpdateListener`] returning `None`) all handlers
-    /// will be gone. As such, to restart listening you need to re-add
-    /// handlers.
+    /// Each time a handler is invoked, [`Dispatcher`] adds the following
+    /// dependencies (in addition to those passed to
+    /// [`DispatcherBuilder::dependencies`]):
+    ///
+    ///  - Your bot passed to [`Dispatcher::builder`];
+    ///  - An update from Telegram;
+    ///  - [`crate::types::Me`] (can be used in [`HandlerExt::filter_command`]).
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
+    /// [`HandlerExt::filter_command`]: crate::dispatching::HandlerExt::filter_command
     pub async fn dispatch(&mut self)
     where
         R: Requester + Clone,
         <R as Requester>::GetUpdates: Send,
     {
-        let listener = update_listeners::polling_default(self.requester.clone()).await;
+        let listener = update_listeners::polling_default(self.bot.clone()).await;
         let error_handler =
             LoggingErrorHandler::with_custom_text("An error from the update listener");
 
@@ -267,10 +247,7 @@ where
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
     ///
-    /// Please note that after shutting down (either because of [`shutdown`],
-    /// [a ctrlc signal], or [`UpdateListener`] returning `None`) all handlers
-    /// will be gone. As such, to restart listening you need to re-add
-    /// handlers.
+    /// This method adds the same dependencies as [`Dispatcher::dispatch`].
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
@@ -282,9 +259,16 @@ where
         UListener: UpdateListener<ListenerE> + 'a,
         Eh: ErrorHandler<ListenerE> + 'a,
         ListenerE: Debug,
-        R: Requester + Clone,
     {
-        self.hint_allowed_updates(&mut update_listener);
+        // FIXME: there should be a way to check if dependency is already inserted
+        let me = self.bot.get_me().send().await.expect("Failed to retrieve 'me'");
+        self.dependencies.insert(me);
+        self.dependencies.insert(self.bot.clone());
+
+        let description = self.handler.description();
+        let allowed_updates = description.allowed_updates();
+        log::debug!("hinting allowed updates: {:?}", allowed_updates);
+        update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
         let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
@@ -314,8 +298,99 @@ where
             }
         }
 
-        self.wait_for_handlers().await;
+        self.workers
+            .drain()
+            .map(|(_chat_id, worker)| worker.handle)
+            .chain(self.default_worker.take().map(|worker| worker.handle))
+            .collect::<FuturesUnordered<_>>()
+            .for_each(|res| async {
+                res.expect("Failed to wait for a worker.");
+            })
+            .await;
+
         self.state.done();
+    }
+
+    async fn process_update<LErr, LErrHandler>(
+        &mut self,
+        update: Result<Update, LErr>,
+        err_handler: &Arc<LErrHandler>,
+    ) where
+        LErrHandler: ErrorHandler<LErr>,
+    {
+        match update {
+            Ok(upd) => {
+                if let UpdateKind::Error(err) = upd.kind {
+                    log::error!(
+                        "Cannot parse an update.\nError: {:?}\n\
+                            This is a bug in teloxide-core, please open an issue here: \
+                            https://github.com/teloxide/teloxide/issues.",
+                        err,
+                    );
+                    return;
+                }
+
+                let worker = match (self.distribution_f)(&upd) {
+                    Some(key) => self.workers.entry(key).or_insert_with(|| {
+                        let deps = self.dependencies.clone();
+                        let handler = Arc::clone(&self.handler);
+                        let default_handler = Arc::clone(&self.default_handler);
+                        let error_handler = Arc::clone(&self.error_handler);
+
+                        spawn_worker(
+                            deps,
+                            handler,
+                            default_handler,
+                            error_handler,
+                            self.worker_queue_size,
+                        )
+                    }),
+                    None => self.default_worker.get_or_insert_with(|| {
+                        let deps = self.dependencies.clone();
+                        let handler = Arc::clone(&self.handler);
+                        let default_handler = Arc::clone(&self.default_handler);
+                        let error_handler = Arc::clone(&self.error_handler);
+
+                        spawn_default_worker(
+                            deps,
+                            handler,
+                            default_handler,
+                            error_handler,
+                            self.worker_queue_size,
+                        )
+                    }),
+                };
+
+                worker.tx.send(upd).await.expect("TX is dead");
+            }
+            Err(err) => err_handler.clone().handle_error(err).await,
+        }
+    }
+
+    /// Setups the `^C` handler that [`shutdown`]s dispatching.
+    ///
+    /// [`shutdown`]: ShutdownToken::shutdown
+    #[cfg(feature = "ctrlc_handler")]
+    pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
+        let token = self.state.clone();
+        tokio::spawn(async move {
+            loop {
+                tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
+
+                match token.shutdown() {
+                    Ok(f) => {
+                        log::info!("^C received, trying to shutdown the dispatcher...");
+                        f.await;
+                        log::info!("dispatcher is shutdown...");
+                    }
+                    Err(_) => {
+                        log::info!("^C received, the dispatcher isn't running, ignoring the signal")
+                    }
+                }
+            }
+        });
+
+        self
     }
 
     /// Returns a shutdown token, which can later be used to shutdown
@@ -323,208 +398,102 @@ where
     pub fn shutdown_token(&self) -> ShutdownToken {
         self.state.clone()
     }
+}
 
-    async fn process_update<ListenerE, Eh>(
-        &self,
-        update: Result<Update, ListenerE>,
-        update_listener_error_handler: &Arc<Eh>,
-    ) where
-        R: Requester + Clone,
-        Eh: ErrorHandler<ListenerE>,
-        ListenerE: Debug,
-    {
-        {
-            log::trace!("Dispatcher received an update: {:?}", update);
+fn spawn_worker<Err>(
+    deps: DependencyMap,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: DefaultHandler,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    queue_size: usize,
+) -> Worker
+where
+    Err: Send + Sync + 'static,
+{
+    let (tx, rx) = tokio::sync::mpsc::channel(queue_size);
 
-            let update = match update {
-                Ok(update) => update,
-                Err(error) => {
-                    Arc::clone(update_listener_error_handler).handle_error(error).await;
-                    return;
-                }
-            };
+    let deps = Arc::new(deps);
 
-            match update.kind {
-                UpdateKind::Message(message) => {
-                    send(&self.requester, &self.messages_queue, message, "UpdateKind::Message")
-                }
-                UpdateKind::EditedMessage(message) => send(
-                    &self.requester,
-                    &self.edited_messages_queue,
-                    message,
-                    "UpdateKind::EditedMessage",
-                ),
-                UpdateKind::ChannelPost(post) => send(
-                    &self.requester,
-                    &self.channel_posts_queue,
-                    post,
-                    "UpdateKind::ChannelPost",
-                ),
-                UpdateKind::EditedChannelPost(post) => send(
-                    &self.requester,
-                    &self.edited_channel_posts_queue,
-                    post,
-                    "UpdateKind::EditedChannelPost",
-                ),
-                UpdateKind::InlineQuery(query) => send(
-                    &self.requester,
-                    &self.inline_queries_queue,
-                    query,
-                    "UpdateKind::InlineQuery",
-                ),
-                UpdateKind::ChosenInlineResult(result) => send(
-                    &self.requester,
-                    &self.chosen_inline_results_queue,
-                    result,
-                    "UpdateKind::ChosenInlineResult",
-                ),
-                UpdateKind::CallbackQuery(query) => send(
-                    &self.requester,
-                    &self.callback_queries_queue,
-                    query,
-                    "UpdateKind::CallbackQuer",
-                ),
-                UpdateKind::ShippingQuery(query) => send(
-                    &self.requester,
-                    &self.shipping_queries_queue,
-                    query,
-                    "UpdateKind::ShippingQuery",
-                ),
-                UpdateKind::PreCheckoutQuery(query) => send(
-                    &self.requester,
-                    &self.pre_checkout_queries_queue,
-                    query,
-                    "UpdateKind::PreCheckoutQuery",
-                ),
-                UpdateKind::Poll(poll) => {
-                    send(&self.requester, &self.polls_queue, poll, "UpdateKind::Poll")
-                }
-                UpdateKind::PollAnswer(answer) => send(
-                    &self.requester,
-                    &self.poll_answers_queue,
-                    answer,
-                    "UpdateKind::PollAnswer",
-                ),
-                UpdateKind::MyChatMember(chat_member_updated) => send(
-                    &self.requester,
-                    &self.my_chat_members_queue,
-                    chat_member_updated,
-                    "UpdateKind::MyChatMember",
-                ),
-                UpdateKind::ChatMember(chat_member_updated) => send(
-                    &self.requester,
-                    &self.chat_members_queue,
-                    chat_member_updated,
-                    "UpdateKind::MyChatMember",
-                ),
-                UpdateKind::ChatJoinRequest(chat_join_request) => send(
-                    &self.requester,
-                    &self.chat_join_requests_queue,
-                    chat_join_request,
-                    "UpdateKind::ChatJoinRequest",
-                ),
-                UpdateKind::Error(err) => {
-                    log::error!(
-                        "Cannot parse an update.\nError: {:?}\n\
-                            This is a bug in teloxide-core, please open an issue here: \
-                            https://github.com/teloxide/teloxide/issues.",
-                        err,
-                    );
-                }
-            }
+    let handle = tokio::spawn(ReceiverStream::new(rx).for_each(move |update| {
+        let deps = Arc::clone(&deps);
+        let handler = Arc::clone(&handler);
+        let default_handler = Arc::clone(&default_handler);
+        let error_handler = Arc::clone(&error_handler);
+
+        handle_update(update, deps, handler, default_handler, error_handler)
+    }));
+
+    Worker { tx, handle }
+}
+
+fn spawn_default_worker<Err>(
+    deps: DependencyMap,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: DefaultHandler,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    queue_size: usize,
+) -> Worker
+where
+    Err: Send + Sync + 'static,
+{
+    let (tx, rx) = tokio::sync::mpsc::channel(queue_size);
+
+    let deps = Arc::new(deps);
+
+    let handle = tokio::spawn(ReceiverStream::new(rx).for_each_concurrent(None, move |update| {
+        let deps = Arc::clone(&deps);
+        let handler = Arc::clone(&handler);
+        let default_handler = Arc::clone(&default_handler);
+        let error_handler = Arc::clone(&error_handler);
+
+        handle_update(update, deps, handler, default_handler, error_handler)
+    }));
+
+    Worker { tx, handle }
+}
+
+async fn handle_update<Err>(
+    update: Update,
+    deps: Arc<DependencyMap>,
+    handler: Arc<UpdateHandler<Err>>,
+    default_handler: DefaultHandler,
+    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+) where
+    Err: Send + Sync + 'static,
+{
+    let mut deps = deps.deref().clone();
+    deps.insert(update);
+
+    match handler.dispatch(deps).await {
+        ControlFlow::Break(Ok(())) => {}
+        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err).await,
+        ControlFlow::Continue(deps) => {
+            let update = deps.get();
+            (default_handler)(update).await;
         }
-    }
-
-    fn hint_allowed_updates<E>(&self, listener: &mut impl UpdateListener<E>) {
-        fn hint_handler_allowed_update<T>(
-            queue: &Option<T>,
-            kind: AllowedUpdate,
-        ) -> std::option::IntoIter<AllowedUpdate> {
-            queue.as_ref().map(|_| kind).into_iter()
-        }
-
-        let mut allowed = hint_handler_allowed_update(&self.messages_queue, AllowedUpdate::Message)
-            .chain(hint_handler_allowed_update(
-                &self.edited_messages_queue,
-                AllowedUpdate::EditedMessage,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.channel_posts_queue,
-                AllowedUpdate::ChannelPost,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.edited_channel_posts_queue,
-                AllowedUpdate::EditedChannelPost,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.inline_queries_queue,
-                AllowedUpdate::InlineQuery,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.chosen_inline_results_queue,
-                AllowedUpdate::ChosenInlineResult,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.callback_queries_queue,
-                AllowedUpdate::CallbackQuery,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.shipping_queries_queue,
-                AllowedUpdate::ShippingQuery,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.pre_checkout_queries_queue,
-                AllowedUpdate::PreCheckoutQuery,
-            ))
-            .chain(hint_handler_allowed_update(&self.polls_queue, AllowedUpdate::Poll))
-            .chain(hint_handler_allowed_update(&self.poll_answers_queue, AllowedUpdate::PollAnswer))
-            .chain(hint_handler_allowed_update(
-                &self.my_chat_members_queue,
-                AllowedUpdate::MyChatMember,
-            ))
-            .chain(hint_handler_allowed_update(
-                &self.chat_members_queue,
-                AllowedUpdate::ChatMember,
-            ));
-
-        listener.hint_allowed_updates(&mut allowed);
-    }
-
-    async fn wait_for_handlers(&mut self) {
-        log::debug!("Waiting for handlers to finish");
-
-        // Drop all senders, so handlers can stop
-        self.messages_queue.take();
-        self.edited_messages_queue.take();
-        self.channel_posts_queue.take();
-        self.edited_channel_posts_queue.take();
-        self.inline_queries_queue.take();
-        self.chosen_inline_results_queue.take();
-        self.callback_queries_queue.take();
-        self.shipping_queries_queue.take();
-        self.pre_checkout_queries_queue.take();
-        self.polls_queue.take();
-        self.poll_answers_queue.take();
-        self.my_chat_members_queue.take();
-        self.chat_members_queue.take();
-
-        // Wait untill all handlers finish
-        self.running_handlers.by_ref().for_each(|_| async {}).await;
     }
 }
 
-fn send<'a, R, Upd>(requester: &'a R, tx: &'a Tx<R, Upd>, update: Upd, variant: &'static str)
-where
-    Upd: Debug,
-    R: Requester + Clone,
-{
-    if let Some(tx) = tx {
-        if let Err(error) = tx.send(UpdateWithCx { requester: requester.clone(), update }) {
-            log::error!(
-                "The RX part of the {} channel is closed, but an update is received.\nError:{}\n",
-                variant,
-                error
-            );
-        }
+#[cfg(test)]
+mod tests {
+    use std::convert::Infallible;
+
+    use teloxide_core::Bot;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_tokio_spawn() {
+        tokio::spawn(async {
+            // Just check that this code compiles.
+            if false {
+                Dispatcher::<_, Infallible, _>::builder(Bot::new(""), dptree::entry())
+                    .build()
+                    .dispatch()
+                    .await;
+            }
+        })
+        .await
+        .unwrap();
     }
 }

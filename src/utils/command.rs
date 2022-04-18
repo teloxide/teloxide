@@ -1,17 +1,18 @@
 //! Command parsers.
 //!
-//! You can either create an `enum` with derived [`BotCommand`], containing
+//! You can either create an `enum` with derived [`BotCommands`], containing
 //! commands of your bot, or use functions, which split input text into a string
 //! command with its arguments.
 //!
-//! # Using BotCommand
+//! # Using BotCommands
+//!
 //! ```
 //! # #[cfg(feature = "macros")] {
-//! use teloxide::utils::command::BotCommand;
+//! use teloxide::utils::command::BotCommands;
 //!
 //! type UnitOfTime = u8;
 //!
-//! #[derive(BotCommand, PartialEq, Debug)]
+//! #[derive(BotCommands, PartialEq, Debug)]
 //! #[command(rename = "lowercase", parse_with = "split")]
 //! enum AdminCommand {
 //!     Mute(UnitOfTime, char),
@@ -24,6 +25,7 @@
 //! ```
 //!
 //! # Using parse_command
+//!
 //! ```
 //! use teloxide::utils::command::parse_command;
 //!
@@ -33,6 +35,7 @@
 //! ```
 //!
 //! # Using parse_command_with_prefix
+//!
 //! ```
 //! use teloxide::utils::command::parse_command_with_prefix;
 //!
@@ -46,25 +49,27 @@
 //!
 //! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
 
+use core::fmt;
 use std::{
     error::Error,
-    fmt::{Display, Formatter},
+    fmt::{Display, Formatter, Write},
 };
 
 use std::marker::PhantomData;
+use teloxide_core::types::{BotCommand, Me};
 #[cfg(feature = "macros")]
-pub use teloxide_macros::BotCommand;
+pub use teloxide_macros::BotCommands;
 
 /// An enumeration of bot's commands.
 ///
 /// # Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
 /// type UnitOfTime = u8;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split")]
 /// enum AdminCommand {
 ///     Mute(UnitOfTime, char),
@@ -98,9 +103,9 @@ pub use teloxide_macros::BotCommand;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
 /// enum Command {
 ///     Text(String),
@@ -118,9 +123,9 @@ pub use teloxide_macros::BotCommand;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
@@ -138,9 +143,9 @@ pub use teloxide_macros::BotCommand;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::BotCommand;
+/// use teloxide::utils::command::BotCommands;
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase", parse_with = "split", separator = "|")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
@@ -171,7 +176,7 @@ pub use teloxide_macros::BotCommand;
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::utils::command::{BotCommand, ParseError};
+/// use teloxide::utils::command::{BotCommands, ParseError};
 ///
 /// fn accept_two_digits(input: String) -> Result<(u8,), ParseError> {
 ///     match input.len() {
@@ -183,7 +188,7 @@ pub use teloxide_macros::BotCommand;
 ///     }
 /// }
 ///
-/// #[derive(BotCommand, PartialEq, Debug)]
+/// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename = "lowercase")]
 /// enum Command {
 ///     #[command(parse_with = "accept_two_digits")]
@@ -204,24 +209,41 @@ pub use teloxide_macros::BotCommand;
 /// specific variant.
 ///
 /// [`FromStr`]: https://doc.rust-lang.org/std/str/trait.FromStr.html
-/// [`BotCommand`]: crate::utils::command::BotCommand
-pub trait BotCommand: Sized {
-    fn descriptions() -> String;
-    fn parse<N>(s: &str, bot_name: N) -> Result<Self, ParseError>
+/// [`BotCommands`]: crate::utils::command::BotCommands
+pub trait BotCommands: Sized {
+    /// Parses a command.
+    ///
+    /// `bot_username` is required to parse commands like
+    /// `/cmd@username_of_the_bot`.
+    fn parse<N>(s: &str, bot_username: N) -> Result<Self, ParseError>
     where
         N: Into<String>;
+
+    /// Returns descriptions of the commands suitable to be shown to the user
+    /// (for example when `/help` command is used).
+    fn descriptions() -> CommandDescriptions<'static>;
+
+    /// Returns a vector of [`BotCommand`] that can be used with
+    /// [`set_my_commands`].
+    ///
+    /// [`BotCommand`]: crate::types::BotCommand
+    /// [`set_my_commands`]: crate::requests::Requester::set_my_commands
+    fn bot_commands() -> Vec<BotCommand>;
+
+    /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
+    ///
+    /// [`commands_repl`]: (crate::repls2::commands_repl)
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
-    fn bot_commands() -> Vec<crate::types::BotCommand>;
 }
 
 pub type PrefixedBotCommand = String;
 pub type BotName = String;
 
-/// Errors returned from [`BotCommand::parse`].
+/// Errors returned from [`BotCommands::parse`].
 ///
-/// [`BotCommand::parse`]: crate::utils::command::BotCommand::parse
+/// [`BotCommands::parse`]: BotCommands::parse
 #[derive(Debug)]
 pub enum ParseError {
     TooFewArguments {
@@ -247,28 +269,77 @@ pub enum ParseError {
     Custom(Box<dyn Error + Send + Sync + 'static>),
 }
 
-impl Display for ParseError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-        match self {
-            ParseError::TooFewArguments { expected, found, message } => write!(
-                f,
-                "Too few arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
-            ),
-            ParseError::TooManyArguments { expected, found, message } => write!(
-                f,
-                "Too many arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
-            ),
-            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
-            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
-            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
-            ParseError::Custom(e) => write!(f, "{}", e),
-        }
-    }
+/// Command descriptions that can be shown to the user (e.g. as a part of
+/// `/help` message)
+///
+/// Most of the time you don't need to create this struct yourself as it's
+/// returned from [`BotCommands::descriptions`].
+#[derive(Debug, Clone)]
+pub struct CommandDescriptions<'a> {
+    global_description: Option<&'a str>,
+    descriptions: &'a [CommandDescription<'a>],
+    bot_username: Option<&'a str>,
 }
 
-impl std::error::Error for ParseError {}
+/// Description of a particular command, used in [`CommandDescriptions`].
+#[derive(Debug, Clone)]
+pub struct CommandDescription<'a> {
+    /// Prefix of the command, usually `/`.
+    pub prefix: &'a str,
+    /// The command itself, e.g. `start`.
+    pub command: &'a str,
+    /// Human-readable description of the command.
+    pub description: &'a str,
+}
+
+impl<'a> CommandDescriptions<'a> {
+    /// Creates new [`CommandDescriptions`] from a list of command descriptions.
+    pub fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
+        Self { global_description: None, descriptions, bot_username: None }
+    }
+
+    /// Sets the global description of these commands.
+    pub fn global_description(self, global_description: &'a str) -> Self {
+        Self { global_description: Some(global_description), ..self }
+    }
+
+    /// Sets the username of the bot.
+    ///
+    /// After this method is called, returned instance of
+    /// [`CommandDescriptions`] will append `@bot_username` to all commands.
+    /// This is useful in groups, to disambiguate commands for different bots.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// use teloxide::utils::command::{CommandDescription, CommandDescriptions};
+    ///
+    /// let descriptions = CommandDescriptions::new(&[
+    ///     CommandDescription { prefix: "/", command: "start", description: "start this bot" },
+    ///     CommandDescription { prefix: "/", command: "help", description: "show this message" },
+    /// ]);
+    ///
+    /// assert_eq!(descriptions.to_string(), "/start — start this bot\n/help — show this message");
+    /// assert_eq!(
+    ///     descriptions.username("username_of_the_bot").to_string(),
+    ///     "/start@username_of_the_bot — start this bot\n/help@username_of_the_bot — show this \
+    ///          message"
+    /// );
+    /// ```
+    pub fn username(self, bot_username: &'a str) -> Self {
+        Self { bot_username: Some(bot_username), ..self }
+    }
+
+    /// Sets the username of the bot.
+    ///
+    /// This is the same as [`username`], but uses value returned from `get_me`
+    /// method to get the username.
+    ///
+    /// [`username`]: self::CommandDescriptions::username
+    pub fn username_from_me(self, me: &'a Me) -> CommandDescriptions<'a> {
+        self.username(me.user.username.as_deref().expect("Bots must have usernames"))
+    }
+}
 
 /// Parses a string into a command with args.
 ///
@@ -344,6 +415,68 @@ where
         _ => return None,
     }
     Some((command, words.collect()))
+}
+
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        match self {
+            ParseError::TooFewArguments { expected, found, message } => write!(
+                f,
+                "Too few arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::TooManyArguments { expected, found, message } => write!(
+                f,
+                "Too many arguments (expected {}, found {}, message = '{}')",
+                expected, found, message
+            ),
+            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
+            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
+            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
+            ParseError::Custom(e) => write!(f, "{}", e),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
+
+impl Display for CommandDescriptions<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(global_description) = self.global_description {
+            f.write_str(global_description)?;
+            f.write_str("\n\n")?;
+        }
+
+        let mut write = |&CommandDescription { prefix, command, description }, nls| {
+            if nls {
+                f.write_char('\n')?;
+            }
+
+            f.write_str(prefix)?;
+            f.write_str(command)?;
+
+            if let Some(username) = self.bot_username {
+                f.write_char('@')?;
+                f.write_str(username)?;
+            }
+
+            if !description.is_empty() {
+                f.write_str(" — ")?;
+                f.write_str(description)?;
+            }
+
+            fmt::Result::Ok(())
+        };
+
+        if let Some(descr) = self.descriptions.first() {
+            write(descr, false)?;
+            for descr in &self.descriptions[1..] {
+                write(descr, true)?;
+            }
+        }
+
+        Ok(())
+    }
 }
 
 // The rest of tests are integrational due to problems with macro expansion in

@@ -3,7 +3,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use once_cell::sync::Lazy;
-use teloxide::prelude2::*;
+use teloxide::prelude::*;
 
 static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
 
@@ -17,7 +17,7 @@ async fn main() {
     let handler = Update::filter_message().branch(dptree::endpoint(
         |msg: Message, bot: AutoSend<Bot>| async move {
             let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
-            bot.send_message(msg.chat.id, format!("I received {} messages in total.", previous))
+            bot.send_message(msg.chat.id, format!("I received {previous} messages in total."))
                 .await?;
             respond(())
         },

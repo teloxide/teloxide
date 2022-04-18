@@ -1,14 +1,17 @@
 use std::sync::Arc;
 
 use crate::{
-    dispatching2::{
+    dispatching::{
         dialogue::{Dialogue, GetChatId, Storage},
-        HandlerFactory,
+        DpHandlerDescription,
     },
     types::{Me, Message},
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 use dptree::{di::DependencyMap, Handler};
+
+#[allow(deprecated)]
+use crate::dispatching::HandlerFactory;
 
 use std::fmt::Debug;
 
@@ -23,7 +26,7 @@ pub trait HandlerExt<Output> {
     #[must_use]
     fn filter_command<C>(self) -> Self
     where
-        C: BotCommand + Send + Sync + 'static;
+        C: BotCommands + Send + Sync + 'static;
 
     /// Passes [`Dialogue<D, S>`] and `D` as handler dependencies.
     ///
@@ -51,18 +54,20 @@ pub trait HandlerExt<Output> {
         Upd: GetChatId + Clone + Send + Sync + 'static;
 
     #[must_use]
+    #[deprecated(note = "Use the teloxide::handler! API")]
+    #[allow(deprecated)]
     fn dispatch_by<F>(self) -> Self
     where
         F: HandlerFactory<Out = Output>;
 }
 
-impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output>
+impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     Output: Send + Sync + 'static,
 {
     fn filter_command<C>(self) -> Self
     where
-        C: BotCommand + Send + Sync + 'static,
+        C: BotCommands + Send + Sync + 'static,
     {
         self.chain(dptree::filter_map(move |message: Message, me: Me| {
             let bot_name = me.user.username.expect("Bots must have a username");
@@ -92,6 +97,7 @@ where
         }))
     }
 
+    #[allow(deprecated)]
     fn dispatch_by<F>(self) -> Self
     where
         F: HandlerFactory<Out = Output>,

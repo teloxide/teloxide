@@ -1,21 +1,37 @@
 use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
-    prelude2::*,
+    prelude::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText,
     },
-    utils::command::BotCommand,
+    utils::command::BotCommands,
 };
 
-#[derive(BotCommand)]
+#[derive(BotCommands)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "Display this text")]
     Help,
     #[command(description = "Start")]
     Start,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    pretty_env_logger::init();
+    log::info!("Starting bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    let handler = dptree::entry()
+        .branch(Update::filter_message().endpoint(message_handler))
+        .branch(Update::filter_callback_query().endpoint(callback_handler))
+        .branch(Update::filter_inline_query().endpoint(inline_query_handler));
+
+    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+    Ok(())
 }
 
 /// Creates a keyboard made by buttons in a big column.
@@ -47,10 +63,10 @@ async fn message_handler(
     bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(text) = m.text() {
-        match BotCommand::parse(text, "buttons") {
+        match BotCommands::parse(text, "buttons") {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
-                bot.send_message(m.chat.id, Command::descriptions()).await?;
+                bot.send_message(m.chat.id, Command::descriptions().to_string()).await?;
             }
             Ok(Command::Start) => {
                 // Create a list of buttons and send them.
@@ -93,7 +109,7 @@ async fn callback_handler(
     bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
-        let text = format!("You chose: {}", version);
+        let text = format!("You chose: {version}");
 
         match q.message {
             Some(Message { id, chat, .. }) => {
@@ -108,25 +124,6 @@ async fn callback_handler(
 
         log::info!("You chose: {}", version);
     }
-
-    Ok(())
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    pretty_env_logger::init();
-    log::info!("Starting bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    let handler = dptree::entry()
-        .branch(Update::filter_message().endpoint(message_handler))
-        .branch(Update::filter_callback_query().endpoint(callback_handler))
-        .branch(Update::filter_inline_query().endpoint(inline_query_handler));
-
-    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
-
-    log::info!("Closing bot... Goodbye!");
 
     Ok(())
 }

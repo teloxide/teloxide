@@ -1,4 +1,4 @@
-> [v0.5 -> v0.6 migration guide >>](MIGRATION_GUIDE.md#05---06)
+> [v0.7 -> v0.8 migration guide >>](MIGRATION_GUIDE.md#07---08)
 
 > `teloxide-core` versions less that `0.4.5` (`teloxide` versions less than 0.7.3) have a low-severity security vulnerability, [learn more >>](https://github.com/teloxide/teloxide/discussions/574)
 
@@ -10,9 +10,6 @@
   </a>
   <a href="https://github.com/teloxide/teloxide/actions">
     <img src="https://github.com/teloxide/teloxide/workflows/Continuous%20integration/badge.svg">
-  </a>
-  <a href="https://teloxide.netlify.com">
-    <img src="https://img.shields.io/badge/docs-dev-blue">
   </a>
   <a href="https://crates.io/crates/teloxide">
     <img src="https://img.shields.io/crates/v/teloxide.svg">
@@ -75,7 +72,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.7", features = ["macros", "auto-send"] }
+teloxide = { version = "0.8", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -90,7 +87,7 @@ This bot replies with a dice throw to each received message:
 ([Full](examples/dices.rs))
 
 ```rust,no_run
-use teloxide::prelude2::*;
+use teloxide::prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -99,7 +96,7 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })
@@ -127,11 +124,21 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 ([Full](examples/simple_commands.rs))
 
 ```rust,no_run
-use teloxide::{prelude2::*, utils::command::BotCommand};
+use teloxide::{prelude::*, utils::command::BotCommands};
 
 use std::error::Error;
 
-#[derive(BotCommand, Clone)]
+#[tokio::main]
+async fn main() {
+    pretty_env_logger::init();
+    log::info!("Starting simple_commands_bot...");
+
+    let bot = Bot::from_env().auto_send();
+
+    teloxide::commands_repl(bot, answer, Command::ty()).await;
+}
+
+#[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
@@ -148,30 +155,22 @@ async fn answer(
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
-        Command::Help => bot.send_message(message.chat.id, Command::descriptions()).await?,
+        Command::Help => {
+            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
+        }
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{}.", username)).await?
+            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
             bot.send_message(
                 message.chat.id,
-                format!("Your username is @{} and age is {}.", username, age),
+                format!("Your username is @{username} and age is {age}."),
             )
             .await?
         }
     };
 
     Ok(())
-}
-
-#[tokio::main]
-async fn main() {
-    pretty_env_logger::init();
-    log::info!("Starting simple_commands_bot...");
-
-    let bot = Bot::from_env().auto_send();
-
-    teloxide::repls2::commands_repl(bot, answer, Command::ty()).await;
 }
 ```
 
@@ -192,23 +191,16 @@ Below is a bot that asks you three questions and then sends the answers back to 
 ([Full](examples/dialogue.rs))
 
 ```rust,ignore
-use teloxide::{dispatching2::dialogue::InMemStorage, macros::DialogueState, prelude2::*};
+use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
+type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(DialogueState, Clone)]
-#[handler_out(anyhow::Result<()>)]
+#[derive(Clone)]
 pub enum State {
-    #[handler(handle_start)]
     Start,
-
-    #[handler(handle_receive_full_name)]
     ReceiveFullName,
-
-    #[handler(handle_receive_age)]
     ReceiveAge { full_name: String },
-
-    #[handler(handle_receive_location)]
     ReceiveLocation { full_name: String, age: u8 },
 }
 
@@ -229,7 +221,13 @@ async fn main() {
         bot,
         Update::filter_message()
             .enter_dialogue::<Message, InMemStorage<State>, State>()
-            .dispatch_by::<State>(),
+            .branch(teloxide::handler![State::Start].endpoint(start))
+            .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
+            .branch(teloxide::handler![State::ReceiveAge { full_name }].endpoint(receive_age))
+            .branch(
+                teloxide::handler![State::ReceiveLocation { full_name, age }]
+                    .endpoint(receive_location),
+            ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
@@ -238,21 +236,17 @@ async fn main() {
     .await;
 }
 
-async fn handle_start(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> anyhow::Result<()> {
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn handle_receive_full_name(
+async fn receive_full_name(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-) -> anyhow::Result<()> {
+) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -266,12 +260,12 @@ async fn handle_receive_full_name(
     Ok(())
 }
 
-async fn handle_receive_age(
+async fn receive_age(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
-    (full_name,): (String,), // Available from `State::ReceiveAge`.
-) -> anyhow::Result<()> {
+    full_name: String, // Available from `State::ReceiveAge`.
+) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
             bot.send_message(msg.chat.id, "What's your location?").await?;
@@ -285,15 +279,15 @@ async fn handle_receive_age(
     Ok(())
 }
 
-async fn handle_receive_location(
+async fn receive_location(
     bot: AutoSend<Bot>,
     msg: Message,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
-) -> anyhow::Result<()> {
+) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {}\nAge: {}\nLocation: {}", full_name, age, location);
+            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
             bot.send_message(msg.chat.id, message).await?;
             dialogue.exit().await?;
         }
@@ -349,6 +343,7 @@ Feel free to propose your own bot to our collection!
  - [alexkonovalov/PedigreeBot](https://github.com/alexkonovalov/PedigreeBot) -- A Telegram bot for building family trees.
  - [Hermitter/tepe](https://github.com/Hermitter/tepe) -- A CLI to command a bot to send messages and files over Telegram.
  - [mattrighetti/GroupActivityBot](https://github.com/mattrighetti/group-activity-bot-rs) -- Telegram bot that keeps track of user activity in groups.
+ - [mattrighetti/libgen-bot-rs](https://github.com/mattrighetti/libgen-bot-rs) -- Telgram bot to interface with libgen
  - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) -- A Telegram group manager bot with variety of extra features.
  - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) -- A bot that shows the latest posts at Rust subreddit.
  - [myblackbeard/basketball-betting-bot](https://github.com/myblackbeard/basketball-betting-bot) -- The bot lets you bet on NBA games against your buddies.

@@ -6,7 +6,7 @@
 //!
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices.rs))
 //! ```no_run
-//! use teloxide::prelude2::*;
+//! use teloxide::prelude::*;
 //!
 //! # #[tokio::main]
 //! # async fn main() {
@@ -15,7 +15,7 @@
 //!
 //! let bot = Bot::from_env().auto_send();
 //!
-//! teloxide::repls2::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+//! teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
 //!     bot.send_dice(message.chat.id).await?;
 //!     respond(())
 //! })
@@ -63,23 +63,14 @@
 
 #[cfg(feature = "ctrlc_handler")]
 pub use dispatching::repls::{
-    commands_repl, commands_repl_with_listener, dialogues_repl, dialogues_repl_with_listener, repl,
-    repl_with_listener,
+    commands_repl, commands_repl_with_listener, repl, repl_with_listener,
 };
-
-#[cfg(all(feature = "dispatching2", feature = "ctrlc_handler"))]
-pub use dispatching2::repls as repls2;
 
 mod logging;
 
-// Things from this module is also used for the dispatching2 module.
 pub mod dispatching;
-#[cfg(feature = "dispatching2")]
-pub mod dispatching2;
 pub mod error_handlers;
 pub mod prelude;
-#[cfg(feature = "dispatching2")]
-pub mod prelude2;
 pub mod utils;
 
 #[doc(inline)]
@@ -88,10 +79,7 @@ pub use teloxide_core::*;
 #[cfg(feature = "macros")]
 pub use teloxide_macros as macros;
 
-#[cfg(feature = "dispatching2")]
 pub use dptree;
-#[cfg(feature = "macros")]
-pub use teloxide_macros::teloxide;
 
 #[cfg(all(feature = "nightly", doctest))]
 #[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../README.md")))]

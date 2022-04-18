@@ -34,6 +34,7 @@ pub struct AsyncStopToken(AbortHandle);
 ///
 /// [`is_stopped`]: AsyncStopFlag::is_stopped
 #[pin_project::pin_project]
+#[derive(Clone)]
 pub struct AsyncStopFlag(#[pin] Abortable<Pending<()>>);
 
 impl AsyncStopToken {
