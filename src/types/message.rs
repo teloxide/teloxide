@@ -8,7 +8,7 @@ use crate::types::{
     InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
     PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User,
     Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
-    VoiceChatScheduled, VoiceChatStarted,
+    VoiceChatScheduled, VoiceChatStarted, WebAppData,
 };
 
 /// This object represents a message.
@@ -58,6 +58,7 @@ pub enum MessageKind {
     VoiceChatStarted(MessageVoiceChatStarted),
     VoiceChatEnded(MessageVoiceChatEnded),
     VoiceChatParticipantsInvited(MessageVoiceChatParticipantsInvited),
+    WebAppData(MessageWebAppData),
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -513,6 +514,12 @@ pub struct MessageVoiceChatEnded {
 pub struct MessageVoiceChatParticipantsInvited {
     /// Service message: new participants invited to a voice chat.
     pub voice_chat_participants_invited: VoiceChatParticipantsInvited,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageWebAppData {
+    /// Service message: data sent by a Web App.
+    pub web_app_data: WebAppData,
 }
 
 mod getters {
