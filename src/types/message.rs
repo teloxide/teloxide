@@ -1462,7 +1462,7 @@ mod tests {
     /// Regression test for <https://github.com/teloxide/teloxide/issues/475>
     #[test]
     fn issue_475() {
-        let json = r#"{"message_id":198295,"from":{"id":1087968824,"is_bot":true,"first_name":"Group","username":"GroupAnonymousBot"},"sender_chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"date":1638236631,"voice_chat_started":{}}"#;
+        let json = r#"{"message_id":198295,"from":{"id":1087968824,"is_bot":true,"first_name":"Group","username":"GroupAnonymousBot"},"sender_chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"date":1638236631,"video_chat_started":{}}"#;
 
         let message: Message = serde_json::from_str(json).unwrap();
 

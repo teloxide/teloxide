@@ -617,7 +617,7 @@ mod tests {
             "can_manage_chat": true,
             "can_change_info": true,
             "can_delete_messages": true,
-            "can_manage_voice_chats": true,
+            "can_manage_video_chats": true,
             "can_invite_users": true,
             "can_restrict_members": true,
             "can_pin_messages": true,
