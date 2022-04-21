@@ -7,8 +7,8 @@ use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
     InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
     PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User,
-    Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
-    VoiceChatScheduled, VoiceChatStarted, WebAppData,
+    Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData,
 };
 
 /// This object represents a message.
@@ -495,25 +495,25 @@ pub struct MessageProximityAlertTriggered {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatScheduled {
     /// Service message: voice chat scheduled
-    pub voice_chat_scheduled: VoiceChatScheduled,
+    pub video_chat_scheduled: VideoChatScheduled,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatStarted {
     /// Service message: voice chat started.
-    pub voice_chat_started: VoiceChatStarted,
+    pub video_chat_started: VideoChatStarted,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatEnded {
     /// Service message: voice chat ended.
-    pub voice_chat_ended: VoiceChatEnded,
+    pub video_chat_ended: VideoChatEnded,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatParticipantsInvited {
     /// Service message: new participants invited to a voice chat.
-    pub voice_chat_participants_invited: VoiceChatParticipantsInvited,
+    pub video_chat_participants_invited: VideoChatParticipantsInvited,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

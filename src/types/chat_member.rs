@@ -76,7 +76,7 @@ pub struct Administrator {
     pub can_delete_messages: bool,
 
     /// `true` if the administrator can manage voice chats.
-    pub can_manage_voice_chats: bool,
+    pub can_manage_video_chats: bool,
 
     /// `true` if the administrator can invite new users to the chat.
     pub can_invite_users: bool,
@@ -403,15 +403,20 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_voice_chats`]: Administrator::can_manage_voice_chats
-    pub fn can_manage_voice_chats(&self) -> bool {
+    pub fn can_manage_video_chats(&self) -> bool {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator {
-                can_manage_voice_chats,
+                can_manage_video_chats,
                 ..
-            }) => *can_manage_voice_chats,
+            }) => *can_manage_video_chats,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
+    }
+
+    #[deprecated(since = "0.6.0", note = "renamed to `can_manage_video_chats`")]
+    pub fn can_manage_voice_chats(&self) -> bool {
+        self.can_manage_video_chats()
     }
 
     /// Returns `true` if the user can can invite new users to the chat.
@@ -636,7 +641,7 @@ mod tests {
                 can_post_messages: None,
                 can_edit_messages: None,
                 can_delete_messages: true,
-                can_manage_voice_chats: true,
+                can_manage_video_chats: true,
                 can_invite_users: true,
                 can_restrict_members: true,
                 can_pin_messages: Some(true),
