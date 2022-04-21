@@ -55,6 +55,7 @@ jobs:
           - stable
           - beta
           - nightly
+          - msrv
     
         include:
           - rust: stable
@@ -66,6 +67,9 @@ jobs:
           - rust: nightly
             toolchain: nightly-2022-01-17
             features: "--all-features"
+          - rust: msrv
+            toolchain: "1.58.0"
+            features: "--features full"
 
     steps:
       - uses: actions/checkout@v2
