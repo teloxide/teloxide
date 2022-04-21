@@ -109,7 +109,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
         leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
         set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-        set_my_commands, get_my_commands, delete_my_commands, answer_inline_query,
+        set_my_commands, get_my_commands, set_chat_menu_button, get_chat_menu_button, set_my_default_administrator_rights, get_my_default_administrator_rights, delete_my_commands, answer_inline_query, answer_web_app_query,
         edit_message_media, edit_message_media_inline, edit_message_reply_markup,
         edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,
         get_sticker_set, upload_sticker_file, create_new_sticker_set,

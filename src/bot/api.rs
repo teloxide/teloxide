@@ -689,6 +689,36 @@ impl Requester for Bot {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
     }
 
+    type SetChatMenuButton = JsonRequest<payloads::SetChatMenuButton>;
+
+    fn set_chat_menu_button(&self) -> Self::SetChatMenuButton {
+        Self::SetChatMenuButton::new(self.clone(), payloads::SetChatMenuButton::new())
+    }
+
+    type GetChatMenuButton = JsonRequest<payloads::GetChatMenuButton>;
+
+    fn get_chat_menu_button(&self) -> Self::GetChatMenuButton {
+        Self::GetChatMenuButton::new(self.clone(), payloads::GetChatMenuButton::new())
+    }
+
+    type SetMyDefaultAdministratorRights = JsonRequest<payloads::SetMyDefaultAdministratorRights>;
+
+    fn set_my_default_administrator_rights(&self) -> Self::SetMyDefaultAdministratorRights {
+        Self::SetMyDefaultAdministratorRights::new(
+            self.clone(),
+            payloads::SetMyDefaultAdministratorRights::new(),
+        )
+    }
+
+    type GetMyDefaultAdministratorRights = JsonRequest<payloads::GetMyDefaultAdministratorRights>;
+
+    fn get_my_default_administrator_rights(&self) -> Self::GetMyDefaultAdministratorRights {
+        Self::GetMyDefaultAdministratorRights::new(
+            self.clone(),
+            payloads::GetMyDefaultAdministratorRights::new(),
+        )
+    }
+
     type DeleteMyCommands = JsonRequest<payloads::DeleteMyCommands>;
 
     fn delete_my_commands(&self) -> Self::DeleteMyCommands {
@@ -705,6 +735,22 @@ impl Requester for Bot {
         Self::AnswerInlineQuery::new(
             self.clone(),
             payloads::AnswerInlineQuery::new(inline_query_id, results),
+        )
+    }
+
+    type AnswerWebAppQuery = JsonRequest<payloads::AnswerWebAppQuery>;
+
+    fn answer_web_app_query<W>(
+        &self,
+        web_app_query_id: W,
+        result: InlineQueryResult,
+    ) -> Self::AnswerWebAppQuery
+    where
+        W: Into<String>,
+    {
+        Self::AnswerWebAppQuery::new(
+            self.clone(),
+            payloads::AnswerWebAppQuery::new(web_app_query_id, result),
         )
     }
 

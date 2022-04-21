@@ -590,6 +590,32 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMyCommands`].
     fn get_my_commands(&self) -> Self::GetMyCommands;
 
+    type SetChatMenuButton: Request<Payload = SetChatMenuButton, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetChatMenuButton`].
+    fn set_chat_menu_button(&self) -> Self::SetChatMenuButton;
+
+    type GetChatMenuButton: Request<Payload = GetChatMenuButton, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetChatMenuButton`].
+    fn get_chat_menu_button(&self) -> Self::GetChatMenuButton;
+
+    type SetMyDefaultAdministratorRights: Request<
+        Payload = SetMyDefaultAdministratorRights,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetMyDefaultAdministratorRights`].
+    fn set_my_default_administrator_rights(&self) -> Self::SetMyDefaultAdministratorRights;
+
+    type GetMyDefaultAdministratorRights: Request<
+        Payload = GetMyDefaultAdministratorRights,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`GetMyDefaultAdministratorRights`].
+    fn get_my_default_administrator_rights(&self) -> Self::GetMyDefaultAdministratorRights;
+
     type DeleteMyCommands: Request<Payload = DeleteMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`DeleteMyCommands`].
@@ -602,6 +628,17 @@ pub trait Requester {
     where
         I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>;
+
+    type AnswerWebAppQuery: Request<Payload = AnswerWebAppQuery, Err = Self::Err>;
+
+    /// For Telegram documentation see [`AnswerWebAppQuery`].
+    fn answer_web_app_query<W>(
+        &self,
+        web_app_query_id: W,
+        result: InlineQueryResult,
+    ) -> Self::AnswerWebAppQuery
+    where
+        W: Into<String>;
 
     type EditMessageText: Request<Payload = EditMessageText, Err = Self::Err>;
 
@@ -902,7 +939,7 @@ macro_rules! forward_all {
             set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
             leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
             set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-            set_my_commands, get_my_commands, delete_my_commands, answer_inline_query, edit_message_text,
+            set_my_commands, get_my_commands, set_chat_menu_button, get_chat_menu_button, set_my_default_administrator_rights, get_my_default_administrator_rights, delete_my_commands, answer_inline_query, answer_web_app_query, edit_message_text,
             edit_message_text_inline, edit_message_caption, edit_message_caption_inline,
             edit_message_media, edit_message_media_inline, edit_message_reply_markup,
             edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,
@@ -998,7 +1035,7 @@ where
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
         leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
         set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-        set_my_commands, get_my_commands, delete_my_commands, answer_inline_query, edit_message_text,
+        set_my_commands, get_my_commands, set_chat_menu_button, get_chat_menu_button, set_my_default_administrator_rights, get_my_default_administrator_rights, delete_my_commands, answer_inline_query, answer_web_app_query, edit_message_text,
         edit_message_text_inline, edit_message_caption, edit_message_caption_inline,
         edit_message_media, edit_message_media_inline, edit_message_reply_markup,
         edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,

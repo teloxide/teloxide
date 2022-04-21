@@ -25,6 +25,7 @@ mod answer_callback_query;
 mod answer_inline_query;
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
+mod answer_web_app_query;
 mod approve_chat_join_request;
 mod ban_chat_member;
 mod ban_chat_sender_chat;
@@ -57,10 +58,12 @@ mod get_chat_administrators;
 mod get_chat_member;
 mod get_chat_member_count;
 mod get_chat_members_count;
+mod get_chat_menu_button;
 mod get_file;
 mod get_game_high_scores;
 mod get_me;
 mod get_my_commands;
+mod get_my_default_administrator_rights;
 mod get_sticker_set;
 mod get_updates;
 mod get_user_profile_photos;
@@ -92,6 +95,7 @@ mod send_video_note;
 mod send_voice;
 mod set_chat_administrator_custom_title;
 mod set_chat_description;
+mod set_chat_menu_button;
 mod set_chat_permissions;
 mod set_chat_photo;
 mod set_chat_sticker_set;
@@ -99,6 +103,7 @@ mod set_chat_title;
 mod set_game_score;
 mod set_game_score_inline;
 mod set_my_commands;
+mod set_my_default_administrator_rights;
 mod set_passport_data_errors;
 mod set_sticker_position_in_set;
 mod set_sticker_set_thumb;
@@ -117,6 +122,7 @@ pub use answer_callback_query::{AnswerCallbackQuery, AnswerCallbackQuerySetters}
 pub use answer_inline_query::{AnswerInlineQuery, AnswerInlineQuerySetters};
 pub use answer_pre_checkout_query::{AnswerPreCheckoutQuery, AnswerPreCheckoutQuerySetters};
 pub use answer_shipping_query::{AnswerShippingQuery, AnswerShippingQuerySetters};
+pub use answer_web_app_query::{AnswerWebAppQuery, AnswerWebAppQuerySetters};
 pub use approve_chat_join_request::{ApproveChatJoinRequest, ApproveChatJoinRequestSetters};
 pub use ban_chat_member::{BanChatMember, BanChatMemberSetters};
 pub use ban_chat_sender_chat::{BanChatSenderChat, BanChatSenderChatSetters};
@@ -153,10 +159,14 @@ pub use get_chat_administrators::{GetChatAdministrators, GetChatAdministratorsSe
 pub use get_chat_member::{GetChatMember, GetChatMemberSetters};
 pub use get_chat_member_count::{GetChatMemberCount, GetChatMemberCountSetters};
 pub use get_chat_members_count::{GetChatMembersCount, GetChatMembersCountSetters};
+pub use get_chat_menu_button::{GetChatMenuButton, GetChatMenuButtonSetters};
 pub use get_file::{GetFile, GetFileSetters};
 pub use get_game_high_scores::{GetGameHighScores, GetGameHighScoresSetters};
 pub use get_me::{GetMe, GetMeSetters};
 pub use get_my_commands::{GetMyCommands, GetMyCommandsSetters};
+pub use get_my_default_administrator_rights::{
+    GetMyDefaultAdministratorRights, GetMyDefaultAdministratorRightsSetters,
+};
 pub use get_sticker_set::{GetStickerSet, GetStickerSetSetters};
 pub use get_updates::{GetUpdates, GetUpdatesSetters};
 pub use get_user_profile_photos::{GetUserProfilePhotos, GetUserProfilePhotosSetters};
@@ -190,6 +200,7 @@ pub use set_chat_administrator_custom_title::{
     SetChatAdministratorCustomTitle, SetChatAdministratorCustomTitleSetters,
 };
 pub use set_chat_description::{SetChatDescription, SetChatDescriptionSetters};
+pub use set_chat_menu_button::{SetChatMenuButton, SetChatMenuButtonSetters};
 pub use set_chat_permissions::{SetChatPermissions, SetChatPermissionsSetters};
 pub use set_chat_photo::{SetChatPhoto, SetChatPhotoSetters};
 pub use set_chat_sticker_set::{SetChatStickerSet, SetChatStickerSetSetters};
@@ -197,6 +208,9 @@ pub use set_chat_title::{SetChatTitle, SetChatTitleSetters};
 pub use set_game_score::{SetGameScore, SetGameScoreSetters};
 pub use set_game_score_inline::{SetGameScoreInline, SetGameScoreInlineSetters};
 pub use set_my_commands::{SetMyCommands, SetMyCommandsSetters};
+pub use set_my_default_administrator_rights::{
+    SetMyDefaultAdministratorRights, SetMyDefaultAdministratorRightsSetters,
+};
 pub use set_passport_data_errors::{SetPassportDataErrors, SetPassportDataErrorsSetters};
 pub use set_sticker_position_in_set::{SetStickerPositionInSet, SetStickerPositionInSetSetters};
 pub use set_sticker_set_thumb::{SetStickerSetThumb, SetStickerSetThumbSetters};
@@ -211,5 +225,3 @@ pub use unban_chat_sender_chat::{UnbanChatSenderChat, UnbanChatSenderChatSetters
 pub use unpin_all_chat_messages::{UnpinAllChatMessages, UnpinAllChatMessagesSetters};
 pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};
-
-// end of auto generated block

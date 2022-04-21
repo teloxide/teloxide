@@ -170,7 +170,7 @@ where
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
         leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
         set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-        set_my_commands, get_my_commands, delete_my_commands, answer_inline_query, edit_message_text,
+        set_my_commands, get_my_commands, set_chat_menu_button, get_chat_menu_button, set_my_default_administrator_rights, get_my_default_administrator_rights, delete_my_commands, answer_inline_query, answer_web_app_query, edit_message_text,
         edit_message_text_inline, edit_message_caption, edit_message_caption_inline,
         edit_message_media, edit_message_media_inline, edit_message_reply_markup,
         edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,
@@ -523,6 +523,18 @@ trait ErasableRequester<'a> {
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err>;
 
+    fn set_chat_menu_button(&self) -> ErasedRequest<'a, SetChatMenuButton, Self::Err>;
+
+    fn get_chat_menu_button(&self) -> ErasedRequest<'a, GetChatMenuButton, Self::Err>;
+
+    fn set_my_default_administrator_rights(
+        &self,
+    ) -> ErasedRequest<'a, SetMyDefaultAdministratorRights, Self::Err>;
+
+    fn get_my_default_administrator_rights(
+        &self,
+    ) -> ErasedRequest<'a, GetMyDefaultAdministratorRights, Self::Err>;
+
     fn delete_my_commands(&self) -> ErasedRequest<'a, DeleteMyCommands, Self::Err>;
 
     fn answer_inline_query(
@@ -530,6 +542,12 @@ trait ErasableRequester<'a> {
         inline_query_id: String,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err>;
+
+    fn answer_web_app_query(
+        &self,
+        web_app_query_id: String,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err>;
 
     fn edit_message_text(
         &self,
@@ -1169,6 +1187,26 @@ where
         Requester::get_my_commands(self).erase()
     }
 
+    fn set_chat_menu_button(&self) -> ErasedRequest<'a, SetChatMenuButton, Self::Err> {
+        Requester::set_chat_menu_button(self).erase()
+    }
+
+    fn get_chat_menu_button(&self) -> ErasedRequest<'a, GetChatMenuButton, Self::Err> {
+        Requester::get_chat_menu_button(self).erase()
+    }
+
+    fn set_my_default_administrator_rights(
+        &self,
+    ) -> ErasedRequest<'a, SetMyDefaultAdministratorRights, Self::Err> {
+        Requester::set_my_default_administrator_rights(self).erase()
+    }
+
+    fn get_my_default_administrator_rights(
+        &self,
+    ) -> ErasedRequest<'a, GetMyDefaultAdministratorRights, Self::Err> {
+        Requester::get_my_default_administrator_rights(self).erase()
+    }
+
     fn delete_my_commands(&self) -> ErasedRequest<'a, DeleteMyCommands, Self::Err> {
         Requester::delete_my_commands(self).erase()
     }
@@ -1179,6 +1217,14 @@ where
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err> {
         Requester::answer_inline_query(self, inline_query_id, results).erase()
+    }
+
+    fn answer_web_app_query(
+        &self,
+        web_app_query_id: String,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err> {
+        Requester::answer_web_app_query(self, web_app_query_id, result).erase()
     }
 
     fn edit_message_text(
