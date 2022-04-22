@@ -1,5 +1,5 @@
-// This example demonstrates how to deal with messages and callback queries in a
-// single dialogue.
+// This example demonstrates how to deal with messages and callback queries
+// within a single dialogue.
 //
 // # Example
 // ```

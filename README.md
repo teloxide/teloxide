@@ -334,6 +334,10 @@ Associated links:
  - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
  - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
 
+**Q: Can I handle both callback queries and messages within a single dialogue?**
+
+A: Yes, see [`examples/purchase.rs`](examples/purchase.rs).
+
 ## Community bots
 
 Feel free to propose your own bot to our collection!
