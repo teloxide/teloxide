@@ -13,7 +13,7 @@
 // ```
 
 use teloxide::{
-    dispatching::dialogue::{GetChatId, InMemStorage},
+    dispatching::dialogue::{self, GetChatId, InMemStorage},
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -53,8 +53,7 @@ async fn main() {
 
     Dispatcher::builder(
         bot,
-        dptree::entry()
-            .enter_dialogue::<Update, InMemStorage<State>, State>()
+        dialogue::enter::<Update, InMemStorage<State>, State, _>()
             .branch(
                 Update::filter_message()
                     .chain(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name)),

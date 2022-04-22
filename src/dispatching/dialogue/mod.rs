@@ -83,11 +83,14 @@ pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
+use dptree::{prelude::DependencyMap, Handler};
 pub use get_chat_id::GetChatId;
 pub use storage::*;
 use teloxide_core::types::ChatId;
 
-use std::{marker::PhantomData, sync::Arc};
+use std::{fmt::Debug, marker::PhantomData, sync::Arc};
+
+use super::DpHandlerDescription;
 
 mod get_chat_id;
 mod storage;
@@ -178,6 +181,37 @@ where
     pub async fn exit(&self) -> Result<(), S::Error> {
         self.storage.clone().remove_dialogue(self.chat_id).await
     }
+}
+
+/// Enters a dialogue context.
+///
+/// A call to this function is the same as `dptree::entry().enter_dialogue()`.
+///
+/// See [`HandlerExt::enter_dialogue`].
+///
+/// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
+pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+where
+    S: Storage<D> + ?Sized + Send + Sync + 'static,
+    <S as Storage<D>>::Error: Debug + Send,
+    D: Default + Send + Sync + 'static,
+    Upd: GetChatId + Clone + Send + Sync + 'static,
+    Output: Send + Sync + 'static,
+{
+    dptree::entry()
+        .chain(dptree::filter_map(|storage: Arc<S>, upd: Upd| {
+            let chat_id = upd.chat_id()?;
+            Some(Dialogue::new(storage, chat_id))
+        }))
+        .chain(dptree::filter_map_async(|dialogue: Dialogue<D, S>| async move {
+            match dialogue.get_or_default().await {
+                Ok(dialogue) => Some(dialogue),
+                Err(err) => {
+                    log::error!("dialogue.get_or_default() failed: {:?}", err);
+                    None
+                }
+            }
+        }))
 }
 
 /// Perform a dialogue FSM transition.
