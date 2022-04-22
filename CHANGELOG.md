@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+ - Implement `GetChatId` for `Update`.
+
 ## 0.8.0 - 2022-04-18
 
 ### Removed
