@@ -1,4 +1,4 @@
-use crate::types::{CallbackGame, LoginUrl};
+use crate::types::{CallbackGame, LoginUrl, WebAppInfo};
 use serde::{Deserialize, Serialize};
 
 /// This object represents one button of an inline keyboard.
@@ -61,6 +61,15 @@ pub enum InlineKeyboardButtonKind {
     ///
     /// [`CallbackQuery`]: crate::types::CallbackQuery
     CallbackData(String),
+
+    /// Description of the [Web App] that will be launched when the user presses
+    /// the button. The Web App will be able to send an arbitrary message on
+    /// behalf of the user using the method [`AnswerWebAppQuery`]. Available
+    /// only in private chats between a user and the bot.
+    ///
+    /// [Web App]: https://core.telegram.org/bots/webapps
+    /// [`AnswerWebAppQuery`]: crate::payloads::AnswerWebAppQuery
+    WebApp(WebAppInfo),
 
     /// If set, pressing the button will prompt the user to select one of their
     /// chats, open that chat and insert the bot‘s username and the specified

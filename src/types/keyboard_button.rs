@@ -1,6 +1,6 @@
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::types::{KeyboardButtonPollType, True};
+use crate::types::{KeyboardButtonPollType, True, WebAppInfo};
 
 /// This object represents one button of the reply keyboard.
 ///
@@ -15,11 +15,28 @@ pub struct KeyboardButton {
     /// be sent as a message when the button is pressed.
     pub text: String,
 
-    /// Request something from user.
+    /// Request something from user. This is available in private chats only.
+    ///
     /// - If `Some(Contact)`, the user's phone number will be sent as a contact
-    ///   when the button is pressed. Available in private chats only
+    ///   when the button is pressed.
     /// - If `Some(Location)`, the user's current location will be sent when the
-    ///   button is pressed. Available in private chats only
+    ///   button is pressed.
+    /// - If `Some(Poll(_))`, the user will be asked to create a poll and send
+    ///   it to the bot when the button is pressed.
+    /// - If `Some(WebApp(_))`, the described Web App will be launched when the
+    ///   button is pressed. The Web App will be able to send a “web_app_data”
+    ///   service message.
+    ///
+    /// **Note:** `Contact` and `Location` options will only work in Telegram
+    /// versions released after 9 April, 2016. Older clients will display
+    /// unsupported message.
+    ///
+    /// **Note:** `Poll(_)` option will only work in Telegram versions released
+    /// after 23 January, 2020. Older clients will display unsupported message.
+    ///
+    /// **Note:** `WebApp(_)` option will only work in Telegram versions
+    /// released after 16 April, 2022. Older clients will display unsupported
+    /// message.
     #[serde(flatten)]
     pub request: Option<ButtonRequest>,
 }
@@ -45,11 +62,13 @@ impl KeyboardButton {
 }
 
 // Serialize + Deserialize are implemented by hand
+// FIXME: add documentation
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ButtonRequest {
     Location,
     Contact,
     Poll(KeyboardButtonPollType),
+    WebApp(WebAppInfo),
 }
 
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
@@ -71,6 +90,11 @@ struct RawRequest {
     /// chats only.
     #[serde(rename = "request_poll")]
     poll: Option<KeyboardButtonPollType>,
+
+    /// If specified, the described Web App will be launched when the button is
+    /// pressed. The Web App will be able to send a “web_app_data” service
+    /// message. Available in private chats only.
+    web_app: Option<WebAppInfo>,
 }
 
 impl<'de> Deserialize<'de> for ButtonRequest {
@@ -81,13 +105,21 @@ impl<'de> Deserialize<'de> for ButtonRequest {
         let raw = RawRequest::deserialize(deserializer)?;
         match raw {
             RawRequest {
-                contact: Some(_),
-                location: Some(_),
-                poll: Some(_),
-            } => Err(D::Error::custom(
-                "`request_contact` and `request_location` fields are mutually exclusive, but both \
-                 were provided",
-            )),
+                contact,
+                location,
+                poll,
+                web_app,
+            } if 1
+                < (contact.is_some() as u8
+                    + location.is_some() as u8
+                    + poll.is_some() as u8
+                    + web_app.is_some() as u8) =>
+            {
+                Err(D::Error::custom(
+                    "`request_contact`, `request_location`, `request_poll` and `web_app` fields \
+                     are mutually exclusive",
+                ))
+            }
             RawRequest {
                 contact: Some(_), ..
             } => Ok(Self::Contact),
@@ -98,8 +130,14 @@ impl<'de> Deserialize<'de> for ButtonRequest {
                 poll: Some(poll_type),
                 ..
             } => Ok(Self::Poll(poll_type)),
+            RawRequest {
+                web_app: Some(web_app),
+                ..
+            } => Ok(Self::WebApp(web_app)),
+
             _ => Err(D::Error::custom(
-                "Either one of `request_contact` and `request_location` fields is required",
+                "Either one of `request_contact`, `request_location`, `request_poll` and \
+                 `web_app` fields is required",
             )),
         }
     }
@@ -110,26 +148,21 @@ impl Serialize for ButtonRequest {
     where
         S: Serializer,
     {
+        let mut raw = RawRequest {
+            contact: None,
+            location: None,
+            poll: None,
+            web_app: None,
+        };
+
         match self {
-            Self::Contact => RawRequest {
-                contact: Some(True),
-                location: None,
-                poll: None,
-            }
-            .serialize(serializer),
-            Self::Location => RawRequest {
-                contact: None,
-                location: Some(True),
-                poll: None,
-            }
-            .serialize(serializer),
-            Self::Poll(poll_type) => RawRequest {
-                contact: None,
-                location: None,
-                poll: Some(poll_type.clone()),
-            }
-            .serialize(serializer),
-        }
+            Self::Contact => raw.contact = Some(True),
+            Self::Location => raw.location = Some(True),
+            Self::Poll(poll_type) => raw.poll = Some(poll_type.clone()),
+            Self::WebApp(web_app) => raw.web_app = Some(web_app.clone()),
+        };
+
+        raw.serialize(serializer)
     }
 }
 

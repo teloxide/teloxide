@@ -7,8 +7,8 @@ use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
     InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
     PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User,
-    Venue, Video, VideoNote, Voice, VoiceChatEnded, VoiceChatParticipantsInvited,
-    VoiceChatScheduled, VoiceChatStarted,
+    Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData,
 };
 
 /// This object represents a message.
@@ -58,6 +58,7 @@ pub enum MessageKind {
     VoiceChatStarted(MessageVoiceChatStarted),
     VoiceChatEnded(MessageVoiceChatEnded),
     VoiceChatParticipantsInvited(MessageVoiceChatParticipantsInvited),
+    WebAppData(MessageWebAppData),
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -494,25 +495,31 @@ pub struct MessageProximityAlertTriggered {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatScheduled {
     /// Service message: voice chat scheduled
-    pub voice_chat_scheduled: VoiceChatScheduled,
+    pub video_chat_scheduled: VideoChatScheduled,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatStarted {
     /// Service message: voice chat started.
-    pub voice_chat_started: VoiceChatStarted,
+    pub video_chat_started: VideoChatStarted,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatEnded {
     /// Service message: voice chat ended.
-    pub voice_chat_ended: VoiceChatEnded,
+    pub video_chat_ended: VideoChatEnded,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVoiceChatParticipantsInvited {
     /// Service message: new participants invited to a voice chat.
-    pub voice_chat_participants_invited: VoiceChatParticipantsInvited,
+    pub video_chat_participants_invited: VideoChatParticipantsInvited,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageWebAppData {
+    /// Service message: data sent by a Web App.
+    pub web_app_data: WebAppData,
 }
 
 mod getters {
@@ -1455,7 +1462,7 @@ mod tests {
     /// Regression test for <https://github.com/teloxide/teloxide/issues/475>
     #[test]
     fn issue_475() {
-        let json = r#"{"message_id":198295,"from":{"id":1087968824,"is_bot":true,"first_name":"Group","username":"GroupAnonymousBot"},"sender_chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"date":1638236631,"voice_chat_started":{}}"#;
+        let json = r#"{"message_id":198295,"from":{"id":1087968824,"is_bot":true,"first_name":"Group","username":"GroupAnonymousBot"},"sender_chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"chat":{"id":-1001331354980,"title":"C++ Together 2.0","username":"cpptogether","type":"supergroup"},"date":1638236631,"video_chat_started":{}}"#;
 
         let message: Message = serde_json::from_str(json).unwrap();
 
