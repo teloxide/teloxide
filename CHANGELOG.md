@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022)
+  - Note that some field were renamed
+
 ## 0.5.1 - 2022-04-18
 
 ### Fixed

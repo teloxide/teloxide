@@ -34,6 +34,11 @@ pub struct WebhookInfo {
     /// happened when trying to deliver an update via webhook.
     pub last_error_message: Option<String>,
 
+    /// Time of the most recent error that happened when trying to synchronize
+    /// available updates with Telegram data-centers.
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    pub last_synchronization_error_date: Option<DateTime<Utc>>,
+
     /// Maximum allowed number of simultaneous HTTPS connections to the webhook
     /// for update delivery.
     pub max_connections: Option<u32>,
@@ -55,6 +60,7 @@ fn empty_url() {
         ip_address: None,
         last_error_date: None,
         last_error_message: None,
+        last_synchronization_error_date: None,
         max_connections: None,
         allowed_updates: Some(vec![AllowedUpdate::Message]),
     };

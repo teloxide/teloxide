@@ -590,6 +590,32 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMyCommands`].
     fn get_my_commands(&self) -> Self::GetMyCommands;
 
+    type SetChatMenuButton: Request<Payload = SetChatMenuButton, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetChatMenuButton`].
+    fn set_chat_menu_button(&self) -> Self::SetChatMenuButton;
+
+    type GetChatMenuButton: Request<Payload = GetChatMenuButton, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetChatMenuButton`].
+    fn get_chat_menu_button(&self) -> Self::GetChatMenuButton;
+
+    type SetMyDefaultAdministratorRights: Request<
+        Payload = SetMyDefaultAdministratorRights,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetMyDefaultAdministratorRights`].
+    fn set_my_default_administrator_rights(&self) -> Self::SetMyDefaultAdministratorRights;
+
+    type GetMyDefaultAdministratorRights: Request<
+        Payload = GetMyDefaultAdministratorRights,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`GetMyDefaultAdministratorRights`].
+    fn get_my_default_administrator_rights(&self) -> Self::GetMyDefaultAdministratorRights;
+
     type DeleteMyCommands: Request<Payload = DeleteMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`DeleteMyCommands`].
@@ -602,6 +628,17 @@ pub trait Requester {
     where
         I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>;
+
+    type AnswerWebAppQuery: Request<Payload = AnswerWebAppQuery, Err = Self::Err>;
+
+    /// For Telegram documentation see [`AnswerWebAppQuery`].
+    fn answer_web_app_query<W>(
+        &self,
+        web_app_query_id: W,
+        result: InlineQueryResult,
+    ) -> Self::AnswerWebAppQuery
+    where
+        W: Into<String>;
 
     type EditMessageText: Request<Payload = EditMessageText, Err = Self::Err>;
 
@@ -888,30 +925,103 @@ macro_rules! fwd_deref {
 macro_rules! forward_all {
     () => {
         requester_forward! {
-            get_me, log_out, close, get_updates, set_webhook, delete_webhook, get_webhook_info,
-            forward_message, copy_message, send_message, send_photo, send_audio, send_document,
-            send_video, send_animation, send_voice, send_video_note, send_media_group, send_location,
-            edit_message_live_location, edit_message_live_location_inline,
-            stop_message_live_location, stop_message_live_location_inline, send_venue,
-            send_contact, send_poll, send_dice, send_chat_action, get_user_profile_photos,
-            get_file, kick_chat_member, ban_chat_member, unban_chat_member, restrict_chat_member,
-            promote_chat_member, set_chat_administrator_custom_title,
-            ban_chat_sender_chat, unban_chat_sender_chat, set_chat_permissions,
-            export_chat_invite_link, create_chat_invite_link, edit_chat_invite_link,
-            revoke_chat_invite_link, set_chat_photo, delete_chat_photo, set_chat_title,
-            set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
-            leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
-            set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-            set_my_commands, get_my_commands, delete_my_commands, answer_inline_query, edit_message_text,
-            edit_message_text_inline, edit_message_caption, edit_message_caption_inline,
-            edit_message_media, edit_message_media_inline, edit_message_reply_markup,
-            edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,
-            get_sticker_set, upload_sticker_file, create_new_sticker_set,
-            add_sticker_to_set, set_sticker_position_in_set, delete_sticker_from_set,
-            set_sticker_set_thumb, send_invoice, answer_shipping_query,
-            answer_pre_checkout_query, set_passport_data_errors, send_game,
-            set_game_score, set_game_score_inline, get_game_high_scores,
-            approve_chat_join_request, decline_chat_join_request => fwd_deref, fty
+            get_me,
+            log_out,
+            close,
+            get_updates,
+            set_webhook,
+            delete_webhook,
+            get_webhook_info,
+            forward_message,
+            copy_message,
+            send_message,
+            send_photo,
+            send_audio,
+            send_document,
+            send_video,
+            send_animation,
+            send_voice,
+            send_video_note,
+            send_media_group,
+            send_location,
+            edit_message_live_location,
+            edit_message_live_location_inline,
+            stop_message_live_location,
+            stop_message_live_location_inline,
+            send_venue,
+            send_contact,
+            send_poll,
+            send_dice,
+            send_chat_action,
+            get_user_profile_photos,
+            get_file,
+            kick_chat_member,
+            ban_chat_member,
+            unban_chat_member,
+            restrict_chat_member,
+            promote_chat_member,
+            set_chat_administrator_custom_title,
+            ban_chat_sender_chat,
+            unban_chat_sender_chat,
+            set_chat_permissions,
+            export_chat_invite_link,
+            create_chat_invite_link,
+            edit_chat_invite_link,
+            revoke_chat_invite_link,
+            set_chat_photo,
+            delete_chat_photo,
+            set_chat_title,
+            set_chat_description,
+            pin_chat_message,
+            unpin_chat_message,
+            unpin_all_chat_messages,
+            leave_chat,
+            get_chat,
+            get_chat_administrators,
+            get_chat_members_count,
+            get_chat_member_count,
+            get_chat_member,
+            set_chat_sticker_set,
+            delete_chat_sticker_set,
+            answer_callback_query,
+            set_my_commands,
+            get_my_commands,
+            set_chat_menu_button,
+            get_chat_menu_button,
+            set_my_default_administrator_rights,
+            get_my_default_administrator_rights,
+            delete_my_commands,
+            answer_inline_query,
+            answer_web_app_query,
+            edit_message_text,
+            edit_message_text_inline,
+            edit_message_caption,
+            edit_message_caption_inline,
+            edit_message_media,
+            edit_message_media_inline,
+            edit_message_reply_markup,
+            edit_message_reply_markup_inline,
+            stop_poll,
+            delete_message,
+            send_sticker,
+            get_sticker_set,
+            upload_sticker_file,
+            create_new_sticker_set,
+            add_sticker_to_set,
+            set_sticker_position_in_set,
+            delete_sticker_from_set,
+            set_sticker_set_thumb,
+            send_invoice,
+            answer_shipping_query,
+            answer_pre_checkout_query,
+            set_passport_data_errors,
+            send_game,
+            set_game_score,
+            set_game_score_inline,
+            get_game_high_scores,
+            approve_chat_join_request,
+            decline_chat_join_request
+            => fwd_deref, fty
         }
     };
 }
@@ -998,7 +1108,7 @@ where
         set_chat_description, pin_chat_message, unpin_chat_message, unpin_all_chat_messages,
         leave_chat, get_chat, get_chat_administrators, get_chat_members_count, get_chat_member_count, get_chat_member,
         set_chat_sticker_set, delete_chat_sticker_set, answer_callback_query,
-        set_my_commands, get_my_commands, delete_my_commands, answer_inline_query, edit_message_text,
+        set_my_commands, get_my_commands, set_chat_menu_button, get_chat_menu_button, set_my_default_administrator_rights, get_my_default_administrator_rights, delete_my_commands, answer_inline_query, answer_web_app_query, edit_message_text,
         edit_message_text_inline, edit_message_caption, edit_message_caption_inline,
         edit_message_media, edit_message_media_inline, edit_message_reply_markup,
         edit_message_reply_markup_inline, stop_poll, delete_message, send_sticker,

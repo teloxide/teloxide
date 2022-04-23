@@ -943,6 +943,38 @@ macro_rules! requester_forward {
             $body!(get_my_commands this ())
         }
     };
+    (@method set_chat_menu_button $body:ident $ty:ident) => {
+        type SetChatMenuButton = $ty![SetChatMenuButton];
+
+        fn set_chat_menu_button(&self) -> Self::SetChatMenuButton {
+            let this = self;
+            $body!(set_chat_menu_button this ())
+        }
+    };
+    (@method get_chat_menu_button $body:ident $ty:ident) => {
+        type GetChatMenuButton = $ty![GetChatMenuButton];
+
+        fn get_chat_menu_button(&self) -> Self::GetChatMenuButton {
+            let this = self;
+            $body!(get_chat_menu_button this ())
+        }
+    };
+    (@method set_my_default_administrator_rights $body:ident $ty:ident) => {
+        type SetMyDefaultAdministratorRights = $ty![SetMyDefaultAdministratorRights];
+
+        fn set_my_default_administrator_rights(&self) -> Self::SetMyDefaultAdministratorRights {
+            let this = self;
+            $body!(set_my_default_administrator_rights this ())
+        }
+    };
+    (@method get_my_default_administrator_rights $body:ident $ty:ident) => {
+        type GetMyDefaultAdministratorRights = $ty![GetMyDefaultAdministratorRights];
+
+        fn get_my_default_administrator_rights(&self) -> Self::GetMyDefaultAdministratorRights {
+            let this = self;
+            $body!(get_my_default_administrator_rights this ())
+        }
+    };
     (@method delete_my_commands $body:ident $ty:ident) => {
         type DeleteMyCommands = $ty![DeleteMyCommands];
 
@@ -958,6 +990,14 @@ macro_rules! requester_forward {
         R: IntoIterator<Item = InlineQueryResult> {
             let this = self;
             $body!(answer_inline_query this (inline_query_id: I, results: R))
+        }
+    };
+    (@method answer_web_app_query $body:ident $ty:ident) => {
+        type AnswerWebAppQuery = $ty![AnswerWebAppQuery];
+
+        fn answer_web_app_query<W>(&self, web_app_query_id: W, result: InlineQueryResult) -> Self::AnswerWebAppQuery where W: Into<String> {
+            let this = self;
+            $body!(answer_web_app_query this (web_app_query_id: W, result: InlineQueryResult))
         }
     };
     (@method edit_message_text $body:ident $ty:ident) => {
