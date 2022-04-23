@@ -56,16 +56,16 @@ async fn main() {
         dialogue::enter::<Update, InMemStorage<State>, State, _>()
             .branch(
                 Update::filter_message()
-                    .chain(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name)),
+                    .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
+                    .branch(dptree::entry().filter_command::<Command>().endpoint(handle_command))
+                    .branch(dptree::endpoint(invalid_state)),
             )
             .branch(
                 Update::filter_callback_query().chain(
                     teloxide::handler![State::ReceiveProductChoice { full_name }]
                         .endpoint(receive_product_selection),
                 ),
-            )
-            .branch(Update::filter_message().filter_command::<Command>().endpoint(handle_command))
-            .branch(Update::filter_message().endpoint(invalid_state)),
+            ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
