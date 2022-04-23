@@ -130,9 +130,8 @@ async fn receive_product_selection(
                 format!("{full_name}, product '{product}' has been purchased successfully!"),
             )
             .await?;
+            dialogue.exit().await?;
         }
-
-        dialogue.update(State::Start).await?;
     }
 
     Ok(())
