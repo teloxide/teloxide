@@ -67,8 +67,11 @@ impl KeyboardMarkup {
         }
     }
 
-    pub fn append_row(mut self, buttons: Vec<KeyboardButton>) -> Self {
-        self.keyboard.push(buttons);
+    pub fn append_row<R>(mut self, buttons: R) -> Self
+    where
+        R: IntoIterator<Item = KeyboardButton>,
+    {
+        self.keyboard.push(buttons.into_iter().collect());
         self
     }
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+ - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
+
 ## 0.5.1 - 2022-04-18
 
 ### Fixed
