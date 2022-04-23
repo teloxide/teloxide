@@ -1,6 +1,4 @@
-use crate::{
-    adaptors::DefaultParseMode, errors::AsResponseParameters, requests::Requester, types::ParseMode,
-};
+use crate::{adaptors::DefaultParseMode, requests::Requester, types::ParseMode};
 
 #[cfg(feature = "cache_me")]
 use crate::adaptors::CacheMe;
