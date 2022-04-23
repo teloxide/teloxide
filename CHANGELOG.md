@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.8.1 - 2022-04-24
+
+### Added
+
+ - Implement `GetChatId` for `Update`.
+ - The `dialogue::enter()` function as a shortcut for `dptree::entry().enter_dialogue()`.
+
 ## 0.8.0 - 2022-04-18
 
 ### Removed
