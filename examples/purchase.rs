@@ -26,7 +26,7 @@ type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 pub enum State {
     Start,
     ReceiveFullName,
-    ProductChosen { full_name: String },
+    ReceiveProductChoice { full_name: String },
 }
 
 impl Default for State {
@@ -60,7 +60,7 @@ async fn main() {
             )
             .branch(
                 Update::filter_callback_query().chain(
-                    teloxide::handler![State::ProductChosen { full_name }]
+                    teloxide::handler![State::ReceiveProductChoice { full_name }]
                         .endpoint(receive_product_selection),
                 ),
             )
@@ -107,7 +107,7 @@ async fn receive_full_name(
             );
 
             bot.send_message(msg.chat.id, "Select a product:").reply_markup(products).await?;
-            dialogue.update(State::ProductChosen { full_name }).await?;
+            dialogue.update(State::ReceiveProductChoice { full_name }).await?;
         }
         None => {
             bot.send_message(msg.chat.id, "Please, send me your full name.").await?;
