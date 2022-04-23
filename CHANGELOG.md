@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022)
   - Note that some field were renamed
+- Method `MessageEntity::user_mention` ([#208][pr208])
+
+[pr208]: https://github.com/teloxide/teloxide-core/pull/208
 
 ## 0.5.1 - 2022-04-18
 
@@ -186,8 +189,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Throttle` adaptor not honouring chat/min limits ([#121][pr121])
 - Make `SendPoll::type_` optional ([#133][pr133])
 - Bug with `caption_entities`, see issue [#473][issue473]
-- Type of response for `CopyMessage` method ([#141](pr141), [#142](pr142))
-- Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145](pr145))
+- Type of response for `CopyMessage` method ([#141][pr141], [#142][pr142])
+- Bad request serialization when the `language` field of `MessageEntityKind::Pre` is `None` ([#145][pr145])
 - Deserialization of `MediaKind::Venue` ([#147][pr147])
 - Deserialization of `VoiceChat{Started,Ended}` messages ([#153][pr153])
 - Serialization of `BotCommandScope::Chat{,Administrators}` ([#154][pr154])
