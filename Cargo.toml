@@ -26,7 +26,7 @@ tokio = { version = "1.12.0", features = ["fs"] }
 tokio-util = "0.6.0"
 pin-project = "1.0.3"
 bytes = "1.0.0"
-reqwest = { version = "0.11.0", features = ["json", "stream", "multipart"], default-features = false }
+reqwest = { version = "0.11.10", features = ["json", "stream", "multipart"], default-features = false }
 url = { version = "2", features = ["serde"] }
 log = "0.4"
 
