@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use crate::{
     dispatching::{
-        dialogue::{Dialogue, GetChatId, Storage},
+        dialogue::{GetChatId, Storage},
         DpHandlerDescription,
     },
     types::{Me, Message},
@@ -82,19 +80,7 @@ where
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
-        self.chain(dptree::filter_map(|storage: Arc<S>, upd: Upd| {
-            let chat_id = upd.chat_id()?;
-            Some(Dialogue::new(storage, chat_id))
-        }))
-        .chain(dptree::filter_map_async(|dialogue: Dialogue<D, S>| async move {
-            match dialogue.get_or_default().await {
-                Ok(dialogue) => Some(dialogue),
-                Err(err) => {
-                    log::error!("dialogue.get_or_default() failed: {:?}", err);
-                    None
-                }
-            }
-        }))
+        self.chain(super::dialogue::enter::<Upd, S, D, Output>())
     }
 
     #[allow(deprecated)]

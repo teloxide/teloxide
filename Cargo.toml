@@ -152,3 +152,7 @@ required-features = ["macros"]
 [[example]]
 name = "ngrok_ping_pong"
 required-features = ["webhooks-axum"]
+
+[[example]]
+name = "purchase"
+required-features = ["macros"]
