@@ -114,35 +114,50 @@ pub enum InlineKeyboardButtonKind {
 /// let url_button = InlineKeyboardButton::url("Text".to_string(), url);
 /// ```
 impl InlineKeyboardButton {
-    pub fn url(text: String, url: reqwest::Url) -> InlineKeyboardButton {
+    pub fn url<T>(text: T, url: reqwest::Url) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+    {
         InlineKeyboardButton {
-            text,
+            text: text.into(),
             kind: InlineKeyboardButtonKind::Url(url),
         }
     }
 
-    pub fn callback(text: String, callback_data: String) -> InlineKeyboardButton {
+    pub fn callback<T, C>(text: T, callback_data: C) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+        C: Into<String>,
+    {
         InlineKeyboardButton {
-            text,
-            kind: InlineKeyboardButtonKind::CallbackData(callback_data),
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::CallbackData(callback_data.into()),
         }
     }
 
-    pub fn switch_inline_query(text: String, switch_inline_query: String) -> InlineKeyboardButton {
+    pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+        Q: Into<String>,
+    {
         InlineKeyboardButton {
-            text,
-            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query),
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
         }
     }
 
-    pub fn switch_inline_query_current_chat(
-        text: String,
-        switch_inline_query_current_chat: String,
-    ) -> InlineKeyboardButton {
+    pub fn switch_inline_query_current_chat<T, Q>(
+        text: T,
+        switch_inline_query_current_chat: Q,
+    ) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+        Q: Into<String>,
+    {
         InlineKeyboardButton {
-            text,
+            text: text.into(),
             kind: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
-                switch_inline_query_current_chat,
+                switch_inline_query_current_chat.into(),
             ),
         }
     }

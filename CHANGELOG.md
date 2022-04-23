@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
+ - Accept `Into<String>` instead of `String` in `InlineKeyboardButton::{url, callback, switch_inline_query, switch_inline_query_current_chat}`.
 
 ## 0.5.1 - 2022-04-18
 
