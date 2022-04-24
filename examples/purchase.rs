@@ -42,6 +42,8 @@ enum Command {
     Help,
     #[command(description = "start the purchase procedure.")]
     Start,
+    #[command(description = "cancel the purchase procedure.")]
+    Cancel,
 }
 
 #[tokio::main]
@@ -57,9 +59,14 @@ async fn main() {
             .branch(
                 Update::filter_message()
                     .branch(
-                        teloxide::handler![State::Start]
+                        dptree::entry()
                             .filter_command::<Command>()
-                            .endpoint(handle_command),
+                            .branch(
+                                teloxide::handler![State::Start]
+                                    .branch(teloxide::handler![Command::Help].endpoint(help))
+                                    .branch(teloxide::handler![Command::Start].endpoint(start)),
+                            )
+                            .branch(teloxide::handler![Command::Cancel].endpoint(cancel)),
                     )
                     .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
                     .branch(dptree::endpoint(invalid_state)),
@@ -78,22 +85,26 @@ async fn main() {
     .await;
 }
 
-async fn handle_command(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    cmd: Command,
-    dialogue: MyDialogue,
-) -> HandlerResult {
-    match cmd {
-        Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
-        }
-        Command::Start => {
-            bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
-            dialogue.update(State::ReceiveFullName).await?;
-        }
-    }
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
+    dialogue.update(State::ReceiveFullName).await?;
+    Ok(())
+}
 
+async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
+    Ok(())
+}
+
+async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Cancelling the dialogue.").await?;
+    dialogue.exit().await?;
+    Ok(())
+}
+
+async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
+        .await?;
     Ok(())
 }
 
@@ -136,11 +147,5 @@ async fn receive_product_selection(
         dialogue.exit().await?;
     }
 
-    Ok(())
-}
-
-async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
-    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
-        .await?;
     Ok(())
 }
