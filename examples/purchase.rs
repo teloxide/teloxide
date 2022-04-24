@@ -53,21 +53,21 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
+    let command_handler = dptree::entry()
+        .filter_command::<Command>()
+        .branch(
+            teloxide::handler![State::Start]
+                .branch(teloxide::handler![Command::Help].endpoint(help))
+                .branch(teloxide::handler![Command::Start].endpoint(start)),
+        )
+        .branch(teloxide::handler![Command::Cancel].endpoint(cancel));
+
     Dispatcher::builder(
         bot,
         dialogue::enter::<Update, InMemStorage<State>, State, _>()
             .branch(
                 Update::filter_message()
-                    .branch(
-                        dptree::entry()
-                            .filter_command::<Command>()
-                            .branch(
-                                teloxide::handler![State::Start]
-                                    .branch(teloxide::handler![Command::Help].endpoint(help))
-                                    .branch(teloxide::handler![Command::Start].endpoint(start)),
-                            )
-                            .branch(teloxide::handler![Command::Cancel].endpoint(cancel)),
-                    )
+                    .branch(command_handler)
                     .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
                     .branch(dptree::endpoint(invalid_state)),
             )
