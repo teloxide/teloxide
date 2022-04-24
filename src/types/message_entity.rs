@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::User;
+use crate::types::{User, UserId};
 
 /// This object represents one special entity in a text message.
 ///
@@ -23,6 +23,16 @@ impl MessageEntity {
     pub const fn new(kind: MessageEntityKind, offset: usize, length: usize) -> Self {
         Self {
             kind,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a text link in the form of
+    /// `tg://user/?id=...` that mentions user with `user_id`.
+    pub fn user_mention(user_id: UserId, offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::TextLink { url: user_id.url() },
             offset,
             length,
         }
