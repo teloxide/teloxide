@@ -56,8 +56,12 @@ async fn main() {
         dialogue::enter::<Update, InMemStorage<State>, State, _>()
             .branch(
                 Update::filter_message()
+                    .branch(
+                        teloxide::handler![State::Start]
+                            .filter_command::<Command>()
+                            .endpoint(handle_command),
+                    )
                     .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-                    .branch(dptree::entry().filter_command::<Command>().endpoint(handle_command))
                     .branch(dptree::endpoint(invalid_state)),
             )
             .branch(
