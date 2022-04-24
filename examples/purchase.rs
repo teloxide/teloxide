@@ -13,7 +13,7 @@
 // ```
 
 use teloxide::{
-    dispatching::dialogue::{self, GetChatId, InMemStorage},
+    dispatching::dialogue::{self, InMemStorage},
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -124,14 +124,12 @@ async fn receive_product_selection(
     full_name: String,
 ) -> HandlerResult {
     if let Some(product) = &q.data {
-        if let Some(chat_id) = q.chat_id() {
-            bot.send_message(
-                chat_id,
-                format!("{full_name}, product '{product}' has been purchased successfully!"),
-            )
-            .await?;
-            dialogue.exit().await?;
-        }
+        bot.send_message(
+            dialogue.chat_id(),
+            format!("{full_name}, product '{product}' has been purchased successfully!"),
+        )
+        .await?;
+        dialogue.exit().await?;
     }
 
     Ok(())
