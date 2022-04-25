@@ -61,21 +61,21 @@ async fn main() {
         )
         .branch(teloxide::handler![Command::Cancel].endpoint(cancel));
 
+    let message_handler = Update::filter_message()
+        .branch(command_handler)
+        .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
+        .branch(dptree::endpoint(invalid_state));
+
+    let callback_query_handler = Update::filter_callback_query().chain(
+        teloxide::handler![State::ReceiveProductChoice { full_name }]
+            .endpoint(receive_product_selection),
+    );
+
     Dispatcher::builder(
         bot,
         dialogue::enter::<Update, InMemStorage<State>, State, _>()
-            .branch(
-                Update::filter_message()
-                    .branch(command_handler)
-                    .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-                    .branch(dptree::endpoint(invalid_state)),
-            )
-            .branch(
-                Update::filter_callback_query().chain(
-                    teloxide::handler![State::ReceiveProductChoice { full_name }]
-                        .endpoint(receive_product_selection),
-                ),
-            ),
+            .branch(message_handler)
+            .branch(callback_query_handler),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
     .build()
