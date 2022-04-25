@@ -42,6 +42,8 @@ enum Command {
     Help,
     #[command(description = "start the purchase procedure.")]
     Start,
+    #[command(description = "cancel the purchase procedure.")]
+    Cancel,
 }
 
 #[tokio::main]
@@ -51,13 +53,22 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
+    let command_handler = dptree::entry()
+        .filter_command::<Command>()
+        .branch(
+            teloxide::handler![State::Start]
+                .branch(teloxide::handler![Command::Help].endpoint(help))
+                .branch(teloxide::handler![Command::Start].endpoint(start)),
+        )
+        .branch(teloxide::handler![Command::Cancel].endpoint(cancel));
+
     Dispatcher::builder(
         bot,
         dialogue::enter::<Update, InMemStorage<State>, State, _>()
             .branch(
                 Update::filter_message()
+                    .branch(command_handler)
                     .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-                    .branch(dptree::entry().filter_command::<Command>().endpoint(handle_command))
                     .branch(dptree::endpoint(invalid_state)),
             )
             .branch(
@@ -74,22 +85,26 @@ async fn main() {
     .await;
 }
 
-async fn handle_command(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    cmd: Command,
-    dialogue: MyDialogue,
-) -> HandlerResult {
-    match cmd {
-        Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
-        }
-        Command::Start => {
-            bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
-            dialogue.update(State::ReceiveFullName).await?;
-        }
-    }
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
+    dialogue.update(State::ReceiveFullName).await?;
+    Ok(())
+}
 
+async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
+    Ok(())
+}
+
+async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Cancelling the dialogue.").await?;
+    dialogue.exit().await?;
+    Ok(())
+}
+
+async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
+        .await?;
     Ok(())
 }
 
@@ -100,13 +115,13 @@ async fn receive_full_name(
 ) -> HandlerResult {
     match msg.text().map(ToOwned::to_owned) {
         Some(full_name) => {
-            let products = InlineKeyboardMarkup::default().append_row(
-                vec!["Apple", "Banana", "Orange", "Potato"].into_iter().map(|product| {
-                    InlineKeyboardButton::callback(product.to_owned(), product.to_owned())
-                }),
-            );
+            let products = ["Apple", "Banana", "Orange", "Potato"].map(|product| {
+                InlineKeyboardButton::callback(product.to_owned(), product.to_owned())
+            });
 
-            bot.send_message(msg.chat.id, "Select a product:").reply_markup(products).await?;
+            bot.send_message(msg.chat.id, "Select a product:")
+                .reply_markup(InlineKeyboardMarkup::new([products]))
+                .await?;
             dialogue.update(State::ReceiveProductChoice { full_name }).await?;
         }
         None => {
@@ -132,11 +147,5 @@ async fn receive_product_selection(
         dialogue.exit().await?;
     }
 
-    Ok(())
-}
-
-async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
-    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
-        .await?;
     Ok(())
 }
