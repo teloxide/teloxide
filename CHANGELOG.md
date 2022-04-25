@@ -7,25 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.6.0 - 2022-04-25
+
 ### Added
 
-- Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022)
+- Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022) ([#206][pr206], [#211][pr211])
   - Note that some field were renamed
 - Shortcut methods for `MessageEntity` ([#208][pr208], [#210][pr210])
 
 [pr208]: https://github.com/teloxide/teloxide-core/pull/208
+[pr206]: https://github.com/teloxide/teloxide-core/pull/206
 [pr210]: https://github.com/teloxide/teloxide-core/pull/210
+[pr211]: https://github.com/teloxide/teloxide-core/pull/211
 
 ### Changed
 
- - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
- - Accept `Into<String>` instead of `String` in `InlineKeyboardButton::{url, callback, switch_inline_query, switch_inline_query_current_chat}`.
+- Make `KeyboardMarkup` creation more convenient ([#207][pr207])
+  - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
+  - Accept `Into<String>` instead of `String` in `InlineKeyboardButton::{url, callback, switch_inline_query, switch_inline_query_current_chat}`.
+
+[pr207]: https://github.com/teloxide/teloxide-core/pull/207
 
 ## 0.5.1 - 2022-04-18
 
 ### Fixed
 
- - Document the `errors` module.
+- Document the `errors` module.
 
 ## 0.5.0 - 2022-04-13
 

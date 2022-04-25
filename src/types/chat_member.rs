@@ -75,7 +75,7 @@ pub struct Administrator {
     /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
 
-    /// `true` if the administrator can manage voice chats.
+    /// `true` if the administrator can manage video chats.
     pub can_manage_video_chats: bool,
 
     /// `true` if the administrator can invite new users to the chat.
@@ -394,15 +394,15 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can manage voice chats.
+    /// Returns `true` if the user can manage video chats.
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
-    ///   [`can_manage_voice_chats`] privilege.
+    ///   [`can_manage_video_chats`] privilege.
     /// Returns `false` otherwise.
     ///
-    /// [`can_manage_voice_chats`]: Administrator::can_manage_voice_chats
+    /// [`can_manage_video_chats`]: Administrator::can_manage_video_chats
     pub fn can_manage_video_chats(&self) -> bool {
         match self {
             Self::Owner(_) => true,

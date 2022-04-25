@@ -54,10 +54,10 @@ pub enum MessageKind {
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
-    VoiceChatScheduled(MessageVoiceChatScheduled),
-    VoiceChatStarted(MessageVoiceChatStarted),
-    VoiceChatEnded(MessageVoiceChatEnded),
-    VoiceChatParticipantsInvited(MessageVoiceChatParticipantsInvited),
+    VideoChatScheduled(MessageVideoChatScheduled),
+    VideoChatStarted(MessageVideoChatStarted),
+    VideoChatEnded(MessageVideoChatEnded),
+    VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited),
     WebAppData(MessageWebAppData),
 }
 
@@ -493,26 +493,26 @@ pub struct MessageProximityAlertTriggered {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageVoiceChatScheduled {
-    /// Service message: voice chat scheduled
+pub struct MessageVideoChatScheduled {
+    /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageVoiceChatStarted {
-    /// Service message: voice chat started.
+pub struct MessageVideoChatStarted {
+    /// Service message: video chat started.
     pub video_chat_started: VideoChatStarted,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageVoiceChatEnded {
-    /// Service message: voice chat ended.
+pub struct MessageVideoChatEnded {
+    /// Service message: video chat ended.
     pub video_chat_ended: VideoChatEnded,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageVoiceChatParticipantsInvited {
-    /// Service message: new participants invited to a voice chat.
+pub struct MessageVideoChatParticipantsInvited {
+    /// Service message: new participants invited to a video chat.
     pub video_chat_participants_invited: VideoChatParticipantsInvited,
 }
 
@@ -1466,7 +1466,7 @@ mod tests {
 
         let message: Message = serde_json::from_str(json).unwrap();
 
-        assert!(matches!(message.kind, MessageKind::VoiceChatStarted { .. }));
+        assert!(matches!(message.kind, MessageKind::VideoChatStarted { .. }));
 
         // FIXME(waffle): it seems like we are losing `sender_chat` in some
         // cases inclusing this
