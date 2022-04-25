@@ -28,9 +28,95 @@ impl MessageEntity {
         }
     }
 
+    /// Create a message entity representing a bold text.
+    pub const fn bold(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Bold,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing an italic text.
+    pub const fn italic(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Italic,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing an underline text.
+    pub const fn underline(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Underline,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a strikethrough text.
+    pub const fn strikethrough(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Strikethrough,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a spoiler text.
+    pub const fn spoiler(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Spoiler,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a monowidth text.
+    pub const fn code(offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Code,
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a monowidth block.
+    pub const fn pre(language: Option<String>, offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::Pre { language },
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a clickable text URL.
+    pub const fn text_link(url: reqwest::Url, offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::TextLink { url },
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a text mention.
+    ///
+    /// # Note
+    ///
+    /// If you don't have a complete [`User`] value, please use
+    /// [`MessageEntity::text_mention_id`] instead.
+    pub fn text_mention(user: User, offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::TextMention { user },
+            offset,
+            length,
+        }
+    }
+
     /// Create a message entity representing a text link in the form of
     /// `tg://user/?id=...` that mentions user with `user_id`.
-    pub fn user_mention(user_id: UserId, offset: usize, length: usize) -> Self {
+    pub fn text_mention_id(user_id: UserId, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextLink { url: user_id.url() },
             offset,

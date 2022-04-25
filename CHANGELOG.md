@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022)
   - Note that some field were renamed
-- Method `MessageEntity::user_mention` ([#208][pr208])
+- Shortcut methods for `MessageEntity` ([#208][pr208], [#210][pr210])
 
 [pr208]: https://github.com/teloxide/teloxide-core/pull/208
+[pr210]: https://github.com/teloxide/teloxide-core/pull/210
 
 ### Changed
 
