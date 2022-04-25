@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.8.2 - 2022-04-26
+
 ### Fixed
 
  - Fix the broken `#[derive(DialogueState)]` (function return type `dptree::Handler`).
