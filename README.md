@@ -363,6 +363,7 @@ Feel free to propose your own bot to our collection!
  - [wa7sa34cx/the-black-box-bot](https://github.com/wa7sa34cx/the-black-box-bot) -- This is the Black Box Telegram bot. You can hold any items in it.
  - [crapstone/hsctt](https://codeberg.org/crapstones-bots/hsctt) -- A Telegram bot that searches for HTTP status codes in all messages and replies with the text form.
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) -- Telegram bot for searching AUR in inline mode.
+ - [studiedlist/EddieBot](https://gitlab.com/studiedlist/eddie-bot) -- Chatting bot with several entertainment features
   
 ## Contributing
 
