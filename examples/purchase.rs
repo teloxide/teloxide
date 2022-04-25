@@ -115,9 +115,8 @@ async fn receive_full_name(
 ) -> HandlerResult {
     match msg.text().map(ToOwned::to_owned) {
         Some(full_name) => {
-            let products = ["Apple", "Banana", "Orange", "Potato"].map(|product| {
-                InlineKeyboardButton::callback(product.to_owned(), product.to_owned())
-            });
+            let products = ["Apple", "Banana", "Orange", "Potato"]
+                .map(|product| InlineKeyboardButton::callback(product, product));
 
             bot.send_message(msg.chat.id, "Select a product:")
                 .reply_markup(InlineKeyboardMarkup::new([products]))

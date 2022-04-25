@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+ - Update teloxide-core to v0.6.0 with [Bot API 6.0] support [**BC**].
+
+[Bot API 6.0]: https://core.telegram.org/bots/api#april-16-2022
+
 ## 0.8.1 - 2022-04-24
 
 ### Added
