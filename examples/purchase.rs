@@ -49,12 +49,11 @@ enum Command {
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dialogue_bot...");
+    log::info!("Starting purchase bot...");
 
     let bot = Bot::from_env().auto_send();
 
-    let command_handler = dptree::entry()
-        .filter_command::<Command>()
+    let command_handler = teloxide::filter_command::<Command, _>()
         .branch(
             teloxide::handler![State::Start]
                 .branch(teloxide::handler![Command::Help].endpoint(help))

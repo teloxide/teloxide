@@ -189,6 +189,11 @@ where
 ///
 /// See [`HandlerExt::enter_dialogue`].
 ///
+/// ## Dependency requirements
+///
+///  - `Arc<S>`
+///  - `Upd`
+///
 /// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
 pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
