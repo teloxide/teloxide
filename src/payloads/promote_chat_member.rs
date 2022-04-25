@@ -33,7 +33,7 @@ impl_payload! {
             pub can_edit_messages: bool,
             /// Pass True, if the administrator can delete messages of other users
             pub can_delete_messages: bool,
-            /// Pass True, if the administrator can manage voice chats, supergroups only
+            /// Pass True, if the administrator can manage video chats, supergroups only
             pub can_manage_video_chats: bool,
             /// Pass True, if the administrator can invite new users to the chat
             pub can_invite_users: bool,
