@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+ - Fix the broken `#[derive(DialogueState)]` (function return type `dptree::Handler`).
+
 ### Changed
 
  - Update teloxide-core to v0.6.0 with [Bot API 6.0] support [**BC**].
