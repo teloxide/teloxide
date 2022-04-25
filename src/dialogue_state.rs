@@ -104,7 +104,8 @@ pub fn expand(item: ItemEnum) -> Result<TokenStream, syn::Error> {
         impl #self_params_with_bounds teloxide::dispatching::HandlerFactory for #enum_ident #self_params #where_clause {
         type Out = #out;
 
-        fn handler() -> dptree::Handler<'static, dptree::di::DependencyMap, Self::Out> {
+        fn handler() -> dptree::Handler<'static, dptree::di::DependencyMap, Self::Out,
+            teloxide::dispatching::DpHandlerDescription> {
             assert_clone::<#enum_ident #self_params>();
 
             dptree::entry()
