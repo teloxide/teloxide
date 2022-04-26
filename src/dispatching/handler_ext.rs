@@ -42,7 +42,8 @@ pub trait HandlerExt<Output> {
     ///  - `Arc<S>`
     ///  - `Upd`
     ///
-    /// [`Dialogue<D, S>`]: Dialogue
+    /// [`Dialogue<D, S>`]: super::dialogue::Dialogue
+    /// [`Dialogue::get_or_default`]: super::dialogue::Dialogue::get_or_default
     #[must_use]
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
@@ -67,10 +68,7 @@ where
     where
         C: BotCommands + Send + Sync + 'static,
     {
-        self.chain(dptree::filter_map(move |message: Message, me: Me| {
-            let bot_name = me.user.username.expect("Bots must have a username");
-            message.text().and_then(|text| C::parse(text, bot_name).ok())
-        }))
+        self.chain(filter_command::<C, Output>())
     }
 
     fn enter_dialogue<Upd, S, D>(self) -> Self
@@ -90,4 +88,25 @@ where
     {
         self.chain(F::handler())
     }
+}
+
+/// Returns a handler that accepts a parsed command `C`.
+///
+/// A call to this function is the same as `dptree::entry().filter_command()`.
+///
+/// See [`HandlerExt::filter_command`].
+///
+/// ## Dependency requirements
+///
+///  - [`crate::types::Message`]
+///  - [`crate::types::Me`]
+pub fn filter_command<C, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+where
+    C: BotCommands + Send + Sync + 'static,
+    Output: Send + Sync + 'static,
+{
+    dptree::entry().chain(dptree::filter_map(move |message: Message, me: Me| {
+        let bot_name = me.user.username.expect("Bots must have a username");
+        message.text().and_then(|text| C::parse(text, bot_name).ok())
+    }))
 }
