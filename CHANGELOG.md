@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Bot API 6.0]: https://core.telegram.org/bots/api#april-16-2022
 
+## 0.8.2 - 2022-04-26
+
+### Fixed
+
+ - Fix the broken `#[derive(DialogueState)]` (function return type `dptree::Handler`).
+
 ## 0.8.1 - 2022-04-24
 
 ### Added
