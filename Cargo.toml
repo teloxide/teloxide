@@ -122,11 +122,14 @@ path = "tests/sqlite.rs"
 required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
 
 [[example]]
+name = "throw_dice"
+
+[[example]]
 name = "dialogue"
 required-features = ["macros"]
 
 [[example]]
-name = "simple_commands"
+name = "command"
 required-features = ["macros"]
 
 [[example]]
@@ -143,10 +146,6 @@ required-features = ["macros"]
 
 [[example]]
 name = "admin"
-required-features = ["macros"]
-
-[[example]]
-name = "dispatching_features"
 required-features = ["macros"]
 
 [[example]]
