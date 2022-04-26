@@ -13,7 +13,10 @@
 // ```
 
 use teloxide::{
-    dispatching::dialogue::{self, InMemStorage},
+    dispatching::{
+        dialogue::{self, InMemStorage},
+        UpdateHandler,
+    },
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -53,6 +56,15 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
+    Dispatcher::builder(bot, schema())
+        .dependencies(dptree::deps![InMemStorage::<State>::new()])
+        .build()
+        .setup_ctrlc_handler()
+        .dispatch()
+        .await;
+}
+
+fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
     let command_handler = teloxide::filter_command::<Command, _>()
         .branch(
             teloxide::handler![State::Start]
@@ -71,17 +83,9 @@ async fn main() {
             .endpoint(receive_product_selection),
     );
 
-    Dispatcher::builder(
-        bot,
-        dialogue::enter::<Update, InMemStorage<State>, State, _>()
-            .branch(message_handler)
-            .branch(callback_query_handler),
-    )
-    .dependencies(dptree::deps![InMemStorage::<State>::new()])
-    .build()
-    .setup_ctrlc_handler()
-    .dispatch()
-    .await;
+    dialogue::enter::<Update, InMemStorage<State>, State, _>()
+        .branch(message_handler)
+        .branch(callback_query_handler)
 }
 
 async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
