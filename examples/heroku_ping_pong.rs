@@ -39,7 +39,7 @@ use reqwest::{StatusCode, Url};
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting heroku_ping_pong_bot...");
+    log::info!("Starting Heroku ping-pong bot...");
 
     let bot = Bot::from_env().auto_send();
 

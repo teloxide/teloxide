@@ -6,7 +6,7 @@ use teloxide::{dispatching::update_listeners::webhooks, prelude::*};
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting ngrok_ping_pong_bot...");
+    log::info!("Starting ngrok ping-pong bot...");
 
     let bot = Bot::from_env().auto_send();
 
