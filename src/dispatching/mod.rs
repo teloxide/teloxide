@@ -88,7 +88,7 @@
 //! which allows you to deal with such objects as a bot and various update types
 //! easily.
 //!
-//! For a more involved example, see [`examples/dispatching_features.rs`](https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs).
+//! For a more involved example, see [`examples/purchase.rs`](https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs).
 //!
 //! TODO: explain a more involved example with multiple branches.
 //!
