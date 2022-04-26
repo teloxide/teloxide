@@ -113,6 +113,6 @@ pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_description::DpHandlerDescription;
-pub use handler_ext::HandlerExt;
+pub use handler_ext::{filter_command, HandlerExt};
 #[allow(deprecated)]
 pub use handler_factory::HandlerFactory;

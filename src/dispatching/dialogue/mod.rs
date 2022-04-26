@@ -189,6 +189,11 @@ where
 ///
 /// See [`HandlerExt::enter_dialogue`].
 ///
+/// ## Dependency requirements
+///
+///  - `Arc<S>`
+///  - `Upd`
+///
 /// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
 pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
@@ -214,11 +219,13 @@ where
         }))
 }
 
-/// Perform a dialogue FSM transition.
+/// Filters an enumeration, passing its payload forwards.
 ///
-/// This macro expands to a [`dptree::Handler`] that filters your dialogue
-/// state: if the state enumeration is of a certain variant, the execution
-/// continues; otherwise, `dptree` will try the next branch.
+/// This macro expands to a [`dptree::Handler`] that acts on your enumeration
+/// type: if the enumeration is of a certain variant, the execution continues;
+/// otherwise, `dptree` will try the next branch. This is very useful for
+/// dialogue FSM transitions and Telegram command filtering; for a complete
+/// example, please see [`examples/purchase.rs`].
 ///
 /// Variants can take the following forms:
 ///
@@ -243,6 +250,8 @@ where
 /// ## Dependency requirements
 ///
 ///  - Your dialogue state enumeration `State`.
+///
+/// [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
 #[macro_export]
 macro_rules! handler {
     ($($variant:ident)::+) => {
