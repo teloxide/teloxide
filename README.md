@@ -106,7 +106,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/DICES_BOT.gif />
+    <img src=../../raw/master/media/dices.gif />
   </kbd>
 </div>
 
@@ -176,7 +176,7 @@ async fn answer(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/SIMPLE_COMMANDS_BOT.gif />
+    <img src=../../raw/master/media/simple-commands.gif />
   </kbd>
 </div>
 
@@ -302,7 +302,7 @@ async fn receive_location(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/DIALOGUE_BOT.gif />
+    <img src=../../raw/master/media/dialogue.gif />
   </kbd>
 </div>
 
