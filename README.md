@@ -121,7 +121,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](examples/simple_commands.rs))
+([Full](examples/command.rs))
 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
@@ -131,7 +131,7 @@ use std::error::Error;
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting simple_commands_bot...");
+    log::info!("Starting command bot...");
 
     let bot = Bot::from_env().auto_send();
 
@@ -176,7 +176,7 @@ async fn answer(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/simple-commands.gif />
+    <img src=../../raw/master/media/command.gif />
   </kbd>
 </div>
 
