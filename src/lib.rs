@@ -4,14 +4,14 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices.rs))
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs))
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
 //! # #[tokio::main]
 //! # async fn main() {
 //! pretty_env_logger::init();
-//! log::info!("Starting dices_bot...");
+//! log::info!("Starting throw dice bot...");
 //!
 //! let bot = Bot::from_env().auto_send();
 //!
