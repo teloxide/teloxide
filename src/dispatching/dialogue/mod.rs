@@ -252,38 +252,16 @@ where
 ///  - Your dialogue state enumeration `State`.
 ///
 /// [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
+#[deprecated(note = "Use dptree::case! instead")]
 #[macro_export]
 macro_rules! handler {
-    ($($variant:ident)::+) => {
-        $crate::dptree::filter(|state| matches!(state, $($variant)::+))
-    };
-    ($($variant:ident)::+ ($param:ident)) => {
-        $crate::dptree::filter_map(|state| match state {
-            $($variant)::+($param) => Some($param),
-            _ => None,
-        })
-    };
-    ($($variant:ident)::+ ($($param:ident),+ $(,)?)) => {
-        $crate::dptree::filter_map(|state| match state {
-            $($variant)::+($($param),+) => Some(($($param),+ ,)),
-            _ => None,
-        })
-    };
-    ($($variant:ident)::+ {$param:ident}) => {
-        $crate::dptree::filter_map(|state| match state {
-            $($variant)::+{$param} => Some($param),
-            _ => None,
-        })
-    };
-    ($($variant:ident)::+ {$($param:ident),+ $(,)?}) => {
-        $crate::dptree::filter_map(|state| match state {
-            $($variant)::+ { $($param),+ } => Some(($($param),+ ,)),
-            _ => None,
-        })
+    ($($x:tt)*) => {
+        $crate::dptree::case![$($x)*]
     };
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod tests {
     use std::ops::ControlFlow;
 

@@ -210,7 +210,6 @@ impl Default for State {
     }
 }
 
-#[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dialogue_bot...");
@@ -221,12 +220,11 @@ async fn main() {
         bot,
         Update::filter_message()
             .enter_dialogue::<Message, InMemStorage<State>, State>()
-            .branch(teloxide::handler![State::Start].endpoint(start))
-            .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-            .branch(teloxide::handler![State::ReceiveAge { full_name }].endpoint(receive_age))
+            .branch(dptree::case![State::Start].endpoint(start))
+            .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
+            .branch(dptree::case![State::ReceiveAge { full_name }].endpoint(receive_age))
             .branch(
-                teloxide::handler![State::ReceiveLocation { full_name, age }]
-                    .endpoint(receive_location),
+                dptree::case![State::ReceiveLocation { full_name, age }].endpoint(receive_location),
             ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])

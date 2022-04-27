@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Bot API 6.0]: https://core.telegram.org/bots/api#april-16-2022
 
+### Deprecated
+
+ - `teloxide::handler!` in favour of `dptree::case!`.
+
 ## 0.8.2 - 2022-04-26
 
 ### Fixed
