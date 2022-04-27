@@ -149,6 +149,10 @@ name = "admin"
 required-features = ["macros"]
 
 [[example]]
+name = "dispatching_features"
+required-features = ["macros"]
+
+[[example]]
 name = "ngrok_ping_pong"
 required-features = ["webhooks-axum"]
 
