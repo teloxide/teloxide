@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.9.0 - 2022-04-27
+
 ### Added
 
  - The `dispatching::filter_command` function (also accessible as `teloxide::filter_command`) as a shortcut for `dptree::entry().filter_command()`.
