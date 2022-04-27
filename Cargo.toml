@@ -126,7 +126,7 @@ name = "dialogue"
 required-features = ["macros"]
 
 [[example]]
-name = "simple_commands"
+name = "command"
 required-features = ["macros"]
 
 [[example]]

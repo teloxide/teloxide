@@ -21,7 +21,7 @@ enum Command {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     pretty_env_logger::init();
-    log::info!("Starting bot...");
+    log::info!("Starting buttons bot...");
 
     let bot = Bot::from_env().auto_send();
 
