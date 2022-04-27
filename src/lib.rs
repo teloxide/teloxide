@@ -80,7 +80,7 @@ pub use teloxide_core::*;
 pub use teloxide_macros as macros;
 
 pub use dispatching::filter_command;
-pub use dptree;
+pub use dptree::{self, case as handler};
 
 #[cfg(all(feature = "nightly", doctest))]
 #[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../README.md")))]

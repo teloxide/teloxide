@@ -13,7 +13,10 @@
 // ```
 
 use teloxide::{
-    dispatching::dialogue::{self, InMemStorage},
+    dispatching::{
+        dialogue::{self, InMemStorage},
+        UpdateHandler,
+    },
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -53,35 +56,36 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
+    Dispatcher::builder(bot, schema())
+        .dependencies(dptree::deps![InMemStorage::<State>::new()])
+        .build()
+        .setup_ctrlc_handler()
+        .dispatch()
+        .await;
+}
+
+fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
     let command_handler = teloxide::filter_command::<Command, _>()
         .branch(
-            teloxide::handler![State::Start]
-                .branch(teloxide::handler![Command::Help].endpoint(help))
-                .branch(teloxide::handler![Command::Start].endpoint(start)),
+            dptree::case![State::Start]
+                .branch(dptree::case![Command::Help].endpoint(help))
+                .branch(dptree::case![Command::Start].endpoint(start)),
         )
-        .branch(teloxide::handler![Command::Cancel].endpoint(cancel));
+        .branch(dptree::case![Command::Cancel].endpoint(cancel));
 
     let message_handler = Update::filter_message()
         .branch(command_handler)
-        .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
+        .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
         .branch(dptree::endpoint(invalid_state));
 
     let callback_query_handler = Update::filter_callback_query().chain(
-        teloxide::handler![State::ReceiveProductChoice { full_name }]
+        dptree::case![State::ReceiveProductChoice { full_name }]
             .endpoint(receive_product_selection),
     );
 
-    Dispatcher::builder(
-        bot,
-        dialogue::enter::<Update, InMemStorage<State>, State, _>()
-            .branch(message_handler)
-            .branch(callback_query_handler),
-    )
-    .dependencies(dptree::deps![InMemStorage::<State>::new()])
-    .build()
-    .setup_ctrlc_handler()
-    .dispatch()
-    .await;
+    dialogue::enter::<Update, InMemStorage<State>, State, _>()
+        .branch(message_handler)
+        .branch(callback_query_handler)
 }
 
 async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
