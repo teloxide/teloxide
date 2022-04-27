@@ -3,7 +3,7 @@
 > `teloxide-core` versions less that `0.4.5` (`teloxide` versions less than 0.7.3) have a low-severity security vulnerability, [learn more >>](https://github.com/teloxide/teloxide/discussions/574)
 
 <div align="center">
-  <img src="ICON.png" width="250"/>
+  <img src="../../raw/master/ICON.png" width="250"/>
   <h1>teloxide</h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
@@ -106,7 +106,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/throw-dice.gif />
+    <img src=../../raw/master/media/throw-dice.gif width="420px" />
   </kbd>
 </div>
 
@@ -176,7 +176,7 @@ async fn answer(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/command.gif />
+    <img src=../../raw/master/media/command.gif width="420px" />
   </kbd>
 </div>
 
@@ -301,7 +301,7 @@ async fn receive_location(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/dialogue.gif />
+    <img src=../../raw/master/media/dialogue.gif width="420px" />
   </kbd>
 </div>
 
