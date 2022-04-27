@@ -12,7 +12,7 @@ use teloxide::{
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dispatching_features_bot...");
+    log::info!("Starting dispatching features bot...");
 
     let bot = Bot::from_env().auto_send();
 

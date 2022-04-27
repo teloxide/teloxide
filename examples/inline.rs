@@ -9,7 +9,7 @@ use teloxide::{
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting inline_bot...");
+    log::info!("Starting inline bot...");
 
     let bot = Bot::from_env().auto_send();
 

@@ -13,7 +13,10 @@
 // ```
 
 use teloxide::{
-    dispatching::dialogue::{self, GetChatId, InMemStorage},
+    dispatching::{
+        dialogue::{self, InMemStorage},
+        UpdateHandler,
+    },
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -42,54 +45,69 @@ enum Command {
     Help,
     #[command(description = "start the purchase procedure.")]
     Start,
+    #[command(description = "cancel the purchase procedure.")]
+    Cancel,
 }
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dialogue_bot...");
+    log::info!("Starting purchase bot...");
 
     let bot = Bot::from_env().auto_send();
 
-    Dispatcher::builder(
-        bot,
-        dialogue::enter::<Update, InMemStorage<State>, State, _>()
-            .branch(
-                Update::filter_message()
-                    .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-                    .branch(dptree::entry().filter_command::<Command>().endpoint(handle_command))
-                    .branch(dptree::endpoint(invalid_state)),
-            )
-            .branch(
-                Update::filter_callback_query().chain(
-                    teloxide::handler![State::ReceiveProductChoice { full_name }]
-                        .endpoint(receive_product_selection),
-                ),
-            ),
-    )
-    .dependencies(dptree::deps![InMemStorage::<State>::new()])
-    .build()
-    .setup_ctrlc_handler()
-    .dispatch()
-    .await;
+    Dispatcher::builder(bot, schema())
+        .dependencies(dptree::deps![InMemStorage::<State>::new()])
+        .build()
+        .setup_ctrlc_handler()
+        .dispatch()
+        .await;
 }
 
-async fn handle_command(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    cmd: Command,
-    dialogue: MyDialogue,
-) -> HandlerResult {
-    match cmd {
-        Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
-        }
-        Command::Start => {
-            bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
-            dialogue.update(State::ReceiveFullName).await?;
-        }
-    }
+fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
+    let command_handler = teloxide::filter_command::<Command, _>()
+        .branch(
+            dptree::case![State::Start]
+                .branch(dptree::case![Command::Help].endpoint(help))
+                .branch(dptree::case![Command::Start].endpoint(start)),
+        )
+        .branch(dptree::case![Command::Cancel].endpoint(cancel));
 
+    let message_handler = Update::filter_message()
+        .branch(command_handler)
+        .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
+        .branch(dptree::endpoint(invalid_state));
+
+    let callback_query_handler = Update::filter_callback_query().chain(
+        dptree::case![State::ReceiveProductChoice { full_name }]
+            .endpoint(receive_product_selection),
+    );
+
+    dialogue::enter::<Update, InMemStorage<State>, State, _>()
+        .branch(message_handler)
+        .branch(callback_query_handler)
+}
+
+async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
+    dialogue.update(State::ReceiveFullName).await?;
+    Ok(())
+}
+
+async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
+    Ok(())
+}
+
+async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Cancelling the dialogue.").await?;
+    dialogue.exit().await?;
+    Ok(())
+}
+
+async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
+        .await?;
     Ok(())
 }
 
@@ -100,13 +118,12 @@ async fn receive_full_name(
 ) -> HandlerResult {
     match msg.text().map(ToOwned::to_owned) {
         Some(full_name) => {
-            let products = InlineKeyboardMarkup::default().append_row(
-                vec!["Apple", "Banana", "Orange", "Potato"].into_iter().map(|product| {
-                    InlineKeyboardButton::callback(product.to_owned(), product.to_owned())
-                }),
-            );
+            let products = ["Apple", "Banana", "Orange", "Potato"]
+                .map(|product| InlineKeyboardButton::callback(product, product));
 
-            bot.send_message(msg.chat.id, "Select a product:").reply_markup(products).await?;
+            bot.send_message(msg.chat.id, "Select a product:")
+                .reply_markup(InlineKeyboardMarkup::new([products]))
+                .await?;
             dialogue.update(State::ReceiveProductChoice { full_name }).await?;
         }
         None => {
@@ -124,21 +141,13 @@ async fn receive_product_selection(
     full_name: String,
 ) -> HandlerResult {
     if let Some(product) = &q.data {
-        if let Some(chat_id) = q.chat_id() {
-            bot.send_message(
-                chat_id,
-                format!("{full_name}, product '{product}' has been purchased successfully!"),
-            )
-            .await?;
-            dialogue.exit().await?;
-        }
+        bot.send_message(
+            dialogue.chat_id(),
+            format!("{full_name}, product '{product}' has been purchased successfully!"),
+        )
+        .await?;
+        dialogue.exit().await?;
     }
 
-    Ok(())
-}
-
-async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
-    bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
-        .await?;
     Ok(())
 }
