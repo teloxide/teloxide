@@ -9,16 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - The `dispatching::filter_command` function (also accessible as `teloxide::filter_command`) as a shortcut for `dptree::entry().filter_command()`.
+ - Re-export `dptree::case!` as `teloxide::handler!` (the former is preferred for new code).
 
 ### Changed
 
  - Update teloxide-core to v0.6.0 with [Bot API 6.0] support [**BC**].
 
 [Bot API 6.0]: https://core.telegram.org/bots/api#april-16-2022
-
-### Deprecated
-
- - `teloxide::handler!` in favour of `dptree::case!`.
 
 ## 0.8.2 - 2022-04-26
 
