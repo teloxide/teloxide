@@ -4,14 +4,14 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/dices.rs))
+//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs))
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
 //! # #[tokio::main]
 //! # async fn main() {
 //! pretty_env_logger::init();
-//! log::info!("Starting dices_bot...");
+//! log::info!("Starting throw dice bot...");
 //!
 //! let bot = Bot::from_env().auto_send();
 //!
@@ -79,7 +79,8 @@ pub use teloxide_core::*;
 #[cfg(feature = "macros")]
 pub use teloxide_macros as macros;
 
-pub use dptree;
+pub use dispatching::filter_command;
+pub use dptree::{self, case as handler};
 
 #[cfg(all(feature = "nightly", doctest))]
 #[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../README.md")))]

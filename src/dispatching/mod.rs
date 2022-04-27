@@ -39,7 +39,7 @@
 //! # #[tokio::main]
 //! # async fn main() {
 //! pretty_env_logger::init();
-//! log::info!("Starting shared_state_bot...");
+//! log::info!("Starting shared state bot...");
 //!
 //! let bot = Bot::from_env().auto_send();
 //!
@@ -113,6 +113,6 @@ pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_description::DpHandlerDescription;
-pub use handler_ext::HandlerExt;
+pub use handler_ext::{filter_command, HandlerExt};
 #[allow(deprecated)]
 pub use handler_factory::HandlerFactory;

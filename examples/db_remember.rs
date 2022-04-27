@@ -38,7 +38,7 @@ pub enum Command {
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting db_remember_bot...");
+    log::info!("Starting DB remember bot...");
 
     let bot = Bot::from_env().auto_send();
 
@@ -50,9 +50,9 @@ async fn main() {
 
     let handler = Update::filter_message()
         .enter_dialogue::<Message, ErasedStorage<State>, State>()
-        .branch(teloxide::handler![State::Start].endpoint(start))
+        .branch(dptree::case![State::Start].endpoint(start))
         .branch(
-            teloxide::handler![State::GotNumber(n)]
+            dptree::case![State::GotNumber(n)]
                 .branch(dptree::entry().filter_command::<Command>().endpoint(got_number))
                 .branch(dptree::endpoint(invalid_command)),
         );

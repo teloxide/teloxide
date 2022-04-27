@@ -56,7 +56,7 @@ impl FromStr for UnitOfTime {
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting admin_bot...");
+    log::info!("Starting admin bot...");
 
     let bot = teloxide::Bot::from_env().auto_send();
 

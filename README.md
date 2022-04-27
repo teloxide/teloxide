@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%205.7%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.0%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/official%20chat-t.me%2Fteloxide-blueviolet">
@@ -72,7 +72,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.8", features = ["macros", "auto-send"] }
+teloxide = { version = "0.9", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -84,7 +84,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 This bot replies with a dice throw to each received message:
 
-([Full](examples/dices.rs))
+([Full](examples/throw_dice.rs))
 
 ```rust,no_run
 use teloxide::prelude::*;
@@ -92,7 +92,7 @@ use teloxide::prelude::*;
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dices_bot...");
+    log::info!("Starting throw dice bot...");
 
     let bot = Bot::from_env().auto_send();
 
@@ -106,7 +106,7 @@ async fn main() {
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/DICES_BOT.gif />
+    <img src=../../raw/master/media/throw-dice.gif />
   </kbd>
 </div>
 
@@ -121,7 +121,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-([Full](examples/simple_commands.rs))
+([Full](examples/command.rs))
 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
@@ -131,7 +131,7 @@ use std::error::Error;
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting simple_commands_bot...");
+    log::info!("Starting command bot...");
 
     let bot = Bot::from_env().auto_send();
 
@@ -176,7 +176,7 @@ async fn answer(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/SIMPLE_COMMANDS_BOT.gif />
+    <img src=../../raw/master/media/command.gif />
   </kbd>
 </div>
 
@@ -213,7 +213,7 @@ impl Default for State {
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting dialogue_bot...");
+    log::info!("Starting dialogue bot...");
 
     let bot = Bot::from_env().auto_send();
 
@@ -221,12 +221,11 @@ async fn main() {
         bot,
         Update::filter_message()
             .enter_dialogue::<Message, InMemStorage<State>, State>()
-            .branch(teloxide::handler![State::Start].endpoint(start))
-            .branch(teloxide::handler![State::ReceiveFullName].endpoint(receive_full_name))
-            .branch(teloxide::handler![State::ReceiveAge { full_name }].endpoint(receive_age))
+            .branch(dptree::case![State::Start].endpoint(start))
+            .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
+            .branch(dptree::case![State::ReceiveAge { full_name }].endpoint(receive_age))
             .branch(
-                teloxide::handler![State::ReceiveLocation { full_name, age }]
-                    .endpoint(receive_location),
+                dptree::case![State::ReceiveLocation { full_name, age }].endpoint(receive_location),
             ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
@@ -302,7 +301,7 @@ async fn receive_location(
 
 <div align="center">
   <kbd>
-    <img src=../../raw/master/media/DIALOGUE_BOT.gif />
+    <img src=../../raw/master/media/dialogue.gif />
   </kbd>
 </div>
 
@@ -363,6 +362,7 @@ Feel free to propose your own bot to our collection!
  - [wa7sa34cx/the-black-box-bot](https://github.com/wa7sa34cx/the-black-box-bot) -- This is the Black Box Telegram bot. You can hold any items in it.
  - [crapstone/hsctt](https://codeberg.org/crapstones-bots/hsctt) -- A Telegram bot that searches for HTTP status codes in all messages and replies with the text form.
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) -- Telegram bot for searching AUR in inline mode.
+ - [studiedlist/EddieBot](https://gitlab.com/studiedlist/eddie-bot) -- Chatting bot with several entertainment features
   
 ## Contributing
 
