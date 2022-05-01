@@ -21,7 +21,7 @@ pub fn rename_by_rule(input: &str, rule: &str) -> String {
         "SCREAMING_SNAKE_CASE" => input.to_shouty_snake_case(),
         "kebab-case" => input.to_kebab_case(),
         "SCREAMING-KEBAB-CASE" => input.to_shouty_kebab_case(),
-        _ => input.to_string(),
+        _ => rule.to_string(),
     }
 }
 
