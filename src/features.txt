@@ -15,7 +15,6 @@
 | `cache-me` | Enables the [`CacheMe`](adaptors::CacheMe) bot adaptor. |
 | `trace-adaptor` | Enables the [`Trace`](adaptors::Trace) bot adaptor. |
 | `erased` | Enables the [`ErasedRequester`](adaptors::ErasedRequester) bot adaptor. |
-| `frunk` | Enables [`teloxide::utils::UpState`]. |
 | `full` | Enables all the features except `nightly`. |
 | `nightly` | Enables nightly-only features (see the [teloxide-core features]). |
 
