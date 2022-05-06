@@ -5,7 +5,7 @@ use teloxide_core::types::MessageEntity;
 #[derive(Debug)]
 pub enum InvokeEntityError {
     IndexOutOfBound,
-    FromUTF16(FromUtf16Error)
+    FromUTF16(FromUtf16Error),
 }
 
 impl From<FromUtf16Error> for InvokeEntityError {
@@ -25,7 +25,10 @@ impl std::fmt::Display for InvokeEntityError {
 
 impl std::error::Error for InvokeEntityError {}
 
-fn invoke_entity_from_utf16(text: &[u16], entity: &MessageEntity) -> Result<String, InvokeEntityError> {
+fn invoke_entity_from_utf16(
+    text: &[u16],
+    entity: &MessageEntity,
+) -> Result<String, InvokeEntityError> {
     let start = entity.offset;
     let end = entity.offset + entity.length;
     if text.len() < end {
@@ -38,7 +41,10 @@ pub fn invoke_entity(text: &str, entity: &MessageEntity) -> Result<String, Invok
     let text: Vec<_> = text.encode_utf16().collect();
     invoke_entity_from_utf16(text.as_slice(), entity)
 }
-pub fn invoke_entities(text: &str, entities: &Vec<MessageEntity>) -> Result<Vec<String>, InvokeEntityError> {
+pub fn invoke_entities(
+    text: &str,
+    entities: &Vec<MessageEntity>,
+) -> Result<Vec<String>, InvokeEntityError> {
     let text16: Vec<_> = text.encode_utf16().collect();
     let slice = text16.as_slice();
     let mut result = Vec::new();
@@ -60,7 +66,7 @@ mod test {
         test_invoke(
             "some tag: #some_tag",
             MessageEntity { kind: Hashtag, offset: 10, length: 9 },
-            "#some_tag"
+            "#some_tag",
         );
     }
 
@@ -69,7 +75,7 @@ mod test {
         test_invoke(
             "какой-то тэг #просто_тэг",
             MessageEntity { kind: Hashtag, offset: 13, length: 11 },
-            "#просто_тэг"
+            "#просто_тэг",
         );
     }
 
@@ -78,7 +84,7 @@ mod test {
         test_invoke(
             "smile 😁 перед тэгом #bugoga",
             MessageEntity { kind: Hashtag, offset: 21, length: 7 },
-            "#bugoga"
+            "#bugoga",
         );
     }
 
@@ -86,14 +92,11 @@ mod test {
     fn multiple_entities() {
         let text = "быба";
         let entities = vec![
-            MessageEntity { kind: Strikethrough, offset: 0, length: 1 }, 
-            MessageEntity { kind: Bold, offset: 1, length: 1 }, 
-            MessageEntity { kind: Italic, offset: 2, length: 1 }, 
-            MessageEntity { kind: Code, offset: 3, length: 1 }
+            MessageEntity { kind: Strikethrough, offset: 0, length: 1 },
+            MessageEntity { kind: Bold, offset: 1, length: 1 },
+            MessageEntity { kind: Italic, offset: 2, length: 1 },
+            MessageEntity { kind: Code, offset: 3, length: 1 },
         ];
-        assert_eq!( 
-            invoke_entities(text, &entities).unwrap(), 
-            vec!["б","ы","б","а"]
-        )
+        assert_eq!(invoke_entities(text, &entities).unwrap(), vec!["б", "ы", "б", "а"])
     }
 }
