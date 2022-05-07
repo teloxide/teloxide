@@ -4,7 +4,7 @@ use teloxide_core::types::MessageEntity;
 
 #[derive(Debug)]
 pub enum InvokeEntityError {
-    IndexOutOfBound,
+    TooShortText { offset: usize, length: usize },
     FromUTF16(FromUtf16Error),
 }
 
@@ -17,7 +17,11 @@ impl From<FromUtf16Error> for InvokeEntityError {
 impl std::fmt::Display for InvokeEntityError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            InvokeEntityError::IndexOutOfBound => f.write_str("index out of bound"),
+            InvokeEntityError::TooShortText { offset, length } => write!(
+                f,
+                "Text is too short for entity with offset {} and length {}",
+                offset, length
+            ),
             InvokeEntityError::FromUTF16(e) => e.fmt(f),
         }
     }
@@ -32,7 +36,7 @@ fn invoke_entity_from_utf16(
     let start = entity.offset;
     let end = entity.offset + entity.length;
     if text.len() < end {
-        Err(InvokeEntityError::IndexOutOfBound)
+        Err(InvokeEntityError::TooShortText { offset: entity.offset, length: entity.length })
     } else {
         String::from_utf16(&text[start..end]).map_err(Into::into)
     }
@@ -98,5 +102,15 @@ mod test {
             MessageEntity { kind: Code, offset: 3, length: 1 },
         ];
         assert_eq!(invoke_entities(text, &entities).unwrap(), vec!["б", "ы", "б", "а"])
+    }
+
+    #[test]
+    fn too_short() {
+        let text = "test";
+        let entity = MessageEntity { kind: Hashtag, offset: 4, length: 3 };
+        assert!(matches!(
+            invoke_entity(text, &entity),
+            Err(InvokeEntityError::TooShortText { offset: 4, length: 3 })
+        ))
     }
 }
