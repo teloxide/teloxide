@@ -4,5 +4,6 @@
 pub use crate::{
     payloads::setters::*,
     requests::{Request, Requester, RequesterExt},
+    types::{ChatId, UserId},
     Bot,
 };
