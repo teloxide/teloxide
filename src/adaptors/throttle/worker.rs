@@ -359,7 +359,8 @@ async fn freeze(
 
 async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_closed: &mut bool) {
     if queue.is_empty() {
-        log::warn!("A-blocking on queue");
+        log::debug!("blocking on queue");
+
         match rx.recv().await {
             Some(req) => queue.push(req),
             None => *rx_is_closed = true,
