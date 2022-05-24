@@ -195,6 +195,7 @@ impl<'a> MessageEntityRef<'a> {
     }
 
     /// Returns the length of this entity in bytes for UTF-8 encoding.
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.range.len()
     }
