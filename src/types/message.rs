@@ -655,6 +655,18 @@ mod getters {
             }
         }
 
+        /// Returns message entities that represent text formatting.
+        ///
+        /// **Note:** you probably want to use [`parse_entities`] instead.
+        ///
+        /// This function returns `Some(entities)` for **text messages** and
+        /// `None` for all other kinds of messages (including photos with
+        /// captions).
+        ///
+        /// See also: [`caption_entities`].
+        ///
+        /// [`parse_entities`]: Message::parse_entities
+        /// [`caption_entities`]: Message::caption_entities
         pub fn entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -665,6 +677,18 @@ mod getters {
             }
         }
 
+        /// Returns message entities that represent text formatting.
+        ///
+        /// **Note:** you probably want to use [`parse_caption_entities`]
+        /// instead.
+        ///
+        /// This function returns `Some(entities)` for **media messages** and
+        /// `None` for all other kinds of messages (including text messages).
+        ///
+        /// See also: [`entities`].
+        ///
+        /// [`parse_caption_entities`]: Message::parse_caption_entities
+        /// [`entities`]: Message::entities
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -1096,12 +1120,29 @@ impl Message {
         Some(reqwest::Url::parse(&url).unwrap())
     }
 
+    /// Returns message entities that represent text formatting.
+    ///
+    /// This function returns `Some(entities)` for **text messages** and
+    /// `None` for all other kinds of messages (including photos with
+    /// captions).
+    ///
+    /// See also: [`parse_caption_entities`].
+    ///
+    /// [`parse_caption_entities`]: Message::parse_caption_entities
     pub fn parse_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.text()
             .zip(self.entities())
             .map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 
+    /// Returns message entities that represent text formatting.
+    ///
+    /// This function returns `Some(entities)` for **media messages** and
+    /// `None` for all other kinds of messages (including text messages).
+    ///
+    /// See also: [`parse_entities`].
+    ///
+    /// [`parse_entities`]: Message::parse_entities
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.text()
             .zip(self.entities())

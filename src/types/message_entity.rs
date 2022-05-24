@@ -27,6 +27,14 @@ pub struct MessageEntity {
 /// mostly work with UTF-**8**. In order to use an entity we need to convert
 /// UTF-16 offsets to UTF-8 ones. This type represents a message entity with
 /// converted offsets and a reference to the text.
+///
+/// You can get [`MessageEntityRef`]s by calling [`parse_entities`] and
+/// [`parse_caption_entities`] methods of [`Message`] or by calling
+/// [`MessageEntityRef::parse`].
+///
+/// [`parse_entities`]: crate::types::Message::parse_entities
+/// [`parse_caption_entities`]: crate::types::Message::parse_caption_entities
+/// [`Message`]: crate::types::Message
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct MessageEntityRef<'a> {
     message: &'a str,
@@ -156,34 +164,47 @@ impl MessageEntity {
 }
 
 impl<'a> MessageEntityRef<'a> {
+    /// Returns kind of this entity.
     pub fn kind(&self) -> &'a MessageEntityKind {
         self.kind
     }
 
+    /// Returns the text that this entity is related to.
     pub fn text(&self) -> &'a str {
         &self.message[self.range.clone()]
     }
 
+    /// Returns range that this entity is related to.
+    ///
+    /// The range is in bytes for UTF-8 encoding i.e. you can use it with common
+    /// Rust strings.
     pub fn range(&self) -> Range<usize> {
         self.range.clone()
     }
 
+    /// Returns the offset (in bytes, for UTF-8) to the start of this entity in
+    /// the original message.
     pub fn start(&self) -> usize {
         self.range.start
     }
 
+    /// Returns the offset (in bytes, for UTF-8) to the end of this entity in
+    /// the original message.
     pub fn end(&self) -> usize {
         self.range.end
     }
 
+    /// Returns the length of this entity in bytes for UTF-8 encoding.
     pub fn len(&self) -> usize {
         self.range.len()
     }
 
+    /// Returns the full text of the original message.
     pub fn message_text(&self) -> &'a str {
         self.message
     }
 
+    /// Parses telegram [`MessageEntity`]s converting offsets to UTF-8.
     pub fn parse(text: &'a str, entities: &'a [MessageEntity]) -> Vec<Self> {
         // This creates entities with **wrong** offsets (UTF-16) that we later patch.
         let mut entities: Vec<_> = entities
