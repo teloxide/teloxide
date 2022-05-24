@@ -586,11 +586,13 @@ impl ChatMemberKind {
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ChatMemberStatus {
+    #[serde(rename = "creator")]
     Owner,
     Administrator,
     Member,
     Restricted,
     Left,
+    #[serde(rename = "kicked")]
     Banned,
 }
 
