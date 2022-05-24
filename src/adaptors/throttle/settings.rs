@@ -19,6 +19,8 @@ type BoxedFuture = Pin<Box<dyn Future<Output = ()> + Send>>;
 /// // use settings in `Throttle::with_settings` or other constructors
 /// # let _ = settings;
 /// ```
+///
+/// [`Throttle`]: crate::adaptors::throttle::Throttle
 #[non_exhaustive]
 pub struct Settings {
     pub limits: Limits,
@@ -35,6 +37,7 @@ pub struct Settings {
 /// particular bot if it has a lot of users (but they may or may not do that).
 ///
 /// [@BotSupport]: https://t.me/botsupport
+/// [`Throttle`]: crate::adaptors::throttle::Throttle
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Limits {
     /// Allowed messages in one chat per second.
