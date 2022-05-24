@@ -1,3 +1,5 @@
+use std::{cmp, ops::Range};
+
 use serde::{Deserialize, Serialize};
 
 use crate::types::{User, UserId};
@@ -17,6 +19,18 @@ pub struct MessageEntity {
 
     /// Length of the entity in UTF-16 code units.
     pub length: usize,
+}
+
+/// A "parsed" [`MessageEntity`].
+///
+/// [`MessageEntity`] has offsets in UTF-**16** code units, but in Rust we
+/// mostly work with UTF-**8**. In order to use an entity we need to convert
+/// UTF-16 offsets to UTF-8 ones. This type represents a message entity with
+/// converted offsets and a reference to the text.
+pub struct MessageEntityRef<'a> {
+    message: &'a str,
+    range: Range<usize>,
+    kind: &'a MessageEntityKind,
 }
 
 impl MessageEntity {
@@ -137,6 +151,93 @@ impl MessageEntity {
     pub const fn length(mut self, val: usize) -> Self {
         self.length = val;
         self
+    }
+}
+
+impl<'a> MessageEntityRef<'a> {
+    pub fn kind(&self) -> &'a MessageEntityKind {
+        self.kind
+    }
+
+    pub fn text(&self) -> &'a str {
+        &self.message[self.range.clone()]
+    }
+
+    pub fn range(&self) -> Range<usize> {
+        self.range.clone()
+    }
+
+    pub fn start(&self) -> usize {
+        self.range.start
+    }
+
+    pub fn end(&self) -> usize {
+        self.range.end
+    }
+
+    pub fn len(&self) -> usize {
+        self.range.len()
+    }
+
+    pub fn message_text(&self) -> &'a str {
+        self.message
+    }
+
+    pub fn parse(text: &'a str, entities: &'a [MessageEntity]) -> Vec<Self> {
+        // This creates entities with **wrong** offsets (UTF-16) that we later patch.
+        let mut entities: Vec<_> = entities
+            .iter()
+            .map(|e| Self {
+                message: text,
+                range: e.offset..e.offset + e.length,
+                kind: &e.kind,
+            })
+            .collect();
+
+        // Convert offsets
+
+        // References to all offsets that need patching
+        let mut offsets: Vec<&mut usize> = entities
+            .iter_mut()
+            .flat_map(
+                |Self {
+                     range: Range { start, end },
+                     ..
+                 }| [start, end],
+            )
+            .collect();
+
+        // Sort in decreasing order, so the smallest elements are at the end and can be
+        // removed more easily
+        offsets.sort_unstable_by_key(|&&mut offset| cmp::Reverse(offset));
+
+        let _ = text
+            .chars()
+            .chain(['\0']) // this is needed to process offset pointing at the end of the string
+            .try_fold((0, 0), |(len_utf8, len_utf16), c| {
+                // Stop if there are no more offsets to patch
+                if offsets.is_empty() {
+                    return None;
+                }
+
+                // Patch all offsets that can be patched
+                while offsets
+                    .last()
+                    .map(|&&mut offset| offset <= len_utf16)
+                    .unwrap_or(false)
+                {
+                    let offset = offsets.pop().unwrap();
+                    assert_eq!(*offset, len_utf16, "Invalid utf-16 offset");
+
+                    // Patch the offset to be UTF-8
+                    *offset = len_utf8;
+                }
+
+                // Update "running" length
+                Some((len_utf8 + c.len_utf8(), len_utf16 + c.len_utf16()))
+            });
+
+        entities
     }
 }
 

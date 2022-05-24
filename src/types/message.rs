@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
     InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
-    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User,
-    Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData,
+    MessageEntityRef, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
+    SuccessfulPayment, True, User, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData,
 };
 
 /// This object represents a message.
@@ -1094,6 +1094,18 @@ impl Message {
         // The `url` produced by formatting is correct since username is
         // /[a-zA-Z0-9_]{5,32}/ and chat/message ids are integers.
         Some(reqwest::Url::parse(&url).unwrap())
+    }
+
+    pub fn parse_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
+        self.text()
+            .zip(self.entities())
+            .map(|(t, e)| MessageEntityRef::parse(t, e))
+    }
+
+    pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
+        self.text()
+            .zip(self.entities())
+            .map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 }
 
