@@ -6,9 +6,11 @@ use teloxide_core::{adaptors::trace, prelude::*, types::ChatAction};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty_env_logger::init();
 
-    let chat_id = std::env::var("CHAT_ID")
-        .expect("Expected CHAT_ID env var")
-        .parse::<i64>()?;
+    let chat_id = ChatId(
+        std::env::var("CHAT_ID")
+            .expect("Expected CHAT_ID env var")
+            .parse::<i64>()?,
+    );
 
     let trace_settings = match std::env::var("TRACE").as_deref() {
         Ok("EVERYTHING_VERBOSE") => trace::Settings::TRACE_EVERYTHING_VERBOSE,

@@ -7,9 +7,11 @@ use teloxide_core::{
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty_env_logger::init();
 
-    let chat_id = std::env::var("CHAT_ID")
-        .expect("Expected CHAT_ID env var")
-        .parse::<i64>()?;
+    let chat_id = ChatId(
+        std::env::var("CHAT_ID")
+            .expect("Expected CHAT_ID env var")
+            .parse::<i64>()?,
+    );
 
     let bot = Bot::from_env()
         .parse_mode(ParseMode::MarkdownV2)
