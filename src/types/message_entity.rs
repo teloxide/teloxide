@@ -27,6 +27,7 @@ pub struct MessageEntity {
 /// mostly work with UTF-**8**. In order to use an entity we need to convert
 /// UTF-16 offsets to UTF-8 ones. This type represents a message entity with
 /// converted offsets and a reference to the text.
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct MessageEntityRef<'a> {
     message: &'a str,
     range: Range<usize>,
@@ -267,6 +268,9 @@ pub enum MessageEntityKind {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cool_asserts::assert_matches;
+    use MessageEntity;
+    use MessageEntityKind::*;
 
     #[test]
     fn recursive_kind() {
@@ -318,6 +322,132 @@ mod tests {
             .unwrap()
             .find("language"),
             None
+        );
+    }
+
+    #[test]
+    fn parse_быба() {
+        let parsed = MessageEntityRef::parse(
+            "быба",
+            &[
+                MessageEntity {
+                    kind: Strikethrough,
+                    offset: 0,
+                    length: 1,
+                },
+                MessageEntity {
+                    kind: Bold,
+                    offset: 1,
+                    length: 1,
+                },
+                MessageEntity {
+                    kind: Italic,
+                    offset: 2,
+                    length: 1,
+                },
+                MessageEntity {
+                    kind: Code,
+                    offset: 3,
+                    length: 1,
+                },
+            ],
+        );
+
+        assert_matches!(
+            parsed,
+            [
+                entity if entity.text() == "б" && entity.kind() == &Strikethrough,
+                entity if entity.text() == "ы" && entity.kind() == &Bold,
+                entity if entity.text() == "б" && entity.kind() == &Italic,
+                entity if entity.text() == "а" && entity.kind() == &Code,
+
+            ]
+        );
+    }
+
+    #[test]
+    fn parse_symbol_24bit() {
+        let parsed = MessageEntityRef::parse(
+            "xx আ #tt",
+            &[MessageEntity {
+                kind: Hashtag,
+                offset: 5,
+                length: 3,
+            }],
+        );
+
+        assert_matches!(
+            parsed,
+            [entity if entity.text() == "#tt" && entity.kind() == &Hashtag]
+        );
+    }
+
+    #[test]
+    fn parse_enclosed() {
+        let parsed = MessageEntityRef::parse(
+            "b i b",
+            // For some reason this is how telegram encodes <b>b <i>i<i/> b<b/>
+            &[
+                MessageEntity {
+                    kind: Bold,
+                    offset: 0,
+                    length: 2,
+                },
+                MessageEntity {
+                    kind: Bold,
+                    offset: 2,
+                    length: 3,
+                },
+                MessageEntity {
+                    kind: Italic,
+                    offset: 2,
+                    length: 1,
+                },
+            ],
+        );
+
+        assert_matches!(
+            parsed,
+            [
+                entity if entity.text() == "b " && entity.kind() == &Bold,
+                entity if entity.text() == "i b" && entity.kind() == &Bold,
+                entity if entity.text() == "i" && entity.kind() == &Italic,
+            ]
+        );
+    }
+
+    #[test]
+    fn parse_nothing() {
+        let parsed = MessageEntityRef::parse("a", &[]);
+        assert_eq!(parsed, []);
+    }
+
+    #[test]
+    fn parse_empty() {
+        // It should be impossible for this to be returned from telegram, but just to be
+        // sure
+        let parsed = MessageEntityRef::parse(
+            "",
+            &[
+                MessageEntity {
+                    kind: Bold,
+                    offset: 0,
+                    length: 0,
+                },
+                MessageEntity {
+                    kind: Italic,
+                    offset: 0,
+                    length: 0,
+                },
+            ],
+        );
+
+        assert_matches!(
+            parsed,
+            [
+                entity if entity.text() == "" && entity.kind() == &Bold,
+                entity if entity.text() == "" && entity.kind() == &Italic,
+            ]
         );
     }
 }
