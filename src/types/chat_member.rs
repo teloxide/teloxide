@@ -596,6 +596,77 @@ pub enum ChatMemberStatus {
     Banned,
 }
 
+/// Simple methods for checking a user status.
+impl ChatMemberStatus {
+    /// Returns `true` if the user is the [owner] of the given chat.
+    ///
+    /// [owner]: ChatMemberKind::Owner
+    pub fn is_owner(&self) -> bool {
+        matches!(self, Self::Owner { .. })
+    }
+
+    /// Returns `true` if the user is an [administrator] of the given chat.
+    ///
+    /// [administrator]: ChatMemberKind::Administrator
+    ///
+    /// **Note**: this function **doesn't** return `true` if the user is the
+    /// owner of the given chat. See also: [`is_privileged`].
+    ///
+    /// [`is_privileged`]: ChatMemberKind::is_privileged
+    pub fn is_administrator(&self) -> bool {
+        matches!(self, Self::Administrator { .. })
+    }
+
+    /// Returns `true` if the user is a common [member] of the given chat.
+    ///
+    /// [member]: ChatMemberKind::Member
+    pub fn is_member(&self) -> bool {
+        matches!(self, Self::Member { .. })
+    }
+
+    /// Returns `true` if the user is [restricted] in the given chat.
+    ///
+    /// [restricted]: ChatMemberKind::Restricted
+    pub fn is_restricted(&self) -> bool {
+        matches!(self, Self::Restricted { .. })
+    }
+
+    /// Returns `true` if the user [left] the given chat.
+    ///
+    /// [left]: ChatMemberKind::Left
+    pub fn is_left(&self) -> bool {
+        matches!(self, Self::Left { .. })
+    }
+
+    /// Returns `true` if the user is [banned] in the given chat.
+    ///
+    /// [banned]: ChatMemberKind::Banned
+    pub fn is_banned(&self) -> bool {
+        matches!(self, Self::Banned { .. })
+    }
+}
+
+/// Compound methods for checking a user status.
+impl ChatMemberStatus {
+    /// Returns `true` if the user is privileged in the given chat. i.e. if the
+    /// user is either the [owner] or an [administrator] in the given chat.
+    ///
+    /// [owner]: ChatMemberKind::Owner
+    /// [administrator]: ChatMemberKind::Administrator
+    pub fn is_privileged(&self) -> bool {
+        self.is_administrator() || self.is_owner()
+    }
+
+    /// Returns `true` if the user is currently present in the chat. i.e. if the
+    /// user **hasn't** [left] or been [banned].
+    ///
+    /// [left]: ChatMemberKind::Left
+    /// [banned]: ChatMemberKind::Banned
+    pub fn is_present(&self) -> bool {
+        !(self.is_left() || self.is_banned())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::types::UserId;
