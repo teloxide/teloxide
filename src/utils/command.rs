@@ -160,8 +160,10 @@ pub use teloxide_macros::BotCommands;
 /// All variant attributes override the corresponding `enum` attributes.
 ///
 ///  1. `#[command(rename = "rule")]`
-/// Rename one command by a rule. Allowed rules are `lowercase`, `%some_name%`,
-/// where `%some_name%` is any string, a new name.
+/// Rename one command by a rule. Allowed rules are `lowercase`, `UPPERCASE`,
+/// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
+/// `kebab-case`, `SCREAMING-KEBAB-CASE`, and `%some_name%`, where `%some_name%`
+/// is any string, a new name.
 ///
 ///  2. `#[command(description = "description")]`
 /// Give your command a description. Write `"off"` for `"description"` to hide a
@@ -323,7 +325,7 @@ impl<'a> CommandDescriptions<'a> {
     /// assert_eq!(
     ///     descriptions.username("username_of_the_bot").to_string(),
     ///     "/start@username_of_the_bot — start this bot\n/help@username_of_the_bot — show this \
-    ///          message"
+    ///      message"
     /// );
     /// ```
     pub fn username(self, bot_username: &'a str) -> Self {
