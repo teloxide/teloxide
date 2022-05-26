@@ -24,7 +24,14 @@ impl CommandEnum {
         }
         if let Some(rename_rule) = &rename {
             match rename_rule.as_str() {
-                "lowercase" => {}
+                "lowercase"
+                | "UPPERCASE"
+                | "PascalCase"
+                | "camelCase"
+                | "snake_case"
+                | "SCREAMING_SNAKE_CASE"
+                | "kebab-case"
+                | "SCREAMING-KEBAB-CASE" => {}
                 _ => return Err("disallowed value".to_owned()),
             }
         }
