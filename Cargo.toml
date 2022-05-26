@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.9.0"
+version = "0.9.1"
 edition = "2021"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -57,7 +57,7 @@ full = [
 
 [dependencies]
 teloxide-core = { version = "0.6.0", default-features = false }
-teloxide-macros = { version = "0.6.1", optional = true }
+teloxide-macros = { version = "0.6.2", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

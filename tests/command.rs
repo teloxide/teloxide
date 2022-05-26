@@ -218,6 +218,8 @@ fn rename_rules() {
         GggGgg,
         #[command(rename = "SCREAMING-KEBAB-CASE")]
         HhhHhh,
+        #[command(rename = "Bar")]
+        Foo,
     }
 
     assert_eq!(DefaultCommands::AaaAaa, DefaultCommands::parse("/aaaaaa", "").unwrap());
@@ -228,9 +230,10 @@ fn rename_rules() {
     assert_eq!(DefaultCommands::FffFff, DefaultCommands::parse("/FFF_FFF", "").unwrap());
     assert_eq!(DefaultCommands::GggGgg, DefaultCommands::parse("/ggg-ggg", "").unwrap());
     assert_eq!(DefaultCommands::HhhHhh, DefaultCommands::parse("/HHH-HHH", "").unwrap());
+    assert_eq!(DefaultCommands::Foo, DefaultCommands::parse("/Bar", "").unwrap());
 
     assert_eq!(
-        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH",
+        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH\n/Bar",
         DefaultCommands::descriptions().to_string()
     );
 }
