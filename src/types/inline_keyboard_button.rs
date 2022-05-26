@@ -110,6 +110,7 @@ pub enum InlineKeyboardButtonKind {
     /// row.
     ///
     /// [Pay button]: https://core.telegram.org/bots/api#payments
+    // FIXME(waffle): This should be using `True`
     Pay(bool),
 }
 
