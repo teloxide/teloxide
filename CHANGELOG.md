@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+ - Fix `#[command(rename = "...")]` for custom command names ([issue 633](https://github.com/teloxide/teloxide/issues/633)).
+
 ## 0.6.1 - 2022-04-26
 
 ### Fixed
