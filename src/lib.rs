@@ -1,10 +1,10 @@
 //! A full-featured framework that empowers you to easily build [Telegram bots]
-//! using the [`async`/`.await`] syntax in [Rust]. It handles all the difficult
-//! stuff so you can focus only on your business logic.
+//! using [Rust]. It handles all the difficult stuff so you can focus only on
+//! your business logic.
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs))
+//! [[`examples/throw_dice.rs`](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs)]
 //! ```no_run
 //! use teloxide::prelude::*;
 //!
@@ -25,7 +25,7 @@
 //!
 //! <div align="center">
 //!   <kbd>
-//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/DICES_BOT.gif />
+//!     <img src=https://github.com/teloxide/teloxide/raw/master/media/throw-dice.gif width=420px />
 //!   </kbd>
 //! </div>
 //!
