@@ -28,7 +28,7 @@
 
  - **Declarative design.** teloxide is based upon [`dptree`], a functional [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
 
-[`dptree`]: https://github.com/p0lunin/dptree
+[`dptree`]: https://github.com/teloxide/dptree
 [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
  - **Dialogues management subsystem.** Our dialogues management subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
