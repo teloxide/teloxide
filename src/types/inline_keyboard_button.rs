@@ -51,7 +51,7 @@ pub enum InlineKeyboardButtonKind {
     Url(reqwest::Url),
 
     /// An HTTP URL used to automatically authorize the user. Can be used as a
-    /// replacement for the [Telegram Login Widget]().
+    /// replacement for the [Telegram Login Widget].
     ///
     /// [Telegram Login Widget]: https://core.telegram.org/widgets/login
     LoginUrl(LoginUrl),
@@ -110,6 +110,7 @@ pub enum InlineKeyboardButtonKind {
     /// row.
     ///
     /// [Pay button]: https://core.telegram.org/bots/api#payments
+    // FIXME(waffle): This should be using `True`
     Pay(bool),
 }
 
