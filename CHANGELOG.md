@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `ChatId` and `UserId` to the prelude ([#212][pr212])
 - Add `is_*` methods to `ChatMemberStatus` analogous to the `ChatMember{,Kind}` methods ([#216][pr216])
+- Correct how `NotFound` and `UserDeactivated` errors are deserialized ([#219][pr219])
 
 [pr212]: https://github.com/teloxide/teloxide-core/pull/212
 [pr216]: https://github.com/teloxide/teloxide-core/pull/216
+[pr219]: https://github.com/teloxide/teloxide-core/pull/219
 
 ## 0.6.0 - 2022-04-25
 

@@ -100,8 +100,8 @@ pub enum ApiError {
     BotBlocked,
 
     /// Occurs when the bot token is incorrect.
-    #[serde(rename = "Forbidden: bot was blocked by the user")]
-    #[error("Forbidden: bot was blocked by the user")]
+    #[serde(rename = "Not Found")]
+    #[error("Not Found")]
     NotFound,
 
     /// Occurs when bot tries to modify a message without modification content.
@@ -684,14 +684,15 @@ pub enum ApiError {
     #[error("Forbidden: bot was kicked from the supergroup chat")]
     BotKickedFromSupergroup,
 
-    /// Occurs when bot tries to send message to deactivated user.
+    /// Occurs when bot tries to send a message to a deactivated user (i.e. a
+    /// user that was banned by telegram).
     ///
     /// May happen in methods:
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Unauthorized: user is deactivated")]
-    #[error("Unauthorized: user is deactivated")]
+    #[serde(rename = "Forbidden: user is deactivated")]
+    #[error("Forbidden: user is deactivated")]
     UserDeactivated,
 
     /// Occurs when you tries to initiate conversation with a user.
