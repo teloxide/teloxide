@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+- Fix deserialization of `File` when `file_path` or `file_size` are missing ([#220][pr220])
 - Add `ChatId` and `UserId` to the prelude ([#212][pr212])
 - Add `is_*` methods to `ChatMemberStatus` analogous to the `ChatMember{,Kind}` methods ([#216][pr216])
 
+[pr220]: https://github.com/teloxide/teloxide-core/pull/220
 [pr212]: https://github.com/teloxide/teloxide-core/pull/212
 [pr216]: https://github.com/teloxide/teloxide-core/pull/216
 
