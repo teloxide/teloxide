@@ -89,9 +89,9 @@ impl User {
         debug_assert!(
             !self.id.is_channel()
                 || (self.is_bot
-                    && self.first_name == "Group"
+                    && self.first_name == "Channel"
                     && self.last_name.is_none()
-                    && self.username.as_deref() == Some("GroupAnonymousBot"))
+                    && self.username.as_deref() == Some("Channel_Bot"))
         );
 
         self.id.is_channel()
