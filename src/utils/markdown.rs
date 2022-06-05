@@ -124,7 +124,7 @@ pub fn escape_code(s: &str) -> String {
 pub fn user_mention_or_link(user: &User) -> String {
     match user.mention() {
         Some(mention) => mention,
-        None => link(user.url().as_str(), &user.full_name()),
+        None => link(user.url().as_str(), &escape(&user.full_name())),
     }
 }
 
