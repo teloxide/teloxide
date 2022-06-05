@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+- Fix incorrect panic in `User::is_channel` ([#222][pr222])
+
+[pr222]: https://github.com/teloxide/teloxide-core/pull/222
+
 ## 0.6.1 - 2022-06-02
 
 - Fix deserialization of `File` when `file_path` or `file_size` are missing ([#220][pr220])
