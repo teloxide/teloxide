@@ -75,7 +75,7 @@ $ rustup override set nightly
 teloxide = { version = "0.9", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
-tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
+tokio = "1.8"
 ```
 
 ## API overview
