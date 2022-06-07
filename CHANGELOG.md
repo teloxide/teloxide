@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.9.2 - 2022-06-07
+
 ### Fixed
 
  - Fix Api Unknown error (Can't parse entities) on message created with `utils::markdown::user_mention_or_link` if user full name contaiins some escapable symbols eg '.'
