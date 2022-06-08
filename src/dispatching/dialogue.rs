@@ -83,6 +83,9 @@ pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
 #[cfg(feature = "sqlite-storage")]
 pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
 
+#[cfg(feature = "sled-storage")]
+pub use crate::dispatching::dialogue::{SledStorage, SledStorageError};
+
 use dptree::{prelude::DependencyMap, Handler};
 pub use get_chat_id::GetChatId;
 pub use storage::*;
