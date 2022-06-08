@@ -9,6 +9,9 @@ mod redis_storage;
 #[cfg(feature = "sqlite-storage")]
 mod sqlite_storage;
 
+#[cfg(feature = "sled-storage")]
+mod sled_storage;
+
 use futures::future::BoxFuture;
 use teloxide_core::types::ChatId;
 
