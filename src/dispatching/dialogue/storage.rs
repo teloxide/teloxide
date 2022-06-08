@@ -28,6 +28,9 @@ use std::sync::Arc;
 #[cfg(feature = "sqlite-storage")]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 
+#[cfg(feature = "sled-storage")]
+pub use sled_storage::{SledStorage, SledStorageError};
+
 /// A storage with an erased error type.
 pub type ErasedStorage<D> =
     dyn Storage<D, Error = Box<dyn std::error::Error + Send + Sync>> + Send + Sync;
