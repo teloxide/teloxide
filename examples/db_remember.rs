@@ -4,7 +4,7 @@
 use teloxide::{
     dispatching::dialogue::{
         serializer::{Bincode, Json},
-        ErasedStorage, RedisStorage, SqliteStorage, Storage,
+        ErasedStorage, RedisStorage, SqliteStorage, SledStorage, Storage,
     },
     prelude::*,
     utils::command::BotCommands,
@@ -42,12 +42,12 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    let storage: MyStorage = if std::env::var("DB_REMEMBER_REDIS").is_ok() {
-        RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap().erase()
-    } else {
-        SqliteStorage::open("db.sqlite", Json).await.unwrap().erase()
+    let storage: MyStorage = match std::env::var("DB_TYPE") {
+        Ok("redis") => RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap().erase(),
+        Ok("sled") => SledStorage::with_db(sled::open("teloxide").unwrap(), Bincode).unwrap().erase(),
+        _ => SqliteStorage::open("db.sqlite", Json).await.unwrap().erase()
     };
-
+    
     let handler = Update::filter_message()
         .enter_dialogue::<Message, ErasedStorage<State>, State>()
         .branch(dptree::case![State::Start].endpoint(start))
