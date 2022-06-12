@@ -2,6 +2,7 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
@@ -1077,18 +1078,36 @@ mod getters {
 }
 
 impl Message {
-    /// Produces a direct link to the message.
+    /// Produces a direct link to this message.
     ///
     /// Note that for private groups the link will only be accessible for group
     /// members.
     ///
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
-    pub fn url(&self) -> Option<reqwest::Url> {
+    pub fn url(&self) -> Option<Url> {
+        Self::url_of(self.chat.id, self.chat.username(), self.id)
+    }
+
+    /// Produces a direct link to a message in a chat.
+    ///
+    /// If you have a `Message` object, use [`url`] instead.
+    /// This function should only be used if you have limited information about
+    /// the message (chat id, username of the chat, if any and its id).
+    ///
+    /// Note that for private groups the link will only be accessible for group
+    /// members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
+    ///
+    /// [`url`]: Message::url
+    #[track_caller]
+    pub fn url_of(chat_id: ChatId, chat_username: Option<&str>, message_id: i32) -> Option<Url> {
         use BareChatId::*;
 
         // Note: `t.me` links use bare chat ids
-        let chat_id = match self.chat.id.to_bare() {
+        let chat_id = match chat_id.to_bare() {
             // For private chats (i.e.: DMs) we can't produce "normal" t.me link.
             //
             // There are "tg://openmessage?user_id={0}&message_id={1}" links, which are
@@ -1104,13 +1123,13 @@ impl Message {
             Channel(id) => id,
         };
 
-        let url = match self.chat.username() {
+        let url = match chat_username {
             // If it's public group (i.e. not DM, not private group), we can produce
             // "normal" t.me link (accessible to everyone).
-            Some(username) => format!("https://t.me/{0}/{1}", username, self.id),
+            Some(username) => format!("https://t.me/{0}/{1}", username, message_id),
             // For private supergroups and channels we produce "private" t.me/c links. These are
             // only accessible to the group members.
-            None => format!("https://t.me/c/{0}/{1}", chat_id, self.id),
+            None => format!("https://t.me/c/{0}/{1}", chat_id, message_id),
         };
 
         // UNWRAP:
@@ -1118,6 +1137,93 @@ impl Message {
         // The `url` produced by formatting is correct since username is
         // /[a-zA-Z0-9_]{5,32}/ and chat/message ids are integers.
         Some(reqwest::Url::parse(&url).unwrap())
+    }
+
+    /// Produces a direct link to a comment on this post.
+    ///
+    /// Note that for private channels the link will only be accessible for
+    /// channel members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
+    pub fn comment_url(&self, comment_id: i32) -> Option<Url> {
+        Self::comment_url_of(self.chat.id, self.chat.username(), self.id, comment_id)
+    }
+
+    /// Produces a direct link to a comment on a post.
+    ///
+    /// If you have a `Message` object of the channel post, use [`comment_url`]
+    /// instead. This function should only be used if you have limited
+    /// information about the message (channel id, username of the channel,
+    /// if any, post id and comment id).
+    ///
+    /// Note that for private channels the link will only be accessible for
+    /// channel members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
+    ///
+    /// [`comment_url`]: Message::comment_url
+    pub fn comment_url_of(
+        channel_id: ChatId,
+        channel_username: Option<&str>,
+        post_id: i32,
+        comment_id: i32,
+    ) -> Option<Url> {
+        Self::url_of(channel_id, channel_username, post_id).map(|mut url| {
+            url.set_query(Some(&format!("comment={comment_id}")));
+            url
+        })
+    }
+
+    /// Produces a direct link to this message in a given thread.
+    ///
+    /// "Thread" is a group of messages that reply to each other in a tree-like
+    /// structure. `thread_starter_msg_id` is the id of the first message in
+    /// the thread, the root of the tree.
+    ///
+    /// Note that for private groups the link will only be accessible for group
+    /// members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
+    pub fn url_in_thread(&self, thread_starter_msg_id: i32) -> Option<Url> {
+        Self::url_in_thread_of(
+            self.chat.id,
+            self.chat.username(),
+            thread_starter_msg_id,
+            self.id,
+        )
+    }
+
+    /// Produces a direct link to a message in a given thread.
+    ///
+    /// If you have a `Message` object of the channel post, use
+    /// [`url_in_thread`] instead. This function should only be used if you
+    /// have limited information about the message (chat id, username of the
+    /// chat, if any, thread starter id and message id).
+    ///
+    /// "Thread" is a group of messages that reply to each other in a tree-like
+    /// structure. `thread_starter_msg_id` is the id of the first message in
+    /// the thread, the root of the tree.
+    ///
+    /// Note that for private groups the link will only be accessible for group
+    /// members.
+    ///
+    /// Returns `None` for private chats (i.e.: DMs) and private groups (not
+    /// supergroups).
+    ///
+    /// [`url_in_thread`]: Message::url_in_thread
+    pub fn url_in_thread_of(
+        chat_id: ChatId,
+        chat_username: Option<&str>,
+        thread_starter_msg_id: i32,
+        message_id: i32,
+    ) -> Option<Url> {
+        Self::url_of(chat_id, chat_username, message_id).map(|mut url| {
+            url.set_query(Some(&format!("thread={thread_starter_msg_id}")));
+            url
+        })
     }
 
     /// Returns message entities that represent text formatting.
