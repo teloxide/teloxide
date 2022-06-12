@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Build with particular crates versions (enable `"codec"` feature of `tokio-util`) ([#225][pr225])
 - Fix incorrect panic in `User::is_channel` ([#222][pr222])
+- Remove trailing `/` from `Message::url` (on ios it caused problems) ([#223][pr223])
 
 [pr225]: https://github.com/teloxide/teloxide-core/pull/225
 [pr222]: https://github.com/teloxide/teloxide-core/pull/222
+[pr223]: https://github.com/teloxide/teloxide-core/pull/223
 
 ### Added
 

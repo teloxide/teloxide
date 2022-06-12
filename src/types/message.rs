@@ -1107,10 +1107,10 @@ impl Message {
         let url = match self.chat.username() {
             // If it's public group (i.e. not DM, not private group), we can produce
             // "normal" t.me link (accessible to everyone).
-            Some(username) => format!("https://t.me/{0}/{1}/", username, self.id),
+            Some(username) => format!("https://t.me/{0}/{1}", username, self.id),
             // For private supergroups and channels we produce "private" t.me/c links. These are
             // only accessible to the group members.
-            None => format!("https://t.me/c/{0}/{1}/", chat_id, self.id),
+            None => format!("https://t.me/c/{0}/{1}", chat_id, self.id),
         };
 
         // UNWRAP:
