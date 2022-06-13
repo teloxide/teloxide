@@ -30,6 +30,6 @@ pub struct VideoNote {
     /// Video thumbnail.
     pub thumb: Option<PhotoSize>,
 
-    /// File size.
+    /// File size in bytes.
     pub file_size: Option<u32>,
 }

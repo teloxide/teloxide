@@ -21,7 +21,7 @@ pub struct File {
     /// file.
     pub file_unique_id: String,
 
-    /// File size, if known.
+    /// File size in bytes, if known.
     ///
     /// **Note:** in the Telegram Bot API this field is optional, however it was
     /// errourneusly marked as required in Teloxide. To workaround this issue,

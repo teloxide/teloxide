@@ -32,6 +32,6 @@ pub struct Document {
     #[serde(default, with = "crate::types::non_telegram_types::mime::opt_deser")]
     pub mime_type: Option<Mime>,
 
-    /// A size of a file.
+    /// File size in bytes.
     pub file_size: Option<u32>,
 }
