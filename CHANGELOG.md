@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+- Build with particular crates versions (enable `"codec"` feature of `tokio-util`) ([#225][pr225])
 - Fix incorrect panic in `User::is_channel` ([#222][pr222])
 
+[pr225]: https://github.com/teloxide/teloxide-core/pull/225
 [pr222]: https://github.com/teloxide/teloxide-core/pull/222
 
 ## 0.6.1 - 2022-06-02
