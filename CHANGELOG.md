@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr225]: https://github.com/teloxide/teloxide-core/pull/225
 [pr222]: https://github.com/teloxide/teloxide-core/pull/222
 
+### Added
+
+- Utilities to parse message entities (see `Message::parse_entities`) ([#217][pr217])
+
+[pr212]: https://github.com/teloxide/teloxide-core/pull/212
+
 ## 0.6.1 - 2022-06-02
 
 - Fix deserialization of `File` when `file_path` or `file_size` are missing ([#220][pr220])
