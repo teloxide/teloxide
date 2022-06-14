@@ -44,6 +44,6 @@ pub struct Sticker {
     /// For mask stickers, the position where the mask should be placed.
     pub mask_position: Option<MaskPosition>,
 
-    /// File size.
+    /// File size in bytes.
     pub file_size: Option<u32>,
 }
