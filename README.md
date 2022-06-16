@@ -363,6 +363,7 @@ Feel free to propose your own bot to our collection!
  - [crapstone/hsctt](https://codeberg.org/crapstones-bots/hsctt) — A Telegram bot that searches for HTTP status codes in all messages and replies with the text form.
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) — Telegram bot for searching AUR in inline mode.
  - [studiedlist/EddieBot](https://gitlab.com/studiedlist/eddie-bot) — Chatting bot with several entertainment features.
+ - [modos189/tg_blackbox_bot](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project. This bot in Docker from scratch container.
   
 ## Contributing
 
