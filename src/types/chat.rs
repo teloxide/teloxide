@@ -81,6 +81,8 @@ pub struct ChatPrivate {
     /// `private`.
     #[serde(rename = "type")]
     #[serde(deserialize_with = "assert_private_field")]
+    #[serde(serialize_with = "serialize_private_field")]
+    // FIXME(waffle): remove this entirely (replace with custom De/Serialize impl)
     pub type_: (),
 
     /// A username, for private chats, supergroups and channels if
@@ -208,6 +210,13 @@ where
     D: serde::Deserializer<'de>,
 {
     des.deserialize_str(PrivateChatKindVisitor)
+}
+
+fn serialize_private_field<S>(_: &(), ser: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    ser.serialize_str("private")
 }
 
 impl Chat {
@@ -443,7 +452,7 @@ impl Chat {
 
 #[cfg(test)]
 mod tests {
-    use serde_json::from_str;
+    use serde_json::{from_str, to_string};
 
     use crate::types::*;
 
@@ -489,6 +498,29 @@ mod tests {
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
         );
+    }
+
+    #[test]
+    fn private_roundtrip() {
+        let chat = Chat {
+            id: ChatId(0),
+            kind: ChatKind::Private(ChatPrivate {
+                type_: (),
+                username: Some("username".into()),
+                first_name: Some("Anon".into()),
+                last_name: None,
+                bio: None,
+                has_private_forwards: None,
+            }),
+            photo: None,
+            pinned_message: None,
+            message_auto_delete_time: None,
+        };
+
+        let json = to_string(&chat).unwrap();
+        let chat2 = from_str::<Chat>(&json).unwrap();
+
+        assert_eq!(chat, chat2);
     }
 
     #[test]
