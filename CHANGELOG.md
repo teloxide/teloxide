@@ -7,34 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
 - Fix `ChatPrivate` serialization ([#226][pr226])
 - Build with particular crates versions (enable `"codec"` feature of `tokio-util`) ([#225][pr225])
-- Fix incorrect panic in `User::is_channel` ([#222][pr222])
 - Remove trailing `/` from `Message::url` (on ios it caused problems) ([#223][pr223])
-- Add `Message::{url_of, comment_url, comment_url_of, url_in_thread, url_in_thread_of}` functions ([#223][pr223])
+- Fix incorrect panic in `User::is_channel` ([#222][pr222])
 
 [pr226]: https://github.com/teloxide/teloxide-core/pull/226
 [pr225]: https://github.com/teloxide/teloxide-core/pull/225
 [pr222]: https://github.com/teloxide/teloxide-core/pull/222
-[pr223]: https://github.com/teloxide/teloxide-core/pull/223
 
 ### Added
 
+- `Message::{url_of, comment_url, comment_url_of, url_in_thread, url_in_thread_of}` functions ([#223][pr223])
 - Utilities to parse message entities (see `Message::parse_entities`) ([#217][pr217])
 
+[pr223]: https://github.com/teloxide/teloxide-core/pull/223
 [pr212]: https://github.com/teloxide/teloxide-core/pull/212
 
 ## 0.6.1 - 2022-06-02
 
-- Fix deserialization of `File` when `file_path` or `file_size` are missing ([#220][pr220])
-- Add `ChatId` and `UserId` to the prelude ([#212][pr212])
-- Add `is_*` methods to `ChatMemberStatus` analogous to the `ChatMember{,Kind}` methods ([#216][pr216])
+### Fixed
+
+- Deserialization of `File` when `file_path` or `file_size` are missing ([#220][pr220])
 - Correct how `NotFound` and `UserDeactivated` errors are deserialized ([#219][pr219])
 
 [pr220]: https://github.com/teloxide/teloxide-core/pull/220
-[pr212]: https://github.com/teloxide/teloxide-core/pull/212
-[pr216]: https://github.com/teloxide/teloxide-core/pull/216
 [pr219]: https://github.com/teloxide/teloxide-core/pull/219
+
+### Added
+
+- `is_*` methods to `ChatMemberStatus` analogous to the `ChatMember{,Kind}` methods ([#216][pr216])
+- `ChatId` and `UserId` to the prelude ([#212][pr212])
+
+[pr216]: https://github.com/teloxide/teloxide-core/pull/216
+[pr212]: https://github.com/teloxide/teloxide-core/pull/212
 
 ## 0.6.0 - 2022-04-25
 
