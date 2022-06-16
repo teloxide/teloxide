@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.6.2 - 2022-06-16
+
 ### Fixed
 
 - Fix `ChatPrivate` serialization ([#226][pr226])
