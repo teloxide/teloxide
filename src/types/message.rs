@@ -1250,8 +1250,8 @@ impl Message {
     ///
     /// [`parse_entities`]: Message::parse_entities
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
-        self.text()
-            .zip(self.entities())
+        self.caption()
+            .zip(self.caption_entities())
             .map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 }
