@@ -1696,7 +1696,7 @@ mod tests {
         assert!(entities.is_some());
 
         let entities = entities.unwrap();
-        assert!(entities.len() > 0);
+        assert!(!entities.is_empty());
         assert_eq!(entities[0].kind().clone(), MessageEntityKind::Url);
     }
 }
