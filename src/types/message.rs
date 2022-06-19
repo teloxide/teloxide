@@ -1250,8 +1250,8 @@ impl Message {
     ///
     /// [`parse_entities`]: Message::parse_entities
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
-        self.text()
-            .zip(self.entities())
+        self.caption()
+            .zip(self.caption_entities())
             .map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 }
@@ -1630,5 +1630,73 @@ mod tests {
         // FIXME(waffle): it seems like we are losing `sender_chat` in some
         // cases inclusing this
         // assert!(message.sender_chat().is_some());
+    }
+
+    #[test]
+    fn parse_caption_entities() {
+        let json = r#"
+        {
+            "message_id": 3460,
+            "from": {
+              "id": 27433968,
+              "is_bot": false,
+              "first_name": "Crax | rats addict",
+              "username": "tacocrasco",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 27433968,
+              "first_name": "Crax | rats addict",
+              "username": "tacocrasco",
+              "type": "private"
+            },
+            "date": 1655671349,
+            "photo": [
+              {
+                "file_id": "AgACAgQAAxkBAAINhGKvijUVSn2i3980bQIIc1fqWGNCAAJpvDEbEmaBUfuA43fR-BnlAQADAgADcwADJAQ",
+                "file_unique_id": "AQADabwxGxJmgVF4",
+                "file_size": 2077,
+                "width": 90,
+                "height": 90
+              },
+              {
+                "file_id": "AgACAgQAAxkBAAINhGKvijUVSn2i3980bQIIc1fqWGNCAAJpvDEbEmaBUfuA43fR-BnlAQADAgADbQADJAQ",
+                "file_unique_id": "AQADabwxGxJmgVFy",
+                "file_size": 27640,
+                "width": 320,
+                "height": 320
+              },
+              {
+                "file_id": "AgACAgQAAxkBAAINhGKvijUVSn2i3980bQIIc1fqWGNCAAJpvDEbEmaBUfuA43fR-BnlAQADAgADeAADJAQ",
+                "file_unique_id": "AQADabwxGxJmgVF9",
+                "file_size": 99248,
+                "width": 800,
+                "height": 800
+              },
+              {
+                "file_id": "AgACAgQAAxkBAAINhGKvijUVSn2i3980bQIIc1fqWGNCAAJpvDEbEmaBUfuA43fR-BnlAQADAgADeQADJAQ",
+                "file_unique_id": "AQADabwxGxJmgVF-",
+                "file_size": 162061,
+                "width": 1280,
+                "height": 1280
+              }
+            ],
+            "caption": "www.example.com",
+            "caption_entities": [
+              {
+                "offset": 0,
+                "length": 15,
+                "type": "url"
+              }
+            ]
+        }"#;
+
+        let message: Message = serde_json::from_str(json).unwrap();
+        let entities = message.parse_caption_entities();
+        assert!(entities.is_some());
+
+        let entities = entities.unwrap();
+        assert!(!entities.is_empty());
+        assert_eq!(entities[0].kind().clone(), MessageEntityKind::Url);
     }
 }
