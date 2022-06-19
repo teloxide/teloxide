@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-## 0.6.3 - 2022-06-19
-
 ### Fixed
 
 - Fix `Message::parse_caption_entities` ([#229][pr229])
