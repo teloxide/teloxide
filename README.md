@@ -364,7 +364,8 @@ Feel free to propose your own bot to our collection!
  - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) — Telegram bot for searching AUR in inline mode.
  - [studiedlist/EddieBot](https://gitlab.com/studiedlist/eddie-bot) — Chatting bot with several entertainment features.
  - [modos189/tg_blackbox_bot](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project. This bot in Docker from scratch container.
-  
+ - [0xNima/spacecraft](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
+ - [0xNima/Twideo](https://github.com/0xNima/Twideo) — Telegram Bot for downloading videos from Twitter via their links, as well as converting tweets to telegram messages.
 ## Contributing
 
 See [`CONRIBUTING.md`](CONTRIBUTING.md).
