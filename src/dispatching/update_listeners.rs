@@ -42,8 +42,9 @@ use crate::{
 mod polling;
 mod stateful_listener;
 
+#[allow(deprecated)]
 pub use self::{
-    polling::{polling, polling_builder, polling_default, PollingBuilder},
+    polling::{polling, polling_builder, polling_default, Polling, PollingBuilder, PollingStream},
     stateful_listener::StatefulListener,
 };
 
