@@ -105,9 +105,7 @@ async fn main() {
 ```
 
 <div align="center">
-  <kbd>
-    <img src=../../raw/master/media/throw-dice.gif width="420px" />
-  </kbd>
+    <img src="../../raw/master/media/throw-dice.gif" width="420" />
 </div>
 
 ### Commands
@@ -175,9 +173,7 @@ async fn answer(
 ```
 
 <div align="center">
-  <kbd>
-    <img src=../../raw/master/media/command.gif width="420px" />
-  </kbd>
+    <img src="../../raw/master/media/command.gif" width="420" />
 </div>
 
 ### Dialogues management
@@ -300,9 +296,7 @@ async fn receive_location(
 ```
 
 <div align="center">
-  <kbd>
-    <img src=../../raw/master/media/dialogue.gif width="420px" />
-  </kbd>
+    <img src="../../raw/master/media/dialogue.gif" width="420" />
 </div>
 
 [More examples >>](examples/)
