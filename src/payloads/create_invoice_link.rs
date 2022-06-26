@@ -7,19 +7,14 @@
 // [cg]: https://github.com/teloxide/cg
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
-use url::Url;
 
-use crate::types::{InlineKeyboardMarkup, LabeledPrice, Message, Recipient};
+use crate::types::LabeledPrice;
 
 impl_payload! {
-    /// Use this method to send invoices. On success, the sent [`Message`] is returned.
-    ///
-    /// [`Message`]: crate::types::Message
+    /// Use this method to create a link for an invoice. Returns the created invoice link as String on success.
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendInvoice (SendInvoiceSetters) => Message {
+    pub CreateInvoiceLink (CreateInvoiceLinkSetters) => String {
         required {
-            /// Unique identifier for the target private chat
-            pub chat_id: Recipient [into],
             /// Product name, 1-32 characters
             pub title: String [into],
             /// Product description, 1-255 characters
@@ -42,12 +37,10 @@ impl_payload! {
             pub max_tip_amount: u32,
             /// A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, **not** float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed _max_tip_amount_.
             pub suggested_tip_amounts: Vec<u32> [collect],
-            /// Unique deep-linking parameter. If left empty, **forwarded copies** of the sent message will have a Pay button, allowing multiple users to pay directly from the forwarded message, using the same invoice. If non-empty, forwarded copies of the sent message will have a URL button with a deep link to the bot (instead of a Pay button), with the value used as the start parameter
-            pub start_parameter: String [into],
             /// A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
             pub provider_data: String [into],
             /// URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
-            pub photo_url: Url,
+            pub photo_url: String [into],
             /// Photo size in bytes
             pub photo_size: String [into],
             /// Photo width
@@ -68,20 +61,6 @@ impl_payload! {
             pub send_email_to_provider: bool,
             /// Pass _True_, if the final price depends on the shipping method
             pub is_flexible: bool,
-            /// Sends the message [silently]. Users will receive a notification with no sound.
-            ///
-            /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
-            pub disable_notification: bool,
-            /// Protects the contents of sent messages from forwarding and saving
-            pub protect_content: bool,
-            /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i32,
-            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
-            pub allow_sending_without_reply: bool,
-            /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.
-            ///
-            /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
-            pub reply_markup: InlineKeyboardMarkup,
         }
     }
 }

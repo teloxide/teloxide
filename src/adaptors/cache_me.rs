@@ -176,6 +176,7 @@ where
         delete_sticker_from_set,
         set_sticker_set_thumb,
         send_invoice,
+        create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
         set_passport_data_errors,

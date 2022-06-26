@@ -1163,6 +1163,19 @@ macro_rules! requester_forward {
             $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
         }
     };
+    (@method create_invoice_link $body:ident $ty:ident) => {
+        type CreateInvoiceLink = $ty![CreateInvoiceLink];
+
+        fn create_invoice_link<T, D, Pa, P, C, Pri>(&self, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::CreateInvoiceLink where T: Into<String>,
+        D: Into<String>,
+        Pa: Into<String>,
+        P: Into<String>,
+        C: Into<String>,
+        Pri: IntoIterator<Item = LabeledPrice> {
+            let this = self;
+            $body!(create_invoice_link this (title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
+        }
+    };
     (@method answer_shipping_query $body:ident $ty:ident) => {
         type AnswerShippingQuery = $ty![AnswerShippingQuery];
 

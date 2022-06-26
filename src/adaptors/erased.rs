@@ -243,6 +243,7 @@ where
         delete_sticker_from_set,
         set_sticker_set_thumb,
         send_invoice,
+        create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
         set_passport_data_errors,
@@ -742,6 +743,17 @@ trait ErasableRequester<'a> {
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> ErasedRequest<'a, SendInvoice, Self::Err>;
+
+    #[allow(clippy::too_many_arguments)]
+    fn create_invoice_link(
+        &self,
+        title: String,
+        description: String,
+        payload: String,
+        provider_token: String,
+        currency: String,
+        prices: Vec<LabeledPrice>,
+    ) -> ErasedRequest<'a, CreateInvoiceLink, Self::Err>;
 
     fn answer_shipping_query(
         &self,
@@ -1457,6 +1469,28 @@ where
         Requester::send_invoice(
             self,
             chat_id,
+            title,
+            description,
+            payload,
+            provider_token,
+            currency,
+            prices,
+        )
+        .erase()
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn create_invoice_link(
+        &self,
+        title: String,
+        description: String,
+        payload: String,
+        provider_token: String,
+        currency: String,
+        prices: Vec<LabeledPrice>,
+    ) -> ErasedRequest<'a, CreateInvoiceLink, Self::Err> {
+        Requester::create_invoice_link(
+            self,
             title,
             description,
             payload,
