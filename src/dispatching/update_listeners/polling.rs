@@ -71,7 +71,7 @@ where
     }
 
     /// Creates a polling update listener.
-    pub fn build(self) -> impl UpdateListener<R::Err> {
+    pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates } = self;
         polling(bot, timeout, limit, allowed_updates)
     }
@@ -93,7 +93,7 @@ where
 /// ## Notes
 ///
 /// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(bot: R) -> impl UpdateListener<R::Err>
+pub async fn polling_default<R>(bot: R) -> Polling<R>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
@@ -198,7 +198,7 @@ pub fn polling<R>(
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> impl UpdateListener<R::Err>
+) -> Polling<R>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
@@ -228,7 +228,7 @@ where
     }
 }
 
-struct Polling<B: Requester> {
+pub struct Polling<B: Requester> {
     bot: B,
     timeout: Option<Duration>,
     limit: Option<u8>,
@@ -238,7 +238,7 @@ struct Polling<B: Requester> {
 }
 
 #[pin_project::pin_project]
-struct PollingStream<'a, B: Requester> {
+pub struct PollingStream<'a, B: Requester> {
     /// Parent structure
     polling: &'a mut Polling<B>,
 
