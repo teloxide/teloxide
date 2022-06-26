@@ -74,6 +74,7 @@ pub enum InlineKeyboardButtonKind {
     /// button.
     ///
     /// ## Note
+    ///
     /// This type of button **must** always be the first button in the first
     /// row.
     CallbackGame(CallbackGame),
@@ -81,6 +82,7 @@ pub enum InlineKeyboardButtonKind {
     /// Specify True, to send a [Pay button].
     ///
     /// ## Note
+    ///
     /// This type of button **must** always be the first button in the first
     /// row.
     ///
@@ -89,6 +91,7 @@ pub enum InlineKeyboardButtonKind {
 }
 
 impl InlineKeyboardButton {
+    /// Creates a new `InlineKeyboardButton`.
     pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
     where
         S: Into<String>,
@@ -99,6 +102,9 @@ impl InlineKeyboardButton {
         }
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
+    ///
+    /// [`Url`]: InlineKeyboardButtonKind::Url
     pub fn url<T>(text: T, url: reqwest::Url) -> Self
     where
         T: Into<String>,
@@ -106,6 +112,9 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::Url(url))
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`LoginUrl`] kind.
+    ///
+    /// [`LoginUrl`]: InlineKeyboardButtonKind::LoginUrl
     pub fn login<T>(text: T, url: LoginUrl) -> Self
     where
         T: Into<String>,
@@ -113,6 +122,9 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::LoginUrl(url))
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`CallbackData`] kind.
+    ///
+    /// [`CallbackData`]: InlineKeyboardButtonKind::CallbackData
     pub fn callback<T, C>(text: T, callback_data: C) -> Self
     where
         T: Into<String>,
@@ -124,6 +136,9 @@ impl InlineKeyboardButton {
         )
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`WebApp`] kind.
+    ///
+    /// [`WebApp`]: InlineKeyboardButtonKind::WebApp
     pub fn web_app<T>(text: T, info: WebAppInfo) -> Self
     where
         T: Into<String>,
@@ -131,6 +146,9 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::WebApp(info))
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`SwitchInlineQuery`] kind.
+    ///
+    /// [`SwitchInlineQuery`]: InlineKeyboardButtonKind::SwitchInlineQuery
     pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> Self
     where
         T: Into<String>,
@@ -142,6 +160,10 @@ impl InlineKeyboardButton {
         )
     }
 
+    /// Constructor for `InlineKeyboardButton` with
+    /// [`SwitchInlineQueryCurrentChat`] kind.
+    ///
+    /// [`SwitchInlineQueryCurrentChat`]: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat
     pub fn switch_inline_query_current_chat<T, Q>(
         text: T,
         switch_inline_query_current_chat: Q,
@@ -158,6 +180,9 @@ impl InlineKeyboardButton {
         )
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`CallbackGame`] kind.
+    ///
+    /// [`CallbackGame`]: InlineKeyboardButtonKind::CallbackGame
     pub fn callback_game<T>(text: T, game: CallbackGame) -> Self
     where
         T: Into<String>,
@@ -165,6 +190,9 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::CallbackGame(game))
     }
 
+    /// Constructor for `InlineKeyboardButton` with [`Pay`] kind.
+    ///
+    /// [`Pay`]: InlineKeyboardButtonKind::Pay
     pub fn pay<T>(text: T) -> Self
     where
         T: Into<String>,
