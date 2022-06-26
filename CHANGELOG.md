@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `InlineKeyboardButton::{pay, login, web_app, callback_game, pay}` constructors ([#231][pr231])
+
+### Changed
+
+-  `InlineKeyboardButtonKind::Pay`'s only field now has type `True` ([#231][pr231])
+
+### Deprecated
+
+- `InlineKeyboardButton::{text, kind}` functions ([#231][pr231])
+
+[pr231]: https://github.com/teloxide/teloxide-core/pull/231
+
 ### Removed
 
 - `ChatPrivate::type_` field ([#232][pr232])
