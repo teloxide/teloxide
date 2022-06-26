@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Removed
+
+- `ChatPrivate::type_` field ([#232][pr232])
+
+[pr232]: https://github.com/teloxide/teloxide-core/pull/232
+
 ## 0.6.3 - 2022-06-21
 
 ### Fixed
