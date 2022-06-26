@@ -27,7 +27,7 @@ pub struct File {
     /// errourneusly marked as required in Teloxide. To workaround this issue,
     /// when `file_size` is not present, it is deserialized as [`u32::MAX`].
     #[serde(default = "default_file_size")]
-    pub file_size: u32,
+    pub file_size: u64,
 
     /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
     ///
@@ -40,8 +40,8 @@ pub struct File {
     pub file_path: String,
 }
 
-const fn default_file_size() -> u32 {
-    u32::MAX
+const fn default_file_size() -> u64 {
+    u64::MAX
 }
 
 #[cfg(test)]
@@ -59,7 +59,7 @@ mod tests {
             File {
                 file_id: "FILE_ID".to_owned(),
                 file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                file_size: u32::MAX,
+                file_size: u64::MAX,
                 file_path: "FILE_PATH".to_owned(),
             }
         );

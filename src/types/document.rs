@@ -33,5 +33,5 @@ pub struct Document {
     pub mime_type: Option<Mime>,
 
     /// File size in bytes.
-    pub file_size: Option<u32>,
+    pub file_size: Option<u64>,
 }

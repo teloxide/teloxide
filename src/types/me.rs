@@ -66,6 +66,7 @@ mod tests {
                 last_name: None,
                 username: Some("SomethingSomethingBot".to_owned()),
                 language_code: None,
+                is_premium: false,
             },
             can_join_groups: false,
             can_read_all_group_messages: false,

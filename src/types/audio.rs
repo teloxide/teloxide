@@ -35,7 +35,7 @@ pub struct Audio {
     pub mime_type: Option<Mime>,
 
     /// File size in bytes.
-    pub file_size: Option<u32>,
+    pub file_size: Option<u64>,
 
     /// A thumbnail of the album cover to which the music file belongs.
     pub thumb: Option<PhotoSize>,

@@ -27,6 +27,10 @@ pub struct User {
     ///
     /// [IETF language tag]: https://en.wikipedia.org/wiki/IETF_language_tag
     pub language_code: Option<String>,
+
+    /// `true`, if this user is a Telegram Premium user.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_premium: bool,
 }
 
 impl User {
@@ -137,6 +141,7 @@ mod tests {
             last_name: Some("lastName".to_string()),
             username: Some("Username".to_string()),
             language_code: Some(String::from("ru")),
+            is_premium: false,
         };
         let actual = serde_json::from_str::<User>(json).unwrap();
         assert_eq!(actual, expected)
@@ -151,6 +156,7 @@ mod tests {
             last_name: Some("Last".to_owned()),
             username: Some("aaaaaaaaaaaaaaaa".to_owned()),
             language_code: None,
+            is_premium: false,
         };
 
         let user_b = User {
@@ -160,6 +166,7 @@ mod tests {
             last_name: None,
             username: None,
             language_code: None,
+            is_premium: false,
         };
 
         assert_eq!(user_a.full_name(), "First Last");
