@@ -13,31 +13,6 @@ pub struct InlineKeyboardButton {
     pub kind: InlineKeyboardButtonKind,
 }
 
-impl InlineKeyboardButton {
-    pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            text: text.into(),
-            kind,
-        }
-    }
-
-    pub fn text<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.text = val.into();
-        self
-    }
-
-    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
-        self.kind = val;
-        self
-    }
-}
-
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
@@ -113,16 +88,17 @@ pub enum InlineKeyboardButtonKind {
     Pay(True),
 }
 
-/// Build buttons.
-///
-/// # Examples
-/// ```
-/// use teloxide_core::types::InlineKeyboardButton;
-///
-/// let url = url::Url::parse("https://example.com").unwrap();
-/// let url_button = InlineKeyboardButton::url("Text".to_string(), url);
-/// ```
 impl InlineKeyboardButton {
+    pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            text: text.into(),
+            kind,
+        }
+    }
+
     pub fn url<T>(text: T, url: reqwest::Url) -> InlineKeyboardButton
     where
         T: Into<String>,
@@ -130,6 +106,16 @@ impl InlineKeyboardButton {
         InlineKeyboardButton {
             text: text.into(),
             kind: InlineKeyboardButtonKind::Url(url),
+        }
+    }
+
+    pub fn login<T>(text: T, url: LoginUrl) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+    {
+        InlineKeyboardButton {
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::LoginUrl(url),
         }
     }
 
@@ -141,6 +127,16 @@ impl InlineKeyboardButton {
         InlineKeyboardButton {
             text: text.into(),
             kind: InlineKeyboardButtonKind::CallbackData(callback_data.into()),
+        }
+    }
+
+    pub fn web_app<T>(text: T, info: WebAppInfo) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+    {
+        InlineKeyboardButton {
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::WebApp(info),
         }
     }
 
@@ -169,5 +165,38 @@ impl InlineKeyboardButton {
                 switch_inline_query_current_chat.into(),
             ),
         }
+    }
+
+    pub fn callback_game<T>(text: T, game: CallbackGame) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+    {
+        InlineKeyboardButton {
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::CallbackGame(game),
+        }
+    }
+
+    pub fn pay<T>(text: T) -> InlineKeyboardButton
+    where
+        T: Into<String>,
+    {
+        InlineKeyboardButton {
+            text: text.into(),
+            kind: InlineKeyboardButtonKind::Pay(True),
+        }
+    }
+
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
+        self.kind = val;
+        self
     }
 }
