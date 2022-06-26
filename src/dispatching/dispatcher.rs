@@ -288,7 +288,7 @@ where
             tokio::pin!(stream);
 
             loop {
-                self.gc_workers_if_needed().await;
+                self.remove_inactive_workers_if_needed().await;
 
                 // False positive
                 #[allow(clippy::collapsible_match)]
@@ -379,7 +379,7 @@ where
         }
     }
 
-    async fn gc_workers_if_needed(&mut self) {
+    async fn remove_inactive_workers_if_needed(&mut self) {
         let workers = self.workers.len();
         let max = self.max_number_of_active_workers.load(Ordering::Relaxed) as usize;
 
@@ -387,11 +387,11 @@ where
             return;
         }
 
-        self.gc_workers().await;
+        self.remove_inactive_workers().await;
     }
 
-    #[inline(never)]
-    async fn gc_workers(&mut self) {
+    #[inline(never)] // Cold function.
+    async fn remove_inactive_workers(&mut self) {
         let handles = self
             .workers
             .iter()
