@@ -99,92 +99,77 @@ impl InlineKeyboardButton {
         }
     }
 
-    pub fn url<T>(text: T, url: reqwest::Url) -> InlineKeyboardButton
+    pub fn url<T>(text: T, url: reqwest::Url) -> Self
     where
         T: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::Url(url),
-        }
+        Self::new(text, InlineKeyboardButtonKind::Url(url))
     }
 
-    pub fn login<T>(text: T, url: LoginUrl) -> InlineKeyboardButton
+    pub fn login<T>(text: T, url: LoginUrl) -> Self
     where
         T: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::LoginUrl(url),
-        }
+        Self::new(text, InlineKeyboardButtonKind::LoginUrl(url))
     }
 
-    pub fn callback<T, C>(text: T, callback_data: C) -> InlineKeyboardButton
+    pub fn callback<T, C>(text: T, callback_data: C) -> Self
     where
         T: Into<String>,
         C: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::CallbackData(callback_data.into()),
-        }
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::CallbackData(callback_data.into()),
+        )
     }
 
-    pub fn web_app<T>(text: T, info: WebAppInfo) -> InlineKeyboardButton
+    pub fn web_app<T>(text: T, info: WebAppInfo) -> Self
     where
         T: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::WebApp(info),
-        }
+        Self::new(text, InlineKeyboardButtonKind::WebApp(info))
     }
 
-    pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> InlineKeyboardButton
+    pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> Self
     where
         T: Into<String>,
         Q: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
-        }
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
+        )
     }
 
     pub fn switch_inline_query_current_chat<T, Q>(
         text: T,
         switch_inline_query_current_chat: Q,
-    ) -> InlineKeyboardButton
+    ) -> Self
     where
         T: Into<String>,
         Q: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
                 switch_inline_query_current_chat.into(),
             ),
-        }
+        )
     }
 
-    pub fn callback_game<T>(text: T, game: CallbackGame) -> InlineKeyboardButton
+    pub fn callback_game<T>(text: T, game: CallbackGame) -> Self
     where
         T: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::CallbackGame(game),
-        }
+        Self::new(text, InlineKeyboardButtonKind::CallbackGame(game))
     }
 
-    pub fn pay<T>(text: T) -> InlineKeyboardButton
+    pub fn pay<T>(text: T) -> Self
     where
         T: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::Pay(True),
-        }
+        Self::new(text, InlineKeyboardButtonKind::Pay(True))
     }
 
     pub fn text<S>(mut self, val: S) -> Self
