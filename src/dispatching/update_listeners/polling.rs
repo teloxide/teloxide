@@ -22,6 +22,8 @@ use crate::{
 };
 
 /// Builder for polling update listener.
+///
+/// Can be created by [`Polling::builder`].
 pub struct PollingBuilder<R> {
     bot: R,
     timeout: Option<Duration>,
@@ -101,7 +103,7 @@ where
 
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
-/// See also: [`polling_builder`].
+/// See also: [`Polling::builder`].
 ///
 /// ## Notes
 ///
