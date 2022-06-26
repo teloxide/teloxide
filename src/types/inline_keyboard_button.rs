@@ -58,7 +58,7 @@ pub enum InlineKeyboardButtonKind {
     /// switched from, skipping the chat selection screen.
     ///
     /// [inline mode]: https://core.telegram.org/bots/inline
-    /// [switch_pm…]: https://core.telegram.org/bots/api#answerinlinequery
+    /// [switch_pm…]: crate::payloads::AnswerInlineQuery
     SwitchInlineQuery(String),
 
     /// If set, pressing the button will insert the bot‘s username and the
