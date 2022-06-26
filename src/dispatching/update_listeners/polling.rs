@@ -130,7 +130,7 @@ where
 }
 
 /// Returns a long polling update listener with some additional options.
-#[deprecated(since = "0.7.0", note = "use `polling_builder` instead")]
+#[deprecated(since = "0.10.0", note = "use `polling_builder` instead")]
 pub fn polling<R>(
     bot: R,
     timeout: Option<Duration>,
