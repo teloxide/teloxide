@@ -1,4 +1,4 @@
-use crate::types::{CallbackGame, LoginUrl, WebAppInfo};
+use crate::types::{CallbackGame, LoginUrl, True, WebAppInfo};
 use serde::{Deserialize, Serialize};
 
 /// This object represents one button of an inline keyboard.
@@ -110,8 +110,7 @@ pub enum InlineKeyboardButtonKind {
     /// row.
     ///
     /// [Pay button]: https://core.telegram.org/bots/api#payments
-    // FIXME(waffle): This should be using `True`
-    Pay(bool),
+    Pay(True),
 }
 
 /// Build buttons.
