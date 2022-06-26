@@ -99,21 +99,6 @@ where
     }
 }
 
-/// Returns a builder for polling update listener.
-pub fn polling_builder<R>(bot: R) -> PollingBuilder<R>
-where
-    R: Requester + Send + 'static,
-    <R as Requester>::GetUpdates: Send,
-{
-    PollingBuilder {
-        bot,
-        timeout: None,
-        limit: None,
-        allowed_updates: None,
-        drop_pending_updates: false,
-    }
-}
-
 /// Returns a long polling update listener with `timeout` of 10 seconds.
 ///
 /// See also: [`polling_builder`].
@@ -126,11 +111,11 @@ where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    polling_builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build()
+    Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build()
 }
 
 /// Returns a long polling update listener with some additional options.
-#[deprecated(since = "0.10.0", note = "use `polling_builder` instead")]
+#[deprecated(since = "0.10.0", note = "use `Polling::builder()` instead")]
 pub fn polling<R>(
     bot: R,
     timeout: Option<Duration>,
@@ -141,7 +126,7 @@ where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    let mut builder = polling_builder(bot);
+    let mut builder = Polling::builder(bot);
     builder.timeout = timeout;
     builder.limit = limit;
     builder.allowed_updates = allowed_updates;
@@ -248,6 +233,23 @@ pub struct Polling<B: Requester> {
     drop_pending_updates: bool,
     flag: AsyncStopFlag,
     token: AsyncStopToken,
+}
+
+impl<R> Polling<R>
+where
+    R: Requester + Send + 'static,
+    <R as Requester>::GetUpdates: Send,
+{
+    /// Returns a builder for polling update listener.
+    pub fn builder(bot: R) -> PollingBuilder<R> {
+        PollingBuilder {
+            bot,
+            timeout: None,
+            limit: None,
+            allowed_updates: None,
+            drop_pending_updates: false,
+        }
+    }
 }
 
 #[pin_project::pin_project]

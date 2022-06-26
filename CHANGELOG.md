@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Security checks based on `secret_token` param of `set_webhook` to built-in webhooks
-- `dispatching::update_listeners::{polling_builder, PollingBuilder, Polling, PollingStream}`
+- `dispatching::update_listeners::{PollingBuilder, Polling, PollingStream}`
 
 ### Fixed
 
