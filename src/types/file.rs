@@ -62,7 +62,7 @@ mod tests {
                 file_id: "FILE_ID".to_owned(),
                 file_unique_id: "FILE_UNIQUE_ID".to_owned(),
                 file_size: Some(42),
-                file_path: Some("".to_owned()),
+                file_path: None,
             }
         );
     }

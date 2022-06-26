@@ -146,6 +146,7 @@ mod tests {
             username: Some("Username".to_string()),
             language_code: Some(String::from("ru")),
             is_premium: false,
+            added_to_attachment_menu: false,
         };
         let actual = serde_json::from_str::<User>(json).unwrap();
         assert_eq!(actual, expected)
@@ -161,6 +162,7 @@ mod tests {
             username: Some("aaaaaaaaaaaaaaaa".to_owned()),
             language_code: None,
             is_premium: false,
+            added_to_attachment_menu: false,
         };
 
         let user_b = User {
@@ -171,6 +173,7 @@ mod tests {
             username: None,
             language_code: None,
             is_premium: false,
+            added_to_attachment_menu: false,
         };
 
         assert_eq!(user_a.full_name(), "First Last");

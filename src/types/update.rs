@@ -355,6 +355,8 @@ mod test {
                         last_name: None,
                         username: Some(String::from("WaffleLapkin")),
                         language_code: Some(String::from("en")),
+                        is_premium: false,
+                        added_to_attachment_menu: false,
                     }),
                     reply_to_message: None,
                     forward: None,

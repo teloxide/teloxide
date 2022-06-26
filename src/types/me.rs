@@ -67,6 +67,7 @@ mod tests {
                 username: Some("SomethingSomethingBot".to_owned()),
                 language_code: None,
                 is_premium: false,
+                added_to_attachment_menu: false,
             },
             can_join_groups: false,
             can_read_all_group_messages: false,

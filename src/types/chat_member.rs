@@ -704,6 +704,8 @@ mod tests {
                 last_name: Some("Last".to_string()),
                 username: Some("fl".to_string()),
                 language_code: Some("en".to_string()),
+                is_premium: false,
+                added_to_attachment_menu: false,
             },
             kind: ChatMemberKind::Administrator(Administrator {
                 custom_title: None,

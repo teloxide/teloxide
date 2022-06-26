@@ -44,7 +44,7 @@ pub trait Download<'w>
     ///
     /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
     /// let mut file = File::create("/tmp/test.png").await?;
-    /// bot.download_file(&file_path, &mut file).await?;
+    /// bot.download_file(&file_path.unwrap(), &mut file).await?;
     /// # Ok(()) }
     /// ```
     ///
