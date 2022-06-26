@@ -31,6 +31,10 @@ pub struct User {
     /// `true`, if this user is a Telegram Premium user.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_premium: bool,
+
+    /// `true`, if this user added the bot to the attachment menu.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub added_to_attachment_menu: bool,
 }
 
 impl User {
