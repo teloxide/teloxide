@@ -366,8 +366,6 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
 
 #[test]
 fn polling_is_send() {
-    use crate::dispatching::update_listeners::AsUpdateStream;
-
     let bot = crate::Bot::new("TOKEN");
     #[allow(deprecated)]
     let mut polling = polling(bot, None, None, None);
