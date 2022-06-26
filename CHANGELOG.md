@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `InlineKeyboardButton::{pay, login, web_app, callback_game, pay}` constructors ([#231][pr231])
+- Support for Telegram Bot API [version 6.1](https://core.telegram.org/bots/api#june-20-2022) ([#233][pr233])
 
 ### Fixed
 
