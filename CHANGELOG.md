@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+ - `Dispatcher` no longer "leaks" memory for every inactive user ([PR 657](https://github.com/teloxide/teloxide/pull/657)).
+
+### Changed
+
+ - Add the `Key: Clone` requirement for `impl Dispatcher` [**BC**].
+
 ## 0.9.2 - 2022-06-07
 
 ### Fixed
