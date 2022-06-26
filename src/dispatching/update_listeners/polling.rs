@@ -15,20 +15,84 @@ use crate::{
     types::{AllowedUpdate, Update},
 };
 
-/// Returns a long polling update listener with `timeout` of 10 seconds.
-///
-/// See also: [`polling`](polling).
-///
-/// ## Notes
-///
-/// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(requester: R) -> impl UpdateListener<R::Err>
+/// Builder for polling update listener.
+pub struct PollingBuilder<R> {
+    bot: R,
+    timeout: Option<Duration>,
+    limit: Option<u8>,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+}
+
+impl<R> PollingBuilder<R>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    delete_webhook_if_setup(&requester).await;
-    polling(requester, Some(Duration::from_secs(10)), None, None)
+    /// Set timeout.
+    pub fn timeout(self, timeout: Duration) -> Self {
+        Self { timeout: Some(timeout), ..self }
+    }
+
+    /// Set limit.
+    ///
+    /// ## Panics
+    ///
+    /// If `limit` is greater than 100.
+    #[track_caller]
+    pub fn limit(self, limit: u8) -> Self {
+        assert!(limit <= 100, "Maximum limit is 100");
+
+        Self { limit: Some(limit), ..self }
+    }
+
+    /// Set allowed updates.
+    ///
+    /// ## Note
+    ///
+    /// Teloxide normally (when using [`Dispatcher`] or repls) sets this
+    /// automatically.
+    ///
+    /// [`Dispatcher`]: crate::dispatching::Dispatcher
+    pub fn allowed_updates(self, allowed_updates: Vec<AllowedUpdate>) -> Self {
+        Self { allowed_updates: Some(allowed_updates), ..self }
+    }
+
+    /// Deletes webhook if it was set up.
+    pub async fn delete_webhook(self) -> Self {
+        delete_webhook_if_setup(&self.bot).await;
+
+        self
+    }
+
+    /// Creates a polling update listener.
+    pub fn build(self) -> impl UpdateListener<R::Err> {
+        let Self { bot, timeout, limit, allowed_updates } = self;
+        polling(bot, timeout, limit, allowed_updates)
+    }
+}
+
+/// Returns a builder for polling update listener.
+pub fn polling_builder<R>(bot: R) -> PollingBuilder<R>
+where
+    R: Requester + Send + 'static,
+    <R as Requester>::GetUpdates: Send,
+{
+    PollingBuilder { bot, timeout: None, limit: None, allowed_updates: None }
+}
+
+/// Returns a long polling update listener with `timeout` of 10 seconds.
+///
+/// See also: [`polling_builder`].
+///
+/// ## Notes
+///
+/// This function will automatically delete a webhook if it was set up.
+pub async fn polling_default<R>(bot: R) -> impl UpdateListener<R::Err>
+where
+    R: Requester + Send + 'static,
+    <R as Requester>::GetUpdates: Send,
+{
+    polling_builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build()
 }
 
 #[cfg_attr(doc, aquamarine::aquamarine)]

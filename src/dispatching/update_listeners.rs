@@ -43,7 +43,7 @@ mod polling;
 mod stateful_listener;
 
 pub use self::{
-    polling::{polling, polling_default},
+    polling::{polling, polling_builder, polling_default, PollingBuilder},
     stateful_listener::StatefulListener,
 };
 
