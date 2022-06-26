@@ -52,10 +52,11 @@ where
     ///
     /// ## Panics
     ///
-    /// If `limit` is greater than 100.
+    /// If `limit` is 0 or greater than 100.
     #[track_caller]
     pub fn limit(self, limit: u8) -> Self {
-        assert!(limit <= 100, "Maximum limit is 100");
+        assert_ne!(limit, 0, "limit can't be 0");
+        assert!(limit <= 100, "maximum limit is 100, can't set limit to `{limit}`");
 
         Self { limit: Some(limit), ..self }
     }
