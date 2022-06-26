@@ -25,7 +25,7 @@ pub enum InlineKeyboardButtonKind {
     /// message_.
     Url(reqwest::Url),
 
-    /// An HTTP URL used to automatically authorize the user. Can be used as a
+    /// An HTTPS URL used to automatically authorize the user. Can be used as a
     /// replacement for the [Telegram Login Widget].
     ///
     /// [Telegram Login Widget]: https://core.telegram.org/widgets/login
