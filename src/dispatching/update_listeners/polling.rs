@@ -34,12 +34,20 @@ where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    /// Set timeout.
+    /// A timeout in seconds for polling.
+    ///
+    /// ## Note
+    ///
+    /// `timeout` should not be bigger than http client timeout, see
+    /// [`default_reqwest_settings`] for default http client settings.
+    ///
+    /// [`default_reqwest_settings`]: crate::net::default_reqwest_settings
     pub fn timeout(self, timeout: Duration) -> Self {
         Self { timeout: Some(timeout), ..self }
     }
 
-    /// Set limit.
+    /// Limit the number of updates to be retrieved at once. Values between
+    /// 1—100 are accepted.
     ///
     /// ## Panics
     ///
@@ -51,14 +59,17 @@ where
         Self { limit: Some(limit), ..self }
     }
 
-    /// Set allowed updates.
+    /// A list of the types of updates you want to receive.
     ///
     /// ## Note
     ///
-    /// Teloxide normally (when using [`Dispatcher`] or repls) sets this
-    /// automatically.
+    /// Teloxide normally (when using [`Dispatcher`] or [`repl`]s) sets this
+    /// automatically via [`hint_allowed_updates`], so you rarely need to use
+    /// `allowed_updates` explicitly.
     ///
     /// [`Dispatcher`]: crate::dispatching::Dispatcher
+    /// [`repl`]: fn@crate::repl
+    /// [`hint_allowed_updates`]: crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
     pub fn allowed_updates(self, allowed_updates: Vec<AllowedUpdate>) -> Self {
         Self { allowed_updates: Some(allowed_updates), ..self }
     }
@@ -70,10 +81,14 @@ where
         self
     }
 
-    /// Creates a polling update listener.
+    /// Returns a long polling update listener with configuration from the
+    /// builder.
+    ///
+    /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates } = self;
-        polling(bot, timeout, limit, allowed_updates)
+        let (token, flag) = AsyncStopToken::new_pair();
+        Polling { bot, timeout, limit, allowed_updates, flag, token }
     }
 }
 
@@ -101,59 +116,77 @@ where
     polling_builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build()
 }
 
-#[cfg_attr(doc, aquamarine::aquamarine)]
 /// Returns a long polling update listener with some additional options.
-///
-/// - `bot`: Using this bot, the returned update listener will receive updates.
-/// - `timeout`: A timeout in seconds for polling.
-/// - `limit`: Limits the number of updates to be retrieved at once. Values
-///   between 1—100 are accepted.
-/// - `allowed_updates`: A list the types of updates you want to receive.
-///
-/// See [`GetUpdates`] for defaults.
-///
-/// See also: [`polling_default`](polling_default).
-///
-/// ## Notes
-///
-/// - `timeout` should not be bigger than http client timeout, see
-///   [`default_reqwest_settings`] for default http client settings.
-/// - [`repl`]s and [`Dispatcher`] use [`hint_allowed_updates`] to set
-///   `allowed_updates`, so you rarely need to pass `allowed_updates`
-///   explicitly.
-///
-/// [`default_reqwest_settings`]: teloxide::net::default_reqwest_settings
-/// [`repl`]: fn@crate::repl
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`hint_allowed_updates`]:
-/// crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
+#[deprecated(since = "0.7.0", note = "use `polling_builder` instead")]
+pub fn polling<R>(
+    bot: R,
+    timeout: Option<Duration>,
+    limit: Option<u8>,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+) -> Polling<R>
+where
+    R: Requester + Send + 'static,
+    <R as Requester>::GetUpdates: Send,
+{
+    let mut builder = polling_builder(bot);
+    builder.timeout = timeout;
+    builder.limit = limit;
+    builder.allowed_updates = allowed_updates;
+    builder.build()
+}
+
+async fn delete_webhook_if_setup<R>(requester: &R)
+where
+    R: Requester,
+{
+    let webhook_info = match requester.get_webhook_info().send().await {
+        Ok(ok) => ok,
+        Err(e) => {
+            log::error!("Failed to get webhook info: {:?}", e);
+            return;
+        }
+    };
+
+    let is_webhook_setup = webhook_info.url.is_some();
+
+    if is_webhook_setup {
+        if let Err(e) = requester.delete_webhook().send().await {
+            log::error!("Failed to delete a webhook: {:?}", e);
+        }
+    }
+}
+
+#[cfg_attr(doc, aquamarine::aquamarine)]
+/// A polling update listener.
 ///
 /// ## How it works
 ///
-/// Long polling works by repeatedly calling [`Bot::get_updates`][get_updates].
-/// If telegram has any updates, it returns them immediately, otherwise it waits
-/// until either it has any updates or `timeout` expires.
+/// Long polling works by repeatedly calling
+/// [`Bot::get_updates`][get_updates]. If telegram has any updates, it
+/// returns them immediately, otherwise it waits until either it has any
+/// updates or `timeout` expires.
 ///
-/// Each [`get_updates`][get_updates] call includes an `offset` parameter equal
-/// to the latest update id + one, that allows to only receive updates that has
-/// not been received before.
+/// Each [`get_updates`][get_updates] call includes an `offset` parameter
+/// equal to the latest update id + one, that allows to only receive
+/// updates that has not been received before.
 ///
-/// When telegram receives a [`get_updates`][get_updates] request with `offset =
-/// N` it forgets any updates with id < `N`. When `polling` listener is stopped,
-/// it sends [`get_updates`][get_updates] with `timeout = 0, limit = 1` and
-/// appropriate `offset`, so future bot restarts won't see updates that were
-/// already seen.
+/// When telegram receives a [`get_updates`][get_updates] request with
+/// `offset = N` it forgets any updates with id < `N`. When `polling`
+/// listener is stopped, it sends [`get_updates`][get_updates] with
+/// `timeout = 0, limit = 1` and appropriate `offset`, so future bot
+/// restarts won't see updates that were already seen.
 ///
-/// Consumers of a `polling` update listener then need to repeatedly call
+/// Consumers of a [`Polling`] update listener then need to repeatedly call
 /// [`futures::StreamExt::next`] to get the updates.
 ///
-/// Here is an example diagram that shows these interactions between consumers
-/// like [`Dispatcher`], `polling` update listener and telegram.
+/// Here is an example diagram that shows these interactions between
+/// consumers like [`Dispatcher`], [`Polling`] update listener and
+/// telegram.
 ///
 /// ```mermaid
 /// sequenceDiagram    
 ///     participant C as Consumer
-///     participant P as polling
+///     participant P as Polling
 ///     participant T as Telegram
 ///
 ///     link C: Dispatcher @ ../struct.Dispatcher.html
@@ -193,41 +226,7 @@ where
 /// ```
 ///
 /// [get_updates]: crate::requests::Requester::get_updates
-pub fn polling<R>(
-    bot: R,
-    timeout: Option<Duration>,
-    limit: Option<u8>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> Polling<R>
-where
-    R: Requester + Send + 'static,
-    <R as Requester>::GetUpdates: Send,
-{
-    let (token, flag) = AsyncStopToken::new_pair();
-    Polling { bot, timeout, limit, allowed_updates, flag, token }
-}
-
-async fn delete_webhook_if_setup<R>(requester: &R)
-where
-    R: Requester,
-{
-    let webhook_info = match requester.get_webhook_info().send().await {
-        Ok(ok) => ok,
-        Err(e) => {
-            log::error!("Failed to get webhook info: {:?}", e);
-            return;
-        }
-    };
-
-    let is_webhook_setup = webhook_info.url.is_some();
-
-    if is_webhook_setup {
-        if let Err(e) = requester.delete_webhook().send().await {
-            log::error!("Failed to delete a webhook: {:?}", e);
-        }
-    }
-}
-
+/// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct Polling<B: Requester> {
     bot: B,
     timeout: Option<Duration>,
@@ -370,6 +369,7 @@ fn polling_is_send() {
     use crate::dispatching::update_listeners::AsUpdateStream;
 
     let bot = crate::Bot::new("TOKEN");
+    #[allow(deprecated)]
     let mut polling = polling(bot, None, None, None);
 
     assert_send(&polling);
