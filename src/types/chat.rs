@@ -76,15 +76,8 @@ pub struct ChatPublic {
 
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(from = "serde_helper::ChatPrivate", into = "serde_helper::ChatPrivate")]
 pub struct ChatPrivate {
-    /// A dummy field. Used to ensure that the `type` field is equal to
-    /// `private`.
-    #[serde(rename = "type")]
-    #[serde(deserialize_with = "assert_private_field")]
-    #[serde(serialize_with = "serialize_private_field")]
-    // FIXME(waffle): remove this entirely (replace with custom De/Serialize impl)
-    pub type_: (),
-
     /// A username, for private chats, supergroups and channels if
     /// available.
     pub username: Option<String>,
@@ -183,40 +176,6 @@ pub struct PublicChatSupergroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub location: Option<ChatLocation>,
-}
-
-struct PrivateChatKindVisitor;
-
-impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
-    type Value = ();
-
-    fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, r#"field equal to "private""#)
-    }
-
-    fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
-        match v {
-            "private" => Ok(()),
-            _ => Err(E::invalid_value(
-                serde::de::Unexpected::Str(v),
-                &r#""private""#,
-            )),
-        }
-    }
-}
-
-fn assert_private_field<'de, D>(des: D) -> Result<(), D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    des.deserialize_str(PrivateChatKindVisitor)
-}
-
-fn serialize_private_field<S>(_: &(), ser: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    ser.serialize_str("private")
 }
 
 impl Chat {
@@ -450,6 +409,72 @@ impl Chat {
     }
 }
 
+mod serde_helper {
+    use crate::types::True;
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Serialize, Deserialize)]
+    enum Type {
+        #[allow(non_camel_case_types)]
+        private,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    pub(super) struct ChatPrivate {
+        /// A dummy field. Used to ensure that the `type` field is equal to
+        /// `private`.
+        r#type: Type,
+
+        username: Option<String>,
+        first_name: Option<String>,
+        last_name: Option<String>,
+        bio: Option<String>,
+        has_private_forwards: Option<True>,
+    }
+
+    impl From<ChatPrivate> for super::ChatPrivate {
+        fn from(
+            ChatPrivate {
+                r#type: _,
+                username,
+                first_name,
+                last_name,
+                bio,
+                has_private_forwards,
+            }: ChatPrivate,
+        ) -> Self {
+            Self {
+                username,
+                first_name,
+                last_name,
+                bio,
+                has_private_forwards,
+            }
+        }
+    }
+
+    impl From<super::ChatPrivate> for ChatPrivate {
+        fn from(
+            super::ChatPrivate {
+                username,
+                first_name,
+                last_name,
+                bio,
+                has_private_forwards,
+            }: super::ChatPrivate,
+        ) -> Self {
+            Self {
+                r#type: Type::private,
+                username,
+                first_name,
+                last_name,
+                bio,
+                has_private_forwards,
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::{from_str, to_string};
@@ -484,7 +509,6 @@ mod tests {
             Chat {
                 id: ChatId(0),
                 kind: ChatKind::Private(ChatPrivate {
-                    type_: (),
                     username: Some("username".into()),
                     first_name: Some("Anon".into()),
                     last_name: None,
@@ -505,7 +529,6 @@ mod tests {
         let chat = Chat {
             id: ChatId(0),
             kind: ChatKind::Private(ChatPrivate {
-                type_: (),
                 username: Some("username".into()),
                 first_name: Some("Anon".into()),
                 last_name: None,

@@ -337,7 +337,6 @@ mod test {
                 chat: Chat {
                     id: ChatId(218_485_655),
                     kind: ChatKind::Private(ChatPrivate {
-                        type_: (),
                         username: Some(String::from("WaffleLapkin")),
                         first_name: Some(String::from("Waffle")),
                         last_name: None,
