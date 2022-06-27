@@ -1,6 +1,6 @@
 //! An update dispatching model based on [`dptree`].
 //!
-//! In teloxide, updates are dispatched by a pipleine. The central type is
+//! In teloxide, updates are dispatched by a pipeline. The central type is
 //! [`dptree::Handler`] -- it represents a handler of an update; since the API
 //! is highly declarative, you can combine handlers with each other via such
 //! methods as [`dptree::Handler::chain`] and [`dptree::Handler::branch`]. The
