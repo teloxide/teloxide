@@ -10,6 +10,7 @@ on:
 
 env:
   RUSTFLAGS: -Dwarnings
+  RUSTDOCFLAGS: -Dwarnings
   RUST_BACKTRACE: short
 
   CARGO_INCREMENTAL: 0
@@ -34,6 +35,7 @@ jobs:
       - test
       - check-examples
       - clippy
+      - doc
 
     steps:
       - run: exit 0
@@ -161,3 +163,26 @@ jobs:
         with:
           command: clippy
           args: --all-targets --all-features
+
+  doc:
+    name: check docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust ${{ env.rust_nightly }}
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ env.rust_nightly }}
+          override: true
+
+      - name: Cache Dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: rustdoc
+        uses: actions-rs/cargo@v1
+        with:
+          command: docs # from .cargo/config.toml

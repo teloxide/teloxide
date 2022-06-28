@@ -90,6 +90,8 @@
 #![warn(clippy::print_stdout, clippy::dbg_macro)]
 // Unless this becomes machine applicable, I'm not adding 334 #[must_use]s (waffle)
 #![allow(clippy::return_self_not_must_use)]
+// Workaround for CI
+#![allow(rustdoc::bare_urls)]
 
 // The internal helper macros.
 #[macro_use]
