@@ -1,4 +1,4 @@
-use crate::types::{CallbackGame, LoginUrl, WebAppInfo};
+use crate::types::{CallbackGame, LoginUrl, True, WebAppInfo};
 use serde::{Deserialize, Serialize};
 
 /// This object represents one button of an inline keyboard.
@@ -11,31 +11,6 @@ pub struct InlineKeyboardButton {
 
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
-}
-
-impl InlineKeyboardButton {
-    pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            text: text.into(),
-            kind,
-        }
-    }
-
-    pub fn text<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.text = val.into();
-        self
-    }
-
-    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
-        self.kind = val;
-        self
-    }
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -83,7 +58,7 @@ pub enum InlineKeyboardButtonKind {
     /// switched from, skipping the chat selection screen.
     ///
     /// [inline mode]: https://core.telegram.org/bots/inline
-    /// [switch_pm…]: https://core.telegram.org/bots/api#answerinlinequery
+    /// [switch_pm…]: crate::payloads::AnswerInlineQuery
     SwitchInlineQuery(String),
 
     /// If set, pressing the button will insert the bot‘s username and the
@@ -99,6 +74,7 @@ pub enum InlineKeyboardButtonKind {
     /// button.
     ///
     /// ## Note
+    ///
     /// This type of button **must** always be the first button in the first
     /// row.
     CallbackGame(CallbackGame),
@@ -106,69 +82,144 @@ pub enum InlineKeyboardButtonKind {
     /// Specify True, to send a [Pay button].
     ///
     /// ## Note
+    ///
     /// This type of button **must** always be the first button in the first
     /// row.
     ///
     /// [Pay button]: https://core.telegram.org/bots/api#payments
-    // FIXME(waffle): This should be using `True`
-    Pay(bool),
+    Pay(True),
 }
 
-/// Build buttons.
-///
-/// # Examples
-/// ```
-/// use teloxide_core::types::InlineKeyboardButton;
-///
-/// let url = url::Url::parse("https://example.com").unwrap();
-/// let url_button = InlineKeyboardButton::url("Text".to_string(), url);
-/// ```
 impl InlineKeyboardButton {
-    pub fn url<T>(text: T, url: reqwest::Url) -> InlineKeyboardButton
+    /// Creates a new `InlineKeyboardButton`.
+    pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
     where
-        T: Into<String>,
+        S: Into<String>,
     {
-        InlineKeyboardButton {
+        Self {
             text: text.into(),
-            kind: InlineKeyboardButtonKind::Url(url),
+            kind,
         }
     }
 
-    pub fn callback<T, C>(text: T, callback_data: C) -> InlineKeyboardButton
+    /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
+    ///
+    /// [`Url`]: InlineKeyboardButtonKind::Url
+    pub fn url<T>(text: T, url: reqwest::Url) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::Url(url))
+    }
+
+    /// Constructor for `InlineKeyboardButton` with [`LoginUrl`] kind.
+    ///
+    /// [`LoginUrl`]: InlineKeyboardButtonKind::LoginUrl
+    pub fn login<T>(text: T, url: LoginUrl) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::LoginUrl(url))
+    }
+
+    /// Constructor for `InlineKeyboardButton` with [`CallbackData`] kind.
+    ///
+    /// [`CallbackData`]: InlineKeyboardButtonKind::CallbackData
+    pub fn callback<T, C>(text: T, callback_data: C) -> Self
     where
         T: Into<String>,
         C: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::CallbackData(callback_data.into()),
-        }
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::CallbackData(callback_data.into()),
+        )
     }
 
-    pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> InlineKeyboardButton
+    /// Constructor for `InlineKeyboardButton` with [`WebApp`] kind.
+    ///
+    /// [`WebApp`]: InlineKeyboardButtonKind::WebApp
+    pub fn web_app<T>(text: T, info: WebAppInfo) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::WebApp(info))
+    }
+
+    /// Constructor for `InlineKeyboardButton` with [`SwitchInlineQuery`] kind.
+    ///
+    /// [`SwitchInlineQuery`]: InlineKeyboardButtonKind::SwitchInlineQuery
+    pub fn switch_inline_query<T, Q>(text: T, switch_inline_query: Q) -> Self
     where
         T: Into<String>,
         Q: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
-        }
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
+        )
     }
 
+    /// Constructor for `InlineKeyboardButton` with
+    /// [`SwitchInlineQueryCurrentChat`] kind.
+    ///
+    /// [`SwitchInlineQueryCurrentChat`]: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat
     pub fn switch_inline_query_current_chat<T, Q>(
         text: T,
         switch_inline_query_current_chat: Q,
-    ) -> InlineKeyboardButton
+    ) -> Self
     where
         T: Into<String>,
         Q: Into<String>,
     {
-        InlineKeyboardButton {
-            text: text.into(),
-            kind: InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
+        Self::new(
+            text,
+            InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(
                 switch_inline_query_current_chat.into(),
             ),
-        }
+        )
+    }
+
+    /// Constructor for `InlineKeyboardButton` with [`CallbackGame`] kind.
+    ///
+    /// [`CallbackGame`]: InlineKeyboardButtonKind::CallbackGame
+    pub fn callback_game<T>(text: T, game: CallbackGame) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::CallbackGame(game))
+    }
+
+    /// Constructor for `InlineKeyboardButton` with [`Pay`] kind.
+    ///
+    /// [`Pay`]: InlineKeyboardButtonKind::Pay
+    pub fn pay<T>(text: T) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::Pay(True))
+    }
+}
+
+impl InlineKeyboardButton {
+    #[deprecated(
+        since = "0.7.0",
+        note = "set correct text in the constructor or access the field directly"
+    )]
+    pub fn text<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.text = val.into();
+        self
+    }
+
+    #[deprecated(
+        since = "0.7.0",
+        note = "set correct kind in the constructor or access the field directly"
+    )]
+    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
+        self.kind = val;
+        self
     }
 }
