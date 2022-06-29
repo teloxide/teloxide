@@ -1,11 +1,11 @@
 // This bot answers how many messages it received in total on every message.
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{
+    atomic::{AtomicU64, Ordering},
+    Arc,
+};
 
-use once_cell::sync::Lazy;
 use teloxide::prelude::*;
-
-static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
 
 #[tokio::main]
 async fn main() {
@@ -13,15 +13,22 @@ async fn main() {
     log::info!("Starting shared state bot...");
 
     let bot = Bot::from_env().auto_send();
+    let messages_total = Arc::new(AtomicU64::new(0));
 
-    let handler = Update::filter_message().branch(dptree::endpoint(
-        |msg: Message, bot: AutoSend<Bot>| async move {
-            let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
+    let handler = Update::filter_message().endpoint(
+        |msg: Message, bot: AutoSend<Bot>, messages_total: Arc<AtomicU64>| async move {
+            let previous = messages_total.fetch_add(1, Ordering::Relaxed);
             bot.send_message(msg.chat.id, format!("I received {previous} messages in total."))
                 .await?;
             respond(())
         },
-    ));
+    );
 
-    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+    Dispatcher::builder(bot, handler)
+        // Pass the shared state to the handler as a dependency.
+        .dependencies(dptree::deps![messages_total])
+        .build()
+        .setup_ctrlc_handler()
+        .dispatch()
+        .await;
 }
