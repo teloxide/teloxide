@@ -37,7 +37,7 @@ async fn main() {
         .parse()
         .expect("PORT env variable value is not an integer");
 
-    let addr = ([127, 0, 0, 1], port).into();
+    let addr = ([0, 0, 0, 0], port).into();
 
     // Heroku host example: "heroku-ping-pong-bot.herokuapp.com"
     let host = env::var("HOST").expect("HOST env variable is not set");
