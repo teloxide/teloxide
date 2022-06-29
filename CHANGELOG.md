@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `InlineKeyboardButton::{pay, login, web_app, callback_game, pay}` constructors ([#231][pr231])
+- Support for Telegram Bot API [version 6.1](https://core.telegram.org/bots/api#june-20-2022) ([#233][pr233])
+
+### Fixed
+
+- `File::{file_size, file_path}` are now optional ([#233][pr233])
 
 ### Changed
 
@@ -20,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InlineKeyboardButton::{text, kind}` functions ([#231][pr231])
 
 [pr231]: https://github.com/teloxide/teloxide-core/pull/231
+[pr233]: https://github.com/teloxide/teloxide-core/pull/233
 
 ### Removed
 

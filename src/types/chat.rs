@@ -176,6 +176,18 @@ pub struct PublicChatSupergroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub location: Option<ChatLocation>,
+
+    /// True, if users need to join the supergroup before they can send
+    /// messages. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub join_to_send_messages: Option<True>,
+
+    /// True, if all users directly joining the supergroup need to be approved
+    /// by supergroup administrators. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub join_by_request: Option<True>,
 }
 
 impl Chat {
@@ -325,6 +337,34 @@ impl Chat {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
                 return this.location.as_ref();
+            }
+        }
+
+        None
+    }
+
+    /// True, if users need to join the supergroup before they can send
+    /// messages. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub fn join_to_send_messages(&self) -> Option<True> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.join_to_send_messages;
+            }
+        }
+
+        None
+    }
+
+    /// True, if all users directly joining the supergroup need to be approved
+    /// by supergroup administrators. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub fn join_by_request(&self) -> Option<True> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.join_by_request;
             }
         }
 

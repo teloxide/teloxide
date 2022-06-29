@@ -22,26 +22,12 @@ pub struct File {
     pub file_unique_id: String,
 
     /// File size in bytes, if known.
-    ///
-    /// **Note:** in the Telegram Bot API this field is optional, however it was
-    /// errourneusly marked as required in Teloxide. To workaround this issue,
-    /// when `file_size` is not present, it is deserialized as [`u32::MAX`].
-    #[serde(default = "default_file_size")]
-    pub file_size: u32,
+    pub file_size: Option<u64>,
 
     /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
     ///
-    /// **Note:** in the Telegram Bot API this field is optional, however it was
-    /// errourneusly marked as required in Teloxide. To workaround this issue,
-    /// when `file_path` is not present, it is deserialized as an empty string.
-    ///
     /// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
-    #[serde(default)]
-    pub file_path: String,
-}
-
-const fn default_file_size() -> u32 {
-    u32::MAX
+    pub file_path: Option<String>,
 }
 
 #[cfg(test)]
@@ -59,8 +45,8 @@ mod tests {
             File {
                 file_id: "FILE_ID".to_owned(),
                 file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                file_size: u32::MAX,
-                file_path: "FILE_PATH".to_owned(),
+                file_size: None,
+                file_path: Some("FILE_PATH".to_owned()),
             }
         );
     }
@@ -75,8 +61,8 @@ mod tests {
             File {
                 file_id: "FILE_ID".to_owned(),
                 file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                file_size: 42,
-                file_path: "".to_owned(),
+                file_size: Some(42),
+                file_path: None,
             }
         );
     }

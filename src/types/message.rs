@@ -1511,6 +1511,8 @@ mod tests {
                     slow_mode_delay: None,
                     linked_chat_id: None,
                     location: None,
+                    join_by_request: None,
+                    join_to_send_messages: None,
                 }),
                 description: None,
                 invite_link: None,

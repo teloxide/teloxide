@@ -1036,6 +1036,39 @@ impl Requester for Bot {
         )
     }
 
+    type CreateInvoiceLink = JsonRequest<payloads::CreateInvoiceLink>;
+
+    /// For Telegram documentation see [`CreateInvoiceLink`].
+    fn create_invoice_link<T, D, Pa, P, C, Pri>(
+        &self,
+        title: T,
+        description: D,
+        payload: Pa,
+        provider_token: P,
+        currency: C,
+        prices: Pri,
+    ) -> Self::CreateInvoiceLink
+    where
+        T: Into<String>,
+        D: Into<String>,
+        Pa: Into<String>,
+        P: Into<String>,
+        C: Into<String>,
+        Pri: IntoIterator<Item = LabeledPrice>,
+    {
+        Self::CreateInvoiceLink::new(
+            self.clone(),
+            payloads::CreateInvoiceLink::new(
+                title,
+                description,
+                payload,
+                provider_token,
+                currency,
+                prices,
+            ),
+        )
+    }
+
     type AnswerShippingQuery = JsonRequest<payloads::AnswerShippingQuery>;
 
     fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery

@@ -155,6 +155,7 @@ where
         delete_sticker_from_set,
         set_sticker_set_thumb,
         answer_shipping_query,
+        create_invoice_link,
         answer_pre_checkout_query,
         set_passport_data_errors,
         send_game,
