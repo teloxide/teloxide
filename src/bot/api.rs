@@ -1038,7 +1038,6 @@ impl Requester for Bot {
 
     type CreateInvoiceLink = JsonRequest<payloads::CreateInvoiceLink>;
 
-    /// For Telegram documentation see [`CreateInvoiceLink`].
     fn create_invoice_link<T, D, Pa, P, C, Pri>(
         &self,
         title: T,
