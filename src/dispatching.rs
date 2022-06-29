@@ -29,31 +29,7 @@
 //! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/shared_state.rs))
 //!
 //! ```no_run
-//! use std::sync::atomic::{AtomicU64, Ordering};
-//!
-//! use once_cell::sync::Lazy;
-//! use teloxide::prelude::*;
-//!
-//! static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
-//!
-//! # #[tokio::main]
-//! # async fn main() {
-//! pretty_env_logger::init();
-//! log::info!("Starting shared state bot...");
-//!
-//! let bot = Bot::from_env().auto_send();
-//!
-//! let handler = Update::filter_message().branch(dptree::endpoint(
-//!     |msg: Message, bot: AutoSend<Bot>| async move {
-//!         let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
-//!         bot.send_message(msg.chat.id, format!("I received {} messages in total.", previous))
-//!             .await?;
-//!         respond(())
-//!     },
-//! ));
-//!
-//! Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
-//! # }
+//! // TODO: examples/purchase.rs
 //! ```
 //!
 //!  1. First, we create the bot: `let bot = Bot::from_env().auto_send()`.
@@ -61,8 +37,8 @@
 //! kinds of [`crate::types::Update`], here we are only interested in
 //! [`crate::types::Message`]: [`UpdateFilterExt::filter_message`] create a
 //! handler object which filters all messages out of a generic update.
-//!  3. By doing `.branch(dptree::endpoint(...))`, we set up a custom handling
-//! closure that receives `msg: Message` and `bot: AutoSend<Bot>`. There are
+//!  3. By doing `.endpoint(...)` we set up a custom handling closure that
+//! receives `msg: Message` and `bot: AutoSend<Bot>`. There are
 //! called dependencies: `msg` is supplied by
 //! [`UpdateFilterExt::filter_message`], while `bot` is supplied by
 //! [`Dispatcher`].
