@@ -13,8 +13,9 @@
 //! dialogues. Your dialogue state can be represented as an enumeration:
 //!
 //! ```ignore
-//! #[derive(Clone)]
+//! #[derive(Clone, Default)]
 //! pub enum State {
+//!     #[default]
 //!     Start,
 //!     ReceiveFullName,
 //!     ReceiveAge { full_name: String },
