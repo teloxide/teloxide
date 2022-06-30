@@ -14,16 +14,11 @@ type MyDialogue = Dialogue<State, ErasedStorage<State>>;
 type MyStorage = std::sync::Arc<ErasedStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
 pub enum State {
+    #[default]
     Start,
     GotNumber(i32),
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
 }
 
 #[derive(Clone, BotCommands)]
