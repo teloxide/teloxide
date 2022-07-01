@@ -2,6 +2,8 @@
 
 | Feature              | Description                                                                        |
 |----------------------|------------------------------------------------------------------------------------|
+| `webhooks`           | Enables general webhook utilities (almost useless on its own)                      |
+| `webhooks-axum`      | Enables webhook implementation based on axum framework                             |
 | `macros`             | Re-exports macros from [`teloxide-macros`].                                        |
 | `ctrlc_handler`      | Enables the [`Dispatcher::setup_ctrlc_handler`] function (**enabled by default**). |
 | `auto-send`          | Enables the [`AutoSend`](adaptors::AutoSend) bot adaptor (**enabled by default**). |
