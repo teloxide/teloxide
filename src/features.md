@@ -2,13 +2,7 @@
 
 | Feature              | Description                                                                        |
 |----------------------|------------------------------------------------------------------------------------|
-| `redis-storage`      | Enables the [Redis] storage support for dialogues.                                 |
-| `sqlite-storage`     | Enables the [Sqlite] storage support for dialogues.                                |
-| `cbor-serializer`    | Enables the [CBOR] serializer for dialogues.                                       |
-| `bincode-serializer` | Enables the [Bincode] serializer for dialogues.                                    |
 | `macros`             | Re-exports macros from [`teloxide-macros`].                                        |
-| `native-tls`         | Enables the [`native-tls`] TLS implementation (**enabled by default**).            |
-| `rustls`             | Enables the [`rustls`] TLS implementation.                                         |
 | `ctrlc_handler`      | Enables the [`Dispatcher::setup_ctrlc_handler`] function (**enabled by default**). |
 | `auto-send`          | Enables the [`AutoSend`](adaptors::AutoSend) bot adaptor (**enabled by default**). |
 | `throttle`           | Enables the [`Throttle`](adaptors::Throttle) bot adaptor.                          |
@@ -17,6 +11,13 @@
 | `erased`             | Enables the [`ErasedRequester`](adaptors::ErasedRequester) bot adaptor.            |
 | `full`               | Enables all the features except `nightly`.                                         |
 | `nightly`            | Enables nightly-only features (see the [teloxide-core features]).                  |
+| `native-tls`         | Enables the [`native-tls`] TLS implementation (**enabled by default**).            |
+| `rustls`             | Enables the [`rustls`] TLS implementation.                                         |
+| `redis-storage`      | Enables the [Redis] storage support for dialogues.                                 |
+| `sqlite-storage`     | Enables the [Sqlite] storage support for dialogues.                                |
+| `cbor-serializer`    | Enables the [CBOR] serializer for dialogues.                                       |
+| `bincode-serializer` | Enables the [Bincode] serializer for dialogues.                                    |
+
 
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org/
