@@ -44,15 +44,11 @@
     html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
     html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
 )]
-// We pass "--cfg docsrs" when building docs to add `This is supported on
-// feature="..." only.`
-//
-// "--cfg dep_docsrs" is used for the same reason, but for `teloxide-core`.
-//
 // To properly build docs of this crate run
 // ```console
-// $ RUSTFLAGS="--cfg dep_docsrs" RUSTDOCFLAGS="--cfg docsrs -Znormalize-docs" cargo +nightly doc --open --all-features
+// $ cargo docs --open
 // ```
+// (docs is an alias from `.cargo/config.toml`)
 #![cfg_attr(all(docsrs, feature = "nightly"), feature(doc_cfg, doc_auto_cfg))]
 #![forbid(unsafe_code)]
 #![warn(rustdoc::broken_intra_doc_links)]
