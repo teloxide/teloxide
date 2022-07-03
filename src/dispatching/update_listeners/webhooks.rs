@@ -170,7 +170,7 @@ fn check_secret(bytes: &[u8]) -> Result<&[u8], &'static str> {
     let len = bytes.len();
 
     // Check that length is in bounds
-    if !(1 <= len && len <= 256) {
+    if !(1..=256).contains(&len) {
         return Err("secret token length must be in range 1..=256");
     }
 
