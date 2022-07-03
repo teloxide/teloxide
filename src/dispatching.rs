@@ -30,6 +30,7 @@
 //!
 //! ```no_run
 //! // TODO: examples/purchase.rs
+//! fn main() {}
 //! ```
 //!
 //!  1. First, we create the bot: `let bot = Bot::from_env().auto_send()`.
