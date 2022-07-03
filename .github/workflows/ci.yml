@@ -115,11 +115,18 @@ jobs:
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
       
-      - name: Test
+      # NB. Don't test (build) examples so we can use non-msrv features in them
+      - name: Test unit & integration tests 
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --verbose ${{ matrix.features }}
+          args: --tests --verbose ${{ matrix.features }}
+          
+      - name: Test documentation tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --doc --verbose ${{ matrix.features }}
 
   check-examples:
     runs-on: ubuntu-latest
