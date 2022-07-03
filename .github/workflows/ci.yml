@@ -18,7 +18,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2022-05-06
+          toolchain: nightly-2022-07-01
           override: true
           components: rustfmt
 
@@ -37,7 +37,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2022-05-06
+          toolchain: nightly-2022-07-01
           override: true
           components: clippy
 
@@ -65,7 +65,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2022-05-06
+            toolchain: nightly-2022-07-01
             features: "--all-features"
           - rust: msrv
             toolchain: "1.58.0"
