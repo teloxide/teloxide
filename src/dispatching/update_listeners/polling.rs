@@ -24,6 +24,7 @@ use crate::{
 /// Builder for polling update listener.
 ///
 /// Can be created by [`Polling::builder`].
+#[must_use = "`PollingBuilder` is a builder and does nothing unless used"]
 pub struct PollingBuilder<R> {
     bot: R,
     timeout: Option<Duration>,
@@ -233,6 +234,7 @@ where
 ///
 /// [get_updates]: crate::requests::Requester::get_updates
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[must_use = "`Polling` is an update listener and does nothing unless used"]
 pub struct Polling<B: Requester> {
     bot: B,
     timeout: Option<Duration>,
