@@ -15,7 +15,7 @@ use futures::{ready, stream::Stream};
 use crate::{
     dispatching::{
         stop_token::{AsyncStopFlag, AsyncStopToken},
-        update_listeners::{AsUpdateStream, UpdateListener},
+        update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
     },
     requests::{HasPayload, Request, Requester},
     types::{AllowedUpdate, Update},
@@ -97,7 +97,10 @@ where
     pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
         let (token, flag) = AsyncStopToken::new_pair();
-        Polling { bot, timeout, limit, allowed_updates, drop_pending_updates, flag, token }
+        let polling =
+            Polling { bot, timeout, limit, allowed_updates, drop_pending_updates, flag, token };
+
+        assert_update_listener(polling)
     }
 }
 
@@ -113,7 +116,10 @@ where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build()
+    let polling =
+        Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build();
+
+    assert_update_listener(polling)
 }
 
 /// Returns a long polling update listener with some additional options.
@@ -132,7 +138,7 @@ where
     builder.timeout = timeout;
     builder.limit = limit;
     builder.allowed_updates = allowed_updates;
-    builder.build()
+    assert_update_listener(builder.build())
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
