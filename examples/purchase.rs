@@ -25,17 +25,14 @@ use teloxide::{
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveProductChoice { full_name: String },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveProductChoice {
+        full_name: String,
+    },
 }
 
 #[derive(BotCommands, Clone)]
