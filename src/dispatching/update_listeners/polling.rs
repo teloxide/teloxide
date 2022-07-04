@@ -24,13 +24,14 @@ use crate::{
 /// Builder for polling update listener.
 ///
 /// Can be created by [`Polling::builder`].
+#[non_exhaustive]
 #[must_use = "`PollingBuilder` is a builder and does nothing unless used"]
 pub struct PollingBuilder<R> {
-    bot: R,
-    timeout: Option<Duration>,
-    limit: Option<u8>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-    drop_pending_updates: bool,
+    pub bot: R,
+    pub timeout: Option<Duration>,
+    pub limit: Option<u8>,
+    pub allowed_updates: Option<Vec<AllowedUpdate>>,
+    pub drop_pending_updates: bool,
 }
 
 impl<R> PollingBuilder<R>
