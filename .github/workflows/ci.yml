@@ -102,11 +102,12 @@ jobs:
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v1
 
+      # NB. Don't test (build) examples so we can use non-msrv features in them (--tests/--doc)
       - name: Compile 
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-run --verbose ${{ matrix.features }}
+          args: --tests --no-run --verbose ${{ matrix.features }}
 
       - name: Setup redis
         run: |
@@ -115,7 +116,6 @@ jobs:
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
       
-      # NB. Don't test (build) examples so we can use non-msrv features in them
       - name: Test unit & integration tests 
         uses: actions-rs/cargo@v1
         with:
