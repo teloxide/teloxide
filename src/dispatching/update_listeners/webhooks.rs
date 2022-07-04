@@ -4,6 +4,7 @@ use std::net::SocketAddr;
 use crate::{requests::Requester, types::InputFile};
 
 /// Options related to setting up webhooks.
+#[must_use]
 pub struct Options {
     /// Local address to listen to.
     pub address: SocketAddr,
@@ -42,13 +43,28 @@ pub struct Options {
     ///
     /// Default - false.
     pub drop_pending_updates: bool,
+
+    /// A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token”
+    /// in every webhook request, 1-256 characters. Only characters `A-Z`,
+    /// `a-z`, `0-9`, `_` and `-` are allowed. The header is useful to ensure
+    /// that the request comes from a webhook set by you.
+    ///
+    /// Default - teloxide will generate a random token.
+    pub secret_token: Option<String>,
 }
 
 impl Options {
     /// Construct a new webhook options, see [`Options::address`] and
     /// [`Options::url`] for details.
     pub fn new(address: SocketAddr, url: url::Url) -> Self {
-        Self { address, url, certificate: None, max_connections: None, drop_pending_updates: false }
+        Self {
+            address,
+            url,
+            certificate: None,
+            max_connections: None,
+            drop_pending_updates: false,
+            secret_token: None,
+        }
     }
 
     /// Upload your public key certificate so that the root certificate in use
@@ -71,6 +87,32 @@ impl Options {
     pub fn drop_pending_updates(self) -> Self {
         Self { drop_pending_updates: true, ..self }
     }
+
+    /// A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token”
+    /// in every webhook request, 1-256 characters. Only characters `A-Z`,
+    /// `a-z`, `0-9`, `_` and `-` are allowed. The header is useful to ensure
+    /// that the request comes from a webhook set by you.
+    ///
+    /// ## Panics
+    ///
+    /// If the token is invalid.
+    #[track_caller]
+    pub fn secret_token(self, token: String) -> Self {
+        check_secret(token.as_bytes()).expect("Invalid secret token");
+
+        Self { secret_token: Some(token), ..self }
+    }
+
+    /// Returns `self.secret_token`, generating a new one if it's `None`.
+    ///
+    /// After a call to this function `self.secret_token` is always `Some(_)`.
+    ///
+    /// **Note**: if you leave webhook setup to teloxide, it will automatically
+    /// generate a secret token. Call this function only if you need to know the
+    /// secret (for example because you are calling `set_webhook` by yourself).
+    pub fn get_or_gen_secret_token(&mut self) -> &str {
+        self.secret_token.get_or_insert_with(gen_secret_token)
+    }
 }
 
 #[cfg(feature = "webhooks-axum")]
@@ -91,6 +133,7 @@ where
     use crate::requests::Request;
     use teloxide_core::requests::HasPayload;
 
+    let secret = options.get_or_gen_secret_token().to_owned();
     let &mut Options {
         ref url, ref mut certificate, max_connections, drop_pending_updates, ..
     } = options;
@@ -99,10 +142,45 @@ where
     req.payload_mut().certificate = certificate.take();
     req.payload_mut().max_connections = max_connections;
     req.payload_mut().drop_pending_updates = Some(drop_pending_updates);
+    req.payload_mut().secret_token = Some(secret);
 
     req.send().await?;
 
     Ok(())
+}
+
+/// Generates a random string consisting of 32 characters (`a-z`, `A-Z`, `0-9`,
+/// `_` and `-`).
+fn gen_secret_token() -> String {
+    use rand::{distributions::Uniform, Rng};
+    const CHARSET: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
+    const SECRET_LENGTH: usize = 32;
+
+    let random = rand::thread_rng()
+        .sample_iter(Uniform::new(0, CHARSET.len()))
+        .map(|idx| CHARSET[idx] as char)
+        .take(SECRET_LENGTH);
+
+    let mut secret = String::with_capacity(SECRET_LENGTH);
+    secret.extend(random);
+
+    secret
+}
+
+fn check_secret(bytes: &[u8]) -> Result<&[u8], &'static str> {
+    let len = bytes.len();
+
+    if !(1..=256).contains(&len) {
+        return Err("secret token length must be in range 1..=256");
+    }
+
+    let is_not_supported =
+        |c: &_| !matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-');
+    if bytes.iter().any(is_not_supported) {
+        return Err("secret token must only contain of `a-z`, `A-Z`, `0-9`, `_` and `-` characters");
+    }
+
+    Ok(bytes)
 }
 
 /// Returns first (`.0`) field from a tuple as a `&mut` reference.
