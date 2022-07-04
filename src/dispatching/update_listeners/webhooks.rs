@@ -170,12 +170,10 @@ fn gen_secret_token() -> String {
 fn check_secret(bytes: &[u8]) -> Result<&[u8], &'static str> {
     let len = bytes.len();
 
-    // Check that length is in bounds
     if !(1..=256).contains(&len) {
         return Err("secret token length must be in range 1..=256");
     }
 
-    // Check that all characters of the secret are supported by telegram
     let is_not_supported =
         |c: &_| !matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-');
     if bytes.iter().any(is_not_supported) {
