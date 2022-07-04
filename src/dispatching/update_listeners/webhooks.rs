@@ -4,6 +4,7 @@ use std::net::SocketAddr;
 use crate::{requests::Requester, types::InputFile};
 
 /// Options related to setting up webhooks.
+#[must_use]
 pub struct Options {
     /// Local address to listen to.
     pub address: SocketAddr,
