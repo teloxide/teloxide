@@ -42,8 +42,9 @@ use crate::{
 mod polling;
 mod stateful_listener;
 
+#[allow(deprecated)]
 pub use self::{
-    polling::{polling, polling_default},
+    polling::{polling, polling_default, Polling, PollingBuilder, PollingStream},
     stateful_listener::StatefulListener,
 };
 
@@ -124,4 +125,12 @@ pub trait AsUpdateStream<'a, E> {
     ///
     /// [`Stream`]: AsUpdateStream::Stream
     fn as_stream(&'a mut self) -> Self::Stream;
+}
+
+#[inline(always)]
+pub(crate) fn assert_update_listener<L, E>(listener: L) -> L
+where
+    L: UpdateListener<E>,
+{
+    listener
 }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Security checks based on `secret_token` param of `set_webhook` to built-in webhooks
+- `dispatching::update_listeners::{PollingBuilder, Polling, PollingStream}`
 
 ### Fixed
 
@@ -17,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Add the `Key: Clone` requirement for `impl Dispatcher` [**BC**].
+ - `dispatching::update_listeners::{polling_default, polling}` now return a named, `Polling<_>` type
+
+### Deprecated
+
+- `dispatching::update_listeners::polling`
 
 ## 0.9.2 - 2022-06-07
 
