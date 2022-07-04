@@ -27,7 +27,7 @@
 
 /// Implementations of webhook update listeners - an alternative (to
 /// [`fn@polling`]) way of receiving updates from telegram.
-#[cfg(any(feature = "webhooks-axum"))]
+#[cfg(feature = "webhooks")]
 pub mod webhooks;
 
 use futures::Stream;
