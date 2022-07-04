@@ -126,3 +126,11 @@ pub trait AsUpdateStream<'a, E> {
     /// [`Stream`]: AsUpdateStream::Stream
     fn as_stream(&'a mut self) -> Self::Stream;
 }
+
+#[inline(always)]
+pub(crate) fn assert_update_listener<L, E>(listener: L) -> L
+where
+    L: UpdateListener<E>,
+{
+    listener
+}
