@@ -360,6 +360,8 @@ Feel free to propose your own bot to our collection!
  - [modos189/tg_blackbox_bot](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project. This bot in Docker from scratch container.
  - [0xNima/spacecraft](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
  - [0xNima/Twideo](https://github.com/0xNima/Twideo) — Telegram Bot for downloading videos from Twitter via their links, as well as converting tweets to telegram messages.
+ - [raine/tgreddit](https://github.com/raine/tgreddit) — A bot that sends the top posts of your favorite subreddits to Telegram.
+
 ## Contributing
 
 See [`CONRIBUTING.md`](CONTRIBUTING.md).
