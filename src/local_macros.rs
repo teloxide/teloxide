@@ -7,14 +7,7 @@ macro_rules! req_future {
         $(where $($wh:tt)*)?
     ) => {
         #[pin_project::pin_project]
-        pub
-        // FIXME(waffle):
-        // The `pub` above should ideally be `$v`, but we currently can't do
-        // this due to compiler bug, see:
-        // - pin_project bug report <https://github.com/taiki-e/pin-project/issues/312>
-        // - related rustc issue <https://github.com/rust-lang/rust/issues/81007>
-        // - original fix (closed) <https://github.com/rust-lang/rust/pull/81029>
-        // - second iteration of the fix <https://github.com/rust-lang/rust/pull/81177>
+        $v
         struct $i<$T>
         $(where $($wh)*)?
         {
