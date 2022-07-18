@@ -59,3 +59,37 @@ impl HandlerDescription for DpHandlerDescription {
         Self { allowed: self.allowed.merge_branch(&other.allowed) }
     }
 }
+#[cfg(test)]
+mod tests {
+    use crate::{
+        dispatching::{HandlerExt, UpdateFilterExt},
+        types::{AllowedUpdate::*, Update},
+        utils::command::BotCommands,
+    };
+
+    use crate as teloxide; // fixup for the `BotCommands` macro
+
+    #[derive(BotCommands, Clone)]
+    #[command(rename = "lowercase")]
+    enum Cmd {
+        B,
+    }
+
+    // <https://github.com/teloxide/teloxide/discussions/648>
+    #[test]
+    fn discussion_648() {
+        let h =
+            dptree::entry().branch(Update::filter_my_chat_member().endpoint(|| async {})).branch(
+                Update::filter_message()
+                    .branch(dptree::entry().filter_command::<Cmd>().endpoint(|| async {}))
+                    .endpoint(|| async {}),
+            );
+
+        let mut v = h.description().allowed_updates();
+
+        // Hash set randomizes element order, so to compare we need to sort
+        v.sort_by_key(|&a| a as u8);
+
+        assert_eq!(v, [Message, MyChatMember])
+    }
+}
