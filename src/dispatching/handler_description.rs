@@ -1,44 +1,27 @@
 use std::collections::HashSet;
 
-use dptree::{description::EventKind, HandlerDescription};
+use dptree::{
+    description::{EventKind, InterestSet},
+    HandlerDescription,
+};
 use teloxide_core::types::AllowedUpdate;
 
 /// Handler description that is used by [`Dispatcher`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 pub struct DpHandlerDescription {
-    allowed: EventKind<AllowedUpdate>,
+    allowed: InterestSet<Kind>,
 }
 
 impl DpHandlerDescription {
     pub(crate) fn of(allowed: AllowedUpdate) -> Self {
         let mut set = HashSet::with_capacity(1);
-        set.insert(allowed);
-        Self { allowed: EventKind::InterestList(set) }
+        set.insert(Kind(allowed));
+        Self { allowed: InterestSet::new_filter(set) }
     }
 
     pub(crate) fn allowed_updates(&self) -> Vec<AllowedUpdate> {
-        use AllowedUpdate::*;
-
-        match &self.allowed {
-            EventKind::InterestList(set) => set.iter().copied().collect(),
-            EventKind::Entry => panic!("No updates were allowed"),
-            EventKind::UserDefined => vec![
-                Message,
-                EditedMessage,
-                ChannelPost,
-                EditedChannelPost,
-                InlineQuery,
-                ChosenInlineResult,
-                CallbackQuery,
-                ShippingQuery,
-                PreCheckoutQuery,
-                Poll,
-                PollAnswer,
-                MyChatMember,
-                ChatMember,
-            ],
-        }
+        self.allowed.observed.iter().map(|Kind(x)| x).copied().collect()
     }
 }
 
@@ -59,6 +42,39 @@ impl HandlerDescription for DpHandlerDescription {
         Self { allowed: self.allowed.merge_branch(&other.allowed) }
     }
 }
+
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+struct Kind(AllowedUpdate);
+
+impl EventKind for Kind {
+    fn full_set() -> HashSet<Self> {
+        use AllowedUpdate::*;
+
+        [
+            Message,
+            EditedMessage,
+            ChannelPost,
+            EditedChannelPost,
+            InlineQuery,
+            ChosenInlineResult,
+            CallbackQuery,
+            ShippingQuery,
+            PreCheckoutQuery,
+            Poll,
+            PollAnswer,
+            MyChatMember,
+            ChatMember,
+        ]
+        .into_iter()
+        .map(Kind)
+        .collect()
+    }
+
+    fn empty_set() -> HashSet<Self> {
+        HashSet::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{
