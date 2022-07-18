@@ -1,3 +1,5 @@
+use std::{convert::TryFrom, ops::Deref};
+
 use serde::{Deserialize, Serialize};
 
 use crate::types::{File, MaskPosition, PhotoSize};
@@ -22,15 +24,9 @@ pub struct Sticker {
     /// Sticker height.
     pub height: u16,
 
-    /// `true`, if the sticker is [animated].
-    ///
-    /// [animated]: https://telegram.org/blog/animated-stickers
-    pub is_animated: bool,
-
-    /// `true`, if the sticker is a [video sticker].
-    ///
-    /// [video sticker]: https://telegram.org/blog/video-stickers-better-reactions
-    pub is_video: bool,
+    /// Kind of this sticker - webp, animated or video.
+    #[serde(flatten)]
+    pub kind: StickerKind,
 
     /// Sticker thumbnail in the .webp or .jpg format.
     pub thumb: Option<PhotoSize>,
@@ -49,4 +45,104 @@ pub struct Sticker {
 
     /// File size in bytes.
     pub file_size: Option<u32>,
+}
+
+/// Kind of a sticker - webp, animated or video.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(try_from = "StickerKindRaw", into = "StickerKindRaw")]
+pub enum StickerKind {
+    /// "Normal", raster sticker.
+    Webp,
+    /// [Animated] sticker.
+    ///
+    /// [Animated]: https://telegram.org/blog/animated-stickers
+    Animated,
+    /// [Video] sticker.
+    ///
+    /// [Video]: https://telegram.org/blog/video-stickers-better-reactions
+    Video,
+}
+
+/// This allows calling [`StickerKind`]'s methods directly on [`Sticker`].
+///
+/// ```no_run
+/// use teloxide_core::types::Sticker;
+///
+/// let sticker: Sticker = todo!();
+///
+/// let _ = sticker.is_video();
+/// let _ = sticker.kind.is_video();
+/// ```
+impl Deref for Sticker {
+    type Target = StickerKind;
+
+    fn deref(&self) -> &Self::Target {
+        &self.kind
+    }
+}
+
+impl StickerKind {
+    /// Returns `true` is this is a "normal" raster sticker.
+    pub fn is_webp(&self) -> bool {
+        matches!(self, Self::Webp)
+    }
+
+    /// Returns `true` is this is an [animated] sticker.
+    ///
+    /// [animated]: https://telegram.org/blog/animated-stickers
+    pub fn is_animated(&self) -> bool {
+        matches!(self, Self::Animated)
+    }
+
+    /// Returns `true` is this is a [video] sticker.
+    ///
+    /// [video]: https://telegram.org/blog/video-stickers-better-reactions
+    pub fn is_video(&self) -> bool {
+        matches!(self, Self::Video)
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+struct StickerKindRaw {
+    is_animated: bool,
+    is_video: bool,
+}
+
+impl TryFrom<StickerKindRaw> for StickerKind {
+    type Error = &'static str;
+
+    fn try_from(
+        StickerKindRaw {
+            is_animated,
+            is_video,
+        }: StickerKindRaw,
+    ) -> Result<Self, Self::Error> {
+        let ret = match (is_animated, is_video) {
+            (false, false) => Self::Webp,
+            (true, false) => Self::Animated,
+            (false, true) => Self::Video,
+            (true, true) => return Err("`is_animated` and `is_video` present at the same time"),
+        };
+
+        Ok(ret)
+    }
+}
+
+impl From<StickerKind> for StickerKindRaw {
+    fn from(kind: StickerKind) -> Self {
+        match kind {
+            StickerKind::Webp => Self {
+                is_animated: false,
+                is_video: false,
+            },
+            StickerKind::Animated => Self {
+                is_animated: true,
+                is_video: false,
+            },
+            StickerKind::Video => Self {
+                is_animated: false,
+                is_video: true,
+            },
+        }
+    }
 }
