@@ -12,13 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InlineKeyboardButton::{pay, login, web_app, callback_game, pay}` constructors ([#231][pr231])
 - Support for Telegram Bot API [version 6.1](https://core.telegram.org/bots/api#june-20-2022) ([#233][pr233])
 
-### Fixed
-
-- `File::{file_size, file_path}` are now optional ([#233][pr233])
-
 ### Changed
 
--  `InlineKeyboardButtonKind::Pay`'s only field now has type `True` ([#231][pr231])
+- `InlineKeyboardButtonKind::Pay`'s only field now has type `True` ([#231][pr231])
+- `file_size` fields are now always `u32` ([#237][pr237])
+- `File` is now split into `File` and `FileMeta`, the latter is used in `UploadStickerFile` and `Sticker::premium_animation` ([#237][pr237])
+
+[pr237]: https://github.com/teloxide/teloxide-core/pull/237
 
 ### Deprecated
 

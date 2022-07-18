@@ -38,7 +38,8 @@ pub struct Animation {
     pub mime_type: Option<Mime>,
 
     /// File size in bytes.
-    pub file_size: Option<u64>,
+    #[serde(default = "crate::types::file::file_size_fallback")]
+    pub file_size: u32,
 }
 
 #[cfg(test)]
@@ -74,11 +75,11 @@ mod tests {
                 file_unique_id: "".to_string(),
                 width: 320,
                 height: 320,
-                file_size: Some(3452),
+                file_size: 3452,
             }),
             file_name: Some("some".to_string()),
             mime_type: Some("video/gif".parse().unwrap()),
-            file_size: Some(6500),
+            file_size: 6500,
         };
         let actual = serde_json::from_str::<Animation>(json).unwrap();
         assert_eq!(actual, expected)

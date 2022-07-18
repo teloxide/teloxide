@@ -22,7 +22,8 @@ pub struct PhotoSize {
     pub height: u32,
 
     /// File size in bytes.
-    pub file_size: Option<u32>,
+    #[serde(default = "crate::types::file::file_size_fallback")]
+    pub file_size: u32,
 }
 
 #[cfg(test)]
@@ -38,7 +39,7 @@ mod tests {
             file_unique_id: "".to_string(),
             width: 320,
             height: 320,
-            file_size: Some(3452),
+            file_size: 3452,
         };
         let actual = serde_json::from_str::<PhotoSize>(json).unwrap();
         assert_eq!(actual, expected);

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{File, MaskPosition, PhotoSize};
+use crate::types::{FileMeta, MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
@@ -42,11 +42,12 @@ pub struct Sticker {
     pub set_name: Option<String>,
 
     /// Premium animation for the sticker, if the sticker is premium.
-    pub premium_animation: Option<File>,
+    pub premium_animation: Option<FileMeta>,
 
     /// For mask stickers, the position where the mask should be placed.
     pub mask_position: Option<MaskPosition>,
 
     /// File size in bytes.
-    pub file_size: Option<u32>,
+    #[serde(default = "crate::types::file::file_size_fallback")]
+    pub file_size: u32,
 }
