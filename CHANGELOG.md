@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+ - Allow specifying a path to a command handler in `parse_with` ([PR #27](https://github.com/teloxide/teloxide-macros/pull/27)).
+
 ## 0.6.2 - 2022-05-27
 
 ### Fixed

@@ -1,6 +1,6 @@
 extern crate quote;
 
-use quote::{__private::Span, quote, ToTokens};
+use quote::{quote, ToTokens};
 use syn::{FieldsNamed, FieldsUnnamed, Type};
 
 #[derive(Debug)]
@@ -89,8 +89,10 @@ fn create_parser<'a>(
             count_args,
         ),
         ParserType::Custom(s) => {
-            let ident = syn::Ident::new(s, Span::call_site());
-            quote! { #ident }
+            let path = syn::parse_str::<syn::Path>(s).unwrap_or_else(|_| {
+                panic!("Failed to parse a custom command parser, {}", s)
+            });
+            quote! { #path }
         }
     };
     quote! {
