@@ -1,6 +1,4 @@
-> [v0.7 -> v0.8 migration guide >>](MIGRATION_GUIDE.md#07---08)
-
-> `teloxide-core` versions less that `0.4.5` (`teloxide` versions less than 0.7.3) have a low-severity security vulnerability, [learn more >>](https://github.com/teloxide/teloxide/discussions/574)
+> [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
 
 <div align="center">
   <img src="../../raw/master/ICON.png" width="250"/>
@@ -72,7 +70,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.9", features = ["macros", "auto-send"] }
+teloxide = { version = "0.10", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
