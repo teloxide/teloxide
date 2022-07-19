@@ -123,7 +123,7 @@ jobs:
           args: --tests --verbose ${{ matrix.features }}
           
       - name: Test documentation tests
-        if: ${{ matrix.rust != "msrv" }}
+        if: ${{ matrix.rust != 'msrv' }}
         uses: actions-rs/cargo@v1
         with:
           command: test
