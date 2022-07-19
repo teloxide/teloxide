@@ -65,6 +65,10 @@ serde = { version = "1.0", features = ["derive"] }
 
 dptree = "0.3.0"
 
+# These lines are used only for development.
+# teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "b13393d", default-features = false }
+# dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
+
 tokio = { version = "1.8", features = ["fs"] }
 tokio-util = "0.7"
 tokio-stream = "0.1.8"
