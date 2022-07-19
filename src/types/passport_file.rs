@@ -18,7 +18,7 @@ pub struct PassportFile {
     pub file_unique_id: String,
 
     /// File size in bytes.
-    pub file_size: u64, // FIXME: should be u32
+    pub file_size: u32,
 
     /// Time when the file was uploaded.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]

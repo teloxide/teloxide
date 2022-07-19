@@ -8,13 +8,13 @@
 // [`schema`]: https://github.com/WaffleLapkin/tg-methods-schema
 use serde::Serialize;
 
-use crate::types::{File, InputFile, UserId};
+use crate::types::{FileMeta, InputFile, UserId};
 
 impl_payload! {
     @[multipart = png_sticker]
     /// Use this method to upload a .PNG file with a sticker for later use in _createNewStickerSet_ and _addStickerToSet_ methods (can be used multiple times). Returns the uploaded File on success.
     #[derive(Debug, Clone, Serialize)]
-    pub UploadStickerFile (UploadStickerFileSetters) => File {
+    pub UploadStickerFile (UploadStickerFileSetters) => FileMeta {
         required {
             /// User identifier of sticker file owner
             pub user_id: UserId,

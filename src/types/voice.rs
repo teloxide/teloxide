@@ -23,5 +23,6 @@ pub struct Voice {
     pub mime_type: Option<Mime>,
 
     /// File size in bytes.
-    pub file_size: Option<u64>,
+    #[serde(default = "crate::types::file::file_size_fallback")]
+    pub file_size: u32,
 }

@@ -35,7 +35,8 @@ pub struct Audio {
     pub mime_type: Option<Mime>,
 
     /// File size in bytes.
-    pub file_size: Option<u64>,
+    #[serde(default = "crate::types::file::file_size_fallback")]
+    pub file_size: u32,
 
     /// A thumbnail of the album cover to which the music file belongs.
     pub thumb: Option<PhotoSize>,
@@ -70,13 +71,13 @@ mod tests {
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("application/zip".parse().unwrap()),
-            file_size: Some(123_456),
+            file_size: 123_456,
             thumb: Some(PhotoSize {
                 file_id: "id".to_string(),
                 file_unique_id: "".to_string(),
                 width: 320,
                 height: 320,
-                file_size: Some(3452),
+                file_size: 3452,
             }),
             file_name: None,
         };
