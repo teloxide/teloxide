@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Add the `Key: Clone` requirement for `impl Dispatcher` [**BC**].
  - `dispatching::update_listeners::{polling_default, polling}` now return a named, `Polling<_>` type
+ - Update teloxide-core to v0.7.0 with Bot API 6.1 support, see [its changelog][core07c] for more [**BC**]
+
+[core07c]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md#070---2022-07-19
 
 ### Deprecated
 
