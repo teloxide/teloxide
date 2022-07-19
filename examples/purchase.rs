@@ -13,10 +13,7 @@
 // ```
 
 use teloxide::{
-    dispatching::{
-        dialogue::{self, InMemStorage},
-        UpdateHandler,
-    },
+    dispatching::{dialogue::InMemStorage, UpdateHandler},
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -75,12 +72,12 @@ fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>>
         .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
         .branch(dptree::endpoint(invalid_state));
 
-    let callback_query_handler = Update::filter_callback_query().chain(
+    let callback_query_handler = Update::filter_callback_query().branch(
         dptree::case![State::ReceiveProductChoice { full_name }]
             .endpoint(receive_product_selection),
     );
 
-    dialogue::enter::<Update, InMemStorage<State>, State, _>()
+    teloxide::dispatching::dialogue::enter::<Update, InMemStorage<State>, State, _>()
         .branch(message_handler)
         .branch(callback_query_handler)
 }
