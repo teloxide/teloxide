@@ -89,9 +89,9 @@ fn create_parser<'a>(
             count_args,
         ),
         ParserType::Custom(s) => {
-            let path = syn::parse_str::<syn::Path>(s).expect(&format!(
-                "Failed to parse a custom command parser, {s}"
-            ));
+            let path = syn::parse_str::<syn::Path>(s).unwrap_or_else(|_| {
+                panic!("Failed to parse a custom command parser, {}", s)
+            });
             quote! { #path }
         }
     };
