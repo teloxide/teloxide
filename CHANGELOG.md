@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.0 - 2022-07-19
+
 ### Added
 
 - `InlineKeyboardButton::{pay, login, web_app, callback_game, pay}` constructors ([#231][pr231])
