@@ -4,10 +4,11 @@
 //! wrapper over [`Storage`] and a chat ID. All it does is provides convenient
 //! method for manipulating the dialogue state. [`Storage`] is where all
 //! dialogue states are stored; it can be either [`InMemStorage`], which is a
-//! simple hash map, or database wrappers such as [`SqliteStorage`]. In the
-//! latter case, your dialogues are _persistent_, meaning that you can safely
-//! restart your bot and all dialogues will remain in the database -- this is a
-//! preferred method for production bots.
+//! simple hash map from [`std::collections`], or an advanced database wrapper
+//! such as [`SqliteStorage`]. In the latter case, your dialogues are
+//! _persistent_, meaning that you can safely restart your bot and all ongoing
+//! dialogues will remain in the database -- this is a preferred method for
+//! production bots.
 //!
 //! [`examples/dialogue.rs`] clearly demonstrates the typical usage of
 //! dialogues. Your dialogue state can be represented as an enumeration:
@@ -31,8 +32,8 @@
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
-//!     (full_name,): (String,), // Available from `State::ReceiveAge`.
-//! ) -> anyhow::Result<()> {
+//!     full_name: String, // Available from `State::ReceiveAge`.
+//! ) -> HandlerResult {
 //!     match msg.text().map(|text| text.parse::<u8>()) {
 //!         Some(Ok(age)) => {
 //!             bot.send_message(msg.chat.id, "What's your location?").await?;
@@ -47,11 +48,12 @@
 //! }
 //! ```
 //!
-//! Variant's fields are passed to state handlers as tuples: `(full_name,):
-//! (String,)`. Using [`Dialogue::update`], you can update the dialogue with a
-//! new state, in our case -- `State::ReceiveLocation { full_name, age }`. To
-//! exit the dialogue, just call [`Dialogue::exit`] and it will be removed from
-//! the inner storage:
+//! Variant's fields are passed to state handlers as single arguments like
+//! `full_name: String` or tuples in case of two or more variant parameters (see
+//! below). Using [`Dialogue::update`], you can update the dialogue with a new
+//! state, in our case -- `State::ReceiveLocation { full_name, age }`. To exit
+//! the dialogue, just call [`Dialogue::exit`] and it will be removed from the
+//! underlying storage:
 //!
 //! ```ignore
 //! async fn receive_location(
