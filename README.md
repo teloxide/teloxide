@@ -319,11 +319,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide a special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
-
-Associated links:
- - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
- - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
+A: You can! Teloxide has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs)
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
