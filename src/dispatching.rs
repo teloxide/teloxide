@@ -140,7 +140,7 @@
 //!
 //! Finally, we plug the schema into [`Dispatcher`] like this:
 //!
-//! ```no_run
+//! ```ignore
 //! # #[tokio::main]
 //! # async fn main() {
 //! let bot = Bot::from_env().auto_send();
