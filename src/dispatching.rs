@@ -58,25 +58,29 @@
 //! # async fn receive_product_selection() -> HandlerResult { Ok(()) }
 //! #
 //! fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
-//!     let command_handler = teloxide::filter_command::<Command, _>()
+//!     use teloxide::dispatching::dialogue;
+//!     use teloxide::filter_command;
+//!     use dptree::case;
+//!
+//!     let command_handler = filter_command::<Command, _>()
 //!         .branch(
-//!             dptree::case![State::Start]
-//!                 .branch(dptree::case![Command::Help].endpoint(help))
-//!                 .branch(dptree::case![Command::Start].endpoint(start)),
+//!             case![State::Start]
+//!                 .branch(case![Command::Help].endpoint(help))
+//!                 .branch(case![Command::Start].endpoint(start)),
 //!         )
-//!         .branch(dptree::case![Command::Cancel].endpoint(cancel));
+//!         .branch(case![Command::Cancel].endpoint(cancel));
 //!
 //!     let message_handler = Update::filter_message()
 //!         .branch(command_handler)
-//!         .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
+//!         .branch(case![State::ReceiveFullName].endpoint(receive_full_name))
 //!         .branch(dptree::endpoint(invalid_state));
 //!
 //!     let callback_query_handler = Update::filter_callback_query().branch(
-//!         dptree::case![State::ReceiveProductChoice { full_name }]
+//!         case![State::ReceiveProductChoice { full_name }]
 //!             .endpoint(receive_product_selection),
 //!     );
 //!
-//!     teloxide::dispatching::dialogue::enter::<Update, InMemStorage<State>, State, _>()
+//!     dialogue::enter::<Update, InMemStorage<State>, State, _>()
 //!         .branch(message_handler)
 //!         .branch(callback_query_handler)
 //! }
