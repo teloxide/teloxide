@@ -1,99 +1,198 @@
 //! An update dispatching model based on [`dptree`].
 //!
-//! In teloxide, updates are dispatched by a pipleine. The central type is
-//! [`dptree::Handler`] -- it represents a handler of an update; since the API
-//! is highly declarative, you can combine handlers with each other via such
-//! methods as [`dptree::Handler::chain`] and [`dptree::Handler::branch`]. The
-//! former method pipes one handler to another one, whilst the latter creates a
-//! new node, as communicated by the name. For more information, please refer to
-//! the documentation of [`dptree`].
+//! In teloxide, update dispatching is declarative: it takes the form of a
+//! [chain of responsibility] pattern enriched with a number of combinator
+//! functions, which together form an instance of the [`dptree::Handler`] type.
 //!
-//! The pattern itself is called [chain of responsibility], a well-known design
-//! technique across OOP developers. But unlike typical object-oriented design,
-//! we employ declarative FP-style functions like [`dptree::filter`],
-//! [`dptree::filter_map`], and [`dptree::endpoint`]; these functions create
-//! special forms of [`dptree::Handler`]; for more information, please refer to
-//! their respective documentation. Each of these higher-order functions accept
-//! a closure that is made into a handler -- this closure can take any
-//! additional parameters, which must be supplied while creating [`Dispatcher`]
-//! (see [`DispatcherBuilder::dependencies`]).
-//!
-//! The [`Dispatcher`] type puts all these things together: it only provides
-//! [`Dispatcher::dispatch`] and a handful of other methods. Once you call
-//! `.dispatch()`, it will retrieve updates from the Telegram server and pass
-//! them to your handler, which is a parameter of [`Dispatcher::builder`].
-//!
-//! Let us look at a simple example:
-//!
-//!
-//! ([Full](https://github.com/teloxide/teloxide/blob/master/examples/shared_state.rs))
+//! Take [`examples/purchase.rs`] as an example of dispatching logic. First, we
+//! define a type named `State` to represent the current state of a dialogue:
 //!
 //! ```no_run
-//! use std::sync::atomic::{AtomicU64, Ordering};
-//!
-//! use once_cell::sync::Lazy;
-//! use teloxide::prelude::*;
-//!
-//! static MESSAGES_TOTAL: Lazy<AtomicU64> = Lazy::new(AtomicU64::default);
-//!
-//! # #[tokio::main]
-//! # async fn main() {
-//! pretty_env_logger::init();
-//! log::info!("Starting shared state bot...");
-//!
-//! let bot = Bot::from_env().auto_send();
-//!
-//! let handler = Update::filter_message().branch(dptree::endpoint(
-//!     |msg: Message, bot: AutoSend<Bot>| async move {
-//!         let previous = MESSAGES_TOTAL.fetch_add(1, Ordering::Relaxed);
-//!         bot.send_message(msg.chat.id, format!("I received {} messages in total.", previous))
-//!             .await?;
-//!         respond(())
+//! #[derive(Clone, Default)]
+//! pub enum State {
+//!     #[default]
+//!     Start,
+//!     ReceiveFullName,
+//!     ReceiveProductChoice {
+//!         full_name: String,
 //!     },
-//! ));
-//!
-//! Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
-//! # }
+//! }
 //! ```
 //!
-//!  1. First, we create the bot: `let bot = Bot::from_env().auto_send()`.
-//!  2. Then we construct an update handler. While it is possible to handle all
-//! kinds of [`crate::types::Update`], here we are only interested in
-//! [`crate::types::Message`]: [`UpdateFilterExt::filter_message`] create a
-//! handler object which filters all messages out of a generic update.
-//!  3. By doing `.branch(dptree::endpoint(...))`, we set up a custom handling
-//! closure that receives `msg: Message` and `bot: AutoSend<Bot>`. There are
-//! called dependencies: `msg` is supplied by
-//! [`UpdateFilterExt::filter_message`], while `bot` is supplied by
-//! [`Dispatcher`].
+//! Then, we define a type `Command` to represent user commands such as
+//! `/start` or `/help`:
 //!
-//! That being said, if we receive a message, the dispatcher will call our
-//! handler, but if we receive something other than a message (e.g., a channel
-//! post), you will see an unhandled update notice in your terminal.
+//! ```no_run
+//! # use teloxide::utils::command::BotCommands;
+//! #[derive(BotCommands, Clone)]
+//! #[command(rename = "lowercase", description = "These commands are supported:")]
+//! enum Command {
+//!     #[command(description = "display this text.")]
+//!     Help,
+//!     #[command(description = "start the purchase procedure.")]
+//!     Start,
+//!     #[command(description = "cancel the purchase procedure.")]
+//!     Cancel,
+//! }
+//! ```
 //!
-//! This is a very limited example of update pipelining facilities. In more
-//! involved scenarios, there are multiple branches and chains; if one element
-//! of a chain fails to handle an update, the update will be passed forwards; if
-//! no handler succeeds at handling the update, [`Dispatcher`] will invoke a
-//! default handler set up via [`DispatcherBuilder::default_handler`].
+//! Now the key question: how to elegantly dispatch on different combinations of
+//! `State`, `Command`, and Telegram updates? -- i.e., we may want to execute
+//! specific endpoints only in response to specific user commands and while we
+//! are in a given dialogue state (and possibly under other circumstances!). The
+//! solution is to use [`dptree`]:
 //!
-//! Update pipelining provides several advantages over the typical `match
-//! (update.kind) { ... }` approach:
+//! ```no_run
+//! # // That's a lot of context needed to compile this, oof
+//! # use teloxide::dispatching::{UpdateHandler, UpdateFilterExt, dialogue, dialogue::InMemStorage};
+//! # use teloxide::utils::command::BotCommands;
+//! # use teloxide::types::Update;
+//! # #[derive(Clone, Default)] pub enum State { #[default] Start, ReceiveFullName, ReceiveProductChoice { full_name: String } }
+//! # #[derive(BotCommands, Clone)] enum Command { Help, Start, Cancel }
+//! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
+//! # async fn help() -> HandlerResult { Ok(()) }
+//! # async fn start() -> HandlerResult { Ok(()) }
+//! # async fn cancel() -> HandlerResult { Ok(()) }
+//! # async fn receive_full_name() -> HandlerResult { Ok(()) }
+//! # async fn invalid_state() -> HandlerResult { Ok(()) }
+//! # async fn receive_product_selection() -> HandlerResult { Ok(()) }
+//! #
+//! fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
+//!     use dptree::case;
 //!
-//!  1. It supports _extension_: e.g., you
-//! can define extension filters or some other handlers and then combine them in
-//! a single place, thus facilitating loose coupling.
-//!  2. Pipelining exhibits a natural syntax for expressing message processing.
-//!  3. Lastly, it provides a primitive form of [dependency injection (DI)],
-//! which allows you to deal with such objects as a bot and various update types
-//! easily.
+//!     let command_handler = teloxide::filter_command::<Command, _>()
+//!         .branch(
+//!             case![State::Start]
+//!                 .branch(case![Command::Help].endpoint(help))
+//!                 .branch(case![Command::Start].endpoint(start)),
+//!         )
+//!         .branch(case![Command::Cancel].endpoint(cancel));
 //!
-//! For a more involved example, see [`examples/dispatching_features.rs`](https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs).
+//!     let message_handler = Update::filter_message()
+//!         .branch(command_handler)
+//!         .branch(case![State::ReceiveFullName].endpoint(receive_full_name))
+//!         .branch(dptree::endpoint(invalid_state));
 //!
-//! TODO: explain a more involved example with multiple branches.
+//!     let callback_query_handler = Update::filter_callback_query().branch(
+//!         case![State::ReceiveProductChoice { full_name }].endpoint(receive_product_selection),
+//!     );
 //!
+//!     dialogue::enter::<Update, InMemStorage<State>, State, _>()
+//!         .branch(message_handler)
+//!         .branch(callback_query_handler)
+//! }
+//! ```
+//!
+//! The overall logic should be clear. Throughout the above example, we use
+//! several techniques:
+//!
+//!  - **Branching:** `a.branch(b)` roughly means "try to handle an update with
+//!    `a`, then, if it
+//! neglects the update, try `b`".
+//!  - **Pattern matching:** We also use the [`dptree::case!`] macro
+//!    extensively, which acts as a filter on an enumeration: if it is of a
+//!    certain variant, it passes the variant's payload down the handler chain;
+//!    otherwise, it neglects an update.
+//!  - **Endpoints:** To specify the final function to handle an update, we use
+//!    [`dptree::Handler::endpoint`].
+//!
+//! Notice the clear and uniform code structure: regardless of the dispatch
+//! criteria, we use the same program constructions. In future, you may want to
+//! introduce your application-specific filters or data structures to match upon
+//! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
+//! other combinators in the same way!
+//!
+//! Finally, we define our endpoints like this:
+//!
+//! ```no_run
+//! # use teloxide::{Bot, adaptors::AutoSend};
+//! # use teloxide::types::{Message, CallbackQuery};
+//! # use teloxide::dispatching::dialogue::{InMemStorage, Dialogue};
+//! # enum State{}
+//! #
+//! type MyDialogue = Dialogue<State, InMemStorage<State>>;
+//! type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
+//!
+//! async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//!     todo!()
+//! }
+//!
+//! async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//!     todo!()
+//! }
+//!
+//! async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//!     todo!()
+//! }
+//!
+//! async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//!     todo!()
+//! }
+//!
+//! async fn receive_full_name(
+//!     bot: AutoSend<Bot>,
+//!     msg: Message,
+//!     dialogue: MyDialogue,
+//! ) -> HandlerResult {
+//!     todo!()
+//! }
+//!
+//! async fn receive_product_selection(
+//!     bot: AutoSend<Bot>,
+//!     q: CallbackQuery,
+//!     dialogue: MyDialogue,
+//!     full_name: String,
+//! ) -> HandlerResult {
+//!     todo!()
+//! }
+//! ```
+//!
+//! Each parameter is supplied as a dependency by teloxide. In particular:
+//!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below);
+//!  - `msg: Message` comes from [`Update::filter_message`];
+//!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`];
+//!  - `dialogue: MyDialogue` comes from [`dialogue::enter`];
+//!  - `full_name: String` comes from `dptree::case![State::ReceiveProductChoice
+//!    { full_name }]`.
+//!
+//! Inside `main`, we plug the schema into [`Dispatcher`] like this:
+//!
+//! ```no_run
+//! # use teloxide::Bot;
+//! # use teloxide::requests::RequesterExt;
+//! # use teloxide::dispatching::{Dispatcher, dialogue::InMemStorage};
+//! # enum State {}
+//! # fn schema() -> teloxide::dispatching::UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> { teloxide::dptree::entry() }
+//! #[tokio::main]
+//! async fn main() {
+//!     let bot = Bot::from_env().auto_send();
+//!
+//!     Dispatcher::builder(bot, schema())
+//!         .dependencies(dptree::deps![InMemStorage::<State>::new()])
+//!         .enable_ctrlc_handler()
+//!         .build()
+//!         .dispatch()
+//!         .await;
+//! }
+//! ```
+//!
+//! In a call to [`DispatcherBuilder::dependencies`], we specify a list of
+//! additional dependencies that all handlers will receive as parameters. Here,
+//! we only specify an in-memory storage of dialogues needed for
+//! [`dialogue::enter`]. However, in production bots, you normally also pass a
+//! database connection, configuration, and other stuff.
+//!
+//! All in all, [`dptree`] can be seen as an extensible alternative to pattern
+//! matching, with support for [dependency injection (DI)] and a few other
+//! useful features. See [`examples/dispatching_features.rs`] as a more involved
+//! example.
+//!
+//! [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
+//! [`Update::filter_message`]: crate::types::Update::filter_message
+//! [`Update::filter_callback_query`]: crate::types::Update::filter_callback_query
 //! [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 //! [dependency injection (DI)]: https://en.wikipedia.org/wiki/Dependency_injection
+//! [`examples/dispatching_features.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs
 
 #[cfg(all(feature = "ctrlc_handler"))]
 pub mod repls;

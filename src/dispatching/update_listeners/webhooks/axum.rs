@@ -1,12 +1,14 @@
-use std::convert::Infallible;
+use std::{convert::Infallible, future::Future, pin::Pin};
+
+use axum::{
+    extract::{FromRequest, RequestParts},
+    http::status::StatusCode,
+};
 
 use crate::{
     dispatching::{
         stop_token::{AsyncStopFlag, StopToken},
-        update_listeners::{
-            webhooks::{setup_webhook, tuple_first_mut, Options},
-            UpdateListener,
-        },
+        update_listeners::{webhooks::Options, UpdateListener},
     },
     requests::Requester,
 };
@@ -105,15 +107,12 @@ where
 pub async fn axum_to_router<R>(
     bot: R,
     mut options: Options,
-) -> Result<
-    (impl UpdateListener<Infallible>, impl std::future::Future<Output = ()> + Send, axum::Router),
-    R::Err,
->
+) -> Result<(impl UpdateListener<Infallible>, impl Future<Output = ()> + Send, axum::Router), R::Err>
 where
     R: Requester + Send,
     <R as Requester>::DeleteWebhook: Send,
 {
-    use crate::requests::Request;
+    use crate::{dispatching::update_listeners::webhooks::setup_webhook, requests::Request};
     use futures::FutureExt;
 
     setup_webhook(&bot, &mut options).await?;
@@ -149,12 +148,15 @@ where
 /// function.
 pub fn axum_no_setup(
     options: Options,
-) -> (impl UpdateListener<Infallible>, impl std::future::Future<Output = ()>, axum::Router) {
+) -> (impl UpdateListener<Infallible>, impl Future<Output = ()>, axum::Router) {
     use crate::{
-        dispatching::{stop_token::AsyncStopToken, update_listeners},
+        dispatching::{
+            stop_token::AsyncStopToken,
+            update_listeners::{self, webhooks::tuple_first_mut},
+        },
         types::Update,
     };
-    use axum::{extract::Extension, http::StatusCode, response::IntoResponse, routing::post};
+    use axum::{extract::Extension, response::IntoResponse, routing::post};
     use tokio::sync::mpsc;
     use tokio_stream::wrappers::UnboundedReceiverStream;
     use tower::ServiceBuilder;
@@ -167,9 +169,16 @@ pub fn axum_no_setup(
 
     async fn telegram_request(
         input: String,
+        secret_header: XTelegramBotApiSecretToken,
+        secret: Extension<Option<String>>,
         tx: Extension<CSender>,
         flag: Extension<AsyncStopFlag>,
     ) -> impl IntoResponse {
+        // FIXME: use constant time comparison here
+        if secret_header.0.as_deref() != secret.as_deref().map(str::as_bytes) {
+            return StatusCode::UNAUTHORIZED;
+        }
+
         let tx = match tx.get() {
             None => return StatusCode::SERVICE_UNAVAILABLE,
             // Do not process updates after `.stop()` is called even if the server is still
@@ -206,6 +215,7 @@ pub fn axum_no_setup(
             .layer(TraceLayer::new_for_http())
             .layer(Extension(ClosableSender::new(tx)))
             .layer(Extension(stop_flag.clone()))
+            .layer(Extension(options.secret_token))
             .into_inner(),
     );
 
@@ -243,5 +253,34 @@ impl<T> ClosableSender<T> {
 
     fn close(&mut self) {
         self.origin.write().unwrap().take();
+    }
+}
+
+struct XTelegramBotApiSecretToken(Option<Vec<u8>>);
+
+impl<B> FromRequest<B> for XTelegramBotApiSecretToken {
+    type Rejection = StatusCode;
+
+    fn from_request<'l0, 'at>(
+        req: &'l0 mut RequestParts<B>,
+    ) -> Pin<Box<dyn Future<Output = Result<Self, Self::Rejection>> + Send + 'at>>
+    where
+        'l0: 'at,
+        Self: 'at,
+    {
+        use crate::dispatching::update_listeners::webhooks::check_secret;
+
+        let res = req
+            .headers_mut()
+            .remove("x-telegram-bot-api-secret-token")
+            .map(|header| {
+                check_secret(header.as_bytes())
+                    .map(<_>::to_owned)
+                    .map_err(|_| StatusCode::BAD_REQUEST)
+            })
+            .transpose()
+            .map(Self);
+
+        Box::pin(async { res }) as _
     }
 }
