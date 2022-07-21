@@ -44,7 +44,7 @@
 //!
 //! ```no_run
 //! # // That's a lot of context needed to compile this, oof
-//! # use teloxide::dispatching::{UpdateHandler, UpdateFilterExt, dialogue::InMemStorage};
+//! # use teloxide::dispatching::{UpdateHandler, UpdateFilterExt, dialogue, dialogue::InMemStorage};
 //! # use teloxide::utils::command::BotCommands;
 //! # use teloxide::types::Update;
 //! # #[derive(Clone, Default)] pub enum State { #[default] Start, ReceiveFullName, ReceiveProductChoice { full_name: String } }
@@ -58,11 +58,9 @@
 //! # async fn receive_product_selection() -> HandlerResult { Ok(()) }
 //! #
 //! fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
-//!     use teloxide::dispatching::dialogue;
-//!     use teloxide::filter_command;
 //!     use dptree::case;
 //!
-//!     let command_handler = filter_command::<Command, _>()
+//!     let command_handler = teloxide::filter_command::<Command, _>()
 //!         .branch(
 //!             case![State::Start]
 //!                 .branch(case![Command::Help].endpoint(help))
@@ -76,8 +74,7 @@
 //!         .branch(dptree::endpoint(invalid_state));
 //!
 //!     let callback_query_handler = Update::filter_callback_query().branch(
-//!         case![State::ReceiveProductChoice { full_name }]
-//!             .endpoint(receive_product_selection),
+//!         case![State::ReceiveProductChoice { full_name }].endpoint(receive_product_selection),
 //!     );
 //!
 //!     dialogue::enter::<Update, InMemStorage<State>, State, _>()
