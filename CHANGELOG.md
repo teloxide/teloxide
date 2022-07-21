@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.10.0 - 2022-07-21
+
 ### Added
 
  - Security checks based on `secret_token` param of `set_webhook` to built-in webhooks.
