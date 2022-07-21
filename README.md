@@ -342,7 +342,19 @@ Feel free to propose your own bot to our collection!
  - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telgram bot to interface with libgen.
  - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
 
-(Only bots using teloxide v0.6.0 or higher are listed.)
+<details>
+<summary>Show bots using teloxide older than v0.6.0</summary>
+
+ - [`mxseev/logram`](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
+ - [`alexkonovalov/PedigreeBot`](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
+ - [`Hermitter/tepe`](https://github.com/Hermitter/tepe) — A CLI to command a bot to send messages and files over Telegram.
+ - [`myblackbeard/basketball-betting-bot`](https://github.com/myblackbeard/basketball-betting-bot) — The bot lets you bet on NBA games against your buddies.
+ - [`dracarys18/grpmr-rs`](https://github.com/dracarys18/grpmr-rs) — Modular Telegram Group Manager Bot written in Rust.
+ - [`ArtHome12/vzmuinebot`](https://github.com/ArtHome12/vzmuinebot) — Telegram bot for food menu navigate.
+ - [`ArtHome12/cognito_bot`](https://github.com/ArtHome12/cognito_bot) — The bot is designed to anonymize messages to a group.
+ - [`crapstone/hsctt`](https://codeberg.org/crapstones-bots/hsctt) — A bot that converts HTTP status codes into text.
+
+</details>
 
 ## Contributing
 
