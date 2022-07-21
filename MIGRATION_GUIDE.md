@@ -38,7 +38,9 @@ Some places now use `FileMeta` instead of `File`, you may need to change types.
 ### teloxide
 
 Teloxide itself doesn't have any major API changes.
-Note however that `dispatching::update_listeners::polling` function was deprecated, use `polling_builder` instead.
+Note however that some function were deprecated:
+- Instead of `dispatching::update_listeners::polling` use `polling_builder`
+- Instead of `Dispatcher::setup_ctrlc_handler` use `DispatcherBuilder::enable_ctrlc_handler`
 
 ## 0.7 -> 0.8
 

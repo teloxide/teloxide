@@ -33,6 +33,7 @@ pub struct DispatcherBuilder<R, Err, Key> {
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
     error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    ctrlc_handler: bool,
     distribution_f: fn(&Update) -> Option<Key>,
     worker_queue_size: usize,
 }
@@ -78,6 +79,14 @@ where
         Self { dependencies, ..self }
     }
 
+    /// Enables the `^C` handler that [`shutdown`]s dispatching.
+    ///
+    /// [`shutdown`]: ShutdownToken::shutdown
+    #[cfg(feature = "ctrlc_handler")]
+    pub fn enable_ctrlc_handler(self) -> Self {
+        Self { ctrlc_handler: true, ..self }
+    }
+
     /// Specifies size of the queue for workers.
     ///
     /// By default it's 64.
@@ -101,6 +110,7 @@ where
             handler,
             default_handler,
             error_handler,
+            ctrlc_handler,
             distribution_f: _,
             worker_queue_size,
         } = self;
@@ -111,6 +121,7 @@ where
             handler,
             default_handler,
             error_handler,
+            ctrlc_handler,
             distribution_f: f,
             worker_queue_size,
         }
@@ -127,9 +138,10 @@ where
             error_handler,
             distribution_f,
             worker_queue_size,
+            ctrlc_handler,
         } = self;
 
-        Dispatcher {
+        let dp = Dispatcher {
             bot,
             dependencies,
             handler,
@@ -142,7 +154,18 @@ where
             default_worker: None,
             current_number_of_active_workers: Default::default(),
             max_number_of_active_workers: Default::default(),
+        };
+
+        #[cfg(feature = "ctrlc_handler")]
+        {
+            if ctrlc_handler {
+                let mut dp = dp;
+                dp.setup_ctrlc_handler_inner();
+                return dp;
+            }
         }
+
+        dp
     }
 }
 
@@ -212,6 +235,7 @@ where
                 Box::pin(async {})
             }),
             error_handler: LoggingErrorHandler::new(),
+            ctrlc_handler: false,
             worker_queue_size: DEFAULT_WORKER_QUEUE_SIZE,
             distribution_f: default_distribution_function,
         }
@@ -238,7 +262,6 @@ where
     ///  - [`crate::types::Me`] (can be used in [`HandlerExt::filter_command`]).
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
-    /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
     /// [`HandlerExt::filter_command`]: crate::dispatching::HandlerExt::filter_command
     pub async fn dispatch(&mut self)
     where
@@ -258,7 +281,6 @@ where
     /// This method adds the same dependencies as [`Dispatcher::dispatch`].
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
-    /// [a ctrlc signal]: Dispatcher::setup_ctrlc_handler
     pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
         &'a mut self,
         mut update_listener: UListener,
@@ -425,7 +447,22 @@ where
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
+    #[deprecated(since = "0.10", note = "use `enable_ctrlc_handler` on builder instead")]
     pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
+        self.setup_ctrlc_handler_inner();
+        self
+    }
+
+    /// Returns a shutdown token, which can later be used to shutdown
+    /// dispatching.
+    pub fn shutdown_token(&self) -> ShutdownToken {
+        self.state.clone()
+    }
+}
+
+impl<R, Err, Key> Dispatcher<R, Err, Key> {
+    #[cfg(feature = "ctrlc_handler")]
+    fn setup_ctrlc_handler_inner(&mut self) {
         let token = self.state.clone();
         tokio::spawn(async move {
             loop {
@@ -443,14 +480,6 @@ where
                 }
             }
         });
-
-        self
-    }
-
-    /// Returns a shutdown token, which can later be used to shutdown
-    /// dispatching.
-    pub fn shutdown_token(&self) -> ShutdownToken {
-        self.state.clone()
     }
 }
 

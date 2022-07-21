@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Security checks based on `secret_token` param of `set_webhook` to built-in webhooks.
  - `dispatching::update_listeners::{PollingBuilder, Polling, PollingStream}`.
+ - `DispatcherBuilder::enable_ctrlc_handler` method.
 
 ### Fixed
 
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - The `dispatching::update_listeners::polling` function.
+- `Dispatcher::setup_ctrlc_handler` method.
 
 ## 0.9.2 - 2022-06-07
 

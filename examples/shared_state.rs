@@ -27,8 +27,8 @@ async fn main() {
     Dispatcher::builder(bot, handler)
         // Pass the shared state to the handler as a dependency.
         .dependencies(dptree::deps![messages_total])
+        .enable_ctrlc_handler()
         .build()
-        .setup_ctrlc_handler()
         .dispatch()
         .await;
 }
