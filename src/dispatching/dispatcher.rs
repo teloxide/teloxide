@@ -447,7 +447,7 @@ where
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
-    #[deprecated(since = "0.10", note = "use `enable_ctrlc_handler` on builder instead")]
+    #[deprecated(since = "0.10.0", note = "use `enable_ctrlc_handler` on builder instead")]
     pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
         self.setup_ctrlc_handler_inner();
         self
