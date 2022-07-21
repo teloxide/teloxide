@@ -7,20 +7,23 @@
 //! Take [`examples/purchase.rs`] as an example of dispatching logic. First, we
 //! define a type named `State` to represent the current state of a dialogue:
 //!
-//! ```ignore
+//! ```no_run
 //! #[derive(Clone, Default)]
 //! pub enum State {
 //!     #[default]
 //!     Start,
 //!     ReceiveFullName,
-//!     ReceiveProductChoice { full_name: String },
+//!     ReceiveProductChoice {
+//!         full_name: String,
+//!     },
 //! }
 //! ```
 //!
 //! Then, we define a type `Command` to represent user commands such as
 //! `/start` or `/help`:
 //!
-//! ```ignore
+//! ```no_run
+//! # use teloxide::utils::command::BotCommands;
 //! #[derive(BotCommands, Clone)]
 //! #[command(rename = "lowercase", description = "These commands are supported:")]
 //! enum Command {
@@ -39,7 +42,21 @@
 //! are in a given dialogue state (and possibly under other circumstances!). The
 //! solution is to use [`dptree`]:
 //!
-//! ```ignore
+//! ```no_run
+//! # // That's a lot of context needed to compile this, oof
+//! # use teloxide::dispatching::{UpdateHandler, UpdateFilterExt, dialogue::InMemStorage};
+//! # use teloxide::utils::command::BotCommands;
+//! # use teloxide::types::Update;
+//! # #[derive(Clone, Default)] pub enum State { #[default] Start, ReceiveFullName, ReceiveProductChoice { full_name: String } }
+//! # #[derive(BotCommands, Clone)] enum Command { Help, Start, Cancel }
+//! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
+//! # async fn help() -> HandlerResult { Ok(()) }
+//! # async fn start() -> HandlerResult { Ok(()) }
+//! # async fn cancel() -> HandlerResult { Ok(()) }
+//! # async fn receive_full_name() -> HandlerResult { Ok(()) }
+//! # async fn invalid_state() -> HandlerResult { Ok(()) }
+//! # async fn receive_product_selection() -> HandlerResult { Ok(()) }
+//! #
 //! fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
 //!     let command_handler = teloxide::filter_command::<Command, _>()
 //!         .branch(
@@ -86,8 +103,14 @@
 //!
 //! Finally, we define our endpoints like this:
 //!
-//! ```ignore
-//! // Handler definitions omitted...
+//! ```no_run
+//! # use teloxide::{Bot, adaptors::AutoSend};
+//! # use teloxide::types::{Message, CallbackQuery};
+//! # use teloxide::dispatching::dialogue::{InMemStorage, Dialogue};
+//! # enum State{}
+//! #
+//! type MyDialogue = Dialogue<State, InMemStorage<State>>;
+//! type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //!
 //! async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
 //!     todo!()
@@ -133,7 +156,12 @@
 //!
 //! Inside `main`, we plug the schema into [`Dispatcher`] like this:
 //!
-//! ```ignore
+//! ```no_run
+//! # use teloxide::Bot;
+//! # use teloxide::requests::RequesterExt;
+//! # use teloxide::dispatching::{Dispatcher, dialogue::InMemStorage};
+//! # enum State {}
+//! # fn schema() -> teloxide::dispatching::UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> { teloxide::dptree::entry() }
 //! #[tokio::main]
 //! async fn main() {
 //!     let bot = Bot::from_env().auto_send();
