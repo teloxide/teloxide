@@ -13,10 +13,7 @@
 // ```
 
 use teloxide::{
-    dispatching::{
-        dialogue::{self, InMemStorage},
-        UpdateHandler,
-    },
+    dispatching::{dialogue, dialogue::InMemStorage, UpdateHandler},
     prelude::*,
     types::{InlineKeyboardButton, InlineKeyboardMarkup},
     utils::command::BotCommands,
@@ -25,17 +22,14 @@ use teloxide::{
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveProductChoice { full_name: String },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveProductChoice {
+        full_name: String,
+    },
 }
 
 #[derive(BotCommands, Clone)]
@@ -58,29 +52,30 @@ async fn main() {
 
     Dispatcher::builder(bot, schema())
         .dependencies(dptree::deps![InMemStorage::<State>::new()])
+        .enable_ctrlc_handler()
         .build()
-        .setup_ctrlc_handler()
         .dispatch()
         .await;
 }
 
 fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
+    use dptree::case;
+
     let command_handler = teloxide::filter_command::<Command, _>()
         .branch(
-            dptree::case![State::Start]
-                .branch(dptree::case![Command::Help].endpoint(help))
-                .branch(dptree::case![Command::Start].endpoint(start)),
+            case![State::Start]
+                .branch(case![Command::Help].endpoint(help))
+                .branch(case![Command::Start].endpoint(start)),
         )
-        .branch(dptree::case![Command::Cancel].endpoint(cancel));
+        .branch(case![Command::Cancel].endpoint(cancel));
 
     let message_handler = Update::filter_message()
         .branch(command_handler)
-        .branch(dptree::case![State::ReceiveFullName].endpoint(receive_full_name))
+        .branch(case![State::ReceiveFullName].endpoint(receive_full_name))
         .branch(dptree::endpoint(invalid_state));
 
-    let callback_query_handler = Update::filter_callback_query().chain(
-        dptree::case![State::ReceiveProductChoice { full_name }]
-            .endpoint(receive_product_selection),
+    let callback_query_handler = Update::filter_callback_query().branch(
+        case![State::ReceiveProductChoice { full_name }].endpoint(receive_product_selection),
     );
 
     dialogue::enter::<Update, InMemStorage<State>, State, _>()

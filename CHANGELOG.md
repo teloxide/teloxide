@@ -6,6 +6,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.10.0 - 2022-07-21
+
+### Added
+
+ - Security checks based on `secret_token` param of `set_webhook` to built-in webhooks.
+ - `dispatching::update_listeners::{PollingBuilder, Polling, PollingStream}`.
+ - `DispatcherBuilder::enable_ctrlc_handler` method.
+
+### Fixed
+
+ - `Dispatcher` no longer "leaks" memory for every inactive user ([PR 657](https://github.com/teloxide/teloxide/pull/657)).
+ - Allow specifying a path to a custom command parser in `parse_with` ([issue 668](https://github.com/teloxide/teloxide/issues/668)).
+
+### Changed
+
+ - Add the `Key: Clone` requirement for `impl Dispatcher` [**BC**].
+ - `dispatching::update_listeners::{polling_default, polling}` now return a named, `Polling<_>` type.
+ - Update teloxide-core to v0.7.0 with Bot API 6.1 support, see [its changelog][core07c] for more information [**BC**].
+
+[core07c]: https://github.com/teloxide/teloxide-core/blob/master/CHANGELOG.md#070---2022-07-19
+
+### Deprecated
+
+- The `dispatching::update_listeners::polling` function.
+- `Dispatcher::setup_ctrlc_handler` method.
+
 ## 0.9.2 - 2022-06-07
 
 ### Fixed

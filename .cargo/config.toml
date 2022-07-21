@@ -1,0 +1,12 @@
+[alias]
+# We pass "--cfg docsrs" when building docs to turn on nightly-only rustdoc features like
+# `This is supported on feature="..." only.`
+#
+# "--cfg dep_docsrs" is used for the same reason, but for `teloxide-core`.
+docs = """
+doc 
+  --all-features 
+  --config build.rustflags=["--cfg=dep_docsrs"]
+  --config build.rustdocflags=["--cfg=docsrs","-Znormalize-docs"]
+  -Zrustdoc-scrape-examples=examples
+"""

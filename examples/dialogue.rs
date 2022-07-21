@@ -18,18 +18,18 @@ use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveAge { full_name: String },
-    ReceiveLocation { full_name: String, age: u8 },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveAge {
+        full_name: String,
+    },
+    ReceiveLocation {
+        full_name: String,
+        age: u8,
+    },
 }
 
 #[tokio::main]
@@ -51,8 +51,8 @@ async fn main() {
             ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
+    .enable_ctrlc_handler()
     .build()
-    .setup_ctrlc_handler()
     .dispatch()
     .await;
 }
