@@ -2,7 +2,7 @@
 #![allow(clippy::nonstandard_macro_braces)]
 
 #[cfg(feature = "macros")]
-use teloxide::utils::command::{BotCommands, ParseError};
+use teloxide::utils::command::BotCommands;
 
 // We put tests here because macro expand in unit tests in module
 // teloxide::utils::command was a failure
@@ -141,28 +141,43 @@ fn parse_with_split2() {
 #[test]
 #[cfg(feature = "macros")]
 fn parse_custom_parser() {
-    fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
-        let vec = s.split_whitespace().collect::<Vec<_>>();
-        let (left, right) = match vec.as_slice() {
-            [l, r] => (l, r),
-            _ => return Err(ParseError::IncorrectFormat("might be 2 arguments!".into())),
-        };
-        left.parse::<u8>()
-            .map(|res| (res, (*right).to_string()))
-            .map_err(|_| ParseError::Custom("First argument must be a integer!".to_owned().into()))
+    mod parser {
+        use teloxide::utils::command::ParseError;
+
+        pub fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
+            let vec = s.split_whitespace().collect::<Vec<_>>();
+            let (left, right) = match vec.as_slice() {
+                [l, r] => (l, r),
+                _ => return Err(ParseError::IncorrectFormat("might be 2 arguments!".into())),
+            };
+            left.parse::<u8>().map(|res| (res, (*right).to_string())).map_err(|_| {
+                ParseError::Custom("First argument must be a integer!".to_owned().into())
+            })
+        }
     }
+
+    use parser::custom_parse_function;
 
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename = "lowercase")]
     enum DefaultCommands {
         #[command(parse_with = "custom_parse_function")]
         Start(u8, String),
+
+        // Test <https://github.com/teloxide/teloxide/issues/668>.
+        #[command(parse_with = "parser::custom_parse_function")]
+        TestPath(u8, String),
+
         Help,
     }
 
     assert_eq!(
         DefaultCommands::Start(10, "hello".to_string()),
         DefaultCommands::parse("/start 10 hello", "").unwrap()
+    );
+    assert_eq!(
+        DefaultCommands::TestPath(10, "hello".to_string()),
+        DefaultCommands::parse("/testpath 10 hello", "").unwrap()
     );
 }
 

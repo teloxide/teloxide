@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.9.2"
+version = "0.10.0"
 edition = "2021"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -57,17 +57,21 @@ full = [
 ]
 
 [dependencies]
-#teloxide-core = { version = "0.6.0", default-features = false }
-teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "b13393d", default-features = false }
-teloxide-macros = { version = "0.6.2", optional = true }
+teloxide-core = { version = "0.7.0", default-features = false }
+teloxide-macros = { version = "0.6.3", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = "0.2.1"
+dptree = "0.3.0"
+
+# These lines are used only for development.
+# teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "b13393d", default-features = false }
+# teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", rev = "44d91c5", optional = true }
+# dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
 
 tokio = { version = "1.8", features = ["fs"] }
-tokio-util = "0.6"
+tokio-util = "0.7"
 tokio-stream = "0.1.8"
 
 url = "2.2.2"
@@ -82,17 +86,17 @@ pin-project = "1.0"
 serde_with_macros = "1.4"
 aquamarine = "0.1.11"
 
-sqlx = { version = "0.5", optional = true, default-features = false, features = [
+sqlx = { version = "0.6", optional = true, default-features = false, features = [
         "runtime-tokio-native-tls",
         "macros",
         "sqlite",
 ] }
-redis = { version = "0.20", features = ["tokio-comp"], optional = true }
+redis = { version = "0.21", features = ["tokio-comp"], optional = true }
 serde_cbor = { version = "0.11", optional = true }
 bincode = { version = "1.3", optional = true }
-axum = { version = "0.4.8", optional = true }
+axum = { version = "0.5.13", optional = true }
 tower = { version = "0.4.12", optional = true }
-tower-http = { version = "0.2.5", features = ["trace"], optional = true }
+tower-http = { version = "0.3.4", features = ["trace"], optional = true }
 rand = { version = "0.8.5", optional = true }
 
 [dev-dependencies]
@@ -101,7 +105,7 @@ pretty_env_logger = "0.4.0"
 serde = "1"
 serde_json = "1"
 tokio = { version = "1.8", features = ["fs", "rt-multi-thread", "macros"] }
-reqwest = "0.10.4"
+reqwest = "0.11.11"
 chrono = "0.4"
 tokio-stream = "0.1"
 

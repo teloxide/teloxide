@@ -14,7 +14,12 @@ use teloxide_core::requests::Requester;
 ///
 /// All errors from an update listener and handler will be logged.
 ///
+/// REPLs are meant only for simple bots and rapid prototyping. If you need to
+/// supply dependencies or describe more complex dispatch logic, please use
+/// [`Dispatcher`].
+///
 /// ## Caution
+///
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
@@ -49,7 +54,12 @@ where
 ///
 /// All errors from an update listener and handler will be logged.
 ///
+/// REPLs are meant only for simple bots and rapid prototyping. If you need to
+/// supply dependencies or describe more complex dispatch logic, please use
+/// [`Dispatcher`].
+///
 /// ## Caution
+///
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
 /// because Telegram disallow multiple requests at the same time from the same
 /// bot.
@@ -86,8 +96,8 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
         Update::filter_message().filter_command::<Cmd>().chain(dptree::endpoint(handler)),
     )
     .default_handler(ignore_update)
+    .enable_ctrlc_handler()
     .build()
-    .setup_ctrlc_handler()
     .dispatch_with_listener(
         listener,
         LoggingErrorHandler::with_custom_text("An error from the update listener"),

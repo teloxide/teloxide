@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .branch(Update::filter_callback_query().endpoint(callback_handler))
         .branch(Update::filter_inline_query().endpoint(inline_query_handler));
 
-    Dispatcher::builder(bot, handler).build().setup_ctrlc_handler().dispatch().await;
+    Dispatcher::builder(bot, handler).enable_ctrlc_handler().build().dispatch().await;
     Ok(())
 }
 
