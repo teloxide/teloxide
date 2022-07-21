@@ -272,7 +272,7 @@ impl<B> FromRequest<B> for XTelegramBotApiSecretToken {
 
         let res = req
             .headers_mut()
-            .and_then(|map| map.remove("x-telegram-bot-api-secret-token"))
+            .remove("x-telegram-bot-api-secret-token")
             .map(|header| {
                 check_secret(header.as_bytes())
                     .map(<_>::to_owned)

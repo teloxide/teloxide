@@ -1,6 +1,4 @@
-> [v0.7 -> v0.8 migration guide >>](MIGRATION_GUIDE.md#07---08)
-
-> `teloxide-core` versions less that `0.4.5` (`teloxide` versions less than 0.7.3) have a low-severity security vulnerability, [learn more >>](https://github.com/teloxide/teloxide/discussions/574)
+> [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
 
 <div align="center">
   <img src="../../raw/master/ICON.png" width="250"/>
@@ -15,7 +13,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.0%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.1%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
@@ -72,7 +70,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.9", features = ["macros", "auto-send"] }
+teloxide = { version = "0.10", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -225,8 +223,8 @@ async fn main() {
             ),
     )
     .dependencies(dptree::deps![InMemStorage::<State>::new()])
+    .enable_ctrlc_handler()
     .build()
-    .setup_ctrlc_handler()
     .dispatch()
     .await;
 }
@@ -321,11 +319,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: teloxide doesn't provide a special API for working with webhooks due to their nature with lots of subtle settings. Instead, you should setup your webhook by yourself, as shown in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
-
-Associated links:
- - [Marvin's Marvellous Guide to All Things Webhook](https://core.telegram.org/bots/webhooks)
- - [Using self-signed certificates](https://core.telegram.org/bots/self-signed)
+A: You can! Teloxide has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
@@ -335,32 +329,32 @@ A: Yes, see [`examples/purchase.rs`](examples/purchase.rs).
 
 Feel free to propose your own bot to our collection!
 
- - [WaffleLapkin/crate_upd_bot](https://github.com/WaffleLapkin/crate_upd_bot) — A bot that notifies about crate updates.
- - [mxseev/logram](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
- - [alexkonovalov/PedigreeBot](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
- - [Hermitter/tepe](https://github.com/Hermitter/tepe) — A CLI to command a bot to send messages and files over Telegram.
- - [mattrighetti/GroupActivityBot](https://github.com/mattrighetti/group-activity-bot-rs) — Telegram bot that keeps track of user activity in groups.
- - [mattrighetti/libgen-bot-rs](https://github.com/mattrighetti/libgen-bot-rs) — Telgram bot to interface with libgen
- - [dracarys18/grpmr-rs](https://github.com/dracarys18/grpmr-rs) — A Telegram group manager bot with variety of extra features.
- - [steadylearner/subreddit_reader](https://github.com/steadylearner/Rust-Full-Stack/tree/master/commits/teloxide/subreddit_reader) — A bot that shows the latest posts at Rust subreddit.
- - [myblackbeard/basketball-betting-bot](https://github.com/myblackbeard/basketball-betting-bot) — The bot lets you bet on NBA games against your buddies.
- - [ArtHome12/vzmuinebot](https://github.com/ArtHome12/vzmuinebot) — Telegram bot for food menu navigate.
- - [ArtHome12/cognito_bot](https://github.com/ArtHome12/cognito_bot) — The bot is designed to anonymize messages to a group.
- - [pro-vim/tg-vimhelpbot](https://github.com/pro-vim/tg-vimhelpbot) — Link `:help` for Vim in Telegram.
- - [sschiz/janitor-bot](https://github.com/sschiz/janitor-bot) —  A bot that removes users trying to join to a chat that is designed for comments.
- - [slondr/BeerHolderBot](https://gitlab.com/slondr/BeerHolderBot) — A bot that holds your beer.
- - [MustafaSalih1993/Miss-Vodka-Telegram-Bot](https://github.com/MustafaSalih1993/Miss-Vodka-Telegram-Bot) — A Telegram bot written in rust using "Teloxide" library.
- - [x13a/tg-prompt](https://github.com/x13a/tg-prompt) — Telegram prompt.
- - [magnickolas/remindee-bot](https://github.com/magnickolas/remindee-bot) — Telegram bot for managing reminders.
- - [cyberknight777/knight-bot](https://gitlab.com/cyberknight777/knight-bot) — A Telegram bot with variety of fun features.
- - [wa7sa34cx/the-black-box-bot](https://github.com/wa7sa34cx/the-black-box-bot) — This is the Black Box Telegram bot. You can hold any items in it.
- - [crapstone/hsctt](https://codeberg.org/crapstones-bots/hsctt) — A Telegram bot that searches for HTTP status codes in all messages and replies with the text form.
- - [alenpaul2001/AurSearchBot](https://gitlab.com/alenpaul2001/aursearchbot) — Telegram bot for searching AUR in inline mode.
- - [studiedlist/EddieBot](https://gitlab.com/studiedlist/eddie-bot) — Chatting bot with several entertainment features.
- - [modos189/tg_blackbox_bot](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project. This bot in Docker from scratch container.
- - [0xNima/spacecraft](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
- - [0xNima/Twideo](https://github.com/0xNima/Twideo) — Telegram Bot for downloading videos from Twitter via their links, as well as converting tweets to telegram messages.
- - [raine/tgreddit](https://github.com/raine/tgreddit) — A bot that sends the top posts of your favorite subreddits to Telegram.
+ - [`raine/tgreddit`](https://github.com/raine/tgreddit) — A bot that sends the top posts of your favorite subreddits to Telegram.
+ - [`magnickolas/remindee-bot`](https://github.com/magnickolas/remindee-bot) — Telegram bot for managing reminders.
+ - [`WaffleLapkin/crate_upd_bot`](https://github.com/WaffleLapkin/crate_upd_bot) — A bot that notifies about crate updates.
+ - [`mattrighetti/GroupActivityBot`](https://github.com/mattrighetti/group-activity-bot-rs) — Telegram bot that keeps track of user activity in groups.
+ - [`alenpaul2001/AurSearchBot`](https://gitlab.com/alenpaul2001/aursearchbot) — Telegram bot for searching in Arch User Repository (AUR).
+ - [`ArtHome12/vzmuinebot`](https://github.com/ArtHome12/vzmuinebot) — Telegram bot for food menu navigate.
+ - [`studiedlist/EddieBot`](https://gitlab.com/studiedlist/eddie-bot) — Chatting bot with several entertainment features.
+ - [`modos189/tg_blackbox_bot`](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project.
+ - [`0xNima/spacecraft`](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
+ - [`0xNima/Twideo`](https://github.com/0xNima/Twideo) — Simple Telegram Bot for downloading videos from Twitter via their links.
+ - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telgram bot to interface with libgen.
+ - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
+
+<details>
+<summary>Show bots using teloxide older than v0.6.0</summary>
+
+ - [`mxseev/logram`](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
+ - [`alexkonovalov/PedigreeBot`](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
+ - [`Hermitter/tepe`](https://github.com/Hermitter/tepe) — A CLI to command a bot to send messages and files over Telegram.
+ - [`myblackbeard/basketball-betting-bot`](https://github.com/myblackbeard/basketball-betting-bot) — The bot lets you bet on NBA games against your buddies.
+ - [`dracarys18/grpmr-rs`](https://github.com/dracarys18/grpmr-rs) — Modular Telegram Group Manager Bot written in Rust.
+ - [`ArtHome12/vzmuinebot`](https://github.com/ArtHome12/vzmuinebot) — Telegram bot for food menu navigate.
+ - [`ArtHome12/cognito_bot`](https://github.com/ArtHome12/cognito_bot) — The bot is designed to anonymize messages to a group.
+ - [`crapstone/hsctt`](https://codeberg.org/crapstones-bots/hsctt) — A bot that converts HTTP status codes into text.
+
+</details>
 
 ## Contributing
 

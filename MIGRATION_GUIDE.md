@@ -1,6 +1,47 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.9 -> 0.10
+
+### core
+
+We've added some convenience functions to `InlineKeyboardButton` so it's easier to construct it. Consider using them instead of variants:
+```diff
+-InlineKeyboardButton::new("text", InlineKeyboardButtonKind::Url(url))
++InlineKeyboardButton::url("text", url)
+```
+
+`file_size` fields are now `u32`, you may need to update your code accordingly:
+
+```diff
+-let file_size: u64 = audio.file_size?;
++let file_size: u32 = audio.file_size;
+```
+
+Some places now use `FileMeta` instead of `File`, you may need to change types.
+
+`Sticker` and `StickerSet` now has a `kind` field instead of `is_animated` and `is_video`:
+
+```diff
++use teloxide::types::StickerKind::*;
+-match () {
++match sticker.kind {
+-    _ if sticker.is_animated => /* handle animated */,
++    Animated => /* handle animated */,
+-    _ if sticker.is_video => /* handle video */,
++    Video => /* handle video */,
+-    _ => /* handle normal */,
++    Webp => /* handle normal */,
+}
+```
+
+### teloxide
+
+Teloxide itself doesn't have any major API changes.
+Note however that some function were deprecated:
+- Instead of `dispatching::update_listeners::polling` use `polling_builder`
+- Instead of `Dispatcher::setup_ctrlc_handler` use `DispatcherBuilder::enable_ctrlc_handler`
+
 ## 0.7 -> 0.8
 
 ### core
@@ -8,7 +49,7 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` (if they allow for channel usernames).
 
 If you used to work with chat/user ids (for example saving them to a database), you may need to change your code to account for new types. Some examples how that may look like:
-```diff,
+```diff
 -let user_id: i64 = user.id;
 +let UserId(user_id) = user.id;
 db.save(user_id, ...);
