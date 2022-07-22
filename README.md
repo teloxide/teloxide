@@ -1,7 +1,7 @@
 > [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
 
 <div align="center">
-  <img src="../../raw/master/ICON.png" width="250"/>
+  <img src="./ICON.png" width="250"/>
   <h1>teloxide</h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
@@ -103,7 +103,7 @@ async fn main() {
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/throw-dice.gif" width="420" />
+    <img src="./media/throw-dice.gif" width="420" />
 </div>
 
 ### Commands
@@ -171,7 +171,7 @@ async fn answer(
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/command.gif" width="420" />
+    <img src="./media/command.gif" width="420" />
 </div>
 
 ### Dialogues management
@@ -294,7 +294,7 @@ async fn receive_location(
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/dialogue.gif" width="420" />
+    <img src="./media/dialogue.gif" width="420" />
 </div>
 
 [More examples >>](examples/)
