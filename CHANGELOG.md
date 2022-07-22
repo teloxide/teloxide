@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.10.1 - 2022-07-22
+
+### Fixed
+
+ - Mark the following functions with `#[must_use]` ([PR 457](https://github.com/teloxide/teloxide/pull/457)):
+   - `TraceStorage::into_inner`.
+   - `AsyncStopToken::new_pair`.
+   - `AsyncStopFlag::is_stopped`.
+   - All from `crate::utils::{html, markdown}`.
+ - Rendering of GIFs in lib.rs and crates.io ([PR 681](https://github.com/teloxide/teloxide/pull/681)).
+
 ## 0.10.0 - 2022-07-21
 
 ### Added
