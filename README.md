@@ -1,7 +1,7 @@
 > [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
 
 <div align="center">
-  <img src="../../raw/master/ICON.png" width="250"/>
+  <img src="./ICON.png" width="250"/>
   <h1>teloxide</h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
@@ -103,7 +103,7 @@ async fn main() {
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/throw-dice.gif" width="420" />
+    <img src="./media/throw-dice.gif" width="420" />
 </div>
 
 ### Commands
@@ -171,7 +171,7 @@ async fn answer(
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/command.gif" width="420" />
+    <img src="./media/command.gif" width="420" />
 </div>
 
 ### Dialogues management
@@ -294,7 +294,7 @@ async fn receive_location(
 ```
 
 <div align="center">
-    <img src="../../raw/master/media/dialogue.gif" width="420" />
+    <img src="./media/dialogue.gif" width="420" />
 </div>
 
 [More examples >>](examples/)
@@ -350,11 +350,12 @@ Feel free to propose your own bot to our collection!
  - [`Hermitter/tepe`](https://github.com/Hermitter/tepe) — A CLI to command a bot to send messages and files over Telegram.
  - [`myblackbeard/basketball-betting-bot`](https://github.com/myblackbeard/basketball-betting-bot) — The bot lets you bet on NBA games against your buddies.
  - [`dracarys18/grpmr-rs`](https://github.com/dracarys18/grpmr-rs) — Modular Telegram Group Manager Bot written in Rust.
- - [`ArtHome12/vzmuinebot`](https://github.com/ArtHome12/vzmuinebot) — Telegram bot for food menu navigate.
  - [`ArtHome12/cognito_bot`](https://github.com/ArtHome12/cognito_bot) — The bot is designed to anonymize messages to a group.
  - [`crapstone/hsctt`](https://codeberg.org/crapstones-bots/hsctt) — A bot that converts HTTP status codes into text.
 
 </details>
+
+See [600+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 
