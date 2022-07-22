@@ -1,3 +1,5 @@
+> [More than 600 public repositories on GitHub use teloxide](https://github.com/teloxide/teloxide/network/dependents) 🎉
+
 > [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
 
 <div align="center">
