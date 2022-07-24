@@ -195,20 +195,21 @@
 //!
 //! Here are things that dispatching can do, but REPLs can't:
 //!  - Handle different kinds of [`Update`];
-//!  - [Pass dependencies](struct.DispatcherBuilder.html#method.dependencies) to
-//!    handlers;
-//!  - Disable a [default Ctrl-C
-//!    handling](struct.DispatcherBuilder.html#method.enable_ctrlc_handler);
-//!  - Control your
-//!    [default](struct.DispatcherBuilder.html#method.default_handler) and
-//!    [error](struct.DispatcherBuilder.html#method.error_handler) handlers;
-//!  - Use [dialogues](dialogue/index.html).
+//!  - [Pass dependencies] to handlers;
+//!  - Disable a [default Ctrl-C handling];
+//!  - Control your [default] and [error] handlers;
+//!  - Use [dialogues].
 //!  - Use [`dptree`]-related functionality.
 //!  - Probably more.
 //!
 //! Thus, REPLs are good for simple bots and rapid prototyping, but for more
 //! involved scenarios, we recommend using dispatching over REPLs.
 //!
+//! [Pass dependencies]: DispatcherBuilder#method.dependencies
+//! [default Ctrl-C handling]: DispatcherBuilder#method.enable_ctrlc_handler
+//! [default]: DispatcherBuilder#method.default_handler
+//! [error]: DispatcherBuilder#method.error_handler
+//! [dialogues]: dialogue
 //! [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
 //! [`Update::filter_message`]: crate::types::Update::filter_message
 //! [`Update::filter_callback_query`]: crate::types::Update::filter_callback_query
