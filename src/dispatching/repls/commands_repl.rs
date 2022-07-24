@@ -91,16 +91,13 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, ListenerE, E, Args>(
     // commands. See <https://github.com/teloxide/teloxide/issues/557>.
     let ignore_update = |_upd| Box::pin(async {});
 
-    Dispatcher::builder(
-        bot,
-        Update::filter_message().filter_command::<Cmd>().chain(dptree::endpoint(handler)),
-    )
-    .default_handler(ignore_update)
-    .enable_ctrlc_handler()
-    .build()
-    .dispatch_with_listener(
-        listener,
-        LoggingErrorHandler::with_custom_text("An error from the update listener"),
-    )
-    .await;
+    Dispatcher::builder(bot, Update::filter_message().filter_command::<Cmd>().endpoint(handler))
+        .default_handler(ignore_update)
+        .enable_ctrlc_handler()
+        .build()
+        .dispatch_with_listener(
+            listener,
+            LoggingErrorHandler::with_custom_text("An error from the update listener"),
+        )
+        .await;
 }
