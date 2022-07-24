@@ -104,6 +104,9 @@
 //!
 //! Finally, we define our endpoints like this:
 //!
+//! <details>
+//! <summary>Show the endpoints</summary>
+//!
 //! ```no_run
 //! # use teloxide::{Bot, adaptors::AutoSend};
 //! # use teloxide::types::{Message, CallbackQuery};
@@ -146,6 +149,8 @@
 //!     todo!()
 //! }
 //! ```
+//!
+//! </details>
 //!
 //! Each parameter is supplied as a dependency by teloxide. In particular:
 //!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below);
