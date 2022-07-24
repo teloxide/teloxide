@@ -174,7 +174,7 @@ where
 
 /// The base for update dispatching.
 ///
-/// Updates from different chats are handles concurrently, whereas updates from
+/// Updates from different chats are handled concurrently, whereas updates from
 /// the same chats are handled sequentially. If the dispatcher is unable to
 /// determine a chat ID of an incoming update, it will be handled concurrently.
 /// Note that this behaviour can be altered with [`distribution_function`].
