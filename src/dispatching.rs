@@ -207,8 +207,7 @@
 //!  - Probably more.
 //!
 //! Thus, REPLs are good for simple bots and rapid prototyping, but for more
-//! involved scenarios, we recommend using [`DispatcherBuilder`]/[`Dispatcher`]
-//! together with [`dptree`].
+//! involved scenarios, we recommend using dispatching over REPLs.
 //!
 //! [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
 //! [`Update::filter_message`]: crate::types::Update::filter_message
