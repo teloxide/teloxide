@@ -13,21 +13,30 @@
 //! [`examples/dialogue.rs`] clearly demonstrates the typical usage of
 //! dialogues. Your dialogue state can be represented as an enumeration:
 //!
-//! ```ignore
+//! ```no_run
 //! #[derive(Clone, Default)]
 //! pub enum State {
 //!     #[default]
 //!     Start,
 //!     ReceiveFullName,
-//!     ReceiveAge { full_name: String },
-//!     ReceiveLocation { full_name: String, age: u8 },
+//!     ReceiveAge {
+//!         full_name: String,
+//!     },
+//!     ReceiveLocation {
+//!         full_name: String,
+//!         age: u8,
+//!     },
 //! }
 //! ```
 //!
 //! Each state is associated with its respective handler: e.g., when a dialogue
 //! state is `ReceiveAge`, `receive_age` is invoked:
 //!
-//! ```ignore
+//! ```no_run
+//! # use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
+//! # type MyDialogue = Dialogue<State, InMemStorage<State>>;
+//! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
+//! # #[derive(Clone, Debug)] enum State { ReceiveLocation { full_name: String, age: u8 } }
 //! async fn receive_age(
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
@@ -55,13 +64,17 @@
 //! the dialogue, just call [`Dialogue::exit`] and it will be removed from the
 //! underlying storage:
 //!
-//! ```ignore
+//! ```no_run
+//! # use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
+//! # type MyDialogue = Dialogue<State, InMemStorage<State>>;
+//! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
+//! # #[derive(Clone, Debug)] enum State {}
 //! async fn receive_location(
 //!     bot: AutoSend<Bot>,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
 //!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
-//! ) -> anyhow::Result<()> {
+//! ) -> HandlerResult {
 //!     match msg.text() {
 //!         Some(location) => {
 //!             let message =
