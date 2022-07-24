@@ -27,6 +27,9 @@ use std::{
 };
 
 /// The builder for [`Dispatcher`].
+///
+/// See also: ["Dispatching or
+/// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 pub struct DispatcherBuilder<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
@@ -175,6 +178,9 @@ where
 /// the same chats are handled sequentially. If the dispatcher is unable to
 /// determine a chat ID of an incoming update, it will be handled concurrently.
 /// Note that this behaviour can be altered with [`distribution_function`].
+///
+/// See also: ["Dispatching or
+/// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 ///
 /// [`distribution_function`]: DispatcherBuilder::distribution_function
 pub struct Dispatcher<R, Err, Key> {

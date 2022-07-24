@@ -187,12 +187,36 @@
 //! useful features. See [`examples/dispatching_features.rs`] as a more involved
 //! example.
 //!
+//! ## Dispatching or REPLs?
+//!
+//! The difference between dispatching and the REPLs ([`crate::repl`] & co) is
+//! that dispatching allows you a greater degree of flexibility at the cost of a
+//! bit more complicated setup.
+//!
+//! Here are things that dispatching can do, but REPLs can't:
+//!  - Handle different kinds of [`Update`];
+//!  - [Pass dependencies](struct.DispatcherBuilder.html#method.dependencies) to
+//!    handlers;
+//!  - Disable a [default Ctrl-C
+//!    handling](struct.DispatcherBuilder.html#method.enable_ctrlc_handler);
+//!  - Control your
+//!    [default](struct.DispatcherBuilder.html#method.default_handler) and
+//!    [error](struct.DispatcherBuilder.html#method.error_handler) handlers;
+//!  - Use [dialogues](dialogue/index.html).
+//!  - Use [`dptree`]-related functionality.
+//!  - Probably more.
+//!
+//! Thus, REPLs are good for simple bots and rapid prototyping, but for more
+//! involved scenarios, we recommend using [`DispatcherBuilder`]/[`Dispatcher`]
+//! together with [`dptree`].
+//!
 //! [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
 //! [`Update::filter_message`]: crate::types::Update::filter_message
 //! [`Update::filter_callback_query`]: crate::types::Update::filter_callback_query
 //! [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 //! [dependency injection (DI)]: https://en.wikipedia.org/wiki/Dependency_injection
 //! [`examples/dispatching_features.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs
+//! [`Update`]: crate::types::Update
 
 #[cfg(all(feature = "ctrlc_handler"))]
 pub mod repls;
