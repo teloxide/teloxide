@@ -190,7 +190,7 @@
 //! ## Dispatching or REPLs?
 //!
 //! The difference between dispatching and the REPLs ([`crate::repl`] & co) is
-//! that dispatching allows you a greater degree of flexibility at the cost of a
+//! that dispatching gives you a greater degree of flexibility at the cost of a
 //! bit more complicated setup.
 //!
 //! Here are things that dispatching can do, but REPLs can't:
