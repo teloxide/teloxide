@@ -102,7 +102,7 @@
 //! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
 //! other combinators in the same way!
 //!
-//! Finally, we define our endpoints like this:
+//! Finally, we define our endpoints via simple `async` functions like this:
 //!
 //! <details>
 //! <summary>Show the endpoints</summary>
