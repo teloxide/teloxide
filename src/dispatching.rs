@@ -102,7 +102,10 @@
 //! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
 //! other combinators in the same way!
 //!
-//! Finally, we define our endpoints like this:
+//! Finally, we define our endpoints via simple `async` functions like this:
+//!
+//! <details>
+//! <summary>Show the endpoints</summary>
 //!
 //! ```no_run
 //! # use teloxide::{Bot, adaptors::AutoSend};
@@ -146,6 +149,8 @@
 //!     todo!()
 //! }
 //! ```
+//!
+//! </details>
 //!
 //! Each parameter is supplied as a dependency by teloxide. In particular:
 //!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below);
