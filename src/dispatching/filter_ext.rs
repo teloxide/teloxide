@@ -56,11 +56,11 @@ mod private {
 macro_rules! define_message_ext {
     ($( ($func:ident, $fn_name:path) ,)*) => {
         define_ext! {
-            MessageFilterExt, crate::types::Message =>
+            MessageFilterExt, Message =>
             $((
                 $func,
                 (|x| $fn_name(&x).map(ToOwned::to_owned)),
-                concat!("Applies the [`crate::types::", stringify!($fn_name), "`] filter.")
+                concat!("Applies the [`", stringify!($fn_name), "`] filter.")
             ),)*
         }
     }
@@ -89,14 +89,14 @@ define_message_ext! {
 macro_rules! define_update_ext {
     ($( ($func:ident, $kind:path, $Allowed:ident) ,)*) => {
         define_ext! {
-            UpdateFilterExt, crate::types::Update =>
+            UpdateFilterExt, Update =>
             $((
                 $func,
                 |update: Update| match update.kind {
                     $kind(x) => Some(x),
                     _ => None,
                 },
-                concat!("Filters out [`crate::types::", stringify!($kind), "`] objects."),
+                concat!("Filters out [`", stringify!($kind), "`] objects."),
                 $Allowed
             ),)*
         }
