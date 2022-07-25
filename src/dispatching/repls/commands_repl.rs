@@ -18,6 +18,9 @@ use teloxide_core::requests::Requester;
 /// supply dependencies or describe more complex dispatch logic, please use
 /// [`Dispatcher`].
 ///
+/// See also: ["Dispatching or
+/// REPLs?"](dispatching/index.html#dispatching-or-repls)
+///
 /// ## Caution
 ///
 /// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
@@ -57,6 +60,9 @@ where
 /// REPLs are meant only for simple bots and rapid prototyping. If you need to
 /// supply dependencies or describe more complex dispatch logic, please use
 /// [`Dispatcher`].
+///
+/// See also: ["Dispatching or
+/// REPLs?"](dispatching/index.html#dispatching-or-repls)
 ///
 /// ## Caution
 ///
