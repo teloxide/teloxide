@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `From<ApiError>`, `From<DownloadError>` and `From<std::io::Error>` impls for `RequestError` ([#241][pr241])
+
+[pr241]: https://github.com/teloxide/teloxide-core/pull/241
+
 ## 0.7.0 - 2022-07-19
 
 ### Added
@@ -117,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `errors` module and `errors::AsResponseParameters` trait ([#130][pr130])
-- `UserId::{url, is_anonymous, is_channel, is_telegram}` convenience functions ([#197][pr197]) 
+- `UserId::{url, is_anonymous, is_channel, is_telegram}` convenience functions ([#197][pr197])
 - `User::{tme_url, preferably_tme_url}` convenience functions ([#197][pr197])
 - `Me::username` and `Deref<Target = User>` implementation for `Me` ([#197][pr197])
 - `Me::{mention, tme_url}` ([#197][pr197])
@@ -337,7 +343,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DefaultParseMode::parse_mode` which allows to get currently used default parse mode ([#77][pr77])
 - `Thrrotle::{limits,set_limits}` functions ([#77][pr77])
 - `Throttle::{with_settings,spawn_with_settings}` and `throttle::Settings` ([#96][pr96])
-- Getters for fields nested in `Chat` ([#80][pr80]) 
+- Getters for fields nested in `Chat` ([#80][pr80])
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
 - Telegram bot API 5.2 support ([#86][pr86])
 - Telegram bot API 5.3 support ([#99][pr99])
@@ -355,7 +361,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `Message::url` now returns links to messages in private groups too ([#80][pr80]) 
+- `Message::url` now returns links to messages in private groups too ([#80][pr80])
 - Refactor `ChatMember` methods ([#74][pr74])
   - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callable directly on `ChatMember`
   - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
@@ -369,8 +375,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - telegram_response: fix issue `retry_after` and `migrate_to_chat_id` handling ([#94][pr94])
-- Type of `PublicChatSupergroup::slow_mode_delay` field: `Option<i32>`=> `Option<u32>` ([#80][pr80]) 
-- Add missing `Chat::message_auto_delete_time` field ([#80][pr80]) 
+- Type of `PublicChatSupergroup::slow_mode_delay` field: `Option<i32>`=> `Option<u32>` ([#80][pr80])
+- Add missing `Chat::message_auto_delete_time` field ([#80][pr80])
 - Output types of `LeaveChat` `PinChatMessage`, `SetChatDescription`, `SetChatPhoto` `SetChatTitle`, `UnpinAllChatMessages` and `UnpinChatMessage`: `String` => `True` ([#79][pr79])
 - `SendChatAction` output type `Message` => `True` ([#75][pr75])
 - `GetChatAdministrators` output type `ChatMember` => `Vec<ChatMember>` ([#73][pr73])
@@ -396,7 +402,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.2.1 - 2020-03-19
 
-### Fixed 
+### Fixed
 
 - Types fields privacy (make fields of some types public) ([#68][pr68])
   - `Dice::{emoji, value}`
@@ -451,7 +457,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - `NonStrictVec` -> `SemiparsedVec`.
+- `NonStrictVec` -> `SemiparsedVec`.
 
 ## 0.1.1 - 2020-02-17
 
@@ -483,16 +489,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Output<T>` alias to `<<T as HasPayload>::Payload as Payload>::Output`
 - `Payload`, `HasPayload` and `Request` traits which represent different parts of the request ([#5][pr5])
 - `GetUpdatesNonStrict` 'telegram' method, that behaves just like `GetUpdates` but doesn't [#2][pr2]
-  fail if one of updates fails to be deserialized 
+  fail if one of updates fails to be deserialized
 - Move core code here from the [`teloxide`] main repo, for older changes see it's [`CHANGELOG.md`].
   - Following modules were moved:
     - `bot`
     - `requests` [except `requests::respond` function]
     - `types`
     - `errors`
-    - `net` [private] 
+    - `net` [private]
   - `client_from_env` was moved from `teloxide::utils` to crate root of `teloxide-core`
-  - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>` 
+  - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>`
     (instead of `Vec<Result<Update, (Value, serde_json::Error)>>`)
 
 [pr2]: https://github.com/teloxide/teloxide-core/pull/2
@@ -523,8 +529,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Make `net` module public
   - Move `Bot::download_file{,_stream}` methods to a new `Download` trait
     - Impl `Download` for all bot adaptors & the `Bot` itself
-  - Change return type of `download_file_stream` — return `Stream<Result<Bytes>>``,
-    instead of `Future<Result<Stream<Result<Bytes>>>>``
+  - Change return type of `download_file_stream` — return ` Stream<Result<Bytes>>``, instead of  `Future<Result<Stream<Result<Bytes>>>>``
   - Add `api_url` param to standalone versions of `download_file{,_stream}`
   - Make `net::{TELEGRAM_API_URL, download_file{,_stream}}` pub
 - Refactor `Bot` ([#29][pr29]):
@@ -565,7 +570,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr4]: https://github.com/teloxide/teloxide-core/pull/4
 [pr44]: https://github.com/teloxide/teloxide-core/pull/44
-  
-
 [`teloxide`]: https://github.com/teloxide/teloxide
-[`CHANGELOG.md`]: https://github.com/teloxide/teloxide/blob/master/CHANGELOG.md
+[`changelog.md`]: https://github.com/teloxide/teloxide/blob/master/CHANGELOG.md
