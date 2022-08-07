@@ -544,6 +544,7 @@ mod getters {
     /// [Message]: crate::types::Message
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
+        #[must_use]
         pub fn from(&self) -> Option<&User> {
             match &self.kind {
                 Common(MessageCommon { from, .. }) => from.as_ref(),
@@ -551,6 +552,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn author_signature(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
@@ -560,6 +562,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn sender_chat(&self) -> Option<&Chat> {
             match &self.kind {
                 Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
@@ -568,22 +571,27 @@ mod getters {
         }
 
         #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]
+        #[must_use]
         pub fn chat_id(&self) -> ChatId {
             self.chat.id
         }
 
+        #[must_use]
         pub fn forward(&self) -> Option<&Forward> {
             self.common().and_then(|m| m.forward.as_ref())
         }
 
+        #[must_use]
         pub fn forward_date(&self) -> Option<DateTime<Utc>> {
             self.forward().map(|f| f.date)
         }
 
+        #[must_use]
         pub fn forward_from(&self) -> Option<&ForwardedFrom> {
             self.forward().map(|f| &f.from)
         }
 
+        #[must_use]
         pub fn forward_from_user(&self) -> Option<&User> {
             self.forward_from().and_then(|from| match from {
                 ForwardedFrom::User(user) => Some(user),
@@ -591,6 +599,7 @@ mod getters {
             })
         }
 
+        #[must_use]
         pub fn forward_from_chat(&self) -> Option<&Chat> {
             self.forward_from().and_then(|from| match from {
                 ForwardedFrom::Chat(chat) => Some(chat),
@@ -598,6 +607,7 @@ mod getters {
             })
         }
 
+        #[must_use]
         pub fn forward_from_sender_name(&self) -> Option<&str> {
             self.forward_from().and_then(|from| match from {
                 ForwardedFrom::SenderName(sender_name) => Some(&**sender_name),
@@ -605,18 +615,22 @@ mod getters {
             })
         }
 
+        #[must_use]
         pub fn forward_from_message_id(&self) -> Option<i32> {
             self.forward().and_then(|f| f.message_id)
         }
 
+        #[must_use]
         pub fn forward_signature(&self) -> Option<&str> {
             self.forward().and_then(|f| f.signature.as_deref())
         }
 
+        #[must_use]
         pub fn reply_to_message(&self) -> Option<&Message> {
             self.common().and_then(|m| m.reply_to_message.as_deref())
         }
 
+        #[must_use]
         pub fn edit_date(&self) -> Option<&DateTime<Utc>> {
             match &self.kind {
                 Common(MessageCommon { edit_date, .. }) => edit_date.as_ref(),
@@ -624,6 +638,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn media_group_id(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
@@ -646,6 +661,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn text(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
@@ -668,6 +684,7 @@ mod getters {
         ///
         /// [`parse_entities`]: Message::parse_entities
         /// [`caption_entities`]: Message::caption_entities
+        #[must_use]
         pub fn entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -690,6 +707,7 @@ mod getters {
         ///
         /// [`parse_caption_entities`]: Message::parse_caption_entities
         /// [`entities`]: Message::entities
+        #[must_use]
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -738,6 +756,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn audio(&self) -> Option<&types::Audio> {
             match &self.kind {
                 Common(MessageCommon {
@@ -748,6 +767,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn document(&self) -> Option<&types::Document> {
             match &self.kind {
                 Common(MessageCommon {
@@ -758,6 +778,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn animation(&self) -> Option<&types::Animation> {
             match &self.kind {
                 Common(MessageCommon {
@@ -768,6 +789,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn game(&self) -> Option<&types::Game> {
             match &self.kind {
                 Common(MessageCommon {
@@ -778,6 +800,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn photo(&self) -> Option<&[PhotoSize]> {
             match &self.kind {
                 Common(MessageCommon {
@@ -788,6 +811,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn sticker(&self) -> Option<&types::Sticker> {
             match &self.kind {
                 Common(MessageCommon {
@@ -798,6 +822,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn video(&self) -> Option<&types::Video> {
             match &self.kind {
                 Common(MessageCommon {
@@ -808,6 +833,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn voice(&self) -> Option<&types::Voice> {
             match &self.kind {
                 Common(MessageCommon {
@@ -818,6 +844,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn video_note(&self) -> Option<&types::VideoNote> {
             match &self.kind {
                 Common(MessageCommon {
@@ -828,6 +855,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn caption(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon { media_kind, .. }) => match media_kind {
@@ -845,6 +873,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn contact(&self) -> Option<&types::Contact> {
             match &self.kind {
                 Common(MessageCommon {
@@ -855,6 +884,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn location(&self) -> Option<&types::Location> {
             match &self.kind {
                 Common(MessageCommon {
@@ -865,6 +895,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn venue(&self) -> Option<&types::Venue> {
             match &self.kind {
                 Common(MessageCommon {
@@ -875,6 +906,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn poll(&self) -> Option<&types::Poll> {
             match &self.kind {
                 Common(MessageCommon {
@@ -885,6 +917,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn new_chat_members(&self) -> Option<&[User]> {
             match &self.kind {
                 NewChatMembers(MessageNewChatMembers { new_chat_members }) => {
@@ -894,6 +927,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn left_chat_member(&self) -> Option<&User> {
             match &self.kind {
                 LeftChatMember(MessageLeftChatMember { left_chat_member }) => {
@@ -903,6 +937,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn new_chat_title(&self) -> Option<&str> {
             match &self.kind {
                 NewChatTitle(MessageNewChatTitle { new_chat_title }) => Some(new_chat_title),
@@ -910,6 +945,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn new_chat_photo(&self) -> Option<&[PhotoSize]> {
             match &self.kind {
                 NewChatPhoto(MessageNewChatPhoto { new_chat_photo }) => Some(new_chat_photo),
@@ -919,6 +955,7 @@ mod getters {
 
         // TODO: OK, `Option<True>` is weird, can we do something with it?
         //       mb smt like `is_delete_chat_photo(&self) -> bool`?
+        #[must_use]
         pub fn delete_chat_photo(&self) -> Option<True> {
             match &self.kind {
                 DeleteChatPhoto(MessageDeleteChatPhoto { delete_chat_photo }) => {
@@ -928,6 +965,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn group_chat_created(&self) -> Option<True> {
             match &self.kind {
                 GroupChatCreated(MessageGroupChatCreated { group_chat_created }) => {
@@ -937,6 +975,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn super_group_chat_created(&self) -> Option<True> {
             match &self.kind {
                 SupergroupChatCreated(MessageSupergroupChatCreated {
@@ -946,6 +985,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn channel_chat_created(&self) -> Option<True> {
             match &self.kind {
                 ChannelChatCreated(MessageChannelChatCreated {
@@ -955,6 +995,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn chat_migration(&self) -> Option<ChatMigration> {
             match &self.kind {
                 Common(MessageCommon {
@@ -965,6 +1006,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn migrate_to_chat_id(&self) -> Option<ChatId> {
             match &self.kind {
                 Common(MessageCommon {
@@ -975,6 +1017,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn migrate_from_chat_id(&self) -> Option<ChatId> {
             match &self.kind {
                 Common(MessageCommon {
@@ -985,6 +1028,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn pinned_message(&self) -> Option<&Message> {
             match &self.kind {
                 Pinned(MessagePinned { pinned }) => Some(pinned),
@@ -992,6 +1036,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn invoice(&self) -> Option<&types::Invoice> {
             match &self.kind {
                 Invoice(MessageInvoice { invoice }) => Some(invoice),
@@ -999,6 +1044,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn successful_payment(&self) -> Option<&types::SuccessfulPayment> {
             match &self.kind {
                 SuccessfulPayment(MessageSuccessfulPayment { successful_payment }) => {
@@ -1008,6 +1054,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn connected_website(&self) -> Option<&str> {
             match &self.kind {
                 ConnectedWebsite(MessageConnectedWebsite { connected_website }) => {
@@ -1017,6 +1064,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn passport_data(&self) -> Option<&types::PassportData> {
             match &self.kind {
                 PassportData(MessagePassportData { passport_data }) => Some(passport_data),
@@ -1024,6 +1072,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn dice(&self) -> Option<&types::Dice> {
             match &self.kind {
                 Dice(MessageDice { dice }) => Some(dice),
@@ -1031,6 +1080,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn proximity_alert_triggered(&self) -> Option<&types::ProximityAlertTriggered> {
             match &self.kind {
                 ProximityAlertTriggered(MessageProximityAlertTriggered {
@@ -1040,6 +1090,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn reply_markup(&self) -> Option<&types::InlineKeyboardMarkup> {
             match &self.kind {
                 Common(MessageCommon { reply_markup, .. }) => reply_markup.as_ref(),
@@ -1047,6 +1098,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn is_automatic_forward(&self) -> bool {
             match &self.kind {
                 Common(MessageCommon {
@@ -1057,6 +1109,7 @@ mod getters {
             }
         }
 
+        #[must_use]
         pub fn has_protected_content(&self) -> bool {
             match &self.kind {
                 Common(MessageCommon {
@@ -1085,6 +1138,7 @@ impl Message {
     ///
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
+    #[must_use]
     pub fn url(&self) -> Option<Url> {
         Self::url_of(self.chat.id, self.chat.username(), self.id)
     }
@@ -1103,6 +1157,7 @@ impl Message {
     ///
     /// [`url`]: Message::url
     #[track_caller]
+    #[must_use]
     pub fn url_of(chat_id: ChatId, chat_username: Option<&str>, message_id: i32) -> Option<Url> {
         use BareChatId::*;
 
@@ -1146,6 +1201,7 @@ impl Message {
     ///
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
+    #[must_use]
     pub fn comment_url(&self, comment_id: i32) -> Option<Url> {
         Self::comment_url_of(self.chat.id, self.chat.username(), self.id, comment_id)
     }
@@ -1164,6 +1220,7 @@ impl Message {
     /// supergroups).
     ///
     /// [`comment_url`]: Message::comment_url
+    #[must_use]
     pub fn comment_url_of(
         channel_id: ChatId,
         channel_username: Option<&str>,
@@ -1187,6 +1244,7 @@ impl Message {
     ///
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
+    #[must_use]
     pub fn url_in_thread(&self, thread_starter_msg_id: i32) -> Option<Url> {
         Self::url_in_thread_of(
             self.chat.id,
@@ -1214,6 +1272,7 @@ impl Message {
     /// supergroups).
     ///
     /// [`url_in_thread`]: Message::url_in_thread
+    #[must_use]
     pub fn url_in_thread_of(
         chat_id: ChatId,
         chat_username: Option<&str>,
@@ -1235,6 +1294,7 @@ impl Message {
     /// See also: [`parse_caption_entities`].
     ///
     /// [`parse_caption_entities`]: Message::parse_caption_entities
+    #[must_use]
     pub fn parse_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.text()
             .zip(self.entities())
@@ -1249,6 +1309,7 @@ impl Message {
     /// See also: [`parse_entities`].
     ///
     /// [`parse_entities`]: Message::parse_entities
+    #[must_use]
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.caption()
             .zip(self.caption_entities())

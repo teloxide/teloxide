@@ -89,11 +89,13 @@ impl InlineQueryResultLocation {
         self
     }
 
+    #[must_use]
     pub fn latitude(mut self, val: f64) -> Self {
         self.latitude = val;
         self
     }
 
+    #[must_use]
     pub fn longitude(mut self, val: f64) -> Self {
         self.longitude = val;
         self
@@ -107,46 +109,55 @@ impl InlineQueryResultLocation {
         self
     }
 
+    #[must_use]
     pub fn horizontal_accuracy<S>(mut self, val: f64) -> Self {
         self.horizontal_accuracy = Some(val);
         self
     }
 
+    #[must_use]
     pub fn live_period(mut self, val: i32) -> Self {
         self.live_period = Some(val);
         self
     }
 
+    #[must_use]
     pub fn heading(mut self, val: u16) -> Self {
         self.heading = Some(val);
         self
     }
 
+    #[must_use]
     pub fn proximity_alert_radius(mut self, val: u32) -> Self {
         self.proximity_alert_radius = Some(val);
         self
     }
 
+    #[must_use]
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self
     }
 
+    #[must_use]
     pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
         self.input_message_content = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
         self.thumb_url = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_width(mut self, val: u32) -> Self {
         self.thumb_width = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_height(mut self, val: u32) -> Self {
         self.thumb_height = Some(val);
         self

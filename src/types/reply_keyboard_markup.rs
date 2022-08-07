@@ -75,6 +75,7 @@ impl KeyboardMarkup {
         self
     }
 
+    #[must_use]
     pub fn append_to_row(mut self, index: usize, button: KeyboardButton) -> Self {
         match self.keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),

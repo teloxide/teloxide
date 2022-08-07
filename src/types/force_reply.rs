@@ -33,6 +33,7 @@ pub struct ForceReply {
 }
 
 impl ForceReply {
+    #[must_use]
     pub const fn new() -> Self {
         Self {
             force_reply: True,
@@ -49,6 +50,7 @@ impl ForceReply {
         self
     }
 
+    #[must_use]
     pub const fn selective(mut self, val: bool) -> Self {
         self.selective = Some(val);
         self

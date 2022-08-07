@@ -51,6 +51,7 @@ const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 ///
 /// [`Arc`]: std::sync::Arc
 /// [Telegram Bot API]: https://core.telegram.org/bots/api
+#[must_use]
 #[derive(Debug, Clone)]
 pub struct Bot {
     token: Arc<str>,
@@ -186,16 +187,19 @@ impl Bot {
 /// Getters
 impl Bot {
     /// Returns currently used token.
+    #[must_use]
     pub fn token(&self) -> &str {
         &self.token
     }
 
     /// Returns currently used http-client.
+    #[must_use]
     pub fn client(&self) -> &Client {
         &self.client
     }
 
     /// Returns currently used token API url.
+    #[must_use]
     pub fn api_url(&self) -> reqwest::Url {
         reqwest::Url::clone(&*self.api_url)
     }

@@ -191,10 +191,12 @@ pub struct PublicChatSupergroup {
 }
 
 impl Chat {
+    #[must_use]
     pub fn is_private(&self) -> bool {
         matches!(self.kind, ChatKind::Private(_))
     }
 
+    #[must_use]
     pub fn is_group(&self) -> bool {
         matches!(
             self.kind,
@@ -205,6 +207,7 @@ impl Chat {
         )
     }
 
+    #[must_use]
     pub fn is_supergroup(&self) -> bool {
         matches!(
             self.kind,
@@ -215,6 +218,7 @@ impl Chat {
         )
     }
 
+    #[must_use]
     pub fn is_channel(&self) -> bool {
         matches!(
             self.kind,
@@ -225,6 +229,7 @@ impl Chat {
         )
     }
 
+    #[must_use]
     pub fn is_chat(&self) -> bool {
         self.is_private() || self.is_group() || self.is_supergroup()
     }
@@ -233,6 +238,7 @@ impl Chat {
 /// Getters
 impl Chat {
     /// A title, for supergroups, channels and group chats.
+    #[must_use]
     pub fn title(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Public(this) => this.title.as_deref(),
@@ -241,6 +247,7 @@ impl Chat {
     }
 
     /// A username, for private chats, supergroups and channels if available.
+    #[must_use]
     pub fn username(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Public(this) => match &this.kind {
@@ -258,6 +265,7 @@ impl Chat {
     /// identifier for a channel and vice versa. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn linked_chat_id(&self) -> Option<i64> {
         match &self.kind {
             ChatKind::Public(this) => match &this.kind {
@@ -275,6 +283,7 @@ impl Chat {
     /// only from [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn permissions(&self) -> Option<ChatPermissions> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Group(PublicChatGroup { permissions })
@@ -291,6 +300,7 @@ impl Chat {
     /// [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn sticker_set_name(&self) -> Option<&str> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -305,6 +315,7 @@ impl Chat {
     /// from [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn can_set_sticker_set(&self) -> Option<bool> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -319,6 +330,7 @@ impl Chat {
     /// unpriviledged user. Returned only from [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn slow_mode_delay(&self) -> Option<u32> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -333,6 +345,7 @@ impl Chat {
     /// [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn location(&self) -> Option<&ChatLocation> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -347,6 +360,7 @@ impl Chat {
     /// messages. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn join_to_send_messages(&self) -> Option<True> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -361,6 +375,7 @@ impl Chat {
     /// by supergroup administrators. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn join_by_request(&self) -> Option<True> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
@@ -375,6 +390,7 @@ impl Chat {
     /// only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn description(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Public(this) => this.description.as_deref(),
@@ -392,6 +408,7 @@ impl Chat {
     /// crate::payloads::ExportChatInviteLink
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn invite_link(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Public(this) => this.invite_link.as_deref(),
@@ -403,6 +420,7 @@ impl Chat {
     /// Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn has_protected_content(&self) -> Option<True> {
         match &self.kind {
             ChatKind::Public(this) => this.has_protected_content,
@@ -411,6 +429,7 @@ impl Chat {
     }
 
     /// A first name of the other party in a private chat.
+    #[must_use]
     pub fn first_name(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Private(this) => this.first_name.as_deref(),
@@ -419,6 +438,7 @@ impl Chat {
     }
 
     /// A last name of the other party in a private chat.
+    #[must_use]
     pub fn last_name(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Private(this) => this.last_name.as_deref(),
@@ -429,6 +449,7 @@ impl Chat {
     /// Bio of the other party in a private chat. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn bio(&self) -> Option<&str> {
         match &self.kind {
             ChatKind::Private(this) => this.bio.as_deref(),
@@ -441,6 +462,7 @@ impl Chat {
     /// user. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
     pub fn has_private_forwards(&self) -> Option<True> {
         match &self.kind {
             ChatKind::Private(this) => this.has_private_forwards,

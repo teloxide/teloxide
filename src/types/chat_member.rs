@@ -147,6 +147,7 @@ impl Deref for ChatMember {
 /// Simple methods for checking a user status.
 impl ChatMemberKind {
     /// Returns chat member status.
+    #[must_use]
     pub fn status(&self) -> ChatMemberStatus {
         match self {
             ChatMemberKind::Owner(_) => ChatMemberStatus::Owner,
@@ -161,6 +162,7 @@ impl ChatMemberKind {
     /// Returns `true` if the user is the [owner] of the given chat.
     ///
     /// [owner]: ChatMemberKind::Owner
+    #[must_use]
     pub fn is_owner(&self) -> bool {
         matches!(self, Self::Owner { .. })
     }
@@ -173,6 +175,7 @@ impl ChatMemberKind {
     /// owner of the given chat. See also: [`is_privileged`].
     ///
     /// [`is_privileged`]: ChatMemberKind::is_privileged
+    #[must_use]
     pub fn is_administrator(&self) -> bool {
         matches!(self, Self::Administrator { .. })
     }
@@ -180,6 +183,7 @@ impl ChatMemberKind {
     /// Returns `true` if the user is a common [member] of the given chat.
     ///
     /// [member]: ChatMemberKind::Member
+    #[must_use]
     pub fn is_member(&self) -> bool {
         matches!(self, Self::Member { .. })
     }
@@ -187,6 +191,7 @@ impl ChatMemberKind {
     /// Returns `true` if the user is [restricted] in the given chat.
     ///
     /// [restricted]: ChatMemberKind::Restricted
+    #[must_use]
     pub fn is_restricted(&self) -> bool {
         matches!(self, Self::Restricted { .. })
     }
@@ -194,6 +199,7 @@ impl ChatMemberKind {
     /// Returns `true` if the user [left] the given chat.
     ///
     /// [left]: ChatMemberKind::Left
+    #[must_use]
     pub fn is_left(&self) -> bool {
         matches!(self, Self::Left { .. })
     }
@@ -201,6 +207,7 @@ impl ChatMemberKind {
     /// Returns `true` if the user is [banned] in the given chat.
     ///
     /// [banned]: ChatMemberKind::Banned
+    #[must_use]
     pub fn is_banned(&self) -> bool {
         matches!(self, Self::Banned { .. })
     }
@@ -209,6 +216,7 @@ impl ChatMemberKind {
     ///
     /// [kicked]: ChatMemberKind::Banned
     #[deprecated = "use `is_banned` instead"]
+    #[must_use]
     pub fn is_kicked(&self) -> bool {
         self.is_banned()
     }
@@ -217,6 +225,7 @@ impl ChatMemberKind {
     ///
     /// [creator]: ChatMemberKind::Owner
     #[deprecated = "use `is_owner` instead"]
+    #[must_use]
     pub fn is_creator(&self) -> bool {
         self.is_owner()
     }
@@ -229,6 +238,7 @@ impl ChatMemberKind {
     ///
     /// [owner]: ChatMemberKind::Owner
     /// [administrator]: ChatMemberKind::Administrator
+    #[must_use]
     pub fn is_privileged(&self) -> bool {
         self.is_administrator() || self.is_owner()
     }
@@ -238,6 +248,7 @@ impl ChatMemberKind {
     ///
     /// [left]: ChatMemberKind::Left
     /// [banned]: ChatMemberKind::Banned
+    #[must_use]
     pub fn is_present(&self) -> bool {
         !(self.is_left() || self.is_banned())
     }
@@ -246,6 +257,7 @@ impl ChatMemberKind {
 impl ChatMemberKind {
     /// Getter for [`Administrator::custom_title`] and [`Owner::custom_title`]
     /// fields.
+    #[must_use]
     pub fn custom_title(&self) -> Option<&str> {
         match &self {
             Self::Administrator(Administrator { custom_title, .. })
@@ -261,6 +273,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: Administrator::can_manage_chat
+    #[must_use]
     pub fn is_anonymous(&self) -> bool {
         match self {
             Self::Owner(Owner { is_anonymous, .. })
@@ -270,6 +283,7 @@ impl ChatMemberKind {
     }
 
     /// Getter for [`Restricted::until_date`] and [`Banned::until_date`] fields.
+    #[must_use]
     pub fn until_date(&self) -> Option<UntilDate> {
         match &self {
             Self::Owner(_) | Self::Administrator(_) | Self::Member | Self::Left => None,
@@ -283,6 +297,7 @@ impl ChatMemberKind {
 impl ChatMemberKind {
     /// Returns `true` if the user is an administrator in the given chat and the
     /// bot is allowed to edit administrator privileges of that user.
+    #[must_use]
     pub fn can_be_edited(&self) -> bool {
         match self {
             Self::Administrator(Administrator { can_be_edited, .. }) => *can_be_edited,
@@ -305,6 +320,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: Administrator::can_manage_chat
+    #[must_use]
     pub fn can_manage_chat(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -325,6 +341,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_change_info`]: Administrator::can_change_info
+    #[must_use]
     pub fn can_change_info(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -344,6 +361,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_post_messages`]: Administrator::can_post_messages
+    #[must_use]
     pub fn can_post_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -364,6 +382,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_edit_messages`]: Administrator::can_edit_messages
+    #[must_use]
     pub fn can_edit_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -383,6 +402,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_delete_messages`]: Administrator::can_delete_messages
+    #[must_use]
     pub fn can_delete_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -403,6 +423,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_video_chats`]: Administrator::can_manage_video_chats
+    #[must_use]
     pub fn can_manage_video_chats(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -415,6 +436,7 @@ impl ChatMemberKind {
     }
 
     #[deprecated(since = "0.6.0", note = "renamed to `can_manage_video_chats`")]
+    #[must_use]
     pub fn can_manage_voice_chats(&self) -> bool {
         self.can_manage_video_chats()
     }
@@ -428,6 +450,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_invite_users`]: Administrator::can_invite_users
+    #[must_use]
     pub fn can_invite_users(&self) -> bool {
         match &self {
             Self::Owner(_) => true,
@@ -447,6 +470,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_restrict_members`]: Administrator::can_restrict_members
+    #[must_use]
     pub fn can_restrict_members(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -467,6 +491,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_pin_messages`]: Administrator::can_pin_messages
+    #[must_use]
     pub fn can_pin_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -489,6 +514,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     ///
     /// [`can_promote_members`]: Administrator::can_promote_members
+    #[must_use]
     pub fn can_promote_members(&self) -> bool {
         match self {
             Self::Owner(_) => true,
@@ -512,6 +538,7 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_messages`]: Restricted::can_send_messages
+    #[must_use]
     pub fn can_send_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
@@ -531,6 +558,7 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[must_use]
     pub fn can_send_media_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
@@ -551,6 +579,7 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[must_use]
     pub fn can_send_other_messages(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
@@ -571,6 +600,7 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[must_use]
     pub fn can_add_web_page_previews(&self) -> bool {
         match &self {
             Self::Restricted(Restricted {
@@ -601,6 +631,7 @@ impl ChatMemberStatus {
     /// Returns `true` if the user is the [owner] of the given chat.
     ///
     /// [owner]: ChatMemberKind::Owner
+    #[must_use]
     pub fn is_owner(&self) -> bool {
         matches!(self, Self::Owner { .. })
     }
@@ -613,6 +644,7 @@ impl ChatMemberStatus {
     /// owner of the given chat. See also: [`is_privileged`].
     ///
     /// [`is_privileged`]: ChatMemberKind::is_privileged
+    #[must_use]
     pub fn is_administrator(&self) -> bool {
         matches!(self, Self::Administrator { .. })
     }
@@ -620,6 +652,7 @@ impl ChatMemberStatus {
     /// Returns `true` if the user is a common [member] of the given chat.
     ///
     /// [member]: ChatMemberKind::Member
+    #[must_use]
     pub fn is_member(&self) -> bool {
         matches!(self, Self::Member { .. })
     }
@@ -627,6 +660,7 @@ impl ChatMemberStatus {
     /// Returns `true` if the user is [restricted] in the given chat.
     ///
     /// [restricted]: ChatMemberKind::Restricted
+    #[must_use]
     pub fn is_restricted(&self) -> bool {
         matches!(self, Self::Restricted { .. })
     }
@@ -634,6 +668,7 @@ impl ChatMemberStatus {
     /// Returns `true` if the user [left] the given chat.
     ///
     /// [left]: ChatMemberKind::Left
+    #[must_use]
     pub fn is_left(&self) -> bool {
         matches!(self, Self::Left { .. })
     }
@@ -641,6 +676,7 @@ impl ChatMemberStatus {
     /// Returns `true` if the user is [banned] in the given chat.
     ///
     /// [banned]: ChatMemberKind::Banned
+    #[must_use]
     pub fn is_banned(&self) -> bool {
         matches!(self, Self::Banned { .. })
     }
@@ -653,6 +689,7 @@ impl ChatMemberStatus {
     ///
     /// [owner]: ChatMemberKind::Owner
     /// [administrator]: ChatMemberKind::Administrator
+    #[must_use]
     pub fn is_privileged(&self) -> bool {
         self.is_administrator() || self.is_owner()
     }
@@ -662,6 +699,7 @@ impl ChatMemberStatus {
     ///
     /// [left]: ChatMemberKind::Left
     /// [banned]: ChatMemberKind::Banned
+    #[must_use]
     pub fn is_present(&self) -> bool {
         !(self.is_left() || self.is_banned())
     }

@@ -45,16 +45,19 @@ impl MaskPosition {
         self
     }
 
+    #[must_use]
     pub fn x_shift(mut self, val: f64) -> Self {
         self.x_shift = val;
         self
     }
 
+    #[must_use]
     pub fn y_shift(mut self, val: f64) -> Self {
         self.y_shift = val;
         self
     }
 
+    #[must_use]
     pub fn scale(mut self, val: f64) -> Self {
         self.scale = val;
         self

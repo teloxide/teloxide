@@ -61,6 +61,7 @@ impl InputMessageContentText {
         self
     }
 
+    #[must_use]
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
@@ -74,6 +75,7 @@ impl InputMessageContentText {
         self
     }
 
+    #[must_use]
     pub fn disable_web_page_preview(mut self, val: bool) -> Self {
         self.disable_web_page_preview = Some(val);
         self
@@ -109,6 +111,7 @@ pub struct InputMessageContentLocation {
 }
 
 impl InputMessageContentLocation {
+    #[must_use]
     pub const fn new(latitude: f64, longitude: f64) -> Self {
         Self {
             latitude,
@@ -120,16 +123,19 @@ impl InputMessageContentLocation {
         }
     }
 
+    #[must_use]
     pub const fn latitude(mut self, val: f64) -> Self {
         self.latitude = val;
         self
     }
 
+    #[must_use]
     pub const fn longitude(mut self, val: f64) -> Self {
         self.longitude = val;
         self
     }
 
+    #[must_use]
     pub const fn live_period(mut self, val: u32) -> Self {
         self.live_period = Some(val);
         self
@@ -188,11 +194,13 @@ impl InputMessageContentVenue {
         }
     }
 
+    #[must_use]
     pub fn latitude(mut self, val: f64) -> Self {
         self.latitude = val;
         self
     }
 
+    #[must_use]
     pub fn longitude(mut self, val: f64) -> Self {
         self.longitude = val;
         self
@@ -465,6 +473,7 @@ impl InputMessageContentInvoice {
         self
     }
 
+    #[must_use]
     pub fn currency(mut self, val: Currency) -> Self {
         self.currency = val;
         self
@@ -478,6 +487,7 @@ impl InputMessageContentInvoice {
         self
     }
 
+    #[must_use]
     pub fn max_tip_amount(mut self, val: u32) -> Self {
         self.max_tip_amount = Some(val);
         self
@@ -499,57 +509,68 @@ impl InputMessageContentInvoice {
         self
     }
 
+    #[must_use]
     pub fn photo_url(mut self, val: Url) -> Self {
         self.photo_url = Some(val);
         self
     }
 
+    #[must_use]
     pub fn photo_size(mut self, val: u32) -> Self {
         self.photo_size = Some(val);
         self
     }
 
+    #[must_use]
     pub fn photo_width(mut self, val: u32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
+    #[must_use]
     pub fn photo_height(mut self, val: u32) -> Self {
         self.photo_height = Some(val);
         self
     }
 
+    #[must_use]
     pub fn need_name(mut self, val: bool) -> Self {
         self.need_name = Some(val);
         self
     }
 
+    #[must_use]
     pub fn need_phone_number(mut self, val: bool) -> Self {
         self.need_phone_number = Some(val);
         self
     }
 
+    #[must_use]
     pub fn need_email(mut self, val: bool) -> Self {
         self.need_email = Some(val);
         self
     }
 
+    #[must_use]
     pub fn need_shipping_address(mut self, val: bool) -> Self {
         self.need_shipping_address = Some(val);
         self
     }
 
+    #[must_use]
     pub fn send_phone_number_to_provider(mut self, val: bool) -> Self {
         self.send_phone_number_to_provider = Some(val);
         self
     }
 
+    #[must_use]
     pub fn send_email_to_provider(mut self, val: bool) -> Self {
         self.send_email_to_provider = Some(val);
         self
     }
 
     #[allow(clippy::wrong_self_convention)]
+    #[must_use]
     pub fn is_flexible(mut self, val: bool) -> Self {
         self.is_flexible = Some(val);
         self

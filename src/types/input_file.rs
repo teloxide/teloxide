@@ -64,6 +64,7 @@ impl InputFile {
     /// [`SendAudio`]: crate::payloads::SendAudio
     /// [`SendDocument`]: crate::payloads::SendDocument
     /// [`SendVoice`]: crate::payloads::SendVoice
+    #[must_use]
     pub fn url(url: url::Url) -> Self {
         Self::new(Url(url))
     }

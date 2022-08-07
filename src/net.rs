@@ -34,6 +34,7 @@ pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 /// ## Panics
 ///
 /// If `TELOXIDE_PROXY` exists, but isn't correct url.
+#[must_use]
 pub fn client_from_env() -> reqwest::Client {
     use reqwest::Proxy;
 

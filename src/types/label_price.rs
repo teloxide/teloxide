@@ -38,6 +38,7 @@ impl LabeledPrice {
         self
     }
 
+    #[must_use]
     pub fn amount(mut self, val: i32) -> Self {
         self.amount = val;
         self

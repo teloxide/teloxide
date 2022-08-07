@@ -218,6 +218,7 @@ impl InlineKeyboardButton {
         since = "0.7.0",
         note = "set correct kind in the constructor or access the field directly"
     )]
+    #[must_use]
     pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
         self.kind = val;
         self

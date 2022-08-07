@@ -29,6 +29,7 @@ pub struct Update {
 }
 
 impl Update {
+    #[must_use]
     pub fn user(&self) -> Option<&User> {
         match &self.kind {
             UpdateKind::Message(m) => m.from(),
@@ -43,6 +44,7 @@ impl Update {
         }
     }
 
+    #[must_use]
     pub fn chat(&self) -> Option<&Chat> {
         match &self.kind {
             UpdateKind::Message(m) => Some(&m.chat),

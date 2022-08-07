@@ -84,6 +84,7 @@ impl Deref for Sticker {
 
 impl StickerKind {
     /// Returns `true` is this is a "normal" raster sticker.
+    #[must_use]
     pub fn is_webp(&self) -> bool {
         matches!(self, Self::Webp)
     }
@@ -91,6 +92,7 @@ impl StickerKind {
     /// Returns `true` is this is an [animated] sticker.
     ///
     /// [animated]: https://telegram.org/blog/animated-stickers
+    #[must_use]
     pub fn is_animated(&self) -> bool {
         matches!(self, Self::Animated)
     }
@@ -98,6 +100,7 @@ impl StickerKind {
     /// Returns `true` is this is a [video] sticker.
     ///
     /// [video]: https://telegram.org/blog/video-stickers-better-reactions
+    #[must_use]
     pub fn is_video(&self) -> bool {
         matches!(self, Self::Video)
     }

@@ -76,6 +76,7 @@ impl InlineQueryResultVoice {
         self
     }
 
+    #[must_use]
     pub fn voice_url(mut self, val: reqwest::Url) -> Self {
         self.voice_url = val;
         self
@@ -97,6 +98,7 @@ impl InlineQueryResultVoice {
         self
     }
 
+    #[must_use]
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
@@ -110,16 +112,19 @@ impl InlineQueryResultVoice {
         self
     }
 
+    #[must_use]
     pub fn voice_duration(mut self, value: i32) -> Self {
         self.voice_duration = Some(value);
         self
     }
 
+    #[must_use]
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self
     }
 
+    #[must_use]
     pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
         self.input_message_content = Some(val);
         self
