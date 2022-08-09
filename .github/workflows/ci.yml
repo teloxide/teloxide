@@ -24,6 +24,8 @@ env:
   # - down below in a matrix
   rust_msrv: 1.58.0
 
+  CI: 1
+
 jobs:
   # Depends on all action that are required for a "successful" CI run.
   ci-pass:

@@ -115,3 +115,6 @@ mod bot;
 
 // implementation details
 mod serde_multipart;
+
+#[cfg(test)]
+mod codegen;
