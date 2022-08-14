@@ -58,14 +58,14 @@ fn codegen_payloads() {
 
         let multipart = multipart_input_file_fields(&method)
             .map(|field| format!("    @[multipart = {}]\n", field.join(", ")))
-            .unwrap_or(String::new());
+            .unwrap_or_else(String::new);
 
         let derive = if !multipart.is_empty()
             || matches!(
                 &*method.names.1,
                 "SendMediaGroup" | "EditMessageMedia" | "EditMessageMediaInline"
             ) {
-            format!("#[derive(Debug, Clone, Serialize)]")
+            "#[derive(Debug, Clone, Serialize)]".to_owned()
         } else {
             format!("#[derive(Debug, PartialEq,{eq_hash_derive}{default_derive} Clone, Serialize)]")
         };
@@ -116,7 +116,7 @@ fn uses(method: &Method) -> String {
             | Type::bool
             | Type::String => Use::Prelude,
             Type::Option(inner) | Type::ArrayOf(inner) => ty_use(inner),
-            Type::RawTy(raw) => Use::Crate(["use crate::types::", &raw, ";"].concat()),
+            Type::RawTy(raw) => Use::Crate(["use crate::types::", raw, ";"].concat()),
             Type::Url => Use::External(String::from("use url::Url;")),
             Type::DateTime => Use::External(String::from("use chrono::{DateTime, Utc};")),
         }
@@ -175,7 +175,7 @@ fn render_doc(doc: &Doc, sibling: Option<&str>) -> String {
 
     [
         "    /// ",
-        &doc.md.replace("\n", "\n    /// "),
+        &doc.md.replace('\n', "\n    /// "),
         &sibling_note,
         &links,
     ]
@@ -218,7 +218,7 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
     params
         .map(|param| {
             let param = param.borrow();
-            let doc = render_doc(&param.descr, None).replace("\n", "\n        ");
+            let doc = render_doc(&param.descr, None).replace('\n', "\n        ");
             let field = &param.name;
             let ty = &param.ty;
             let flatten = match ty {

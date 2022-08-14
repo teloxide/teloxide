@@ -1142,7 +1142,7 @@ fn codegen_requester_methods() {
                 .map(|(name, _)| &**name)
                 .collect::<Vec<_>>();
 
-            convert_params.sort();
+            convert_params.sort_unstable();
 
             let prefixes: IndexMap<_, _> = convert_params
                 .iter()
@@ -1150,7 +1150,7 @@ fn codegen_requester_methods() {
                 // Workaround to output the last type as the first letter
                 .chain(["\0"])
                 .tuple_windows()
-                .map(|(l, r)| (l, min_prefix(&l, &r)))
+                .map(|(l, r)| (l, min_prefix(l, r)))
                 .collect();
 
             let args = m
@@ -1178,12 +1178,12 @@ fn codegen_requester_methods() {
                     Convert::Id(_) => None,
                     Convert::Into(ty) => Some(format!(
                         "{}: Into<{}>",
-                        &to_uppercase(&prefixes[&*p.name]),
+                        &to_uppercase(prefixes[&*p.name]),
                         ty
                     )),
                     Convert::Collect(ty) => Some(format!(
                         "{}: IntoIterator<Item = {}>",
-                        &to_uppercase(&prefixes[&*p.name]),
+                        &to_uppercase(prefixes[&*p.name]),
                         ty
                     )),
                 })

@@ -239,7 +239,7 @@ fn intra_links(doc: &mut Doc) {
                 match () {
                     _ if k == "games" => {}
                     _ if k == "unbanned" => *v = String::from("crate::payloads::UnbanChatMember"),
-                    _ if c.is_lowercase() && !["update"].contains(&&&**k) => {
+                    _ if c.is_lowercase() && !["update"].contains(&&**k) => {
                         repls_m.push(k.clone());
                         *v = format!("crate::payloads::{}", to_uppercase(k));
                     }
