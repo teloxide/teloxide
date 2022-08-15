@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr241]: https://github.com/teloxide/teloxide-core/pull/241
 
+### Changed
+
+- More functions are now marked with `#[must_use]` ([#242][PR242])
+
+[pr242]: https://github.com/teloxide/teloxide-core/pull/242
+
 ## 0.7.0 - 2022-07-19
 
 ### Added
