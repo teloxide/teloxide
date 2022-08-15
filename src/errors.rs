@@ -12,7 +12,7 @@ use crate::types::ResponseParameters;
 pub enum RequestError {
     /// A Telegram API error.
     #[error("A Telegram's error: {0}")]
-    Api(#[source] ApiError),
+    Api(#[from] ApiError),
 
     /// The group has been migrated to a supergroup with the specified
     /// identifier.
@@ -26,7 +26,7 @@ pub enum RequestError {
 
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
-    // NOTE: this variant must not be created by anything except the From impl
+    // NOTE: this variant must not be created by anything except the explicit From impl
     Network(#[source] reqwest::Error),
 
     /// Error while parsing a response from Telegram.
@@ -45,7 +45,7 @@ pub enum RequestError {
 
     /// Occurs when trying to send a file to Telegram.
     #[error("An I/O error: {0}")]
-    Io(#[source] io::Error),
+    Io(#[from] io::Error),
 }
 
 /// An error caused by downloading a file.
@@ -53,7 +53,7 @@ pub enum RequestError {
 pub enum DownloadError {
     /// A network error while downloading a file from Telegram.
     #[error("A network error: {0}")]
-    // NOTE: this variant must not be created by anything except the From impl
+    // NOTE: this variant must not be created by anything except the explicit From impl
     Network(#[source] reqwest::Error),
 
     /// An I/O error while writing a file to destination.
@@ -760,6 +760,32 @@ pub enum ApiError {
     /// [open an issue]: https://github.com/teloxide/teloxide/issues/new
     #[error("Unknown error: {0:?}")]
     Unknown(String),
+}
+
+/// This impl allows to use `?` to propagate [`DownloadError`]s in function
+/// returning [`RequestError`]s. For example:
+///
+/// ```rust
+/// # use teloxide_core::errors::{DownloadError, RequestError};
+///
+/// async fn handler() -> Result<(), RequestError> {
+///     download_file().await?; // `?` just works
+///
+///     Ok(())
+/// }
+///
+/// async fn download_file() -> Result<(), DownloadError> {
+///     /* download file here */
+///     Ok(())
+/// }
+/// ```
+impl From<DownloadError> for RequestError {
+    fn from(download_err: DownloadError) -> Self {
+        match download_err {
+            DownloadError::Network(err) => RequestError::Network(err),
+            DownloadError::Io(err) => RequestError::Io(err),
+        }
+    }
 }
 
 impl From<reqwest::Error> for DownloadError {
