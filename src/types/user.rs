@@ -43,7 +43,7 @@ impl User {
     #[must_use]
     pub fn full_name(&self) -> String {
         match &self.last_name {
-            Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
+            Some(last_name) => format!("{0} {1}", self.first_name, last_name),
             None => self.first_name.clone(),
         }
     }
