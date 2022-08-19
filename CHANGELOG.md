@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- `ErasedRequester<E>` now implements `Clone` even if `E` is not `Clone` ([#244][pr244])
+
+[pr244]: https://github.com/teloxide/teloxide-core/pull/244
+
 ### Added
 
 - `From<ApiError>`, `From<DownloadError>` and `From<std::io::Error>` impls for `RequestError` ([#241][pr241])
