@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.1 - 2022-08-19
+
 ### Fixed
 
 - `ErasedRequester<E>` now implements `Clone` even if `E` is not `Clone` ([#244][pr244])
