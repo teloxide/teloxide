@@ -66,6 +66,7 @@ impl InlineKeyboardMarkup {
         self
     }
 
+    #[must_use]
     pub fn append_to_row(mut self, index: usize, button: InlineKeyboardButton) -> Self {
         match self.inline_keyboard.get_mut(index) {
             Some(buttons) => buttons.push(button),

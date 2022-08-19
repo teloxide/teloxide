@@ -43,6 +43,7 @@ pub struct MessageEntityRef<'a> {
 }
 
 impl MessageEntity {
+    #[must_use]
     pub const fn new(kind: MessageEntityKind, offset: usize, length: usize) -> Self {
         Self {
             kind,
@@ -52,6 +53,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a bold text.
+    #[must_use]
     pub const fn bold(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Bold,
@@ -61,6 +63,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing an italic text.
+    #[must_use]
     pub const fn italic(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Italic,
@@ -70,6 +73,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing an underline text.
+    #[must_use]
     pub const fn underline(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Underline,
@@ -79,6 +83,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a strikethrough text.
+    #[must_use]
     pub const fn strikethrough(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Strikethrough,
@@ -88,6 +93,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a spoiler text.
+    #[must_use]
     pub const fn spoiler(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Spoiler,
@@ -97,6 +103,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a monowidth text.
+    #[must_use]
     pub const fn code(offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Code,
@@ -106,6 +113,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a monowidth block.
+    #[must_use]
     pub const fn pre(language: Option<String>, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::Pre { language },
@@ -115,6 +123,7 @@ impl MessageEntity {
     }
 
     /// Create a message entity representing a clickable text URL.
+    #[must_use]
     pub const fn text_link(url: reqwest::Url, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextLink { url },
@@ -129,6 +138,7 @@ impl MessageEntity {
     ///
     /// If you don't have a complete [`User`] value, please use
     /// [`MessageEntity::text_mention_id`] instead.
+    #[must_use]
     pub fn text_mention(user: User, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextMention { user },
@@ -139,6 +149,7 @@ impl MessageEntity {
 
     /// Create a message entity representing a text link in the form of
     /// `tg://user/?id=...` that mentions user with `user_id`.
+    #[must_use]
     pub fn text_mention_id(user_id: UserId, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextLink { url: user_id.url() },
@@ -147,16 +158,19 @@ impl MessageEntity {
         }
     }
 
+    #[must_use]
     pub fn kind(mut self, val: MessageEntityKind) -> Self {
         self.kind = val;
         self
     }
 
+    #[must_use]
     pub const fn offset(mut self, val: usize) -> Self {
         self.offset = val;
         self
     }
 
+    #[must_use]
     pub const fn length(mut self, val: usize) -> Self {
         self.length = val;
         self
@@ -165,11 +179,13 @@ impl MessageEntity {
 
 impl<'a> MessageEntityRef<'a> {
     /// Returns kind of this entity.
+    #[must_use]
     pub fn kind(&self) -> &'a MessageEntityKind {
         self.kind
     }
 
     /// Returns the text that this entity is related to.
+    #[must_use]
     pub fn text(&self) -> &'a str {
         &self.message[self.range.clone()]
     }
@@ -178,34 +194,40 @@ impl<'a> MessageEntityRef<'a> {
     ///
     /// The range is in bytes for UTF-8 encoding i.e. you can use it with common
     /// Rust strings.
+    #[must_use]
     pub fn range(&self) -> Range<usize> {
         self.range.clone()
     }
 
     /// Returns the offset (in bytes, for UTF-8) to the start of this entity in
     /// the original message.
+    #[must_use]
     pub fn start(&self) -> usize {
         self.range.start
     }
 
     /// Returns the offset (in bytes, for UTF-8) to the end of this entity in
     /// the original message.
+    #[must_use]
     pub fn end(&self) -> usize {
         self.range.end
     }
 
     /// Returns the length of this entity in bytes for UTF-8 encoding.
     #[allow(clippy::len_without_is_empty)]
+    #[must_use]
     pub fn len(&self) -> usize {
         self.range.len()
     }
 
     /// Returns the full text of the original message.
+    #[must_use]
     pub fn message_text(&self) -> &'a str {
         self.message
     }
 
     /// Parses telegram [`MessageEntity`]s converting offsets to UTF-8.
+    #[must_use]
     pub fn parse(text: &'a str, entities: &'a [MessageEntity]) -> Vec<Self> {
         // This creates entities with **wrong** offsets (UTF-16) that we later patch.
         let mut entities: Vec<_> = entities

@@ -32,6 +32,7 @@ impl PassportElementError {
         self
     }
 
+    #[must_use]
     pub fn kind(mut self, val: PassportElementErrorKind) -> Self {
         self.kind = val;
         self
@@ -104,6 +105,7 @@ impl PassportElementErrorDataField {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorDataFieldType) -> Self {
         self.r#type = val;
         self
@@ -153,6 +155,7 @@ impl PassportElementErrorFrontSide {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorFrontSideType) -> Self {
         self.r#type = val;
         self
@@ -194,6 +197,7 @@ impl PassportElementErrorReverseSide {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorReverseSideType) -> Self {
         self.r#type = val;
         self
@@ -233,6 +237,7 @@ impl PassportElementErrorSelfie {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorSelfieType) -> Self {
         self.r#type = val;
         self
@@ -273,6 +278,7 @@ impl PassportElementErrorFile {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorFileType) -> Self {
         self.r#type = val;
         self
@@ -313,6 +319,7 @@ impl PassportElementErrorFiles {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorFilesType) -> Self {
         self.r#type = val;
         self
@@ -354,6 +361,7 @@ impl PassportElementErrorTranslationFile {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorTranslationFileType) -> Self {
         self.r#type = val;
         self
@@ -394,6 +402,7 @@ impl PassportElementErrorTranslationFiles {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorTranslationFilesType) -> Self {
         self.r#type = val;
         self
@@ -434,6 +443,7 @@ impl PassportElementErrorUnspecified {
         }
     }
 
+    #[must_use]
     pub fn r#type(mut self, val: PassportElementErrorUnspecifiedType) -> Self {
         self.r#type = val;
         self

@@ -11,6 +11,7 @@ pub struct UserId(pub u64);
 impl UserId {
     /// Returns an URL that links to the user with this id in the form of
     /// `tg://user/?id=<...>`.
+    #[must_use]
     pub fn url(self) -> reqwest::Url {
         reqwest::Url::parse(&format!("tg://user/?id={}", self)).unwrap()
     }
@@ -18,6 +19,7 @@ impl UserId {
     /// Returns `true` if this is the id of the special user used by telegram
     /// bot API to denote an anonymous user that sends messages on behalf of
     /// a group.
+    #[must_use]
     pub fn is_anonymous(self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4941-L4943
         const ANON_ID: UserId = UserId(1087968824);
@@ -28,6 +30,7 @@ impl UserId {
     /// Returns `true` if this is the id of the special user used by telegram
     /// bot API to denote an anonymous user that sends messages on behalf of
     /// a channel.
+    #[must_use]
     pub fn is_channel(self) -> bool {
         // https://github.com/tdlib/td/blob/4791fb6a2af0257f6cad8396e10424a79ee5f768/td/telegram/ContactsManager.cpp#L4945-L4947
         const ANON_CHANNEL_ID: UserId = UserId(136817688);
@@ -41,6 +44,7 @@ impl UserId {
     /// It is sometimes also used as a fallback, for example when a channel post
     /// is automatically forwarded to a group, bots in a group will get a
     /// message where `from` is the Telegram user.
+    #[must_use]
     pub fn is_telegram(self) -> bool {
         const TELEGRAM_USER_ID: UserId = UserId(777000);
 

@@ -87,6 +87,7 @@ impl InlineQueryResultDocument {
         self
     }
 
+    #[must_use]
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
@@ -100,11 +101,13 @@ impl InlineQueryResultDocument {
         self
     }
 
+    #[must_use]
     pub fn document_url(mut self, val: reqwest::Url) -> Self {
         self.document_url = val;
         self
     }
 
+    #[must_use]
     pub fn mime_type(mut self, val: Mime) -> Self {
         self.mime_type = val;
         self
@@ -118,26 +121,31 @@ impl InlineQueryResultDocument {
         self
     }
 
+    #[must_use]
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self
     }
 
+    #[must_use]
     pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
         self.input_message_content = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
         self.thumb_url = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_width(mut self, val: i32) -> Self {
         self.thumb_width = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_height(mut self, val: i32) -> Self {
         self.thumb_height = Some(val);
         self

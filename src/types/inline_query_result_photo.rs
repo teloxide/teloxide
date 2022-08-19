@@ -87,21 +87,25 @@ impl InlineQueryResultPhoto {
         self
     }
 
+    #[must_use]
     pub fn photo_url(mut self, val: reqwest::Url) -> Self {
         self.photo_url = val;
         self
     }
 
+    #[must_use]
     pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
         self.thumb_url = val;
         self
     }
 
+    #[must_use]
     pub fn photo_width(mut self, val: i32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
+    #[must_use]
     pub fn photo_height(mut self, val: i32) -> Self {
         self.photo_height = Some(val);
         self
@@ -131,6 +135,7 @@ impl InlineQueryResultPhoto {
         self
     }
 
+    #[must_use]
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
@@ -144,11 +149,13 @@ impl InlineQueryResultPhoto {
         self
     }
 
+    #[must_use]
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self
     }
 
+    #[must_use]
     pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
         self.input_message_content = Some(val);
         self

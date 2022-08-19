@@ -87,26 +87,31 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
+    #[must_use]
     pub fn mpeg4_url(mut self, val: reqwest::Url) -> Self {
         self.mpeg4_url = val;
         self
     }
 
+    #[must_use]
     pub fn mpeg4_width(mut self, val: i32) -> Self {
         self.mpeg4_width = Some(val);
         self
     }
 
+    #[must_use]
     pub fn mpeg4_height(mut self, val: i32) -> Self {
         self.mpeg4_height = Some(val);
         self
     }
 
+    #[must_use]
     pub fn mpeg4_duration(mut self, val: i32) -> Self {
         self.mpeg4_duration = Some(val);
         self
     }
 
+    #[must_use]
     pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
         self.thumb_url = val;
         self
@@ -128,6 +133,7 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
+    #[must_use]
     pub fn parse_mode(mut self, val: ParseMode) -> Self {
         self.parse_mode = Some(val);
         self
@@ -141,11 +147,13 @@ impl InlineQueryResultMpeg4Gif {
         self
     }
 
+    #[must_use]
     pub fn reply_markup(mut self, val: InlineKeyboardMarkup) -> Self {
         self.reply_markup = Some(val);
         self
     }
 
+    #[must_use]
     pub fn input_message_content(mut self, val: InputMessageContent) -> Self {
         self.input_message_content = Some(val);
         self

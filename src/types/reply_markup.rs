@@ -50,6 +50,7 @@ impl ReplyMarkup {
     /// `ReplyMarkup::KeyboardRemove(ReplyKeyboardRemove::new()))`.
     ///
     /// [`KeyboardRemove`]: ReplyMarkup::KeyboardRemove
+    #[must_use]
     pub fn kb_remove() -> Self {
         Self::KeyboardRemove(KeyboardRemove::new())
     }
@@ -59,6 +60,7 @@ impl ReplyMarkup {
     /// This is a shortcut to `ReplyMarkup::ForceReply(ForceReply::new())`.
     ///
     /// [`ForceReply`]: ReplyMarkup::KeyboardRemove
+    #[must_use]
     pub fn force_reply() -> Self {
         Self::ForceReply(ForceReply::new())
     }

@@ -60,11 +60,13 @@ impl InlineQuery {
         self
     }
 
+    #[must_use]
     pub fn from(mut self, val: User) -> Self {
         self.from = val;
         self
     }
 
+    #[must_use]
     pub fn location(mut self, val: Location) -> Self {
         self.location = Some(val);
         self

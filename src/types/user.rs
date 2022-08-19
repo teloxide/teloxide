@@ -40,27 +40,31 @@ pub struct User {
 impl User {
     /// Returns full name of this user, ie first and last names joined with a
     /// space.
+    #[must_use]
     pub fn full_name(&self) -> String {
         match &self.last_name {
-            Some(last_name) => (format!("{0} {1}", self.first_name, last_name)),
+            Some(last_name) => format!("{0} {1}", self.first_name, last_name),
             None => self.first_name.clone(),
         }
     }
 
     /// Returns a username mention of this user. Returns `None` if
     /// `self.username.is_none()`.
+    #[must_use]
     pub fn mention(&self) -> Option<String> {
         Some(format!("@{}", self.username.as_ref()?))
     }
 
     /// Returns an URL that links to this user in the form of
     /// `tg://user/?id=<...>`.
+    #[must_use]
     pub fn url(&self) -> reqwest::Url {
         self.id.url()
     }
 
     /// Returns an URL that links to this user in the form of `t.me/<...>`.
     /// Returns `None` if `self.username.is_none()`.
+    #[must_use]
     pub fn tme_url(&self) -> Option<reqwest::Url> {
         Some(
             format!("https://t.me/{}", self.username.as_ref()?)
@@ -71,12 +75,14 @@ impl User {
 
     /// Returns an URL that links to this user in the form of `t.me/<...>` or
     /// `tg://user/?id=<...>`, preferring `t.me` one when possible.
+    #[must_use]
     pub fn preferably_tme_url(&self) -> reqwest::Url {
         self.tme_url().unwrap_or_else(|| self.url())
     }
 
     /// Returns `true` if this is the special user used by telegram bot API to
     /// denote an anonymous user that sends messages on behalf of a group.
+    #[must_use]
     pub fn is_anonymous(&self) -> bool {
         // Sanity check
         debug_assert!(
@@ -92,6 +98,7 @@ impl User {
 
     /// Returns `true` if this is the special user used by telegram bot API to
     /// denote an anonymous user that sends messages on behalf of a channel.
+    #[must_use]
     pub fn is_channel(&self) -> bool {
         // Sanity check
         debug_assert!(
@@ -110,6 +117,7 @@ impl User {
     /// It is sometimes also used as a fallback, for example when a channel post
     /// is automatically forwarded to a group, bots in a group will get a
     /// message where `from` is the Telegram user.
+    #[must_use]
     pub fn is_telegram(&self) -> bool {
         // Sanity check
         debug_assert!(

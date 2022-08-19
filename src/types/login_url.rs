@@ -46,6 +46,7 @@ pub struct LoginUrl {
 }
 
 impl LoginUrl {
+    #[must_use]
     pub fn url(mut self, val: reqwest::Url) -> Self {
         self.url = val;
         self
@@ -67,6 +68,7 @@ impl LoginUrl {
         self
     }
 
+    #[must_use]
     pub fn request_write_access(mut self, val: bool) -> Self {
         self.request_write_access = Some(val);
         self

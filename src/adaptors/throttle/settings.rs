@@ -21,6 +21,7 @@ type BoxedFuture = Pin<Box<dyn Future<Output = ()> + Send>>;
 /// ```
 ///
 /// [`Throttle`]: crate::adaptors::throttle::Throttle
+#[must_use]
 #[non_exhaustive]
 pub struct Settings {
     pub limits: Limits,

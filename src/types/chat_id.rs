@@ -31,6 +31,7 @@ pub(crate) enum BareChatId {
 
 impl ChatId {
     /// Returns `true` if this is an id of a user.
+    #[must_use]
     pub fn is_user(self) -> bool {
         matches!(self.to_bare(), BareChatId::User(_))
     }
@@ -38,11 +39,13 @@ impl ChatId {
     /// Returns `true` if this is an id of a group.
     ///
     /// Note: supergroup is **not** considered a group.
+    #[must_use]
     pub fn is_group(self) -> bool {
         matches!(self.to_bare(), BareChatId::Group(_))
     }
 
     /// Returns `true` if this is an id of a channel.
+    #[must_use]
     pub fn is_channel_or_supergroup(self) -> bool {
         matches!(self.to_bare(), BareChatId::Channel(_))
     }

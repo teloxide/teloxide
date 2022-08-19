@@ -38,6 +38,7 @@ pub struct KeyboardRemove {
 }
 
 impl KeyboardRemove {
+    #[must_use]
     pub const fn new() -> Self {
         Self {
             remove_keyboard: True,
@@ -45,6 +46,7 @@ impl KeyboardRemove {
         }
     }
 
+    #[must_use]
     pub const fn selective(mut self, val: bool) -> Self {
         self.selective = Some(val);
         self
