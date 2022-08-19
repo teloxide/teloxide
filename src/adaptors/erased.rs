@@ -10,7 +10,6 @@ use crate::{
 };
 
 /// [`Requester`] with erased type.
-#[derive(Clone)]
 pub struct ErasedRequester<'a, E> {
     inner: Arc<dyn ErasableRequester<'a, Err = E> + 'a>,
 }
@@ -34,6 +33,15 @@ impl<'a, E> ErasedRequester<'a, E> {
 impl<E> std::fmt::Debug for ErasedRequester<'_, E> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.debug_struct("ErasedRequester").finish_non_exhaustive()
+    }
+}
+
+// NB. hand-written impl to avoid `E: Clone` bound
+impl<E> Clone for ErasedRequester<'_, E> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: Arc::clone(&self.inner),
+        }
     }
 }
 
