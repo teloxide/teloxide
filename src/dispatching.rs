@@ -153,12 +153,12 @@
 //! </details>
 //!
 //! Each parameter is supplied as a dependency by teloxide. In particular:
-//!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below);
-//!  - `msg: Message` comes from [`Update::filter_message`];
-//!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`];
-//!  - `dialogue: MyDialogue` comes from [`dialogue::enter`];
+//!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below)
+//!  - `msg: Message` comes from [`Update::filter_message`]
+//!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`]
+//!  - `dialogue: MyDialogue` comes from [`dialogue::enter`]
 //!  - `full_name: String` comes from `dptree::case![State::ReceiveProductChoice
-//!    { full_name }]`.
+//!    { full_name }]`
 //!
 //! Inside `main`, we plug the schema into [`Dispatcher`] like this:
 //!
@@ -199,13 +199,13 @@
 //! bit more complicated setup.
 //!
 //! Here are things that dispatching can do, but REPLs can't:
-//!  - Handle different kinds of [`Update`];
-//!  - [Pass dependencies] to handlers;
-//!  - Disable a [default Ctrl-C handling];
-//!  - Control your [default] and [error] handlers;
-//!  - Use [dialogues].
-//!  - Use [`dptree`]-related functionality.
-//!  - Probably more.
+//!  - Handle different kinds of [`Update`]
+//!  - [Pass dependencies] to handlers
+//!  - Disable a [default Ctrl-C handling]
+//!  - Control your [default] and [error] handlers
+//!  - Use [dialogues]
+//!  - Use [`dptree`]-related functionality
+//!  - Probably more
 //!
 //! Thus, REPLs are good for simple bots and rapid prototyping, but for more
 //! involved scenarios, we recommend using dispatching over REPLs.

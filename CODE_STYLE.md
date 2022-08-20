@@ -42,7 +42,31 @@ Good:
 pub fn make_request(url: &str) -> String { ... }
 ```
 
- 2. Also, link resources in your comments when possible:
+ 2. Do not use ending punctuation in short list items (usually containing just one phrase or sentence). Bad:
+
+```md
+ - Handle different kinds of Update.
+ - Pass dependencies to handlers.
+ - Disable a default Ctrl-C handling.
+```
+
+Bad:
+
+```md
+ - Handle different kinds of Update;
+ - Pass dependencies to handlers;
+ - Disable a default Ctrl-C handling.
+```
+
+Good:
+
+```md
+ - Handle different kinds of Update
+ - Pass dependencies to handlers
+ - Disable a default Ctrl-C handling
+```
+
+ 3. Link resources in your comments when possible:
 
 ```rust
 /// Download a file from Telegram.
