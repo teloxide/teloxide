@@ -29,7 +29,7 @@ use teloxide_core::requests::Requester;
 ///
 /// ## Dependency requirements
 ///
-///  - Those of [`HandlerExt::filter_command`].
+///  - Those of [`HandlerExt::filter_command`]
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
@@ -72,7 +72,7 @@ where
 ///
 /// ## Dependency requirements
 ///
-///  - Those of [`HandlerExt::filter_command`].
+///  - Those of [`HandlerExt::filter_command`]
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 /// [`commands_repl`]: crate::dispatching::repls::commands_repl()
