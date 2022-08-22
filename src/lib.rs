@@ -11,7 +11,7 @@ extern crate proc_macro;
 extern crate quote;
 extern crate syn;
 use crate::{
-    attr::{CommandAttr, CommandAttrs},
+    attr::CommandAttrs,
     command::Command,
     command_enum::CommandEnum,
     fields_parse::{impl_parse_args_named, impl_parse_args_unnamed},
@@ -31,28 +31,23 @@ fn bot_commands_impl(tokens: TokenStream) -> Result<TokenStream, Error> {
     let input = syn::parse_macro_input::parse::<DeriveInput>(tokens)?;
 
     let data_enum: &syn::DataEnum = get_enum_data(&input)?;
-    let enum_attrs: Vec<CommandAttr> = parse_attributes(&input.attrs)?;
-    let command_enum = CommandEnum::try_from(enum_attrs.as_slice())?;
+    let enum_attrs = CommandAttrs::from_attributes(&input.attrs)?;
+    let command_enum = CommandEnum::try_from(enum_attrs)?;
 
-    let variants: Vec<&syn::Variant> = data_enum.variants.iter().collect();
+    let variant_infos = data_enum
+        .variants
+        .iter()
+        .map(|variant| {
+            let attrs = CommandAttrs::from_attributes(&variant.attrs)?;
+            let command = Command::try_from(attrs, &variant.ident.to_string())?;
 
-    let mut variant_infos = vec![];
-    for variant in variants.iter() {
-        let mut attrs = Vec::new();
-        for attr in &variant.attrs {
-            let attrs_ = attr
-                .parse_args::<CommandAttrs>()
-                .map_err(|e| compile_error(e.to_compile_error()))?;
-            attrs.extend(attrs_);
-        }
-        let command =
-            Command::try_from(attrs.as_slice(), &variant.ident.to_string())?;
-
-        variant_infos.push(command);
-    }
+            Ok(command)
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
 
     let mut vec_impl_create = vec![];
-    for (variant, info) in variants.iter().zip(variant_infos.iter()) {
+
+    for (variant, info) in data_enum.variants.iter().zip(variant_infos.iter()) {
         let var = &variant.ident;
         let variant_ = quote! { Self::#var };
         match &variant.fields {
@@ -181,19 +176,4 @@ fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum> {
         syn::Data::Enum(data) => Ok(data),
         _ => Err(compile_error("TelegramBotCommand allowed only for enums")),
     }
-}
-
-fn parse_attributes(input: &[syn::Attribute]) -> Result<Vec<CommandAttr>> {
-    let mut enum_attrs = Vec::new();
-    for attr in input.iter() {
-        match attr.parse_args::<CommandAttrs>() {
-            Ok(attrs) => {
-                enum_attrs.extend(attrs);
-            }
-            Err(e) => {
-                return Err(compile_error(e.to_compile_error()));
-            }
-        }
-    }
-    Ok(enum_attrs)
 }

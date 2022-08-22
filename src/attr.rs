@@ -1,8 +1,9 @@
 use syn::{
-    parse::{Parse, ParseStream},
-    punctuated::Punctuated,
-    LitStr, Token,
+    parse::{Parse, ParseBuffer, ParseStream},
+    Attribute, LitStr, Token,
 };
+
+use crate::Result;
 
 pub(crate) enum CommandAttrName {
     Prefix,
@@ -49,20 +50,47 @@ impl Parse for CommandAttr {
     }
 }
 
-pub(crate) struct CommandAttrs(Punctuated<CommandAttr, Token![,]>);
+pub(crate) struct CommandAttrs(Vec<CommandAttr>);
 
-impl Parse for CommandAttrs {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        input.parse_terminated(CommandAttr::parse).map(Self)
+impl CommandAttrs {
+    pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
+        let mut attrs = Vec::new();
+
+        for attribute in attributes.iter().filter(is_command_attribute) {
+            let attrs_ = attribute.parse_args_with(|input: &ParseBuffer| {
+                input.parse_terminated::<_, Token![,]>(CommandAttr::parse)
+            })?;
+
+            attrs.extend(attrs_);
+        }
+
+        Ok(Self(attrs))
+    }
+}
+
+impl<'a> IntoIterator for &'a CommandAttrs {
+    type Item = &'a CommandAttr;
+
+    type IntoIter = std::slice::Iter<'a, CommandAttr>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
     }
 }
 
 impl IntoIterator for CommandAttrs {
     type Item = CommandAttr;
 
-    type IntoIter = syn::punctuated::IntoIter<CommandAttr>;
+    type IntoIter = std::vec::IntoIter<CommandAttr>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+fn is_command_attribute(a: &&Attribute) -> bool {
+    match a.path.get_ident() {
+        Some(ident) => ident == "command",
+        _ => false,
     }
 }
