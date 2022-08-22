@@ -1,5 +1,5 @@
 use crate::{
-    attr::{Attr, BotCommandAttribute},
+    attr::{CommandAttr, CommandAttrName},
     command_enum::CommandEnum,
     fields_parse::ParserType,
     rename_rules::RenameRule,
@@ -14,7 +14,7 @@ pub(crate) struct Command {
 }
 
 impl Command {
-    pub fn try_from(attrs: &[Attr], name: &str) -> Result<Self> {
+    pub fn try_from(attrs: &[CommandAttr], name: &str) -> Result<Self> {
         let attrs = parse_attrs(attrs)?;
         let CommandAttrs {
             prefix,
@@ -65,26 +65,22 @@ pub(crate) struct CommandAttrs {
     pub separator: Option<String>,
 }
 
-pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {
+pub(crate) fn parse_attrs(attrs: &[CommandAttr]) -> Result<CommandAttrs> {
     let mut prefix = None;
     let mut description = None;
     let mut rename_rule = RenameRule::Identity;
     let mut parser = None;
     let mut separator = None;
 
-    for attr in attrs {
-        match attr.name() {
-            BotCommandAttribute::Prefix => prefix = Some(attr.value()),
-            BotCommandAttribute::Description => {
-                description = Some(attr.value())
+    for CommandAttr { name, value } in attrs {
+        match name {
+            CommandAttrName::Prefix => prefix = Some(value.clone()),
+            CommandAttrName::Description => description = Some(value.clone()),
+            CommandAttrName::Rename => rename_rule = RenameRule::parse(value)?,
+            CommandAttrName::ParseWith => {
+                parser = Some(ParserType::parse(value))
             }
-            BotCommandAttribute::RenameRule => {
-                rename_rule = RenameRule::parse(&attr.value())?
-            }
-            BotCommandAttribute::CustomParser => {
-                parser = Some(ParserType::parse(&attr.value()))
-            }
-            BotCommandAttribute::Separator => separator = Some(attr.value()),
+            CommandAttrName::Separator => separator = Some(value.clone()),
         }
     }
 

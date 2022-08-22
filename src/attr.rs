@@ -1,38 +1,47 @@
 use syn::{
     parse::{Parse, ParseStream},
+    punctuated::Punctuated,
     LitStr, Token,
 };
 
-pub(crate) enum BotCommandAttribute {
+pub(crate) enum CommandAttrName {
     Prefix,
     Description,
-    RenameRule,
-    CustomParser,
+    Rename,
+    ParseWith,
     Separator,
 }
 
-impl Parse for BotCommandAttribute {
-    fn parse(input: ParseStream) -> Result<Self, syn::Error> {
+impl Parse for CommandAttrName {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
         let name_arg: syn::Ident = input.parse()?;
+
         match name_arg.to_string().as_str() {
-            "prefix" => Ok(BotCommandAttribute::Prefix),
-            "description" => Ok(BotCommandAttribute::Description),
-            "rename" => Ok(BotCommandAttribute::RenameRule),
-            "parse_with" => Ok(BotCommandAttribute::CustomParser),
-            "separator" => Ok(BotCommandAttribute::Separator),
-            _ => Err(syn::Error::new(name_arg.span(), "unexpected argument")),
+            "prefix" => Ok(CommandAttrName::Prefix),
+            "description" => Ok(CommandAttrName::Description),
+            "rename" => Ok(CommandAttrName::Rename),
+            "parse_with" => Ok(CommandAttrName::ParseWith),
+            "separator" => Ok(CommandAttrName::Separator),
+            _ => Err(syn::Error::new(
+                name_arg.span(),
+                "unexpected attribute name (expected one of `prefix`, \
+                 `description`, `rename`, `parse_with`, `separator`",
+            )),
         }
     }
 }
 
-pub(crate) struct Attr {
-    name: BotCommandAttribute,
-    value: String,
+pub(crate) struct CommandAttr {
+    pub name: CommandAttrName,
+    pub value: String,
 }
 
-impl Parse for Attr {
-    fn parse(input: ParseStream) -> Result<Self, syn::Error> {
-        let name = input.parse::<BotCommandAttribute>()?;
+impl Parse for CommandAttr {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let name = input.parse::<CommandAttrName>()?;
+
+        // FIXME: this should support value-less attrs, as well as
+        //        non-string-literal values
         input.parse::<Token![=]>()?;
         let value = input.parse::<LitStr>()?.value();
 
@@ -40,29 +49,20 @@ impl Parse for Attr {
     }
 }
 
-impl Attr {
-    pub fn name(&self) -> &BotCommandAttribute {
-        &self.name
-    }
+pub(crate) struct CommandAttrs(Punctuated<CommandAttr, Token![,]>);
 
-    pub fn value(&self) -> String {
-        self.value.clone()
+impl Parse for CommandAttrs {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        input.parse_terminated(CommandAttr::parse).map(Self)
     }
 }
 
-pub(crate) struct VecAttrs {
-    pub data: Vec<Attr>,
-}
+impl IntoIterator for CommandAttrs {
+    type Item = CommandAttr;
 
-impl Parse for VecAttrs {
-    fn parse(input: ParseStream) -> Result<Self, syn::Error> {
-        let mut data = vec![];
-        while !input.is_empty() {
-            data.push(input.parse()?);
-            if !input.is_empty() {
-                input.parse::<Token![,]>()?;
-            }
-        }
-        Ok(Self { data })
+    type IntoIter = syn::punctuated::IntoIter<CommandAttr>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }

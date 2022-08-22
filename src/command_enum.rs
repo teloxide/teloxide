@@ -1,5 +1,5 @@
 use crate::{
-    attr::Attr, command::parse_attrs, fields_parse::ParserType,
+    attr::CommandAttr, command::parse_attrs, fields_parse::ParserType,
     rename_rules::RenameRule, Result,
 };
 
@@ -12,7 +12,7 @@ pub(crate) struct CommandEnum {
 }
 
 impl CommandEnum {
-    pub fn try_from(attrs: &[Attr]) -> Result<Self> {
+    pub fn try_from(attrs: &[CommandAttr]) -> Result<Self> {
         let attrs = parse_attrs(attrs)?;
 
         let prefix = attrs.prefix;
