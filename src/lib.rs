@@ -54,22 +54,22 @@ fn bot_commands_impl(tokens: TokenStream) -> Result<TokenStream, Error> {
     let mut vec_impl_create = vec![];
     for (variant, info) in variants.iter().zip(variant_infos.iter()) {
         let var = &variant.ident;
-        let variantt = quote! { Self::#var };
+        let variant_ = quote! { Self::#var };
         match &variant.fields {
             Fields::Unnamed(fields) => {
                 let parser =
                     info.parser.as_ref().unwrap_or(&command_enum.parser_type);
                 vec_impl_create
-                    .push(impl_parse_args_unnamed(fields, variantt, parser));
+                    .push(impl_parse_args_unnamed(fields, variant_, parser));
             }
             Fields::Unit => {
-                vec_impl_create.push(variantt);
+                vec_impl_create.push(variant_);
             }
             Fields::Named(named) => {
                 let parser =
                     info.parser.as_ref().unwrap_or(&command_enum.parser_type);
                 vec_impl_create
-                    .push(impl_parse_args_named(named, variantt, parser));
+                    .push(impl_parse_args_named(named, variant_, parser));
             }
         }
     }
@@ -156,9 +156,9 @@ fn impl_parse(
               use teloxide::utils::command::ParseError;
 
               let mut words = s.splitn(2, ' ');
-              let mut splited = words.next().expect("First item will be always.").split('@');
-              let command_raw = splited.next().expect("First item will be always.");
-              let bot = splited.next();
+              let mut splitted = words.next().expect("First item will be always.").split('@');
+              let command_raw = splitted.next().expect("First item will be always.");
+              let bot = splitted.next();
               let bot_name = bot_name.into();
               match bot {
                   Some(name) if name.eq_ignore_ascii_case(&bot_name) => {}

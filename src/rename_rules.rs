@@ -82,10 +82,10 @@ mod tests {
     use super::*;
 
     macro_rules! test_eq {
-        ($lval:expr => $rval:expr) => {
+        ($input:expr => $output:expr) => {
             let rule = RenameRule::parse(TYPE).unwrap();
 
-            assert_eq!(rule.apply($lval), $rval);
+            assert_eq!(rule.apply($input), $output);
         };
     }
 
