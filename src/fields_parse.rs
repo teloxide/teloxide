@@ -24,7 +24,7 @@ pub fn impl_parse_args_unnamed(
     data: &FieldsUnnamed,
     variant: impl ToTokens,
     parser_type: &ParserType,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let get_arguments = create_parser(
         parser_type,
         data.unnamed.iter().map(|f| &f.ty),
@@ -48,7 +48,7 @@ pub fn impl_parse_args_named(
     data: &FieldsNamed,
     variant: impl ToTokens,
     parser_type: &ParserType,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let get_arguments = create_parser(
         parser_type,
         data.named.iter().map(|f| &f.ty),
@@ -69,7 +69,7 @@ fn create_parser<'a>(
     parser_type: &ParserType,
     mut types: impl Iterator<Item = &'a Type>,
     count_args: usize,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let function_to_parse = match parser_type {
         ParserType::Default => match count_args {
             1 => {
@@ -104,7 +104,7 @@ fn parser_with_separator<'a>(
     separator: &str,
     types: impl Iterator<Item = &'a Type>,
     count_args: usize,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let inner = quote! { let mut splited = s.split(#separator); };
     let i = 0..count_args;
     let inner2 = quote! {

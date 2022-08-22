@@ -94,7 +94,7 @@ fn bot_commands_impl(tokens: TokenStream) -> Result<TokenStream, TokenStream> {
 fn impl_commands(
     infos: &[Command],
     global: &CommandEnum,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let commands_to_list = infos.iter().filter_map(|command| {
         if command.description == Some("off".into()) {
             None
@@ -115,7 +115,7 @@ fn impl_commands(
 fn impl_descriptions(
     infos: &[Command],
     global: &CommandEnum,
-) -> quote::__private::TokenStream {
+) -> proc_macro2::TokenStream {
     let command_descriptions = infos.iter().filter_map(|c| {
         let (prefix, command) = c.get_matched_value2(global);
         let description = c.description.clone().unwrap_or_default();
@@ -143,8 +143,8 @@ fn impl_descriptions(
 fn impl_parse(
     infos: &[Command],
     global: &CommandEnum,
-    variants_initialization: &[quote::__private::TokenStream],
-) -> quote::__private::TokenStream {
+    variants_initialization: &[proc_macro2::TokenStream],
+) -> proc_macro2::TokenStream {
     let matching_values = infos.iter().map(|c| c.get_matched_value(global));
 
     quote! {
