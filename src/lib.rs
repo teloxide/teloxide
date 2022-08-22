@@ -17,29 +17,21 @@ use crate::{
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Fields};
-
-macro_rules! get_or_return {
-    ($($some:tt)*) => {
-        match $($some)* {
-            Ok(elem) => elem,
-            Err(e) => return e
-        }
-    }
-}
+use syn::{DeriveInput, Fields};
 
 #[proc_macro_derive(BotCommands, attributes(command))]
-pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(tokens as DeriveInput);
+pub fn bot_commands_derive(tokens: TokenStream) -> TokenStream {
+    bot_commands_impl(tokens).unwrap_or_else(|err| err)
+}
 
-    let data_enum: &syn::DataEnum = get_or_return!(get_enum_data(&input));
+fn bot_commands_impl(tokens: TokenStream) -> Result<TokenStream, TokenStream> {
+    let input = syn::parse_macro_input::parse::<DeriveInput>(tokens)
+        .map_err(|e| compile_error(e.to_compile_error()))?;
 
-    let enum_attrs: Vec<Attr> = get_or_return!(parse_attributes(&input.attrs));
-
-    let command_enum = match CommandEnum::try_from(enum_attrs.as_slice()) {
-        Ok(command_enum) => command_enum,
-        Err(e) => return compile_error(e),
-    };
+    let data_enum: &syn::DataEnum = get_enum_data(&input)?;
+    let enum_attrs: Vec<Attr> = parse_attributes(&input.attrs)?;
+    let command_enum =
+        CommandEnum::try_from(enum_attrs.as_slice()).map_err(compile_error)?;
 
     let variants: Vec<&syn::Variant> = data_enum.variants.iter().collect();
 
@@ -47,19 +39,16 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
     for variant in variants.iter() {
         let mut attrs = Vec::new();
         for attr in &variant.attrs {
-            match attr.parse_args::<VecAttrs>() {
-                Ok(mut attrs_) => {
-                    attrs.append(attrs_.data.as_mut());
-                }
-                Err(e) => {
-                    return compile_error(e.to_compile_error());
-                }
-            }
+            let mut attrs_ = attr
+                .parse_args::<VecAttrs>()
+                .map_err(|e| compile_error(e.to_compile_error()))?;
+            attrs.append(attrs_.data.as_mut());
         }
-        match Command::try_from(attrs.as_slice(), &variant.ident.to_string()) {
-            Ok(command) => variant_infos.push(command),
-            Err(e) => return compile_error(e),
-        }
+        let command =
+            Command::try_from(attrs.as_slice(), &variant.ident.to_string())
+                .map_err(compile_error)?;
+
+        variant_infos.push(command);
     }
 
     let mut vec_impl_create = vec![];
@@ -99,7 +88,7 @@ pub fn derive_telegram_command_enum(tokens: TokenStream) -> TokenStream {
         }
     };
 
-    TokenStream::from(trait_impl)
+    Ok(TokenStream::from(trait_impl))
 }
 
 fn impl_commands(
