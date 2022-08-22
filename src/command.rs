@@ -66,11 +66,11 @@ impl Command {
 }
 
 pub(crate) struct CommandAttrs {
-    pub(crate) prefix: Option<String>,
-    pub(crate) description: Option<String>,
-    pub(crate) rename: Option<String>,
-    pub(crate) parser: Option<ParserType>,
-    pub(crate) separator: Option<String>,
+    pub prefix: Option<String>,
+    pub description: Option<String>,
+    pub rename: Option<String>,
+    pub parser: Option<ParserType>,
+    pub separator: Option<String>,
 }
 
 pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {

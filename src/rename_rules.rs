@@ -11,7 +11,7 @@ use heck::{
 /// The possible `rule` can be: `lowercase`, `UPPERCASE`, `PascalCase`,
 /// `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`,
 /// `SCREAMING-KEBAB-CASE`. See tests for the details how it will work.
-pub fn rename_by_rule(input: &str, rule: &str) -> String {
+pub(crate) fn rename_by_rule(input: &str, rule: &str) -> String {
     match rule {
         "lowercase" => input.to_lowercase(),
         "UPPERCASE" => input.to_uppercase(),

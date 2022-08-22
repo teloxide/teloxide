@@ -3,7 +3,7 @@ use syn::{
     LitStr, Token,
 };
 
-pub enum BotCommandAttribute {
+pub(crate) enum BotCommandAttribute {
     Prefix,
     Description,
     RenameRule,
@@ -25,7 +25,7 @@ impl Parse for BotCommandAttribute {
     }
 }
 
-pub struct Attr {
+pub(crate) struct Attr {
     name: BotCommandAttribute,
     value: String,
 }
@@ -50,7 +50,7 @@ impl Attr {
     }
 }
 
-pub struct VecAttrs {
+pub(crate) struct VecAttrs {
     pub data: Vec<Attr>,
 }
 

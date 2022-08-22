@@ -4,7 +4,7 @@ use quote::{quote, ToTokens};
 use syn::{FieldsNamed, FieldsUnnamed, Type};
 
 #[derive(Debug)]
-pub enum ParserType {
+pub(crate) enum ParserType {
     Default,
     Split { separator: Option<String> },
     Custom(String),
@@ -20,7 +20,7 @@ impl ParserType {
     }
 }
 
-pub fn impl_parse_args_unnamed(
+pub(crate) fn impl_parse_args_unnamed(
     data: &FieldsUnnamed,
     variant: impl ToTokens,
     parser_type: &ParserType,
@@ -44,7 +44,7 @@ pub fn impl_parse_args_unnamed(
     res
 }
 
-pub fn impl_parse_args_named(
+pub(crate) fn impl_parse_args_named(
     data: &FieldsNamed,
     variant: impl ToTokens,
     parser_type: &ParserType,
