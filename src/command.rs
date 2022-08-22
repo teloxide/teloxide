@@ -2,7 +2,7 @@ use crate::{
     attr::{Attr, BotCommandAttribute},
     command_enum::CommandEnum,
     fields_parse::ParserType,
-    rename_rules::rename_by_rule,
+    rename_rules::RenameRule,
     Result,
 };
 
@@ -11,24 +11,22 @@ pub(crate) struct Command {
     pub description: Option<String>,
     pub parser: Option<ParserType>,
     pub name: String,
-    pub renamed: bool,
 }
 
 impl Command {
     pub fn try_from(attrs: &[Attr], name: &str) -> Result<Self> {
         let attrs = parse_attrs(attrs)?;
-        let mut new_name = name.to_string();
-        let mut renamed = false;
+        let CommandAttrs {
+            prefix,
+            description,
+            rename_rule,
+            parser,
+            separator: _,
+        } = attrs;
 
-        let prefix = attrs.prefix;
-        let description = attrs.description;
-        let rename = attrs.rename;
-        let parser = attrs.parser;
-        if let Some(rename_rule) = rename {
-            new_name = rename_by_rule(name, &rename_rule);
-            renamed = true;
-        }
-        Ok(Self { prefix, description, parser, name: new_name, renamed })
+        let name = rename_rule.apply(name);
+
+        Ok(Self { prefix, description, parser, name })
     }
 
     pub fn get_matched_value(&self, global_parameters: &CommandEnum) -> String {
@@ -39,11 +37,8 @@ impl Command {
         } else {
             "/"
         };
-        if let Some(rule) = &global_parameters.rename_rule {
-            String::from(prefix) + &rename_by_rule(&self.name, rule.as_str())
-        } else {
-            String::from(prefix) + &self.name
-        }
+
+        String::from(prefix) + &global_parameters.rename_rule.apply(&self.name)
     }
 
     pub fn get_matched_value2(
@@ -57,18 +52,15 @@ impl Command {
         } else {
             "/"
         };
-        if let Some(rule) = &global_parameters.rename_rule {
-            (String::from(prefix), rename_by_rule(&self.name, rule.as_str()))
-        } else {
-            (String::from(prefix), self.name.clone())
-        }
+
+        (String::from(prefix), global_parameters.rename_rule.apply(&self.name))
     }
 }
 
 pub(crate) struct CommandAttrs {
     pub prefix: Option<String>,
     pub description: Option<String>,
-    pub rename: Option<String>,
+    pub rename_rule: RenameRule,
     pub parser: Option<ParserType>,
     pub separator: Option<String>,
 }
@@ -76,7 +68,7 @@ pub(crate) struct CommandAttrs {
 pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {
     let mut prefix = None;
     let mut description = None;
-    let mut rename_rule = None;
+    let mut rename_rule = RenameRule::Identity;
     let mut parser = None;
     let mut separator = None;
 
@@ -86,7 +78,9 @@ pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {
             BotCommandAttribute::Description => {
                 description = Some(attr.value())
             }
-            BotCommandAttribute::RenameRule => rename_rule = Some(attr.value()),
+            BotCommandAttribute::RenameRule => {
+                rename_rule = RenameRule::parse(&attr.value())?
+            }
             BotCommandAttribute::CustomParser => {
                 parser = Some(ParserType::parse(&attr.value()))
             }
@@ -94,11 +88,5 @@ pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {
         }
     }
 
-    Ok(CommandAttrs {
-        prefix,
-        description,
-        rename: rename_rule,
-        parser,
-        separator,
-    })
+    Ok(CommandAttrs { prefix, description, rename_rule, parser, separator })
 }
