@@ -3,9 +3,10 @@ use crate::{
     command_enum::CommandEnum,
     fields_parse::ParserType,
     rename_rules::rename_by_rule,
+    Result,
 };
 
-pub struct Command {
+pub(crate) struct Command {
     pub prefix: Option<String>,
     pub description: Option<String>,
     pub parser: Option<ParserType>,
@@ -14,7 +15,7 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn try_from(attrs: &[Attr], name: &str) -> Result<Self, String> {
+    pub fn try_from(attrs: &[Attr], name: &str) -> Result<Self> {
         let attrs = parse_attrs(attrs)?;
         let mut new_name = name.to_string();
         let mut renamed = false;
@@ -64,7 +65,7 @@ impl Command {
     }
 }
 
-pub struct CommandAttrs {
+pub(crate) struct CommandAttrs {
     pub(crate) prefix: Option<String>,
     pub(crate) description: Option<String>,
     pub(crate) rename: Option<String>,
@@ -72,7 +73,7 @@ pub struct CommandAttrs {
     pub(crate) separator: Option<String>,
 }
 
-pub fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs, String> {
+pub(crate) fn parse_attrs(attrs: &[Attr]) -> Result<CommandAttrs> {
     let mut prefix = None;
     let mut description = None;
     let mut rename_rule = None;

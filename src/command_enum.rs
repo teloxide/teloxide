@@ -1,7 +1,10 @@
-use crate::{attr::Attr, command::parse_attrs, fields_parse::ParserType};
+use crate::{
+    attr::Attr, command::parse_attrs, error::compile_error,
+    fields_parse::ParserType, Result,
+};
 
 #[derive(Debug)]
-pub struct CommandEnum {
+pub(crate) struct CommandEnum {
     pub prefix: Option<String>,
     pub description: Option<String>,
     pub rename_rule: Option<String>,
@@ -9,7 +12,7 @@ pub struct CommandEnum {
 }
 
 impl CommandEnum {
-    pub fn try_from(attrs: &[Attr]) -> Result<Self, String> {
+    pub fn try_from(attrs: &[Attr]) -> Result<Self> {
         let attrs = parse_attrs(attrs)?;
 
         let prefix = attrs.prefix;
@@ -32,7 +35,7 @@ impl CommandEnum {
                 | "SCREAMING_SNAKE_CASE"
                 | "kebab-case"
                 | "SCREAMING-KEBAB-CASE" => {}
-                _ => return Err("disallowed value".to_owned()),
+                _ => return Err(compile_error("disallowed value")),
             }
         }
         Ok(Self {
