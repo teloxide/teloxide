@@ -3,7 +3,6 @@
 mod attr;
 mod command;
 mod command_enum;
-mod dialogue_state;
 mod fields_parse;
 mod rename_rules;
 
@@ -18,17 +17,7 @@ use crate::{
 };
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Fields, ItemEnum};
-
-#[proc_macro_derive(DialogueState, attributes(handler, handler_out, store))]
-#[deprecated(note = "Use teloxide::handler! instead")]
-pub fn derive_dialogue_state(item: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(item as ItemEnum);
-    match dialogue_state::expand(input) {
-        Ok(s) => s.into(),
-        Err(e) => e.to_compile_error().into(),
-    }
-}
+use syn::{parse_macro_input, DeriveInput, Fields};
 
 macro_rules! get_or_return {
     ($($some:tt)*) => {
