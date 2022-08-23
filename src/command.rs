@@ -55,6 +55,10 @@ impl Command {
 
         (String::from(prefix), global_parameters.rename_rule.apply(&self.name))
     }
+
+    pub(crate) fn description_is_enabled(&self) -> bool {
+        self.description != Some("off".to_owned())
+    }
 }
 
 pub(crate) struct CommandAttrs {

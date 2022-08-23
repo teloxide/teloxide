@@ -1,7 +1,7 @@
 extern crate quote;
 
-use quote::{quote, ToTokens};
-use syn::{FieldsNamed, FieldsUnnamed, Type};
+use quote::quote;
+use syn::{Fields, FieldsNamed, FieldsUnnamed, Type};
 
 #[derive(Debug)]
 pub(crate) enum ParserType {
@@ -20,9 +20,25 @@ impl ParserType {
     }
 }
 
+pub(crate) fn impl_parse_args(
+    fields: &Fields,
+    self_variant: proc_macro2::TokenStream,
+    parser: &ParserType,
+) -> proc_macro2::TokenStream {
+    match fields {
+        Fields::Unit => self_variant,
+        Fields::Unnamed(fields) => {
+            impl_parse_args_unnamed(fields, self_variant, parser)
+        }
+        Fields::Named(named) => {
+            impl_parse_args_named(named, self_variant, parser)
+        }
+    }
+}
+
 pub(crate) fn impl_parse_args_unnamed(
     data: &FieldsUnnamed,
-    variant: impl ToTokens,
+    variant: proc_macro2::TokenStream,
     parser_type: &ParserType,
 ) -> proc_macro2::TokenStream {
     let get_arguments = create_parser(
@@ -46,7 +62,7 @@ pub(crate) fn impl_parse_args_unnamed(
 
 pub(crate) fn impl_parse_args_named(
     data: &FieldsNamed,
-    variant: impl ToTokens,
+    variant: proc_macro2::TokenStream,
     parser_type: &ParserType,
 ) -> proc_macro2::TokenStream {
     let get_arguments = create_parser(

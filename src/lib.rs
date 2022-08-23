@@ -6,19 +6,18 @@ mod command_enum;
 mod error;
 mod fields_parse;
 mod rename_rules;
+mod unzip;
 
 extern crate proc_macro;
 extern crate quote;
 extern crate syn;
 use crate::{
-    attr::CommandAttrs,
-    command::Command,
-    command_enum::CommandEnum,
-    fields_parse::{impl_parse_args_named, impl_parse_args_unnamed},
+    attr::CommandAttrs, command::Command, command_enum::CommandEnum,
+    fields_parse::impl_parse_args, unzip::Unzip,
 };
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Fields};
+use syn::DeriveInput;
 
 pub(crate) use error::{compile_error, Error, Result};
 
@@ -30,53 +29,35 @@ pub fn bot_commands_derive(tokens: TokenStream) -> TokenStream {
 fn bot_commands_impl(tokens: TokenStream) -> Result<TokenStream, Error> {
     let input = syn::parse_macro_input::parse::<DeriveInput>(tokens)?;
 
-    let data_enum: &syn::DataEnum = get_enum_data(&input)?;
+    let data_enum = get_enum_data(&input)?;
     let enum_attrs = CommandAttrs::from_attributes(&input.attrs)?;
     let command_enum = CommandEnum::try_from(enum_attrs)?;
 
-    let variant_infos = data_enum
+    let Unzip(var_init, var_info) = data_enum
         .variants
         .iter()
         .map(|variant| {
             let attrs = CommandAttrs::from_attributes(&variant.attrs)?;
             let command = Command::try_from(attrs, &variant.ident.to_string())?;
 
-            Ok(command)
+            let variant_name = &variant.ident;
+            let self_variant = quote! { Self::#variant_name };
+
+            let parser =
+                command.parser.as_ref().unwrap_or(&command_enum.parser_type);
+            let parse = impl_parse_args(&variant.fields, self_variant, parser);
+
+            Ok((parse, command))
         })
-        .collect::<Result<Vec<_>, Error>>()?;
+        .collect::<Result<Unzip<Vec<_>, Vec<_>>, Error>>()?;
 
-    let mut vec_impl_create = vec![];
-
-    for (variant, info) in data_enum.variants.iter().zip(variant_infos.iter()) {
-        let var = &variant.ident;
-        let variant_ = quote! { Self::#var };
-        match &variant.fields {
-            Fields::Unnamed(fields) => {
-                let parser =
-                    info.parser.as_ref().unwrap_or(&command_enum.parser_type);
-                vec_impl_create
-                    .push(impl_parse_args_unnamed(fields, variant_, parser));
-            }
-            Fields::Unit => {
-                vec_impl_create.push(variant_);
-            }
-            Fields::Named(named) => {
-                let parser =
-                    info.parser.as_ref().unwrap_or(&command_enum.parser_type);
-                vec_impl_create
-                    .push(impl_parse_args_named(named, variant_, parser));
-            }
-        }
-    }
-
-    let ident = &input.ident;
-
-    let fn_descriptions = impl_descriptions(&variant_infos, &command_enum);
-    let fn_parse = impl_parse(&variant_infos, &command_enum, &vec_impl_create);
-    let fn_commands = impl_commands(&variant_infos, &command_enum);
+    let type_name = &input.ident;
+    let fn_descriptions = impl_descriptions(&var_info, &command_enum);
+    let fn_parse = impl_parse(&var_info, &command_enum, &var_init);
+    let fn_commands = impl_commands(&var_info, &command_enum);
 
     let trait_impl = quote! {
-        impl BotCommands for #ident {
+        impl BotCommands for #type_name {
             #fn_descriptions
             #fn_parse
             #fn_commands
@@ -90,19 +71,19 @@ fn impl_commands(
     infos: &[Command],
     global: &CommandEnum,
 ) -> proc_macro2::TokenStream {
-    let commands_to_list = infos.iter().filter_map(|command| {
-        if command.description == Some("off".into()) {
-            None
-        } else {
+    let commands = infos
+        .iter()
+        .filter(|command| command.description_is_enabled())
+        .map(|command| {
             let c = command.get_matched_value(global);
             let d = command.description.as_deref().unwrap_or_default();
-            Some(quote! { BotCommand::new(#c,#d) })
-        }
-    });
+            quote! { BotCommand::new(#c,#d) }
+        });
+
     quote! {
         fn bot_commands() -> Vec<teloxide::types::BotCommand> {
             use teloxide::types::BotCommand;
-            vec![#(#commands_to_list),*]
+            vec![#(#commands),*]
         }
     }
 }
@@ -111,11 +92,14 @@ fn impl_descriptions(
     infos: &[Command],
     global: &CommandEnum,
 ) -> proc_macro2::TokenStream {
-    let command_descriptions = infos.iter().filter_map(|c| {
-        let (prefix, command) = c.get_matched_value2(global);
-        let description = c.description.clone().unwrap_or_default();
-        (description != "off").then(|| quote! { CommandDescription { prefix: #prefix, command: #command, description: #description } })
-    });
+    let command_descriptions = infos
+        .iter()
+        .filter(|command| command.description_is_enabled())
+        .map(|c| {
+            let (prefix, command) = c.get_matched_value2(global);
+            let description = c.description.clone().unwrap_or_default();
+            quote! { CommandDescription { prefix: #prefix, command: #command, description: #description } }
+        });
 
     let global_description = match global.description.as_deref() {
         Some(gd) => quote! { .global_description(#gd) },
