@@ -10,7 +10,7 @@ pub(crate) fn compile_error<T>(data: T) -> Error
 where
     T: ToTokens,
 {
-    Error(TokenStream::from(quote! { compile_error!(#data) }))
+    Error(TokenStream::from(quote! { compile_error! { #data } }))
 }
 
 impl From<Error> for proc_macro::TokenStream {
