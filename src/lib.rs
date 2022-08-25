@@ -131,25 +131,31 @@ fn impl_parse(
          where
               N: Into<String>
          {
+              // FIXME: we should probably just call a helper function from `teloxide`, instead of parsing command syntax ourselves
               use std::str::FromStr;
               use teloxide::utils::command::ParseError;
 
+              // 2 is used to only split once (=> in two parts),
+              // we only need to split the command and the rest of arguments.
               let mut words = s.splitn(2, ' ');
-              let mut splitted = words.next().expect("First item will be always.").split('@');
-              let command_raw = splitted.next().expect("First item will be always.");
-              let bot = splitted.next();
-              let bot_name = bot_name.into();
-              match bot {
-                  Some(name) if name.eq_ignore_ascii_case(&bot_name) => {}
+
+              // Unwrap: split iterators always have at least one item
+              let mut full_command = words.next().unwrap().split('@');
+              let command = full_command.next().unwrap();
+
+              let bot_username = full_command.next();
+              match bot_username {
                   None => {}
-                  Some(n) => return Err(ParseError::WrongBotName(n.to_string())),
+                  Some(username) if username.eq_ignore_ascii_case(&bot_name.into()) => {}
+                  Some(n) => return Err(ParseError::WrongBotName(n.to_owned())),
               }
-              let mut args = words.next().unwrap_or("").to_string();
-              match command_raw {
+
+              let args = words.next().unwrap_or("").to_owned();
+              match command {
                    #(
                         #matching_values => Ok(#variants_initialization),
                    )*
-                   _ => Err(ParseError::UnknownCommand(command_raw.to_string())),
+                   _ => Err(ParseError::UnknownCommand(command.to_owned())),
               }
          }
     }
