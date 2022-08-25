@@ -164,6 +164,6 @@ fn impl_parse(
 fn get_enum_data(input: &DeriveInput) -> Result<&syn::DataEnum> {
     match &input.data {
         syn::Data::Enum(data) => Ok(data),
-        _ => Err(compile_error("TelegramBotCommand allowed only for enums")),
+        _ => Err(compile_error("`BotCommands` is only allowed for enums")),
     }
 }
