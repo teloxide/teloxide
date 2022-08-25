@@ -1,9 +1,9 @@
+use crate::Result;
+
 use syn::{
     parse::{Parse, ParseBuffer, ParseStream},
     Attribute, LitStr, Token,
 };
-
-use crate::Result;
 
 pub(crate) enum CommandAttrName {
     Prefix,

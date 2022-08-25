@@ -1,11 +1,11 @@
 // Some concepts are from Serde.
 
+use crate::error::{compile_error, Result};
+
 use heck::{
     ToKebabCase, ToLowerCamelCase, ToPascalCase, ToShoutyKebabCase,
     ToShoutySnakeCase, ToSnakeCase,
 };
-
-use crate::error::{compile_error, Result};
 
 #[derive(Copy, Clone, Debug)]
 pub(crate) enum RenameRule {

@@ -13,9 +13,9 @@ where
     Error(TokenStream::from(quote! { compile_error! { #data } }))
 }
 
-impl From<Error> for proc_macro::TokenStream {
+impl From<Error> for proc_macro2::TokenStream {
     fn from(Error(e): Error) -> Self {
-        e.into()
+        e
     }
 }
 

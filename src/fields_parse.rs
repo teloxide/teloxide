@@ -1,5 +1,3 @@
-extern crate quote;
-
 use quote::quote;
 use syn::{Fields, FieldsNamed, FieldsUnnamed, Type};
 
