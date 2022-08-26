@@ -43,7 +43,7 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
         }
     };
 
-    Ok(TokenStream::from(trait_impl))
+    Ok(trait_impl)
 }
 
 fn impl_commands(
