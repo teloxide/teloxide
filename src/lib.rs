@@ -1,5 +1,3 @@
-// TODO: refactor this shit.
-
 extern crate proc_macro;
 
 mod attr;
