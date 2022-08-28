@@ -75,7 +75,10 @@ impl Parse for Attr {
 
 impl Attr {
     pub(crate) fn span(&self) -> Span {
-        self.key.span().join(self.value.span()).unwrap_or(self.key.span())
+        self.key
+            .span()
+            .join(self.value.span())
+            .unwrap_or_else(|| self.key.span())
     }
 }
 
