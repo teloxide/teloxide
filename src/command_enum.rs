@@ -1,5 +1,5 @@
 use crate::{
-    attr, command::parse_attrs, fields_parse::ParserType,
+    command_attr::CommandAttrs, fields_parse::ParserType,
     rename_rules::RenameRule, Result,
 };
 
@@ -12,14 +12,17 @@ pub(crate) struct CommandEnum {
 }
 
 impl CommandEnum {
-    pub fn try_from(attrs: attr::CommandAttrs) -> Result<Self> {
-        let attrs = parse_attrs(attrs)?;
+    pub fn try_from(attrs: CommandAttrs) -> Result<Self> {
+        let CommandAttrs {
+            prefix,
+            description,
+            rename_rule,
+            parser,
+            separator,
+        } = attrs;
+        let mut parser = parser.unwrap_or(ParserType::Default);
 
-        let prefix = attrs.prefix;
-        let description = attrs.description;
-        let rename = attrs.rename_rule;
-        let separator = attrs.separator;
-        let mut parser = attrs.parser.unwrap_or(ParserType::Default);
+        // FIXME: Error on unused separator
         if let (ParserType::Split { separator }, Some(s)) =
             (&mut parser, &separator)
         {
@@ -28,7 +31,7 @@ impl CommandEnum {
         Ok(Self {
             prefix,
             description,
-            rename_rule: rename,
+            rename_rule: rename_rule.unwrap_or(RenameRule::Identity),
             parser_type: parser,
         })
     }

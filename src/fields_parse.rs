@@ -9,6 +9,7 @@ pub(crate) enum ParserType {
 }
 
 impl ParserType {
+    // FIXME: use path for custom
     pub fn parse(data: &str) -> Self {
         match data {
             "default" => ParserType::Default,

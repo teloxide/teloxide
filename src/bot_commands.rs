@@ -1,5 +1,5 @@
 use crate::{
-    attr::CommandAttrs, command::Command, command_enum::CommandEnum,
+    command::Command, command_attr::CommandAttrs, command_enum::CommandEnum,
     compile_error, fields_parse::impl_parse_args, unzip::Unzip, Result,
 };
 

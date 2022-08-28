@@ -1,9 +1,6 @@
 use crate::{
-    attr::{self, CommandAttr, CommandAttrName},
-    command_enum::CommandEnum,
-    fields_parse::ParserType,
-    rename_rules::RenameRule,
-    Result,
+    command_attr::CommandAttrs, command_enum::CommandEnum,
+    fields_parse::ParserType, rename_rules::RenameRule, Result,
 };
 
 pub(crate) struct Command {
@@ -14,8 +11,7 @@ pub(crate) struct Command {
 }
 
 impl Command {
-    pub fn try_from(attrs: attr::CommandAttrs, name: &str) -> Result<Self> {
-        let attrs = parse_attrs(attrs)?;
+    pub fn try_from(attrs: CommandAttrs, name: &str) -> Result<Self> {
         let CommandAttrs {
             prefix,
             description,
@@ -24,7 +20,7 @@ impl Command {
             separator: _,
         } = attrs;
 
-        let name = rename_rule.apply(name);
+        let name = rename_rule.unwrap_or(RenameRule::Identity).apply(name);
 
         Ok(Self { prefix, description, parser, name })
     }
@@ -59,34 +55,4 @@ impl Command {
     pub(crate) fn description_is_enabled(&self) -> bool {
         self.description != Some("off".to_owned())
     }
-}
-
-pub(crate) struct CommandAttrs {
-    pub prefix: Option<String>,
-    pub description: Option<String>,
-    pub rename_rule: RenameRule,
-    pub parser: Option<ParserType>,
-    pub separator: Option<String>,
-}
-
-pub(crate) fn parse_attrs(attrs: attr::CommandAttrs) -> Result<CommandAttrs> {
-    let mut prefix = None;
-    let mut description = None;
-    let mut rename_rule = RenameRule::Identity;
-    let mut parser = None;
-    let mut separator = None;
-
-    for CommandAttr { name, value } in attrs {
-        match name {
-            CommandAttrName::Prefix => prefix = Some(value),
-            CommandAttrName::Description => description = Some(value),
-            CommandAttrName::Rename => rename_rule = RenameRule::parse(&value)?,
-            CommandAttrName::ParseWith => {
-                parser = Some(ParserType::parse(&value))
-            }
-            CommandAttrName::Separator => separator = Some(value),
-        }
-    }
-
-    Ok(CommandAttrs { prefix, description, rename_rule, parser, separator })
 }

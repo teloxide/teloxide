@@ -5,6 +5,7 @@ extern crate proc_macro;
 mod attr;
 mod bot_commands;
 mod command;
+mod command_attr;
 mod command_enum;
 mod error;
 mod fields_parse;

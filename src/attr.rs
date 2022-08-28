@@ -1,96 +1,153 @@
-use crate::Result;
+use crate::{error::compile_error_at, Result};
 
+use proc_macro2::Span;
 use syn::{
     parse::{Parse, ParseBuffer, ParseStream},
-    Attribute, LitStr, Token,
+    spanned::Spanned,
+    Attribute, Ident, Lit, Path, Token,
 };
 
-pub(crate) enum CommandAttrName {
-    Prefix,
-    Description,
-    Rename,
-    ParseWith,
-    Separator,
+pub(crate) fn fold_attrs<A, R>(
+    attrs: &[Attribute],
+    filter: fn(&Attribute) -> bool,
+    parse: impl Fn(Attr) -> Result<R>,
+    init: A,
+    f: impl Fn(A, R) -> Result<A>,
+) -> Result<A> {
+    attrs
+        .iter()
+        .filter(|&a| filter(a))
+        .flat_map(|attribute| {
+            // FIXME: don't allocate here
+            let attrs =
+                match attribute.parse_args_with(|input: &ParseBuffer| {
+                    input.parse_terminated::<_, Token![,]>(Attr::parse)
+                }) {
+                    Ok(ok) => ok,
+                    Err(err) => return vec![Err(err.into())],
+                };
+
+            attrs.into_iter().map(&parse).collect()
+        })
+        .try_fold(init, |acc, r| r.and_then(|r| f(acc, r)))
 }
 
-impl Parse for CommandAttrName {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        let name_arg: syn::Ident = input.parse()?;
+/// An attribute key-value pair.
+///
+/// For example:
+/// ```text
+///   #[blahblah(key = "puff", value = 12, nope)]
+///              ^^^^^^^^^^^^  ^^^^^^^^^^  ^^^^
+/// ```
+pub(crate) struct Attr {
+    pub key: Ident,
+    pub value: AttrValue,
+}
 
-        match name_arg.to_string().as_str() {
-            "prefix" => Ok(CommandAttrName::Prefix),
-            "description" => Ok(CommandAttrName::Description),
-            "rename" => Ok(CommandAttrName::Rename),
-            "parse_with" => Ok(CommandAttrName::ParseWith),
-            "separator" => Ok(CommandAttrName::Separator),
-            _ => Err(syn::Error::new(
-                name_arg.span(),
-                "unexpected attribute name (expected one of `prefix`, \
-                 `description`, `rename`, `parse_with`, `separator`",
-            )),
+/// Value of an attribute.
+///
+/// For example:
+/// ```text
+///   #[blahblah(key = "puff", value = 12, nope)]
+///                    ^^^^^^          ^^     ^-- (None pseudo-value)
+/// ```
+pub(crate) enum AttrValue {
+    Path(Path),
+    Lit(Lit),
+    None(Span),
+}
+
+impl Parse for Attr {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let key = input.parse::<Ident>()?;
+
+        let value = match input.peek(Token![=]) {
+            true => {
+                input.parse::<Token![=]>()?;
+                input.parse::<AttrValue>()?
+            }
+            false => AttrValue::None(input.span()),
+        };
+
+        Ok(Self { key, value })
+    }
+}
+
+impl Attr {
+    pub(crate) fn span(&self) -> Span {
+        self.key.span().join(self.value.span()).unwrap_or(self.key.span())
+    }
+}
+
+impl AttrValue {
+    /// Unwraps this value if it's a string literal.
+    pub fn expect_string(self) -> Result<String> {
+        self.expect("a string", |this| match this {
+            AttrValue::Lit(Lit::Str(s)) => Ok(s.value()),
+            _ => Err(this),
+        })
+    }
+
+    // /// Unwraps this value if it's a path.
+    // pub fn expect_path(self) -> Result<Path> {
+    //     self.expect("a path", |this| match this {
+    //         AttrValue::Path(p) => Ok(p),
+    //         _ => Err(this),
+    //     })
+    // }
+
+    fn expect<T>(
+        self,
+        expected: &str,
+        f: impl FnOnce(Self) -> Result<T, Self>,
+    ) -> Result<T> {
+        f(self).map_err(|this| {
+            compile_error_at(
+                &format!("expected {expected}, found {}", this.descr()),
+                this.span(),
+            )
+        })
+    }
+
+    fn descr(&self) -> &'static str {
+        use Lit::*;
+
+        match self {
+            Self::None(_) => "nothing",
+            Self::Lit(l) => match l {
+                Str(_) | ByteStr(_) => "a string",
+                Char(_) => "a character",
+                Byte(_) | Int(_) => "an integer",
+                Float(_) => "a floating point integer",
+                Bool(_) => "a boolean",
+                Verbatim(_) => ":shrug:",
+            },
+            Self::Path(_) => "a path",
+        }
+    }
+
+    /// Returns span of the value
+    ///
+    /// ```text
+    ///   #[blahblah(key = "puff", value = 12, nope )]
+    ///                    ^^^^^^          ^^      ^
+    /// ```
+    fn span(&self) -> Span {
+        match self {
+            Self::Path(p) => p.span(),
+            Self::Lit(l) => l.span(),
+            Self::None(sp) => *sp,
         }
     }
 }
 
-pub(crate) struct CommandAttr {
-    pub name: CommandAttrName,
-    pub value: String,
-}
-
-impl Parse for CommandAttr {
+impl Parse for AttrValue {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let name = input.parse::<CommandAttrName>()?;
+        let this = match input.peek(Lit) {
+            true => Self::Lit(input.parse()?),
+            false => Self::Path(input.parse()?),
+        };
 
-        // FIXME: this should support value-less attrs, as well as
-        //        non-string-literal values
-        input.parse::<Token![=]>()?;
-        let value = input.parse::<LitStr>()?.value();
-
-        Ok(Self { name, value })
-    }
-}
-
-pub(crate) struct CommandAttrs(Vec<CommandAttr>);
-
-impl CommandAttrs {
-    pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
-        let mut attrs = Vec::new();
-
-        for attribute in attributes.iter().filter(is_command_attribute) {
-            let attrs_ = attribute.parse_args_with(|input: &ParseBuffer| {
-                input.parse_terminated::<_, Token![,]>(CommandAttr::parse)
-            })?;
-
-            attrs.extend(attrs_);
-        }
-
-        Ok(Self(attrs))
-    }
-}
-
-impl<'a> IntoIterator for &'a CommandAttrs {
-    type Item = &'a CommandAttr;
-
-    type IntoIter = std::slice::Iter<'a, CommandAttr>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.iter()
-    }
-}
-
-impl IntoIterator for CommandAttrs {
-    type Item = CommandAttr;
-
-    type IntoIter = std::vec::IntoIter<CommandAttr>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-fn is_command_attribute(a: &&Attribute) -> bool {
-    match a.path.get_ident() {
-        Some(ident) => ident == "command",
-        _ => false,
+        Ok(this)
     }
 }
