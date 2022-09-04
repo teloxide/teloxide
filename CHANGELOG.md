@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+<!-- TODO: use a version once teloxide-macros is released -->
+- Updated `teloxide-macros` see its [changelog](https://github.com/teloxide/teloxide-macros/blob/master/CHANGELOG.md#unreleased) for more
+
 ## 0.10.1 - 2022-07-22
 
 ### Fixed
