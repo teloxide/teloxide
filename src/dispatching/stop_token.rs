@@ -12,7 +12,7 @@ use futures::future::{pending, AbortHandle, Abortable, Pending};
 /// crate::dispatching::update_listeners::UpdateListener::stop_token
 pub trait StopToken {
     /// Stop the listener linked to this token.
-    fn stop(self);
+    fn stop(&mut self);
 }
 
 /// A stop token which does nothing. May be used in prototyping or in cases
@@ -20,7 +20,7 @@ pub trait StopToken {
 pub struct Noop;
 
 impl StopToken for Noop {
-    fn stop(self) {}
+    fn stop(&mut self) {}
 }
 
 /// A stop token which corresponds to [`AsyncStopFlag`].
@@ -50,7 +50,7 @@ impl AsyncStopToken {
 }
 
 impl StopToken for AsyncStopToken {
-    fn stop(self) {
+    fn stop(&mut self) {
         self.0.abort()
     }
 }
@@ -77,3 +77,5 @@ impl Future for AsyncStopFlag {
         })
     }
 }
+
+fn _assert_object_safe(_: &mut dyn StopToken) {}

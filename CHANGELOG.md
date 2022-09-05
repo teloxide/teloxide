@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- `StopToken` now accepts self by unique reference, making it object safe (you can now use `dyn StopToken`)
+
 ## 0.10.1 - 2022-07-22
 
 ### Fixed

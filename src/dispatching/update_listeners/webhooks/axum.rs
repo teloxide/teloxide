@@ -46,7 +46,7 @@ where
     let Options { address, .. } = options;
 
     let (mut update_listener, stop_flag, app) = axum_to_router(bot, options).await?;
-    let stop_token = update_listener.stop_token();
+    let mut stop_token = update_listener.stop_token();
 
     tokio::spawn(async move {
         axum::Server::bind(&address)
