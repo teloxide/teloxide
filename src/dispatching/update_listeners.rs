@@ -124,13 +124,9 @@ pub trait AsUpdateStream<'a> {
     type StreamErr;
 
     /// The stream of updates from Telegram.
-    // HACK: There is currently no way to write something like
-    // `-> impl for<'a> AsUpdateStream<'a, E, Stream: Send>`. Since we return
-    // `impl UpdateListener<E>` from `polling`, we need to have `Send` bound here,
-    // to make the stream `Send`.
-    //
-    // Without this it's, for example, impossible to spawn a tokio task with
-    // teloxide polling.
+    // NB: `Send` is not strictly required here, but it makes it easier to return
+    //     `impl AsUpdateStream` and also you want `Send` streams almost (?) always
+    //     anyway.
     type Stream: Stream<Item = Result<Update, Self::StreamErr>> + Send + 'a;
 
     /// Creates the update [`Stream`].
