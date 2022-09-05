@@ -60,11 +60,11 @@ where
 /// [`repl`]: crate::dispatching::repls::repl()
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl_with_listener<'a, R, H, E, L, ListenerE, Args>(bot: R, handler: H, listener: L)
+pub async fn repl_with_listener<'a, R, H, E, L, Args>(bot: R, handler: H, listener: L)
 where
     H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    L: UpdateListener<ListenerE> + Send + 'a,
-    ListenerE: Debug,
+    L: UpdateListener + Send + 'a,
+    L::Err: Debug,
     Result<(), E>: OnError<E>,
     E: Debug + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
