@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- TODO: use a version once teloxide-macros is released -->
 - Updated `teloxide-macros` see its [changelog](https://github.com/teloxide/teloxide-macros/blob/master/CHANGELOG.md#unreleased) for more
+- `UpdateListener` now has an associated type `Err` instead of a generic
+- `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
 
 ## 0.10.1 - 2022-07-22
 
