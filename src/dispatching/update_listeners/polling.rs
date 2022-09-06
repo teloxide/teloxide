@@ -291,7 +291,8 @@ pub struct PollingStream<'a, B: Requester> {
     in_flight: Option<<B::GetUpdates as Request>::Send>,
 }
 
-impl<B: Requester + Send + 'static> UpdateListener<B::Err> for Polling<B> {
+impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
+    type Err = B::Err;
     type StopToken = AsyncStopToken;
 
     fn stop_token(&mut self) -> Self::StopToken {
@@ -309,7 +310,8 @@ impl<B: Requester + Send + 'static> UpdateListener<B::Err> for Polling<B> {
     }
 }
 
-impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a, B::Err> for Polling<B> {
+impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
+    type StreamErr = B::Err;
     type Stream = PollingStream<'a, B>;
 
     fn as_stream(&'a mut self) -> Self::Stream {

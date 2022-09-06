@@ -93,7 +93,7 @@ impl fmt::Display for IdleShutdownError {
 
 impl std::error::Error for IdleShutdownError {}
 
-pub(crate) fn shutdown_check_timeout_for<E>(update_listener: &impl UpdateListener<E>) -> Duration {
+pub(crate) fn shutdown_check_timeout_for(update_listener: &impl UpdateListener) -> Duration {
     const MIN_SHUTDOWN_CHECK_TIMEOUT: Duration = Duration::from_secs(1);
     const DZERO: Duration = Duration::ZERO;
 
