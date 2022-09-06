@@ -5,7 +5,7 @@ use futures::Stream;
 use crate::{
     dispatching::{
         stop_token::{self, StopToken},
-        update_listeners::{AsUpdateStream, UpdateListener},
+        update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
     },
     types::{AllowedUpdate, Update},
 };
@@ -103,7 +103,7 @@ where
     }
 }
 
-impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a, E>
+impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a>
     for StatefulListener<St, Assf, Hauf, Sf, Thf>
 where
     (St, Strm): 'a,
@@ -111,6 +111,7 @@ where
     Assf: FnMut(&'a mut St) -> Strm,
     Strm: Stream<Item = Result<Update, E>>,
 {
+    type StreamErr = E;
     type Stream = Strm;
 
     fn as_stream(&'a mut self) -> Self::Stream {
@@ -118,15 +119,15 @@ where
     }
 }
 
-impl<St, Assf, Sf, Hauf, Stt, Thf, E> UpdateListener<E>
-    for StatefulListener<St, Assf, Sf, Hauf, Thf>
+impl<St, Assf, Sf, Hauf, Stt, Thf, E> UpdateListener for StatefulListener<St, Assf, Sf, Hauf, Thf>
 where
-    Self: for<'a> AsUpdateStream<'a, E>,
+    Self: for<'a> AsUpdateStream<'a, StreamErr = E>,
     Sf: FnMut(&mut St) -> Stt,
     Stt: StopToken + Send,
     Hauf: FnMut(&mut St, &mut dyn Iterator<Item = AllowedUpdate>),
     Thf: Fn(&St) -> Option<Duration>,
 {
+    type Err = E;
     type StopToken = Stt;
 
     fn stop_token(&mut self) -> Stt {
@@ -142,11 +143,4 @@ where
     fn timeout_hint(&self) -> Option<Duration> {
         self.timeout_hint.as_ref().and_then(|f| f(&self.state))
     }
-}
-
-fn assert_update_listener<L, E>(l: L) -> L
-where
-    L: UpdateListener<E>,
-{
-    l
 }

@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- `UpdateListener` now has an associated type `Err` instead of a generic
+- `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
+
 ## 0.10.1 - 2022-07-22
 
 ### Fixed
