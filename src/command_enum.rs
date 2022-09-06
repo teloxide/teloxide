@@ -1,44 +1,37 @@
-use crate::{attr::Attr, command::parse_attrs, fields_parse::ParserType};
+use crate::{
+    command_attr::CommandAttrs, fields_parse::ParserType,
+    rename_rules::RenameRule, Result,
+};
 
 #[derive(Debug)]
-pub struct CommandEnum {
+pub(crate) struct CommandEnum {
     pub prefix: Option<String>,
     pub description: Option<String>,
-    pub rename_rule: Option<String>,
+    pub rename_rule: RenameRule,
     pub parser_type: ParserType,
 }
 
 impl CommandEnum {
-    pub fn try_from(attrs: &[Attr]) -> Result<Self, String> {
-        let attrs = parse_attrs(attrs)?;
+    pub fn try_from(attrs: CommandAttrs) -> Result<Self> {
+        let CommandAttrs {
+            prefix,
+            description,
+            rename_rule,
+            parser,
+            separator,
+        } = attrs;
+        let mut parser = parser.unwrap_or(ParserType::Default);
 
-        let prefix = attrs.prefix;
-        let description = attrs.description;
-        let rename = attrs.rename;
-        let separator = attrs.separator;
-        let mut parser = attrs.parser.unwrap_or(ParserType::Default);
+        // FIXME: Error on unused separator
         if let (ParserType::Split { separator }, Some(s)) =
             (&mut parser, &separator)
         {
             *separator = Some(s.clone())
         }
-        if let Some(rename_rule) = &rename {
-            match rename_rule.as_str() {
-                "lowercase"
-                | "UPPERCASE"
-                | "PascalCase"
-                | "camelCase"
-                | "snake_case"
-                | "SCREAMING_SNAKE_CASE"
-                | "kebab-case"
-                | "SCREAMING-KEBAB-CASE" => {}
-                _ => return Err("disallowed value".to_owned()),
-            }
-        }
         Ok(Self {
             prefix,
             description,
-            rename_rule: rename,
+            rename_rule: rename_rule.unwrap_or(RenameRule::Identity),
             parser_type: parser,
         })
     }
