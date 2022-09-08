@@ -4,7 +4,7 @@ use teloxide::{
     prelude::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
-        InputMessageContentText,
+        InputMessageContentText, Me,
     },
     utils::command::BotCommands,
 };
@@ -61,9 +61,10 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 async fn message_handler(
     m: Message,
     bot: AutoSend<Bot>,
+    me: Me,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(text) = m.text() {
-        match BotCommands::parse(text, "buttons") {
+        match BotCommands::parse(text, me.username()) {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
                 bot.send_message(m.chat.id, Command::descriptions().to_string()).await?;
