@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener, UpdateFilterExt},
-    error_handlers::{LoggingErrorHandler, OnError},
+    error_handlers::LoggingErrorHandler,
     types::Update,
 };
 use dptree::di::{DependencyMap, Injectable};
@@ -8,66 +8,101 @@ use std::fmt::Debug;
 use teloxide_core::requests::Requester;
 
 /// A [REPL] for messages.
-///
-/// All errors from an update listener and a handler will be logged.
-///
-/// REPLs are meant only for simple bots and rapid prototyping. If you need to
-/// supply dependencies or describe more complex dispatch logic, please use
-/// [`Dispatcher`].
-///
-/// See also: ["Dispatching or
-/// REPLs?"](dispatching/index.html#dispatching-or-repls)
-///
-/// ## Caution
-///
-/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
-/// because Telegram disallow multiple requests at the same time from the same
-/// bot.
+//
+#[doc = include_str!("preamble.md")]
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
+///
+/// ## Signature
+///
+/// Don't be scared by many trait bounds in the signature, in essence they
+/// require:
+///
+/// 1. `bot` is a bot, client for the Telegram bot API
+///    - in teloxide this is represented via a [`Requester`] trait
+/// 2. `handler` is an async function that returns `Result<(), E>`
+///    - Such that `E` can be printed with [`Debug`] formatting
+///    - And all arguments can be extracted from [`DependencyMap`]
+///       - Which is the same, as all arguments implementing `Send + Sync +
+///         'static`
+///
+/// ## Handler arguments
+///
+/// Teloxide provides the following types to the `handler`:
+/// - [`Message`]
+/// - `R` (type of the `bot`)
+/// - [`Me`]
+///
+/// [`Me`]: crate::types::Me
+/// [`Message`]: crate::types::Message
+///
+/// ## Stopping
+//
+#[doc = include_str!("stopping.md")]
+///
+/// ## Caution
+//
+#[doc = include_str!("caution.md")]
+///
 #[cfg(feature = "ctrlc_handler")]
 pub async fn repl<R, H, E, Args>(bot: R, handler: H)
 where
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    Result<(), E>: OnError<E>,
-    E: Debug + Send + Sync + 'static,
     R: Requester + Send + Sync + Clone + 'static,
     <R as Requester>::GetUpdates: Send,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    E: Debug + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
 }
 
-/// Like [`repl`], but with a custom [`UpdateListener`].
+/// A [REPL] for messages, with a custom [`UpdateListener`].
+//
+#[doc = include_str!("preamble.md")]
 ///
-/// All errors from an update listener and handler will be logged.
-///
-/// REPLs are meant only for simple bots and rapid prototyping. If you need to
-/// supply dependencies or describe more complex dispatch logic, please use
-/// [`Dispatcher`].
-///
-/// See also: ["Dispatching or
-/// REPLs?"](dispatching/index.html#dispatching-or-repls)
-///
-/// # Caution
-///
-/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
-/// because Telegram disallow multiple requests at the same time from the same
-/// bot.
-///
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`repl`]: crate::dispatching::repls::repl()
+/// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 /// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+///
+/// ## Signature
+///
+/// Don't be scared by many trait bounds in the signature, in essence they
+/// require:
+///
+/// 1. `bot` is a bot, client for the Telegram bot API
+///    - in teloxide this is represented via a [`Requester`] trait
+/// 2. `handler` is an async function that returns `Result<(), E>`
+///    - Such that `E` can be printed with [`Debug`] formatting
+///    - And all arguments can be extracted from [`DependencyMap`]
+///       - Which is the same, as all arguments implementing `Send + Sync +
+///         'static`
+/// 3. `listener` is an [`UpdateListener`]
+///
+/// ## Handler arguments
+///
+/// Teloxide provides the following types to the `handler`:
+/// - [`Message`]
+/// - `R` (type of the `bot`)
+/// - [`Me`]
+///
+/// [`Me`]: crate::types::Me
+/// [`Message`]: crate::types::Message
+///
+/// ## Stopping
+//
+#[doc = include_str!("stopping.md")]
+///
+/// ## Caution
+//
+#[doc = include_str!("caution.md")]
+///
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl_with_listener<'a, R, H, E, L, Args>(bot: R, handler: H, listener: L)
+pub async fn repl_with_listener<R, H, E, L, Args>(bot: R, handler: H, listener: L)
 where
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    L: UpdateListener + Send + 'a,
-    L::Err: Debug,
-    Result<(), E>: OnError<E>,
-    E: Debug + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    E: Debug + Send + Sync + 'static,
+    L: UpdateListener + Send,
+    L::Err: Debug,
 {
     use crate::dispatching::Dispatcher;
 
