@@ -67,6 +67,7 @@ mod logging;
 pub mod dispatching;
 pub mod error_handlers;
 pub mod prelude;
+pub mod stop;
 pub mod utils;
 
 #[doc(inline)]
