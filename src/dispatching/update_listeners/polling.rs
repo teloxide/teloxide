@@ -13,11 +13,9 @@ use std::{
 use futures::{ready, stream::Stream};
 
 use crate::{
-    dispatching::{
-        stop_token::{AsyncStopFlag, AsyncStopToken},
-        update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
-    },
+    dispatching::update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
     requests::{HasPayload, Request, Requester},
+    stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
 };
 
@@ -98,7 +96,7 @@ where
     /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
-        let (token, flag) = AsyncStopToken::new_pair();
+        let (token, flag) = mk_stop_token();
         let polling =
             Polling { bot, timeout, limit, allowed_updates, drop_pending_updates, flag, token };
 
@@ -242,8 +240,8 @@ pub struct Polling<B: Requester> {
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
     drop_pending_updates: bool,
-    flag: AsyncStopFlag,
-    token: AsyncStopToken,
+    flag: StopFlag,
+    token: StopToken,
 }
 
 impl<R> Polling<R>
@@ -293,9 +291,8 @@ pub struct PollingStream<'a, B: Requester> {
 
 impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
     type Err = B::Err;
-    type StopToken = AsyncStopToken;
 
-    fn stop_token(&mut self) -> Self::StopToken {
+    fn stop_token(&mut self) -> StopToken {
         self.token.clone()
     }
 

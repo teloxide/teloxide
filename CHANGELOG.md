@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `teloxide-macros` see its [changelog](https://github.com/teloxide/teloxide-macros/blob/master/CHANGELOG.md#unreleased) for more
 - `UpdateListener` now has an associated type `Err` instead of a generic
 - `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
+- Rename `dispatching::stop_token::{AsyncStopToken, AsyncStopFlag}` => `stop::{StopToken, StopFlag}`
+
+### Removed
+
+- `dispatching::stop_token::StopToken` trait (all uses are replaced with `stop::StopToken` structure)
 
 ## 0.10.1 - 2022-07-22
 

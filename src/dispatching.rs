@@ -233,7 +233,6 @@ mod filter_ext;
 mod handler_description;
 mod handler_ext;
 mod handler_factory;
-pub mod stop_token;
 pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
