@@ -5,7 +5,7 @@
 //! [flag]: StopFlag
 //! [listeners]: crate::dispatching::update_listeners
 
-use std::{future::Future, pin::Pin, task};
+use std::{convert::Infallible, future::Future, pin::Pin, task};
 
 use futures::future::{pending, AbortHandle, Abortable, Pending};
 
@@ -31,7 +31,7 @@ pub struct StopToken(AbortHandle);
 /// [`is_stopped`]: StopFlag::is_stopped
 #[pin_project::pin_project]
 #[derive(Clone)]
-pub struct StopFlag(#[pin] Abortable<Pending<()>>);
+pub struct StopFlag(#[pin] Abortable<Pending<Infallible>>);
 
 impl StopToken {
     /// "Stops" the flag associated with this token.
@@ -56,12 +56,9 @@ impl Future for StopFlag {
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> task::Poll<Self::Output> {
-        self.project().0.poll(cx).map(|res| {
-            debug_assert!(
-                res.is_err(),
-                "Pending Future can't ever be resolved, so Abortable is only resolved when \
-                 canceled"
-            );
+        self.project().0.poll(cx).map(|res| match res {
+            Err(_aborted) => (),
+            Ok(unreachable) => match unreachable {},
         })
     }
 }
