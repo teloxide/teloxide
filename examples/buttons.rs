@@ -112,15 +112,17 @@ async fn callback_handler(
     if let Some(version) = q.data {
         let text = format!("You chose: {version}");
 
-        match q.message {
-            Some(Message { id, chat, .. }) => {
-                bot.edit_message_text(chat.id, id, text).await?;
-            }
-            None => {
-                if let Some(id) = q.inline_message_id {
-                    bot.edit_message_text_inline(id, text).await?;
-                }
-            }
+        // Tell telegram that we've seen this query, to remove 🕑 icons from the
+        //
+        // clients. You could also use `answer_callback_query`'s optional
+        // parameters to tweak what happens on the client side.
+        bot.answer_callback_query(q.id).await?;
+
+        // Edit text of the message to which the buttons were attached
+        if let Some(Message { id, chat, .. }) = q.message {
+            bot.edit_message_text(chat.id, id, text).await?;
+        } else if let Some(id) = q.inline_message_id {
+            bot.edit_message_text_inline(id, text).await?;
         }
 
         log::info!("You chose: {}", version);
