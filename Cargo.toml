@@ -2,7 +2,7 @@
 name = "teloxide-core"
 description = "Core part of the `teloxide` library - telegram bot API client"
 version = "0.7.1"
-edition = "2018"
+edition = "2021"
 
 license = "MIT"
 repository = "https://github.com/teloxide/teloxide-core/"
@@ -53,6 +53,12 @@ vecrem = { version = "0.1", optional = true }
 pretty_env_logger = "0.4"
 tokio = { version = "1.8.0", features = ["fs", "macros", "macros", "rt-multi-thread"] }
 cool_asserts = "2.0.3"
+
+xshell = "0.2"
+ron = "0.7"
+indexmap = { version = "1.9", features = ["serde-1"] }
+aho-corasick = "0.7"
+itertools = "0.10"
 
 [features]
 default = ["native-tls"]

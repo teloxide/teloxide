@@ -21,8 +21,15 @@ env:
   # When updating this, also update:
   # - README.md
   # - src/lib.rs
-  # - down below in a matrix
+  # - down below in a matrix  
   rust_msrv: 1.58.0
+  # When updating this, also update:
+  # - down below in a matrix
+  #
+  # This is needed because some of our tests can't run on MSRV.
+  rust_msrv_dev: 1.59.0
+
+  CI: 1
 
 jobs:
   # Depends on all action that are required for a "successful" CI run.
@@ -36,6 +43,7 @@ jobs:
       - check-examples
       - clippy
       - doc
+      - msrv
 
     steps:
       - run: exit 0
@@ -74,7 +82,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - msrv
+          - msrv_dev
     
         include:
           - rust: stable
@@ -86,8 +94,8 @@ jobs:
           - rust: nightly
             toolchain: nightly-2022-01-17
             features: "--all-features"
-          - rust: msrv
-            toolchain: 1.58.0
+          - rust: msrv_dev
+            toolchain: 1.59.0
             features: "--features full"
 
     steps:      
@@ -186,3 +194,27 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: docs # from .cargo/config.toml
+
+  msrv:
+    name: minimal supported rust version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust ${{ env.rust_msrv }}
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ env.rust_msrv }}
+          override: true
+
+      - name: Cache Dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: Check 
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --verbose --features full

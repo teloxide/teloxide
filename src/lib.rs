@@ -88,6 +88,7 @@
 #![cfg_attr(all(feature = "full", docsrs), deny(rustdoc::broken_intra_doc_links))]
 //#![deny(missing_docs)]
 #![warn(clippy::print_stdout, clippy::dbg_macro)]
+#![allow(clippy::let_and_return)]
 // Unless this becomes machine applicable, I'm not adding 334 #[must_use]s (waffle)
 #![allow(clippy::return_self_not_must_use)]
 // Workaround for CI
@@ -115,3 +116,6 @@ mod bot;
 
 // implementation details
 mod serde_multipart;
+
+#[cfg(test)]
+mod codegen;
