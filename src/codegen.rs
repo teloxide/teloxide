@@ -23,7 +23,7 @@ use xshell::{cmd, Shell};
 
 fn ensure_rustfmt(sh: &Shell) {
     // FIXME(waffle): find a better way to set toolchain
-    let toolchain = "nightly-2022-01-17";
+    let toolchain = "nightly-2022-09-23";
 
     let version = cmd!(sh, "rustup run {toolchain} rustfmt --version")
         .read()
@@ -38,7 +38,7 @@ fn ensure_rustfmt(sh: &Shell) {
 }
 
 pub fn reformat(text: String) -> String {
-    let toolchain = "nightly-2022-01-17";
+    let toolchain = "nightly-2022-09-23";
 
     let sh = Shell::new().unwrap();
     ensure_rustfmt(&sh);
