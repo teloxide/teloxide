@@ -1,5 +1,4 @@
-use std::{pin::Pin, sync::Arc};
-use std::future::IntoFuture;
+use std::{future::IntoFuture, pin::Pin, sync::Arc};
 
 use futures::{
     future,

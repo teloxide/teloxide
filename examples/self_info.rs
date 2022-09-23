@@ -13,8 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .parse::<i64>()?,
     );
 
-    let bot = Bot::from_env()
-        .parse_mode(ParseMode::MarkdownV2);
+    let bot = Bot::from_env().parse_mode(ParseMode::MarkdownV2);
 
     let Me { user: me, .. } = bot.get_me().await?;
 

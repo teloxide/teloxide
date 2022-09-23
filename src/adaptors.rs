@@ -5,13 +5,16 @@
 //!
 //! [`Requester`]: crate::requests::Requester
 
-/// [`AutoSend`] bot adaptor which used to allow sending a request without calling
-/// [`send`].
+/// [`AutoSend`] bot adaptor which used to allow sending a request without
+/// calling [`send`].
 ///
 /// [`AutoSend`]: auto_send::AutoSend
 /// [`send`]: crate::requests::Request::send
 #[cfg(feature = "auto_send")]
-#[deprecated(since = "0.8.0", note = "`AutoSend` is no longer required to `.await` requests and is now noop")]
+#[deprecated(
+    since = "0.8.0",
+    note = "`AutoSend` is no longer required to `.await` requests and is now noop"
+)]
 pub mod auto_send;
 
 /// [`CacheMe`] bot adaptor which caches [`GetMe`] requests.

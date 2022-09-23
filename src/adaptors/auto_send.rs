@@ -12,10 +12,10 @@ use crate::{
 /// Before addition of [`IntoFuture`] you could only `.await` [`Future`]s.
 /// This adaptor turned requests into futures, allowing to `.await` them,
 /// without calling `.send()`.
-/// 
+///
 /// Now, however, all requests are required to implement `IntoFuture`, allowing
 /// you to `.await` them directly. This adaptor is noop, and shouldn't be used.
-/// 
+///
 /// [`Future`]: std::future::Future
 #[derive(Clone, Debug)]
 pub struct AutoSend<B> {

@@ -41,7 +41,7 @@ where
     /// Send this request.
     ///
     /// ## Examples
-    /// 
+    ///
     /// ```
     /// # async {
     /// use teloxide_core::{
@@ -57,7 +57,7 @@ where
     /// let method = GetMe::new();
     /// let request = JsonRequest::new(bot, method);
     /// let _: Me = request.send().await.unwrap();
-    /// 
+    ///
     /// // You can also just await requests, without calling `send`:
     /// let method = GetMe::new();
     /// let request = JsonRequest::new(bot, method);
@@ -78,7 +78,7 @@ where
     /// and then serializing it, this method should just serialize the data.)
     ///
     /// ## Examples
-    /// 
+    ///
     /// ```
     /// # async {
     /// use teloxide_core::{prelude::*, requests::Request, types::ChatId, Bot};
@@ -105,7 +105,8 @@ where
     }
 }
 
-// FIXME: re-introduce `Either` impls once `Either: IntoFuture` (or make out own `Either`) (same for `Requester`)
+// FIXME: re-introduce `Either` impls once `Either: IntoFuture` (or make out own
+// `Either`) (same for `Requester`)
 
 // impl<L, R> Request for Either<L, R>
 // where
