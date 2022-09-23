@@ -14,8 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let bot = Bot::from_env()
-        .parse_mode(ParseMode::MarkdownV2)
-        .auto_send();
+        .parse_mode(ParseMode::MarkdownV2);
 
     let Me { user: me, .. } = bot.get_me().await?;
 

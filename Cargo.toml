@@ -99,8 +99,8 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
 
 [[example]]
 name = "self_info"
-required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send"]
+required-features = ["tokio/macros", "tokio/rt-multi-thread"]
 
 [[example]]
 name = "erased"
-required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send", "erased"]
+required-features = ["tokio/macros", "tokio/rt-multi-thread", "erased", "trace_adaptor"]
