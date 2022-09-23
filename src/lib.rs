@@ -17,8 +17,7 @@
 //!     types::{DiceEmoji, ParseMode},
 //! };
 //!
-//! let bot = Bot::from_env()
-//!     .parse_mode(ParseMode::MarkdownV2);
+//! let bot = Bot::from_env().parse_mode(ParseMode::MarkdownV2);
 //!
 //! let me = bot.get_me().await?;
 //!
