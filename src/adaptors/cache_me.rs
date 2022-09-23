@@ -1,4 +1,5 @@
 use std::{pin::Pin, sync::Arc};
+use std::future::IntoFuture;
 
 use futures::{
     future,
@@ -241,6 +242,15 @@ impl<R: Request<Payload = GetMe>> HasPayload for CachedMeRequest<R> {
 
     fn payload_ref(&self) -> &Self::Payload {
         &self.1
+    }
+}
+
+impl<R: Request<Payload = GetMe>> IntoFuture for CachedMeRequest<R> {
+    type Output = Result<Me, R::Err>;
+    type IntoFuture = Send<R>;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
     }
 }
 

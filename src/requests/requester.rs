@@ -1090,30 +1090,30 @@ where
     forward_all! {}
 }
 
-macro_rules! fty_either {
-    ($T:ident) => {
-        either::Either<LR::$T, RR::$T>
-    };
-}
+// macro_rules! fty_either {
+//     ($T:ident) => {
+//         either::Either<LR::$T, RR::$T>
+//     };
+// }
 
-macro_rules! fwd_either {
-    ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
-        match ($this) {
-            either::Either::Left(l) => either::Either::Left(l.$m($($arg),*)),
-            either::Either::Right(r) => either::Either::Right(r.$m($($arg),*)),
-        }
-    };
-}
+// macro_rules! fwd_either {
+//     ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
+//         match ($this) {
+//             either::Either::Left(l) => either::Either::Left(l.$m($($arg),*)),
+//             either::Either::Right(r) =>
+// either::Either::Right(r.$m($($arg),*)),         }
+//     };
+// }
 
-impl<LR, RR> Requester for either::Either<LR, RR>
-where
-    LR: Requester,
-    RR: Requester<Err = LR::Err>,
-{
-    type Err = LR::Err;
+// impl<LR, RR> Requester for either::Either<LR, RR>
+// where
+//     LR: Requester,
+//     RR: Requester<Err = LR::Err>,
+// {
+//     type Err = LR::Err;
 
-    forward_all! { fwd_either, fty_either }
-}
+//     forward_all! { fwd_either, fty_either }
+// }
 
 #[test]
 fn codegen_requester_methods() {

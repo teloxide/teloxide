@@ -1,7 +1,7 @@
-use std::future::Future;
+use std::future::{Future, IntoFuture};
 
-use either::Either;
-use futures::future;
+// use either::Either;
+// use futures::future;
 
 use crate::requests::{HasPayload, Output};
 
@@ -20,12 +20,11 @@ use crate::requests::{HasPayload, Output};
 ///
 /// [`Throttle<B>`]: crate::adaptors::Throttle
 #[cfg_attr(all(any(docsrs, dep_docsrs), feature = "nightly"), doc(notable_trait))]
-pub trait Request: HasPayload {
-    /*
-     * Could be mostly `core::future::IntoFuture` though there is no reason to
-     * use it before it's integrated in async/await
-     */
-
+pub trait Request
+where
+    Self: HasPayload,
+    Self: IntoFuture<Output = Result<Output<Self>, Self::Err>, IntoFuture = Self::Send>,
+{
     /// The type of an error that may happen while sending a request to
     /// Telegram.
     type Err: std::error::Error + Send;
@@ -99,27 +98,29 @@ pub trait Request: HasPayload {
     }
 }
 
-impl<L, R> Request for Either<L, R>
-where
-    L: Request,
-    R: Request<Payload = L::Payload, Err = L::Err>,
-{
-    type Err = L::Err;
+// FIXME: re-introduce `Either` impls once `Either: IntoFuture` (or make out own `Either`) (same for `Requester`)
 
-    type Send = future::Either<L::Send, R::Send>;
+// impl<L, R> Request for Either<L, R>
+// where
+//     L: Request,
+//     R: Request<Payload = L::Payload, Err = L::Err>,
+// {
+//     type Err = L::Err;
 
-    type SendRef = future::Either<L::SendRef, R::SendRef>;
+//     type Send = future::Either<L::Send, R::Send>;
 
-    fn send(self) -> Self::Send {
-        self.map_left(<_>::send)
-            .map_right(<_>::send)
-            .either(future::Either::Left, future::Either::Right)
-    }
+//     type SendRef = future::Either<L::SendRef, R::SendRef>;
 
-    fn send_ref(&self) -> Self::SendRef {
-        self.as_ref()
-            .map_left(<_>::send_ref)
-            .map_right(<_>::send_ref)
-            .either(future::Either::Left, future::Either::Right)
-    }
-}
+//     fn send(self) -> Self::Send {
+//         self.map_left(<_>::send)
+//             .map_right(<_>::send)
+//             .either(future::Either::Left, future::Either::Right)
+//     }
+
+//     fn send_ref(&self) -> Self::SendRef {
+//         self.as_ref()
+//             .map_left(<_>::send_ref)
+//             .map_right(<_>::send_ref)
+//             .either(future::Either::Left, future::Either::Right)
+//     }
+// }

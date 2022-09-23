@@ -1,4 +1,9 @@
-use std::{future::Future, pin::Pin, sync::Arc, time::Instant};
+use std::{
+    future::{Future, IntoFuture},
+    pin::Pin,
+    sync::Arc,
+    time::Instant,
+};
 
 use futures::{
     future::BoxFuture,
@@ -71,6 +76,20 @@ where
         let fut = send(request, chat, self.worker.clone());
 
         ThrottlingSend(Box::pin(fut))
+    }
+}
+
+impl<R> IntoFuture for ThrottlingRequest<R>
+where
+    R: Request + Clone + Send + Sync + 'static,
+    R::Err: AsResponseParameters + Send,
+    Output<R>: Send,
+{
+    type Output = Result<Output<Self>, <Self as Request>::Err>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
     }
 }
 
