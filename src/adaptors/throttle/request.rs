@@ -178,7 +178,7 @@ where
 
             let res = match &mut request {
                 ShareableRequest::Shared(shared) => shared.send_ref().await,
-                ShareableRequest::Owned(owned) => owned.take().unwrap().send().await,
+                ShareableRequest::Owned(owned) => owned.take().unwrap().await,
             };
 
             return res;
@@ -197,7 +197,7 @@ where
                 request.send_ref().await
             }
             (false, ShareableRequest::Shared(shared)) => shared.send_ref().await,
-            (false, ShareableRequest::Owned(owned)) => owned.take().unwrap().send().await,
+            (false, ShareableRequest::Owned(owned)) => owned.take().unwrap().await,
         };
 
         let retry_after = res.as_ref().err().and_then(<_>::retry_after);

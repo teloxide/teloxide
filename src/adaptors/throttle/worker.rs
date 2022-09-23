@@ -9,7 +9,7 @@ use vecrem::VecExt;
 use crate::{
     adaptors::throttle::{request_lock::RequestLock, ChatIdHash, Limits, Settings},
     errors::AsResponseParameters,
-    requests::{Request, Requester},
+    requests::Requester,
 };
 
 const MINUTE: Duration = Duration::from_secs(60);
@@ -321,7 +321,7 @@ async fn freeze(
                 // TODO: maybe not call `get_chat` every time?
 
                 // At this point there isn't much we can do with the error besides ignoring
-                if let Ok(chat) = bot.get_chat(id).send().await {
+                if let Ok(chat) = bot.get_chat(id).await {
                     match chat.slow_mode_delay() {
                         Some(delay) => {
                             let now = Instant::now();

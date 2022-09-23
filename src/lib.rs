@@ -10,7 +10,6 @@
 //! _Compiler support: requires rustc 1.58+_.
 //!
 //! ```
-//! # #[cfg(feature = "auto_send")]
 //! # async {
 //! # let chat_id = teloxide_core::types::ChatId(-1);
 //! use teloxide_core::{
@@ -20,7 +19,6 @@
 //!
 //! let bot = Bot::from_env()
 //!     .parse_mode(ParseMode::MarkdownV2)
-//!     .auto_send();
 //!
 //! let me = bot.get_me().await?;
 //!
@@ -46,7 +44,6 @@
 //! - `native-tls` = use [`native-tls`] tls implementation (**enabled by
 //!   default**)
 //! - `rustls` — use [`rustls`] tls implementation
-//! - `auto_send` — enables [`AutoSend`] bot adaptor
 //! - `trace_adaptor` — enables [`Trace`] bot adaptor
 //! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
@@ -55,6 +52,7 @@
 //! - `nightly` — enables nightly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
+//! - `auto_send` — enables [`AutoSend`] bot adaptor (deprecated)
 //!
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace

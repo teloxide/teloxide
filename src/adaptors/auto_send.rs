@@ -7,32 +7,16 @@ use crate::{
     types::*,
 };
 
-/// Send requests automatically.
+/// Previously was used to send requests automatically.
 ///
-/// Requests returned by `<AutoSend<_> as `[`Requester`]`>` are [`Future`]s
-/// which means that you can simply `.await` them instead of using
-/// `.send().await`.
-///
-/// Notes:
-/// 1. This wrapper should be the most outer i.e.: `AutoSend<CacheMe<Bot>>`
-///    will automatically send requests, while `CacheMe<AutoSend<Bot>>` - won't.
-/// 2. After first call to `poll` on a request you will be unable to access
-///    payload nor could you use [`send_ref`](Request::send_ref).
-///
-/// ## Examples
-///
-/// ```rust
-/// use teloxide_core::{
-///     requests::{Requester, RequesterExt},
-///     types::Me,
-///     Bot,
-/// };
-///
-/// # async {
-/// let bot = Bot::new("TOKEN").auto_send();
-/// let myself: Me = bot.get_me().await?; // No .send()!
-/// # Ok::<_, teloxide_core::RequestError>(()) };
-/// ```
+/// Before addition of [`IntoFuture`] you could only `.await` [`Future`]s.
+/// This adaptor turned requests into futures, allowing to `.await` them,
+/// without calling `.send()`.
+/// 
+/// Now, however, all requests are required to implement `IntoFuture`, allowing
+/// you to `.await` them directly. This adaptor is noop, and shouldn't be used.
+/// 
+/// [`Future`]: std::future::Future
 #[derive(Clone, Debug)]
 pub struct AutoSend<B> {
     bot: B,
