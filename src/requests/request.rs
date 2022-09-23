@@ -56,12 +56,11 @@ where
     /// // Note: it's recommended to `Requester` instead of creating requests directly
     /// let method = GetMe::new();
     /// let request = JsonRequest::new(bot, method);
+    /// let request_clone = request.clone();
     /// let _: Me = request.send().await.unwrap();
     ///
     /// // You can also just await requests, without calling `send`:
-    /// let method = GetMe::new();
-    /// let request = JsonRequest::new(bot, method);
-    /// let _: Me = request.await.unwrap();
+    /// let _: Me = request_clone.await.unwrap();
     /// # };
     /// ```
     #[must_use = "Futures are lazy and do nothing unless polled or awaited"]
