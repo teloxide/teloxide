@@ -102,6 +102,7 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.toolchain }}
           override: true
+          components: rustfmt # required by codegen
 
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v1
