@@ -90,6 +90,13 @@
 #![allow(clippy::return_self_not_must_use)]
 // Workaround for CI
 #![allow(rustdoc::bare_urls)]
+// FIXME: deal with these lints
+#![allow(
+    clippy::collapsible_str_replace,
+    clippy::borrow_deref_ref,
+    clippy::unnecessary_lazy_evaluations,
+    clippy::derive_partial_eq_without_eq
+)]
 
 // The internal helper macros.
 #[macro_use]
