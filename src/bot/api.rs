@@ -20,7 +20,7 @@ impl Requester for Bot {
         Self::GetUpdates::new(self.clone(), payloads::GetUpdates::new())
     }
 
-    type SetWebhook = JsonRequest<payloads::SetWebhook>;
+    type SetWebhook = MultipartRequest<payloads::SetWebhook>;
 
     fn set_webhook(&self, url: Url) -> Self::SetWebhook {
         Self::SetWebhook::new(self.clone(), payloads::SetWebhook::new(url))

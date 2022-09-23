@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr244]: https://github.com/teloxide/teloxide-core/pull/246
 
+### Fixed 
+
+- `SetWebhook` request can now properly send certificate ([#250][pr250])
+
+[pr250]: https://github.com/teloxide/teloxide-core/pull/250
+
 ## 0.7.1 - 2022-08-19
 
 ### Fixed
