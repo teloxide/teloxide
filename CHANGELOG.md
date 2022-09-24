@@ -7,11 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- **You can now `.await` any `Request`!** ([#249][pr249])
+  - `Request` now requires `Self: IntoFuture`
+  - There is no need for `AutoSend` anymore
+- MSRV (Minimal Supported Rust Version) was bumped from `1.58.0` to `1.64.0`
+
 ### Removed
 
 - Methods for creating `InlineQuery` ([#246][pr244])
 
 [pr244]: https://github.com/teloxide/teloxide-core/pull/246
+
+### Deprecated
+
+- `AutoSend` adaptor ([#249][pr249])
+
+[pr249]: https://github.com/teloxide/teloxide-core/pull/249
 
 ## 0.7.1 - 2022-08-19
 

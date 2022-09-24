@@ -29,7 +29,7 @@ const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
 /// use teloxide_core::prelude::*;
 ///
 /// let bot = Bot::new("TOKEN");
-/// dbg!(bot.get_me().send().await?);
+/// dbg!(bot.get_me().await?);
 /// # Ok::<_, teloxide_core::RequestError>(()) };
 /// ```
 ///
@@ -158,7 +158,7 @@ impl Bot {
     /// let url = reqwest::Url::parse("https://localhost/tbas").unwrap();
     /// let bot = Bot::new("TOKEN").set_api_url(url);
     /// // From now all methods will use "https://localhost/tbas" as an API URL.
-    /// bot.get_me().send().await
+    /// bot.get_me().await
     /// # };
     /// ```
     ///

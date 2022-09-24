@@ -24,7 +24,7 @@ exclude = [
 futures = "0.3.5"
 tokio = { version = "1.12.0", features = ["fs"] }
 tokio-util = { version = "0.7.0", features = ["codec"] }
-pin-project = "1.0.3"
+pin-project = "1.0.12"
 bytes = "1.0.0"
 reqwest = { version = "0.11.10", features = ["json", "stream", "multipart"], default-features = false }
 url = { version = "2", features = ["serde"] }
@@ -99,8 +99,8 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
 
 [[example]]
 name = "self_info"
-required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send"]
+required-features = ["tokio/macros", "tokio/rt-multi-thread"]
 
 [[example]]
 name = "erased"
-required-features = ["tokio/macros", "tokio/rt-multi-thread", "auto_send", "erased"]
+required-features = ["tokio/macros", "tokio/rt-multi-thread", "erased", "trace_adaptor"]

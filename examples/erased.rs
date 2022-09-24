@@ -32,9 +32,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     log::info!("Trace settings: {:?}", trace_settings);
 
     let bot = if trace_settings.is_empty() {
-        Bot::from_env().erase().auto_send()
+        Bot::from_env().erase()
     } else {
-        Bot::from_env().trace(trace_settings).erase().auto_send()
+        Bot::from_env().trace(trace_settings).erase()
     };
 
     bot.send_chat_action(chat_id, ChatAction::Typing).await?;

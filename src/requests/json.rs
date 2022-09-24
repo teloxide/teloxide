@@ -1,3 +1,5 @@
+use std::future::IntoFuture;
+
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
@@ -46,6 +48,20 @@ where
 
     fn send_ref(&self) -> Self::SendRef {
         SendRef::new(self)
+    }
+}
+
+impl<P> IntoFuture for JsonRequest<P>
+where
+    P: 'static,
+    P: Payload + Serialize,
+    P::Output: DeserializeOwned,
+{
+    type Output = Result<P::Output, RequestError>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
     }
 }
 

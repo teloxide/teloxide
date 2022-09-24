@@ -7,10 +7,9 @@
 //!```toml
 //! teloxide_core = "0.7"
 //! ```
-//! _Compiler support: requires rustc 1.58+_.
+//! _Compiler support: requires rustc 1.64+_.
 //!
 //! ```
-//! # #[cfg(feature = "auto_send")]
 //! # async {
 //! # let chat_id = teloxide_core::types::ChatId(-1);
 //! use teloxide_core::{
@@ -18,9 +17,7 @@
 //!     types::{DiceEmoji, ParseMode},
 //! };
 //!
-//! let bot = Bot::from_env()
-//!     .parse_mode(ParseMode::MarkdownV2)
-//!     .auto_send();
+//! let bot = Bot::from_env().parse_mode(ParseMode::MarkdownV2);
 //!
 //! let me = bot.get_me().await?;
 //!
@@ -46,7 +43,6 @@
 //! - `native-tls` = use [`native-tls`] tls implementation (**enabled by
 //!   default**)
 //! - `rustls` — use [`rustls`] tls implementation
-//! - `auto_send` — enables [`AutoSend`] bot adaptor
 //! - `trace_adaptor` — enables [`Trace`] bot adaptor
 //! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
@@ -55,6 +51,7 @@
 //! - `nightly` — enables nightly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
+//! - `auto_send` — enables [`AutoSend`] bot adaptor (deprecated)
 //!
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace
@@ -93,6 +90,13 @@
 #![allow(clippy::return_self_not_must_use)]
 // Workaround for CI
 #![allow(rustdoc::bare_urls)]
+// FIXME: deal with these lints
+#![allow(
+    clippy::collapsible_str_replace,
+    clippy::borrow_deref_ref,
+    clippy::unnecessary_lazy_evaluations,
+    clippy::derive_partial_eq_without_eq
+)]
 
 // The internal helper macros.
 #[macro_use]

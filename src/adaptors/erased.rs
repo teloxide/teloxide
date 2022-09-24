@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{future::IntoFuture, sync::Arc};
 
 use futures::{future::BoxFuture, FutureExt};
 use reqwest::Url;
@@ -51,7 +51,8 @@ pub struct ErasedRequest<'a, T, E> {
     inner: Box<dyn ErasableRequest<'a, Payload = T, Err = E> + 'a>,
 }
 
-impl<'a, T, E> ErasedRequest<'a, T, E> {
+// `T: Payload` required b/c of <https://github.com/rust-lang/rust/issues/102185>
+impl<'a, T: Payload, E> ErasedRequest<'a, T, E> {
     pub(crate) fn erase(request: impl Request<Payload = T, Err = E> + 'a) -> Self {
         Self {
             inner: Box::new(request),
@@ -91,6 +92,19 @@ where
 
     fn send_ref(&self) -> Self::SendRef {
         self.inner.send_ref()
+    }
+}
+
+impl<'a, T, E> IntoFuture for ErasedRequest<'a, T, E>
+where
+    T: Payload,
+    E: std::error::Error + Send,
+{
+    type Output = Result<Output<Self>, <Self as Request>::Err>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
     }
 }
 

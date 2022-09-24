@@ -32,8 +32,7 @@ use crate::{
 /// bot.send_message(chat_id, "<b>Text</b>")
 ///     // Optional parameters can be supplied by calling setters
 ///     .parse_mode(ParseMode::Html)
-///     // To send request to telegram you need to call `.send()` and await the resulting future
-///     .send()
+///     // To send request to telegram you need to `.await` the request
 ///     .await?;
 /// # Ok::<_, teloxide_core::RequestError>(())
 /// # };
@@ -51,7 +50,7 @@ use crate::{
 /// where
 ///     R: Requester,
 /// {
-///     bot.send_message(chat, "hi").send().await.expect("error")
+///     bot.send_message(chat, "hi").await.expect("error")
 /// }
 /// ```
 #[cfg_attr(all(any(docsrs, dep_docsrs), feature = "nightly"), doc(notable_trait))]
@@ -1090,30 +1089,30 @@ where
     forward_all! {}
 }
 
-macro_rules! fty_either {
-    ($T:ident) => {
-        either::Either<LR::$T, RR::$T>
-    };
-}
+// macro_rules! fty_either {
+//     ($T:ident) => {
+//         either::Either<LR::$T, RR::$T>
+//     };
+// }
 
-macro_rules! fwd_either {
-    ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
-        match ($this) {
-            either::Either::Left(l) => either::Either::Left(l.$m($($arg),*)),
-            either::Either::Right(r) => either::Either::Right(r.$m($($arg),*)),
-        }
-    };
-}
+// macro_rules! fwd_either {
+//     ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
+//         match ($this) {
+//             either::Either::Left(l) => either::Either::Left(l.$m($($arg),*)),
+//             either::Either::Right(r) =>
+// either::Either::Right(r.$m($($arg),*)),         }
+//     };
+// }
 
-impl<LR, RR> Requester for either::Either<LR, RR>
-where
-    LR: Requester,
-    RR: Requester<Err = LR::Err>,
-{
-    type Err = LR::Err;
+// impl<LR, RR> Requester for either::Either<LR, RR>
+// where
+//     LR: Requester,
+//     RR: Requester<Err = LR::Err>,
+// {
+//     type Err = LR::Err;
 
-    forward_all! { fwd_either, fty_either }
-}
+//     forward_all! { fwd_either, fty_either }
+// }
 
 #[test]
 fn codegen_requester_methods() {

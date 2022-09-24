@@ -4,6 +4,7 @@ use crate::{adaptors::DefaultParseMode, requests::Requester, types::ParseMode};
 use crate::adaptors::CacheMe;
 
 #[cfg(feature = "auto_send")]
+#[allow(deprecated)]
 use crate::adaptors::AutoSend;
 
 #[cfg(feature = "erased")]
@@ -28,6 +29,11 @@ pub trait RequesterExt: Requester {
 
     /// Send requests automatically, see [`AutoSend`] for more.
     #[cfg(feature = "auto_send")]
+    #[deprecated(
+        since = "0.8.0",
+        note = "`AutoSend` is no longer required to `.await` requests and is now noop"
+    )]
+    #[allow(deprecated)]
     fn auto_send(self) -> AutoSend<Self>
     where
         Self: Sized,
