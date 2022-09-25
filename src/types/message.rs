@@ -7,7 +7,7 @@ use url::Url;
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
     InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
-    MessageEntityRef, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
+    MessageEntityRef, MessageId, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
     SuccessfulPayment, True, User, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
     VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData,
 };
@@ -18,8 +18,8 @@ use crate::types::{
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Message {
     /// Unique message identifier inside this chat.
-    #[serde(rename = "message_id")]
-    pub id: i32,
+    #[serde(flatten)]
+    pub id: MessageId,
 
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
@@ -1158,7 +1158,11 @@ impl Message {
     /// [`url`]: Message::url
     #[track_caller]
     #[must_use]
-    pub fn url_of(chat_id: ChatId, chat_username: Option<&str>, message_id: i32) -> Option<Url> {
+    pub fn url_of(
+        chat_id: ChatId,
+        chat_username: Option<&str>,
+        message_id: MessageId,
+    ) -> Option<Url> {
         use BareChatId::*;
 
         // Note: `t.me` links use bare chat ids
@@ -1181,10 +1185,10 @@ impl Message {
         let url = match chat_username {
             // If it's public group (i.e. not DM, not private group), we can produce
             // "normal" t.me link (accessible to everyone).
-            Some(username) => format!("https://t.me/{0}/{1}", username, message_id),
+            Some(username) => format!("https://t.me/{0}/{1}", username, message_id.0),
             // For private supergroups and channels we produce "private" t.me/c links. These are
             // only accessible to the group members.
-            None => format!("https://t.me/c/{0}/{1}", chat_id, message_id),
+            None => format!("https://t.me/c/{0}/{1}", chat_id, message_id.0),
         };
 
         // UNWRAP:
@@ -1276,11 +1280,11 @@ impl Message {
     pub fn url_in_thread_of(
         chat_id: ChatId,
         chat_username: Option<&str>,
-        thread_starter_msg_id: i32,
-        message_id: i32,
+        thread_starter_msg_id: MessageId,
+        message_id: MessageId,
     ) -> Option<Url> {
         Self::url_of(chat_id, chat_username, message_id).map(|mut url| {
-            url.set_query(Some(&format!("thread={thread_starter_msg_id}")));
+            url.set_query(Some(&format!("thread={}", thread_starter_msg_id.0)));
             url
         })
     }
