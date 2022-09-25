@@ -7,12 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added 
+
+- Support for Telegram Bot API [version 6.2](https://core.telegram.org/bots/api#august-12-2022) ([#251][pr251])
+
+[pr251]: https://github.com/teloxide/teloxide-core/pull/251
+
 ### Changed
 
 - **You can now `.await` any `Request`!** ([#249][pr249])
   - `Request` now requires `Self: IntoFuture`
   - There is no need for `AutoSend` anymore
 - MSRV (Minimal Supported Rust Version) was bumped from `1.58.0` to `1.64.0`
+- Refactored `Sticker` and related types ([#251][pr251])
 
 ### Removed
 
