@@ -166,6 +166,9 @@ macro_rules! fwd_erased {
     (@convert $m:ident, $arg:ident, errors : $T:ty) => {
         $arg.into_iter().collect()
     };
+    (@convert $m:ident, $arg:ident, custom_emoji_ids : $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert $m:ident, $arg:ident, $arg_:ident : $T:ty) => {
         $arg.into()
     };
@@ -258,6 +261,7 @@ where
         delete_message,
         send_sticker,
         get_sticker_set,
+        get_custom_emoji_stickers,
         upload_sticker_file,
         create_new_sticker_set,
         add_sticker_to_set,
@@ -712,6 +716,11 @@ trait ErasableRequester<'a> {
     ) -> ErasedRequest<'a, SendSticker, Self::Err>;
 
     fn get_sticker_set(&self, name: String) -> ErasedRequest<'a, GetStickerSet, Self::Err>;
+
+    fn get_custom_emoji_stickers(
+        &self,
+        custom_emoji_ids: Vec<String>,
+    ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err>;
 
     fn upload_sticker_file(
         &self,
@@ -1424,6 +1433,13 @@ where
 
     fn get_sticker_set(&self, name: String) -> ErasedRequest<'a, GetStickerSet, Self::Err> {
         Requester::get_sticker_set(self, name).erase()
+    }
+
+    fn get_custom_emoji_stickers(
+        &self,
+        custom_emoji_ids: Vec<String>,
+    ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err> {
+        Requester::get_custom_emoji_stickers(self, custom_emoji_ids).erase()
     }
 
     fn upload_sticker_file(

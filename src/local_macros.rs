@@ -1087,6 +1087,14 @@ macro_rules! requester_forward {
             $body!(get_sticker_set this (name: N))
         }
     };
+    (@method get_custom_emoji_stickers $body:ident $ty:ident) => {
+        type GetCustomEmojiStickers = $ty![GetCustomEmojiStickers];
+
+        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = String> {
+            let this = self;
+            $body!(get_custom_emoji_stickers this (custom_emoji_ids: C))
+        }
+    };
     (@method upload_sticker_file $body:ident $ty:ident) => {
         type UploadStickerFile = $ty![UploadStickerFile];
 

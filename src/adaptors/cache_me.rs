@@ -169,6 +169,7 @@ where
         delete_message,
         send_sticker,
         get_sticker_set,
+        get_custom_emoji_stickers,
         upload_sticker_file,
         create_new_sticker_set,
         add_sticker_to_set,
