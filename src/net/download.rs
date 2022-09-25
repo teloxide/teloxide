@@ -42,7 +42,7 @@ pub trait Download<'w>
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
     ///
-    /// let TgFile { file_path, .. } = bot.get_file("*file_id*").send().await?;
+    /// let TgFile { file_path, .. } = bot.get_file("*file_id*").await?;
     /// let mut file = File::create("/tmp/test.png").await?;
     /// bot.download_file(&file_path, &mut file).await?;
     /// # Ok(()) }

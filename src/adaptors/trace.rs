@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    future::Future,
+    future::{Future, IntoFuture},
     pin::Pin,
     task::{self, Poll},
 };
@@ -306,6 +306,21 @@ where
             trace_fn: self.trace_response_fn(),
             inner: self.inner.send_ref(),
         }
+    }
+}
+
+impl<R> IntoFuture for TraceRequest<R>
+where
+    R: Request,
+    Output<R>: Debug,
+    R::Err: Debug,
+    R::Payload: Debug,
+{
+    type Output = Result<Output<Self>, <Self as Request>::Err>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
     }
 }
 

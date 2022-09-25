@@ -17,26 +17,8 @@ pub struct KeyboardButton {
 
     /// Request something from user. This is available in private chats only.
     ///
-    /// - If `Some(Contact)`, the user's phone number will be sent as a contact
-    ///   when the button is pressed.
-    /// - If `Some(Location)`, the user's current location will be sent when the
-    ///   button is pressed.
-    /// - If `Some(Poll(_))`, the user will be asked to create a poll and send
-    ///   it to the bot when the button is pressed.
-    /// - If `Some(WebApp(_))`, the described Web App will be launched when the
-    ///   button is pressed. The Web App will be able to send a “web_app_data”
-    ///   service message.
-    ///
-    /// **Note:** `Contact` and `Location` options will only work in Telegram
-    /// versions released after 9 April, 2016. Older clients will display
-    /// unsupported message.
-    ///
-    /// **Note:** `Poll(_)` option will only work in Telegram versions released
-    /// after 23 January, 2020. Older clients will display unsupported message.
-    ///
-    /// **Note:** `WebApp(_)` option will only work in Telegram versions
-    /// released after 16 April, 2022. Older clients will display unsupported
-    /// message.
+    /// See [`ButtonRequest`] documentation for options on what can be
+    /// requested.
     #[serde(flatten)]
     pub request: Option<ButtonRequest>,
 }
@@ -61,13 +43,38 @@ impl KeyboardButton {
     }
 }
 
-// Serialize + Deserialize are implemented by hand
-// FIXME: add documentation
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+/// Request something from user, when a button is pressed.
+///
+/// See individual variants documentation for more info.
+#[derive(Clone, Debug, Eq, Hash, PartialEq /*, Serialize, Deserialize */)]
 pub enum ButtonRequest {
+    /// If this variant is used, the user's current location will be sent when
+    /// the button is pressed.
+    ///
+    /// **Note:** this option will only work in Telegram versions released after
+    /// 9 April, 2016. Older clients will display unsupported message.
     Location,
+
+    /// If this variant is used, the user's phone number will be sent as a
+    /// contact when the button is pressed.
+    ///
+    /// **Note:** this option will only work in Telegram versions released after
+    /// 9 April, 2016. Older clients will display unsupported message.
     Contact,
+
+    /// If this variant is used, the user will be asked to create a poll and
+    /// send it to the bot when the button is pressed.
+    ///
+    /// **Note:** this option will only work in Telegram versions released after
+    /// 23 January, 2020. Older clients will display unsupported message.
     Poll(KeyboardButtonPollType),
+
+    /// If this variant is used, the described Web App will be launched when the
+    /// button is pressed. The Web App will be able to send a “web_app_data”
+    /// service message.
+    ///
+    /// **Note:** this option will only work in Telegram versions released after
+    /// 16 April, 2022. Older clients will display unsupported message.
     WebApp(WebAppInfo),
 }
 
