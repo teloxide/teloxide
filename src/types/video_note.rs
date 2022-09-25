@@ -1,6 +1,7 @@
+use derive_more::Deref;
 use serde::{Deserialize, Serialize};
 
-use crate::types::PhotoSize;
+use crate::types::{FileMeta, PhotoSize};
 
 /// This object represents a [video message] (available in Telegram apps as of
 /// [v.4.0]).
@@ -10,15 +11,12 @@ use crate::types::PhotoSize;
 /// [video message]: https://telegram.org/blog/video-messages-and-telescope
 /// [v4.0]: https://telegram.org/blog/video-messages-and-telescope
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
 pub struct VideoNote {
-    /// Identifier for this file.
-    pub file_id: String,
-
-    /// Unique identifier for this file, which is supposed to be the same over
-    /// time and for different bots. Can't be used to download or reuse the
-    /// file.
-    pub file_unique_id: String,
+    /// Metadata of the video note file.
+    #[deref]
+    #[serde(flatten)]
+    pub file: FileMeta,
 
     /// Video width and height (diameter of the video message) as defined by
     /// sender.
@@ -29,8 +27,4 @@ pub struct VideoNote {
 
     /// Video thumbnail.
     pub thumb: Option<PhotoSize>,
-
-    /// File size in bytes.
-    #[serde(default = "crate::types::file::file_size_fallback")]
-    pub file_size: u32,
 }
