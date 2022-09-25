@@ -119,8 +119,8 @@ pub enum StickerFormat {
 /// let _ = sticker.is_regular();
 /// let _ = sticker.kind.is_regular();
 ///
-/// let _ sticker.mask_position();
-/// let _ sticker.kind.mask_position();
+/// let _ = sticker.mask_position();
+/// let _ = sticker.kind.mask_position();
 /// ```
 impl Deref for Sticker {
     type Target = StickerKind;
@@ -418,7 +418,7 @@ mod tests {
     #[test]
     fn sticker_format_serde() {
         {
-            let json = r#"{"is_animation":false,"is_video":false}"#;
+            let json = r#"{"is_animated":false,"is_video":false}"#;
             let fmt: StickerFormat = serde_json::from_str(json).unwrap();
             assert_eq!(fmt, StickerFormat::Raster);
 
@@ -426,7 +426,7 @@ mod tests {
             assert_eq!(json, json2);
         }
         {
-            let json = r#"{"is_animation":true,"is_video":false}"#;
+            let json = r#"{"is_animated":true,"is_video":false}"#;
             let fmt: StickerFormat = serde_json::from_str(json).unwrap();
             assert_eq!(fmt, StickerFormat::Animated);
 
@@ -434,7 +434,7 @@ mod tests {
             assert_eq!(json, json2);
         }
         {
-            let json = r#"{"is_animation":false,"is_video":true}"#;
+            let json = r#"{"is_animated":false,"is_video":true}"#;
             let fmt: StickerFormat = serde_json::from_str(json).unwrap();
             assert_eq!(fmt, StickerFormat::Video);
 
@@ -442,7 +442,7 @@ mod tests {
             assert_eq!(json, json2);
         }
         {
-            let json = r#"{"is_animation":true,"is_video":true}"#;
+            let json = r#"{"is_animated":true,"is_video":true}"#;
             let fmt: Result<StickerFormat, _> = serde_json::from_str(json);
             assert!(fmt.is_err());
         }
