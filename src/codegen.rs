@@ -15,6 +15,7 @@ pub(crate) mod schema;
 
 use std::{
     fs,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -79,25 +80,32 @@ pub fn ensure_files_contents<'a>(
 ) {
     let mut err_count = 0;
 
-    for (file, contents) in files_and_contents {
-        if let Ok(old_contents) = fs::read_to_string(file) {
-            if normalize_newlines(&old_contents) == normalize_newlines(contents) {
-                // File is already up to date.
-                continue;
-            }
+    for (path, contents) in files_and_contents {
+        let mut file = fs::File::options()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path)
+            .unwrap();
+        let mut old_contents = String::with_capacity(contents.len());
+        file.read_to_string(&mut old_contents).unwrap();
 
-            err_count += 1;
-
-            let display_path = file.strip_prefix(&project_root()).unwrap_or(file);
-            eprintln!(
-                "\n\x1b[31;1merror\x1b[0m: {} was not up-to-date, updating\n",
-                display_path.display()
-            );
-            if let Some(parent) = file.parent() {
-                let _ = fs::create_dir_all(parent);
-            }
-            fs::write(file, contents).unwrap();
+        if normalize_newlines(&old_contents) == normalize_newlines(contents) {
+            // File is already up to date.
+            continue;
         }
+
+        err_count += 1;
+
+        let display_path = path.strip_prefix(&project_root()).unwrap_or(path);
+        eprintln!(
+            "\n\x1b[31;1merror\x1b[0m: {} was not up-to-date, updating\n",
+            display_path.display()
+        );
+        if let Some(parent) = path.parent() {
+            let _ = fs::create_dir_all(parent);
+        }
+        file.write_all(contents.as_bytes()).unwrap();
     }
 
     let (s, were) = match err_count {
