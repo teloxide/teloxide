@@ -344,6 +344,7 @@ mod test {
                         last_name: None,
                         bio: None,
                         has_private_forwards: None,
+                        has_restricted_voice_and_video_messages: None,
                     }),
                     photo: None,
                     pinned_message: None,
