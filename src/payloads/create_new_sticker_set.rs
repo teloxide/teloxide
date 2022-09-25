@@ -26,6 +26,7 @@ impl_payload! {
         }
         optional {
             /// Type of stickers in the set, pass “regular” or “mask”. Custom emoji sticker sets can't be created via the Bot API at the moment. By default, a regular sticker set is created.
+            #[serde(flatten)]
             pub sticker_type: StickerType,
             /// A JSON-serialized object for position where the mask should be placed on faces
             pub mask_position: MaskPosition,

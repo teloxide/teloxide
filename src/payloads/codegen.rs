@@ -222,7 +222,9 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
             let field = &param.name;
             let ty = &param.ty;
             let flatten = match ty {
-                Type::RawTy(s) if s == "InputSticker" || s == "TargetMessage" => {
+                Type::RawTy(s)
+                    if s == "InputSticker" || s == "TargetMessage" || s == "StickerType" =>
+                {
                     "\n            #[serde(flatten)]"
                 }
                 _ => "",
