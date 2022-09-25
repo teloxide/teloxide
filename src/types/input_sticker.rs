@@ -34,5 +34,6 @@ pub enum InputSticker {
     /// WEBM video with the sticker, uploaded using multipart/form-data.
     ///
     /// See <https://core.telegram.org/stickers#video-sticker-requirements> for technical requirements.
+    #[serde(rename = "webm_sticker")]
     Webm(InputFile),
 }
