@@ -86,6 +86,7 @@ pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
 pub use response_parameters::*;
 pub use sent_web_app_message::*;
+use serde::Serialize;
 pub use shipping_address::*;
 pub use shipping_option::*;
 pub use shipping_query::*;
@@ -404,4 +405,14 @@ pub(crate) mod duration_secs {
             assert_eq!(serde_json::to_string(&duration).unwrap(), json.to_owned());
         }
     }
+}
+
+pub(crate) fn serialize_reply_to_message_id<S>(
+    this: &Option<MessageId>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    this.map(|MessageId(id)| id).serialize(serializer)
 }

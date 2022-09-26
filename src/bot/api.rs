@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, Recipient, UserId,
+        InputSticker, LabeledPrice, MessageId, Recipient, UserId,
     },
     Bot,
 };
@@ -60,7 +60,7 @@ impl Requester for Bot {
         &self,
         chat_id: C,
         from_chat_id: F,
-        message_id: i32,
+        message_id: MessageId,
     ) -> Self::ForwardMessage
     where
         C: Into<Recipient>,
@@ -168,7 +168,7 @@ impl Requester for Bot {
     fn edit_message_live_location<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> Self::EditMessageLiveLocation
@@ -203,7 +203,7 @@ impl Requester for Bot {
     fn stop_message_live_location<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> Self::StopMessageLiveLocation
@@ -564,7 +564,7 @@ impl Requester for Bot {
 
     type PinChatMessage = JsonRequest<payloads::PinChatMessage>;
 
-    fn pin_chat_message<C>(&self, chat_id: C, message_id: i32) -> Self::PinChatMessage
+    fn pin_chat_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::PinChatMessage
     where
         C: Into<Recipient>,
     {
@@ -756,7 +756,12 @@ impl Requester for Bot {
 
     type EditMessageText = JsonRequest<payloads::EditMessageText>;
 
-    fn edit_message_text<C, T>(&self, chat_id: C, message_id: i32, text: T) -> Self::EditMessageText
+    fn edit_message_text<C, T>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+        text: T,
+    ) -> Self::EditMessageText
     where
         C: Into<Recipient>,
         T: Into<String>,
@@ -786,7 +791,7 @@ impl Requester for Bot {
 
     type EditMessageCaption = JsonRequest<payloads::EditMessageCaption>;
 
-    fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> Self::EditMessageCaption
+    fn edit_message_caption<C>(&self, chat_id: C, message_id: MessageId) -> Self::EditMessageCaption
     where
         C: Into<Recipient>,
     {
@@ -813,7 +818,7 @@ impl Requester for Bot {
     fn edit_message_media<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         media: InputMedia,
     ) -> Self::EditMessageMedia
     where
@@ -846,7 +851,7 @@ impl Requester for Bot {
     fn edit_message_reply_markup<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
     ) -> Self::EditMessageReplyMarkup
     where
         C: Into<Recipient>,
@@ -874,7 +879,7 @@ impl Requester for Bot {
 
     type StopPoll = JsonRequest<payloads::StopPoll>;
 
-    fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> Self::StopPoll
+    fn stop_poll<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopPoll
     where
         C: Into<Recipient>,
     {
@@ -883,7 +888,7 @@ impl Requester for Bot {
 
     type DeleteMessage = JsonRequest<payloads::DeleteMessage>;
 
-    fn delete_message<C>(&self, chat_id: C, message_id: i32) -> Self::DeleteMessage
+    fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage
     where
         C: Into<Recipient>,
     {
@@ -1139,7 +1144,7 @@ impl Requester for Bot {
         user_id: UserId,
         score: u64,
         chat_id: u32,
-        message_id: i64,
+        message_id: MessageId,
     ) -> Self::SetGameScore {
         Self::SetGameScore::new(
             self.clone(),
@@ -1190,7 +1195,12 @@ impl Requester for Bot {
 
     type CopyMessage = JsonRequest<payloads::CopyMessage>;
 
-    fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage
+    fn copy_message<C, F>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_id: MessageId,
+    ) -> Self::CopyMessage
     where
         C: Into<Recipient>,
         F: Into<Recipient>,

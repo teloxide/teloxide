@@ -312,14 +312,14 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         from_chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, ForwardMessage, Self::Err>;
 
     fn copy_message(
         &self,
         chat_id: Recipient,
         from_chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err>;
 
     fn send_photo(
@@ -380,7 +380,7 @@ trait ErasableRequester<'a> {
     fn edit_message_live_location(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, EditMessageLiveLocation, Self::Err>;
@@ -395,7 +395,7 @@ trait ErasableRequester<'a> {
     fn stop_message_live_location(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocation, Self::Err>;
@@ -562,7 +562,7 @@ trait ErasableRequester<'a> {
     fn pin_chat_message(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, PinChatMessage, Self::Err>;
 
     fn unpin_chat_message(
@@ -652,7 +652,7 @@ trait ErasableRequester<'a> {
     fn edit_message_text(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         text: String,
     ) -> ErasedRequest<'a, EditMessageText, Self::Err>;
 
@@ -665,7 +665,7 @@ trait ErasableRequester<'a> {
     fn edit_message_caption(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, EditMessageCaption, Self::Err>;
 
     fn edit_message_caption_inline(
@@ -676,7 +676,7 @@ trait ErasableRequester<'a> {
     fn edit_message_media(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         media: InputMedia,
     ) -> ErasedRequest<'a, EditMessageMedia, Self::Err>;
 
@@ -689,7 +689,7 @@ trait ErasableRequester<'a> {
     fn edit_message_reply_markup(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, EditMessageReplyMarkup, Self::Err>;
 
     fn edit_message_reply_markup_inline(
@@ -700,13 +700,13 @@ trait ErasableRequester<'a> {
     fn stop_poll(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, StopPoll, Self::Err>;
 
     fn delete_message(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err>;
 
     fn send_sticker(
@@ -815,7 +815,7 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         score: u64,
         chat_id: u32,
-        message_id: i64,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, SetGameScore, Self::Err>;
 
     fn set_game_score_inline(
@@ -878,7 +878,7 @@ where
         &self,
         chat_id: Recipient,
         from_chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, ForwardMessage, Self::Err> {
         Requester::forward_message(self, chat_id, from_chat_id, message_id).erase()
     }
@@ -887,7 +887,7 @@ where
         &self,
         chat_id: Recipient,
         from_chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err> {
         Requester::copy_message(self, chat_id, from_chat_id, message_id).erase()
     }
@@ -968,7 +968,7 @@ where
     fn edit_message_live_location(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, EditMessageLiveLocation, Self::Err> {
@@ -989,7 +989,7 @@ where
     fn stop_message_live_location(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocation, Self::Err> {
@@ -1214,7 +1214,7 @@ where
     fn pin_chat_message(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, PinChatMessage, Self::Err> {
         Requester::pin_chat_message(self, chat_id, message_id).erase()
     }
@@ -1346,7 +1346,7 @@ where
     fn edit_message_text(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         text: String,
     ) -> ErasedRequest<'a, EditMessageText, Self::Err> {
         Requester::edit_message_text(self, chat_id, message_id, text).erase()
@@ -1363,7 +1363,7 @@ where
     fn edit_message_caption(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, EditMessageCaption, Self::Err> {
         Requester::edit_message_caption(self, chat_id, message_id).erase()
     }
@@ -1378,7 +1378,7 @@ where
     fn edit_message_media(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
         media: InputMedia,
     ) -> ErasedRequest<'a, EditMessageMedia, Self::Err> {
         Requester::edit_message_media(self, chat_id, message_id, media).erase()
@@ -1395,7 +1395,7 @@ where
     fn edit_message_reply_markup(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, EditMessageReplyMarkup, Self::Err> {
         Requester::edit_message_reply_markup(self, chat_id, message_id).erase()
     }
@@ -1410,7 +1410,7 @@ where
     fn stop_poll(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, StopPoll, Self::Err> {
         Requester::stop_poll(self, chat_id, message_id).erase()
     }
@@ -1418,7 +1418,7 @@ where
     fn delete_message(
         &self,
         chat_id: Recipient,
-        message_id: i32,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err> {
         Requester::delete_message(self, chat_id, message_id).erase()
     }
@@ -1576,7 +1576,7 @@ where
         user_id: UserId,
         score: u64,
         chat_id: u32,
-        message_id: i64,
+        message_id: MessageId,
     ) -> ErasedRequest<'a, SetGameScore, Self::Err> {
         Requester::set_game_score(self, user_id, score, chat_id, message_id).erase()
     }

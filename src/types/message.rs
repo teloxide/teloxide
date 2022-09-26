@@ -1206,7 +1206,7 @@ impl Message {
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
     #[must_use]
-    pub fn comment_url(&self, comment_id: i32) -> Option<Url> {
+    pub fn comment_url(&self, comment_id: MessageId) -> Option<Url> {
         Self::comment_url_of(self.chat.id, self.chat.username(), self.id, comment_id)
     }
 
@@ -1228,11 +1228,11 @@ impl Message {
     pub fn comment_url_of(
         channel_id: ChatId,
         channel_username: Option<&str>,
-        post_id: i32,
-        comment_id: i32,
+        post_id: MessageId,
+        comment_id: MessageId,
     ) -> Option<Url> {
         Self::url_of(channel_id, channel_username, post_id).map(|mut url| {
-            url.set_query(Some(&format!("comment={comment_id}")));
+            url.set_query(Some(&format!("comment={}", comment_id.0)));
             url
         })
     }
@@ -1249,7 +1249,7 @@ impl Message {
     /// Returns `None` for private chats (i.e.: DMs) and private groups (not
     /// supergroups).
     #[must_use]
-    pub fn url_in_thread(&self, thread_starter_msg_id: i32) -> Option<Url> {
+    pub fn url_in_thread(&self, thread_starter_msg_id: MessageId) -> Option<Url> {
         Self::url_in_thread_of(
             self.chat.id,
             self.chat.username(),

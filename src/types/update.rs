@@ -297,7 +297,7 @@ impl Serialize for UpdateKind {
 mod test {
     use crate::types::{
         Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageKind, Update, UpdateKind, User, UserId,
+        MessageKind, Update, UpdateKind, User, UserId, MessageId
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
@@ -334,7 +334,7 @@ mod test {
             id: 892_252_934,
             kind: UpdateKind::Message(Message {
                 via_bot: None,
-                id: 6557,
+                id: MessageId(6557),
                 date,
                 chat: Chat {
                     id: ChatId(218_485_655),

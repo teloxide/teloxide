@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputMedia, Message, Recipient};
+use crate::types::{InputMedia, Message, MessageId, Recipient};
 
 impl_payload! {
     /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
@@ -24,7 +24,8 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i32,
+            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
+            pub reply_to_message_id: MessageId,
             /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
             pub allow_sending_without_reply: bool,
         }

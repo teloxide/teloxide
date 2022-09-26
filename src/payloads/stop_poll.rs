@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, Poll, Recipient};
+use crate::types::{InlineKeyboardMarkup, MessageId, Poll, Recipient};
 
 impl_payload! {
     /// Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
@@ -12,7 +12,8 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
             pub chat_id: Recipient [into],
             /// Identifier of the message to edit
-            pub message_id: i32,
+            #[serde(flatten)]
+            pub message_id: MessageId,
         }
         optional {
             /// A JSON-serialized object for an [inline keyboard].

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A unique message identifier.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MessageId(#[serde(rename = "message_id")] pub i32);
 
 #[cfg(test)]
