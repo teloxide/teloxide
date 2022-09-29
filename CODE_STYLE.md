@@ -196,3 +196,9 @@ warn!("Everything is on fire");
 ```
 
 **Rationale:** uniformity, it's clearer which log crate is used.
+
+## `&str` -> `String` conversion
+
+Prefer using `.to_owned()`, rather than `.to_string()`, `.into()`, `String::from`, etc.
+
+**Rationale:** uniformity, intent clarity.
