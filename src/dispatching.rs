@@ -102,10 +102,7 @@
 //! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
 //! other combinators in the same way!
 //!
-//! Finally, we define our endpoints via simple `async` functions like this:
-//!
-//! <details>
-//! <summary>Show the endpoints</summary>
+//! Finally, we define our endpoints:
 //!
 //! ```no_run
 //! # use teloxide::Bot;
@@ -119,23 +116,18 @@
 //! async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn help(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn cancel(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn invalid_state(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn receive_product_selection(
 //!     bot: Bot,
 //!     q: CallbackQuery,
@@ -145,8 +137,6 @@
 //!     todo!()
 //! }
 //! ```
-//!
-//! </details>
 //!
 //! Each parameter is supplied as a dependency by teloxide. In particular:
 //!  - `bot: Bot` comes from the dispatcher (see below)
