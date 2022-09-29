@@ -92,9 +92,9 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting throw dice bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+    teloxide::repl(bot, |message: Message, bot: Bot| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })
@@ -129,7 +129,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting command bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     teloxide::commands_repl(bot, answer, Command::ty()).await;
 }
@@ -146,7 +146,7 @@ enum Command {
 }
 
 async fn answer(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     message: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -190,18 +190,18 @@ use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveAge { full_name: String },
-    ReceiveLocation { full_name: String, age: u8 },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveAge {
+        full_name: String,
+    },
+    ReceiveLocation {
+        full_name: String,
+        age: u8,
+    },
 }
 
 #[tokio::main]
@@ -209,7 +209,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dialogue bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     Dispatcher::builder(
         bot,
@@ -229,17 +229,13 @@ async fn main() {
     .await;
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn receive_full_name(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> HandlerResult {
+async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -254,7 +250,7 @@ async fn receive_full_name(
 }
 
 async fn receive_age(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     msg: Message,
     dialogue: MyDialogue,
     full_name: String, // Available from `State::ReceiveAge`.
@@ -273,7 +269,7 @@ async fn receive_age(
 }
 
 async fn receive_location(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     msg: Message,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.

@@ -38,7 +38,7 @@
 //! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //! # #[derive(Clone, Debug)] enum State { ReceiveLocation { full_name: String, age: u8 } }
 //! async fn receive_age(
-//!     bot: AutoSend<Bot>,
+//!     bot: Bot,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
 //!     full_name: String, // Available from `State::ReceiveAge`.
@@ -70,7 +70,7 @@
 //! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //! # #[derive(Clone, Debug)] enum State {}
 //! async fn receive_location(
-//!     bot: AutoSend<Bot>,
+//!     bot: Bot,
 //!     msg: Message,
 //!     dialogue: MyDialogue,
 //!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
