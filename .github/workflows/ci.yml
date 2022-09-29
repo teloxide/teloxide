@@ -20,7 +20,7 @@ env:
   # - README.md
   # - src/lib.rs
   # - down below in a matrix
-  rust_msrv: 1.58.0
+  rust_msrv: 1.64.0
 
 jobs:
   # Depends on all action that are required for a "successful" CI run.
@@ -85,7 +85,7 @@ jobs:
             toolchain: nightly-2022-09-01
             features: "--all-features"
           - rust: msrv
-            toolchain: 1.58.0
+            toolchain: 1.64.0
             features: "--features full"
 
     steps:      
