@@ -202,3 +202,191 @@ warn!("Everything is on fire");
 Prefer using `.to_owned()`, rather than `.to_string()`, `.into()`, `String::from`, etc.
 
 **Rationale:** uniformity, intent clarity.
+
+## Order of imports
+
+Separate import groups with blank lines. Use one use per crate.
+
+Module declarations come before the imports.
+Order them in "suggested reading order" for a person new to the code base.
+
+```rust
+mod x;
+mod y;
+
+// First std.
+use std::{ ... }
+
+// Second, external crates (both crates.io crates and other rust-analyzer crates).
+use crate_foo::{ ... }
+use crate_bar::{ ... }
+
+// Then current crate.
+use crate::{}
+
+// Finally, parent and child modules, but prefer `use crate::`.
+use super::{}
+
+// Re-exports are treated as item definitions rather than imports, so they go
+// after imports and modules. Use them sparingly.
+pub use crate::x::Z;
+```
+
+**Rationale:** consistency. Reading order is important for new contributors. Grouping by crate allows spotting unwanted dependencies easier.
+
+## Import Style
+
+When implementing traits from `std::fmt` import the module:
+
+```rust
+// GOOD
+use std::fmt;
+
+impl fmt::Display for RenameError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { .. }
+}
+
+// BAD
+impl std::fmt::Display for RenameError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { .. }
+}
+```
+
+**Rationale:** overall, less typing. Makes it clear that a trait is implemented, rather than used.
+
+Prefer `use crate::foo::bar` to `use super::bar` or `use self::bar::baz`. **Rationale:** consistency, this is the style which works in all cases.
+
+## Order of Items
+
+Optimize for the reader who sees the file for the first time, and wants to get a general idea about what's going on. People read things from top to bottom, so place most important things first.
+
+Specifically, if all items except one are private, always put the non-private item on top.
+```rust
+// GOOD
+pub(crate) fn frobnicate() {
+    Helper::act()
+}
+
+#[derive(Default)]
+struct Helper { stuff: i32 }
+
+impl Helper {
+    fn act(&self) {
+
+    }
+}
+
+// BAD
+#[derive(Default)]
+struct Helper { stuff: i32 }
+
+pub(crate) fn frobnicate() {
+    Helper::act()
+}
+
+impl Helper {
+    fn act(&self) {
+
+    }
+}
+```
+
+If there's a mixture of private and public items, put public items first.
+
+Put structs and enums first, functions and impls last. Order type declarations in top-down manner.
+
+```rust
+// GOOD
+struct Parent {
+    children: Vec<Child>
+}
+
+struct Child;
+
+impl Parent {
+}
+
+impl Child {
+}
+
+// BAD
+struct Child;
+
+impl Child {
+}
+
+struct Parent {
+    children: Vec<Child>
+}
+
+impl Parent {
+}
+```
+
+**Rationale:** easier to get the sense of the API by visually scanning the file. If function bodies are folded in the editor, the source code should read as documentation for the public API.
+
+## Early Returns
+
+Do use early returns
+
+```rust
+// GOOD
+fn foo() -> Option<Bar> {
+    if !condition() {
+        return None;
+    }
+
+    Some(...)
+}
+
+// BAD
+fn foo() -> Option<Bar> {
+    if condition() {
+        Some(...)
+    } else {
+        None
+    }
+}
+```
+
+**Rationale:** reduce cognitive stack usage.
+
+## If-let
+
+Avoid if let ... { } else { } construct, use match instead.
+
+```rust
+// GOOD
+match ctx.expected_type.as_ref() {
+    Some(expected_type) => completion_ty == expected_type && !expected_type.is_unit(),
+    None => false,
+}
+
+// BAD
+if let Some(expected_type) = ctx.expected_type.as_ref() {
+    completion_ty == expected_type && !expected_type.is_unit()
+} else {
+    false
+}
+```
+
+**Rationale:** `match is almost always more compact. The `else` branch can get a more precise pattern: `None` or `Err(_)` instead of `_`.
+
+## Empty Match Arms
+
+Use `=> (),` when a match arm is intentionally empty:
+```rust
+// GOOD
+match result {
+    Ok(_) => (),
+    Err(err) => error!("{}", err),
+}
+
+// BAD
+match result {
+    Ok(_) => {}
+    Err(err) => error!("{}", err),
+}
+```
+
+**Rationale:** consistency.
