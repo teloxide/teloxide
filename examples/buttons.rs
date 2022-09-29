@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     pretty_env_logger::init();
     log::info!("Starting buttons bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     let handler = dptree::entry()
         .branch(Update::filter_message().endpoint(message_handler))
@@ -58,11 +58,7 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 /// Parse the text wrote on Telegram and check if that text is a valid command
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
-async fn message_handler(
-    m: Message,
-    bot: AutoSend<Bot>,
-    me: Me,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn message_handler(m: Message, bot: Bot, me: Me) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(text) = m.text() {
         match BotCommands::parse(text, me.username()) {
             Ok(Command::Help) => {
@@ -86,7 +82,7 @@ async fn message_handler(
 
 async fn inline_query_handler(
     q: InlineQuery,
-    bot: AutoSend<Bot>,
+    bot: Bot,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let choose_debian_version = InlineQueryResultArticle::new(
         "0",
@@ -105,10 +101,7 @@ async fn inline_query_handler(
 ///
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
 /// Anyone can read data stored in the callback button.
-async fn callback_handler(
-    q: CallbackQuery,
-    bot: AutoSend<Bot>,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn callback_handler(q: CallbackQuery, bot: Bot) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
         let text = format!("You chose: {version}");
 

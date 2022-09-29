@@ -12,11 +12,11 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting shared state bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
     let messages_total = Arc::new(AtomicU64::new(0));
 
     let handler = Update::filter_message().endpoint(
-        |msg: Message, bot: AutoSend<Bot>, messages_total: Arc<AtomicU64>| async move {
+        |msg: Message, bot: Bot, messages_total: Arc<AtomicU64>| async move {
             let previous = messages_total.fetch_add(1, Ordering::Relaxed);
             bot.send_message(msg.chat.id, format!("I received {previous} messages in total."))
                 .await?;

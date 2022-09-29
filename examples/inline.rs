@@ -11,10 +11,10 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting inline bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     let handler = Update::filter_inline_query().branch(dptree::endpoint(
-        |query: InlineQuery, bot: AutoSend<Bot>| async move {
+        |query: InlineQuery, bot: Bot| async move {
             // First, create your actual response
             let google_search = InlineQueryResultArticle::new(
                 // Each item needs a unique ID, as well as the response container for the
