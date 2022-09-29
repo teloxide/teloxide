@@ -37,7 +37,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dialogue bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     Dispatcher::builder(
         bot,
@@ -57,17 +57,13 @@ async fn main() {
     .await;
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn receive_full_name(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> HandlerResult {
+async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -82,7 +78,7 @@ async fn receive_full_name(
 }
 
 async fn receive_age(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     msg: Message,
     dialogue: MyDialogue,
     full_name: String, // Available from `State::ReceiveAge`.
@@ -101,7 +97,7 @@ async fn receive_age(
 }
 
 async fn receive_location(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     msg: Message,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.

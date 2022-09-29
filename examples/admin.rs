@@ -58,12 +58,10 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting admin bot...");
 
-    let bot = teloxide::Bot::from_env().auto_send();
+    let bot = teloxide::Bot::from_env();
 
     teloxide::commands_repl(bot, action, Command::ty()).await;
 }
-
-type Bot = AutoSend<teloxide::Bot>;
 
 async fn action(
     bot: Bot,
