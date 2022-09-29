@@ -27,7 +27,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting Heroku ping-pong bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     // Heroku auto defines a port value
     let port: u16 = env::var("PORT")
@@ -47,7 +47,7 @@ async fn main() {
 
     teloxide::repl_with_listener(
         bot,
-        |msg: Message, bot: AutoSend<Bot>| async move {
+        |msg: Message, bot: Bot| async move {
             bot.send_message(msg.chat.id, "pong").await?;
             respond(())
         },

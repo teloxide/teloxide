@@ -7,7 +7,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting command bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     teloxide::commands_repl(bot, answer, Command::ty()).await;
 }
@@ -24,7 +24,7 @@ enum Command {
 }
 
 async fn answer(
-    bot: AutoSend<Bot>,
+    bot: Bot,
     message: Message,
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {

@@ -7,9 +7,9 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting throw dice bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
+    teloxide::repl(bot, |message: Message, bot: Bot| async move {
         bot.send_dice(message.chat.id).await?;
         respond(())
     })
