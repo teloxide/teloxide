@@ -2,7 +2,25 @@ use serde::{Deserialize, Serialize};
 
 /// A unique message identifier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct MessageId(#[serde(rename = "message_id")] pub i32);
+#[serde(from = "MessageIdRaw", into = "MessageIdRaw")]
+pub struct MessageId(pub i32);
+
+#[derive(Serialize, Deserialize)]
+struct MessageIdRaw {
+    message_id: i32,
+}
+
+impl From<MessageIdRaw> for MessageId {
+    fn from(MessageIdRaw { message_id }: MessageIdRaw) -> Self {
+        MessageId(message_id)
+    }
+}
+
+impl From<MessageId> for MessageIdRaw {
+    fn from(MessageId(message_id): MessageId) -> Self {
+        MessageIdRaw { message_id }
+    }
+}
 
 #[cfg(test)]
 mod tests {
