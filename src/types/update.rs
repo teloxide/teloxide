@@ -297,7 +297,7 @@ impl Serialize for UpdateKind {
 mod test {
     use crate::types::{
         Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageKind, Update, UpdateKind, User, UserId, MessageId
+        MessageId, MessageKind, Update, UpdateKind, User, UserId,
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
