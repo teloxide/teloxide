@@ -351,7 +351,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [600+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
+See [700+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 
