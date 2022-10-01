@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - `dispatching::stop_token::StopToken` trait (all uses are replaced with `stop::StopToken` structure)
+- Some previously deprecated items
+  - `enable_logging!`, `enable_logging_with_filter!`
+  - `HandlerFactory`, `HandlerExt::dispatch_by`
 
 ## 0.10.1 - 2022-07-22
 
