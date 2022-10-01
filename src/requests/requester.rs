@@ -750,6 +750,13 @@ pub trait Requester {
     where
         N: Into<String>;
 
+    type GetCustomEmojiStickers: Request<Payload = GetCustomEmojiStickers, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetCustomEmojiStickers`].
+    fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
+    where
+        C: IntoIterator<Item = String>;
+
     type UploadStickerFile: Request<Payload = UploadStickerFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`UploadStickerFile`].
@@ -1019,6 +1026,7 @@ macro_rules! forward_all {
             delete_message,
             send_sticker,
             get_sticker_set,
+            get_custom_emoji_stickers,
             upload_sticker_file,
             create_new_sticker_set,
             add_sticker_to_set,

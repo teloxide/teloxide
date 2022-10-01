@@ -1435,42 +1435,43 @@ mod tests {
     #[test]
     fn de_sticker() {
         let json = r#"{
-          "message_id": 199787,
-          "from": {
-           "id": 250918540,
-           "is_bot": false,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "language_code": "en"
-          },
-          "chat": {
-           "id": 250918540,
-           "first_name": "Андрей",
-           "last_name": "Власов",
-           "username": "aka_dude",
-           "type": "private"
-          },
-          "date": 1568290188,
-          "sticker": {
-           "width": 512,
-           "height": 512,
-           "emoji": "😡",
-           "set_name": "AdvenTimeAnim",
-           "is_animated": true,
-           "is_video": false,
-           "thumb": {
-            "file_id": "AAQCAAMjAAOw0PgMaabKAcaXKCBLubkPAAQBAAdtAAPGKwACFgQ",
-            "file_unique_id":"",
-            "file_size": 4118,
-            "width": 128,
-            "height": 128
-           },
-           "file_id": "CAADAgADIwADsND4DGmmygHGlyggFgQ",
-           "file_unique_id":"",
-           "file_size": 16639
-          }
-         }"#;
+            "message_id": 199787,
+            "from": {
+                "id": 250918540,
+                "is_bot": false,
+                "first_name": "Андрей",
+                "last_name": "Власов",
+                "username": "aka_dude",
+                "language_code": "en"
+            },
+            "chat": {
+                "id": 250918540,
+                "first_name": "Андрей",
+                "last_name": "Власов",
+                "username": "aka_dude",
+                "type": "private"
+            },
+            "date": 1568290188,
+            "sticker": {
+                "width": 512,
+                "height": 512,
+                "emoji": "😡",
+                "set_name": "AdvenTimeAnim",
+                "is_animated": true,
+                "is_video": false,
+                "type": "regular",
+                "thumb": {
+                    "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
+                    "file_unique_id": "AQADIwADsND4DHI",
+                    "file_size": 4118,
+                    "width": 128,
+                    "height": 128
+                },
+                "file_id": "CAACAgIAAxkBAAESLdBjMImep-J0W8XaTN6S_Lz1-j1QIQACIwADsND4DGmmygHGlyggKQQ",
+                "file_unique_id": "AgADIwADsND4DA",
+                "file_size": 16639
+            }
+        }"#;
         from_str::<Message>(json).unwrap();
     }
 

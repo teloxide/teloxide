@@ -911,6 +911,18 @@ impl Requester for Bot {
         Self::GetStickerSet::new(self.clone(), payloads::GetStickerSet::new(name))
     }
 
+    type GetCustomEmojiStickers = JsonRequest<payloads::GetCustomEmojiStickers>;
+
+    fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
+    where
+        C: IntoIterator<Item = String>,
+    {
+        Self::GetCustomEmojiStickers::new(
+            self.clone(),
+            payloads::GetCustomEmojiStickers::new(custom_emoji_ids),
+        )
+    }
+
     type UploadStickerFile = MultipartRequest<payloads::UploadStickerFile>;
 
     fn upload_sticker_file(

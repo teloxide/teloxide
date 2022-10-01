@@ -139,7 +139,7 @@ impl MessageEntity {
     /// If you don't have a complete [`User`] value, please use
     /// [`MessageEntity::text_mention_id`] instead.
     #[must_use]
-    pub fn text_mention(user: User, offset: usize, length: usize) -> Self {
+    pub const fn text_mention(user: User, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextMention { user },
             offset,
@@ -153,6 +153,16 @@ impl MessageEntity {
     pub fn text_mention_id(user_id: UserId, offset: usize, length: usize) -> Self {
         Self {
             kind: MessageEntityKind::TextLink { url: user_id.url() },
+            offset,
+            length,
+        }
+    }
+
+    /// Create a message entity representing a custom emoji.
+    #[must_use]
+    pub const fn custom_emoji(custom_emoji_id: String, offset: usize, length: usize) -> Self {
+        Self {
+            kind: MessageEntityKind::CustomEmoji { custom_emoji_id },
             offset,
             length,
         }
@@ -300,13 +310,14 @@ pub enum MessageEntityKind {
     PhoneNumber,
     Bold,
     Italic,
+    Underline,
+    Strikethrough,
+    Spoiler,
     Code,
     Pre { language: Option<String> },
     TextLink { url: reqwest::Url },
     TextMention { user: User },
-    Underline,
-    Strikethrough,
-    Spoiler,
+    CustomEmoji { custom_emoji_id: String }, // FIXME(waffle): newtype this
 }
 
 #[cfg(test)]

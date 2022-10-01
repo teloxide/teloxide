@@ -99,6 +99,13 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub has_private_forwards: Option<True>,
+
+    /// `True`, if the privacy settings of the other party restrict sending
+    /// voice and video note messages in the private chat. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub has_restricted_voice_and_video_messages: Option<True>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -492,6 +499,7 @@ mod serde_helper {
         last_name: Option<String>,
         bio: Option<String>,
         has_private_forwards: Option<True>,
+        has_restricted_voice_and_video_messages: Option<True>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -503,6 +511,7 @@ mod serde_helper {
                 last_name,
                 bio,
                 has_private_forwards,
+                has_restricted_voice_and_video_messages,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -511,6 +520,7 @@ mod serde_helper {
                 last_name,
                 bio,
                 has_private_forwards,
+                has_restricted_voice_and_video_messages,
             }
         }
     }
@@ -523,6 +533,7 @@ mod serde_helper {
                 last_name,
                 bio,
                 has_private_forwards,
+                has_restricted_voice_and_video_messages,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -532,6 +543,7 @@ mod serde_helper {
                 last_name,
                 bio,
                 has_private_forwards,
+                has_restricted_voice_and_video_messages,
             }
         }
     }
@@ -576,6 +588,7 @@ mod tests {
                     last_name: None,
                     bio: None,
                     has_private_forwards: None,
+                    has_restricted_voice_and_video_messages: None,
                 }),
                 photo: None,
                 pinned_message: None,
@@ -596,6 +609,7 @@ mod tests {
                 last_name: None,
                 bio: None,
                 has_private_forwards: None,
+                has_restricted_voice_and_video_messages: None,
             }),
             photo: None,
             pinned_message: None,
