@@ -1,22 +1,20 @@
+use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::PhotoSize;
+use crate::types::{FileMeta, PhotoSize};
 
 /// This object represents an audio file to be treated as music by the Telegram
 /// clients.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#audio).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
 pub struct Audio {
-    /// An identifier for this file.
-    pub file_id: String,
-
-    /// Unique identifier for this file, which is supposed to be the same over
-    /// time and for different bots. Can't be used to download or reuse the
-    /// file.
-    pub file_unique_id: String,
+    /// Metadata of the audio file.
+    #[deref]
+    #[serde(flatten)]
+    pub file: FileMeta,
 
     /// A duration of the audio in seconds as defined by a sender.
     pub duration: u32,
@@ -34,16 +32,14 @@ pub struct Audio {
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
     pub mime_type: Option<Mime>,
 
-    /// File size in bytes.
-    #[serde(default = "crate::types::file::file_size_fallback")]
-    pub file_size: u32,
-
     /// A thumbnail of the album cover to which the music file belongs.
     pub thumb: Option<PhotoSize>,
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::types::FileMeta;
+
     use super::*;
 
     #[test]
@@ -65,19 +61,23 @@ mod tests {
             }
         }"#;
         let expected = Audio {
-            file_id: "id".to_string(),
-            file_unique_id: "".to_string(),
+            file: FileMeta {
+                file_id: "id".to_string(),
+                file_unique_id: "".to_string(),
+                file_size: 123_456,
+            },
             duration: 60,
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("application/zip".parse().unwrap()),
-            file_size: 123_456,
             thumb: Some(PhotoSize {
-                file_id: "id".to_string(),
-                file_unique_id: "".to_string(),
+                file: FileMeta {
+                    file_id: "id".to_owned(),
+                    file_unique_id: "".to_owned(),
+                    file_size: 3452,
+                },
                 width: 320,
                 height: 320,
-                file_size: 3452,
             }),
             file_name: None,
         };

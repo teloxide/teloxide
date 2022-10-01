@@ -1,5 +1,8 @@
 use chrono::{DateTime, Utc};
+use derive_more::Deref;
 use serde::{Deserialize, Serialize};
+
+use crate::types::FileMeta;
 
 /// This object represents a file uploaded to Telegram Passport.
 ///
@@ -7,18 +10,12 @@ use serde::{Deserialize, Serialize};
 /// don't exceed 10MB.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportfile).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
 pub struct PassportFile {
-    /// Identifier for this file.
-    pub file_id: String,
-
-    /// Unique identifier for this file, which is supposed to be the same over
-    /// time and for different bots. Can't be used to download or reuse the
-    /// file.
-    pub file_unique_id: String,
-
-    /// File size in bytes.
-    pub file_size: u32,
+    /// Metadata of the passport file.
+    #[deref]
+    #[serde(flatten)]
+    pub file: FileMeta,
 
     /// Time when the file was uploaded.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]

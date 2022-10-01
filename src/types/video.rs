@@ -1,21 +1,19 @@
+use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::PhotoSize;
+use crate::types::{FileMeta, PhotoSize};
 
 /// This object represents a video file.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#video).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
 pub struct Video {
-    /// Identifier for this file.
-    pub file_id: String,
-
-    /// Unique identifier for this file, which is supposed to be the same over
-    /// time and for different bots. Can't be used to download or reuse the
-    /// file.
-    pub file_unique_id: String,
+    /// Metadata of the video file.
+    #[deref]
+    #[serde(flatten)]
+    pub file: FileMeta,
 
     /// Video width as defined by sender.
     pub width: u32,
@@ -35,8 +33,4 @@ pub struct Video {
     /// Mime type of a file as defined by sender.
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
     pub mime_type: Option<Mime>,
-
-    /// File size in bytes.
-    #[serde(default = "crate::types::file::file_size_fallback")]
-    pub file_size: u32,
 }

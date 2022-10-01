@@ -9,10 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Animation`, `Audio`, `Document`, `PassportFile`, `PhotoSize`, `Video`, `VideoNote` and `Voice` now contain `FileMeta` instead of its fields ([#253][pr253])
+  - Field access should still work via `Deref` impls
 - **You can now `.await` any `Request`!** ([#249][pr249])
   - `Request` now requires `Self: IntoFuture`
   - There is no need for `AutoSend` anymore
 - MSRV (Minimal Supported Rust Version) was bumped from `1.58.0` to `1.64.0`
+
+[pr253]: https://github.com/teloxide/teloxide-core/pull/253
 
 ### Removed
 
