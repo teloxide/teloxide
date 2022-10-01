@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
@@ -8,10 +7,9 @@ use crate::types::{FileMeta, PhotoSize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#video).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Video {
     /// Metadata of the video file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 

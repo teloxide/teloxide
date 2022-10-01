@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{FileMeta, PhotoSize};
@@ -11,10 +10,9 @@ use crate::types::{FileMeta, PhotoSize};
 /// [video message]: https://telegram.org/blog/video-messages-and-telescope
 /// [v4.0]: https://telegram.org/blog/video-messages-and-telescope
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct VideoNote {
     /// Metadata of the video note file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 

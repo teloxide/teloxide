@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use serde::{Deserialize, Serialize};
 
 use crate::types::FileMeta;
@@ -8,10 +7,9 @@ use crate::types::FileMeta;
 /// [file]: crate::types::Document
 /// [sticker]: crate::types::Sticker
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PhotoSize {
     /// Metadata of the photo file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 
@@ -32,9 +30,9 @@ mod tests {
                              "file_size":3452}"#;
         let expected = PhotoSize {
             file: FileMeta {
-                file_id: "id".to_owned(),
-                file_unique_id: "".to_owned(),
-                file_size: 3452,
+                id: "id".to_owned(),
+                unique_id: "".to_owned(),
+                size: 3452,
             },
             width: 320,
             height: 320,

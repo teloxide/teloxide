@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
@@ -9,10 +8,9 @@ use crate::types::{FileMeta, PhotoSize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#animation).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Animation {
     /// Metadata of the animation file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 
@@ -62,18 +60,18 @@ mod tests {
         "file_size":6500}"#;
         let expected = Animation {
             file: FileMeta {
-                file_id: "id".to_string(),
-                file_unique_id: "".to_string(),
-                file_size: 6500,
+                id: "id".to_string(),
+                unique_id: "".to_string(),
+                size: 6500,
             },
             width: 320,
             height: 320,
             duration: 59,
             thumb: Some(PhotoSize {
                 file: FileMeta {
-                    file_id: "id".to_owned(),
-                    file_unique_id: "".to_owned(),
-                    file_size: 3452,
+                    id: "id".to_owned(),
+                    unique_id: "".to_owned(),
+                    size: 3452,
                 },
                 width: 320,
                 height: 320,

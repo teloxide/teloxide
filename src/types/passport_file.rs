@@ -19,5 +19,6 @@ pub struct PassportFile {
 
     /// Time when the file was uploaded.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub file_date: DateTime<Utc>,
+    #[serde(rename = "file_date")]
+    pub date: DateTime<Utc>,
 }

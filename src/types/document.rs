@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
@@ -13,10 +12,9 @@ use crate::types::{FileMeta, PhotoSize};
 /// [voice messages]: https://core.telegram.org/bots/api#voice
 /// [audio files]: https://core.telegram.org/bots/api#audio
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Document {
     /// Metadata of the document file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 
