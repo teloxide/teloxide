@@ -27,8 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed 
 
 - `SetWebhook` request can now properly send certificate ([#250][pr250])
+- Serialization of `InputSticker::Webm` ([#252][pr252])
 
 [pr250]: https://github.com/teloxide/teloxide-core/pull/250
+[pr252]: https://github.com/teloxide/teloxide-core/pull/252
 
 ### Deprecated
 
