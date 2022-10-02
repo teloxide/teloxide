@@ -21,9 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Request` now requires `Self: IntoFuture`
   - There is no need for `AutoSend` anymore
 - MSRV (Minimal Supported Rust Version) was bumped from `1.58.0` to `1.64.0`
+- Message id parameters and fields now use `MessageId` type instead of `i32` ([#254][pr254])
 - Refactored `Sticker` and related types ([#251][pr251])
 
 [pr253]: https://github.com/teloxide/teloxide-core/pull/253
+[pr254]: https://github.com/teloxide/teloxide-core/pull/254
 
 ### Removed
 

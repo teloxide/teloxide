@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Recipient, True};
+use crate::types::{MessageId, Recipient, True};
 
 impl_payload! {
     /// Use this method to delete a message, including service messages, with the following limitations:
@@ -21,7 +21,8 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
             pub chat_id: Recipient [into],
             /// Identifier of the message to delete
-            pub message_id: i32,
+            #[serde(flatten)]
+            pub message_id: MessageId,
         }
     }
 }

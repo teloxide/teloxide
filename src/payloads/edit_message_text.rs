@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, Message, MessageEntity, ParseMode, Recipient};
+use crate::types::{InlineKeyboardMarkup, Message, MessageEntity, MessageId, ParseMode, Recipient};
 
 impl_payload! {
     /// Use this method to edit text and [games] messages. On success, the edited Message is returned.
@@ -16,7 +16,8 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
             pub chat_id: Recipient [into],
             /// Identifier of the message to edit
-            pub message_id: i32,
+            #[serde(flatten)]
+            pub message_id: MessageId,
             /// New text of the message, 1-4096 characters after entities parsing
             pub text: String [into],
         }

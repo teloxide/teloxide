@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, Recipient};
+use crate::types::{Message, MessageId, Recipient};
 
 impl_payload! {
     /// Use this method to forward messages of any kind. On success, the sent [`Message`] is returned.
@@ -16,7 +16,8 @@ impl_payload! {
             /// Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)
             pub from_chat_id: Recipient [into],
             /// Message identifier in the chat specified in _from\_chat\_id_
-            pub message_id: i32,
+            #[serde(flatten)]
+            pub message_id: MessageId,
         }
         optional {
             /// Sends the message [silently]. Users will receive a notification with no sound.

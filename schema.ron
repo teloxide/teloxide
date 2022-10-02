@@ -268,7 +268,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -324,7 +324,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32, 
+                    ty: RawTy("MessageId"), 
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
                 ),
             ],
@@ -351,7 +351,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32, 
+                    ty: RawTy("MessageId"), 
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
                 ),
                 Param(
@@ -387,7 +387,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -464,7 +464,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -567,7 +567,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -657,7 +657,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -765,7 +765,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -866,7 +866,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -947,7 +947,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1027,7 +1027,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1084,7 +1084,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1157,7 +1157,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1195,7 +1195,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32, 
+                    ty: RawTy("MessageId"), 
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -1311,7 +1311,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32, 
+                    ty: RawTy("MessageId"), 
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -1450,7 +1450,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1524,7 +1524,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1638,7 +1638,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -1694,7 +1694,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -2311,7 +2311,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of a message to pin"),
                 ),
                 Param(
@@ -2335,7 +2335,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "Identifier of a message to unpin. If not specified, the most recent pinned message (by sending date) will be unpinned.")
                 ),
             ],
@@ -2760,7 +2760,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -2860,7 +2860,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -2948,7 +2948,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -3009,7 +3009,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -3059,7 +3059,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -3086,7 +3086,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i32,
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to delete")
                 ),  
             ],
@@ -3786,7 +3786,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: i64, 
+                    ty: RawTy("MessageId"), 
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
             ],
