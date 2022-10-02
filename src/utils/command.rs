@@ -235,6 +235,7 @@ pub trait BotCommands: Sized {
     /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
     ///
     /// [`commands_repl`]: (crate::repls2::commands_repl)
+    #[must_use]
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
@@ -296,11 +297,13 @@ pub struct CommandDescription<'a> {
 
 impl<'a> CommandDescriptions<'a> {
     /// Creates new [`CommandDescriptions`] from a list of command descriptions.
+    #[must_use]
     pub fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
         Self { global_description: None, descriptions, bot_username: None }
     }
 
     /// Sets the global description of these commands.
+    #[must_use]
     pub fn global_description(self, global_description: &'a str) -> Self {
         Self { global_description: Some(global_description), ..self }
     }
@@ -328,6 +331,7 @@ impl<'a> CommandDescriptions<'a> {
     ///      message"
     /// );
     /// ```
+    #[must_use]
     pub fn username(self, bot_username: &'a str) -> Self {
         Self { bot_username: Some(bot_username), ..self }
     }
@@ -338,6 +342,7 @@ impl<'a> CommandDescriptions<'a> {
     /// method to get the username.
     ///
     /// [`username`]: self::CommandDescriptions::username
+    #[must_use]
     pub fn username_from_me(self, me: &'a Me) -> CommandDescriptions<'a> {
         self.username(me.user.username.as_deref().expect("Bots must have usernames"))
     }

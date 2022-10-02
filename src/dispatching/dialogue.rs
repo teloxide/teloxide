@@ -211,6 +211,7 @@ where
 ///  - `Upd`
 ///
 /// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
+#[must_use]
 pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     S: Storage<D> + ?Sized + Send + Sync + 'static,

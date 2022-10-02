@@ -82,6 +82,7 @@ where
 ///
 ///  - [`crate::types::Message`]
 ///  - [`crate::types::Me`]
+#[must_use]
 pub fn filter_command<C, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     C: BotCommands + Send + Sync + 'static,
