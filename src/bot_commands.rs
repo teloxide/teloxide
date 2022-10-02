@@ -36,7 +36,7 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
     let fn_commands = impl_commands(&var_info, &command_enum);
 
     let trait_impl = quote! {
-        impl BotCommands for #type_name {
+        impl teloxide::utils::command::BotCommands for #type_name {
             #fn_descriptions
             #fn_parse
             #fn_commands
