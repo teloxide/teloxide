@@ -49,7 +49,7 @@ async fn main() {
         bot,
         |msg: Message, bot: Bot| async move {
             bot.send_message(msg.chat.id, "pong").await?;
-            respond(())
+            Ok(())
         },
         listener,
     )

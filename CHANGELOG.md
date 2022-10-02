@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `UpdateListener` now has an associated type `Err` instead of a generic
 - `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
 - Rename `dispatching::stop_token::{AsyncStopToken, AsyncStopFlag}` => `stop::{StopToken, StopFlag}`
+- Replace the generic error type `E` with `RequestError` for REPLs (`repl(_with_listener)`, `commands_repl(_with_listener)`)
+
+### Added
+
+- `requests::ResponseResult` to `prelude`
 
 ### Removed
 
