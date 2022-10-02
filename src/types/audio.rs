@@ -1,4 +1,3 @@
-use derive_more::Deref;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
@@ -9,10 +8,9 @@ use crate::types::{FileMeta, PhotoSize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#audio).
 #[serde_with_macros::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Audio {
     /// Metadata of the audio file.
-    #[deref]
     #[serde(flatten)]
     pub file: FileMeta,
 
@@ -62,9 +60,9 @@ mod tests {
         }"#;
         let expected = Audio {
             file: FileMeta {
-                file_id: "id".to_string(),
-                file_unique_id: "".to_string(),
-                file_size: 123_456,
+                id: "id".to_string(),
+                unique_id: "".to_string(),
+                size: 123_456,
             },
             duration: 60,
             performer: Some("Performer".to_string()),
@@ -72,9 +70,9 @@ mod tests {
             mime_type: Some("application/zip".parse().unwrap()),
             thumb: Some(PhotoSize {
                 file: FileMeta {
-                    file_id: "id".to_owned(),
-                    file_unique_id: "".to_owned(),
-                    file_size: 3452,
+                    id: "id".to_owned(),
+                    unique_id: "".to_owned(),
+                    size: 3452,
                 },
                 width: 320,
                 height: 320,

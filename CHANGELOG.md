@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Removed `file_` prefix from `File` and `FileMeta` fields [#255][pr255]
 - `Animation`, `Audio`, `Document`, `PassportFile`, `PhotoSize`, `Video`, `VideoNote` and `Voice` now contain `FileMeta` instead of its fields ([#253][pr253])
-  - Field access should still work via `Deref` impls
+  - Combined with `File` fields renaming, instead of `.file_size` you can write `.file.size` and similarly with other fields
 - **You can now `.await` any `Request`!** ([#249][pr249])
   - `Request` now requires `Self: IntoFuture`
   - There is no need for `AutoSend` anymore
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr253]: https://github.com/teloxide/teloxide-core/pull/253
 [pr254]: https://github.com/teloxide/teloxide-core/pull/254
+[pr255]: https://github.com/teloxide/teloxide-core/pull/255
 
 ### Removed
 

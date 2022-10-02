@@ -25,26 +25,30 @@ pub struct File {
     /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
     ///
     /// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
-    pub file_path: String,
+    #[serde(rename = "file_path")]
+    pub path: String,
 }
 
-/// Metadata of the [`File`].
+/// Metadata of a [`File`].
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct FileMeta {
     /// Identifier for this file.
-    pub file_id: String,
+    #[serde(rename = "file_id")]
+    pub id: String,
 
     /// Unique identifier for this file, which is supposed to be the same over
     /// time and for different bots. Can't be used to download or reuse the
     /// file.
-    pub file_unique_id: String,
+    #[serde(rename = "file_unique_id")]
+    pub unique_id: String,
 
     /// File size in bytes.
-    // This should never be necessary in practice,
+    #[serde(rename = "file_size")]
+    // This fallback should never be necessary in practice,
     // but just in case something goes wrong with the TBA server
     // (see the test below)
     #[serde(default = "file_size_fallback")]
-    pub file_size: u32,
+    pub size: u32,
 }
 
 pub(crate) const fn file_size_fallback() -> u32 {
@@ -58,12 +62,12 @@ pub(crate) const fn file_size_fallback() -> u32 {
 /// ```rust
 /// use teloxide_core::types::File;
 /// #
-/// # let get_file = || File { meta: teloxide_core::types::FileMeta { file_id: String::new(), file_unique_id: String::new(), file_size: 0 }, file_path: String::new() };
+/// # let get_file = || File { meta: teloxide_core::types::FileMeta { id: String::new(), unique_id: String::new(), size: 0 }, path: String::new() };
 /// let file: File = get_file();
 ///
-/// let file_id: &str = &file.file_id;
-/// let file_unique_id: &str = &file.file_unique_id;
-/// let file_size: u32 = file.file_size;
+/// let file_id: &str = &file.id;
+/// let file_unique_id: &str = &file.unique_id;
+/// let file_size: u32 = file.size;
 /// #
 /// # let _ = (file_id, file_unique_id, file_size);
 /// ```
@@ -92,11 +96,11 @@ mod tests {
             file,
             File {
                 meta: FileMeta {
-                    file_id: "FILE_ID".to_owned(),
-                    file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                    file_size: u32::MAX,
+                    id: "FILE_ID".to_owned(),
+                    unique_id: "FILE_UNIQUE_ID".to_owned(),
+                    size: u32::MAX,
                 },
-                file_path: "FILE_PATH".to_owned(),
+                path: "FILE_PATH".to_owned(),
             }
         );
     }
@@ -111,9 +115,9 @@ mod tests {
         assert_eq!(
             file,
             FileMeta {
-                file_id: "FILE_ID".to_owned(),
-                file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                file_size: 42,
+                id: "FILE_ID".to_owned(),
+                unique_id: "FILE_UNIQUE_ID".to_owned(),
+                size: 42,
             }
         );
     }
@@ -127,11 +131,11 @@ mod tests {
             file,
             File {
                 meta: FileMeta {
-                    file_id: "FILE_ID".to_owned(),
-                    file_unique_id: "FILE_UNIQUE_ID".to_owned(),
-                    file_size: 42,
+                    id: "FILE_ID".to_owned(),
+                    unique_id: "FILE_UNIQUE_ID".to_owned(),
+                    size: 42,
                 },
-                file_path: "FILE_PATH".to_owned(),
+                path: "FILE_PATH".to_owned(),
             }
         );
     }
