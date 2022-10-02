@@ -8,9 +8,6 @@ use crate::{
 };
 use dptree::{di::DependencyMap, Handler};
 
-#[allow(deprecated)]
-use crate::dispatching::HandlerFactory;
-
 use std::fmt::Debug;
 
 /// Extension methods for working with `dptree` handlers.
@@ -51,13 +48,6 @@ pub trait HandlerExt<Output> {
         <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
-
-    #[must_use]
-    #[deprecated(note = "Use the teloxide::handler! API")]
-    #[allow(deprecated)]
-    fn dispatch_by<F>(self) -> Self
-    where
-        F: HandlerFactory<Out = Output>;
 }
 
 impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output, DpHandlerDescription>
@@ -79,14 +69,6 @@ where
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
         self.chain(super::dialogue::enter::<Upd, S, D, Output>())
-    }
-
-    #[allow(deprecated)]
-    fn dispatch_by<F>(self) -> Self
-    where
-        F: HandlerFactory<Out = Output>,
-    {
-        self.chain(F::handler())
     }
 }
 
