@@ -9,17 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 <!-- TODO: use a version once teloxide-macros is released -->
-- Updated `teloxide-macros` see its [changelog](https://github.com/teloxide/teloxide-macros/blob/master/CHANGELOG.md#unreleased) for more
-- `UpdateListener` now has an associated type `Err` instead of a generic
-- `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
-- Rename `dispatching::stop_token::{AsyncStopToken, AsyncStopFlag}` => `stop::{StopToken, StopFlag}`
+ - Updated `teloxide-macros` see its [changelog](https://github.com/teloxide/teloxide-macros/blob/master/CHANGELOG.md#unreleased) for more
+ - `UpdateListener` now has an associated type `Err` instead of a generic
+ - `AsUpdateStream` now has an associated type `StreamErr` instead of a generic
+ - Rename `dispatching::stop_token::{AsyncStopToken, AsyncStopFlag}` => `stop::{StopToken, StopFlag}`
+ - The following functions are now `#[must_use]`:
+   - `BotCommands::ty`.
+   - `CommandDescriptions::{new, global_description, username, username_from_me}`.
+   - `teloxide::filter_command`.
+   - `teloxide::dispatching::dialogue::enter`.
 
 ### Removed
 
-- `dispatching::stop_token::StopToken` trait (all uses are replaced with `stop::StopToken` structure)
-- Some previously deprecated items
-  - `enable_logging!`, `enable_logging_with_filter!`
-  - `HandlerFactory`, `HandlerExt::dispatch_by`
+ - `dispatching::stop_token::StopToken` trait (all uses are replaced with `stop::StopToken` structure)
+ - Some previously deprecated items
+   - `enable_logging!`, `enable_logging_with_filter!`
+   - `HandlerFactory`, `HandlerExt::dispatch_by`
 
 ## 0.10.1 - 2022-07-22
 
