@@ -1,7 +1,5 @@
 use teloxide::{prelude::*, utils::command::BotCommands};
 
-use std::error::Error;
-
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
@@ -23,11 +21,7 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    bot: Bot,
-    message: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn answer(bot: Bot, message: Message, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => {
             bot.send_message(message.chat.id, Command::descriptions().to_string()).await?

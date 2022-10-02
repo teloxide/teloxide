@@ -96,7 +96,7 @@ async fn main() {
 
     teloxide::repl(bot, |message: Message, bot: Bot| async move {
         bot.send_dice(message.chat.id).await?;
-        respond(())
+        Ok(())
     })
     .await;
 }
@@ -122,8 +122,6 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
 
-use std::error::Error;
-
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
@@ -145,11 +143,7 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    bot: Bot,
-    message: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn answer(bot: Bot, message: Message, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => {
             bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
