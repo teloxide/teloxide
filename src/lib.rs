@@ -62,8 +62,6 @@ pub use dispatching::repls::{
     commands_repl, commands_repl_with_listener, repl, repl_with_listener,
 };
 
-mod logging;
-
 pub mod dispatching;
 pub mod error_handlers;
 pub mod prelude;
