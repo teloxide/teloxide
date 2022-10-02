@@ -9,13 +9,20 @@ use crate::{
     types::*,
 };
 
-/// Methods for building requests.
+/// Telegram Bot API client.
 ///
 /// This trait is implemented by all bots & bot adaptors.
 ///
-/// ## Examples
+/// ## Calling Telegram Bot API methods
 ///
-/// Calling TBA methods:
+/// To call Telegram's methods you first need to get a [`Bot`] instance or any
+/// other type which implement this trait.
+///
+/// Then you can simply call the method you want and pass required parameters to
+/// it. Optional parameters can be supplied by calling setters (like
+/// `parse_mode` in the example below). Lastly, you need to `.await` the request
+/// created in previous steps, to actually send it to telegram and wait for the
+/// response.
 ///
 /// ```
 /// # async {
@@ -38,7 +45,81 @@ use crate::{
 /// # };
 /// ```
 ///
-/// Using `Requester` in a generic context:
+/// ## Adaptors
+///
+/// Similarly to how [`Iterator`] has iterator adaptors ([`FlatMap`],
+/// [`Filter`], etc) that wrap an [`Iterator`] and alter its behaviour, Teloxide
+/// has a similar story with `Requester`.
+///
+/// [`adaptors`] module provides a handful of `Requester` adaptors that can be
+/// created via [`RequesterExt`] methods. For example using [`.parse_mode(...)`]
+/// on a bot will wrap it in [`DefaultParseMode`] adaptor which sets the parse
+/// mode to a default value:
+///
+/// ```rust
+/// # async {
+/// # let chat_id = ChatId(-1);
+/// use teloxide_core::{
+///     prelude::*,
+///     types::{ChatId, ParseMode},
+/// };
+///
+/// let bot = Bot::new("TOKEN")
+///     // Wrap the bot in an adaptor
+///     .parse_mode(ParseMode::Html);
+///
+/// // This will use `ParseMode::Html`
+/// bot.send_message(chat_id, "<b>Text</b>").await?;
+///
+/// // This will use `ParseMode::MarkdownV2`
+/// bot.send_message(chat_id, "**Text**")
+///     .parse_mode(ParseMode::MarkdownV2)
+///     .await?;
+/// # Ok::<_, teloxide_core::RequestError>(())
+/// # };
+/// ```
+///
+/// Note that just as with iterators, adaptors change type:
+///
+/// ```compile_fail
+/// # use teloxide_core::{prelude::*, types::{ChatId, ParseMode}};
+/// let bot: Bot = Bot::new("TOKEN").parse_mode(ParseMode::Html);
+/// ```
+/// ```rust
+/// # use teloxide_core::{prelude::*, types::{ChatId, ParseMode}, adaptors::DefaultParseMode};
+/// let bot: DefaultParseMode<Bot> = Bot::new("TOKEN").parse_mode(ParseMode::Html);
+/// ```
+///
+/// Because of this it's oftentimes more convinient to have a type alias:
+///
+/// ```rust
+/// # async {
+/// # use teloxide_core::{adaptors::{DefaultParseMode, Throttle}, requests::RequesterExt, types::ParseMode};
+/// type Bot = DefaultParseMode<Throttle<teloxide_core::Bot>>;
+///
+/// let bot: Bot = teloxide_core::Bot::new("TOKEN")
+///     .throttle(<_>::default())
+///     .parse_mode(ParseMode::Html);
+/// # let _ = bot;
+/// # };
+/// ```
+///
+/// Also note that most adaptors require specific cargo features to be enabled.
+/// For example, to use [`Throttle`] you need to enable `throttle` feature in
+/// your `Cargo.toml`:
+///
+/// ```toml
+/// teloxide_core = { version = "...", features = ["throttle"] }
+/// ```
+///
+/// Refer to adaptor's documentation for information about what features it
+/// requires.
+///
+/// ## Using `Requester` in a generic context
+///
+/// When writing helper function you may be indifferent to which exact type is
+/// being used as a bot and instead only care that it implements `Requester`
+/// trait. In this case you can use generic bounds to express this exact thing:
 ///
 /// ```
 /// use teloxide_core::{
@@ -52,7 +133,18 @@ use crate::{
 /// {
 ///     bot.send_message(chat, "hi").await.expect("error")
 /// }
+///
+/// // `send_hi` can be called with `Bot`, `DefaultParseMode<Bot>` and so on, and so forth
 /// ```
+///
+/// [`Bot`]: crate::Bot
+/// [`FlatMap`]: std::iter::FlatMap
+/// [`Filter`]: std::iter::Filter
+/// [`adaptors`]: crate::adaptors
+/// [`DefaultParseMode`]: crate::adaptors::DefaultParseMode
+/// [`Throttle`]: crate::adaptors::Throttle
+/// [`RequesterExt`]: crate::requests::RequesterExt
+/// [`.parse_mode(...)`]: crate::requests::RequesterExt::parse_mode
 #[cfg_attr(all(any(docsrs, dep_docsrs), feature = "nightly"), doc(notable_trait))]
 pub trait Requester {
     /// Error type returned by all requests.
