@@ -479,19 +479,19 @@ macro_rules! requester_forward {
     (@method forward_message $body:ident $ty:ident) => {
         type ForwardMessage = $ty![ForwardMessage];
 
-        fn forward_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::ForwardMessage where C: Into<Recipient>,
+        fn forward_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: MessageId) -> Self::ForwardMessage where C: Into<Recipient>,
         F: Into<Recipient> {
             let this = self;
-            $body!(forward_message this (chat_id: C, from_chat_id: F, message_id: i32))
+            $body!(forward_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
         }
     };
     (@method copy_message $body:ident $ty:ident) => {
         type CopyMessage = $ty![CopyMessage];
 
-        fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage where C: Into<Recipient>,
+        fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: MessageId) -> Self::CopyMessage where C: Into<Recipient>,
         F: Into<Recipient> {
             let this = self;
-            $body!(copy_message this (chat_id: C, from_chat_id: F, message_id: i32))
+            $body!(copy_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
         }
     };
     (@method send_photo $body:ident $ty:ident) => {
@@ -570,9 +570,9 @@ macro_rules! requester_forward {
     (@method edit_message_live_location $body:ident $ty:ident) => {
         type EditMessageLiveLocation = $ty![EditMessageLiveLocation];
 
-        fn edit_message_live_location<C>(&self, chat_id: C, message_id: i32, latitude: f64, longitude: f64) -> Self::EditMessageLiveLocation where C: Into<Recipient> {
+        fn edit_message_live_location<C>(&self, chat_id: C, message_id: MessageId, latitude: f64, longitude: f64) -> Self::EditMessageLiveLocation where C: Into<Recipient> {
             let this = self;
-            $body!(edit_message_live_location this (chat_id: C, message_id: i32, latitude: f64, longitude: f64))
+            $body!(edit_message_live_location this (chat_id: C, message_id: MessageId, latitude: f64, longitude: f64))
         }
     };
     (@method edit_message_live_location_inline $body:ident $ty:ident) => {
@@ -586,9 +586,9 @@ macro_rules! requester_forward {
     (@method stop_message_live_location $body:ident $ty:ident) => {
         type StopMessageLiveLocation = $ty![StopMessageLiveLocation];
 
-        fn stop_message_live_location<C>(&self, chat_id: C, message_id: i32, latitude: f64, longitude: f64) -> Self::StopMessageLiveLocation where C: Into<Recipient> {
+        fn stop_message_live_location<C>(&self, chat_id: C, message_id: MessageId, latitude: f64, longitude: f64) -> Self::StopMessageLiveLocation where C: Into<Recipient> {
             let this = self;
-            $body!(stop_message_live_location this (chat_id: C, message_id: i32, latitude: f64, longitude: f64))
+            $body!(stop_message_live_location this (chat_id: C, message_id: MessageId, latitude: f64, longitude: f64))
         }
     };
     (@method stop_message_live_location_inline $body:ident $ty:ident) => {
@@ -822,9 +822,9 @@ macro_rules! requester_forward {
     (@method pin_chat_message $body:ident $ty:ident) => {
         type PinChatMessage = $ty![PinChatMessage];
 
-        fn pin_chat_message<C>(&self, chat_id: C, message_id: i32) -> Self::PinChatMessage where C: Into<Recipient> {
+        fn pin_chat_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::PinChatMessage where C: Into<Recipient> {
             let this = self;
-            $body!(pin_chat_message this (chat_id: C, message_id: i32))
+            $body!(pin_chat_message this (chat_id: C, message_id: MessageId))
         }
     };
     (@method unpin_chat_message $body:ident $ty:ident) => {
@@ -992,10 +992,10 @@ macro_rules! requester_forward {
     (@method edit_message_text $body:ident $ty:ident) => {
         type EditMessageText = $ty![EditMessageText];
 
-        fn edit_message_text<C, T>(&self, chat_id: C, message_id: i32, text: T) -> Self::EditMessageText where C: Into<Recipient>,
+        fn edit_message_text<C, T>(&self, chat_id: C, message_id: MessageId, text: T) -> Self::EditMessageText where C: Into<Recipient>,
         T: Into<String> {
             let this = self;
-            $body!(edit_message_text this (chat_id: C, message_id: i32, text: T))
+            $body!(edit_message_text this (chat_id: C, message_id: MessageId, text: T))
         }
     };
     (@method edit_message_text_inline $body:ident $ty:ident) => {
@@ -1010,9 +1010,9 @@ macro_rules! requester_forward {
     (@method edit_message_caption $body:ident $ty:ident) => {
         type EditMessageCaption = $ty![EditMessageCaption];
 
-        fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> Self::EditMessageCaption where C: Into<Recipient> {
+        fn edit_message_caption<C>(&self, chat_id: C, message_id: MessageId) -> Self::EditMessageCaption where C: Into<Recipient> {
             let this = self;
-            $body!(edit_message_caption this (chat_id: C, message_id: i32))
+            $body!(edit_message_caption this (chat_id: C, message_id: MessageId))
         }
     };
     (@method edit_message_caption_inline $body:ident $ty:ident) => {
@@ -1026,9 +1026,9 @@ macro_rules! requester_forward {
     (@method edit_message_media $body:ident $ty:ident) => {
         type EditMessageMedia = $ty![EditMessageMedia];
 
-        fn edit_message_media<C>(&self, chat_id: C, message_id: i32, media: InputMedia) -> Self::EditMessageMedia where C: Into<Recipient> {
+        fn edit_message_media<C>(&self, chat_id: C, message_id: MessageId, media: InputMedia) -> Self::EditMessageMedia where C: Into<Recipient> {
             let this = self;
-            $body!(edit_message_media this (chat_id: C, message_id: i32, media: InputMedia))
+            $body!(edit_message_media this (chat_id: C, message_id: MessageId, media: InputMedia))
         }
     };
     (@method edit_message_media_inline $body:ident $ty:ident) => {
@@ -1042,9 +1042,9 @@ macro_rules! requester_forward {
     (@method edit_message_reply_markup $body:ident $ty:ident) => {
         type EditMessageReplyMarkup = $ty![EditMessageReplyMarkup];
 
-        fn edit_message_reply_markup<C>(&self, chat_id: C, message_id: i32) -> Self::EditMessageReplyMarkup where C: Into<Recipient> {
+        fn edit_message_reply_markup<C>(&self, chat_id: C, message_id: MessageId) -> Self::EditMessageReplyMarkup where C: Into<Recipient> {
             let this = self;
-            $body!(edit_message_reply_markup this (chat_id: C, message_id: i32))
+            $body!(edit_message_reply_markup this (chat_id: C, message_id: MessageId))
         }
     };
     (@method edit_message_reply_markup_inline $body:ident $ty:ident) => {
@@ -1058,17 +1058,17 @@ macro_rules! requester_forward {
     (@method stop_poll $body:ident $ty:ident) => {
         type StopPoll = $ty![StopPoll];
 
-        fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> Self::StopPoll where C: Into<Recipient> {
+        fn stop_poll<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopPoll where C: Into<Recipient> {
             let this = self;
-            $body!(stop_poll this (chat_id: C, message_id: i32))
+            $body!(stop_poll this (chat_id: C, message_id: MessageId))
         }
     };
     (@method delete_message $body:ident $ty:ident) => {
         type DeleteMessage = $ty![DeleteMessage];
 
-        fn delete_message<C>(&self, chat_id: C, message_id: i32) -> Self::DeleteMessage where C: Into<Recipient> {
+        fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage where C: Into<Recipient> {
             let this = self;
-            $body!(delete_message this (chat_id: C, message_id: i32))
+            $body!(delete_message this (chat_id: C, message_id: MessageId))
         }
     };
     (@method send_sticker $body:ident $ty:ident) => {
@@ -1208,9 +1208,9 @@ macro_rules! requester_forward {
     (@method set_game_score $body:ident $ty:ident) => {
         type SetGameScore = $ty![SetGameScore];
 
-        fn set_game_score(&self, user_id: UserId, score: u64, chat_id: u32, message_id: i64) -> Self::SetGameScore {
+        fn set_game_score(&self, user_id: UserId, score: u64, chat_id: u32, message_id: MessageId) -> Self::SetGameScore {
             let this = self;
-            $body!(set_game_score this (user_id: UserId, score: u64, chat_id: u32, message_id: i64))
+            $body!(set_game_score this (user_id: UserId, score: u64, chat_id: u32, message_id: MessageId))
         }
     };
     (@method set_game_score_inline $body:ident $ty:ident) => {

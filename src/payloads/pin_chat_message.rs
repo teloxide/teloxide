@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Recipient, True};
+use crate::types::{MessageId, Recipient, True};
 
 impl_payload! {
     /// Use this method to pin a message in a group, a supergroup, or a channel. The bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin right in the channel. Returns _True_ on success.
@@ -12,7 +12,8 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Identifier of a message to pin
-            pub message_id: i32,
+            #[serde(flatten)]
+            pub message_id: MessageId,
         }
         optional {
             /// Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels.

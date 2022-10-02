@@ -111,7 +111,7 @@ pub trait Requester {
         &self,
         chat_id: C,
         from_chat_id: F,
-        message_id: i32,
+        message_id: MessageId,
     ) -> Self::ForwardMessage
     where
         C: Into<Recipient>,
@@ -120,7 +120,12 @@ pub trait Requester {
     type CopyMessage: Request<Payload = CopyMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`CopyMessage`].
-    fn copy_message<C, F>(&self, chat_id: C, from_chat_id: F, message_id: i32) -> Self::CopyMessage
+    fn copy_message<C, F>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_id: MessageId,
+    ) -> Self::CopyMessage
     where
         C: Into<Recipient>,
         F: Into<Recipient>;
@@ -195,7 +200,7 @@ pub trait Requester {
     fn edit_message_live_location<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> Self::EditMessageLiveLocation
@@ -223,7 +228,7 @@ pub trait Requester {
     fn stop_message_live_location<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         latitude: f64,
         longitude: f64,
     ) -> Self::StopMessageLiveLocation
@@ -485,7 +490,7 @@ pub trait Requester {
     type PinChatMessage: Request<Payload = PinChatMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`PinChatMessage`].
-    fn pin_chat_message<C>(&self, chat_id: C, message_id: i32) -> Self::PinChatMessage
+    fn pin_chat_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::PinChatMessage
     where
         C: Into<Recipient>;
 
@@ -639,7 +644,7 @@ pub trait Requester {
     fn edit_message_text<C, T>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         text: T,
     ) -> Self::EditMessageText
     where
@@ -661,7 +666,11 @@ pub trait Requester {
     type EditMessageCaption: Request<Payload = EditMessageCaption, Err = Self::Err>;
 
     /// For Telegram documentation see [`EditMessageCaption`].
-    fn edit_message_caption<C>(&self, chat_id: C, message_id: i32) -> Self::EditMessageCaption
+    fn edit_message_caption<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::EditMessageCaption
     where
         C: Into<Recipient>;
 
@@ -681,7 +690,7 @@ pub trait Requester {
     fn edit_message_media<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
         media: InputMedia,
     ) -> Self::EditMessageMedia
     where
@@ -704,7 +713,7 @@ pub trait Requester {
     fn edit_message_reply_markup<C>(
         &self,
         chat_id: C,
-        message_id: i32,
+        message_id: MessageId,
     ) -> Self::EditMessageReplyMarkup
     where
         C: Into<Recipient>;
@@ -725,14 +734,14 @@ pub trait Requester {
     type StopPoll: Request<Payload = StopPoll, Err = Self::Err>;
 
     /// For Telegram documentation see [`StopPoll`].
-    fn stop_poll<C>(&self, chat_id: C, message_id: i32) -> Self::StopPoll
+    fn stop_poll<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopPoll
     where
         C: Into<Recipient>;
 
     type DeleteMessage: Request<Payload = DeleteMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`DeleteMessage`].
-    fn delete_message<C>(&self, chat_id: C, message_id: i32) -> Self::DeleteMessage
+    fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage
     where
         C: Into<Recipient>;
 
@@ -907,7 +916,7 @@ pub trait Requester {
         user_id: UserId,
         score: u64,
         chat_id: u32,
-        message_id: i64,
+        message_id: MessageId,
     ) -> Self::SetGameScore;
 
     type SetGameScoreInline: Request<Payload = SetGameScoreInline, Err = Self::Err>;

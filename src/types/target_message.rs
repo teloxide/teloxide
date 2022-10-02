@@ -1,4 +1,4 @@
-use crate::types::Recipient;
+use crate::types::{MessageId, Recipient};
 
 use serde::{Deserialize, Serialize};
 
@@ -6,8 +6,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum TargetMessage {
-    Common { chat_id: Recipient, message_id: i32 },
-    Inline { inline_message_id: String },
+    Common {
+        chat_id: Recipient,
+        #[serde(flatten)]
+        message_id: MessageId,
+    },
+    Inline {
+        inline_message_id: String,
+    },
 }
 
 impl From<String> for TargetMessage {

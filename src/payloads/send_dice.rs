@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{DiceEmoji, Message, Recipient, ReplyMarkup};
+use crate::types::{DiceEmoji, Message, MessageId, Recipient, ReplyMarkup};
 
 impl_payload! {
     /// Use this method to send an animated emoji that will display a random value. On success, the sent [`Message`] is returned.
@@ -24,7 +24,8 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i32,
+            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
+            pub reply_to_message_id: MessageId,
             /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
             pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
