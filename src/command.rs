@@ -1,55 +1,54 @@
 use crate::{
     command_attr::CommandAttrs, command_enum::CommandEnum,
-    fields_parse::ParserType, rename_rules::RenameRule, Result,
+    fields_parse::ParserType, Result,
 };
 
 pub(crate) struct Command {
-    pub prefix: Option<String>,
+    /// Prefix of this command, for example "/".
+    pub prefix: String,
+    /// Description for the command.
     pub description: Option<String>,
-    pub parser: Option<ParserType>,
+    /// Name of the command, with all renames already applied.
     pub name: String,
+    /// Parser for arguments of this command.
+    pub parser: ParserType,
 }
 
 impl Command {
-    pub fn try_from(attrs: CommandAttrs, name: &str) -> Result<Self> {
+    pub fn new(
+        name: &str,
+        attributes: &[syn::Attribute],
+        global_options: &CommandEnum,
+    ) -> Result<Self> {
+        let attrs = CommandAttrs::from_attributes(attributes)?;
         let CommandAttrs {
             prefix,
             description,
             rename_rule,
             parser,
+            // FIXME: error on/do not ignore separator
             separator: _,
         } = attrs;
 
-        let name = rename_rule.unwrap_or(RenameRule::Identity).apply(name);
+        let name = rename_rule
+            .map(|(rr, _)| rr)
+            .unwrap_or(global_options.rename_rule)
+            .apply(name);
+
+        let prefix = prefix
+            .map(|(p, _)| p)
+            .unwrap_or_else(|| global_options.prefix.clone());
+        let description = description.map(|(d, _)| d);
+        let parser = parser
+            .map(|(p, _)| p)
+            .unwrap_or_else(|| global_options.parser_type.clone());
 
         Ok(Self { prefix, description, parser, name })
     }
 
-    pub fn get_matched_value(&self, global_parameters: &CommandEnum) -> String {
-        let prefix = if let Some(prefix) = &self.prefix {
-            prefix
-        } else if let Some(prefix) = &global_parameters.prefix {
-            prefix
-        } else {
-            "/"
-        };
-
-        String::from(prefix) + &global_parameters.rename_rule.apply(&self.name)
-    }
-
-    pub fn get_matched_value2(
-        &self,
-        global_parameters: &CommandEnum,
-    ) -> (String, String) {
-        let prefix = if let Some(prefix) = &self.prefix {
-            prefix
-        } else if let Some(prefix) = &global_parameters.prefix {
-            prefix
-        } else {
-            "/"
-        };
-
-        (String::from(prefix), global_parameters.rename_rule.apply(&self.name))
+    pub fn get_prefixed_command(&self) -> String {
+        let Self { prefix, name, .. } = self;
+        format!("{prefix}{name}")
     }
 
     pub(crate) fn description_is_enabled(&self) -> bool {

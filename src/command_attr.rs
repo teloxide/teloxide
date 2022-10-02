@@ -9,22 +9,31 @@ use crate::{
 use proc_macro2::Span;
 use syn::Attribute;
 
-/// Attributes for `BotCommands` derive macro.
+/// All attributes that can be used for `derive(BotCommands)`
 pub(crate) struct CommandAttrs {
-    pub prefix: Option<String>,
-    pub description: Option<String>,
-    pub rename_rule: Option<RenameRule>,
-    pub parser: Option<ParserType>,
-    pub separator: Option<String>,
+    pub prefix: Option<(String, Span)>,
+    pub description: Option<(String, Span)>,
+    pub rename_rule: Option<(RenameRule, Span)>,
+    pub parser: Option<(ParserType, Span)>,
+    pub separator: Option<(String, Span)>,
 }
 
-/// An attribute for `BotCommands` derive macro.
-pub(crate) struct CommandAttr {
+/// A single k/v attribute for `BotCommands` derive macro.
+///
+/// For example:
+/// ```text
+///   #[command(prefix = "!", rename_rule = "snake_case")]
+///            /^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^---- CommandAttr { kind: RenameRule(SnakeCase) }
+///            |
+///            CommandAttr { kind: Prefix("!") }
+/// ```
+struct CommandAttr {
     kind: CommandAttrKind,
     sp: Span,
 }
 
-pub(crate) enum CommandAttrKind {
+/// Kind of [`CommandAttr`].
+enum CommandAttrKind {
     Prefix(String),
     Description(String),
     RenameRule(RenameRule),
@@ -49,13 +58,13 @@ impl CommandAttrs {
             },
             |mut this, attr| {
                 fn insert<T>(
-                    opt: &mut Option<T>,
+                    opt: &mut Option<(T, Span)>,
                     x: T,
                     sp: Span,
                 ) -> Result<()> {
                     match opt {
                         slot @ None => {
-                            *slot = Some(x);
+                            *slot = Some((x, sp));
                             Ok(())
                         }
                         Some(_) => {
