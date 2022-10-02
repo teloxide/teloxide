@@ -27,7 +27,7 @@ pub(crate) struct CommandAttr {
 pub(crate) enum CommandAttrKind {
     Prefix(String),
     Description(String),
-    Rename(RenameRule),
+    RenameRule(RenameRule),
     ParseWith(ParserType),
     Separator(String),
 }
@@ -67,7 +67,7 @@ impl CommandAttrs {
                 match attr.kind {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
                     Description(d) => insert(&mut this.description, d, attr.sp),
-                    Rename(r) => insert(&mut this.rename_rule, r, attr.sp),
+                    RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
                 }?;
@@ -87,8 +87,10 @@ impl CommandAttr {
         let kind = match &*key.to_string() {
             "prefix" => Prefix(value.expect_string()?),
             "description" => Description(value.expect_string()?),
-            "rename" => Rename(
-                value.expect_string().and_then(|r| RenameRule::parse(&r))?,
+            "rename_rule" => RenameRule(
+                value
+                    .expect_string()
+                    .and_then(|r| self::RenameRule::parse(&r))?,
             ),
             "parse_with" => {
                 ParseWith(value.expect_string().map(|p| ParserType::parse(&p))?)
