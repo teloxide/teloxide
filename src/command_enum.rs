@@ -1,6 +1,6 @@
 use crate::{
-    command_attr::CommandAttrs, fields_parse::ParserType,
-    rename_rules::RenameRule, Result,
+    command_attr::CommandAttrs, error::compile_error_at,
+    fields_parse::ParserType, rename_rules::RenameRule, Result,
 };
 
 #[derive(Debug)]
@@ -18,9 +18,17 @@ impl CommandEnum {
             prefix,
             description,
             rename_rule,
+            rename,
             parser,
             separator,
         } = attrs;
+
+        if let Some((_rename, sp)) = rename {
+            return Err(compile_error_at(
+                "`rename` attribute can only be applied to enums *variants*",
+                sp,
+            ));
+        }
 
         let mut parser = parser.map(|(p, _)| p).unwrap_or(ParserType::Default);
 

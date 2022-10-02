@@ -14,6 +14,7 @@ pub(crate) struct CommandAttrs {
     pub prefix: Option<(String, Span)>,
     pub description: Option<(String, Span)>,
     pub rename_rule: Option<(RenameRule, Span)>,
+    pub rename: Option<(String, Span)>,
     pub parser: Option<(ParserType, Span)>,
     pub separator: Option<(String, Span)>,
 }
@@ -37,6 +38,7 @@ enum CommandAttrKind {
     Prefix(String),
     Description(String),
     RenameRule(RenameRule),
+    Rename(String),
     ParseWith(ParserType),
     Separator(String),
 }
@@ -53,6 +55,7 @@ impl CommandAttrs {
                 prefix: None,
                 description: None,
                 rename_rule: None,
+                rename: None,
                 parser: None,
                 separator: None,
             },
@@ -77,6 +80,7 @@ impl CommandAttrs {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
                     Description(d) => insert(&mut this.description, d, attr.sp),
                     RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
+                    Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
                 }?;
@@ -101,6 +105,7 @@ impl CommandAttr {
                     .expect_string()
                     .and_then(|r| self::RenameRule::parse(&r))?,
             ),
+            "rename" => Rename(value.expect_string()?),
             "parse_with" => {
                 ParseWith(value.expect_string().map(|p| ParserType::parse(&p))?)
             }

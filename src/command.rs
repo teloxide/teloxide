@@ -1,6 +1,6 @@
 use crate::{
     command_attr::CommandAttrs, command_enum::CommandEnum,
-    fields_parse::ParserType, Result,
+    error::compile_error_at, fields_parse::ParserType, Result,
 };
 
 pub(crate) struct Command {
@@ -25,15 +25,23 @@ impl Command {
             prefix,
             description,
             rename_rule,
+            rename,
             parser,
             // FIXME: error on/do not ignore separator
             separator: _,
         } = attrs;
 
-        let name = rename_rule
-            .map(|(rr, _)| rr)
-            .unwrap_or(global_options.rename_rule)
-            .apply(name);
+        let name = match (rename, rename_rule) {
+            (Some((rename, _)), None) => rename,
+            (Some(_), Some((_, sp))) => {
+                return Err(compile_error_at(
+                    "`rename_rule` can't be applied to `rename`-d variant",
+                    sp,
+                ))
+            }
+            (None, Some((rule, _))) => rule.apply(name),
+            (None, None) => global_options.rename_rule.apply(name),
+        };
 
         let prefix = prefix
             .map(|(p, _)| p)
