@@ -14,7 +14,7 @@ async fn main() {
     let bot = Bot::from_env();
 
     let handler = Update::filter_inline_query().branch(dptree::endpoint(
-        |query: InlineQuery, bot: Bot| async move {
+        |q: InlineQuery, bot: Bot| async move {
             // First, create your actual response
             let google_search = InlineQueryResultArticle::new(
                 // Each item needs a unique ID, as well as the response container for the
@@ -26,7 +26,7 @@ async fn main() {
                 // What message will be sent when clicked/tapped
                 InputMessageContent::Text(InputMessageContentText::new(format!(
                     "https://www.google.com/search?q={}",
-                    query.query,
+                    q.query,
                 ))),
             );
             // While constructing them from the struct itself is possible, it is preferred
@@ -38,7 +38,7 @@ async fn main() {
                 "DuckDuckGo Search".to_string(),
                 InputMessageContent::Text(InputMessageContentText::new(format!(
                     "https://duckduckgo.com/?q={}",
-                    query.query
+                    q.query
                 ))),
             )
             .description("DuckDuckGo Search")
@@ -52,7 +52,7 @@ async fn main() {
 
             // Send it off! One thing to note -- the ID we use here must be of the query
             // we're responding to.
-            let response = bot.answer_inline_query(&query.id, results).send().await;
+            let response = bot.answer_inline_query(&q.id, results).send().await;
             if let Err(err) = response {
                 log::error!("Error in handler: {:?}", err);
             }

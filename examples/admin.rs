@@ -63,8 +63,8 @@ async fn main() {
     teloxide::commands_repl(bot, action, Command::ty()).await;
 }
 
-async fn action(bot: Bot, msg: Message, command: Command) -> ResponseResult<()> {
-    match command {
+async fn action(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
         Command::Help => {
             bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
         }
