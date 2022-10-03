@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr};
+use std::str::FromStr;
 
 use chrono::Duration;
 use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
@@ -63,11 +63,7 @@ async fn main() {
     teloxide::commands_repl(bot, action, Command::ty()).await;
 }
 
-async fn action(
-    bot: Bot,
-    msg: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn action(bot: Bot, msg: Message, command: Command) -> ResponseResult<()> {
     match command {
         Command::Help => {
             bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
@@ -81,7 +77,7 @@ async fn action(
 }
 
 // Kick a user with a replied message.
-async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn kick_user(bot: Bot, msg: Message) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
@@ -95,11 +91,7 @@ async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + 
 }
 
 // Ban a user with replied message.
-async fn ban_user(
-    bot: Bot,
-    msg: Message,
-    time: Duration,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn ban_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             bot.kick_chat_member(
@@ -118,11 +110,7 @@ async fn ban_user(
 }
 
 // Mute a user with a replied message.
-async fn mute_user(
-    bot: Bot,
-    msg: Message,
-    time: Duration,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn mute_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             bot.restrict_chat_member(
