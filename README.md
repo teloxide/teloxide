@@ -94,8 +94,8 @@ async fn main() {
 
     let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message: Message, bot: Bot| async move {
-        bot.send_dice(message.chat.id).await?;
+    teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+        bot.send_dice(msg.chat.id).await?;
         Ok(())
     })
     .await;
@@ -143,20 +143,15 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(bot: Bot, message: Message, command: Command) -> ResponseResult<()> {
-    match command {
-        Command::Help => {
-            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
-        }
+async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
+        Command::Help => bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?,
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
-            bot.send_message(
-                message.chat.id,
-                format!("Your username is @{username} and age is {age}."),
-            )
-            .await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username} and age is {age}."))
+                .await?
         }
     };
 
@@ -223,13 +218,13 @@ async fn main() {
     .await;
 }
 
-async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -245,9 +240,9 @@ async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> Hand
 
 async fn receive_age(
     bot: Bot,
-    msg: Message,
     dialogue: MyDialogue,
     full_name: String, // Available from `State::ReceiveAge`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -264,14 +259,14 @@ async fn receive_age(
 
 async fn receive_location(
     bot: Bot,
-    msg: Message,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
-            bot.send_message(msg.chat.id, message).await?;
+            let report = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
+            bot.send_message(msg.chat.id, report).await?;
             dialogue.exit().await?;
         }
         None => {

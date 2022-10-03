@@ -16,7 +16,7 @@ async fn main() {
     let messages_total = Arc::new(AtomicU64::new(0));
 
     let handler = Update::filter_message().endpoint(
-        |msg: Message, bot: Bot, messages_total: Arc<AtomicU64>| async move {
+        |bot: Bot, messages_total: Arc<AtomicU64>, msg: Message| async move {
             let previous = messages_total.fetch_add(1, Ordering::Relaxed);
             bot.send_message(msg.chat.id, format!("I received {previous} messages in total."))
                 .await?;

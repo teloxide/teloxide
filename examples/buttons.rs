@@ -58,21 +58,25 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 /// Parse the text wrote on Telegram and check if that text is a valid command
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
-async fn message_handler(m: Message, bot: Bot, me: Me) -> Result<(), Box<dyn Error + Send + Sync>> {
-    if let Some(text) = m.text() {
+async fn message_handler(
+    bot: Bot,
+    msg: Message,
+    me: Me,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    if let Some(text) = msg.text() {
         match BotCommands::parse(text, me.username()) {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
-                bot.send_message(m.chat.id, Command::descriptions().to_string()).await?;
+                bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
             }
             Ok(Command::Start) => {
                 // Create a list of buttons and send them.
                 let keyboard = make_keyboard();
-                bot.send_message(m.chat.id, "Debian versions:").reply_markup(keyboard).await?;
+                bot.send_message(msg.chat.id, "Debian versions:").reply_markup(keyboard).await?;
             }
 
             Err(_) => {
-                bot.send_message(m.chat.id, "Command not found!").await?;
+                bot.send_message(msg.chat.id, "Command not found!").await?;
             }
         }
     }
@@ -81,8 +85,8 @@ async fn message_handler(m: Message, bot: Bot, me: Me) -> Result<(), Box<dyn Err
 }
 
 async fn inline_query_handler(
-    q: InlineQuery,
     bot: Bot,
+    q: InlineQuery,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let choose_debian_version = InlineQueryResultArticle::new(
         "0",
@@ -101,7 +105,7 @@ async fn inline_query_handler(
 ///
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
 /// Anyone can read data stored in the callback button.
-async fn callback_handler(q: CallbackQuery, bot: Bot) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
         let text = format!("You chose: {version}");
 
