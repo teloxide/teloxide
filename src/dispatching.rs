@@ -113,26 +113,26 @@
 //! type MyDialogue = Dialogue<State, InMemStorage<State>>;
 //! type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //!
-//! async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
 //! async fn help(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//! async fn cancel(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn cancel(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
 //! async fn invalid_state(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//! async fn receive_full_name(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
 //! async fn receive_product_selection(
 //!     bot: Bot,
-//!     q: CallbackQuery,
 //!     dialogue: MyDialogue,
-//!     full_name: String,
+//!     full_name: String, // Available from `State::ReceiveProductChoice`.
+//!     q: CallbackQuery,
 //! ) -> HandlerResult {
 //!     todo!()
 //! }

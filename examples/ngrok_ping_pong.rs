@@ -18,7 +18,7 @@ async fn main() {
 
     teloxide::repl_with_listener(
         bot,
-        |msg: Message, bot: Bot| async move {
+        |bot: Bot, msg: Message| async move {
             bot.send_message(msg.chat.id, "pong").await?;
             Ok(())
         },

@@ -39,9 +39,9 @@
 //! # #[derive(Clone, Debug)] enum State { ReceiveLocation { full_name: String, age: u8 } }
 //! async fn receive_age(
 //!     bot: Bot,
-//!     msg: Message,
 //!     dialogue: MyDialogue,
 //!     full_name: String, // Available from `State::ReceiveAge`.
+//!     msg: Message,
 //! ) -> HandlerResult {
 //!     match msg.text().map(|text| text.parse::<u8>()) {
 //!         Some(Ok(age)) => {
@@ -71,9 +71,9 @@
 //! # #[derive(Clone, Debug)] enum State {}
 //! async fn receive_location(
 //!     bot: Bot,
-//!     msg: Message,
 //!     dialogue: MyDialogue,
 //!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+//!     msg: Message,
 //! ) -> HandlerResult {
 //!     match msg.text() {
 //!         Some(location) => {

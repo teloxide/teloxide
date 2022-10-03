@@ -60,7 +60,7 @@ async fn main() {
         .await;
 }
 
-async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text().map(|text| text.parse::<i32>()) {
         Some(Ok(n)) => {
             dialogue.update(State::GotNumber(n)).await?;
@@ -80,9 +80,9 @@ async fn start(bot: Bot, msg: Message, dialogue: MyDialogue) -> HandlerResult {
 
 async fn got_number(
     bot: Bot,
-    msg: Message,
     dialogue: MyDialogue,
-    num: i32,
+    num: i32, // Available from `State::GotNumber`.
+    msg: Message,
     cmd: Command,
 ) -> HandlerResult {
     match cmd {
