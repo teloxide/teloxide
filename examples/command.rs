@@ -21,20 +21,15 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(bot: Bot, message: Message, command: Command) -> ResponseResult<()> {
-    match command {
-        Command::Help => {
-            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
-        }
+async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
+        Command::Help => bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?,
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
-            bot.send_message(
-                message.chat.id,
-                format!("Your username is @{username} and age is {age}."),
-            )
-            .await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username} and age is {age}."))
+                .await?
         }
     };
 

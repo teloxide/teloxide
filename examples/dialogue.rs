@@ -104,8 +104,8 @@ async fn receive_location(
 ) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
-            bot.send_message(msg.chat.id, message).await?;
+            let report = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
+            bot.send_message(msg.chat.id, report).await?;
             dialogue.exit().await?;
         }
         None => {
