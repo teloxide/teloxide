@@ -5,7 +5,7 @@ Please, read the whole document before you start pushing code.
 
 ## Generics
 
-All trait bounds should be written in `where`
+All trait bounds should be written in `where`:
 
 ```rust
 // GOOD
@@ -35,11 +35,13 @@ where
 impl<T: Trait> Trait for Wrap<T> { ... }
 ```
 
-**Rationale:** `where` clauses are easier to read when there are a lot of bounds, uniformity.
+**Rationale:**
+- `where` clauses are easier to read when there are a lot of bounds
+- uniformity
 
 ## Documentation comments
 
-1. Documentation must describe what your code does and mustn't describe how your code does it and bla-bla-bla.
+1. Documentation must describe _what_ your code does and mustn't describe _how_ your code does it and bla-bla-bla.
 2. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on.
    ```rust
    // GOOD
@@ -67,7 +69,7 @@ impl<T: Trait> Trait for Wrap<T> { ... }
    - Pass dependencies to handlers;
    - Disable a default Ctrl-C handling;
    ```
-3. Link resources in your comments when possible, for example:
+3. Link resources in your comments when possible:
    ```rust
    /// Download a file from Telegram.
    ///
@@ -84,7 +86,7 @@ impl<T: Trait> Trait for Wrap<T> { ... }
 
 ## Use `Self` where possible
 
-When referring to the type for which block is implemented, prefer using `Self`, rather than the name of the type.
+When referring to the type for which block is implemented, prefer using `Self`, rather than the name of the type:
 
 ```rust
 impl ErrorKind {
@@ -134,7 +136,7 @@ struct Message {
 }
 ```
 
-**Rationale:** duplication is unnecessary 
+**Rationale:** duplication blurs the focus of code, making it unnecessarily longer.
 
 ## Conventional generic names
 
@@ -150,7 +152,7 @@ Derive `Copy`, `Clone`, `Eq`, `PartialEq`, `Hash` and `Debug` for public types w
 
 Derive `Default` when there is a reasonable default value for the type.
 
-**Rationale:** `Default` plays nicely with generic code (for example `mem::take`).
+**Rationale:** `Default` plays nicely with generic code (for example, `mem::take`).
 
 ## `Into`-polymorphism
 
@@ -161,7 +163,7 @@ I.e. when there are types that implement `Into<Ty>` that are likely to be passed
 
 ## `must_use`
 
-Always mark a functions as `#[must_use]` if they don't have side-effects and the only reason to call them is to get the result.
+Always mark functions as `#[must_use]` if they don't have side effects and the only reason to call them is to get the result:
 
 ```rust
 impl User {
@@ -195,7 +197,9 @@ use log::warn;
 warn!("Everything is on fire");
 ```
 
-**Rationale:** uniformity, it's clearer which log crate is used.
+**Rationale:**
+- Less polluted import blocks
+- Uniformity
 
 ## `&str` -> `String` conversion
 
@@ -232,7 +236,10 @@ use super::{}
 pub use crate::x::Z;
 ```
 
-**Rationale:** consistency. Reading order is important for new contributors. Grouping by crate allows spotting unwanted dependencies easier.
+**Rationale:**
+- Reading order is important for new contributors
+- Grouping by crate allows spotting unwanted dependencies easier
+- Consistency
 
 ## Import Style
 
@@ -252,15 +259,19 @@ impl std::fmt::Display for RenameError {
 }
 ```
 
-**Rationale:** overall, less typing. Makes it clear that a trait is implemented, rather than used.
+**Rationale:**
+- Makes it clear that a trait is implemented, rather than used
+- Less typing
 
-Prefer `use crate::foo::bar` to `use super::bar` or `use self::bar::baz`. **Rationale:** consistency, this is the style which works in all cases.
+Prefer `use crate::foo::bar` to `use super::bar` or `use self::bar::baz`. **Rationale:**
+- Works in all cases
+- Consistency
 
 ## Order of Items
 
 Optimize for the reader who sees the file for the first time, and wants to get a general idea about what's going on. People read things from top to bottom, so place most important things first.
 
-Specifically, if all items except one are private, always put the non-private item on top.
+Specifically, if all items except one are private, always put the non-private item on top:
 ```rust
 // GOOD
 pub(crate) fn frobnicate() {
@@ -293,7 +304,7 @@ impl Helper {
 
 If there's a mixture of private and public items, put public items first.
 
-Put structs and enums first, functions and impls last. Order type declarations in top-down manner.
+Put structs and enums first, functions and impls last. Order type declarations in a top-down manner:
 
 ```rust
 // GOOD
@@ -323,11 +334,13 @@ impl Parent {
 }
 ```
 
-**Rationale:** easier to get the sense of the API by visually scanning the file. If function bodies are folded in the editor, the source code should read as documentation for the public API.
+**Rationale:**
+- Easier to get a sense of the API by visually scanning the file
+- If function bodies are folded in the editor, the source code should be read as documentation for the public API
 
 ## Early Returns
 
-Do use early returns
+Do use early returns:
 
 ```rust
 // GOOD
@@ -353,7 +366,7 @@ fn foo() -> Option<Bar> {
 
 ## If-let
 
-Avoid if let ... { } else { } construct, use match instead.
+Avoid the `if let ... { } else { }` construct, use `match` instead:
 
 ```rust
 // GOOD
@@ -370,7 +383,9 @@ if let Some(expected_type) = ctx.expected_type.as_ref() {
 }
 ```
 
-**Rationale:** `match is almost always more compact. The `else` branch can get a more precise pattern: `None` or `Err(_)` instead of `_`.
+**Rationale:**
+- `match` is almost always more compact
+- The `else` branch can get a more precise pattern: `None` or `Err(_)` instead of `_`
 
 ## Empty Match Arms
 
