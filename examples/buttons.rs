@@ -59,8 +59,8 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
 async fn message_handler(
-    msg: Message,
     bot: Bot,
+    msg: Message,
     me: Me,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(text) = msg.text() {
@@ -85,8 +85,8 @@ async fn message_handler(
 }
 
 async fn inline_query_handler(
-    q: InlineQuery,
     bot: Bot,
+    q: InlineQuery,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let choose_debian_version = InlineQueryResultArticle::new(
         "0",
@@ -105,7 +105,7 @@ async fn inline_query_handler(
 ///
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
 /// Anyone can read data stored in the callback button.
-async fn callback_handler(q: CallbackQuery, bot: Bot) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
         let text = format!("You chose: {version}");
 

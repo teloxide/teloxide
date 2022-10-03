@@ -14,7 +14,7 @@ async fn main() {
     let bot = Bot::from_env();
 
     let handler = Update::filter_inline_query().branch(dptree::endpoint(
-        |q: InlineQuery, bot: Bot| async move {
+        |bot: Bot, q: InlineQuery| async move {
             // First, create your actual response
             let google_search = InlineQueryResultArticle::new(
                 // Each item needs a unique ID, as well as the response container for the

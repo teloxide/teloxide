@@ -33,7 +33,7 @@ async fn main() {
         )
         .branch(
             // Filter a maintainer by a used ID.
-            dptree::filter(|msg: Message, cfg: ConfigParameters| {
+            dptree::filter(|cfg: ConfigParameters, msg: Message| {
                 msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .filter_command::<MaintainerCommands>()
@@ -62,7 +62,7 @@ async fn main() {
         .branch(
             // There are some extension filtering functions on `Message`. The following filter will
             // filter only messages with dices.
-            Message::filter_dice().endpoint(|msg: Message, dice: Dice, bot: Bot| async move {
+            Message::filter_dice().endpoint(|bot: Bot, msg: Message, dice: Dice| async move {
                 bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
                     .reply_to_message_id(msg.id)
                     .await?;
@@ -114,11 +114,11 @@ enum MaintainerCommands {
 }
 
 async fn simple_commands_handler(
-    msg: Message,
-    bot: Bot,
-    cmd: SimpleCommand,
     cfg: ConfigParameters,
+    bot: Bot,
     me: teloxide::types::Me,
+    msg: Message,
+    cmd: SimpleCommand,
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {
