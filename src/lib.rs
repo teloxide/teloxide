@@ -15,8 +15,8 @@
 //!
 //! let bot = Bot::from_env();
 //!
-//! teloxide::repl(bot, |message: Message, bot: Bot| async move {
-//!     bot.send_dice(message.chat.id).await?;
+//! teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+//!     bot.send_dice(msg.chat.id).await?;
 //!     Ok(())
 //! })
 //! .await;
