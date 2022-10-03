@@ -42,7 +42,7 @@ impl<T: Trait> Trait for Wrap<T> { ... }
 ## Documentation comments
 
 1. Documentation must describe _what_ your code does and mustn't describe _how_ your code does it and bla-bla-bla.
-2. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on.
+2. Be sure that your comments follow the grammar, including punctuation, the first capital letter and so on:
    ```rust
    // GOOD
    /// This function makes a request to Telegram.
@@ -52,7 +52,7 @@ impl<T: Trait> Trait for Wrap<T> { ... }
    /// this function make request to telegram
    pub fn make_request(url: &str) -> String { ... }
    ```
-3. Do not use ending punctuation in short list items (usually containing just one phrase or sentence).
+3. Do not use ending punctuation in short list items (usually containing just one phrase or sentence):
    ```md
    <!-- GOOD -->
    - Handle different kinds of Update
