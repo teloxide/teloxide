@@ -1,6 +1,10 @@
 //! Test for `teloxide-macros`
 
-use teloxide::utils::command::BotCommands;
+use teloxide_macros::BotCommands;
+
+// Import only trait _methods_, such that we can call `parse`, but we also test
+// that proc macros works without the trait being imported.
+use teloxide::utils::command::BotCommands as _;
 
 #[test]
 fn parse_command_with_args() {
