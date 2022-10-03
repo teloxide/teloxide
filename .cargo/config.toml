@@ -9,5 +9,6 @@ docs = """doc
 --features=tokio/macros --features=tokio/rt-multi-thread
 """
 
+[build]
 # We pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
 rustdocflags = ["--cfg", "docsrs", "-Znormalize-docs"]
