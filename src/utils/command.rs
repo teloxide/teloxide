@@ -218,9 +218,7 @@ pub trait BotCommands: Sized {
     ///
     /// `bot_username` is required to parse commands like
     /// `/cmd@username_of_the_bot`.
-    fn parse<N>(s: &str, bot_username: N) -> Result<Self, ParseError>
-    where
-        N: Into<String>;
+    fn parse(s: &str, bot_username: &str) -> Result<Self, ParseError>;
 
     /// Returns descriptions of the commands suitable to be shown to the user
     /// (for example when `/help` command is used).
