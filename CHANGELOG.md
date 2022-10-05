@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `CommandDescriptions::{new, global_description, username, username_from_me}`.
   - `teloxide::filter_command`.
   - `teloxide::dispatching::dialogue::enter`.
+- `BotCommands::parse` now accept `bot_username` as `&str`
 
 ### Added
 
