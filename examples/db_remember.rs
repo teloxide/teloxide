@@ -22,7 +22,7 @@ pub enum State {
 }
 
 #[derive(Clone, BotCommands)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]
     Get,
