@@ -102,10 +102,7 @@ fn impl_parse(
     let matching_values = infos.iter().map(|c| c.get_prefixed_command());
 
     quote! {
-         fn parse<N>(s: &str, bot_name: N) -> Result<Self, teloxide::utils::command::ParseError>
-         where
-              N: Into<String>
-         {
+         fn parse(s: &str, bot_name: &str) -> Result<Self, teloxide::utils::command::ParseError> {
               // FIXME: we should probably just call a helper function from `teloxide`, instead of parsing command syntax ourselves
               use std::str::FromStr;
               use teloxide::utils::command::ParseError;
@@ -121,7 +118,7 @@ fn impl_parse(
               let bot_username = full_command.next();
               match bot_username {
                   None => {}
-                  Some(username) if username.eq_ignore_ascii_case(&bot_name.into()) => {}
+                  Some(username) if username.eq_ignore_ascii_case(bot_name) => {}
                   Some(n) => return Err(ParseError::WrongBotName(n.to_owned())),
               }
 
