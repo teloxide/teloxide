@@ -9,25 +9,36 @@ use crate::{
 use proc_macro2::Span;
 use syn::Attribute;
 
-/// Attributes for `BotCommands` derive macro.
+/// All attributes that can be used for `derive(BotCommands)`
 pub(crate) struct CommandAttrs {
-    pub prefix: Option<String>,
-    pub description: Option<String>,
-    pub rename_rule: Option<RenameRule>,
-    pub parser: Option<ParserType>,
-    pub separator: Option<String>,
+    pub prefix: Option<(String, Span)>,
+    pub description: Option<(String, Span)>,
+    pub rename_rule: Option<(RenameRule, Span)>,
+    pub rename: Option<(String, Span)>,
+    pub parser: Option<(ParserType, Span)>,
+    pub separator: Option<(String, Span)>,
 }
 
-/// An attribute for `BotCommands` derive macro.
-pub(crate) struct CommandAttr {
+/// A single k/v attribute for `BotCommands` derive macro.
+///
+/// For example:
+/// ```text
+///   #[command(prefix = "!", rename_rule = "snake_case")]
+///            /^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^---- CommandAttr { kind: RenameRule(SnakeCase) }
+///            |
+///            CommandAttr { kind: Prefix("!") }
+/// ```
+struct CommandAttr {
     kind: CommandAttrKind,
     sp: Span,
 }
 
-pub(crate) enum CommandAttrKind {
+/// Kind of [`CommandAttr`].
+enum CommandAttrKind {
     Prefix(String),
     Description(String),
-    Rename(RenameRule),
+    RenameRule(RenameRule),
+    Rename(String),
     ParseWith(ParserType),
     Separator(String),
 }
@@ -44,18 +55,19 @@ impl CommandAttrs {
                 prefix: None,
                 description: None,
                 rename_rule: None,
+                rename: None,
                 parser: None,
                 separator: None,
             },
             |mut this, attr| {
                 fn insert<T>(
-                    opt: &mut Option<T>,
+                    opt: &mut Option<(T, Span)>,
                     x: T,
                     sp: Span,
                 ) -> Result<()> {
                     match opt {
                         slot @ None => {
-                            *slot = Some(x);
+                            *slot = Some((x, sp));
                             Ok(())
                         }
                         Some(_) => {
@@ -67,7 +79,8 @@ impl CommandAttrs {
                 match attr.kind {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
                     Description(d) => insert(&mut this.description, d, attr.sp),
-                    Rename(r) => insert(&mut this.rename_rule, r, attr.sp),
+                    RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
+                    Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
                 }?;
@@ -87,9 +100,12 @@ impl CommandAttr {
         let kind = match &*key.to_string() {
             "prefix" => Prefix(value.expect_string()?),
             "description" => Description(value.expect_string()?),
-            "rename" => Rename(
-                value.expect_string().and_then(|r| RenameRule::parse(&r))?,
+            "rename_rule" => RenameRule(
+                value
+                    .expect_string()
+                    .and_then(|r| self::RenameRule::parse(&r))?,
             ),
+            "rename" => Rename(value.expect_string()?),
             "parse_with" => {
                 ParseWith(value.expect_string().map(|p| ParserType::parse(&p))?)
             }

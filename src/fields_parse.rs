@@ -1,7 +1,7 @@
 use quote::quote;
 use syn::{Fields, FieldsNamed, FieldsUnnamed, Type};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) enum ParserType {
     Default,
     Split { separator: Option<String> },

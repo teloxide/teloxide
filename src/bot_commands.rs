@@ -1,6 +1,6 @@
 use crate::{
-    command::Command, command_attr::CommandAttrs, command_enum::CommandEnum,
-    compile_error, fields_parse::impl_parse_args, unzip::Unzip, Result,
+    command::Command, command_enum::CommandEnum, compile_error,
+    fields_parse::impl_parse_args, unzip::Unzip, Result,
 };
 
 use proc_macro2::TokenStream;
@@ -9,22 +9,23 @@ use syn::DeriveInput;
 
 pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
     let data_enum = get_enum_data(&input)?;
-    let enum_attrs = CommandAttrs::from_attributes(&input.attrs)?;
-    let command_enum = CommandEnum::try_from(enum_attrs)?;
+    let command_enum = CommandEnum::from_attributes(&input.attrs)?;
 
     let Unzip(var_init, var_info) = data_enum
         .variants
         .iter()
         .map(|variant| {
-            let attrs = CommandAttrs::from_attributes(&variant.attrs)?;
-            let command = Command::try_from(attrs, &variant.ident.to_string())?;
+            let command = Command::new(
+                &variant.ident.to_string(),
+                &variant.attrs,
+                &command_enum,
+            )?;
 
             let variant_name = &variant.ident;
             let self_variant = quote! { Self::#variant_name };
 
-            let parser =
-                command.parser.as_ref().unwrap_or(&command_enum.parser_type);
-            let parse = impl_parse_args(&variant.fields, self_variant, parser);
+            let parse =
+                impl_parse_args(&variant.fields, self_variant, &command.parser);
 
             Ok((parse, command))
         })
@@ -32,8 +33,8 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
 
     let type_name = &input.ident;
     let fn_descriptions = impl_descriptions(&var_info, &command_enum);
-    let fn_parse = impl_parse(&var_info, &command_enum, &var_init);
-    let fn_commands = impl_commands(&var_info, &command_enum);
+    let fn_parse = impl_parse(&var_info, &var_init);
+    let fn_commands = impl_commands(&var_info);
 
     let trait_impl = quote! {
         impl teloxide::utils::command::BotCommands for #type_name {
@@ -46,15 +47,12 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
     Ok(trait_impl)
 }
 
-fn impl_commands(
-    infos: &[Command],
-    global: &CommandEnum,
-) -> proc_macro2::TokenStream {
+fn impl_commands(infos: &[Command]) -> proc_macro2::TokenStream {
     let commands = infos
         .iter()
         .filter(|command| command.description_is_enabled())
         .map(|command| {
-            let c = command.get_matched_value(global);
+            let c = command.get_prefixed_command();
             let d = command.description.as_deref().unwrap_or_default();
             quote! { BotCommand::new(#c,#d) }
         });
@@ -74,10 +72,9 @@ fn impl_descriptions(
     let command_descriptions = infos
         .iter()
         .filter(|command| command.description_is_enabled())
-        .map(|c| {
-            let (prefix, command) = c.get_matched_value2(global);
-            let description = c.description.clone().unwrap_or_default();
-            quote! { CommandDescription { prefix: #prefix, command: #command, description: #description } }
+        .map(|Command { prefix, name, description, ..}| {
+            let description = description.clone().unwrap_or_default();
+            quote! { CommandDescription { prefix: #prefix, command: #name, description: #description } }
         });
 
     let global_description = match global.description.as_deref() {
@@ -100,10 +97,9 @@ fn impl_descriptions(
 
 fn impl_parse(
     infos: &[Command],
-    global: &CommandEnum,
     variants_initialization: &[proc_macro2::TokenStream],
 ) -> proc_macro2::TokenStream {
-    let matching_values = infos.iter().map(|c| c.get_matched_value(global));
+    let matching_values = infos.iter().map(|c| c.get_prefixed_command());
 
     quote! {
          fn parse<N>(s: &str, bot_name: N) -> Result<Self, teloxide::utils::command::ParseError>
