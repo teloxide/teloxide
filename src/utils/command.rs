@@ -82,11 +82,10 @@ pub use teloxide_macros::BotCommands;
 /// ```
 ///
 /// # Enum attributes
-///  1. `#[command(rename = "rule")]`
-/// Rename all commands by `rule`. If you will not use this attribute, commands
-/// will be parsed by their original names. Allowed rules are `lowercase`,
-/// `UPPERCASE`, `PascalCase`, `camelCase`, `snake_case`,
-/// `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE`.
+///  1. `#[command(rename_rule = "rule")]`
+/// Rename all commands by `rule`. Allowed rules are `lowercase`, `UPPERCASE`,
+/// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
+/// `kebab-case`, and `SCREAMING-KEBAB-CASE`.
 ///
 ///  2. `#[command(prefix = "prefix")]`
 /// Change a prefix for all commands (the default is `/`).
@@ -159,21 +158,23 @@ pub use teloxide_macros::BotCommands;
 /// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
 ///
-///  1. `#[command(rename = "rule")]`
+///  1. `#[command(rename_rule = "rule")]`
 /// Rename one command by a rule. Allowed rules are `lowercase`, `UPPERCASE`,
 /// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
-/// `kebab-case`, `SCREAMING-KEBAB-CASE`, and `%some_name%`, where `%some_name%`
-/// is any string, a new name.
+/// `kebab-case`, `SCREAMING-KEBAB-CASE`.
 ///
-///  2. `#[command(description = "description")]`
+///  2. `#[command(rename = "name")]`
+/// Rename one command to `name` (literal renaming; do not confuse with
+/// `rename_rule`).
+///
+///  3. `#[command(description = "description")]`
 /// Give your command a description. Write `"off"` for `"description"` to hide a
 /// command.
 ///
-///  3. `#[command(parse_with = "parser")]`
-/// One more option is available for variants.
-///    - `custom_parser` - your own parser of the signature `fn(String) ->
-///    Result<Tuple, ParseError>`, where `Tuple` corresponds to the variant's
-/// arguments.
+///  4. `#[command(parse_with = "parser")]`
+/// Parse arguments of one command with a given parser. `parser` must be a
+/// function of the signature `fn(String) -> Result<Tuple, ParseError>`, where
+/// `Tuple` corresponds to the variant's arguments.
 ///
 /// ## Example
 /// ```
@@ -204,8 +205,8 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
-///  4. `#[command(prefix = "prefix")]`
-///  5. `#[command(separator = "sep")]`
+///  5. `#[command(prefix = "prefix")]`
+///  6. `#[command(separator = "sep")]`
 ///
 /// These attributes just override the corresponding `enum` attributes for a
 /// specific variant.
