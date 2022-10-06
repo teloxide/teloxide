@@ -106,9 +106,7 @@ impl CommandAttr {
                     .and_then(|r| self::RenameRule::parse(&r))?,
             ),
             "rename" => Rename(value.expect_string()?),
-            "parse_with" => {
-                ParseWith(value.expect_string().map(|p| ParserType::parse(&p))?)
-            }
+            "parse_with" => ParseWith(ParserType::parse(value)?),
             "separator" => Separator(value.expect_string()?),
             _ => {
                 return Err(compile_error_at(
