@@ -3,7 +3,7 @@ name = "teloxide-macros"
 version = "0.7.0"
 description = "The teloxide's procedural macros"
 license = "MIT"
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
