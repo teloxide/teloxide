@@ -161,11 +161,11 @@ fn parse_custom_parser() {
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
     enum DefaultCommands {
-        #[command(parse_with = "custom_parse_function")]
+        #[command(parse_with = custom_parse_function)]
         Start(u8, String),
 
         // Test <https://github.com/teloxide/teloxide/issues/668>.
-        #[command(parse_with = "parser::custom_parse_function")]
+        #[command(parse_with = parser::custom_parse_function)]
         TestPath(u8, String),
 
         Help,

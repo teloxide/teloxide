@@ -194,7 +194,7 @@ pub use teloxide_macros::BotCommands;
 /// #[derive(BotCommands, PartialEq, Debug)]
 /// #[command(rename_rule = "lowercase")]
 /// enum Command {
-///     #[command(parse_with = "accept_two_digits")]
+///     #[command(parse_with = accept_two_digits)]
 ///     Num(u8),
 /// }
 ///
