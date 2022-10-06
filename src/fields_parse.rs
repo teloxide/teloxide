@@ -13,7 +13,7 @@ pub(crate) enum ParserType {
 impl ParserType {
     pub fn parse(value: AttrValue) -> Result<Self> {
         value.expect(
-            r#""default", "split", or a path for custom parsers"#,
+            r#""default", "split", or a path to a custom parser function"#,
             |v| match v {
                 AttrValue::Path(p) => Ok(ParserType::Custom(p)),
                 AttrValue::Lit(syn::Lit::Str(ref l)) => match &*l.value() {
