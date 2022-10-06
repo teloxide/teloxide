@@ -99,7 +99,7 @@ impl AttrValue {
     //     })
     // }
 
-    fn expect<T>(
+    pub fn expect<T>(
         self,
         expected: &str,
         f: impl FnOnce(Self) -> Result<T, Self>,

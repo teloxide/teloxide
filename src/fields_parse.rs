@@ -1,21 +1,26 @@
 use quote::quote;
 use syn::{Fields, FieldsNamed, FieldsUnnamed, Type};
 
+use crate::{attr::AttrValue, error::Result};
+
 #[derive(Debug, Clone)]
 pub(crate) enum ParserType {
     Default,
     Split { separator: Option<String> },
-    Custom(String),
+    Custom(syn::Path),
 }
 
 impl ParserType {
-    // FIXME: use path for custom
-    pub fn parse(data: &str) -> Self {
-        match data {
-            "default" => ParserType::Default,
-            "split" => ParserType::Split { separator: None },
-            s => ParserType::Custom(s.to_owned()),
-        }
+    pub fn parse(value: AttrValue) -> Result<Self> {
+        value.expect(r#""default", "split" or a path"#, |v| match v {
+            AttrValue::Path(p) => Ok(ParserType::Custom(p)),
+            AttrValue::Lit(syn::Lit::Str(ref l)) => match &*l.value() {
+                "default" => Ok(ParserType::Default),
+                "split" => Ok(ParserType::Split { separator: None }),
+                _ => Err(v),
+            },
+            _ => Err(v),
+        })
     }
 }
 
@@ -101,12 +106,7 @@ fn create_parser<'a>(
             &separator.clone().unwrap_or_else(|| " ".to_owned()),
             types,
         ),
-        ParserType::Custom(s) => {
-            let path = syn::parse_str::<syn::Path>(s).unwrap_or_else(|_| {
-                panic!("Failed to parse a custom command parser, {}", s)
-            });
-            quote! { #path }
-        }
+        ParserType::Custom(path) => quote! { #path },
     };
 
     quote! {

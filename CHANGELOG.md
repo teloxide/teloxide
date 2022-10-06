@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `#[command(rename = "...")]` now always renames to `"..."`, to rename multiple commands using the same pattern, use `#[command(rename_rule = "snake_case")]` and the like.
+- `#[command(parse_with = ...)]` now requires a path, instead of a string, when specifying custom parsers
 
 ## 0.6.3 - 2022-07-19
 
