@@ -96,7 +96,7 @@ struct ConfigParameters {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "Simple commands")]
+#[command(rename_rule = "lowercase", description = "Simple commands")]
 enum SimpleCommand {
     #[command(description = "shows this message.")]
     Help,
@@ -107,7 +107,7 @@ enum SimpleCommand {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "Maintainer commands")]
+#[command(rename_rule = "lowercase", description = "Maintainer commands")]
 enum MaintainerCommands {
     #[command(parse_with = "split", description = "generate a number within range")]
     Rand { from: u64, to: u64 },

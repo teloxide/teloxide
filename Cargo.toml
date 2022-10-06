@@ -67,7 +67,7 @@ dptree = "0.3.0"
 
 # These lines are used only for development.
 teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "00165e6", default-features = false }
-teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", rev = "0e79c37", optional = true }
+teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", rev = "a2a79e29cb106a5d3052cf32a23e698db859cc2a", optional = true }
 # dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
 
 tokio = { version = "1.8", features = ["fs"] }

@@ -10,7 +10,7 @@ use teloxide::{
 };
 
 #[derive(BotCommands)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "Display this text")]
     Help,

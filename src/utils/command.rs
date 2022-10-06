@@ -13,7 +13,7 @@
 //! type UnitOfTime = u8;
 //!
 //! #[derive(BotCommands, PartialEq, Debug)]
-//! #[command(rename = "lowercase", parse_with = "split")]
+//! #[command(rename_rule = "lowercase", parse_with = "split")]
 //! enum AdminCommand {
 //!     Mute(UnitOfTime, char),
 //!     Ban(UnitOfTime, char),
@@ -70,7 +70,7 @@ pub use teloxide_macros::BotCommands;
 /// type UnitOfTime = u8;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split")]
+/// #[command(rename_rule = "lowercase", parse_with = "split")]
 /// enum AdminCommand {
 ///     Mute(UnitOfTime, char),
 ///     Ban(UnitOfTime, char),
@@ -105,7 +105,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase")]
+/// #[command(rename_rule = "lowercase")]
 /// enum Command {
 ///     Text(String),
 /// }
@@ -125,7 +125,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split")]
+/// #[command(rename_rule = "lowercase", parse_with = "split")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
@@ -145,7 +145,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split", separator = "|")]
+/// #[command(rename_rule = "lowercase", parse_with = "split", separator = "|")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
@@ -192,7 +192,7 @@ pub use teloxide_macros::BotCommands;
 /// }
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase")]
+/// #[command(rename_rule = "lowercase")]
 /// enum Command {
 ///     #[command(parse_with = "accept_two_digits")]
 ///     Num(u8),
@@ -218,9 +218,7 @@ pub trait BotCommands: Sized {
     ///
     /// `bot_username` is required to parse commands like
     /// `/cmd@username_of_the_bot`.
-    fn parse<N>(s: &str, bot_username: N) -> Result<Self, ParseError>
-    where
-        N: Into<String>;
+    fn parse(s: &str, bot_username: &str) -> Result<Self, ParseError>;
 
     /// Returns descriptions of the commands suitable to be shown to the user
     /// (for example when `/help` command is used).
