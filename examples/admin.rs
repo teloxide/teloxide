@@ -14,7 +14,7 @@ use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 // %PREFIX%%COMMAND% - %DESCRIPTION%
 #[derive(BotCommands, Clone)]
 #[command(
-    rename = "lowercase",
+    rename_rule = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
     parse_with = "split"
 )]
