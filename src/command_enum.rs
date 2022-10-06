@@ -3,7 +3,6 @@ use crate::{
     fields_parse::ParserType, rename_rules::RenameRule, Result,
 };
 
-#[derive(Debug)]
 pub(crate) struct CommandEnum {
     pub prefix: String,
     pub description: Option<String>,

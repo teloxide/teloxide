@@ -17,8 +17,6 @@ pub(crate) fn compile_error_at(msg: &str, sp: Span) -> Error {
     use proc_macro2::{
         Delimiter, Group, Ident, Literal, Punct, Spacing, TokenTree,
     };
-    use std::iter::FromIterator;
-
     // compile_error! { $msg }
     let ts = TokenStream::from_iter(vec![
         TokenTree::Ident(Ident::new("compile_error", sp)),

@@ -6,14 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.0 - 2022-10-06
+
 ### Removed
 
-- Remove `derive(DialogueState)` macro
+- `derive(DialogueState)` macro
 
 ### Changed
 
-- `#[command(rename = "...")]` now always renames to `"..."`, to rename multiple commands using the same pattern, use `#[command(rename_rule = "snake_case")]` and the like.
-- `#[command(parse_with = ...)]` now requires a path, instead of a string, when specifying custom parsers
+- `#[command(rename = "...")]` now always renames to `"..."`; to rename multiple commands using the same pattern, use `#[command(rename_rule = "snake_case")]` and the like.
+- `#[command(parse_with = ...)]` now requires a path, instead of a string, when specifying custom parsers.
+
+### Fixed
+
+- `#[derive(BotCommands)]` even if the trait is not imported ([issue #717](https://github.com/teloxide/teloxide/issues/717)).
 
 ## 0.6.3 - 2022-07-19
 
