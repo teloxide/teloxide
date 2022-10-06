@@ -3,7 +3,7 @@ use syn::{Fields, FieldsNamed, FieldsUnnamed, Type};
 
 use crate::{attr::AttrValue, error::Result};
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub(crate) enum ParserType {
     Default,
     Split { separator: Option<String> },
