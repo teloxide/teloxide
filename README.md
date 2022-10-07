@@ -1,8 +1,8 @@
-> [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
+> [v0.10 -> v0.11 migration guide >>](MIGRATION_GUIDE.md#010---011)
 
 <div align="center">
   <img src="./ICON.png" width="250"/>
-  <h1>teloxide</h1>
+  <h1><code>teloxide</code></h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
   </a>
@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.1%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.2%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
@@ -24,18 +24,20 @@
 
 ## Highlights
 
- - **Declarative design.** teloxide is based upon [`dptree`], a functional [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
+ - **Declarative design.** `teloxide` is based upon [`dptree`], a functional [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
 
 [`dptree`]: https://github.com/teloxide/dptree
 [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
- - **Dialogues management subsystem.** Our dialogues management subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, and much more.
+
+ - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org
 
- - **Strongly typed commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
+ - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
 
 [`structopt`]: https://github.com/TeXitoi/structopt
 [`serde-json`]: https://github.com/serde-rs/json
@@ -54,9 +56,9 @@ $ set TELOXIDE_TOKEN=<Your token here>
 
 # Windows PowerShell
 $ $env:TELOXIDE_TOKEN=<Your token here>
-
 ```
- 4. Make sure that your Rust compiler is up to date (teloxide currently requires rustc at least version 1.58):
+
+ 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.64):
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -70,7 +72,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.10", features = ["macros", "auto-send"] }
+teloxide = { version = "0.11", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -92,11 +94,11 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting throw dice bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
-        bot.send_dice(message.chat.id).await?;
-        respond(())
+    teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+        bot.send_dice(msg.chat.id).await?;
+        Ok(())
     })
     .await;
 }
@@ -122,20 +124,18 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
 
-use std::error::Error;
-
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     log::info!("Starting command bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     teloxide::commands_repl(bot, answer, Command::ty()).await;
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
     Help,
@@ -145,24 +145,15 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    bot: AutoSend<Bot>,
-    message: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command {
-        Command::Help => {
-            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
-        }
+async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
+        Command::Help => bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?,
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
-            bot.send_message(
-                message.chat.id,
-                format!("Your username is @{username} and age is {age}."),
-            )
-            .await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username} and age is {age}."))
+                .await?
         }
     };
 
@@ -190,18 +181,18 @@ use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveAge { full_name: String },
-    ReceiveLocation { full_name: String, age: u8 },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveAge {
+        full_name: String,
+    },
+    ReceiveLocation {
+        full_name: String,
+        age: u8,
+    },
 }
 
 #[tokio::main]
@@ -209,7 +200,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dialogue bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     Dispatcher::builder(
         bot,
@@ -229,17 +220,13 @@ async fn main() {
     .await;
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn receive_full_name(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> HandlerResult {
+async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -254,10 +241,10 @@ async fn receive_full_name(
 }
 
 async fn receive_age(
-    bot: AutoSend<Bot>,
-    msg: Message,
+    bot: Bot,
     dialogue: MyDialogue,
     full_name: String, // Available from `State::ReceiveAge`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -273,15 +260,15 @@ async fn receive_age(
 }
 
 async fn receive_location(
-    bot: AutoSend<Bot>,
-    msg: Message,
+    bot: Bot,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
-            bot.send_message(msg.chat.id, message).await?;
+            let report = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
+            bot.send_message(msg.chat.id, report).await?;
             dialogue.exit().await?;
         }
         None => {
@@ -319,7 +306,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: You can! Teloxide has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
+A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
@@ -343,7 +330,7 @@ Feel free to propose your own bot to our collection!
  - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
 
 <details>
-<summary>Show bots using teloxide older than v0.6.0</summary>
+<summary>Show bots using `teloxide` older than v0.6.0</summary>
 
  - [`mxseev/logram`](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
  - [`alexkonovalov/PedigreeBot`](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
@@ -355,7 +342,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [600+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
+See [700+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 

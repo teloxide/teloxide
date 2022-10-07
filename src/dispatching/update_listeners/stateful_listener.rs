@@ -3,10 +3,8 @@ use std::time::Duration;
 use futures::Stream;
 
 use crate::{
-    dispatching::{
-        stop_token::{self, StopToken},
-        update_listeners::{AsUpdateStream, UpdateListener},
-    },
+    dispatching::update_listeners::{AsUpdateStream, UpdateListener},
+    stop::StopToken,
     types::{AllowedUpdate, Update},
 };
 
@@ -30,7 +28,7 @@ pub struct StatefulListener<St, Assf, Sf, Hauf, Thf> {
 
     /// The function used as [`UpdateListener::stop_token`].
     ///
-    /// Must implement `FnMut(&mut St) -> impl StopToken`.
+    /// Must implement `FnMut(&mut St) -> StopToken`.
     pub stop_token: Sf,
 
     /// The function used as [`UpdateListener::hint_allowed_updates`].
@@ -68,42 +66,7 @@ impl<St, Assf, Sf, Hauf, Thf> StatefulListener<St, Assf, Sf, Hauf, Thf> {
     }
 }
 
-impl<S, E>
-    StatefulListener<
-        S,
-        for<'a> fn(&'a mut S) -> &'a mut S,
-        for<'a> fn(&'a mut S) -> stop_token::Noop,
-        Haufn<S>,
-        Thfn<S>,
-    >
-where
-    S: Stream<Item = Result<Update, E>> + Unpin + Send + 'static,
-{
-    /// Creates a new update listener from a stream of updates which ignores
-    /// stop signals.
-    ///
-    /// It won't be possible to ever stop this listener with a stop token.
-    pub fn from_stream_without_graceful_shutdown(stream: S) -> Self {
-        let this = Self::new_with_hints(
-            stream,
-            |s| s,
-            |_| stop_token::Noop,
-            None,
-            Some(|_| {
-                // FIXME: replace this by just Duration::MAX once 1.53 releases
-                // be released
-                const NANOS_PER_SEC: u32 = 1_000_000_000;
-                let dmax = Duration::new(u64::MAX, NANOS_PER_SEC - 1);
-
-                Some(dmax)
-            }),
-        );
-
-        assert_update_listener(this)
-    }
-}
-
-impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a, E>
+impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a>
     for StatefulListener<St, Assf, Hauf, Sf, Thf>
 where
     (St, Strm): 'a,
@@ -111,6 +74,7 @@ where
     Assf: FnMut(&'a mut St) -> Strm,
     Strm: Stream<Item = Result<Update, E>>,
 {
+    type StreamErr = E;
     type Stream = Strm;
 
     fn as_stream(&'a mut self) -> Self::Stream {
@@ -118,18 +82,16 @@ where
     }
 }
 
-impl<St, Assf, Sf, Hauf, Stt, Thf, E> UpdateListener<E>
-    for StatefulListener<St, Assf, Sf, Hauf, Thf>
+impl<St, Assf, Sf, Hauf, Thf, E> UpdateListener for StatefulListener<St, Assf, Sf, Hauf, Thf>
 where
-    Self: for<'a> AsUpdateStream<'a, E>,
-    Sf: FnMut(&mut St) -> Stt,
-    Stt: StopToken + Send,
+    Self: for<'a> AsUpdateStream<'a, StreamErr = E>,
+    Sf: FnMut(&mut St) -> StopToken,
     Hauf: FnMut(&mut St, &mut dyn Iterator<Item = AllowedUpdate>),
     Thf: Fn(&St) -> Option<Duration>,
 {
-    type StopToken = Stt;
+    type Err = E;
 
-    fn stop_token(&mut self) -> Stt {
+    fn stop_token(&mut self) -> StopToken {
         (self.stop_token)(&mut self.state)
     }
 
@@ -142,11 +104,4 @@ where
     fn timeout_hint(&self) -> Option<Duration> {
         self.timeout_hint.as_ref().and_then(|f| f(&self.state))
     }
-}
-
-fn assert_update_listener<L, E>(l: L) -> L
-where
-    L: UpdateListener<E>,
-{
-    l
 }

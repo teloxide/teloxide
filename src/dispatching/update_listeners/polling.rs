@@ -13,11 +13,9 @@ use std::{
 use futures::{ready, stream::Stream};
 
 use crate::{
-    dispatching::{
-        stop_token::{AsyncStopFlag, AsyncStopToken},
-        update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
-    },
+    dispatching::update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
     requests::{HasPayload, Request, Requester},
+    stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
 };
 
@@ -69,7 +67,7 @@ where
     ///
     /// ## Note
     ///
-    /// Teloxide normally (when using [`Dispatcher`] or [`repl`]s) sets this
+    /// `teloxide` normally (when using [`Dispatcher`] or [`repl`]s) sets this
     /// automatically via [`hint_allowed_updates`], so you rarely need to use
     /// `allowed_updates` explicitly.
     ///
@@ -98,7 +96,7 @@ where
     /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
-        let (token, flag) = AsyncStopToken::new_pair();
+        let (token, flag) = mk_stop_token();
         let polling =
             Polling { bot, timeout, limit, allowed_updates, drop_pending_updates, flag, token };
 
@@ -242,8 +240,8 @@ pub struct Polling<B: Requester> {
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
     drop_pending_updates: bool,
-    flag: AsyncStopFlag,
-    token: AsyncStopToken,
+    flag: StopFlag,
+    token: StopToken,
 }
 
 impl<R> Polling<R>
@@ -291,10 +289,10 @@ pub struct PollingStream<'a, B: Requester> {
     in_flight: Option<<B::GetUpdates as Request>::Send>,
 }
 
-impl<B: Requester + Send + 'static> UpdateListener<B::Err> for Polling<B> {
-    type StopToken = AsyncStopToken;
+impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
+    type Err = B::Err;
 
-    fn stop_token(&mut self) -> Self::StopToken {
+    fn stop_token(&mut self) -> StopToken {
         self.token.clone()
     }
 
@@ -309,7 +307,8 @@ impl<B: Requester + Send + 'static> UpdateListener<B::Err> for Polling<B> {
     }
 }
 
-impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a, B::Err> for Polling<B> {
+impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
+    type StreamErr = B::Err;
     type Stream = PollingStream<'a, B>;
 
     fn as_stream(&'a mut self) -> Self::Stream {

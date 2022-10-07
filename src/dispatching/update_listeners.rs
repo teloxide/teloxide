@@ -35,7 +35,7 @@ use futures::Stream;
 use std::time::Duration;
 
 use crate::{
-    dispatching::stop_token::StopToken,
+    stop::StopToken,
     types::{AllowedUpdate, Update},
 };
 
@@ -59,9 +59,11 @@ pub use self::{
 /// - [`AsUpdateStream::as_stream`]
 ///
 /// [module-level documentation]: mod@self
-pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
-    /// The type of token which allows to stop this listener.
-    type StopToken: StopToken + Send;
+pub trait UpdateListener:
+    for<'a> AsUpdateStream<'a, StreamErr = <Self as UpdateListener>::Err>
+{
+    /// The type of errors that can be returned from this listener.
+    type Err;
 
     /// Returns a token which stops this listener.
     ///  
@@ -76,7 +78,7 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
     /// soon as all cached updates are returned.
     #[must_use = "This function doesn't stop listening, to stop listening you need to call `stop` \
                   on the returned token"]
-    fn stop_token(&mut self) -> Self::StopToken;
+    fn stop_token(&mut self) -> StopToken;
 
     /// Hint which updates should the listener listen for.
     ///
@@ -110,16 +112,19 @@ pub trait UpdateListener<E>: for<'a> AsUpdateStream<'a, E> {
 /// [`UpdateListener`]'s supertrait/extension.
 ///
 /// This trait is a workaround to not require GAT.
-pub trait AsUpdateStream<'a, E> {
+pub trait AsUpdateStream<'a> {
+    /// Error that can be returned from the [`Stream`]
+    ///
+    /// [`Stream`]: AsUpdateStream::Stream
+    // NB: This should be named differently to `UpdateListener::Err`, so that it's
+    // unambiguous
+    type StreamErr;
+
     /// The stream of updates from Telegram.
-    // HACK: There is currently no way to write something like
-    // `-> impl for<'a> AsUpdateStream<'a, E, Stream: Send>`. Since we return
-    // `impl UpdateListener<E>` from `polling`, we need to have `Send` bound here,
-    // to make the stream `Send`.
-    //
-    // Without this it's, for example, impossible to spawn a tokio task with
-    // teloxide polling.
-    type Stream: Stream<Item = Result<Update, E>> + Send + 'a;
+    // NB: `Send` is not strictly required here, but it makes it easier to return
+    //     `impl AsUpdateStream` and also you want `Send` streams almost (?) always
+    //     anyway.
+    type Stream: Stream<Item = Result<Update, Self::StreamErr>> + Send + 'a;
 
     /// Creates the update [`Stream`].
     ///
@@ -128,9 +133,9 @@ pub trait AsUpdateStream<'a, E> {
 }
 
 #[inline(always)]
-pub(crate) fn assert_update_listener<L, E>(listener: L) -> L
+pub(crate) fn assert_update_listener<L>(listener: L) -> L
 where
-    L: UpdateListener<E>,
+    L: UpdateListener,
 {
     listener
 }

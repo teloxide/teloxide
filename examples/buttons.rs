@@ -4,13 +4,13 @@ use teloxide::{
     prelude::*,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
-        InputMessageContentText,
+        InputMessageContentText, Me,
     },
     utils::command::BotCommands,
 };
 
 #[derive(BotCommands)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "Display this text")]
     Help,
@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     pretty_env_logger::init();
     log::info!("Starting buttons bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     let handler = dptree::entry()
         .branch(Update::filter_message().endpoint(message_handler))
@@ -59,23 +59,24 @@ fn make_keyboard() -> InlineKeyboardMarkup {
 /// or not, then match the command. If the command is `/start` it writes a
 /// markup with the `InlineKeyboardMarkup`.
 async fn message_handler(
-    m: Message,
-    bot: AutoSend<Bot>,
+    bot: Bot,
+    msg: Message,
+    me: Me,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    if let Some(text) = m.text() {
-        match BotCommands::parse(text, "buttons") {
+    if let Some(text) = msg.text() {
+        match BotCommands::parse(text, me.username()) {
             Ok(Command::Help) => {
                 // Just send the description of all commands.
-                bot.send_message(m.chat.id, Command::descriptions().to_string()).await?;
+                bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
             }
             Ok(Command::Start) => {
                 // Create a list of buttons and send them.
                 let keyboard = make_keyboard();
-                bot.send_message(m.chat.id, "Debian versions:").reply_markup(keyboard).await?;
+                bot.send_message(msg.chat.id, "Debian versions:").reply_markup(keyboard).await?;
             }
 
             Err(_) => {
-                bot.send_message(m.chat.id, "Command not found!").await?;
+                bot.send_message(msg.chat.id, "Command not found!").await?;
             }
         }
     }
@@ -84,8 +85,8 @@ async fn message_handler(
 }
 
 async fn inline_query_handler(
+    bot: Bot,
     q: InlineQuery,
-    bot: AutoSend<Bot>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let choose_debian_version = InlineQueryResultArticle::new(
         "0",
@@ -104,22 +105,21 @@ async fn inline_query_handler(
 ///
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
 /// Anyone can read data stored in the callback button.
-async fn callback_handler(
-    q: CallbackQuery,
-    bot: AutoSend<Bot>,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Error + Send + Sync>> {
     if let Some(version) = q.data {
         let text = format!("You chose: {version}");
 
-        match q.message {
-            Some(Message { id, chat, .. }) => {
-                bot.edit_message_text(chat.id, id, text).await?;
-            }
-            None => {
-                if let Some(id) = q.inline_message_id {
-                    bot.edit_message_text_inline(id, text).await?;
-                }
-            }
+        // Tell telegram that we've seen this query, to remove 🕑 icons from the
+        //
+        // clients. You could also use `answer_callback_query`'s optional
+        // parameters to tweak what happens on the client side.
+        bot.answer_callback_query(q.id).await?;
+
+        // Edit text of the message to which the buttons were attached
+        if let Some(Message { id, chat, .. }) = q.message {
+            bot.edit_message_text(chat.id, id, text).await?;
+        } else if let Some(id) = q.inline_message_id {
+            bot.edit_message_text_inline(id, text).await?;
         }
 
         log::info!("You chose: {}", version);

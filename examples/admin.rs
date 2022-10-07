@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr};
+use std::str::FromStr;
 
 use chrono::Duration;
 use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
@@ -14,7 +14,7 @@ use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 // %PREFIX%%COMMAND% - %DESCRIPTION%
 #[derive(BotCommands, Clone)]
 #[command(
-    rename = "lowercase",
+    rename_rule = "lowercase",
     description = "Use commands in format /%command% %num% %unit%",
     parse_with = "split"
 )]
@@ -58,19 +58,13 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting admin bot...");
 
-    let bot = teloxide::Bot::from_env().auto_send();
+    let bot = teloxide::Bot::from_env();
 
     teloxide::commands_repl(bot, action, Command::ty()).await;
 }
 
-type Bot = AutoSend<teloxide::Bot>;
-
-async fn action(
-    bot: Bot,
-    msg: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command {
+async fn action(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
         Command::Help => {
             bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
         }
@@ -83,7 +77,7 @@ async fn action(
 }
 
 // Kick a user with a replied message.
-async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn kick_user(bot: Bot, msg: Message) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
@@ -97,11 +91,7 @@ async fn kick_user(bot: Bot, msg: Message) -> Result<(), Box<dyn Error + Send + 
 }
 
 // Ban a user with replied message.
-async fn ban_user(
-    bot: Bot,
-    msg: Message,
-    time: Duration,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn ban_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             bot.kick_chat_member(
@@ -120,11 +110,7 @@ async fn ban_user(
 }
 
 // Mute a user with a replied message.
-async fn mute_user(
-    bot: Bot,
-    msg: Message,
-    time: Duration,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn mute_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             bot.restrict_chat_member(
