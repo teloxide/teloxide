@@ -3,13 +3,12 @@ use crate::{
         update_listeners, update_listeners::UpdateListener, HandlerExt, UpdateFilterExt,
     },
     error_handlers::LoggingErrorHandler,
+    requests::{Requester, ResponseResult},
     types::Update,
     utils::command::BotCommands,
-    RequestError,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, marker::PhantomData};
-use teloxide_core::requests::Requester;
 
 /// A [REPL] for commands.
 //
@@ -58,7 +57,7 @@ pub async fn commands_repl<'a, R, Cmd, H, Args>(bot: R, handler: H, cmd: Phantom
 where
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     Cmd: BotCommands + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
@@ -123,7 +122,7 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, Args>(
     cmd: PhantomData<Cmd>,
 ) where
     Cmd: BotCommands + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send + 'a,
     L::Err: Debug + Send + 'a,
     R: Requester + Clone + Send + Sync + 'static,
