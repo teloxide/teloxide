@@ -14,7 +14,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dispatching features bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     let parameters = ConfigParameters {
         bot_maintainer: UserId(0), // Paste your ID to run this bot.
@@ -33,29 +33,27 @@ async fn main() {
         )
         .branch(
             // Filter a maintainer by a used ID.
-            dptree::filter(|msg: Message, cfg: ConfigParameters| {
+            dptree::filter(|cfg: ConfigParameters, msg: Message| {
                 msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .filter_command::<MaintainerCommands>()
-            .endpoint(
-                |msg: Message, bot: AutoSend<Bot>, cmd: MaintainerCommands| async move {
-                    match cmd {
-                        MaintainerCommands::Rand { from, to } => {
-                            let mut rng = rand::rngs::OsRng::default();
-                            let value: u64 = rng.gen_range(from..=to);
+            .endpoint(|msg: Message, bot: Bot, cmd: MaintainerCommands| async move {
+                match cmd {
+                    MaintainerCommands::Rand { from, to } => {
+                        let mut rng = rand::rngs::OsRng::default();
+                        let value: u64 = rng.gen_range(from..=to);
 
-                            bot.send_message(msg.chat.id, value.to_string()).await?;
-                            Ok(())
-                        }
+                        bot.send_message(msg.chat.id, value.to_string()).await?;
+                        Ok(())
                     }
-                },
-            ),
+                }
+            }),
         )
         .branch(
             // Filtering allow you to filter updates by some condition.
             dptree::filter(|msg: Message| msg.chat.is_group() || msg.chat.is_supergroup())
                 // An endpoint is the last update handler.
-                .endpoint(|msg: Message, bot: AutoSend<Bot>| async move {
+                .endpoint(|msg: Message, bot: Bot| async move {
                     log::info!("Received a message from a group chat.");
                     bot.send_message(msg.chat.id, "This is a group chat.").await?;
                     respond(())
@@ -64,14 +62,12 @@ async fn main() {
         .branch(
             // There are some extension filtering functions on `Message`. The following filter will
             // filter only messages with dices.
-            Message::filter_dice().endpoint(
-                |msg: Message, dice: Dice, bot: AutoSend<Bot>| async move {
-                    bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                    Ok(())
-                },
-            ),
+            Message::filter_dice().endpoint(|bot: Bot, msg: Message, dice: Dice| async move {
+                bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
+                    .reply_to_message_id(msg.id)
+                    .await?;
+                Ok(())
+            }),
         );
 
     Dispatcher::builder(bot, handler)
@@ -100,7 +96,7 @@ struct ConfigParameters {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "Simple commands")]
+#[command(rename_rule = "lowercase", description = "Simple commands")]
 enum SimpleCommand {
     #[command(description = "shows this message.")]
     Help,
@@ -111,18 +107,18 @@ enum SimpleCommand {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "Maintainer commands")]
+#[command(rename_rule = "lowercase", description = "Maintainer commands")]
 enum MaintainerCommands {
     #[command(parse_with = "split", description = "generate a number within range")]
     Rand { from: u64, to: u64 },
 }
 
 async fn simple_commands_handler(
-    msg: Message,
-    bot: AutoSend<Bot>,
-    cmd: SimpleCommand,
     cfg: ConfigParameters,
+    bot: Bot,
     me: teloxide::types::Me,
+    msg: Message,
+    cmd: SimpleCommand,
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {

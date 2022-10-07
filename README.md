@@ -92,11 +92,11 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting throw dice bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message: Message, bot: AutoSend<Bot>| async move {
-        bot.send_dice(message.chat.id).await?;
-        respond(())
+    teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+        bot.send_dice(msg.chat.id).await?;
+        Ok(())
     })
     .await;
 }
@@ -122,20 +122,18 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
 
-use std::error::Error;
-
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     log::info!("Starting command bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     teloxide::commands_repl(bot, answer, Command::ty()).await;
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
     Help,
@@ -145,24 +143,15 @@ enum Command {
     UsernameAndAge { username: String, age: u8 },
 }
 
-async fn answer(
-    bot: AutoSend<Bot>,
-    message: Message,
-    command: Command,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    match command {
-        Command::Help => {
-            bot.send_message(message.chat.id, Command::descriptions().to_string()).await?
-        }
+async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+    match cmd {
+        Command::Help => bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?,
         Command::Username(username) => {
-            bot.send_message(message.chat.id, format!("Your username is @{username}.")).await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username}.")).await?
         }
         Command::UsernameAndAge { username, age } => {
-            bot.send_message(
-                message.chat.id,
-                format!("Your username is @{username} and age is {age}."),
-            )
-            .await?
+            bot.send_message(msg.chat.id, format!("Your username is @{username} and age is {age}."))
+                .await?
         }
     };
 
@@ -190,18 +179,18 @@ use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
 type MyDialogue = Dialogue<State, InMemStorage<State>>;
 type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum State {
+    #[default]
     Start,
     ReceiveFullName,
-    ReceiveAge { full_name: String },
-    ReceiveLocation { full_name: String, age: u8 },
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::Start
-    }
+    ReceiveAge {
+        full_name: String,
+    },
+    ReceiveLocation {
+        full_name: String,
+        age: u8,
+    },
 }
 
 #[tokio::main]
@@ -209,7 +198,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting dialogue bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     Dispatcher::builder(
         bot,
@@ -229,17 +218,13 @@ async fn main() {
     .await;
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn receive_full_name(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> HandlerResult {
+async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text() {
         Some(text) => {
             bot.send_message(msg.chat.id, "How old are you?").await?;
@@ -254,10 +239,10 @@ async fn receive_full_name(
 }
 
 async fn receive_age(
-    bot: AutoSend<Bot>,
-    msg: Message,
+    bot: Bot,
     dialogue: MyDialogue,
     full_name: String, // Available from `State::ReceiveAge`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text().map(|text| text.parse::<u8>()) {
         Some(Ok(age)) => {
@@ -273,15 +258,15 @@ async fn receive_age(
 }
 
 async fn receive_location(
-    bot: AutoSend<Bot>,
-    msg: Message,
+    bot: Bot,
     dialogue: MyDialogue,
     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+    msg: Message,
 ) -> HandlerResult {
     match msg.text() {
         Some(location) => {
-            let message = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
-            bot.send_message(msg.chat.id, message).await?;
+            let report = format!("Full name: {full_name}\nAge: {age}\nLocation: {location}");
+            bot.send_message(msg.chat.id, report).await?;
             dialogue.exit().await?;
         }
         None => {
@@ -355,7 +340,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [600+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
+See [700+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 

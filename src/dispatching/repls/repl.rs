@@ -2,6 +2,7 @@ use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
     types::Update,
+    RequestError,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::fmt::Debug;
@@ -45,12 +46,11 @@ use teloxide_core::requests::Requester;
 #[doc = include_str!("caution.md")]
 ///
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl<R, H, E, Args>(bot: R, handler: H)
+pub async fn repl<R, H, Args>(bot: R, handler: H)
 where
     R: Requester + Send + Sync + Clone + 'static,
     <R as Requester>::GetUpdates: Send,
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    E: Debug + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
@@ -96,11 +96,10 @@ where
 #[doc = include_str!("caution.md")]
 ///
 #[cfg(feature = "ctrlc_handler")]
-pub async fn repl_with_listener<R, H, E, L, Args>(bot: R, handler: H, listener: L)
+pub async fn repl_with_listener<R, H, L, Args>(bot: R, handler: H, listener: L)
 where
     R: Requester + Clone + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    E: Debug + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send,
     L::Err: Debug,
 {
@@ -124,7 +123,7 @@ where
 #[test]
 fn repl_is_send() {
     let bot = crate::Bot::new("");
-    let repl = crate::repl(bot, || async { crate::respond(()) });
+    let repl = crate::repl(bot, || async { Ok(()) });
     assert_send(&repl);
 
     fn assert_send(_: &impl Send) {}

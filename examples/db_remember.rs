@@ -22,7 +22,7 @@ pub enum State {
 }
 
 #[derive(Clone, BotCommands)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 pub enum Command {
     #[command(description = "get your number.")]
     Get,
@@ -35,7 +35,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting DB remember bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     let storage: MyStorage = if std::env::var("DB_REMEMBER_REDIS").is_ok() {
         RedisStorage::open("redis://127.0.0.1:6379", Bincode).await.unwrap().erase()
@@ -60,7 +60,7 @@ async fn main() {
         .await;
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text().map(|text| text.parse::<i32>()) {
         Some(Ok(n)) => {
             dialogue.update(State::GotNumber(n)).await?;
@@ -79,10 +79,10 @@ async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> Handle
 }
 
 async fn got_number(
-    bot: AutoSend<Bot>,
-    msg: Message,
+    bot: Bot,
     dialogue: MyDialogue,
-    num: i32,
+    num: i32, // Available from `State::GotNumber`.
+    msg: Message,
     cmd: Command,
 ) -> HandlerResult {
     match cmd {
@@ -97,7 +97,7 @@ async fn got_number(
     Ok(())
 }
 
-async fn invalid_command(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+async fn invalid_command(bot: Bot, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Please, send /get or /reset.").await?;
     Ok(())
 }

@@ -33,7 +33,7 @@ pub enum State {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase", description = "These commands are supported:")]
 enum Command {
     #[command(description = "display this text.")]
     Help,
@@ -48,7 +48,7 @@ async fn main() {
     pretty_env_logger::init();
     log::info!("Starting purchase bot...");
 
-    let bot = Bot::from_env().auto_send();
+    let bot = Bot::from_env();
 
     Dispatcher::builder(bot, schema())
         .dependencies(dptree::deps![InMemStorage::<State>::new()])
@@ -83,34 +83,30 @@ fn schema() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>>
         .branch(callback_query_handler)
 }
 
-async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(State::ReceiveFullName).await?;
     Ok(())
 }
 
-async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+async fn help(bot: Bot, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, Command::descriptions().to_string()).await?;
     Ok(())
 }
 
-async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+async fn cancel(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Cancelling the dialogue.").await?;
     dialogue.exit().await?;
     Ok(())
 }
 
-async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+async fn invalid_state(bot: Bot, msg: Message) -> HandlerResult {
     bot.send_message(msg.chat.id, "Unable to handle the message. Type /help to see the usage.")
         .await?;
     Ok(())
 }
 
-async fn receive_full_name(
-    bot: AutoSend<Bot>,
-    msg: Message,
-    dialogue: MyDialogue,
-) -> HandlerResult {
+async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
     match msg.text().map(ToOwned::to_owned) {
         Some(full_name) => {
             let products = ["Apple", "Banana", "Orange", "Potato"]
@@ -130,10 +126,10 @@ async fn receive_full_name(
 }
 
 async fn receive_product_selection(
-    bot: AutoSend<Bot>,
-    q: CallbackQuery,
+    bot: Bot,
     dialogue: MyDialogue,
-    full_name: String,
+    full_name: String, // Available from `State::ReceiveProductChoice`.
+    q: CallbackQuery,
 ) -> HandlerResult {
     if let Some(product) = &q.data {
         bot.send_message(
