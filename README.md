@@ -29,7 +29,7 @@
 [`dptree`]: https://github.com/teloxide/dptree
 [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
- - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, and a lot more.
+ - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, and much more.
 
  - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
