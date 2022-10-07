@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="./ICON.png" width="250"/>
-  <h1>teloxide</h1>
+  <h1>`teloxide`</h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
   </a>
@@ -24,7 +24,7 @@
 
 ## Highlights
 
- - **Declarative design.** teloxide is based upon [`dptree`], a functional [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
+ - **Declarative design.** `teloxide` is based upon [`dptree`], a functional [chain of responsibility] pattern that allows you to express pipelines of message processing in a highly declarative and extensible style.
 
 [`dptree`]: https://github.com/teloxide/dptree
 [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
@@ -56,7 +56,7 @@ $ set TELOXIDE_TOKEN=<Your token here>
 $ $env:TELOXIDE_TOKEN=<Your token here>
 
 ```
- 4. Make sure that your Rust compiler is up to date (teloxide currently requires rustc at least version 1.58):
+ 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.58):
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -304,7 +304,7 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: You can! Teloxide has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
+A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
@@ -328,7 +328,7 @@ Feel free to propose your own bot to our collection!
  - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
 
 <details>
-<summary>Show bots using teloxide older than v0.6.0</summary>
+<summary>Show bots using `teloxide` older than v0.6.0</summary>
 
  - [`mxseev/logram`](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
  - [`alexkonovalov/PedigreeBot`](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
@@ -340,7 +340,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [700+ other public repositories using teloxide >>](https://github.com/teloxide/teloxide/network/dependents)
+See [700+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 
