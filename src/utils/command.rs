@@ -13,7 +13,7 @@
 //! type UnitOfTime = u8;
 //!
 //! #[derive(BotCommands, PartialEq, Debug)]
-//! #[command(rename = "lowercase", parse_with = "split")]
+//! #[command(rename_rule = "lowercase", parse_with = "split")]
 //! enum AdminCommand {
 //!     Mute(UnitOfTime, char),
 //!     Ban(UnitOfTime, char),
@@ -70,7 +70,7 @@ pub use teloxide_macros::BotCommands;
 /// type UnitOfTime = u8;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split")]
+/// #[command(rename_rule = "lowercase", parse_with = "split")]
 /// enum AdminCommand {
 ///     Mute(UnitOfTime, char),
 ///     Ban(UnitOfTime, char),
@@ -82,11 +82,10 @@ pub use teloxide_macros::BotCommands;
 /// ```
 ///
 /// # Enum attributes
-///  1. `#[command(rename = "rule")]`
-/// Rename all commands by `rule`. If you will not use this attribute, commands
-/// will be parsed by their original names. Allowed rules are `lowercase`,
-/// `UPPERCASE`, `PascalCase`, `camelCase`, `snake_case`,
-/// `SCREAMING_SNAKE_CASE`, `kebab-case`, and `SCREAMING-KEBAB-CASE`.
+///  1. `#[command(rename_rule = "rule")]`
+/// Rename all commands by `rule`. Allowed rules are `lowercase`, `UPPERCASE`,
+/// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
+/// `kebab-case`, and `SCREAMING-KEBAB-CASE`.
 ///
 ///  2. `#[command(prefix = "prefix")]`
 /// Change a prefix for all commands (the default is `/`).
@@ -106,7 +105,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase")]
+/// #[command(rename_rule = "lowercase")]
 /// enum Command {
 ///     Text(String),
 /// }
@@ -126,7 +125,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split")]
+/// #[command(rename_rule = "lowercase", parse_with = "split")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
@@ -146,7 +145,7 @@ pub use teloxide_macros::BotCommands;
 /// use teloxide::utils::command::BotCommands;
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase", parse_with = "split", separator = "|")]
+/// #[command(rename_rule = "lowercase", parse_with = "split", separator = "|")]
 /// enum Command {
 ///     Nums(u8, u16, i32),
 /// }
@@ -159,21 +158,23 @@ pub use teloxide_macros::BotCommands;
 /// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
 ///
-///  1. `#[command(rename = "rule")]`
+///  1. `#[command(rename_rule = "rule")]`
 /// Rename one command by a rule. Allowed rules are `lowercase`, `UPPERCASE`,
 /// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
-/// `kebab-case`, `SCREAMING-KEBAB-CASE`, and `%some_name%`, where `%some_name%`
-/// is any string, a new name.
+/// `kebab-case`, `SCREAMING-KEBAB-CASE`.
 ///
-///  2. `#[command(description = "description")]`
+///  2. `#[command(rename = "name")]`
+/// Rename one command to `name` (literal renaming; do not confuse with
+/// `rename_rule`).
+///
+///  3. `#[command(description = "description")]`
 /// Give your command a description. Write `"off"` for `"description"` to hide a
 /// command.
 ///
-///  3. `#[command(parse_with = "parser")]`
-/// One more option is available for variants.
-///    - `custom_parser` - your own parser of the signature `fn(String) ->
-///    Result<Tuple, ParseError>`, where `Tuple` corresponds to the variant's
-/// arguments.
+///  4. `#[command(parse_with = "parser")]`
+/// Parse arguments of one command with a given parser. `parser` must be a
+/// function of the signature `fn(String) -> Result<Tuple, ParseError>`, where
+/// `Tuple` corresponds to the variant's arguments.
 ///
 /// ## Example
 /// ```
@@ -191,9 +192,9 @@ pub use teloxide_macros::BotCommands;
 /// }
 ///
 /// #[derive(BotCommands, PartialEq, Debug)]
-/// #[command(rename = "lowercase")]
+/// #[command(rename_rule = "lowercase")]
 /// enum Command {
-///     #[command(parse_with = "accept_two_digits")]
+///     #[command(parse_with = accept_two_digits)]
 ///     Num(u8),
 /// }
 ///
@@ -204,8 +205,8 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
-///  4. `#[command(prefix = "prefix")]`
-///  5. `#[command(separator = "sep")]`
+///  5. `#[command(prefix = "prefix")]`
+///  6. `#[command(separator = "sep")]`
 ///
 /// These attributes just override the corresponding `enum` attributes for a
 /// specific variant.
@@ -217,9 +218,7 @@ pub trait BotCommands: Sized {
     ///
     /// `bot_username` is required to parse commands like
     /// `/cmd@username_of_the_bot`.
-    fn parse<N>(s: &str, bot_username: N) -> Result<Self, ParseError>
-    where
-        N: Into<String>;
+    fn parse(s: &str, bot_username: &str) -> Result<Self, ParseError>;
 
     /// Returns descriptions of the commands suitable to be shown to the user
     /// (for example when `/help` command is used).
@@ -235,6 +234,7 @@ pub trait BotCommands: Sized {
     /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
     ///
     /// [`commands_repl`]: (crate::repls2::commands_repl)
+    #[must_use]
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
@@ -296,11 +296,13 @@ pub struct CommandDescription<'a> {
 
 impl<'a> CommandDescriptions<'a> {
     /// Creates new [`CommandDescriptions`] from a list of command descriptions.
+    #[must_use]
     pub fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
         Self { global_description: None, descriptions, bot_username: None }
     }
 
     /// Sets the global description of these commands.
+    #[must_use]
     pub fn global_description(self, global_description: &'a str) -> Self {
         Self { global_description: Some(global_description), ..self }
     }
@@ -328,6 +330,7 @@ impl<'a> CommandDescriptions<'a> {
     ///      message"
     /// );
     /// ```
+    #[must_use]
     pub fn username(self, bot_username: &'a str) -> Self {
         Self { bot_username: Some(bot_username), ..self }
     }
@@ -338,6 +341,7 @@ impl<'a> CommandDescriptions<'a> {
     /// method to get the username.
     ///
     /// [`username`]: self::CommandDescriptions::username
+    #[must_use]
     pub fn username_from_me(self, me: &'a Me) -> CommandDescriptions<'a> {
         self.username(me.user.username.as_deref().expect("Bots must have usernames"))
     }

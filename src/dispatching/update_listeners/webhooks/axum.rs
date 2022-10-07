@@ -6,11 +6,9 @@ use axum::{
 };
 
 use crate::{
-    dispatching::{
-        stop_token::{AsyncStopFlag, StopToken},
-        update_listeners::{webhooks::Options, UpdateListener},
-    },
+    dispatching::update_listeners::{webhooks::Options, UpdateListener},
     requests::Requester,
+    stop::StopFlag,
 };
 
 /// Webhook implementation based on the [mod@axum] framework.
@@ -22,7 +20,7 @@ use crate::{
 ///
 /// [`set_webhook`]: crate::payloads::SetWebhook
 /// [`delete_webhook`]: crate::payloads::DeleteWebhook
-/// [`stop`]: StopToken::stop
+/// [`stop`]: crate::stop::StopToken::stop
 ///
 /// ## Panics
 ///
@@ -38,7 +36,10 @@ use crate::{
 ///
 /// [`axum_to_router`] and [`axum_no_setup`] for lower-level versions of this
 /// function.
-pub async fn axum<R>(bot: R, options: Options) -> Result<impl UpdateListener<Infallible>, R::Err>
+pub async fn axum<R>(
+    bot: R,
+    options: Options,
+) -> Result<impl UpdateListener<Err = Infallible>, R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::DeleteWebhook: Send,
@@ -85,7 +86,7 @@ where
 ///
 /// [`set_webhook`]: crate::payloads::SetWebhook
 /// [`delete_webhook`]: crate::payloads::DeleteWebhook
-/// [`stop`]: StopToken::stop
+/// [`stop`]: crate::stop::StopToken::stop
 /// [`options.address`]: Options::address
 /// [`with_graceful_shutdown`]: axum::Server::with_graceful_shutdown
 ///
@@ -107,7 +108,10 @@ where
 pub async fn axum_to_router<R>(
     bot: R,
     mut options: Options,
-) -> Result<(impl UpdateListener<Infallible>, impl Future<Output = ()> + Send, axum::Router), R::Err>
+) -> Result<
+    (impl UpdateListener<Err = Infallible>, impl Future<Output = ()> + Send, axum::Router),
+    R::Err,
+>
 where
     R: Requester + Send,
     <R as Requester>::DeleteWebhook: Send,
@@ -148,12 +152,10 @@ where
 /// function.
 pub fn axum_no_setup(
     options: Options,
-) -> (impl UpdateListener<Infallible>, impl Future<Output = ()>, axum::Router) {
+) -> (impl UpdateListener<Err = Infallible>, impl Future<Output = ()>, axum::Router) {
     use crate::{
-        dispatching::{
-            stop_token::AsyncStopToken,
-            update_listeners::{self, webhooks::tuple_first_mut},
-        },
+        dispatching::update_listeners::{self, webhooks::tuple_first_mut},
+        stop::{mk_stop_token, StopToken},
         types::Update,
     };
     use axum::{extract::Extension, response::IntoResponse, routing::post};
@@ -172,7 +174,7 @@ pub fn axum_no_setup(
         secret_header: XTelegramBotApiSecretToken,
         secret: Extension<Option<String>>,
         tx: Extension<CSender>,
-        flag: Extension<AsyncStopFlag>,
+        flag: Extension<StopFlag>,
     ) -> impl IntoResponse {
         // FIXME: use constant time comparison here
         if secret_header.0.as_deref() != secret.as_deref().map(str::as_bytes) {
@@ -208,7 +210,7 @@ pub fn axum_no_setup(
         StatusCode::OK
     }
 
-    let (stop_token, stop_flag) = AsyncStopToken::new_pair();
+    let (stop_token, stop_flag) = mk_stop_token();
 
     let app = axum::Router::new().route(options.url.path(), post(telegram_request)).layer(
         ServiceBuilder::new()
@@ -225,7 +227,7 @@ pub fn axum_no_setup(
     let listener = update_listeners::StatefulListener::new(
         (stream, stop_token),
         tuple_first_mut,
-        |state: &mut (_, AsyncStopToken)| state.1.clone(),
+        |state: &mut (_, StopToken)| state.1.clone(),
     );
 
     (listener, stop_flag, app)

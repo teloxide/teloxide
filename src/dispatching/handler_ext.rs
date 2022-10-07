@@ -8,9 +8,6 @@ use crate::{
 };
 use dptree::{di::DependencyMap, Handler};
 
-#[allow(deprecated)]
-use crate::dispatching::HandlerFactory;
-
 use std::fmt::Debug;
 
 /// Extension methods for working with `dptree` handlers.
@@ -51,13 +48,6 @@ pub trait HandlerExt<Output> {
         <S as Storage<D>>::Error: Debug + Send,
         D: Default + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
-
-    #[must_use]
-    #[deprecated(note = "Use the teloxide::handler! API")]
-    #[allow(deprecated)]
-    fn dispatch_by<F>(self) -> Self
-    where
-        F: HandlerFactory<Out = Output>;
 }
 
 impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output, DpHandlerDescription>
@@ -80,14 +70,6 @@ where
     {
         self.chain(super::dialogue::enter::<Upd, S, D, Output>())
     }
-
-    #[allow(deprecated)]
-    fn dispatch_by<F>(self) -> Self
-    where
-        F: HandlerFactory<Out = Output>,
-    {
-        self.chain(F::handler())
-    }
 }
 
 /// Returns a handler that accepts a parsed command `C`.
@@ -100,13 +82,14 @@ where
 ///
 ///  - [`crate::types::Message`]
 ///  - [`crate::types::Me`]
+#[must_use]
 pub fn filter_command<C, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     C: BotCommands + Send + Sync + 'static,
     Output: Send + Sync + 'static,
 {
-    dptree::entry().chain(dptree::filter_map(move |message: Message, me: Me| {
+    dptree::filter_map(move |message: Message, me: Me| {
         let bot_name = me.user.username.expect("Bots must have a username");
-        message.text().and_then(|text| C::parse(text, bot_name).ok())
-    }))
+        message.text().and_then(|text| C::parse(text, &bot_name).ok())
+    })
 }

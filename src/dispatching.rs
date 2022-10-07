@@ -25,7 +25,7 @@
 //! ```no_run
 //! # use teloxide::utils::command::BotCommands;
 //! #[derive(BotCommands, Clone)]
-//! #[command(rename = "lowercase", description = "These commands are supported:")]
+//! #[command(rename_rule = "lowercase", description = "These commands are supported:")]
 //! enum Command {
 //!     #[command(description = "display this text.")]
 //!     Help,
@@ -102,10 +102,10 @@
 //! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
 //! other combinators in the same way!
 //!
-//! Finally, we define our endpoints like this:
+//! Finally, we define our endpoints:
 //!
 //! ```no_run
-//! # use teloxide::{Bot, adaptors::AutoSend};
+//! # use teloxide::Bot;
 //! # use teloxide::types::{Message, CallbackQuery};
 //! # use teloxide::dispatching::dialogue::{InMemStorage, Dialogue};
 //! # enum State{}
@@ -113,47 +113,38 @@
 //! type MyDialogue = Dialogue<State, InMemStorage<State>>;
 //! type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //!
-//! async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//! async fn help(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn cancel(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//! async fn invalid_state(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn receive_full_name(
-//!     bot: AutoSend<Bot>,
-//!     msg: Message,
-//!     dialogue: MyDialogue,
-//! ) -> HandlerResult {
+//! async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn receive_product_selection(
-//!     bot: AutoSend<Bot>,
-//!     q: CallbackQuery,
+//!     bot: Bot,
 //!     dialogue: MyDialogue,
-//!     full_name: String,
+//!     full_name: String, // Available from `State::ReceiveProductChoice`.
+//!     q: CallbackQuery,
 //! ) -> HandlerResult {
 //!     todo!()
 //! }
 //! ```
 //!
-//! Each parameter is supplied as a dependency by teloxide. In particular:
-//!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below);
-//!  - `msg: Message` comes from [`Update::filter_message`];
-//!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`];
-//!  - `dialogue: MyDialogue` comes from [`dialogue::enter`];
+//! Each parameter is supplied as a dependency by `teloxide`. In particular:
+//!  - `bot: Bot` comes from the dispatcher (see below)
+//!  - `msg: Message` comes from [`Update::filter_message`]
+//!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`]
+//!  - `dialogue: MyDialogue` comes from [`dialogue::enter`]
 //!  - `full_name: String` comes from `dptree::case![State::ReceiveProductChoice
-//!    { full_name }]`.
+//!    { full_name }]`
 //!
 //! Inside `main`, we plug the schema into [`Dispatcher`] like this:
 //!
@@ -165,7 +156,7 @@
 //! # fn schema() -> teloxide::dispatching::UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> { teloxide::dptree::entry() }
 //! #[tokio::main]
 //! async fn main() {
-//!     let bot = Bot::from_env().auto_send();
+//!     let bot = Bot::from_env();
 //!
 //!     Dispatcher::builder(bot, schema())
 //!         .dependencies(dptree::deps![InMemStorage::<State>::new()])
@@ -187,12 +178,36 @@
 //! useful features. See [`examples/dispatching_features.rs`] as a more involved
 //! example.
 //!
+//! ## Dispatching or REPLs?
+//!
+//! The difference between dispatching and the REPLs ([`crate::repl`] & co) is
+//! that dispatching gives you a greater degree of flexibility at the cost of a
+//! bit more complicated setup.
+//!
+//! Here are things that dispatching can do, but REPLs can't:
+//!  - Handle different kinds of [`Update`]
+//!  - [Pass dependencies] to handlers
+//!  - Disable a [default Ctrl-C handling]
+//!  - Control your [default] and [error] handlers
+//!  - Use [dialogues]
+//!  - Use [`dptree`]-related functionality
+//!  - Probably more
+//!
+//! Thus, REPLs are good for simple bots and rapid prototyping, but for more
+//! involved scenarios, we recommend using dispatching over REPLs.
+//!
+//! [Pass dependencies]: DispatcherBuilder#method.dependencies
+//! [default Ctrl-C handling]: DispatcherBuilder#method.enable_ctrlc_handler
+//! [default]: DispatcherBuilder#method.default_handler
+//! [error]: DispatcherBuilder#method.error_handler
+//! [dialogues]: dialogue
 //! [`examples/purchase.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/purchase.rs
 //! [`Update::filter_message`]: crate::types::Update::filter_message
 //! [`Update::filter_callback_query`]: crate::types::Update::filter_callback_query
 //! [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 //! [dependency injection (DI)]: https://en.wikipedia.org/wiki/Dependency_injection
 //! [`examples/dispatching_features.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs
+//! [`Update`]: crate::types::Update
 
 #[cfg(all(feature = "ctrlc_handler"))]
 pub mod repls;
@@ -203,8 +218,6 @@ mod distribution;
 mod filter_ext;
 mod handler_description;
 mod handler_ext;
-mod handler_factory;
-pub mod stop_token;
 pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
@@ -213,5 +226,3 @@ pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_description::DpHandlerDescription;
 pub use handler_ext::{filter_command, HandlerExt};
-#[allow(deprecated)]
-pub use handler_factory::HandlerFactory;

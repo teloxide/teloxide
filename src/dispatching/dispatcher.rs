@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{
-        distribution::default_distribution_function, stop_token::StopToken, update_listeners,
+        distribution::default_distribution_function, update_listeners,
         update_listeners::UpdateListener, DefaultKey, DpHandlerDescription, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
@@ -27,6 +27,9 @@ use std::{
 };
 
 /// The builder for [`Dispatcher`].
+///
+/// See also: ["Dispatching or
+/// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 pub struct DispatcherBuilder<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
@@ -171,10 +174,13 @@ where
 
 /// The base for update dispatching.
 ///
-/// Updates from different chats are handles concurrently, whereas updates from
+/// Updates from different chats are handled concurrently, whereas updates from
 /// the same chats are handled sequentially. If the dispatcher is unable to
 /// determine a chat ID of an incoming update, it will be handled concurrently.
 /// Note that this behaviour can be altered with [`distribution_function`].
+///
+/// See also: ["Dispatching or
+/// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 ///
 /// [`distribution_function`]: DispatcherBuilder::distribution_function
 pub struct Dispatcher<R, Err, Key> {
@@ -281,14 +287,14 @@ where
     /// This method adds the same dependencies as [`Dispatcher::dispatch`].
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
-    pub async fn dispatch_with_listener<'a, UListener, ListenerE, Eh>(
+    pub async fn dispatch_with_listener<'a, UListener, Eh>(
         &'a mut self,
         mut update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
     ) where
-        UListener: UpdateListener<ListenerE> + 'a,
-        Eh: ErrorHandler<ListenerE> + 'a,
-        ListenerE: Debug,
+        UListener: UpdateListener + 'a,
+        Eh: ErrorHandler<UListener::Err> + 'a,
+        UListener::Err: Debug,
     {
         // FIXME: there should be a way to check if dependency is already inserted
         let me = self.bot.get_me().send().await.expect("Failed to retrieve 'me'");

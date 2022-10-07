@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.10.1"
+version = "0.11.0"
 edition = "2021"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -57,8 +57,8 @@ full = [
 ]
 
 [dependencies]
-teloxide-core = { version = "0.7.0", default-features = false }
-teloxide-macros = { version = "0.6.3", optional = true }
+teloxide-core = { version = "0.8.0", default-features = false }
+teloxide-macros = { version = "0.7.0", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -66,8 +66,8 @@ serde = { version = "1.0", features = ["derive"] }
 dptree = "0.3.0"
 
 # These lines are used only for development.
-# teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "b13393d", default-features = false }
-# teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", rev = "44d91c5", optional = true }
+# teloxide-core = { git = "https://github.com/teloxide/teloxide-core", rev = "00165e6", default-features = false }
+# teloxide-macros = { git = "https://github.com/teloxide/teloxide-macros", rev = "e715105", optional = true }
 # dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
 
 tokio = { version = "1.8", features = ["fs"] }
