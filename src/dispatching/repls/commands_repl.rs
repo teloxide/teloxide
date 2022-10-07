@@ -22,19 +22,17 @@ use teloxide_core::requests::Requester;
 /// Don't be scared by many trait bounds in the signature, in essence they
 /// require:
 ///
-/// 1. `bot` is a bot, client for the Telegram bot API
-///    - in teloxide this is represented via a [`Requester`] trait
-/// 2. `handler` is an async function that returns `Result<(), E>`
-///    - Such that `E` can be printed with [`Debug`] formatting
-///    - And all arguments can be extracted from [`DependencyMap`]
-///       - Which is the same, as all arguments implementing `Send + Sync +
-///         'static`
-/// 3. `cmd` is a type of the command that will be parsed,
-///    - The command type must implement [`BotCommands`] trait
-///    - It can be acquired by writing `TheCommandType::ty()`
+/// 1. `bot` is a bot, client for the Telegram bot API. It is represented via
+///    the [`Requester`] trait.
+/// 2. `handler` is an `async` function that takes arguments from
+///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
+/// 3. `cmd` is a type hint for your command enumeration
+///    `MyCommand`: just write `MyCommand::ty()`. Note that `MyCommand` must
+///    implement the [`BotCommands`] trait, typically via
+///   `#[derive(BotCommands)]`.
 ///
-/// All other requirements are about thread safety and data validity and can be
-/// ignored for most of the time.
+/// All the other requirements are about thread safety and data validity and can
+/// be ignored for most of the time.
 ///
 /// ## Handler arguments
 ///
@@ -85,20 +83,18 @@ where
 /// Don't be scared by many trait bounds in the signature, in essence they
 /// require:
 ///
-/// 1. `bot` is a bot, client for the Telegram bot API
-///    - in teloxide this is represented via a [`Requester`] trait
-/// 2. `handler` is an async function that returns `Result<(), E>`
-///    - Such that `E` can be printed with [`Debug`] formatting
-///    - And all arguments can be extracted from [`DependencyMap`]
-///       - Which is the same, as all arguments implementing `Send + Sync +
-///         'static`
-/// 3. `listener` is an [`UpdateListener`]
-/// 4. `cmd` is a type of the command that will be parsed,
-///    - The command type must implement [`BotCommands`] trait
-///    - It can be acquired by writing `TheCommandType::ty()`
+/// 1. `bot` is a bot, client for the Telegram bot API. It is represented via
+///    the [`Requester`] trait.
+/// 2. `handler` is an `async` function that takes arguments from
+///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
+/// 3. `listener` is something that takes updates from a Telegram server and
+///    implements [`UpdateListener`].
+/// 4. `cmd` is a type hint for your command enumeration `MyCommand`: just
+///    write `MyCommand::ty()`. Note that `MyCommand` must implement the
+///   [`BotCommands`] trait, typically via `#[derive(BotCommands)]`.
 ///
-/// All other requirements are about thread safety and data validity and can be
-/// ignored for most of the time.
+/// All the other requirements are about thread safety and data validity and can
+/// be ignored for most of the time.
 ///
 /// ## Handler arguments
 ///
