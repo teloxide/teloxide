@@ -25,7 +25,7 @@
 //! ```no_run
 //! # use teloxide::utils::command::BotCommands;
 //! #[derive(BotCommands, Clone)]
-//! #[command(rename = "lowercase", description = "These commands are supported:")]
+//! #[command(rename_rule = "lowercase", description = "These commands are supported:")]
 //! enum Command {
 //!     #[command(description = "display this text.")]
 //!     Help,
@@ -102,13 +102,10 @@
 //! -- no problem, reuse [`dptree::Handler::filter`], [`dptree::case!`], and
 //! other combinators in the same way!
 //!
-//! Finally, we define our endpoints via simple `async` functions like this:
-//!
-//! <details>
-//! <summary>Show the endpoints</summary>
+//! Finally, we define our endpoints:
 //!
 //! ```no_run
-//! # use teloxide::{Bot, adaptors::AutoSend};
+//! # use teloxide::Bot;
 //! # use teloxide::types::{Message, CallbackQuery};
 //! # use teloxide::dispatching::dialogue::{InMemStorage, Dialogue};
 //! # enum State{}
@@ -116,44 +113,33 @@
 //! type MyDialogue = Dialogue<State, InMemStorage<State>>;
 //! type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //!
-//! async fn start(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn help(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//! async fn help(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn cancel(bot: AutoSend<Bot>, msg: Message, dialogue: MyDialogue) -> HandlerResult {
+//! async fn cancel(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn invalid_state(bot: AutoSend<Bot>, msg: Message) -> HandlerResult {
+//! async fn invalid_state(bot: Bot, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
-//! async fn receive_full_name(
-//!     bot: AutoSend<Bot>,
-//!     msg: Message,
-//!     dialogue: MyDialogue,
-//! ) -> HandlerResult {
+//! async fn receive_full_name(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 //!     todo!()
 //! }
-//!
 //! async fn receive_product_selection(
-//!     bot: AutoSend<Bot>,
-//!     q: CallbackQuery,
+//!     bot: Bot,
 //!     dialogue: MyDialogue,
-//!     full_name: String,
+//!     full_name: String, // Available from `State::ReceiveProductChoice`.
+//!     q: CallbackQuery,
 //! ) -> HandlerResult {
 //!     todo!()
 //! }
 //! ```
 //!
-//! </details>
-//!
 //! Each parameter is supplied as a dependency by teloxide. In particular:
-//!  - `bot: AutoSend<Bot>` comes from the dispatcher (see below)
+//!  - `bot: Bot` comes from the dispatcher (see below)
 //!  - `msg: Message` comes from [`Update::filter_message`]
 //!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`]
 //!  - `dialogue: MyDialogue` comes from [`dialogue::enter`]
@@ -170,7 +156,7 @@
 //! # fn schema() -> teloxide::dispatching::UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> { teloxide::dptree::entry() }
 //! #[tokio::main]
 //! async fn main() {
-//!     let bot = Bot::from_env().auto_send();
+//!     let bot = Bot::from_env();
 //!
 //!     Dispatcher::builder(bot, schema())
 //!         .dependencies(dptree::deps![InMemStorage::<State>::new()])
@@ -232,8 +218,6 @@ mod distribution;
 mod filter_ext;
 mod handler_description;
 mod handler_ext;
-mod handler_factory;
-pub mod stop_token;
 pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
@@ -242,5 +226,3 @@ pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_description::DpHandlerDescription;
 pub use handler_ext::{filter_command, HandlerExt};
-#[allow(deprecated)]
-pub use handler_factory::HandlerFactory;

@@ -1,6 +1,6 @@
 use crate::{
     dispatching::{
-        distribution::default_distribution_function, stop_token::StopToken, update_listeners,
+        distribution::default_distribution_function, update_listeners,
         update_listeners::UpdateListener, DefaultKey, DpHandlerDescription, ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},

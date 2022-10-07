@@ -35,7 +35,7 @@ use futures::Stream;
 use std::time::Duration;
 
 use crate::{
-    dispatching::stop_token::StopToken,
+    stop::StopToken,
     types::{AllowedUpdate, Update},
 };
 
@@ -65,9 +65,6 @@ pub trait UpdateListener:
     /// The type of errors that can be returned from this listener.
     type Err;
 
-    /// The type of token which allows to stop this listener.
-    type StopToken: StopToken + Send;
-
     /// Returns a token which stops this listener.
     ///  
     /// The [`stop`] function of the token is not guaranteed to have an
@@ -81,7 +78,7 @@ pub trait UpdateListener:
     /// soon as all cached updates are returned.
     #[must_use = "This function doesn't stop listening, to stop listening you need to call `stop` \
                   on the returned token"]
-    fn stop_token(&mut self) -> Self::StopToken;
+    fn stop_token(&mut self) -> StopToken;
 
     /// Hint which updates should the listener listen for.
     ///

@@ -21,15 +21,13 @@
 use std::env;
 
 use teloxide::{dispatching::update_listeners::webhooks, prelude::*};
-use url::Url;
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     log::info!("Starting Heroku ping-pong bot...");
 
-    let bot = Bot::from_env().auto_send();
-    let token = bot.inner().token();
+    let bot = Bot::from_env();
 
     // Heroku auto defines a port value
     let port: u16 = env::var("PORT")
@@ -41,7 +39,7 @@ async fn main() {
 
     // Heroku host example: "heroku-ping-pong-bot.herokuapp.com"
     let host = env::var("HOST").expect("HOST env variable is not set");
-    let url = Url::parse(&format!("https://{host}/webhooks/{token}")).unwrap();
+    let url = format!("https://{host}/webhook").parse().unwrap();
 
     let listener = webhooks::axum(bot.clone(), webhooks::Options::new(addr, url))
         .await
@@ -49,9 +47,9 @@ async fn main() {
 
     teloxide::repl_with_listener(
         bot,
-        |msg: Message, bot: AutoSend<Bot>| async move {
+        |bot: Bot, msg: Message| async move {
             bot.send_message(msg.chat.id, "pong").await?;
-            respond(())
+            Ok(())
         },
         listener,
     )

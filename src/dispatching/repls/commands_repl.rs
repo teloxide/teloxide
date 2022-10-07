@@ -5,6 +5,7 @@ use crate::{
     error_handlers::LoggingErrorHandler,
     types::Update,
     utils::command::BotCommands,
+    RequestError,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, marker::PhantomData};
@@ -55,12 +56,11 @@ use teloxide_core::requests::Requester;
 #[doc = include_str!("caution.md")]
 ///
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl<'a, R, Cmd, H, E, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
+pub async fn commands_repl<'a, R, Cmd, H, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
-    E: Debug + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
     Cmd: BotCommands + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
@@ -120,18 +120,17 @@ where
 #[doc = include_str!("caution.md")]
 ///
 #[cfg(feature = "ctrlc_handler")]
-pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, E, Args>(
+pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, Args>(
     bot: R,
     handler: H,
     listener: L,
     cmd: PhantomData<Cmd>,
 ) where
     Cmd: BotCommands + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), E>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send + 'a,
     L::Err: Debug + Send + 'a,
     R: Requester + Clone + Send + Sync + 'static,
-    E: Debug + Send + Sync + 'static,
 {
     use crate::dispatching::Dispatcher;
 

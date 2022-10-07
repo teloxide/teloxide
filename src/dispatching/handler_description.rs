@@ -86,7 +86,7 @@ mod tests {
     use crate as teloxide; // fixup for the `BotCommands` macro
 
     #[derive(BotCommands, Clone)]
-    #[command(rename = "lowercase")]
+    #[command(rename_rule = "lowercase")]
     enum Cmd {
         B,
     }

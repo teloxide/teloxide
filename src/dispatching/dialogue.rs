@@ -38,10 +38,10 @@
 //! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //! # #[derive(Clone, Debug)] enum State { ReceiveLocation { full_name: String, age: u8 } }
 //! async fn receive_age(
-//!     bot: AutoSend<Bot>,
-//!     msg: Message,
+//!     bot: Bot,
 //!     dialogue: MyDialogue,
 //!     full_name: String, // Available from `State::ReceiveAge`.
+//!     msg: Message,
 //! ) -> HandlerResult {
 //!     match msg.text().map(|text| text.parse::<u8>()) {
 //!         Some(Ok(age)) => {
@@ -70,10 +70,10 @@
 //! # type HandlerResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 //! # #[derive(Clone, Debug)] enum State {}
 //! async fn receive_location(
-//!     bot: AutoSend<Bot>,
-//!     msg: Message,
+//!     bot: Bot,
 //!     dialogue: MyDialogue,
 //!     (full_name, age): (String, u8), // Available from `State::ReceiveLocation`.
+//!     msg: Message,
 //! ) -> HandlerResult {
 //!     match msg.text() {
 //!         Some(location) => {
@@ -211,6 +211,7 @@ where
 ///  - `Upd`
 ///
 /// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
+#[must_use]
 pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
 where
     S: Storage<D> + ?Sized + Send + Sync + 'static,
