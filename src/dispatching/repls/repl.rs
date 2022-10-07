@@ -1,12 +1,11 @@
 use crate::{
     dispatching::{update_listeners, update_listeners::UpdateListener, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
+    requests::{Requester, ResponseResult},
     types::Update,
-    RequestError,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::fmt::Debug;
-use teloxide_core::requests::Requester;
 
 /// A [REPL] for messages.
 //
@@ -47,7 +46,7 @@ pub async fn repl<R, H, Args>(bot: R, handler: H)
 where
     R: Requester + Send + Sync + Clone + 'static,
     <R as Requester>::GetUpdates: Send,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
@@ -94,7 +93,7 @@ where
 pub async fn repl_with_listener<R, H, L, Args>(bot: R, handler: H, listener: L)
 where
     R: Requester + Clone + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send,
     L::Err: Debug,
 {
