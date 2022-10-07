@@ -41,6 +41,10 @@ use std::{fmt::Debug, marker::PhantomData};
 /// - `Cmd` (type of the parsed command)
 /// - [`Me`]
 ///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
+///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
 ///
@@ -102,6 +106,10 @@ where
 /// - `R` (type of the `bot`)
 /// - `Cmd` (type of the parsed command)
 /// - [`Me`]
+///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
 ///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
