@@ -88,8 +88,8 @@ where
     C: BotCommands + Send + Sync + 'static,
     Output: Send + Sync + 'static,
 {
-    dptree::entry().chain(dptree::filter_map(move |message: Message, me: Me| {
+    dptree::filter_map(move |message: Message, me: Me| {
         let bot_name = me.user.username.expect("Bots must have a username");
         message.text().and_then(|text| C::parse(text, &bot_name).ok())
-    }))
+    })
 }
