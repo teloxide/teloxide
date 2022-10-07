@@ -1,6 +1,108 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.10 -> 0.11
+
+### core
+
+Requests can now be `.await`ed directly, without need of `.send()` or `AutoSend`.
+If you previously used `AutoSend` adaptor, you can safely remove it:
+
+```diff,rust
+-let bot = Bot::from_env().auto_send();
++let bot = Bot::from_env();
+```
+
+```diff,rust
+-async fn start(bot: AutoSend<Bot>, dialogue: MyDialogue, msg: Message) -> HandlerResult {
++async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
+```
+
+`File`'s and `FileMeta`'s fields now don't have `file_` prefix.
+If you previously accessed the fields, you'll need to change remove the prefix:
+
+```diff
+-_ = file.file_size;
++_ = file.size;
+```
+
+`Animation`, `Audio`, `Document`, `PassportFile`, `PhotoSize`, `Video`, `VideoNote` and `Voice` now contain `FileMeta` instead of its fields.
+Together with rename of `FileMeta`'s fields, you'll need to change `_` to `.`:
+
+```diff
+-_ = animation.file_size;
++_ = animation.file.size;
+```
+
+Message id fields and parameters now use `MessageId` type, instead of `i32`.
+You may need to change code accordingly:
+
+```diff
+-let id: i32 = message.id;
++let id: MessageId = message.id;
+```
+```diff,rust
+let (cid, mid): (ChatId, i32) = get_message_to_delete_from_db();
+-bot.delete_message(cid, mid).await?;
++bot.delete_message(cid, MessageId(mid)).await?;
+```
+
+Note that at the same time `MessageId` is now a tuple struct.
+If you've accessed its only field you'll need to change it too:
+
+```diff,rust
+-let MessageId { message_id } = bot.copy_message(dst_chat, src_chat, mid).await?;
++let MessageId(message_id) = bot.copy_message(dst_chat, src_chat, mid).await?;
+save_to_db(message_id);
+```
+
+Because of API updates `Sticker` type was refactored again.
+You may need to change code accordingly.
+See `Sticker` documentation for more information about the new structure.
+
+### teloxide
+
+You can now write `Ok(())` instead of `respond(())` at the end of closures provided to RELPs:
+
+```diff,rust
+teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+    bot.send_dice(msg.chat.id).await?;
+-    respond(())
++    Ok(())
+})
+.await;
+```
+
+This is because REPLs now require the closure to return `RequestError` instead of a generic error type, so type inference works perfectly for a return value. If you use something other than `RequestError`, you can transfer your code to `teloxide::dispatching`, which still permits a generic error type.
+
+### macros
+
+`parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
+
+```diff,rust
+fn custom_parser(input: String) -> Result<(u8,), ParseError> {
+    todo!()
+}
+
+#[derive(BotCommands)]
+enum Command {
+-    #[command(parse_with = "custom_parser")]
++    #[command(parse_with = custom_parser)]
+    Num(u8),
+}
+```
+
+`rename` now only renames a command literally; use `rename_rule` to change the case of a command:
+
+```diff,rust
+#[derive(BotCommands)]
+- #[command(rename = "lowercase", description = "These commands are supported:")]
++ #[command(rename_rule = "lowercase", description = "These commands are supported:")]
+enum Command {
+    // ...
+}
+```
+
 ## 0.9 -> 0.10
 
 ### core
