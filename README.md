@@ -1,4 +1,4 @@
-> [v0.9 -> v0.10 migration guide >>](MIGRATION_GUIDE.md#09---010)
+> [v0.10 -> v0.11 migration guide >>](MIGRATION_GUIDE.md#010---011)
 
 <div align="center">
   <img src="./ICON.png" width="250"/>
@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.1%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.2%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
@@ -70,7 +70,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.10", features = ["macros", "auto-send"] }
+teloxide = { version = "0.11", features = ["macros", "auto-send"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
