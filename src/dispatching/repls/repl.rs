@@ -30,6 +30,10 @@ use std::fmt::Debug;
 /// - `R` (type of the `bot`)
 /// - [`Me`]
 ///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
+///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
 ///
@@ -77,6 +81,10 @@ where
 /// - [`Message`]
 /// - `R` (type of the `bot`)
 /// - [`Me`]
+///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
 ///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
