@@ -3,44 +3,68 @@ use crate::{
         update_listeners, update_listeners::UpdateListener, HandlerExt, UpdateFilterExt,
     },
     error_handlers::LoggingErrorHandler,
+    requests::{Requester, ResponseResult},
     types::Update,
     utils::command::BotCommands,
-    RequestError,
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::{fmt::Debug, marker::PhantomData};
-use teloxide_core::requests::Requester;
 
 /// A [REPL] for commands.
+//
 ///
-/// All errors from an update listener and handler will be logged.
-///
-/// REPLs are meant only for simple bots and rapid prototyping. If you need to
-/// supply dependencies or describe more complex dispatch logic, please use
-/// [`Dispatcher`].
-///
-/// See also: ["Dispatching or
-/// REPLs?"](dispatching/index.html#dispatching-or-repls)
-///
-/// ## Caution
-///
-/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
-/// because Telegram disallow multiple requests at the same time from the same
-/// bot.
-///
-/// ## Dependency requirements
-///
-///  - Those of [`HandlerExt::filter_command`]
+//
+#[doc = include_str!("preamble.md")]
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
+///
+/// ## Signature
+///
+/// Don't be scared by many trait bounds in the signature, in essence they
+/// require:
+///
+/// 1. `bot` is a bot, client for the Telegram bot API. It is represented via
+///    the [`Requester`] trait.
+/// 2. `handler` is an `async` function that takes arguments from
+///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
+/// 3. `cmd` is a type hint for your command enumeration
+///    `MyCommand`: just write `MyCommand::ty()`. Note that `MyCommand` must
+///    implement the [`BotCommands`] trait, typically via
+///   `#[derive(BotCommands)]`.
+///
+/// All the other requirements are about thread safety and data validity and can
+/// be ignored for most of the time.
+///
+/// ## Handler arguments
+///
+/// Teloxide provides the following types to the `handler`:
+/// - [`Message`]
+/// - `R` (type of the `bot`)
+/// - `Cmd` (type of the parsed command)
+/// - [`Me`]
+///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
+///
+/// [`Me`]: crate::types::Me
+/// [`Message`]: crate::types::Message
+///
+/// ## Stopping
+//
+#[doc = include_str!("stopping.md")]
+///
+/// ## Caution
+//
+#[doc = include_str!("caution.md")]
+///
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl<'a, R, Cmd, H, Args>(bot: R, handler: H, cmd: PhantomData<Cmd>)
 where
-    Cmd: BotCommands + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
     R: Requester + Clone + Send + Sync + 'static,
     <R as Requester>::GetUpdates: Send,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+    Cmd: BotCommands + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
 
@@ -53,44 +77,71 @@ where
     .await;
 }
 
-/// Like [`commands_repl`], but with a custom [`UpdateListener`].
+/// A [REPL] for commands, with a custom [`UpdateListener`].
+//
 ///
-/// All errors from an update listener and handler will be logged.
+//
+#[doc = include_str!("preamble.md")]
 ///
-/// REPLs are meant only for simple bots and rapid prototyping. If you need to
-/// supply dependencies or describe more complex dispatch logic, please use
-/// [`Dispatcher`].
+/// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 ///
-/// See also: ["Dispatching or
-/// REPLs?"](dispatching/index.html#dispatching-or-repls)
+/// ## Signature
+///
+/// Don't be scared by many trait bounds in the signature, in essence they
+/// require:
+///
+/// 1. `bot` is a bot, client for the Telegram bot API. It is represented via
+///    the [`Requester`] trait.
+/// 2. `handler` is an `async` function that takes arguments from
+///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
+/// 3. `listener` is something that takes updates from a Telegram server and
+///    implements [`UpdateListener`].
+/// 4. `cmd` is a type hint for your command enumeration `MyCommand`: just
+///    write `MyCommand::ty()`. Note that `MyCommand` must implement the
+///   [`BotCommands`] trait, typically via `#[derive(BotCommands)]`.
+///
+/// All the other requirements are about thread safety and data validity and can
+/// be ignored for most of the time.
+///
+/// ## Handler arguments
+///
+/// Teloxide provides the following types to the `handler`:
+/// - [`Message`]
+/// - `R` (type of the `bot`)
+/// - `Cmd` (type of the parsed command)
+/// - [`Me`]
+///
+/// Each of these types can be accepted as a handler parameter. Note that they
+/// aren't all required at the same time: e.g., you can take only the bot and
+/// the command without [`Me`] and [`Message`].
+///
+/// [`Me`]: crate::types::Me
+/// [`Message`]: crate::types::Message
+///
+/// ## Stopping
+//
+#[doc = include_str!("stopping.md")]
 ///
 /// ## Caution
+//
+#[doc = include_str!("caution.md")]
 ///
-/// **DO NOT** use this function together with [`Dispatcher`] and other REPLs,
-/// because Telegram disallow multiple requests at the same time from the same
-/// bot.
-///
-/// ## Dependency requirements
-///
-///  - Those of [`HandlerExt::filter_command`]
-///
-/// [`Dispatcher`]: crate::dispatching::Dispatcher
-/// [`commands_repl`]: crate::dispatching::repls::commands_repl()
-/// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
 #[cfg(feature = "ctrlc_handler")]
 pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, Args>(
     bot: R,
     handler: H,
     listener: L,
-    _cmd: PhantomData<Cmd>,
+    cmd: PhantomData<Cmd>,
 ) where
     Cmd: BotCommands + Send + Sync + 'static,
-    H: Injectable<DependencyMap, Result<(), RequestError>, Args> + Send + Sync + 'static,
+    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send + 'a,
     L::Err: Debug + Send + 'a,
     R: Requester + Clone + Send + Sync + 'static,
 {
     use crate::dispatching::Dispatcher;
+
+    let _ = cmd;
 
     // Other update types are of no interest to use since this REPL is only for
     // commands. See <https://github.com/teloxide/teloxide/issues/557>.
