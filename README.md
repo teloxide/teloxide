@@ -37,7 +37,7 @@
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org
 
- - **Strongly typed commands.** You can describe bot commands as enumerations, and then they'll be automatically constructed from strings — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
+ - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
 
 [`structopt`]: https://github.com/TeXitoi/structopt
 [`serde-json`]: https://github.com/serde-rs/json
