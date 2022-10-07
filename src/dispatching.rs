@@ -138,7 +138,7 @@
 //! }
 //! ```
 //!
-//! Each parameter is supplied as a dependency by teloxide. In particular:
+//! Each parameter is supplied as a dependency by `teloxide`. In particular:
 //!  - `bot: Bot` comes from the dispatcher (see below)
 //!  - `msg: Message` comes from [`Update::filter_message`]
 //!  - `q: CallbackQuery` comes from [`Update::filter_callback_query`]
