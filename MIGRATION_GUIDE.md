@@ -75,6 +75,32 @@ teloxide::repl(bot, |bot: Bot, msg: Message| async move {
 
 This is because REPLs now require the closure to return `RequestError` instead of a generic error type, so type inference works perfectly for a return value. If you use something other than `RequestError`, you can transfer your code to `teloxide::dispatching`, which still permits a generic error type.
 
+`parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
+
+```diff,rust
+fn custom_parser(input: String) -> Result<(u8,), ParseError> {
+    todo!()
+}
+
+#[derive(BotCommands)]
+enum Command {
+-    #[command(parse_with = "custom_parser")]
++    #[command(parse_with = custom_parser)]
+    Num(u8),
+}
+```
+
+`rename` now only renames a command literally; use `rename_rule` to change the case of a command:
+
+```diff,rust
+#[derive(BotCommands)]
+- #[command(rename = "lowercase", description = "These commands are supported:")]
++ #[command(rename_rule = "lowercase", description = "These commands are supported:")]
+enum Command {
+    // ...
+}
+```
+
 ## 0.9 -> 0.10
 
 ### core
