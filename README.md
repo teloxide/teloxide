@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="./ICON.png" width="250"/>
-  <h1>`teloxide`</h1>
+  <h1><code>teloxide</code></h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
   </a>
