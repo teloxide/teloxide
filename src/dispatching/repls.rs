@@ -1,9 +1,9 @@
 //! [REPL]s for dispatching updates.
 //!
-//! This module provides functions for easy update handling, that accept a
+//! This module provides utilities for easy update handling. They accept a
 //! single "handler" function that processes all updates of a certain kind. Note
-//! that REPLs are meant to be used as a prototyping tool and lack configuration
-//! and some advanced features.
+//! that REPLs are meant to be used for simple scenarios, such as prototyping,
+//! inasmuch they lack configuration and some advanced features.
 //!
 //! [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
 
