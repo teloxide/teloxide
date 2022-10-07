@@ -12,7 +12,7 @@
 | `trace-adaptor`      | Enables the [`Trace`](adaptors::Trace) bot adaptor.                                        |
 | `erased`             | Enables the [`ErasedRequester`](adaptors::ErasedRequester) bot adaptor.                    |
 | `full`               | Enables all the features except `nightly`.                                                 |
-| `nightly`            | Enables nightly-only features (see the [teloxide-core features]).                          |
+| `nightly`            | Enables nightly-only features (see the [`teloxide-core` features]).                          |
 | `native-tls`         | Enables the [`native-tls`] TLS implementation (**enabled by default**).                    |
 | `rustls`             | Enables the [`rustls`] TLS implementation.                                                 |
 | `redis-storage`      | Enables the [Redis] storage support for dialogues.                                         |
@@ -29,6 +29,6 @@
 [`native-tls`]: https://docs.rs/native-tls
 [`rustls`]: https://docs.rs/rustls
 [`teloxide::utils::UpState`]: utils::UpState
-[teloxide-core features]: https://docs.rs/teloxide-core/latest/teloxide_core/#cargo-features
+[`teloxide-core` features]: https://docs.rs/teloxide-core/latest/teloxide_core/#cargo-features
 
 [`DispatcherBuilder::enable_ctrlc_handler`]: dispatching::DispatcherBuilder::enable_ctrlc_handler
