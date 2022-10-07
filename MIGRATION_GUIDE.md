@@ -75,6 +75,8 @@ teloxide::repl(bot, |bot: Bot, msg: Message| async move {
 
 This is because REPLs now require the closure to return `RequestError` instead of a generic error type, so type inference works perfectly for a return value. If you use something other than `RequestError`, you can transfer your code to `teloxide::dispatching`, which still permits a generic error type.
 
+### macros
+
 `parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
 
 ```diff,rust
