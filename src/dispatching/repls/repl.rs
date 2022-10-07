@@ -27,7 +27,7 @@ use std::fmt::Debug;
 ///
 /// ## Handler arguments
 ///
-/// Teloxide provides the following types to the `handler`:
+/// `teloxide` provides the following types to the `handler`:
 /// - [`Message`]
 /// - `R` (type of the `bot`)
 /// - [`Me`]
@@ -81,7 +81,7 @@ where
 ///
 /// ## Handler arguments
 ///
-/// Teloxide provides the following types to the `handler`:
+/// `teloxide` provides the following types to the `handler`:
 /// - [`Message`]
 /// - `R` (type of the `bot`)
 /// - [`Me`]
