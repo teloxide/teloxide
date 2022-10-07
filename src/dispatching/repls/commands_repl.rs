@@ -37,7 +37,7 @@ use std::{fmt::Debug, marker::PhantomData};
 ///
 /// ## Handler arguments
 ///
-/// Teloxide provides the following types to the `handler`:
+/// `teloxide` provides the following types to the `handler`:
 /// - [`Message`]
 /// - `R` (type of the `bot`)
 /// - `Cmd` (type of the parsed command)
@@ -105,7 +105,7 @@ where
 ///
 /// ## Handler arguments
 ///
-/// Teloxide provides the following types to the `handler`:
+/// `teloxide` provides the following types to the `handler`:
 /// - [`Message`]
 /// - `R` (type of the `bot`)
 /// - `Cmd` (type of the parsed command)

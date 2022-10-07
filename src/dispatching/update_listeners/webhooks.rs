@@ -49,7 +49,7 @@ pub struct Options {
     /// `a-z`, `0-9`, `_` and `-` are allowed. The header is useful to ensure
     /// that the request comes from a webhook set by you.
     ///
-    /// Default - teloxide will generate a random token.
+    /// Default - `teloxide` will generate a random token.
     pub secret_token: Option<String>,
 }
 
