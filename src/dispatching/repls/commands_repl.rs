@@ -12,6 +12,8 @@ use std::{fmt::Debug, marker::PhantomData};
 
 /// A [REPL] for commands.
 //
+///
+//
 #[doc = include_str!("preamble.md")]
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
@@ -76,6 +78,8 @@ where
 }
 
 /// A [REPL] for commands, with a custom [`UpdateListener`].
+//
+///
 //
 #[doc = include_str!("preamble.md")]
 ///
