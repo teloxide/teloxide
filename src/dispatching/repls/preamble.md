@@ -4,4 +4,4 @@ See also: ["Dispatching or REPLs?"](dispatching/index.html#dispatching-or-repls)
 
 [`Dispatcher`]: crate::dispatching::Dispatcher
 
-All errors from a the handler and will be logged.
+All errors from the handler and update listener will be logged.
