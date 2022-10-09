@@ -233,7 +233,7 @@ pub trait BotCommands: Sized {
 
     /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
     ///
-    /// [`commands_repl`]: (crate::repls2::commands_repl)
+    /// [`commands_repl`]: (crate::repls::commands_repl)
     #[must_use]
     fn ty() -> PhantomData<Self> {
         PhantomData
