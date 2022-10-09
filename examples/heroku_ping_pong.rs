@@ -10,7 +10,7 @@
 // heroku create --buildpack emk/rust
 // ```
 //
-// To set buildpack for existing applicaton:
+// To set buildpack for existing application:
 //
 // ```
 // heroku buildpacks:set emk/rust

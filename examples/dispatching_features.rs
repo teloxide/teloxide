@@ -32,7 +32,7 @@ async fn main() {
                 .endpoint(simple_commands_handler),
         )
         .branch(
-            // Filter a maintainer by a used ID.
+            // Filter a maintainer by a user ID.
             dptree::filter(|cfg: ConfigParameters, msg: Message| {
                 msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })

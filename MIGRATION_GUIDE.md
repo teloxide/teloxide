@@ -193,7 +193,7 @@ In order to make `Dispatcher` implement `Send`, `DispatcherBuilder::{default_han
 
 v0.6 of teloxide introduces a new dispatching model based on the [chain of responsibility pattern]. To use it, you need to replace `prelude` with `prelude2` and `dispatching` with `dispatching2`. Instead of using old REPLs, you should now use `teloxide::repls2`.
 
-The whole design is different than the previous one based on Tokio streams. In this section, we are only to address the most common usage scenarios.
+The whole design is different from the previous one based on Tokio streams. In this section, we are only to address the most common usage scenarios.
 
 First of all, now there are no streams. Instead of using streams, you use [`dptree`], which is a more suitable alternative for our purposes. Thus, if you previously used `Dispatcher::messages_handler`, now you should use `Update::filter_message()`, and so on.
 
@@ -237,7 +237,7 @@ List of changed types:
 
 In teloxide `v0.4` (core `v0.2`) some API methods had wrong return types.
 This made them practically unusable as they've always returned parsing error.
-On the offchance you were using the methods, you may need to adjust types in your code.
+On the off-chance you were using the methods, you may need to adjust types in your code.
 
 List of changed return types:
 - `get_chat_administrators`: `ChatMember` -> `Vec<ChatMember>`
@@ -324,7 +324,7 @@ List of renamed items:
 #### Added `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`}
 
 Previously said bot adaptors were lacking `Clone` implementation. 
-To workaround this issue it was proposed to wrap bot in `Arc`.
+To work around this issue it was proposed to wrap bot in `Arc`.
 Now it's not required, so you can remove the `Arc`:
 
 ```diff
