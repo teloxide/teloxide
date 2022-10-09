@@ -371,7 +371,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Now methods which can send file to Telegram returns `tokio::io::Result<T>`. Early it could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
+- Now methods which can send file to Telegram return `tokio::io::Result<T>`. Before that it could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
 - If a bot wasn't triggered for several days, it stops responding ([issue 223](https://github.com/teloxide/teloxide/issues/223)).
 
 ## 0.2.0 - 2020-02-25
