@@ -38,7 +38,7 @@ pub fn italic(s: &str) -> String {
               without using its output does nothing useful"]
 pub fn underline(s: &str) -> String {
     // In case of ambiguity between italic and underline entities
-    // ‘__’ is always greadily treated from left to right as beginning or end of
+    // ‘__’ is always greedily treated from left to right as beginning or end of
     // underline entity, so instead of ___italic underline___ we should use
     // ___italic underline_\r__, where \r is a character with code 13, which
     // will be ignored.

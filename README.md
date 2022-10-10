@@ -82,7 +82,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 ### The dices bot
 
-This bot replies with a dice throw to each received message:
+This bot replies with a die throw to each received message:
 
 [[`examples/throw_dice.rs`](examples/throw_dice.rs)]
 
@@ -326,7 +326,7 @@ Feel free to propose your own bot to our collection!
  - [`modos189/tg_blackbox_bot`](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project.
  - [`0xNima/spacecraft`](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
  - [`0xNima/Twideo`](https://github.com/0xNima/Twideo) — Simple Telegram Bot for downloading videos from Twitter via their links.
- - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telgram bot to interface with libgen.
+ - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telegram bot to interface with libgen.
  - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
 
 <details>
