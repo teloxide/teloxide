@@ -1,8 +1,5 @@
-//! This module contains stop [token] and stop [flag] that are used to stop
-//! async tasks, for example [listeners].
+//! Stopping asynchronous tasks, e.g., [listeners].
 //!
-//! [token]: StopToken
-//! [flag]: StopFlag
 //! [listeners]: crate::dispatching::update_listeners
 
 use std::{convert::Infallible, future::Future, pin::Pin, task};
