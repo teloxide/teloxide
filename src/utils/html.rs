@@ -95,7 +95,7 @@ pub fn code_inline(s: &str) -> String {
 /// style.
 ///
 /// Does not escape ' and " characters (as should be for usual HTML), because
-/// they shoudn't be escaped by the [spec].
+/// they shouldn't be escaped by the [spec].
 ///
 /// [spec]: https://core.telegram.org/bots/api#html-style
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
@@ -176,7 +176,7 @@ mod tests {
         assert_eq!(
             code_block_with_lang(
                 "<p>pre-'formatted'\n & fixed-width \\code `block`</p>",
-                "<html>\""
+                "<html>\"",
             ),
             concat!(
                 "<pre><code class=\"language-&lt;html&gt;&quot;\">",

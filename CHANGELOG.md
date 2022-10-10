@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix Api Unknown error (Can't parse entities) on message created with `utils::markdown::user_mention_or_link` if user full name contaiins some escapable symbols eg '.'
+- Fix Api Unknown error (Can't parse entities) on message created with `utils::markdown::user_mention_or_link` if user full name contains some escapable symbols eg '.'
 
 ## 0.9.1 - 2022-05-27
 
@@ -188,7 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `BotCommand::bot_commands` to obtain Telegram API commands ([issue 262](https://github.com/teloxide/teloxide/issues/262)).
-- The `dispatching2` and `prelude2` modules. They presents a new dispatching model based on `dptree`.
+- The `dispatching2` and `prelude2` modules. They present a new dispatching model based on `dptree`.
 
 ### Changed
 
@@ -265,7 +265,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Remove the `reqwest` dependency. It's not needed after the [teloxide-core] integration.
-- A storage persistency bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
+- A storage persistence bug ([issue 304](https://github.com/teloxide/teloxide/issues/304)).
 - Log errors from `Storage::{remove_dialogue, update_dialogue}` in `DialogueDispatcher` ([issue 302](https://github.com/teloxide/teloxide/issues/302)).
 - Mark all the functions of `Storage` as `#[must_use]`.
 
@@ -371,7 +371,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Now methods which can send file to Telegram returns `tokio::io::Result<T>`. Early its could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
+- Now methods which can send file to Telegram return `tokio::io::Result<T>`. Before that it could panic ([issue 216](https://github.com/teloxide/teloxide/issues/216)).
 - If a bot wasn't triggered for several days, it stops responding ([issue 223](https://github.com/teloxide/teloxide/issues/223)).
 
 ## 0.2.0 - 2020-02-25
