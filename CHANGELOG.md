@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+ - `teloxide::dispatching::repls::CommandRepl`, `teloxide::prelude::CommandRepl` ([issue #740](https://github.com/teloxide/teloxide/issues/740))
+
+### Deprecated
+
+ - `teloxide::dispatching::repls::{commands_repl, commands_repl_with_listener}` (use `CommandRepl` instead)
+
 ## 0.11.0 - 2022-10-07
 
 ### Changed
