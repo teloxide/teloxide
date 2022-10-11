@@ -7,7 +7,7 @@ async fn main() {
 
     let bot = Bot::from_env();
 
-    teloxide::commands_repl(bot, answer, Command::ty()).await;
+    Command::repl(bot, answer).await;
 }
 
 #[derive(BotCommands, Clone)]
