@@ -69,6 +69,7 @@ pub trait CommandRepl {
     /// A REPL for commands.
     ///
     /// See [`CommandRepl`] for more details.
+    #[must_use]
     fn repl<'a, R, H, Args>(bot: R, handler: H) -> BoxFuture<'a, ()>
     where
         R: Requester + Clone + Send + Sync + 'static,
@@ -81,6 +82,7 @@ pub trait CommandRepl {
     /// A REPL for commands with a custom [`UpdateListener`].
     ///
     /// See [`CommandRepl`] for more details.
+    #[must_use]
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
         H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
