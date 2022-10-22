@@ -31,10 +31,11 @@
 
  - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, and much more.
 
- - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis], [RocksDB] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
+[RocksDB]: https://rocksdb.org/
 [Sqlite]: https://www.sqlite.org
 
  - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
