@@ -1,6 +1,22 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.10 -> 0.xxx.xxx
+
+### teloxide
+
+We have introduced the new trait `CommandRepl` that replaces the old `commands_repl_(with_listener)` functions:
+
+```diff,rust
+- teloxide::commands_repl(bot, answer, Command::ty())
++ Command::repl(bot, answer)
+```
+
+```diff,rust
+- teloxide::commands_repl_with_listener(bot, answer, listener, Command::ty())
++ Command::repl_with_listener(bot, answer, listener)
+```
+
 ## 0.10 -> 0.11
 
 ### core
