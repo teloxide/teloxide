@@ -65,10 +65,10 @@ use std::{fmt::Debug, marker::PhantomData};
 #[doc = include_str!("caution.md")]
 ///
 #[cfg(feature = "ctrlc_handler")]
-pub trait CommandRepl {
+pub trait CommandReplExt {
     /// A REPL for commands.
     ///
-    /// See [`CommandRepl`] for more details.
+    /// See [`CommandReplExt`] for more details.
     #[must_use]
     fn repl<'a, R, H, Args>(bot: R, handler: H) -> BoxFuture<'a, ()>
     where
@@ -81,7 +81,7 @@ pub trait CommandRepl {
 
     /// A REPL for commands with a custom [`UpdateListener`].
     ///
-    /// See [`CommandRepl`] for more details.
+    /// See [`CommandReplExt`] for more details.
     #[must_use]
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
@@ -93,7 +93,7 @@ pub trait CommandRepl {
 }
 
 #[cfg(feature = "ctrlc_handler")]
-impl<Cmd> CommandRepl for Cmd
+impl<Cmd> CommandReplExt for Cmd
 where
     Cmd: BotCommands + Send + Sync + 'static,
 {

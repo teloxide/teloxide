@@ -6,7 +6,7 @@ pub use crate::error_handlers::{LoggingErrorHandler, OnError};
 pub use crate::respond;
 
 pub use crate::dispatching::{
-    dialogue::Dialogue, repls::CommandRepl as _, Dispatcher, HandlerExt as _,
+    dialogue::Dialogue, repls::CommandReplExt as _, Dispatcher, HandlerExt as _,
     MessageFilterExt as _, UpdateFilterExt as _,
 };
 
