@@ -6,7 +6,8 @@ pub use crate::error_handlers::{LoggingErrorHandler, OnError};
 pub use crate::respond;
 
 pub use crate::dispatching::{
-    dialogue::Dialogue, Dispatcher, HandlerExt as _, MessageFilterExt as _, UpdateFilterExt as _,
+    dialogue::Dialogue, repls::CommandReplExt as _, Dispatcher, HandlerExt as _,
+    MessageFilterExt as _, UpdateFilterExt as _,
 };
 
 pub use teloxide_core::{
