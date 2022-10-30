@@ -9,6 +9,9 @@ mod redis_storage;
 #[cfg(feature = "sqlite-storage")]
 mod sqlite_storage;
 
+#[cfg(feature = "rocksdb-storage")]
+mod rocksdb_storage;
+
 use futures::future::BoxFuture;
 use teloxide_core::types::ChatId;
 
@@ -24,6 +27,9 @@ use std::sync::Arc;
 
 #[cfg(feature = "sqlite-storage")]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
+
+#[cfg(feature = "rocksdb-storage")]
+pub use rocksdb_storage::{RocksDbStorage, RocksDbStorageError};
 
 /// A storage with an erased error type.
 pub type ErasedStorage<D> =
@@ -41,10 +47,12 @@ pub type ErasedStorage<D> =
 ///
 /// - [`InMemStorage`] -- a storage based on [`std::collections::HashMap`].
 /// - [`RedisStorage`] -- a Redis-based storage.
+/// - [`RocksDbStorage`] -- a RocksDB-based persistent storage.
 /// - [`SqliteStorage`] -- an SQLite-based persistent storage.
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 /// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
+/// [`RocksDbStorage`]: crate::dispatching::dialogue::RocksDbStorage
 /// [`SqliteStorage`]: crate::dispatching::dialogue::SqliteStorage
 pub trait Storage<D> {
     type Error;
