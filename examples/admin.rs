@@ -60,7 +60,7 @@ async fn main() {
 
     let bot = teloxide::Bot::from_env();
 
-    teloxide::commands_repl(bot, action, Command::ty()).await;
+    Command::repl(bot, action).await;
 }
 
 async fn action(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {

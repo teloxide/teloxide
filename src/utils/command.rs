@@ -235,6 +235,7 @@ pub trait BotCommands: Sized {
     ///
     /// [`commands_repl`]: (crate::repls::commands_repl)
     #[must_use]
+    #[deprecated(note = "Use `CommandReplExt` instead")]
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
