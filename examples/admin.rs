@@ -5,8 +5,8 @@ use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 
 // Derive BotCommands to parse text with a command into this enumeration.
 //
-//  1. rename = "lowercase" turns all the commands into lowercase letters.
-//  2. `description = "..."` specifies a text before all the commands.
+// 1. `rename_rule = "lowercase"` turns all the commands into lowercase letters.
+// 2. `description = "..."` specifies a text before all the commands.
 //
 // That is, you can just call Command::descriptions() to get a description of
 // your commands in this format:
@@ -60,7 +60,7 @@ async fn main() {
 
     let bot = teloxide::Bot::from_env();
 
-    teloxide::commands_repl(bot, action, Command::ty()).await;
+    Command::repl(bot, action).await;
 }
 
 async fn action(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {

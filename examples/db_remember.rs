@@ -91,7 +91,7 @@ async fn got_number(
         }
         Command::Reset => {
             dialogue.reset().await?;
-            bot.send_message(msg.chat.id, "Number resetted.").await?;
+            bot.send_message(msg.chat.id, "Number reset.").await?;
         }
     }
     Ok(())

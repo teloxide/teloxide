@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.11.0"
+version = "0.11.1"
 edition = "2021"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
@@ -19,6 +19,7 @@ webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
 
 sqlite-storage = ["sqlx"]
 redis-storage = ["redis"]
+rocksdb-storage = ["rocksdb"]
 cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
@@ -42,6 +43,7 @@ full = [
     "webhooks-axum",
     "sqlite-storage",
     "redis-storage",
+    "rocksdb-storage",
     "cbor-serializer",
     "bincode-serializer",
     "macros",
@@ -92,6 +94,9 @@ sqlx = { version = "0.6", optional = true, default-features = false, features = 
         "sqlite",
 ] }
 redis = { version = "0.21", features = ["tokio-comp"], optional = true }
+rocksdb = { version = "0.19", optional = true, default-features = false, features = [
+        "lz4",
+] }
 serde_cbor = { version = "0.11", optional = true }
 bincode = { version = "1.3", optional = true }
 axum = { version = "0.5.13", optional = true }

@@ -1,6 +1,22 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.11 -> 0.11.1
+
+### teloxide
+
+We have introduced the new trait `CommandRepl` that replaces the old `commands_repl_(with_listener)` functions:
+
+```diff
+- teloxide::commands_repl(bot, answer, Command::ty())
++ Command::repl(bot, answer)
+```
+
+```diff
+- teloxide::commands_repl_with_listener(bot, answer, listener, Command::ty())
++ Command::repl_with_listener(bot, answer, listener)
+```
+
 ## 0.10 -> 0.11
 
 ### core
@@ -8,12 +24,12 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 Requests can now be `.await`ed directly, without need of `.send()` or `AutoSend`.
 If you previously used `AutoSend` adaptor, you can safely remove it:
 
-```diff,rust
+```diff
 -let bot = Bot::from_env().auto_send();
 +let bot = Bot::from_env();
 ```
 
-```diff,rust
+```diff
 -async fn start(bot: AutoSend<Bot>, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 +async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 ```
@@ -41,7 +57,7 @@ You may need to change code accordingly:
 -let id: i32 = message.id;
 +let id: MessageId = message.id;
 ```
-```diff,rust
+```diff
 let (cid, mid): (ChatId, i32) = get_message_to_delete_from_db();
 -bot.delete_message(cid, mid).await?;
 +bot.delete_message(cid, MessageId(mid)).await?;
@@ -50,7 +66,7 @@ let (cid, mid): (ChatId, i32) = get_message_to_delete_from_db();
 Note that at the same time `MessageId` is now a tuple struct.
 If you've accessed its only field you'll need to change it too:
 
-```diff,rust
+```diff
 -let MessageId { message_id } = bot.copy_message(dst_chat, src_chat, mid).await?;
 +let MessageId(message_id) = bot.copy_message(dst_chat, src_chat, mid).await?;
 save_to_db(message_id);
@@ -64,7 +80,7 @@ See `Sticker` documentation for more information about the new structure.
 
 You can now write `Ok(())` instead of `respond(())` at the end of closures provided to RELPs:
 
-```diff,rust
+```diff
 teloxide::repl(bot, |bot: Bot, msg: Message| async move {
     bot.send_dice(msg.chat.id).await?;
 -    respond(())
@@ -75,11 +91,21 @@ teloxide::repl(bot, |bot: Bot, msg: Message| async move {
 
 This is because REPLs now require the closure to return `RequestError` instead of a generic error type, so type inference works perfectly for a return value. If you use something other than `RequestError`, you can transfer your code to `teloxide::dispatching`, which still permits a generic error type.
 
+"Stop tokens" were refactored, the trait is now removed and the types were renamed:
+
+```diff
+-use teloxide::dispatching::stop_token::{AsyncStopToken, AsyncStopFlag};
++use teloxide::stop::{StopToken, StopFlag, mk_stop_token};
+
+-let (token, flag): (AsyncStopToken, AsyncStopFlag) = AsyncStopToken::new_pair();
++let (token, flag): (StopToken, StopFlag) = mk_stop_token();
+```
+
 ### macros
 
 `parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
 
-```diff,rust
+```diff
 fn custom_parser(input: String) -> Result<(u8,), ParseError> {
     todo!()
 }
@@ -94,7 +120,7 @@ enum Command {
 
 `rename` now only renames a command literally; use `rename_rule` to change the case of a command:
 
-```diff,rust
+```diff
 #[derive(BotCommands)]
 - #[command(rename = "lowercase", description = "These commands are supported:")]
 + #[command(rename_rule = "lowercase", description = "These commands are supported:")]
@@ -193,7 +219,7 @@ In order to make `Dispatcher` implement `Send`, `DispatcherBuilder::{default_han
 
 v0.6 of teloxide introduces a new dispatching model based on the [chain of responsibility pattern]. To use it, you need to replace `prelude` with `prelude2` and `dispatching` with `dispatching2`. Instead of using old REPLs, you should now use `teloxide::repls2`.
 
-The whole design is different than the previous one based on Tokio streams. In this section, we are only to address the most common usage scenarios.
+The whole design is different from the previous one based on Tokio streams. In this section, we are only to address the most common usage scenarios.
 
 First of all, now there are no streams. Instead of using streams, you use [`dptree`], which is a more suitable alternative for our purposes. Thus, if you previously used `Dispatcher::messages_handler`, now you should use `Update::filter_message()`, and so on.
 
@@ -237,7 +263,7 @@ List of changed types:
 
 In teloxide `v0.4` (core `v0.2`) some API methods had wrong return types.
 This made them practically unusable as they've always returned parsing error.
-On the offchance you were using the methods, you may need to adjust types in your code.
+On the off-chance you were using the methods, you may need to adjust types in your code.
 
 List of changed return types:
 - `get_chat_administrators`: `ChatMember` -> `Vec<ChatMember>`
@@ -324,7 +350,7 @@ List of renamed items:
 #### Added `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`}
 
 Previously said bot adaptors were lacking `Clone` implementation. 
-To workaround this issue it was proposed to wrap bot in `Arc`.
+To work around this issue it was proposed to wrap bot in `Arc`.
 Now it's not required, so you can remove the `Arc`:
 
 ```diff

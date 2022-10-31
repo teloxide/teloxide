@@ -225,7 +225,7 @@ where
 ///
 ///     C->>P: next
 ///
-///     P->>T: *Acknolegment of update(5)*
+///     P->>T: *Acknowledgement of update(5)*
 ///     T->>P: ok
 ///
 ///     P->>C: None

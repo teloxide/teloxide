@@ -1,4 +1,4 @@
-> [v0.10 -> v0.11 migration guide >>](MIGRATION_GUIDE.md#010---011)
+> [v0.11 -> v0.11.1 migration guide >>](MIGRATION_GUIDE.md#011---0111)
 
 <div align="center">
   <img src="./ICON.png" width="250"/>
@@ -29,12 +29,13 @@
 [`dptree`]: https://github.com/teloxide/dptree
 [chain of responsibility]: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
 
- - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, and much more.
+ - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, do graceful shutdown, and much more.
 
- - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis], [RocksDB] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
+[RocksDB]: https://rocksdb.org/
 [Sqlite]: https://www.sqlite.org
 
  - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
@@ -72,7 +73,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.11", features = ["macros", "auto-send"] }
+teloxide = { version = "0.11", features = ["macros"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -82,7 +83,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 ### The dices bot
 
-This bot replies with a dice throw to each received message:
+This bot replies with a die throw to each received message:
 
 [[`examples/throw_dice.rs`](examples/throw_dice.rs)]
 
@@ -131,7 +132,7 @@ async fn main() {
 
     let bot = Bot::from_env();
 
-    teloxide::commands_repl(bot, answer, Command::ty()).await;
+    Command::repl(bot, answer).await;
 }
 
 #[derive(BotCommands, Clone)]
@@ -326,7 +327,7 @@ Feel free to propose your own bot to our collection!
  - [`modos189/tg_blackbox_bot`](https://gitlab.com/modos189/tg_blackbox_bot) — Anonymous feedback for your Telegram project.
  - [`0xNima/spacecraft`](https://github.com/0xNima/spacecraft) — Yet another telegram bot to downloading Twitter spaces.
  - [`0xNima/Twideo`](https://github.com/0xNima/Twideo) — Simple Telegram Bot for downloading videos from Twitter via their links.
- - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telgram bot to interface with libgen.
+ - [`mattrighetti/libgen-bot-rs`](https://github.com/mattrighetti/libgen-bot-rs) — Telegram bot to interface with libgen.
  - [`zamazan4ik/npaperbot-telegram`](https://github.com/zamazan4ik/npaperbot-telegram) — Telegram bot for searching via C++ proposals.
 
 <details>

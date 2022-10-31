@@ -91,7 +91,7 @@ pub use teloxide_macros::BotCommands;
 /// Change a prefix for all commands (the default is `/`).
 ///
 ///  3. `#[command(description = "description")]`
-/// Add a sumary description of commands before all commands.
+/// Add a summary description of commands before all commands.
 ///
 ///  4. `#[command(parse_with = "parser")]`
 /// Change the parser of arguments. Possible values:
@@ -115,7 +115,7 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
-///  - `split` - separates a messsage by a given separator (the default is the
+///  - `split` - separates a message by a given separator (the default is the
 ///    space character) and parses each part into the corresponding arguments,
 ///    which must implement [`FromStr`].
 ///
@@ -233,8 +233,9 @@ pub trait BotCommands: Sized {
 
     /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
     ///
-    /// [`commands_repl`]: (crate::repls2::commands_repl)
+    /// [`commands_repl`]: (crate::repls::commands_repl)
     #[must_use]
+    #[deprecated(note = "Use `CommandReplExt` instead")]
     fn ty() -> PhantomData<Self> {
         PhantomData
     }
@@ -412,9 +413,9 @@ where
         return None;
     }
     let mut words = text.split_whitespace();
-    let mut splited = words.next()?[prefix.len()..].split('@');
-    let command = splited.next()?;
-    let bot = splited.next();
+    let mut split = words.next()?[prefix.len()..].split('@');
+    let command = split.next()?;
+    let bot = split.next();
     match bot {
         Some(name) if name.eq_ignore_ascii_case(bot_name.as_ref()) => {}
         None => {}
@@ -485,7 +486,7 @@ impl Display for CommandDescriptions<'_> {
     }
 }
 
-// The rest of tests are integrational due to problems with macro expansion in
+// The rest of tests are integration due to problems with macro expansion in
 // unit tests.
 #[cfg(test)]
 mod tests {
