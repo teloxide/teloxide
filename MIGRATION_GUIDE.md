@@ -91,6 +91,16 @@ teloxide::repl(bot, |bot: Bot, msg: Message| async move {
 
 This is because REPLs now require the closure to return `RequestError` instead of a generic error type, so type inference works perfectly for a return value. If you use something other than `RequestError`, you can transfer your code to `teloxide::dispatching`, which still permits a generic error type.
 
+"Stop tokens" were refactored, the trait is now removed and the types were renamed:
+
+```diff
+-use teloxide::dispatching::stop_token::{AsyncStopToken, AsyncStopFlag};
++use teloxide::stop::{StopToken, StopFlag, mk_stop_token};
+
+-let (token, flag): (AsyncStopToken, AsyncStopFlag) = AsyncStopToken::new_pair();
++let (token, flag): (StopToken, StopFlag) = mk_stop_token();
+```
+
 ### macros
 
 `parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
