@@ -7,12 +7,12 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 We have introduced the new trait `CommandRepl` that replaces the old `commands_repl_(with_listener)` functions:
 
-```diff,rust
+```diff
 - teloxide::commands_repl(bot, answer, Command::ty())
 + Command::repl(bot, answer)
 ```
 
-```diff,rust
+```diff
 - teloxide::commands_repl_with_listener(bot, answer, listener, Command::ty())
 + Command::repl_with_listener(bot, answer, listener)
 ```
@@ -24,12 +24,12 @@ We have introduced the new trait `CommandRepl` that replaces the old `commands_r
 Requests can now be `.await`ed directly, without need of `.send()` or `AutoSend`.
 If you previously used `AutoSend` adaptor, you can safely remove it:
 
-```diff,rust
+```diff
 -let bot = Bot::from_env().auto_send();
 +let bot = Bot::from_env();
 ```
 
-```diff,rust
+```diff
 -async fn start(bot: AutoSend<Bot>, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 +async fn start(bot: Bot, dialogue: MyDialogue, msg: Message) -> HandlerResult {
 ```
@@ -57,7 +57,7 @@ You may need to change code accordingly:
 -let id: i32 = message.id;
 +let id: MessageId = message.id;
 ```
-```diff,rust
+```diff
 let (cid, mid): (ChatId, i32) = get_message_to_delete_from_db();
 -bot.delete_message(cid, mid).await?;
 +bot.delete_message(cid, MessageId(mid)).await?;
@@ -66,7 +66,7 @@ let (cid, mid): (ChatId, i32) = get_message_to_delete_from_db();
 Note that at the same time `MessageId` is now a tuple struct.
 If you've accessed its only field you'll need to change it too:
 
-```diff,rust
+```diff
 -let MessageId { message_id } = bot.copy_message(dst_chat, src_chat, mid).await?;
 +let MessageId(message_id) = bot.copy_message(dst_chat, src_chat, mid).await?;
 save_to_db(message_id);
@@ -80,7 +80,7 @@ See `Sticker` documentation for more information about the new structure.
 
 You can now write `Ok(())` instead of `respond(())` at the end of closures provided to RELPs:
 
-```diff,rust
+```diff
 teloxide::repl(bot, |bot: Bot, msg: Message| async move {
     bot.send_dice(msg.chat.id).await?;
 -    respond(())
@@ -95,7 +95,7 @@ This is because REPLs now require the closure to return `RequestError` instead o
 
 `parse_with` now accepts a Rust _path_ to a custom parser function instead of a string:
 
-```diff,rust
+```diff
 fn custom_parser(input: String) -> Result<(u8,), ParseError> {
     todo!()
 }
@@ -110,7 +110,7 @@ enum Command {
 
 `rename` now only renames a command literally; use `rename_rule` to change the case of a command:
 
-```diff,rust
+```diff
 #[derive(BotCommands)]
 - #[command(rename = "lowercase", description = "These commands are supported:")]
 + #[command(rename_rule = "lowercase", description = "These commands are supported:")]
