@@ -85,7 +85,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 This bot replies with a die throw to each received message:
 
-[[`examples/throw_dice.rs`](examples/throw_dice.rs)]
+[[`examples/throw_dice.rs`](crates/teloxide/examples/throw_dice.rs)]
 
 ```rust,no_run
 use teloxide::prelude::*;
@@ -120,7 +120,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-[[`examples/command.rs`](examples/command.rs)]
+[[`examples/command.rs`](crates/teloxide/examples/command.rs)]
 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
@@ -174,7 +174,7 @@ A dialogue is typically described by an enumeration where each variant is one po
 
 Below is a bot that asks you three questions and then sends the answers back to you:
 
-[[`examples/dialogue.rs`](examples/dialogue.rs)]
+[[`examples/dialogue.rs`](crates/teloxide/examples/dialogue.rs)]
 
 ```rust,ignore
 use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
@@ -285,7 +285,7 @@ async fn receive_location(
     <img src="./media/dialogue.gif" width="420" />
 </div>
 
-[More examples >>](examples/)
+[More examples >>](crates/teloxide/examples/)
 
 ## FAQ
 
@@ -307,11 +307,11 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
+A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](crates/teloxide/examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](crates/teloxide/examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
-A: Yes, see [`examples/purchase.rs`](examples/purchase.rs).
+A: Yes, see [`examples/purchase.rs`](crates/teloxide/examples/purchase.rs).
 
 ## Community bots
 
