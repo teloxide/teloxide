@@ -118,7 +118,7 @@ mod tests {
             ChatId(0),
             [
                 InputMedia::Photo(
-                    InputMediaPhoto::new(InputFile::file("./media/logo.png"))
+                    InputMediaPhoto::new(InputFile::file("../../media/teloxide-core-logo.png"))
                         .caption(CAPTION)
                         .parse_mode(ParseMode::MarkdownV2)
                         .caption_entities(entities()),
@@ -128,10 +128,12 @@ mod tests {
                 ),
                 InputMedia::Animation(
                     InputMediaAnimation::new(InputFile::read(
-                        File::open("./media/example.gif").await.unwrap(),
+                        File::open("../../media/example.gif").await.unwrap(),
                     ))
                     .thumb(InputFile::read(
-                        File::open("./media/logo.png").await.unwrap(),
+                        File::open("../../media/teloxide-core-logo.png")
+                            .await
+                            .unwrap(),
                     ))
                     .duration(17),
                 ),
@@ -153,7 +155,7 @@ mod tests {
         to_form_ref(&payloads::AddStickerToSet::new(
             UserId(0),
             "name",
-            InputSticker::Png(InputFile::file("./media/logo.png")),
+            InputSticker::Png(InputFile::file("../../media/teloxide-core-logo.png")),
             "✈️⚙️",
         ))
         .unwrap()
@@ -163,12 +165,17 @@ mod tests {
     #[tokio::test]
     async fn test_send_animation() {
         to_form_ref(
-            &payloads::SendAnimation::new(ChatId(0), InputFile::file("./media/logo.png"))
-                .caption_entities(entities())
-                .thumb(InputFile::read(
-                    File::open("./media/logo.png").await.unwrap(),
-                ))
-                .allow_sending_without_reply(true),
+            &payloads::SendAnimation::new(
+                ChatId(0),
+                InputFile::file("../../media/teloxide-core-logo.png"),
+            )
+            .caption_entities(entities())
+            .thumb(InputFile::read(
+                File::open("../../media/teloxide-core-logo.png")
+                    .await
+                    .unwrap(),
+            ))
+            .allow_sending_without_reply(true),
         )
         .unwrap()
         .await;

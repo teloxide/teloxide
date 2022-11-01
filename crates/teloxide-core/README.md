@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="media/logo.svg" width="250"/>
+  <img src="../../media/teloxide-core-logo.svg" width="250"/>
 
   <h1>teloxide-core</h1>
   <a href="https://github.com/teloxide/teloxide-core/actions">

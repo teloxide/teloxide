@@ -39,10 +39,10 @@
 // [2]: https://github.com/rust-lang/rustfmt/issues/4787
 // [3]: https://github.com/rust-lang/rust/issues/82768#issuecomment-803935643
 #![cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("features.md")))]
-// https://github.com/teloxide/teloxide/raw/master/logo.svg doesn't work in html_logo_url, I don't know why.
+// https://github.com/teloxide/teloxide/raw/master/media/teloxide-logo.svg doesn't work in html_logo_url, I don't know why.
 #![doc(
-    html_logo_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png",
-    html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/ICON.png"
+    html_logo_url = "https://github.com/teloxide/teloxide/raw/master/media/teloxide-logo.png",
+    html_favicon_url = "https://github.com/teloxide/teloxide/raw/master/teloxide-logo.png"
 )]
 // To properly build docs of this crate run
 // ```console

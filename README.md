@@ -1,7 +1,7 @@
 > [v0.11 -> v0.11.1 migration guide >>](MIGRATION_GUIDE.md#011---0111)
 
 <div align="center">
-  <img src="./ICON.png" width="250"/>
+  <img src="./media/teloxide-logo.png" width="250"/>
   <h1><code>teloxide</code></h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
