@@ -1,0 +1,108 @@
+use std::time::Duration;
+
+use reqwest::{
+    header::{HeaderValue, CONTENT_TYPE},
+    Client, Response,
+};
+use serde::de::DeserializeOwned;
+
+use crate::{net::TelegramResponse, requests::ResponseResult, RequestError};
+
+const DELAY_ON_SERVER_ERROR: Duration = Duration::from_secs(10);
+
+pub async fn request_multipart<T>(
+    client: &Client,
+    token: &str,
+    api_url: reqwest::Url,
+    method_name: &str,
+    params: reqwest::multipart::Form,
+    _timeout_hint: Option<Duration>,
+) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+{
+    // Workaround for [#460]
+    //
+    // Telegram has some methods that return either `Message` or `True` depending on
+    // the used arguments we model this as `...` and `..._inline` pairs of methods.
+    //
+    // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
+    // suffix). This removes the suffix allowing to call the right telegram method.
+    // Note that currently there are no normal telegram methods ending in "Inline",
+    // so this is fine.
+    //
+    // [#460]: https://github.com/teloxide/teloxide/issues/460
+    let method_name = method_name.trim_end_matches("Inline");
+
+    let request = client
+        .post(crate::net::method_url(api_url, token, method_name))
+        .multipart(params)
+        .build()?;
+
+    // FIXME: uncomment this, when reqwest starts setting default timeout early
+    // if let Some(timeout) = timeout_hint {
+    //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    // }
+
+    let response = client.execute(request).await?;
+
+    process_response(response).await
+}
+
+pub async fn request_json<T>(
+    client: &Client,
+    token: &str,
+    api_url: reqwest::Url,
+    method_name: &str,
+    params: Vec<u8>,
+    _timeout_hint: Option<Duration>,
+) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+{
+    // Workaround for [#460]
+    //
+    // Telegram has some methods that return either `Message` or `True` depending on
+    // the used arguments we model this as `...` and `..._inline` pairs of methods.
+    //
+    // Currently inline versions have wrong Payload::NAME (ie with the "Inline"
+    // suffix). This removes the suffix allowing to call the right telegram method.
+    // Note that currently there are no normal telegram methods ending in "Inline",
+    // so this is fine.
+    //
+    // [#460]: https://github.com/teloxide/teloxide/issues/460
+    let method_name = method_name.trim_end_matches("Inline");
+
+    let request = client
+        .post(crate::net::method_url(api_url, token, method_name))
+        .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
+        .body(params)
+        .build()?;
+
+    // FIXME: uncomment this, when reqwest starts setting default timeout early
+    // if let Some(timeout) = timeout_hint {
+    //     *request.timeout_mut().get_or_insert(Duration::ZERO) += timeout;
+    // }
+
+    let response = client.execute(request).await?;
+
+    process_response(response).await
+}
+
+async fn process_response<T>(response: Response) -> ResponseResult<T>
+where
+    T: DeserializeOwned,
+{
+    if response.status().is_server_error() {
+        tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
+    }
+
+    let text = response.text().await?;
+
+    serde_json::from_str::<TelegramResponse<T>>(&text)
+        .map_err(|source| RequestError::InvalidJson {
+            source,
+            raw: text.into(),
+        })?
+        .into()
+}
