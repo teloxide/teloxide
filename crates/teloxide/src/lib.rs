@@ -79,7 +79,7 @@ pub use dispatching::filter_command;
 pub use dptree::{self, case as handler};
 
 #[cfg(all(feature = "nightly", doctest))]
-#[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../../README.md")))]
+#[cfg_attr(feature = "nightly", cfg_attr(feature = "nightly", doc = include_str!("../../../README.md")))]
 enum ReadmeDocTests {}
 
 use teloxide_core::requests::ResponseResult;
