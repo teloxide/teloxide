@@ -5,11 +5,11 @@ edition = "2021"
 description = "An elegant Telegram bots framework for Rust"
 repository = "https://github.com/teloxide/teloxide"
 documentation = "https://docs.rs/teloxide/"
-readme = "README.md"
+readme = "../../README.md"
 keywords = ["teloxide", "telegram", "telegram-bot", "telegram-bot-api"]
 categories = ["web-programming", "api-bindings", "asynchronous"]
 license = "MIT"
-exclude = ["media"]
+exclude = ["media", "README.md"]
 
 [features]
 default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
