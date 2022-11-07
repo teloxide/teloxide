@@ -18,4 +18,4 @@ heck = "0.4.0"
 
 [dev-dependencies]
 # XXX: Do not enable `macros` feature
-teloxide = { git = "https://github.com/teloxide/teloxide.git", rev = "b5e237a8a22f9f987b6e4245b9b6c3ca1f804c19" }
+teloxide = { path = "../teloxide" }
