@@ -72,11 +72,11 @@ where
         Box::pin(async move {
             let key = chat_id.to_le_bytes();
 
-            if self.db.get(&key)?.is_none() {
+            if self.db.get(key)?.is_none() {
                 return Err(RocksDbStorageError::DialogueNotFound);
             }
 
-            self.db.delete(&key).unwrap();
+            self.db.delete(key).unwrap();
 
             Ok(())
         })
@@ -92,7 +92,7 @@ where
                 self.serializer.serialize(&dialogue).map_err(RocksDbStorageError::SerdeError)?;
 
             let key = chat_id.to_le_bytes();
-            self.db.put(&key, &d)?;
+            self.db.put(key, &d)?;
 
             Ok(())
         })
@@ -105,7 +105,7 @@ where
         Box::pin(async move {
             let key = chat_id.to_le_bytes();
             self.db
-                .get(&key)?
+                .get(key)?
                 .map(|d| self.serializer.deserialize(&d).map_err(RocksDbStorageError::SerdeError))
                 .transpose()
         })
