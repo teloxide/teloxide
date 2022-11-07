@@ -131,6 +131,11 @@ name = "sqlite"
 path = "tests/sqlite.rs"
 required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
 
+[[test]]
+name = "rocksdb"
+path = "tests/rocksdb.rs"
+required-features = ["rocksdb-storage", "cbor-serializer", "bincode-serializer"]
+
 [[example]]
 name = "dialogue"
 required-features = ["macros"]
