@@ -101,6 +101,9 @@ pub struct Restricted {
     /// Date when restrictions will be lifted for this user.
     pub until_date: UntilDate,
 
+    /// `true` if the user is a member of the chat at the moment of the request.
+    pub is_member: bool,
+
     /// `true` if the user can send text messages, contacts, locations and
     /// venues.
     pub can_send_messages: bool,
@@ -116,6 +119,19 @@ pub struct Restricted {
     /// `true` if the user is allowed to add web page previews to their
     /// messages.
     pub can_add_web_page_previews: bool,
+
+    /// `true` if the user is allowed to change the chat title, photo
+    /// and other settings.
+    pub can_change_info: bool,
+
+    /// `true` if the user is allowed to invite new users to the chat.
+    pub can_invite_users: bool,
+
+    /// `true` if the user is allowed to pin messages.
+    pub can_pin_messages: bool,
+
+    /// `true` if the user is allowed to send polls.
+    pub can_send_polls: bool,
 }
 
 /// User that was banned in the chat and can't return to it or view chat
@@ -334,17 +350,17 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat
-    /// - is an administrator in the given chat and has the [`can_change_info`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`Administrator::can_change_info`] privilege.
+    /// - is restricted, but does have [`Restricted::can_change_info`] privilege
     /// Returns `false` otherwise.
-    ///
-    /// [`can_change_info`]: Administrator::can_change_info
     #[must_use]
     pub fn can_change_info(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_change_info, .. }) => *can_change_info,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Administrator(Administrator { can_change_info, .. })
+            | Self::Restricted(Restricted { can_change_info, .. }) => *can_change_info,
+            Self::Member | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -437,17 +453,18 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat
-    /// - is an administrator in the given chat and has the [`can_invite_users`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`Administrator::can_invite_users`] privilege.
+    /// - is restricted, but does have [`Restricted::can_invite_users`]
+    ///   privilege
     /// Returns `false` otherwise.
-    ///
-    /// [`can_invite_users`]: Administrator::can_invite_users
     #[must_use]
     pub fn can_invite_users(&self) -> bool {
         match &self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_invite_users, .. }) => *can_invite_users,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Administrator(Administrator { can_invite_users, .. })
+            | Self::Restricted(Restricted { can_invite_users, .. }) => *can_invite_users,
+            Self::Member | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -475,11 +492,11 @@ impl ChatMemberKind {
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat (even if the chat is not a supergroup)
-    /// - is an administrator in the given chat and has the [`can_pin_messages`]
-    ///   privilege.
+    /// - is an administrator in the given chat and has the
+    ///   [`Administrator::can_pin_messages`] privilege.
+    /// - is restricted, but does have [`Restricted::can_pin_messages`]
+    ///   privilege
     /// Returns `false` otherwise.
-    ///
-    /// [`can_pin_messages`]: Administrator::can_pin_messages
     #[must_use]
     pub fn can_pin_messages(&self) -> bool {
         match self {
@@ -487,7 +504,8 @@ impl ChatMemberKind {
             Self::Administrator(Administrator { can_pin_messages, .. }) => {
                 can_pin_messages.unwrap_or_default()
             }
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Restricted(Restricted { can_pin_messages, .. }) => *can_pin_messages,
+            Self::Member | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -588,6 +606,23 @@ impl ChatMemberKind {
             Self::Restricted(Restricted { can_add_web_page_previews, .. }) => {
                 *can_add_web_page_previews
             }
+            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Banned(_) => false,
+        }
+    }
+
+    /// Returns `true` if the user is allowed to send polls.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been banned from the chat
+    /// - is restricted and doesn't have the [`can_send_polls`] right
+    /// Returns `true` otherwise.
+    ///
+    /// [`can_send_polls`]: Restricted::can_send_polls
+    #[must_use]
+    pub fn can_send_polls(&self) -> bool {
+        match &self {
+            Self::Restricted(Restricted { can_send_polls, .. }) => *can_send_polls,
             Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
             Self::Left | Self::Banned(_) => false,
         }
