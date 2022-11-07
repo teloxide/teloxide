@@ -37,10 +37,7 @@ impl<R> From<TelegramResponse<R>> for ResponseResult<R> {
     fn from(this: TelegramResponse<R>) -> ResponseResult<R> {
         match this {
             TelegramResponse::Ok { response, .. } => Ok(response),
-            TelegramResponse::Err {
-                response_parameters: Some(params),
-                ..
-            } => Err(match params {
+            TelegramResponse::Err { response_parameters: Some(params), .. } => Err(match params {
                 ResponseParameters::RetryAfter(i) => RequestError::RetryAfter(i),
                 ResponseParameters::MigrateToChatId(to) => RequestError::MigrateToChatId(to),
             }),
@@ -61,10 +58,7 @@ mod tests {
 
         assert!(matches!(
             val,
-            TelegramResponse::Err {
-                error: ApiError::TerminatedByOtherGetUpdates,
-                ..
-            }
+            TelegramResponse::Err { error: ApiError::TerminatedByOtherGetUpdates, .. }
         ));
     }
 

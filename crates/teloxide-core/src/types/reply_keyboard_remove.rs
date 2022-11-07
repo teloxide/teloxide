@@ -40,10 +40,7 @@ pub struct KeyboardRemove {
 impl KeyboardRemove {
     #[must_use]
     pub const fn new() -> Self {
-        Self {
-            remove_keyboard: True,
-            selective: None,
-        }
+        Self { remove_keyboard: True, selective: None }
     }
 
     #[must_use]

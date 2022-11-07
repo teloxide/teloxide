@@ -28,10 +28,7 @@ impl Me {
     /// Returns the username of the bot.
     #[must_use]
     pub fn username(&self) -> &str {
-        self.user
-            .username
-            .as_deref()
-            .expect("Bots must have usernames")
+        self.user.username.as_deref().expect("Bots must have usernames")
     }
 
     /// Returns a username mention of this bot.
@@ -79,9 +76,6 @@ mod tests {
 
         assert_eq!(me.username(), "SomethingSomethingBot");
         assert_eq!(me.mention(), "@SomethingSomethingBot");
-        assert_eq!(
-            me.tme_url(),
-            "https://t.me/SomethingSomethingBot".parse().unwrap()
-        );
+        assert_eq!(me.tme_url(), "https://t.me/SomethingSomethingBot".parse().unwrap());
     }
 }

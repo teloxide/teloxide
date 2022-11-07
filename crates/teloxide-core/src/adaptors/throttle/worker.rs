@@ -90,12 +90,7 @@ pub(super) struct FreezeUntil {
 // the request that it can be now executed, increase counts, add record to the
 // history.
 pub(super) async fn worker<B>(
-    Settings {
-        mut limits,
-        mut on_queue_full,
-        retry,
-        check_slow_mode,
-    }: Settings,
+    Settings { mut limits, mut on_queue_full, retry, check_slow_mode }: Settings,
     mut rx: mpsc::Receiver<(ChatIdHash, RequestLock)>,
     mut info_rx: mpsc::Receiver<InfoMessage>,
     bot: B,
@@ -117,9 +112,8 @@ pub(super) async fn worker<B>(
 
     let mut rx_is_closed = false;
 
-    let mut last_queue_full = Instant::now()
-        .checked_sub(QUEUE_FULL_DELAY)
-        .unwrap_or_else(Instant::now);
+    let mut last_queue_full =
+        Instant::now().checked_sub(QUEUE_FULL_DELAY).unwrap_or_else(Instant::now);
 
     let (freeze_tx, mut freeze_rx) = mpsc::channel::<FreezeUntil>(1);
 
@@ -214,10 +208,7 @@ pub(super) async fn worker<B>(
 
         // as truncates which is ok since in case of truncation it would always be >=
         // limits.overall_s
-        let used = history
-            .iter()
-            .take_while(|(_, time)| time > &sec_back)
-            .count() as u32;
+        let used = history.iter().take_while(|(_, time)| time > &sec_back).count() as u32;
         let mut allowed = limits.messages_per_sec_overall.saturating_sub(used);
 
         if allowed == 0 {

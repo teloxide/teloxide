@@ -116,11 +116,7 @@ impl InputFile {
     /// Shorthand for `Self { file_name: None, inner, id: default() }`
     /// (private because `InnerFile` iы private implementation detail)
     fn new(inner: InnerFile) -> Self {
-        Self {
-            file_name: None,
-            inner,
-            id: OnceCell::new(),
-        }
+        Self { file_name: None, inner, id: OnceCell::new() }
     }
 
     /// Returns id of this file.
@@ -128,8 +124,7 @@ impl InputFile {
     /// This is used to coordinate with `attach://`.
     pub(crate) fn id(&self) -> &str {
         // FIXME: remove extra alloc
-        self.id
-            .get_or_init(|| uuid::Uuid::new_v4().to_string().into())
+        self.id.get_or_init(|| uuid::Uuid::new_v4().to_string().into())
     }
 
     /// Returns `true` if this file needs an attachment i.e. it's not a file_id
@@ -255,12 +250,7 @@ impl Read {
     fn new(it: Arc<TakeCell<dyn AsyncRead + Send + Unpin>>) -> Self {
         let (tx, rx) = watch::channel(());
 
-        Self {
-            inner: it,
-            buf: Arc::default(),
-            notify: Arc::new(tx),
-            wait: rx,
-        }
+        Self { inner: it, buf: Arc::default(), notify: Arc::new(tx), wait: rx }
     }
 
     pub(crate) async fn into_part(mut self, filename: Cow<'static, str>) -> Part {

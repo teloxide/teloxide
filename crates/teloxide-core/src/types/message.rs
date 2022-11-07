@@ -555,9 +555,7 @@ mod getters {
         #[must_use]
         pub fn author_signature(&self) -> Option<&str> {
             match &self.kind {
-                Common(MessageCommon {
-                    author_signature, ..
-                }) => author_signature.as_deref(),
+                Common(MessageCommon { author_signature, .. }) => author_signature.as_deref(),
                 _ => None,
             }
         }
@@ -711,45 +709,27 @@ mod getters {
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Animation(MediaAnimation {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Animation(MediaAnimation { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Audio(MediaAudio {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Audio(MediaAudio { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Document(MediaDocument {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Document(MediaDocument { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Photo(MediaPhoto {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Photo(MediaPhoto { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Video(MediaVideo {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Video(MediaVideo { caption_entities, .. }),
                     ..
                 })
                 | Common(MessageCommon {
-                    media_kind:
-                        MediaKind::Voice(MediaVoice {
-                            caption_entities, ..
-                        }),
+                    media_kind: MediaKind::Voice(MediaVoice { caption_entities, .. }),
                     ..
                 }) => Some(caption_entities),
                 _ => None,
@@ -978,9 +958,9 @@ mod getters {
         #[must_use]
         pub fn super_group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                SupergroupChatCreated(MessageSupergroupChatCreated {
-                    supergroup_chat_created,
-                }) => Some(*supergroup_chat_created),
+                SupergroupChatCreated(MessageSupergroupChatCreated { supergroup_chat_created }) => {
+                    Some(*supergroup_chat_created)
+                }
                 _ => None,
             }
         }
@@ -988,9 +968,9 @@ mod getters {
         #[must_use]
         pub fn channel_chat_created(&self) -> Option<True> {
             match &self.kind {
-                ChannelChatCreated(MessageChannelChatCreated {
-                    channel_chat_created,
-                }) => Some(*channel_chat_created),
+                ChannelChatCreated(MessageChannelChatCreated { channel_chat_created }) => {
+                    Some(*channel_chat_created)
+                }
                 _ => None,
             }
         }
@@ -999,8 +979,7 @@ mod getters {
         pub fn chat_migration(&self) -> Option<ChatMigration> {
             match &self.kind {
                 Common(MessageCommon {
-                    media_kind: MediaKind::Migration(chat_migration),
-                    ..
+                    media_kind: MediaKind::Migration(chat_migration), ..
                 }) => Some(*chat_migration),
                 _ => None,
             }
@@ -1101,10 +1080,7 @@ mod getters {
         #[must_use]
         pub fn is_automatic_forward(&self) -> bool {
             match &self.kind {
-                Common(MessageCommon {
-                    is_automatic_forward,
-                    ..
-                }) => *is_automatic_forward,
+                Common(MessageCommon { is_automatic_forward, .. }) => *is_automatic_forward,
                 _ => false,
             }
         }
@@ -1112,10 +1088,7 @@ mod getters {
         #[must_use]
         pub fn has_protected_content(&self) -> bool {
             match &self.kind {
-                Common(MessageCommon {
-                    has_protected_content,
-                    ..
-                }) => *has_protected_content,
+                Common(MessageCommon { has_protected_content, .. }) => *has_protected_content,
                 _ => false,
             }
         }
@@ -1250,12 +1223,7 @@ impl Message {
     /// supergroups).
     #[must_use]
     pub fn url_in_thread(&self, thread_starter_msg_id: MessageId) -> Option<Url> {
-        Self::url_in_thread_of(
-            self.chat.id,
-            self.chat.username(),
-            thread_starter_msg_id,
-            self.id,
-        )
+        Self::url_in_thread_of(self.chat.id, self.chat.username(), thread_starter_msg_id, self.id)
     }
 
     /// Produces a direct link to a message in a given thread.
@@ -1300,9 +1268,7 @@ impl Message {
     /// [`parse_caption_entities`]: Message::parse_caption_entities
     #[must_use]
     pub fn parse_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
-        self.text()
-            .zip(self.entities())
-            .map(|(t, e)| MessageEntityRef::parse(t, e))
+        self.text().zip(self.entities()).map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 
     /// Returns message entities that represent text formatting.
@@ -1315,9 +1281,7 @@ impl Message {
     /// [`parse_entities`]: Message::parse_entities
     #[must_use]
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
-        self.caption()
-            .zip(self.caption_entities())
-            .map(|(t, e)| MessageEntityRef::parse(t, e))
+        self.caption().zip(self.caption_entities()).map(|(t, e)| MessageEntityRef::parse(t, e))
     }
 }
 
@@ -1610,10 +1574,7 @@ mod tests {
         let message: Message = from_str(json).unwrap();
 
         assert_eq!(message.chat.id, old);
-        assert_eq!(
-            message.chat_migration(),
-            Some(ChatMigration::To { chat_id: new })
-        );
+        assert_eq!(message.chat_migration(), Some(ChatMigration::To { chat_id: new }));
         assert_eq!(message.migrate_to_chat_id(), Some(new));
 
         // The user who initialized the migration
@@ -1624,10 +1585,7 @@ mod tests {
         let message: Message = from_str(json).unwrap();
 
         assert_eq!(message.chat.id, new);
-        assert_eq!(
-            message.chat_migration(),
-            Some(ChatMigration::From { chat_id: old })
-        );
+        assert_eq!(message.chat_migration(), Some(ChatMigration::From { chat_id: old }));
         assert_eq!(message.migrate_from_chat_id(), Some(old));
 
         // Anonymous bot

@@ -20,10 +20,7 @@ impl BotCommand {
         S1: Into<String>,
         S2: Into<String>,
     {
-        Self {
-            command: command.into(),
-            description: description.into(),
-        }
+        Self { command: command.into(), description: description.into() }
     }
 
     pub fn command<S>(mut self, val: S) -> Self

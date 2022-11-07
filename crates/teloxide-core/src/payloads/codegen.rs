@@ -24,19 +24,12 @@ fn codegen_payloads() {
         let uses = uses(&method);
 
         let method_doc = render_doc(&method.doc, method.sibling.as_deref());
-        let eq_hash_derive = eq_hash_suitable(&method)
-            .then(|| " Eq, Hash,")
-            .unwrap_or("");
+        let eq_hash_derive = eq_hash_suitable(&method).then(|| " Eq, Hash,").unwrap_or("");
         let default_derive = default_needed(&method).then(|| " Default,").unwrap_or("");
 
         let return_ty = method.return_ty.to_string();
 
-        let required = params(
-            method
-                .params
-                .iter()
-                .filter(|p| !matches!(&p.ty, Type::Option(_))),
-        );
+        let required = params(method.params.iter().filter(|p| !matches!(&p.ty, Type::Option(_))));
         let required = match &*required {
             "" => "".to_owned(),
             _ => format!("        required {{\n{required}\n        }}"),
@@ -155,10 +148,8 @@ fn render_doc(doc: &Doc, sibling: Option<&str>) -> String {
     let links = match &doc.md_links {
         links if links.is_empty() => String::new(),
         links => {
-            let l: String = links
-                .iter()
-                .map(|(name, link)| format!("\n    /// [{name}]: {link}"))
-                .collect();
+            let l: String =
+                links.iter().map(|(name, link)| format!("\n    /// [{name}]: {link}")).collect();
 
             format!("\n    ///{l}")
         }
@@ -173,13 +164,7 @@ fn render_doc(doc: &Doc, sibling: Option<&str>) -> String {
         })
         .unwrap_or_default();
 
-    [
-        "    /// ",
-        &doc.md.replace('\n', "\n    /// "),
-        &sibling_note,
-        &links,
-    ]
-    .concat()
+    ["    /// ", &doc.md.replace('\n', "\n    /// "), &sibling_note, &links].concat()
 }
 
 fn eq_hash_suitable(method: &Method) -> bool {
@@ -208,10 +193,7 @@ fn eq_hash_suitable(method: &Method) -> bool {
 }
 
 fn default_needed(method: &Method) -> bool {
-    method
-        .params
-        .iter()
-        .all(|p| matches!(p.ty, Type::Option(_)))
+    method.params.iter().all(|p| matches!(p.ty, Type::Option(_)))
 }
 
 fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
@@ -258,12 +240,8 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
 }
 
 fn multipart_input_file_fields(m: &Method) -> Option<Vec<&str>> {
-    let fields: Vec<_> = m
-        .params
-        .iter()
-        .filter(|&p| ty_is_multiparty(&p.ty))
-        .map(|p| &*p.name)
-        .collect();
+    let fields: Vec<_> =
+        m.params.iter().filter(|&p| ty_is_multiparty(&p.ty)).map(|p| &*p.name).collect();
 
     if fields.is_empty() {
         None

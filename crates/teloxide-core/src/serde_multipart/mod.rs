@@ -99,11 +99,7 @@ mod tests {
     async fn issue_473() {
         to_form_ref(
             &payloads::SendPhoto::new(ChatId(0), InputFile::file_id("0")).caption_entities([
-                MessageEntity {
-                    kind: MessageEntityKind::Url,
-                    offset: 0,
-                    length: 0,
-                },
+                MessageEntity { kind: MessageEntityKind::Url, offset: 0, length: 0 },
             ]),
         )
         .unwrap()
@@ -131,9 +127,7 @@ mod tests {
                         File::open("../../media/example.gif").await.unwrap(),
                     ))
                     .thumb(InputFile::read(
-                        File::open("../../media/teloxide-core-logo.png")
-                            .await
-                            .unwrap(),
+                        File::open("../../media/teloxide-core-logo.png").await.unwrap(),
                     ))
                     .duration(17),
                 ),
@@ -170,11 +164,7 @@ mod tests {
                 InputFile::file("../../media/teloxide-core-logo.png"),
             )
             .caption_entities(entities())
-            .thumb(InputFile::read(
-                File::open("../../media/teloxide-core-logo.png")
-                    .await
-                    .unwrap(),
-            ))
+            .thumb(InputFile::read(File::open("../../media/teloxide-core-logo.png").await.unwrap()))
             .allow_sending_without_reply(true),
         )
         .unwrap()
@@ -185,18 +175,10 @@ mod tests {
         <_>::into_iter([
             MessageEntity::new(MessageEntityKind::Url, 0, 0),
             MessageEntity::new(MessageEntityKind::Pre { language: None }, 0, 0),
-            MessageEntity::new(
-                MessageEntityKind::Pre {
-                    language: Some(String::new()),
-                },
-                0,
-                0,
-            ),
+            MessageEntity::new(MessageEntityKind::Pre { language: Some(String::new()) }, 0, 0),
             MessageEntity::new(MessageEntityKind::Url, 0, 0),
             MessageEntity::new(
-                MessageEntityKind::TextLink {
-                    url: "https://example.com".parse().unwrap(),
-                },
+                MessageEntityKind::TextLink { url: "https://example.com".parse().unwrap() },
                 0,
                 0,
             ),

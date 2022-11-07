@@ -19,13 +19,12 @@ pub(crate) fn fold_attrs<A, R>(
         .filter(|&a| filter(a))
         .flat_map(|attribute| {
             // FIXME: don't allocate here
-            let attrs =
-                match attribute.parse_args_with(|input: &ParseBuffer| {
-                    input.parse_terminated::<_, Token![,]>(Attr::parse)
-                }) {
-                    Ok(ok) => ok,
-                    Err(err) => return vec![Err(err.into())],
-                };
+            let attrs = match attribute.parse_args_with(|input: &ParseBuffer| {
+                input.parse_terminated::<_, Token![,]>(Attr::parse)
+            }) {
+                Ok(ok) => ok,
+                Err(err) => return vec![Err(err.into())],
+            };
 
             attrs.into_iter().map(&parse).collect()
         })
@@ -75,10 +74,7 @@ impl Parse for Attr {
 
 impl Attr {
     pub(crate) fn span(&self) -> Span {
-        self.key
-            .span()
-            .join(self.value.span())
-            .unwrap_or_else(|| self.key.span())
+        self.key.span().join(self.value.span()).unwrap_or_else(|| self.key.span())
     }
 }
 
@@ -99,16 +95,9 @@ impl AttrValue {
     //     })
     // }
 
-    pub fn expect<T>(
-        self,
-        expected: &str,
-        f: impl FnOnce(Self) -> Result<T, Self>,
-    ) -> Result<T> {
+    pub fn expect<T>(self, expected: &str, f: impl FnOnce(Self) -> Result<T, Self>) -> Result<T> {
         f(self).map_err(|this| {
-            compile_error_at(
-                &format!("expected {expected}, found {}", this.descr()),
-                this.span(),
-            )
+            compile_error_at(&format!("expected {expected}, found {}", this.descr()), this.span())
         })
     }
 

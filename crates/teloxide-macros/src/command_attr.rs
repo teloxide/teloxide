@@ -60,19 +60,13 @@ impl CommandAttrs {
                 separator: None,
             },
             |mut this, attr| {
-                fn insert<T>(
-                    opt: &mut Option<(T, Span)>,
-                    x: T,
-                    sp: Span,
-                ) -> Result<()> {
+                fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
                     match opt {
                         slot @ None => {
                             *slot = Some((x, sp));
                             Ok(())
                         }
-                        Some(_) => {
-                            Err(compile_error_at("duplicate attribute", sp))
-                        }
+                        Some(_) => Err(compile_error_at("duplicate attribute", sp)),
                     }
                 }
 
@@ -100,18 +94,16 @@ impl CommandAttr {
         let kind = match &*key.to_string() {
             "prefix" => Prefix(value.expect_string()?),
             "description" => Description(value.expect_string()?),
-            "rename_rule" => RenameRule(
-                value
-                    .expect_string()
-                    .and_then(|r| self::RenameRule::parse(&r))?,
-            ),
+            "rename_rule" => {
+                RenameRule(value.expect_string().and_then(|r| self::RenameRule::parse(&r))?)
+            }
             "rename" => Rename(value.expect_string()?),
             "parse_with" => ParseWith(ParserType::parse(value)?),
             "separator" => Separator(value.expect_string()?),
             _ => {
                 return Err(compile_error_at(
-                    "unexpected attribute name (expected one of `prefix`, \
-                     `description`, `rename`, `parse_with` and `separator`",
+                    "unexpected attribute name (expected one of `prefix`, `description`, \
+                     `rename`, `parse_with` and `separator`",
                     key.span(),
                 ))
             }

@@ -62,42 +62,23 @@ fn many_attributes() {
         Help,
     }
 
-    assert_eq!(
-        DefaultCommands::Start,
-        DefaultCommands::parse("!start", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::descriptions().to_string(),
-        "!start — desc\n/help"
-    );
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("!start", "").unwrap());
+    assert_eq!(DefaultCommands::descriptions().to_string(), "!start — desc\n/help");
 }
 
 #[test]
 fn global_attributes() {
     #[derive(BotCommands, Debug, PartialEq)]
-    #[command(
-        prefix = "!",
-        rename_rule = "lowercase",
-        description = "Bot commands"
-    )]
+    #[command(prefix = "!", rename_rule = "lowercase", description = "Bot commands")]
     enum DefaultCommands {
         #[command(prefix = "/")]
         Start,
         Help,
     }
 
-    assert_eq!(
-        DefaultCommands::Start,
-        DefaultCommands::parse("/start", "MyNameBot").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::Help,
-        DefaultCommands::parse("!help", "MyNameBot").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::descriptions().to_string(),
-        "Bot commands\n\n/start\n!help"
-    );
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/start", "MyNameBot").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("!help", "MyNameBot").unwrap());
+    assert_eq!(DefaultCommands::descriptions().to_string(), "Bot commands\n\n/start\n!help");
 }
 
 #[test]
@@ -153,25 +134,15 @@ fn parse_custom_parser() {
     mod parser {
         use teloxide::utils::command::ParseError;
 
-        pub fn custom_parse_function(
-            s: String,
-        ) -> Result<(u8, String), ParseError> {
+        pub fn custom_parse_function(s: String) -> Result<(u8, String), ParseError> {
             let vec = s.split_whitespace().collect::<Vec<_>>();
             let (left, right) = match vec.as_slice() {
                 [l, r] => (l, r),
-                _ => {
-                    return Err(ParseError::IncorrectFormat(
-                        "might be 2 arguments!".into(),
-                    ))
-                }
+                _ => return Err(ParseError::IncorrectFormat("might be 2 arguments!".into())),
             };
-            left.parse::<u8>().map(|res| (res, (*right).to_string())).map_err(
-                |_| {
-                    ParseError::Custom(
-                        "First argument must be a integer!".to_owned().into(),
-                    )
-                },
-            )
+            left.parse::<u8>().map(|res| (res, (*right).to_string())).map_err(|_| {
+                ParseError::Custom("First argument must be a integer!".to_owned().into())
+            })
         }
     }
 
@@ -253,46 +224,18 @@ fn rename_rules() {
         Foo,
     }
 
-    assert_eq!(
-        DefaultCommands::AaaAaa,
-        DefaultCommands::parse("/aaaaaa", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::BbbBbb,
-        DefaultCommands::parse("/BBBBBB", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::CccCcc,
-        DefaultCommands::parse("/CccCcc", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::DddDdd,
-        DefaultCommands::parse("/dddDdd", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::EeeEee,
-        DefaultCommands::parse("/eee_eee", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::FffFff,
-        DefaultCommands::parse("/FFF_FFF", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::GggGgg,
-        DefaultCommands::parse("/ggg-ggg", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::HhhHhh,
-        DefaultCommands::parse("/HHH-HHH", "").unwrap()
-    );
-    assert_eq!(
-        DefaultCommands::Foo,
-        DefaultCommands::parse("/Bar", "").unwrap()
-    );
+    assert_eq!(DefaultCommands::AaaAaa, DefaultCommands::parse("/aaaaaa", "").unwrap());
+    assert_eq!(DefaultCommands::BbbBbb, DefaultCommands::parse("/BBBBBB", "").unwrap());
+    assert_eq!(DefaultCommands::CccCcc, DefaultCommands::parse("/CccCcc", "").unwrap());
+    assert_eq!(DefaultCommands::DddDdd, DefaultCommands::parse("/dddDdd", "").unwrap());
+    assert_eq!(DefaultCommands::EeeEee, DefaultCommands::parse("/eee_eee", "").unwrap());
+    assert_eq!(DefaultCommands::FffFff, DefaultCommands::parse("/FFF_FFF", "").unwrap());
+    assert_eq!(DefaultCommands::GggGgg, DefaultCommands::parse("/ggg-ggg", "").unwrap());
+    assert_eq!(DefaultCommands::HhhHhh, DefaultCommands::parse("/HHH-HHH", "").unwrap());
+    assert_eq!(DefaultCommands::Foo, DefaultCommands::parse("/Bar", "").unwrap());
 
     assert_eq!(
-        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/\
-         HHH-HHH\n/Bar",
+        "/aaaaaa\n/BBBBBB\n/CccCcc\n/dddDdd\n/eee_eee\n/FFF_FFF\n/ggg-ggg\n/HHH-HHH\n/Bar",
         DefaultCommands::descriptions().to_string()
     );
 }

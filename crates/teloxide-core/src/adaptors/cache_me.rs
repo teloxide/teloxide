@@ -32,10 +32,7 @@ impl<B> CacheMe<B> {
     ///
     /// [`RequesterExt::cache_me`]: crate::requests::RequesterExt::cache_me
     pub fn new(bot: B) -> CacheMe<B> {
-        Self {
-            bot,
-            me: Arc::new(OnceCell::new()),
-        }
+        Self { bot, me: Arc::new(OnceCell::new()) }
     }
 
     /// Allows to access inner bot

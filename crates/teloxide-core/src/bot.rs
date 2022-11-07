@@ -71,9 +71,7 @@ impl Bot {
     where
         S: Into<String>,
     {
-        let client = net::default_reqwest_settings()
-            .build()
-            .expect("Client creation failed");
+        let client = net::default_reqwest_settings().build().expect("Client creation failed");
 
         Self::with_client(token, client)
     }
@@ -98,11 +96,7 @@ impl Bot {
                 .expect("Failed to parse default Telegram bot API url"),
         );
 
-        Self {
-            token,
-            api_url,
-            client,
-        }
+        Self { token, api_url, client }
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_PROXY`

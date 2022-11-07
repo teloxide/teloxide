@@ -36,12 +36,7 @@ pub enum MaskPoint {
 
 impl MaskPosition {
     pub const fn new(point: MaskPoint, x_shift: f64, y_shift: f64, scale: f64) -> Self {
-        Self {
-            point,
-            x_shift,
-            y_shift,
-            scale,
-        }
+        Self { point, x_shift, y_shift, scale }
     }
 
     pub const fn point(mut self, val: MaskPoint) -> Self {

@@ -6,11 +6,7 @@ pub fn patch_schema(mut schema: Schema) -> Schema {
     }
 
     schema.methods.iter_mut().for_each(|method| {
-        method
-            .params
-            .iter_mut()
-            .map(|p| &mut p.name)
-            .for_each(escape_kw);
+        method.params.iter_mut().map(|p| &mut p.name).for_each(escape_kw);
 
         DOC_PATCHES.iter().for_each(|(key, patch)| match key {
             Target::Method(m) => {
@@ -18,10 +14,7 @@ pub fn patch_schema(mut schema: Schema) -> Schema {
                     method.doc.patch(patch, *key);
                 }
             }
-            Target::Field {
-                method_name: m,
-                field_name: f,
-            } => {
+            Target::Field { method_name: m, field_name: f } => {
                 if check(m, &method.names.0) {
                     method
                         .params
@@ -34,10 +27,7 @@ pub fn patch_schema(mut schema: Schema) -> Schema {
                 if check(m, &method.names.0) {
                     method.doc.patch(patch, *key);
 
-                    method
-                        .params
-                        .iter_mut()
-                        .for_each(|p| p.descr.patch(patch, *key))
+                    method.params.iter_mut().for_each(|p| p.descr.patch(patch, *key))
                 }
             }
         });
@@ -164,24 +154,18 @@ static DOC_PATCHES: &[(Target, Patch)] = &[
 
 #[derive(Debug, Clone, Copy)]
 enum Target<'a> {
-    Any {
-        method_name: Option<&'a str>,
-    },
+    Any { method_name: Option<&'a str> },
     Method(Option<&'a str>),
-    Field {
-        method_name: Option<&'a str>,
-        field_name: Option<&'a str>,
-    },
+    Field { method_name: Option<&'a str>, field_name: Option<&'a str> },
 }
 
 impl<'a> Target<'a> {
     fn is_exact(&self) -> bool {
         match self {
             Target::Method(m) => m.is_some(),
-            Target::Field {
-                method_name,
-                field_name,
-            } => method_name.is_some() && field_name.is_some(),
+            Target::Field { method_name, field_name } => {
+                method_name.is_some() && field_name.is_some()
+            }
             Target::Any { method_name: _ } => false,
         }
     }
@@ -208,8 +192,7 @@ impl Doc {
                 }
             }
             Patch::AddLink { name, value } => {
-                self.md_links
-                    .insert((*name).to_owned(), (*value).to_owned());
+                self.md_links.insert((*name).to_owned(), (*value).to_owned());
             }
             // Patch::RemoveLink { name } => drop(self.md_links.remove(*name)),
             // Patch::FullReplace { text, with } => {
@@ -253,9 +236,7 @@ fn intra_links(doc: &mut Doc) {
 
     for repl in repls_t {
         if let Some(value) = doc.md_links.remove(repl.as_str()) {
-            doc.md = doc
-                .md
-                .replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repl));
+            doc.md = doc.md.replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repl));
             doc.md_links.insert(format!("`{}`", repl), value);
         }
     }
@@ -263,9 +244,7 @@ fn intra_links(doc: &mut Doc) {
     for repl in repls_m {
         if let Some(value) = doc.md_links.remove(repl.as_str()) {
             let repln = to_uppercase(&repl);
-            doc.md = doc
-                .md
-                .replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repln));
+            doc.md = doc.md.replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repln));
             doc.md_links.insert(format!("`{}`", repln), value);
         }
     }
@@ -284,21 +263,13 @@ fn to_uppercase(s: &str) -> String {
 
 pub(crate) fn patch_ty(mut schema: Schema) -> Schema {
     // URLs
-    patch_types(
-        &mut schema,
-        Type::String,
-        Type::Url,
-        &[("set_webhook", "url")],
-    );
+    patch_types(&mut schema, Type::String, Type::Url, &[("set_webhook", "url")]);
 
     patch_types(
         &mut schema,
         Type::Option(Box::new(Type::String)),
         Type::Option(Box::new(Type::Url)),
-        &[
-            ("answer_callback_query", "url"),
-            ("send_invoice", "photo_url"),
-        ],
+        &[("answer_callback_query", "url"), ("send_invoice", "photo_url")],
     );
 
     // Dates
@@ -317,10 +288,7 @@ pub(crate) fn patch_ty(mut schema: Schema) -> Schema {
         &mut schema,
         Type::Option(Box::new(Type::i64)),
         Type::Option(Box::new(Type::DateTime)),
-        &[
-            ("create_chat_invite_link", "expire_date"),
-            ("edit_chat_invite_link", "expire_date"),
-        ],
+        &[("create_chat_invite_link", "expire_date"), ("edit_chat_invite_link", "expire_date")],
     );
 
     schema

@@ -303,10 +303,7 @@ pub(crate) mod serde_date_from_unix_timestamp {
     {
         let timestamp = i64::deserialize(deserializer)?;
 
-        Ok(DateTime::from_utc(
-            NaiveDateTime::from_timestamp(timestamp, 0),
-            Utc,
-        ))
+        Ok(DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc))
     }
 }
 
@@ -348,10 +345,7 @@ pub(crate) mod option_url_from_string {
 
             let json = r#"{"url":"https://github.com/token"}"#;
             let url: Struct = serde_json::from_str(json).unwrap();
-            assert_eq!(
-                url.url,
-                Some(Url::from_str("https://github.com/token").unwrap())
-            );
+            assert_eq!(url.url, Some(Url::from_str("https://github.com/token").unwrap()));
             assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
         }
     }

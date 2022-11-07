@@ -24,9 +24,7 @@ impl<'a, E> ErasedRequester<'a, E> {
     where
         B: Requester<Err = E> + 'a,
     {
-        Self {
-            inner: Arc::new(requester),
-        }
+        Self { inner: Arc::new(requester) }
     }
 }
 
@@ -39,9 +37,7 @@ impl<E> std::fmt::Debug for ErasedRequester<'_, E> {
 // NB. hand-written impl to avoid `E: Clone` bound
 impl<E> Clone for ErasedRequester<'_, E> {
     fn clone(&self) -> Self {
-        Self {
-            inner: Arc::clone(&self.inner),
-        }
+        Self { inner: Arc::clone(&self.inner) }
     }
 }
 
@@ -54,9 +50,7 @@ pub struct ErasedRequest<'a, T, E> {
 // `T: Payload` required b/c of <https://github.com/rust-lang/rust/issues/102185>
 impl<'a, T: Payload, E> ErasedRequest<'a, T, E> {
     pub(crate) fn erase(request: impl Request<Payload = T, Err = E> + 'a) -> Self {
-        Self {
-            inner: Box::new(request),
-        }
+        Self { inner: Box::new(request) }
     }
 }
 

@@ -104,9 +104,7 @@ mod tests {
     /// Test that `ChatId` is serialized as the underlying integer
     #[test]
     fn deser() {
-        let chat_id = S {
-            chat_id: ChatId(0xAA),
-        };
+        let chat_id = S { chat_id: ChatId(0xAA) };
         let json = r#"{"chat_id":170}"#;
 
         #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -120,10 +118,7 @@ mod tests {
 
     #[test]
     fn chonky_user_id_to_bare() {
-        assert!(matches!(
-            ChatId(5298363099).to_bare(),
-            BareChatId::User(UserId(5298363099))
-        ));
+        assert!(matches!(ChatId(5298363099).to_bare(), BareChatId::User(UserId(5298363099))));
     }
 
     #[test]
@@ -137,19 +132,8 @@ mod tests {
         }
 
         // Somewhat random numbers
-        let ids = [
-            1,
-            4,
-            17,
-            34,
-            51,
-            777000,
-            1000000,
-            617136926,
-            1666111087,
-            1 << 20,
-            (1 << 35) | 123456,
-        ];
+        let ids =
+            [1, 4, 17, 34, 51, 777000, 1000000, 617136926, 1666111087, 1 << 20, (1 << 35) | 123456];
 
         // rust 2021 when :(
         ids.iter().copied().for_each(assert_identity);

@@ -45,12 +45,7 @@ pub struct InputMediaPhoto {
 
 impl InputMediaPhoto {
     pub const fn new(media: InputFile) -> Self {
-        Self {
-            media,
-            caption: None,
-            parse_mode: None,
-            caption_entities: None,
-        }
+        Self { media, caption: None, parse_mode: None, caption_entities: None }
     }
 
     pub fn media(mut self, val: InputFile) -> Self {

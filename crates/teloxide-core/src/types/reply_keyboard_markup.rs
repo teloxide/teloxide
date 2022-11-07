@@ -55,11 +55,7 @@ impl KeyboardMarkup {
         K::Item: IntoIterator<Item = KeyboardButton>,
     {
         Self {
-            keyboard: keyboard
-                .into_iter()
-                .map(<_>::into_iter)
-                .map(<_>::collect)
-                .collect(),
+            keyboard: keyboard.into_iter().map(<_>::into_iter).map(<_>::collect).collect(),
             resize_keyboard: None,
             one_time_keyboard: None,
             input_field_placeholder: None,

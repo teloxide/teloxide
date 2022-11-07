@@ -61,9 +61,7 @@ mod tests {
     /// Test that `UserId` is serialized as the underlying integer
     #[test]
     fn deser() {
-        let user_id = S {
-            user_id: UserId(17),
-        };
+        let user_id = S { user_id: UserId(17) };
         let json = r#"{"user_id":17}"#;
 
         #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]

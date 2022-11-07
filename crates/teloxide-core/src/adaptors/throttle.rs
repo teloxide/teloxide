@@ -88,10 +88,7 @@ impl<B> Throttle<B> {
         B: Requester + Clone,
         B::Err: AsResponseParameters,
     {
-        let settings = Settings {
-            limits,
-            ..<_>::default()
-        };
+        let settings = Settings { limits, ..<_>::default() };
         Self::with_settings(bot, settings)
     }
 
@@ -108,11 +105,7 @@ impl<B> Throttle<B> {
         let (info_tx, info_rx) = mpsc::channel(2);
 
         let worker = worker(settings, rx, info_rx, bot.clone());
-        let this = Self {
-            bot,
-            queue: tx,
-            info_tx,
-        };
+        let this = Self { bot, queue: tx, info_tx };
 
         (this, worker)
     }
@@ -164,10 +157,7 @@ impl<B> Throttle<B> {
 
         let (tx, rx) = oneshot::channel();
 
-        self.info_tx
-            .send(InfoMessage::GetLimits { response: tx })
-            .await
-            .expect(WORKER_DIED);
+        self.info_tx.send(InfoMessage::GetLimits { response: tx }).await.expect(WORKER_DIED);
 
         rx.await.expect(WORKER_DIED)
     }
@@ -178,10 +168,7 @@ impl<B> Throttle<B> {
     pub async fn set_limits(&self, new: Limits) {
         let (tx, rx) = oneshot::channel();
 
-        self.info_tx
-            .send(InfoMessage::SetLimits { new, response: tx })
-            .await
-            .ok();
+        self.info_tx.send(InfoMessage::SetLimits { new, response: tx }).await.ok();
 
         rx.await.ok();
     }

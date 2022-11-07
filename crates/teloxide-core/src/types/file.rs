@@ -114,11 +114,7 @@ mod tests {
 
         assert_eq!(
             file,
-            FileMeta {
-                id: "FILE_ID".to_owned(),
-                unique_id: "FILE_UNIQUE_ID".to_owned(),
-                size: 42,
-            }
+            FileMeta { id: "FILE_ID".to_owned(), unique_id: "FILE_UNIQUE_ID".to_owned(), size: 42 }
         );
     }
 

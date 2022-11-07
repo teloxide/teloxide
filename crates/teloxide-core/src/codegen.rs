@@ -26,9 +26,7 @@ fn ensure_rustfmt(sh: &Shell) {
     // FIXME(waffle): find a better way to set toolchain
     let toolchain = "nightly-2022-09-23";
 
-    let version = cmd!(sh, "rustup run {toolchain} rustfmt --version")
-        .read()
-        .unwrap_or_default();
+    let version = cmd!(sh, "rustup run {toolchain} rustfmt --version").read().unwrap_or_default();
 
     if !version.contains("nightly") {
         panic!(
@@ -81,12 +79,7 @@ pub fn ensure_files_contents<'a>(
     let mut err_count = 0;
 
     for (path, contents) in files_and_contents {
-        let mut file = fs::File::options()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open(path)
-            .unwrap();
+        let mut file = fs::File::options().read(true).write(true).create(true).open(path).unwrap();
         let mut old_contents = String::with_capacity(contents.len());
         file.read_to_string(&mut old_contents).unwrap();
 
@@ -146,28 +139,19 @@ pub fn replace_block(path: &Path, title: &str, new: &str) -> String {
     }
 
     let start_offset = match &*starts {
-        [] => panic!(
-            "Coulnd't find start of block {title} in {p}",
-            p = path.display()
-        ),
+        [] => panic!("Coulnd't find start of block {title} in {p}", p = path.display()),
         [offset] => offset.end,
         [..] => panic!(),
     };
 
     let end_offset = match &*ends {
-        [] => panic!(
-            "Coulnd't find end of block {title} in {p}",
-            p = path.display()
-        ),
+        [] => panic!("Coulnd't find end of block {title} in {p}", p = path.display()),
         [offset] => offset.start,
         [..] => panic!(),
     };
 
     if end_offset < start_offset {
-        panic!(
-            "End of the {title} block is located before the start in {p}",
-            p = path.display()
-        );
+        panic!("End of the {title} block is located before the start in {p}", p = path.display());
     }
 
     format!("{}{}{}", &file[..start_offset], new, &file[end_offset..])

@@ -3,8 +3,7 @@
 use crate::error::{compile_error, Result};
 
 use heck::{
-    ToKebabCase, ToLowerCamelCase, ToPascalCase, ToShoutyKebabCase,
-    ToShoutySnakeCase, ToSnakeCase,
+    ToKebabCase, ToLowerCamelCase, ToPascalCase, ToShoutyKebabCase, ToShoutySnakeCase, ToSnakeCase,
 };
 
 #[derive(Copy, Clone, Debug)]
@@ -65,10 +64,9 @@ impl RenameRule {
             "identity" => Identity,
             invalid => {
                 return Err(compile_error(format!(
-                    "invalid rename rule `{invalid}` (supported rules: \
-                     `lowercase`, `UPPERCASE`, `PascalCase`, `camelCase`, \
-                     `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`, \
-                     `SCREAMING-KEBAB-CASE` and `identity`)"
+                    "invalid rename rule `{invalid}` (supported rules: `lowercase`, `UPPERCASE`, \
+                     `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, \
+                     `kebab-case`, `SCREAMING-KEBAB-CASE` and `identity`)"
                 )))
             }
         };

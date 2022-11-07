@@ -205,35 +205,20 @@ impl Chat {
 
     #[must_use]
     pub fn is_group(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Group(_),
-                ..
-            })
-        )
+        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
     }
 
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
         matches!(
             self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Supergroup(_),
-                ..
-            })
+            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
         )
     }
 
     #[must_use]
     pub fn is_channel(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic {
-                kind: PublicChatKind::Channel(_),
-                ..
-            })
-        )
+        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
     }
 
     #[must_use]

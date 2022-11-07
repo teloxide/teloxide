@@ -21,10 +21,7 @@ impl<B> DefaultParseMode<B> {
     ///
     /// [`RequesterExt::parse_mode`]: crate::requests::RequesterExt::parse_mode
     pub fn new(bot: B, parse_mode: ParseMode) -> Self {
-        Self {
-            bot,
-            mode: parse_mode,
-        }
+        Self { bot, mode: parse_mode }
     }
 
     /// Allows to access the inner bot.

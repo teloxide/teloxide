@@ -324,9 +324,7 @@ impl ChatMemberKind {
     pub fn can_manage_chat(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_manage_chat, ..
-            }) => *can_manage_chat,
+            Self::Administrator(Administrator { can_manage_chat, .. }) => *can_manage_chat,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => true,
         }
     }
@@ -345,9 +343,7 @@ impl ChatMemberKind {
     pub fn can_change_info(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_change_info, ..
-            }) => *can_change_info,
+            Self::Administrator(Administrator { can_change_info, .. }) => *can_change_info,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -365,9 +361,9 @@ impl ChatMemberKind {
     pub fn can_post_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_post_messages, ..
-            }) => can_post_messages.unwrap_or_default(),
+            Self::Administrator(Administrator { can_post_messages, .. }) => {
+                can_post_messages.unwrap_or_default()
+            }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -386,9 +382,9 @@ impl ChatMemberKind {
     pub fn can_edit_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_edit_messages, ..
-            }) => can_edit_messages.unwrap_or_default(),
+            Self::Administrator(Administrator { can_edit_messages, .. }) => {
+                can_edit_messages.unwrap_or_default()
+            }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -406,10 +402,7 @@ impl ChatMemberKind {
     pub fn can_delete_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_delete_messages,
-                ..
-            }) => *can_delete_messages,
+            Self::Administrator(Administrator { can_delete_messages, .. }) => *can_delete_messages,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -427,10 +420,9 @@ impl ChatMemberKind {
     pub fn can_manage_video_chats(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_manage_video_chats,
-                ..
-            }) => *can_manage_video_chats,
+            Self::Administrator(Administrator { can_manage_video_chats, .. }) => {
+                *can_manage_video_chats
+            }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -454,9 +446,7 @@ impl ChatMemberKind {
     pub fn can_invite_users(&self) -> bool {
         match &self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_invite_users, ..
-            }) => *can_invite_users,
+            Self::Administrator(Administrator { can_invite_users, .. }) => *can_invite_users,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -474,10 +464,9 @@ impl ChatMemberKind {
     pub fn can_restrict_members(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_restrict_members,
-                ..
-            }) => *can_restrict_members,
+            Self::Administrator(Administrator { can_restrict_members, .. }) => {
+                *can_restrict_members
+            }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -495,9 +484,9 @@ impl ChatMemberKind {
     pub fn can_pin_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_pin_messages, ..
-            }) => can_pin_messages.unwrap_or_default(),
+            Self::Administrator(Administrator { can_pin_messages, .. }) => {
+                can_pin_messages.unwrap_or_default()
+            }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -518,10 +507,7 @@ impl ChatMemberKind {
     pub fn can_promote_members(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator {
-                can_promote_members,
-                ..
-            }) => *can_promote_members,
+            Self::Administrator(Administrator { can_promote_members, .. }) => *can_promote_members,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -541,9 +527,7 @@ impl ChatMemberKind {
     #[must_use]
     pub fn can_send_messages(&self) -> bool {
         match &self {
-            Self::Restricted(Restricted {
-                can_send_messages, ..
-            }) => *can_send_messages,
+            Self::Restricted(Restricted { can_send_messages, .. }) => *can_send_messages,
             Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
             Self::Left | Self::Banned(_) => false,
         }
@@ -561,10 +545,9 @@ impl ChatMemberKind {
     #[must_use]
     pub fn can_send_media_messages(&self) -> bool {
         match &self {
-            Self::Restricted(Restricted {
-                can_send_media_messages,
-                ..
-            }) => *can_send_media_messages,
+            Self::Restricted(Restricted { can_send_media_messages, .. }) => {
+                *can_send_media_messages
+            }
             Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
             Self::Left | Self::Banned(_) => false,
         }
@@ -582,10 +565,9 @@ impl ChatMemberKind {
     #[must_use]
     pub fn can_send_other_messages(&self) -> bool {
         match &self {
-            Self::Restricted(Restricted {
-                can_send_other_messages,
-                ..
-            }) => *can_send_other_messages,
+            Self::Restricted(Restricted { can_send_other_messages, .. }) => {
+                *can_send_other_messages
+            }
             Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
             Self::Left | Self::Banned(_) => false,
         }
@@ -603,10 +585,9 @@ impl ChatMemberKind {
     #[must_use]
     pub fn can_add_web_page_previews(&self) -> bool {
         match &self {
-            Self::Restricted(Restricted {
-                can_add_web_page_previews,
-                ..
-            }) => *can_add_web_page_previews,
+            Self::Restricted(Restricted { can_add_web_page_previews, .. }) => {
+                *can_add_web_page_previews
+            }
             Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
             Self::Left | Self::Banned(_) => false,
         }

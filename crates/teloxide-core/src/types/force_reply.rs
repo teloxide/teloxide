@@ -35,11 +35,7 @@ pub struct ForceReply {
 impl ForceReply {
     #[must_use]
     pub const fn new() -> Self {
-        Self {
-            force_reply: True,
-            input_field_placeholder: None,
-            selective: None,
-        }
+        Self { force_reply: True, input_field_placeholder: None, selective: None }
     }
 
     pub fn input_field_placeholder<T>(mut self, val: T) -> Self

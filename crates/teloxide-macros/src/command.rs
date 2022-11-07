@@ -1,6 +1,6 @@
 use crate::{
-    command_attr::CommandAttrs, command_enum::CommandEnum,
-    error::compile_error_at, fields_parse::ParserType, Result,
+    command_attr::CommandAttrs, command_enum::CommandEnum, error::compile_error_at,
+    fields_parse::ParserType, Result,
 };
 
 pub(crate) struct Command {
@@ -43,13 +43,9 @@ impl Command {
             (None, None) => global_options.rename_rule.apply(name),
         };
 
-        let prefix = prefix
-            .map(|(p, _)| p)
-            .unwrap_or_else(|| global_options.prefix.clone());
+        let prefix = prefix.map(|(p, _)| p).unwrap_or_else(|| global_options.prefix.clone());
         let description = description.map(|(d, _)| d);
-        let parser = parser
-            .map(|(p, _)| p)
-            .unwrap_or_else(|| global_options.parser_type.clone());
+        let parser = parser.map(|(p, _)| p).unwrap_or_else(|| global_options.parser_type.clone());
 
         Ok(Self { prefix, description, parser, name })
     }

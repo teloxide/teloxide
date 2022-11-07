@@ -62,10 +62,7 @@ impl Serializer for MultipartSerializer {
     type SerializeStructVariant = Impossible<Self::Ok, Self::Error>;
 
     fn serialize_map(self, _: Option<usize>) -> Result<Self::SerializeMap, Self::Error> {
-        Ok(MultipartMapSerializer {
-            form: Form::new(),
-            key: None,
-        })
+        Ok(MultipartMapSerializer { form: Form::new(), key: None })
     }
 
     fn serialize_struct(
@@ -266,10 +263,7 @@ impl SerializeMap for MultipartMapSerializer {
     where
         T: Serialize,
     {
-        let key = self
-            .key
-            .take()
-            .expect("Value serialized before key or key is not string");
+        let key = self.key.take().expect("Value serialized before key or key is not string");
 
         let part = value.serialize(PartSerializer {})?;
 
@@ -373,17 +367,11 @@ impl Serializer for PartSerializer {
         _: &'static str,
         _: usize,
     ) -> Result<Self::SerializeStruct, Self::Error> {
-        Ok(JsonPartSerializer {
-            buf: String::new(),
-            state: PartSerializerStructState::Empty,
-        })
+        Ok(JsonPartSerializer { buf: String::new(), state: PartSerializerStructState::Empty })
     }
 
     fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
-        Ok(JsonPartSerializer {
-            buf: String::new(),
-            state: PartSerializerStructState::Empty,
-        })
+        Ok(JsonPartSerializer { buf: String::new(), state: PartSerializerStructState::Empty })
     }
 
     // Unimplemented

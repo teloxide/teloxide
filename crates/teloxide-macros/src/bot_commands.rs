@@ -1,6 +1,6 @@
 use crate::{
-    command::Command, command_enum::CommandEnum, compile_error,
-    fields_parse::impl_parse_args, unzip::Unzip, Result,
+    command::Command, command_enum::CommandEnum, compile_error, fields_parse::impl_parse_args,
+    unzip::Unzip, Result,
 };
 
 use proc_macro2::TokenStream;
@@ -15,17 +15,12 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
         .variants
         .iter()
         .map(|variant| {
-            let command = Command::new(
-                &variant.ident.to_string(),
-                &variant.attrs,
-                &command_enum,
-            )?;
+            let command = Command::new(&variant.ident.to_string(), &variant.attrs, &command_enum)?;
 
             let variant_name = &variant.ident;
             let self_variant = quote! { Self::#variant_name };
 
-            let parse =
-                impl_parse_args(&variant.fields, self_variant, &command.parser);
+            let parse = impl_parse_args(&variant.fields, self_variant, &command.parser);
 
             Ok((parse, command))
         })
@@ -48,14 +43,11 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
 }
 
 fn impl_commands(infos: &[Command]) -> proc_macro2::TokenStream {
-    let commands = infos
-        .iter()
-        .filter(|command| command.description_is_enabled())
-        .map(|command| {
-            let c = command.get_prefixed_command();
-            let d = command.description.as_deref().unwrap_or_default();
-            quote! { BotCommand::new(#c,#d) }
-        });
+    let commands = infos.iter().filter(|command| command.description_is_enabled()).map(|command| {
+        let c = command.get_prefixed_command();
+        let d = command.description.as_deref().unwrap_or_default();
+        quote! { BotCommand::new(#c,#d) }
+    });
 
     quote! {
         fn bot_commands() -> Vec<teloxide::types::BotCommand> {
@@ -65,10 +57,7 @@ fn impl_commands(infos: &[Command]) -> proc_macro2::TokenStream {
     }
 }
 
-fn impl_descriptions(
-    infos: &[Command],
-    global: &CommandEnum,
-) -> proc_macro2::TokenStream {
+fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::TokenStream {
     let command_descriptions = infos
         .iter()
         .filter(|command| command.description_is_enabled())

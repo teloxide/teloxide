@@ -289,10 +289,7 @@ impl TryFrom<StickerFormatRaw> for StickerFormat {
     type Error = &'static str;
 
     fn try_from(
-        StickerFormatRaw {
-            is_animated,
-            is_video,
-        }: StickerFormatRaw,
+        StickerFormatRaw { is_animated, is_video }: StickerFormatRaw,
     ) -> Result<Self, Self::Error> {
         let ret = match (is_animated, is_video) {
             (false, false) => Self::Raster,
@@ -308,18 +305,9 @@ impl TryFrom<StickerFormatRaw> for StickerFormat {
 impl From<StickerFormat> for StickerFormatRaw {
     fn from(kind: StickerFormat) -> Self {
         match kind {
-            StickerFormat::Raster => Self {
-                is_animated: false,
-                is_video: false,
-            },
-            StickerFormat::Animated => Self {
-                is_animated: true,
-                is_video: false,
-            },
-            StickerFormat::Video => Self {
-                is_animated: false,
-                is_video: true,
-            },
+            StickerFormat::Raster => Self { is_animated: false, is_video: false },
+            StickerFormat::Animated => Self { is_animated: true, is_video: false },
+            StickerFormat::Video => Self { is_animated: false, is_video: true },
         }
     }
 }

@@ -100,9 +100,6 @@ where
     let text = response.text().await?;
 
     serde_json::from_str::<TelegramResponse<T>>(&text)
-        .map_err(|source| RequestError::InvalidJson {
-            source,
-            raw: text.into(),
-        })?
+        .map_err(|source| RequestError::InvalidJson { source, raw: text.into() })?
         .into()
 }

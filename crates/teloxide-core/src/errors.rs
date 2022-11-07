@@ -110,10 +110,9 @@ pub enum ApiError {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::payloads::EditMessageText
-    #[serde(
-        rename = "Bad Request: message is not modified: specified new message content and reply \
-                  markup are exactly the same as a current content and reply markup of the message"
-    )]
+    #[serde(rename = "Bad Request: message is not modified: specified new message content and \
+                      reply markup are exactly the same as a current content and reply markup \
+                      of the message")]
     #[error(
         "Bad Request: message is not modified: specified new message content and reply markup are \
          exactly the same as a current content and reply markup of the message"
@@ -390,10 +389,8 @@ pub enum ApiError {
     /// 1. [`AnswerCallbackQuery`]
     ///
     /// [`AnswerCallbackQuery`]: crate::payloads::AnswerCallbackQuery
-    #[serde(
-        rename = "Bad Request: query is too old and response timeout expired or query id is \
-                  invalid"
-    )]
+    #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is \
+                      invalid")]
     #[error("Bad Request: query is too old and response timeout expired or query id is invalid")]
     InvalidQueryId,
 
@@ -424,10 +421,8 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(
-        rename = "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in \
-                  the inline keyboard"
-    )]
+    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are \
+                      unallowed in the inline keyboard")]
     #[error(
         "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in the \
          inline keyboard"
@@ -614,10 +609,8 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(
-        rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or \
-                  8443"
-    )]
+    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 \
+                      or 8443")]
     #[error("Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or 8443")]
     BadWebhookPort,
 
@@ -627,9 +620,7 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(
-        rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known"
-    )]
+    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
     #[error("Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
     UnknownHost,
 
@@ -732,10 +723,8 @@ pub enum ApiError {
     /// 1. [`GetUpdates`]
     ///
     /// [`GetUpdates`]: crate::payloads::GetUpdates
-    #[serde(
-        rename = "Conflict: terminated by other getUpdates request; make sure that only one bot \
-                  instance is running"
-    )]
+    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one \
+                      bot instance is running")]
     #[error(
         "Conflict: terminated by other getUpdates request; make sure that only one bot instance \
          is running"

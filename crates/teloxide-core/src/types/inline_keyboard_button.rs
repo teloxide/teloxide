@@ -96,10 +96,7 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self {
-            text: text.into(),
-            kind,
-        }
+        Self { text: text.into(), kind }
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
@@ -130,10 +127,7 @@ impl InlineKeyboardButton {
         T: Into<String>,
         C: Into<String>,
     {
-        Self::new(
-            text,
-            InlineKeyboardButtonKind::CallbackData(callback_data.into()),
-        )
+        Self::new(text, InlineKeyboardButtonKind::CallbackData(callback_data.into()))
     }
 
     /// Constructor for `InlineKeyboardButton` with [`WebApp`] kind.
@@ -154,10 +148,7 @@ impl InlineKeyboardButton {
         T: Into<String>,
         Q: Into<String>,
     {
-        Self::new(
-            text,
-            InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()),
-        )
+        Self::new(text, InlineKeyboardButtonKind::SwitchInlineQuery(switch_inline_query.into()))
     }
 
     /// Constructor for `InlineKeyboardButton` with

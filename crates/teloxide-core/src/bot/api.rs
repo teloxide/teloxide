@@ -114,10 +114,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::SendAnimation::new(
-            self.clone(),
-            payloads::SendAnimation::new(chat_id, animation),
-        )
+        Self::SendAnimation::new(self.clone(), payloads::SendAnimation::new(chat_id, animation))
     }
 
     type SendVoice = MultipartRequest<payloads::SendVoice>;
@@ -135,10 +132,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::SendVideoNote::new(
-            self.clone(),
-            payloads::SendVideoNote::new(chat_id, video_note),
-        )
+        Self::SendVideoNote::new(self.clone(), payloads::SendVideoNote::new(chat_id, video_note))
     }
 
     type SendMediaGroup = MultipartRequest<payloads::SendMediaGroup>;
@@ -276,10 +270,7 @@ impl Requester for Bot {
         Q: Into<String>,
         O: IntoIterator<Item = String>,
     {
-        Self::SendPoll::new(
-            self.clone(),
-            payloads::SendPoll::new(chat_id, question, options),
-        )
+        Self::SendPoll::new(self.clone(), payloads::SendPoll::new(chat_id, question, options))
     }
 
     type SendDice = JsonRequest<payloads::SendDice>;
@@ -325,10 +316,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::KickChatMember::new(
-            self.clone(),
-            payloads::KickChatMember::new(chat_id, user_id),
-        )
+        Self::KickChatMember::new(self.clone(), payloads::KickChatMember::new(chat_id, user_id))
     }
 
     type BanChatMember = JsonRequest<payloads::BanChatMember>;
@@ -346,10 +334,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::UnbanChatMember::new(
-            self.clone(),
-            payloads::UnbanChatMember::new(chat_id, user_id),
-        )
+        Self::UnbanChatMember::new(self.clone(), payloads::UnbanChatMember::new(chat_id, user_id))
     }
 
     type RestrictChatMember = JsonRequest<payloads::RestrictChatMember>;
@@ -568,10 +553,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::PinChatMessage::new(
-            self.clone(),
-            payloads::PinChatMessage::new(chat_id, message_id),
-        )
+        Self::PinChatMessage::new(self.clone(), payloads::PinChatMessage::new(chat_id, message_id))
     }
 
     type UnpinChatMessage = JsonRequest<payloads::UnpinChatMessage>;
@@ -892,10 +874,7 @@ impl Requester for Bot {
     where
         C: Into<Recipient>,
     {
-        Self::DeleteMessage::new(
-            self.clone(),
-            payloads::DeleteMessage::new(chat_id, message_id),
-        )
+        Self::DeleteMessage::new(self.clone(), payloads::DeleteMessage::new(chat_id, message_id))
     }
 
     type SendSticker = MultipartRequest<payloads::SendSticker>;
@@ -1131,10 +1110,7 @@ impl Requester for Bot {
     where
         G: Into<String>,
     {
-        Self::SendGame::new(
-            self.clone(),
-            payloads::SendGame::new(chat_id, game_short_name),
-        )
+        Self::SendGame::new(self.clone(), payloads::SendGame::new(chat_id, game_short_name))
     }
 
     type SetGameScore = JsonRequest<payloads::SetGameScore>;

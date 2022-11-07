@@ -161,10 +161,9 @@ impl<'de> Deserialize<'de> for UpdateKind {
 
                 if let Ok(Some(k)) = k {
                     let res = match k {
-                        "message" => map
-                            .next_value::<Message>()
-                            .map(UpdateKind::Message)
-                            .map_err(|_| false),
+                        "message" => {
+                            map.next_value::<Message>().map(UpdateKind::Message).map_err(|_| false)
+                        }
                         "edited_message" => map
                             .next_value::<Message>()
                             .map(UpdateKind::EditedMessage)
@@ -197,10 +196,7 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<PreCheckoutQuery>()
                             .map(UpdateKind::PreCheckoutQuery)
                             .map_err(|_| false),
-                        "poll" => map
-                            .next_value::<Poll>()
-                            .map(UpdateKind::Poll)
-                            .map_err(|_| false),
+                        "poll" => map.next_value::<Poll>().map(UpdateKind::Poll).map_err(|_| false),
                         "poll_answer" => map
                             .next_value::<PollAnswer>()
                             .map(UpdateKind::PollAnswer)

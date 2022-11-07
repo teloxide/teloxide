@@ -50,11 +50,7 @@ impl InlineKeyboardMarkup {
         I: IntoIterator,
         I::Item: IntoIterator<Item = InlineKeyboardButton>,
     {
-        self.inline_keyboard = val
-            .into_iter()
-            .map(<_>::into_iter)
-            .map(<_>::collect)
-            .collect();
+        self.inline_keyboard = val.into_iter().map(<_>::into_iter).map(<_>::collect).collect();
         self
     }
 
@@ -92,9 +88,7 @@ mod tests {
         let markup =
             InlineKeyboardMarkup::default().append_row(vec![button1.clone(), button2.clone()]);
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1, button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
 
         assert_eq!(markup, expected);
     }
@@ -108,9 +102,7 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(0, button2.clone());
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1, button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
 
         assert_eq!(markup, expected);
     }
@@ -124,9 +116,7 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(1, button2.clone());
 
-        let expected = InlineKeyboardMarkup {
-            inline_keyboard: vec![vec![button1], vec![button2]],
-        };
+        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1], vec![button2]] };
 
         assert_eq!(markup, expected);
     }

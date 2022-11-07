@@ -72,9 +72,7 @@ use crate::{
 /// bot.send_message(chat_id, "<b>Text</b>").await?;
 ///
 /// // This will use `ParseMode::MarkdownV2`
-/// bot.send_message(chat_id, "**Text**")
-///     .parse_mode(ParseMode::MarkdownV2)
-///     .await?;
+/// bot.send_message(chat_id, "**Text**").parse_mode(ParseMode::MarkdownV2).await?;
 /// # Ok::<_, teloxide_core::RequestError>(())
 /// # };
 /// ```
@@ -1284,11 +1282,9 @@ fn codegen_requester_methods() {
                 .filter(|p| !matches!(p.ty, Type::Option(_)))
                 .flat_map(|p| match convert_for(&p.ty) {
                     Convert::Id(_) => None,
-                    Convert::Into(ty) => Some(format!(
-                        "{}: Into<{}>",
-                        &to_uppercase(prefixes[&*p.name]),
-                        ty
-                    )),
+                    Convert::Into(ty) => {
+                        Some(format!("{}: Into<{}>", &to_uppercase(prefixes[&*p.name]), ty))
+                    }
                     Convert::Collect(ty) => Some(format!(
                         "{}: IntoIterator<Item = {}>",
                         &to_uppercase(prefixes[&*p.name]),
@@ -1297,11 +1293,8 @@ fn codegen_requester_methods() {
                 })
                 .join(",\n        ");
 
-            let generics = if generics.is_empty() {
-                String::from("")
-            } else {
-                format!("<{}>", generics)
-            };
+            let generics =
+                if generics.is_empty() { String::from("") } else { format!("<{}>", generics) };
 
             let where_clause = if where_clause.is_empty() {
                 String::from("")

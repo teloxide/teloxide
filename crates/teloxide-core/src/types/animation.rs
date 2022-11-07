@@ -59,20 +59,12 @@ mod tests {
         "mime_type":"video/gif",
         "file_size":6500}"#;
         let expected = Animation {
-            file: FileMeta {
-                id: "id".to_string(),
-                unique_id: "".to_string(),
-                size: 6500,
-            },
+            file: FileMeta { id: "id".to_string(), unique_id: "".to_string(), size: 6500 },
             width: 320,
             height: 320,
             duration: 59,
             thumb: Some(PhotoSize {
-                file: FileMeta {
-                    id: "id".to_owned(),
-                    unique_id: "".to_owned(),
-                    size: 3452,
-                },
+                file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
                 width: 320,
                 height: 320,
             }),

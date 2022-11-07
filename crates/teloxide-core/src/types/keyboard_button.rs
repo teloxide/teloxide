@@ -28,10 +28,7 @@ impl KeyboardButton {
     where
         T: Into<String>,
     {
-        Self {
-            text: text.into(),
-            request: None,
-        }
+        Self { text: text.into(), request: None }
     }
 
     pub fn request<T>(mut self, val: T) -> Self
@@ -111,13 +108,8 @@ impl<'de> Deserialize<'de> for ButtonRequest {
     {
         let raw = RawRequest::deserialize(deserializer)?;
         match raw {
-            RawRequest {
-                contact,
-                location,
-                poll,
-                web_app,
-            } if 1
-                < (contact.is_some() as u8
+            RawRequest { contact, location, poll, web_app }
+                if 1 < (contact.is_some() as u8
                     + location.is_some() as u8
                     + poll.is_some() as u8
                     + web_app.is_some() as u8) =>
@@ -127,20 +119,10 @@ impl<'de> Deserialize<'de> for ButtonRequest {
                      are mutually exclusive",
                 ))
             }
-            RawRequest {
-                contact: Some(_), ..
-            } => Ok(Self::Contact),
-            RawRequest {
-                location: Some(_), ..
-            } => Ok(Self::Location),
-            RawRequest {
-                poll: Some(poll_type),
-                ..
-            } => Ok(Self::Poll(poll_type)),
-            RawRequest {
-                web_app: Some(web_app),
-                ..
-            } => Ok(Self::WebApp(web_app)),
+            RawRequest { contact: Some(_), .. } => Ok(Self::Contact),
+            RawRequest { location: Some(_), .. } => Ok(Self::Location),
+            RawRequest { poll: Some(poll_type), .. } => Ok(Self::Poll(poll_type)),
+            RawRequest { web_app: Some(web_app), .. } => Ok(Self::WebApp(web_app)),
 
             _ => Err(D::Error::custom(
                 "Either one of `request_contact`, `request_location`, `request_poll` and \
@@ -155,12 +137,7 @@ impl Serialize for ButtonRequest {
     where
         S: Serializer,
     {
-        let mut raw = RawRequest {
-            contact: None,
-            location: None,
-            poll: None,
-            web_app: None,
-        };
+        let mut raw = RawRequest { contact: None, location: None, poll: None, web_app: None };
 
         match self {
             Self::Contact => raw.contact = Some(True),
@@ -179,10 +156,7 @@ mod tests {
 
     #[test]
     fn serialize_no_request() {
-        let button = KeyboardButton {
-            text: String::from(""),
-            request: None,
-        };
+        let button = KeyboardButton { text: String::from(""), request: None };
         let expected = r#"{"text":""}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -190,10 +164,8 @@ mod tests {
 
     #[test]
     fn serialize_request_contact() {
-        let button = KeyboardButton {
-            text: String::from(""),
-            request: Some(ButtonRequest::Contact),
-        };
+        let button =
+            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
         let expected = r#"{"text":"","request_contact":true}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -202,10 +174,7 @@ mod tests {
     #[test]
     fn deserialize_no_request() {
         let json = r#"{"text":""}"#;
-        let expected = KeyboardButton {
-            text: String::from(""),
-            request: None,
-        };
+        let expected = KeyboardButton { text: String::from(""), request: None };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
@@ -213,10 +182,8 @@ mod tests {
     #[test]
     fn deserialize_request_contact() {
         let json = r#"{"text":"","request_contact":true}"#;
-        let expected = KeyboardButton {
-            text: String::from(""),
-            request: Some(ButtonRequest::Contact),
-        };
+        let expected =
+            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }

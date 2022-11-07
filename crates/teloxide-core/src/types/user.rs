@@ -66,11 +66,7 @@ impl User {
     /// Returns `None` if `self.username.is_none()`.
     #[must_use]
     pub fn tme_url(&self) -> Option<reqwest::Url> {
-        Some(
-            format!("https://t.me/{}", self.username.as_ref()?)
-                .parse()
-                .unwrap(),
-        )
+        Some(format!("https://t.me/{}", self.username.as_ref()?).parse().unwrap())
     }
 
     /// Returns an URL that links to this user in the form of `t.me/<...>` or
@@ -190,19 +186,10 @@ mod tests {
         assert_eq!(user_a.mention(), Some("@aaaaaaaaaaaaaaaa".to_owned()));
         assert_eq!(user_b.mention(), None);
 
-        assert_eq!(
-            user_a.tme_url(),
-            Some("https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap())
-        );
+        assert_eq!(user_a.tme_url(), Some("https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap()));
         assert_eq!(user_b.tme_url(), None);
 
-        assert_eq!(
-            user_a.preferably_tme_url(),
-            "https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap()
-        );
-        assert_eq!(
-            user_b.preferably_tme_url(),
-            "tg://user/?id=44".parse().unwrap()
-        );
+        assert_eq!(user_a.preferably_tme_url(), "https://t.me/aaaaaaaaaaaaaaaa".parse().unwrap());
+        assert_eq!(user_b.preferably_tme_url(), "tg://user/?id=44".parse().unwrap());
     }
 }

@@ -237,10 +237,7 @@ fn codegen_payload_mods_and_reexports() {
     let schema = schema::get();
     let mut block = String::new();
 
-    schema
-        .methods
-        .iter()
-        .for_each(|m| block.push_str(&format!("mod {};\n", m.names.2)));
+    schema.methods.iter().for_each(|m| block.push_str(&format!("mod {};\n", m.names.2)));
 
     block.push('\n');
 

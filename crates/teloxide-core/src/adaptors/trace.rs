@@ -249,11 +249,7 @@ where
     {
         if self.settings.contains(Settings::TRACE_RESPONSES_VERBOSE) {
             |response| {
-                log::trace!(
-                    "Got response from `{}` request: {:?}",
-                    R::Payload::NAME,
-                    response
-                )
+                log::trace!("Got response from `{}` request: {:?}", R::Payload::NAME, response)
             }
         } else if self.settings.contains(Settings::TRACE_RESPONSES) {
             |_| log::trace!("Got response from `{}` request", R::Payload::NAME)
@@ -294,19 +290,13 @@ where
     fn send(self) -> Self::Send {
         self.trace_request();
 
-        Send {
-            trace_fn: self.trace_response_fn(),
-            inner: self.inner.send(),
-        }
+        Send { trace_fn: self.trace_response_fn(), inner: self.inner.send() }
     }
 
     fn send_ref(&self) -> Self::SendRef {
         self.trace_request();
 
-        Send {
-            trace_fn: self.trace_response_fn(),
-            inner: self.inner.send_ref(),
-        }
+        Send { trace_fn: self.trace_response_fn(), inner: self.inner.send_ref() }
     }
 }
 
