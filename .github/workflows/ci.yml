@@ -87,7 +87,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2022-09-01
+            toolchain: nightly-2022-09-23
             features: "--all-features"
           - rust: msrv
             toolchain: 1.64.0
