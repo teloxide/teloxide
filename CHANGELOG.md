@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## Removed
+
+- `rocksdb-storage` feature and associated items [**BC**]
+
 ## 0.11.1 - 2022-10-31
 
 ### Added

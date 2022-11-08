@@ -1,6 +1,14 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## 0.11 -> 0.??
+
+### teloxide
+
+`rocksdb-storage` feature and associated items were removed.
+If you are using rocksdb storage, you'll need to either write `Storage` impl yourself, or use a third party crate.
+<!-- FIXME: add a link once there *is* a third party crate -->
+
 ## 0.11 -> 0.11.1
 
 ### teloxide
