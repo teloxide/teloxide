@@ -41,12 +41,10 @@ pub type ErasedStorage<D> =
 ///
 /// - [`InMemStorage`] -- a storage based on [`std::collections::HashMap`].
 /// - [`RedisStorage`] -- a Redis-based storage.
-/// - [`RocksDbStorage`] -- a RocksDB-based persistent storage.
 /// - [`SqliteStorage`] -- an SQLite-based persistent storage.
 ///
 /// [`InMemStorage`]: crate::dispatching::dialogue::InMemStorage
 /// [`RedisStorage`]: crate::dispatching::dialogue::RedisStorage
-/// [`RocksDbStorage`]: crate::dispatching::dialogue::RocksDbStorage
 /// [`SqliteStorage`]: crate::dispatching::dialogue::SqliteStorage
 pub trait Storage<D> {
     type Error;
