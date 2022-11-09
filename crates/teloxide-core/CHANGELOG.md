@@ -476,7 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
   - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
-  - Add `inline_kb`, `keyboard`, `kb_remove` and `force_reply` `ReplyMarkup` constructors
+  - Add `inline_kb`, `keyboa^d` (there was a letter `r` missing in place of `^` here), `kb_remove` and `force_reply` `ReplyMarkup` constructors
   - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
   - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
   - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
