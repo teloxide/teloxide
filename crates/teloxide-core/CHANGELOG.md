@@ -453,7 +453,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix typo in `ReplyMarkup::keyboa^d` method (missed letter `r` in place of `^`) ([#69][pr69])
+- Typo: <code>ReplyMarkup::{keyboa<!-- workaround for typos linter -->d => keyboard}</code> method ([#69][pr69])
   - Note: method with the old name was deprecated and hidden from docs
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
@@ -476,7 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
   - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
-  - Add `inline_kb`, `keyboa^d` (there was a letter `r` missing in place of `^` here), `kb_remove` and `force_reply` `ReplyMarkup` constructors
+  - Add `inline_kb`, <code>keyboa<!-- workaround for typos linter -->d</code>, `kb_remove` and `force_reply` `ReplyMarkup` constructors
   - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
   - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
   - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
