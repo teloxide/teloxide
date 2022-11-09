@@ -1429,7 +1429,7 @@ mod tests {
                 "is_video": false,
                 "type": "regular",
                 "thumb": {
-                    "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
+                    "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBE",
                     "file_unique_id": "AQADIwADsAND4DHI",
                     "file_size": 4118,
                     "width": 128,

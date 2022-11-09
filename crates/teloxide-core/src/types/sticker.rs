@@ -334,7 +334,7 @@ mod tests {
                 "scale": 1.94
             },
             "thumb": {
-                "file_id": "AAMCAQADFQABYzA0qlYHijpjMzMwBFKnEVE5XdkAAjIKAAK_jJAE1TRw7D936M8BAAdtAAMpBA",
+                "file_id": "AAMCAQADFQABYzA0qlYHijpjMzMwBFKnEVE5XdkAAjIKAAK_jJAE1TRw7D936M8BEAdtAAMpBE",
                 "file_unique_id": "AQADMgoAAr-MkARy",
                 "file_size": 11028,
                 "width": 320,
@@ -374,7 +374,7 @@ mod tests {
             "is_video": false,
             "type": "regular",
             "thumb": {
-                "file_id": "AAMCAgADFQABYzBxOJ1GWrttqL7FSRwdAtrq-AkAAtkHAALBGJ4LUUUh5CUew90BAAdtAAMpBA",
+                "file_id": "AAMCAgADFQABYzBxOJ1GWrttqL7FSRwdAtrq-AkAAtkHAALBGJ4LUUUh5CUew90BEAdtAAMpBE",
                 "file_unique_id": "AQAD2QcAAsEYngty",
                 "file_size": 4558,
                 "width": 116,

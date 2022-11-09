@@ -106,7 +106,7 @@ mod tests {
                     "is_video": false,
                     "type": "regular",
                     "thumb": {
-                        "file_id": "AAMCAQADFQABYzB4ATH0sqXx351gZ5GpY1Z3Tl8AAlgCAAJ1t4hFbxNCoAg1-akBAAdtAAMpBA",
+                        "file_id": "AAMCAQADFQABYzB4ATH0sqXx351gZ5GpY1Z3Tl8AAlgCAAJ1t4hFbxNCoAg1-akBEAdtAAMpBE",
                         "file_unique_id": "AQADWAIAAnW3iEVy",
                         "file_size": 7698,
                         "width": 320,
@@ -125,7 +125,7 @@ mod tests {
                     "is_video": false,
                     "type": "regular",
                     "thumb": {
-                        "file_id": "AAMCAQADFQABYzB4AcABR8-MuvGagis9Pk6liSAAAs8DAAL2YYBFNbvduoN1p7oBAAdtAAMpBA",
+                        "file_id": "AAMCAQADFQABYzB4AcABR8-MuvGagis9Pk6liSAAAs8DAAL2YYBFNbvduoN1p7oBEAdtAAMpBE",
                         "file_unique_id": "AQADzwMAAvZhgEVy",
                         "file_size": 7780,
                         "width": 320,
