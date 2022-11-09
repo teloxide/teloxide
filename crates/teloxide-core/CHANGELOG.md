@@ -453,7 +453,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix type in `ReplyMarkup::keyboard` method ([#69][pr69])
+- Fix typo in `ReplyMarkup::keyboa^d` method (missed letter `r` in place of `^`) ([#69][pr69])
   - Note: method with the old name was deprecated and hidden from docs
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
