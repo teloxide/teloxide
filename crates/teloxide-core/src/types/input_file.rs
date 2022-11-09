@@ -236,7 +236,7 @@ impl InputFile {
     }
 }
 
-/// Adaptor for `AsyncRead` that allows clonning and converting to
+/// Adaptor for `AsyncRead` that allows cloning and converting to
 /// `multipart/form-data`
 #[derive(Clone)]
 struct Read {

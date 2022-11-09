@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.8.0 - 2022-10-03
 
-### Added 
+### Added
 
 - Support for Telegram Bot API [version 6.2](https://core.telegram.org/bots/api#august-12-2022) ([#251][pr251])
 
@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr244]: https://github.com/teloxide/teloxide-core/pull/246
 
-### Fixed 
+### Fixed
 
 - `SetWebhook` request can now properly send certificate ([#250][pr250])
 - Serialization of `InputSticker::Webm` ([#252][pr252])
@@ -195,7 +195,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` [**BC**]
-- Improve `Throttling` adoptor ([#130][pr130])
+- Improve `Throttling` adaptor ([#130][pr130])
   - Freeze when getting `RetryAfter(_)` error
   - Retry requests that previously returned `RetryAfter(_)` error
 - `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
@@ -453,7 +453,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Typo: `ReplyMarkup::{keyboad => keyboard}` ([#69][pr69])
+- Fix type in `ReplyMarkup::keyboard` method ([#69][pr69])
   - Note: method with the old name was deprecated and hidden from docs
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
@@ -476,7 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
   - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
-  - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` consructors
+  - Add `inline_kb`, `keyboard`, `kb_remove` and `force_reply` `ReplyMarkup` constructors
   - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
   - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
   - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`

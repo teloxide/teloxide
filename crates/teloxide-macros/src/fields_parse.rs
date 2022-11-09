@@ -118,7 +118,7 @@ fn parser_with_separator<'a>(
             (
                 #(
                     {
-                        let s = splitted.next().ok_or(ParseError::TooFewArguments {
+                        let s = split.next().ok_or(ParseError::TooFewArguments {
                             expected: #expected,
                             found: #found,
                             message: format!("Expected but not found arg number {}", #found + 1),
@@ -134,11 +134,11 @@ fn parser_with_separator<'a>(
     let res = quote! {
         (
             |s: String| {
-                let mut splitted = s.split(#separator);
+                let mut split = s.split(#separator);
 
                 let res = #res;
 
-                match splitted.next() {
+                match split.next() {
                     Some(d) => Err(ParseError::TooManyArguments {
                         expected: #expected,
                         found: #expected + 1,

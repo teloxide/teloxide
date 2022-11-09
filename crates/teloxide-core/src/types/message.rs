@@ -292,7 +292,7 @@ pub enum MediaKind {
     // - `Animation` must be in front of `Document`
     //
     // This is needed so serde doesn't parse `Venue` as `Location` or `Animation` as `Document`
-    // (for backward compatability telegram duplicates some fields)
+    // (for backward compatibility telegram duplicates some fields)
     //
     // See <https://github.com/teloxide/teloxide/issues/481>
     Animation(MediaAnimation),
@@ -1430,13 +1430,13 @@ mod tests {
                 "type": "regular",
                 "thumb": {
                     "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
-                    "file_unique_id": "AQADIwADsND4DHI",
+                    "file_unique_id": "AQADIwADsAND4DHI",
                     "file_size": 4118,
                     "width": 128,
                     "height": 128
                 },
-                "file_id": "CAACAgIAAxkBAAESLdBjMImep-J0W8XaTN6S_Lz1-j1QIQACIwADsND4DGmmygHGlyggKQQ",
-                "file_unique_id": "AgADIwADsND4DA",
+                "file_id": "CAACAgIAAxkBAAESLdBjMImep-J0W8XaTN6S_Lz1-j1QIQACIwADsAND4DGmmygHGlyggKQQ",
+                "file_unique_id": "AgADIwADsAND4DA",
                 "file_size": 16639
             }
         }"#;

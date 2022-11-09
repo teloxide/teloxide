@@ -101,7 +101,7 @@ impl Serializer for InputFileUnserializer {
         Ok(self)
     }
 
-    forward_to_unsuported_ty! {
+    forward_to_unsupported_ty! {
         supported: "Newtype variant, struct variant";
         simple {
             serialize_bool  bool

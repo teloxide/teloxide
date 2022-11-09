@@ -149,7 +149,7 @@ static DOC_PATCHES: &[(Target, Patch)] = &[
             value: "crate::net::Download::download_file",
         },
     ),
-    // FIXME RETUNRS
+    // FIXME RETURNS
 ];
 
 #[derive(Debug, Clone, Copy)]

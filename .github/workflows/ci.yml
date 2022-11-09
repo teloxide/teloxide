@@ -14,6 +14,7 @@ env:
   CARGO_INCREMENTAL: 0
   CARGO_NET_RETRY: 10
   RUSTUP_MAX_RETRIES: 10
+  CARGO_TERM_COLOR: always
 
   # When updating this, also update:
   # - crates/teloxide-core/src/codegen.rs
@@ -38,6 +39,7 @@ jobs:
       - test
       - check-examples
       - clippy
+      - typos
       - doc
 
     steps:
@@ -73,12 +75,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: 
+        rust:
           - stable
           - beta
           - nightly
           - msrv
-    
+
         include:
           - rust: stable
             toolchain: stable
@@ -93,7 +95,7 @@ jobs:
             toolchain: 1.64.0
             features: "--features full"
 
-    steps:      
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -108,7 +110,7 @@ jobs:
         uses: Swatinem/rust-cache@v1
 
       # NB. Don't test (build) examples so we can use non-msrv features in them (--tests/--doc)
-      - name: Compile 
+      - name: Compile
         uses: actions-rs/cargo@v1
         with:
           command: test
@@ -120,13 +122,13 @@ jobs:
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
-      
-      - name: Test unit & integration tests 
+
+      - name: Test unit & integration tests
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --tests --verbose ${{ matrix.features }}
-          
+
       - name: Test documentation tests
         if: ${{ matrix.rust != 'msrv' }}
         uses: actions-rs/cargo@v1
@@ -181,6 +183,18 @@ jobs:
         with:
           command: clippy
           args: --all-targets --all-features
+
+  typos:
+    name: Check for typos
+    runs-on: "ubuntu-latest",
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+        # Typos check should be pinned to the very specific version
+        # to prevent sudden dictionary updates from making our CI fail
+      - name: Check for typos in the repository
+        uses: crate-ci/typos@v1.12.14
 
   doc:
     name: check docs

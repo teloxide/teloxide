@@ -88,7 +88,7 @@ use crate::{
 /// let bot: DefaultParseMode<Bot> = Bot::new("TOKEN").parse_mode(ParseMode::Html);
 /// ```
 ///
-/// Because of this it's oftentimes more convinient to have a type alias:
+/// Because of this it's oftentimes more convenient to have a type alias:
 ///
 /// ```rust
 /// # async {

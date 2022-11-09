@@ -1,0 +1,10 @@
+# Specific files that contain false positives. Unfortunately
+# we have to ignore the entire files because we can't granularly
+# ignore a specific false positive in a specific file.
+files.extend-exclude = [
+  # Some country codes and currency names are treated as typos
+  "crates/teloxide-core/src/types/non_telegram_types/{currency,country_code}.rs",
+
+  # File IDs in tests are treated as typos
+  "crates/teloxide-core/src/types/{message,sticker,sticker_set}.rs",
+]

@@ -158,7 +158,7 @@ impl Bot {
     ///
     /// ## Multi-instance behaviour
     ///
-    /// This method only sets the url for one bot instace, older clones are
+    /// This method only sets the url for one bot instance, older clones are
     /// unaffected.
     ///
     /// ```
