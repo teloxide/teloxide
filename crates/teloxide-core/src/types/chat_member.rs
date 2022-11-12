@@ -266,7 +266,10 @@ impl ChatMemberKind {
     /// [banned]: ChatMemberKind::Banned
     #[must_use]
     pub fn is_present(&self) -> bool {
-        !(self.is_left() || self.is_banned())
+        let is_restricted_non_member =
+            matches!(self, Self::Restricted(Restricted { is_member: false, .. }));
+
+        !(self.is_left() || self.is_banned() || is_restricted_non_member)
     }
 }
 
