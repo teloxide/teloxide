@@ -260,10 +260,14 @@ impl ChatMemberKind {
     }
 
     /// Returns `true` if the user is currently present in the chat. i.e. if the
-    /// user **hasn't** [left] or been [banned].
+    /// user **hasn't** [left] or been [banned]. It returns `false` if the user
+    /// left the chat, but was [restricted].
+    ///
+    ///
     ///
     /// [left]: ChatMemberKind::Left
     /// [banned]: ChatMemberKind::Banned
+    /// [restricted]: ChatMemberKind::Restricted
     #[must_use]
     pub fn is_present(&self) -> bool {
         let is_restricted_non_member =
