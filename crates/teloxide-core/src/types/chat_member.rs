@@ -260,10 +260,8 @@ impl ChatMemberKind {
     }
 
     /// Returns `true` if the user is currently present in the chat. i.e. if the
-    /// user **hasn't** [left] or been [banned]. It returns `false` if the user
-    /// left the chat, but was [restricted].
-    ///
-    ///
+    /// user **hasn't** [left] or been [banned]. It also returns `false` if the
+    /// user left the chat, but was [restricted].
     ///
     /// [left]: ChatMemberKind::Left
     /// [banned]: ChatMemberKind::Banned
