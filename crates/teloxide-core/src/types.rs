@@ -239,9 +239,23 @@ pub use chat_id::*;
 pub use recipient::*;
 pub use user_id::*;
 
-pub(crate) mod serde_opt_date_from_unix_timestamp {
+/// Converts an `i64` timestump to a `choro::DateTime`, producing serde error
+/// for invalid timestumps
+pub(crate) fn serde_timestamp<E: serde::de::Error>(
+    timestamp: i64,
+) -> Result<chrono::DateTime<chrono::Utc>, E> {
     use chrono::{DateTime, NaiveDateTime, Utc};
+
+    NaiveDateTime::from_timestamp_opt(timestamp, 0)
+        .ok_or_else(|| E::custom("invalid timestump"))
+        .map(|naive| DateTime::from_utc(naive, Utc))
+}
+
+pub(crate) mod serde_opt_date_from_unix_timestamp {
+    use chrono::{DateTime, Utc};
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    use crate::types::serde_timestamp;
 
     pub(crate) fn serialize<S>(
         this: &Option<DateTime<Utc>>,
@@ -257,8 +271,7 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
     where
         D: Deserializer<'de>,
     {
-        Ok(Option::<i64>::deserialize(deserializer)?
-            .map(|timestamp| DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc)))
+        Option::<i64>::deserialize(deserializer)?.map(serde_timestamp).transpose()
     }
 
     #[test]
@@ -271,7 +284,8 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
 
         {
             let json = r#"{"date":1}"#;
-            let expected = DateTime::from_utc(NaiveDateTime::from_timestamp(1, 0), Utc);
+            let expected =
+                DateTime::from_utc(chrono::NaiveDateTime::from_timestamp_opt(1, 0).unwrap(), Utc);
 
             let Struct { date } = serde_json::from_str(json).unwrap();
             assert_eq!(date, Some(expected));
@@ -287,8 +301,10 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
 }
 
 pub(crate) mod serde_date_from_unix_timestamp {
-    use chrono::{DateTime, NaiveDateTime, Utc};
+    use chrono::{DateTime, Utc};
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    use crate::types::serde_timestamp;
 
     pub(crate) fn serialize<S>(this: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -301,9 +317,7 @@ pub(crate) mod serde_date_from_unix_timestamp {
     where
         D: Deserializer<'de>,
     {
-        let timestamp = i64::deserialize(deserializer)?;
-
-        Ok(DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc))
+        serde_timestamp(i64::deserialize(deserializer)?)
     }
 }
 
@@ -360,10 +374,6 @@ pub(crate) mod duration_secs {
     where
         S: Serializer,
     {
-        // match this {
-        //     Some(url) => url.serialize(serializer),
-        //     None => "".serialize(serializer),
-        // }
         this.as_secs().serialize(serializer)
     }
 

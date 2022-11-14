@@ -1,5 +1,7 @@
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::{DateTime, Utc};
 use serde::{de::Visitor, Deserialize, Serialize};
+
+use crate::types::serde_timestamp;
 
 /// A range of time, before some date (for example a time before a restrictions
 /// will be lifted from a member of a chat).
@@ -31,10 +33,7 @@ impl<'de> Deserialize<'de> for UntilDate {
             {
                 match v {
                     0 => Ok(UntilDate::Forever),
-                    timestamp => Ok(UntilDate::Date(DateTime::from_utc(
-                        NaiveDateTime::from_timestamp(timestamp, 0),
-                        Utc,
-                    ))),
+                    timestamp => serde_timestamp(timestamp).map(UntilDate::Date),
                 }
             }
 
