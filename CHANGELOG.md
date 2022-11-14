@@ -6,16 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-### Changed
-
-- The methods `ChatMember::{can_pin_messages, can_invite_users, can_change_info}` now take into account the permissions of `Restricted` chat member kind.
-- The method `ChatMemberKind::is_present` now takes into account the value of `Restricted::is_member` field.
-
-### Added
-
-- `Restricted::{is_member, can_change_info, can_invite_users, can_pin_messages, can_send_polls}` fields.
-- `ChatMember::can_send_polls` method.
-
 ## 0.11.1 - 2022-10-31
 
 ### Added
