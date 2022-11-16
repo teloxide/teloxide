@@ -16,13 +16,11 @@
 | `native-tls`         | Enables the [`native-tls`] TLS implementation (**enabled by default**). |
 | `rustls`             | Enables the [`rustls`] TLS implementation. |
 | `redis-storage`      | Enables the [Redis] storage support for dialogues. |
-| `rocksdb-storage`    | Enables the [RocksDB] storage support for dialogues. |
 | `sqlite-storage`     | Enables the [Sqlite] storage support for dialogues. |
 | `cbor-serializer`    | Enables the [CBOR] serializer for dialogues. |
 | `bincode-serializer` | Enables the [Bincode] serializer for dialogues. |
 
 [Redis]: https://redis.io/
-[RocksDB]: https://rocksdb.org/
 [Sqlite]: https://www.sqlite.org/
 [CBOR]: https://en.wikipedia.org/wiki/CBOR
 [Bincode]: https://github.com/servo/bincode
