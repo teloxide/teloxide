@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- The methods `ChatMember::{can_pin_messages, can_invite_users, can_change_info}` now take into account the permissions of `Restricted` chat member kind ([#764][pr764])
+- The method `ChatMemberKind::is_present` now takes into account the value of `Restricted::is_member` field ([#764][pr764])
+
+### Added
+
+- `Restricted::{is_member, can_change_info, can_invite_users, can_pin_messages, can_send_polls}` fields ([#764][pr764])
+- `ChatMember::can_send_polls` method ([#764][pr764])
+
+[pr764]: https://github.com/teloxide/teloxide/pull/764
+
 ## 0.8.0 - 2022-10-03
 
-### Added 
+### Added
 
 - Support for Telegram Bot API [version 6.2](https://core.telegram.org/bots/api#august-12-2022) ([#251][pr251])
 
@@ -37,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr244]: https://github.com/teloxide/teloxide-core/pull/246
 
-### Fixed 
+### Fixed
 
 - `SetWebhook` request can now properly send certificate ([#250][pr250])
 - Serialization of `InputSticker::Webm` ([#252][pr252])
