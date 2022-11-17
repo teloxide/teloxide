@@ -55,7 +55,7 @@ impl<St, Assf, Sf> StatefulListener<St, Assf, Sf, Haufn<St>, Thfn<St>> {
 
 impl<St, Assf, Sf, Hauf, Thf> StatefulListener<St, Assf, Sf, Hauf, Thf> {
     /// Creates a new stateful listener from its components.
-    pub fn new_with_hints(
+    pub const fn new_with_hints(
         state: St,
         stream: Assf,
         stop_token: Sf,

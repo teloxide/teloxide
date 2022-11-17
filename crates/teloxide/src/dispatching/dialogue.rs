@@ -141,13 +141,13 @@ where
     /// Constructs a new dialogue with `storage` (where dialogues are stored)
     /// and `chat_id` of a current dialogue.
     #[must_use]
-    pub fn new(storage: Arc<S>, chat_id: ChatId) -> Self {
+    pub const fn new(storage: Arc<S>, chat_id: ChatId) -> Self {
         Self { storage, chat_id, _phantom: PhantomData }
     }
 
     /// Returns a chat ID associated with this dialogue.
     #[must_use]
-    pub fn chat_id(&self) -> ChatId {
+    pub const fn chat_id(&self) -> ChatId {
         self.chat_id
     }
 

@@ -250,7 +250,7 @@ where
     <R as Requester>::GetUpdates: Send,
 {
     /// Returns a builder for polling update listener.
-    pub fn builder(bot: R) -> PollingBuilder<R> {
+    pub const fn builder(bot: R) -> PollingBuilder<R> {
         PollingBuilder {
             bot,
             timeout: None,
