@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The methods `ChatMember::{can_pin_messages, can_invite_users, can_change_info}` now take into account the permissions of `Restricted` chat member kind ([#764][pr764])
 - The method `ChatMemberKind::is_present` now takes into account the value of `Restricted::is_member` field ([#764][pr764])
+- The following functions were made `#[must_use]`:
+  - `MaskPoint::{new, point}`
+  - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
 
 ### Added
 

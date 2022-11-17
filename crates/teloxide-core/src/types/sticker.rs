@@ -200,6 +200,7 @@ impl StickerKind {
     }
 
     /// Getter for [`StickerKind::Regular::premium_animation`].
+    #[must_use]
     pub fn premium_animation(&self) -> Option<&FileMeta> {
         if let Self::Regular { premium_animation } = self {
             premium_animation.as_ref()
@@ -209,6 +210,7 @@ impl StickerKind {
     }
 
     /// Getter for [`StickerKind::Mask::mask_position`].
+    #[must_use]
     pub fn mask_position(&self) -> Option<MaskPosition> {
         if let Self::Mask { mask_position } = self {
             Some(*mask_position)
@@ -218,6 +220,7 @@ impl StickerKind {
     }
 
     /// Getter for [`StickerKind::CustomEmoji::custom_emoji_id`].
+    #[must_use]
     pub fn custom_emoji_id(&self) -> Option<&str> {
         if let Self::CustomEmoji { custom_emoji_id } = self {
             Some(custom_emoji_id)

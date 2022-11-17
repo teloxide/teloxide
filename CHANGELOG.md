@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `StatefulListener::new_with_hints`
   - `CommandDescriptions::new`
   - `respond`
+- The following functions were made `#[must_use]`:
+  - `DispatcherBuilder::{enable_ctrlc_handler, distribution_function}`
 
 ## 0.11.1 - 2022-10-31
 
