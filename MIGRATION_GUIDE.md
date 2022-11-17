@@ -1,7 +1,7 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
-## 0.11 -> 0.11.1
+## 0.11 -> 0.11.2
 
 ### teloxide
 
