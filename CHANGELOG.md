@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Add missing feature gate for `dispatching::repls` import ([issue #770](https://github.com/teloxide/teloxide/issues/770)):
+
 ## 0.11.1 - 2022-10-31
 
 ### Added
