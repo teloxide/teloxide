@@ -7,10 +7,10 @@ use axum::{
 use tokio::sync::mpsc;
 
 use crate::{
-    dispatching::update_listeners::{webhooks::Options, UpdateListener},
     requests::Requester,
     stop::StopFlag,
     types::Update,
+    update_listeners::{webhooks::Options, UpdateListener},
 };
 
 /// Webhook implementation based on the [mod@axum] framework.
@@ -118,7 +118,7 @@ where
     R: Requester + Send,
     <R as Requester>::DeleteWebhook: Send,
 {
-    use crate::{dispatching::update_listeners::webhooks::setup_webhook, requests::Request};
+    use crate::{requests::Request, update_listeners::webhooks::setup_webhook};
     use futures::FutureExt;
 
     setup_webhook(&bot, &mut options).await?;
@@ -156,8 +156,8 @@ pub fn axum_no_setup(
     options: Options,
 ) -> (impl UpdateListener<Err = Infallible>, impl Future<Output = ()>, axum::Router) {
     use crate::{
-        dispatching::update_listeners::{self, webhooks::tuple_first_mut},
         stop::{mk_stop_token, StopToken},
+        update_listeners::{webhooks::tuple_first_mut, StatefulListener},
     };
     use axum::{response::IntoResponse, routing::post};
     use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -218,7 +218,7 @@ pub fn axum_no_setup(
     let stream = UnboundedReceiverStream::new(rx);
 
     // FIXME: this should support `hint_allowed_updates()`
-    let listener = update_listeners::StatefulListener::new(
+    let listener = StatefulListener::new(
         (stream, stop_token),
         tuple_first_mut,
         |state: &mut (_, StopToken)| state.1.clone(),
@@ -276,7 +276,7 @@ impl<S> FromRequestParts<S> for XTelegramBotApiSecretToken {
         'l1: 'at,
         Self: 'at,
     {
-        use crate::dispatching::update_listeners::webhooks::check_secret;
+        use crate::update_listeners::webhooks::check_secret;
 
         let res = req
             .headers

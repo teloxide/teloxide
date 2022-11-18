@@ -13,10 +13,10 @@ use std::{
 use futures::{ready, stream::Stream};
 
 use crate::{
-    dispatching::update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
     requests::{HasPayload, Request, Requester},
     stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
+    update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
 };
 
 /// Builder for polling update listener.
@@ -73,7 +73,7 @@ where
     ///
     /// [`Dispatcher`]: crate::dispatching::Dispatcher
     /// [`repl`]: fn@crate::repl
-    /// [`hint_allowed_updates`]: crate::dispatching::update_listeners::UpdateListener::hint_allowed_updates
+    /// [`hint_allowed_updates`]: crate::update_listeners::UpdateListener::hint_allowed_updates
     pub fn allowed_updates(self, allowed_updates: Vec<AllowedUpdate>) -> Self {
         Self { allowed_updates: Some(allowed_updates), ..self }
     }

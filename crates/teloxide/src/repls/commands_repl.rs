@@ -1,10 +1,9 @@
 use crate::{
-    dispatching::{
-        update_listeners, update_listeners::UpdateListener, HandlerExt, UpdateFilterExt,
-    },
+    dispatching::{HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
     requests::{Requester, ResponseResult},
     types::Update,
+    update_listeners::{self, UpdateListener},
     utils::command::BotCommands,
 };
 use dptree::di::{DependencyMap, Injectable};

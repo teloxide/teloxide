@@ -215,16 +215,13 @@
 //! [`examples/dispatching_features.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs
 //! [`Update`]: crate::types::Update
 
-#[cfg(all(feature = "ctrlc_handler"))]
-pub mod repls;
-
 pub mod dialogue;
+
 mod dispatcher;
 mod distribution;
 mod filter_ext;
 mod handler_description;
 mod handler_ext;
-pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};

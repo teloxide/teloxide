@@ -60,16 +60,20 @@
 #![allow(clippy::nonstandard_macro_braces)]
 
 #[cfg(feature = "ctrlc_handler")]
-pub use dispatching::repls::{repl, repl_with_listener};
+pub use repls::{repl, repl_with_listener};
 
 #[cfg(feature = "ctrlc_handler")]
 #[allow(deprecated)]
-pub use dispatching::repls::{commands_repl, commands_repl_with_listener};
+pub use repls::{commands_repl, commands_repl_with_listener};
 
 pub mod dispatching;
 pub mod error_handlers;
 pub mod prelude;
+#[cfg(all(feature = "ctrlc_handler"))]
+pub mod repls;
 pub mod stop;
+pub mod storage;
+pub mod update_listeners;
 pub mod utils;
 
 #[doc(inline)]

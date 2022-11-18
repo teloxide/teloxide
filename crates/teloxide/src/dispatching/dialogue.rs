@@ -93,23 +93,15 @@
 //!
 //! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
-#[cfg(feature = "redis-storage")]
-pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
-
-#[cfg(feature = "sqlite-storage")]
-pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
-
-use dptree::{prelude::DependencyMap, Handler};
+pub use crate::storage::*;
 pub use get_chat_id::GetChatId;
-pub use storage::*;
-use teloxide_core::types::ChatId;
+
+use crate::{dispatching::DpHandlerDescription, types::ChatId};
+use dptree::{prelude::DependencyMap, Handler};
 
 use std::{fmt::Debug, marker::PhantomData, sync::Arc};
 
-use super::DpHandlerDescription;
-
 mod get_chat_id;
-mod storage;
 
 /// A handle for controlling dialogue state.
 #[derive(Debug)]

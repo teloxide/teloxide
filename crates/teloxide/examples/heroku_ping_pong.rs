@@ -20,7 +20,7 @@
 
 use std::env;
 
-use teloxide::{dispatching::update_listeners::webhooks, prelude::*};
+use teloxide::{prelude::*, update_listeners::webhooks};
 
 #[tokio::main]
 async fn main() {
