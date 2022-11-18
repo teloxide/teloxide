@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated `axum` to v0.6.0.
+- The module structure
+  - `teloxide::dispatching::update_listeners` => `teloxide::update_listeners`
+  - `teloxide::dispatching::dialogue::storage` => `teloxide::storage`
+  - `teloxide::dispatching::repls` => `teloxide::repls`
 
 ### Removed
 
