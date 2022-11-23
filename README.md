@@ -1,7 +1,7 @@
 > [v0.11 -> v0.11.2 migration guide >>](MIGRATION_GUIDE.md#011---0112)
 
 <div align="center">
-  <img src="./ICON.png" width="250"/>
+  <img src="./media/teloxide-logo.png" width="250"/>
   <h1><code>teloxide</code></h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
@@ -31,11 +31,10 @@
 
  - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, do graceful shutdown, and much more.
 
- - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis], [RocksDB] and [Sqlite].
+ - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
-[RocksDB]: https://rocksdb.org/
 [Sqlite]: https://www.sqlite.org
 
  - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
@@ -85,7 +84,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 This bot replies with a die throw to each received message:
 
-[[`examples/throw_dice.rs`](examples/throw_dice.rs)]
+[[`examples/throw_dice.rs`](crates/teloxide/examples/throw_dice.rs)]
 
 ```rust,no_run
 use teloxide::prelude::*;
@@ -120,7 +119,7 @@ Commands are strongly typed and defined declaratively, similar to how we define 
 [structopt]: https://docs.rs/structopt/0.3.9/structopt/
 [serde-json]: https://github.com/serde-rs/json
 
-[[`examples/command.rs`](examples/command.rs)]
+[[`examples/command.rs`](crates/teloxide/examples/command.rs)]
 
 ```rust,no_run
 use teloxide::{prelude::*, utils::command::BotCommands};
@@ -174,7 +173,7 @@ A dialogue is typically described by an enumeration where each variant is one po
 
 Below is a bot that asks you three questions and then sends the answers back to you:
 
-[[`examples/dialogue.rs`](examples/dialogue.rs)]
+[[`examples/dialogue.rs`](crates/teloxide/examples/dialogue.rs)]
 
 ```rust,ignore
 use teloxide::{dispatching::dialogue::InMemStorage, prelude::*};
@@ -285,7 +284,7 @@ async fn receive_location(
     <img src="./media/dialogue.gif" width="420" />
 </div>
 
-[More examples >>](examples/)
+[More examples >>](crates/teloxide/examples/)
 
 ## FAQ
 
@@ -307,11 +306,11 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](examples/heroku_ping_pong.rs).
+A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](crates/teloxide/examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](crates/teloxide/examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
-A: Yes, see [`examples/purchase.rs`](examples/purchase.rs).
+A: Yes, see [`examples/purchase.rs`](crates/teloxide/examples/purchase.rs).
 
 ## Community bots
 
