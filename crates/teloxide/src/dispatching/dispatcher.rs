@@ -144,6 +144,9 @@ where
             ctrlc_handler,
         } = self;
 
+        // If the `ctrlc_handler` feature is not enabled, don't emit a warning.
+        let _ = ctrlc_handler;
+
         let dp = Dispatcher {
             bot,
             dependencies,

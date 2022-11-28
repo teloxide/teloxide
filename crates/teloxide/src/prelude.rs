@@ -6,9 +6,11 @@ pub use crate::error_handlers::{LoggingErrorHandler, OnError};
 pub use crate::respond;
 
 pub use crate::dispatching::{
-    dialogue::Dialogue, repls::CommandReplExt as _, Dispatcher, HandlerExt as _,
-    MessageFilterExt as _, UpdateFilterExt as _,
+    dialogue::Dialogue, Dispatcher, HandlerExt as _, MessageFilterExt as _, UpdateFilterExt as _,
 };
+
+#[cfg(feature = "ctrlc_handler")]
+pub use crate::dispatching::repls::CommandReplExt as _;
 
 pub use teloxide_core::{
     requests::ResponseResult,
