@@ -152,6 +152,13 @@ jobs:
           command: check
           args: --examples --features full
 
+      # TODO: prolly move it to a separate step?
+      - name: Check with no default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --no-default-features
+
   clippy:
     name: Run linter
     runs-on: ubuntu-latest
