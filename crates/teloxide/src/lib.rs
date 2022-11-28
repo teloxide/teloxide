@@ -60,7 +60,6 @@
 #[cfg(feature = "ctrlc_handler")]
 pub use dispatching::repls::{repl, repl_with_listener};
 
-#[cfg(feature = "ctrlc_handler")]
 #[allow(deprecated)]
 pub use dispatching::repls::{commands_repl, commands_repl_with_listener};
 

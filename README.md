@@ -1,4 +1,4 @@
-> [v0.11 -> v0.11.2 migration guide >>](MIGRATION_GUIDE.md#011---0112)
+> [v0.11 -> v0.11.1 migration guide >>](MIGRATION_GUIDE.md#011---0111)
 
 <div align="center">
   <img src="./media/teloxide-logo.png" width="250"/>
