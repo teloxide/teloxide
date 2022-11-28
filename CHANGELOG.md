@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.11.3 - 2022-11-28
 
+### Changed
+
+- Updated `axum` to v0.6.0.
+
 ### Fixed
 
 - Add another missing feature gate for `dispatching::repls` import ([issue #770](https://github.com/teloxide/teloxide/issues/770))
