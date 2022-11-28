@@ -166,8 +166,8 @@ pub fn axum_no_setup(
     let (tx, rx): (UpdateSender, _) = mpsc::unbounded_channel();
 
     async fn telegram_request(
-        secret_header: XTelegramBotApiSecretToken,
         State(WebhookState { secret, flag, mut tx }): State<WebhookState>,
+        secret_header: XTelegramBotApiSecretToken,
         input: String,
     ) -> impl IntoResponse {
         // FIXME: use constant time comparison here
