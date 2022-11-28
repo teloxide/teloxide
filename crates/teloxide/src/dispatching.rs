@@ -1,6 +1,6 @@
 //! An update dispatching model based on [`dptree`].
 //!
-//! In teloxide, update dispatching is declarative: it takes the form of a
+//! In `teloxide`, update dispatching is declarative: it takes the form of a
 //! [chain of responsibility] pattern enriched with a number of combinator
 //! functions, which together form an instance of the [`dptree::Handler`] type.
 //!
