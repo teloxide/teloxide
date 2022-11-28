@@ -15,17 +15,12 @@ env:
   CARGO_NET_RETRY: 10
   RUSTUP_MAX_RETRIES: 10
 
+  rust_nightly: nightly-2022-09-01
   # When updating this, also update:
-  # - crates/teloxide-core/src/codegen.rs
-  # - rust-toolchain.toml
-  rust_nightly: nightly-2022-09-23
-  # When updating this, also update:
-  # - **/README.md
-  # - **/src/lib.rs
+  # - README.md
+  # - src/lib.rs
   # - down below in a matrix
   rust_msrv: 1.64.0
-
-  CI: 1
 
 jobs:
   # Depends on all action that are required for a "successful" CI run.
@@ -87,7 +82,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2022-09-23
+            toolchain: nightly-2022-09-01
             features: "--all-features"
           - rust: msrv
             toolchain: 1.64.0

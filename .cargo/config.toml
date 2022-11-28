@@ -1,14 +1,12 @@
 [alias]
-# Using `--features=full --features=nightly` instead of `--all-features` because of
-# https://github.com/rust-lang/cargo/issues/10333
+# We pass "--cfg docsrs" when building docs to turn on nightly-only rustdoc features like
+# `This is supported on feature="..." only.`
 #
-# "tokio/macros" and "tokio/rt-multi-thread" are required for examples
-docs = """doc
--Zrustdoc-scrape-examples=examples
---features=full --features=nightly
---features=tokio/macros --features=tokio/rt-multi-thread
+# "--cfg dep_docsrs" is used for the same reason, but for `teloxide-core`.
+docs = """
+doc 
+  --all-features 
+  --config build.rustflags=["--cfg=dep_docsrs"]
+  --config build.rustdocflags=["--cfg=docsrs","-Znormalize-docs"]
+  -Zrustdoc-scrape-examples=examples
 """
-
-[build]
-# We pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
-rustdocflags = ["--cfg", "docsrs", "-Znormalize-docs"]
