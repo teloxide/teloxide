@@ -4,3 +4,4 @@ format_strings = true
 imports_granularity = "Crate"
 use_small_heuristics = "Max"
 use_field_init_shorthand = true
+merge_derives = false

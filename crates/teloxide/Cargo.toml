@@ -1,0 +1,167 @@
+[package]
+name = "teloxide"
+version = "0.11.3"
+edition = "2021"
+description = "An elegant Telegram bots framework for Rust"
+repository = "https://github.com/teloxide/teloxide"
+documentation = "https://docs.rs/teloxide/"
+readme = "../../README.md"
+keywords = ["teloxide", "telegram", "telegram-bot", "telegram-bot-api"]
+categories = ["web-programming", "api-bindings", "asynchronous"]
+license = "MIT"
+exclude = ["media", "README.md"]
+
+[features]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
+
+webhooks = ["rand"]
+webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
+
+sqlite-storage = ["sqlx"]
+redis-storage = ["redis"]
+cbor-serializer = ["serde_cbor"]
+bincode-serializer = ["bincode"]
+
+macros = ["teloxide-macros"]
+
+ctrlc_handler = ["tokio/signal"]
+
+native-tls = ["teloxide-core/native-tls"]
+rustls = ["teloxide-core/rustls"]
+auto-send = ["teloxide-core/auto_send"]
+throttle = ["teloxide-core/throttle"]
+cache-me = ["teloxide-core/cache_me"]
+trace-adaptor = ["teloxide-core/trace_adaptor"]
+erased = ["teloxide-core/erased"]
+
+# currently used for `README.md` tests, building docs for `docsrs` to add `This is supported on feature="..." only.`,
+# and for teloxide-core.
+nightly = ["teloxide-core/nightly"]
+
+full = [
+    "webhooks-axum",
+    "sqlite-storage",
+    "redis-storage",
+    "cbor-serializer",
+    "bincode-serializer",
+    "macros",
+    "ctrlc_handler",
+    "teloxide-core/full",
+    "native-tls",
+    "rustls",
+    "auto-send",
+    "throttle",
+    "cache-me",
+    "trace-adaptor",
+    "erased",
+]
+
+[dependencies]
+teloxide-core = { version = "0.8.0", default-features = false }
+teloxide-macros = { version = "0.7.0", optional = true }
+
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+dptree = "0.3.0"
+
+# These lines are used only for development.
+# teloxide-core = { path = "../teloxide-core", default-features = false }
+# teloxide-macros = { path = "../teloxide-macros", optional = true }
+# dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
+
+tokio = { version = "1.8", features = ["fs"] }
+tokio-util = "0.7"
+tokio-stream = "0.1.8"
+
+url = "2.2.2"
+log = "0.4"
+bytes = "1.0"
+mime = "0.3"
+
+derive_more = "0.99"
+thiserror = "1.0"
+futures = "0.3.15"
+pin-project = "1.0"
+serde_with_macros = "1.4"
+aquamarine = "0.1.11"
+
+sqlx = { version = "0.6", optional = true, default-features = false, features = [
+        "runtime-tokio-native-tls",
+        "macros",
+        "sqlite",
+] }
+redis = { version = "0.21", features = ["tokio-comp"], optional = true }
+serde_cbor = { version = "0.11", optional = true }
+bincode = { version = "1.3", optional = true }
+axum = { version = "0.5.13", optional = true }
+tower = { version = "0.4.12", optional = true }
+tower-http = { version = "0.3.4", features = ["trace"], optional = true }
+rand = { version = "0.8.5", optional = true }
+
+[dev-dependencies]
+rand = "0.8.3"
+pretty_env_logger = "0.4.0"
+serde = "1"
+serde_json = "1"
+tokio = { version = "1.8", features = ["fs", "rt-multi-thread", "macros"] }
+reqwest = "0.11.11"
+chrono = "0.4"
+tokio-stream = "0.1"
+
+[package.metadata.docs.rs]
+all-features = true
+# FIXME: Add back "-Znormalize-docs" when https://github.com/rust-lang/rust/issues/93703 is fixed
+rustdoc-args = ["--cfg", "docsrs"]
+rustc-args = ["--cfg", "dep_docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
+
+[[test]]
+name = "redis"
+path = "tests/redis.rs"
+required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
+
+[[test]]
+name = "sqlite"
+path = "tests/sqlite.rs"
+required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
+
+[[example]]
+name = "dialogue"
+required-features = ["macros"]
+
+[[example]]
+name = "command"
+required-features = ["macros"]
+
+[[example]]
+name = "db_remember"
+required-features = ["sqlite-storage", "redis-storage", "bincode-serializer", "macros"]
+
+[[example]]
+name = "inline"
+required-features = ["macros"]
+
+[[example]]
+name = "buttons"
+required-features = ["macros"]
+
+[[example]]
+name = "admin"
+required-features = ["macros"]
+
+[[example]]
+name = "dispatching_features"
+required-features = ["macros"]
+
+[[example]]
+name = "ngrok_ping_pong"
+required-features = ["webhooks-axum"]
+
+[[example]]
+name = "heroku_ping_pong"
+required-features = ["webhooks-axum"]
+
+[[example]]
+name = "purchase"
+required-features = ["macros"]
