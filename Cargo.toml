@@ -5,7 +5,6 @@ members = ["crates/*"]
 # The settings below will be applied to all crates in the workspace
 [workspace.package]
 # MSRV (minimal supported Rust version).
-# `1.64` is the version that stabilized `IntoFuture`.
 rust-version = "1.64"
 edition = "2021"
 
