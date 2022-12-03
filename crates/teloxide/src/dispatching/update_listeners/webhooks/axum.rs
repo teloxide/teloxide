@@ -1,17 +1,29 @@
 use std::{convert::Infallible, future::Future, pin::Pin};
 
 use axum::{
-    extract::{FromRequestParts, State},
+    extract::{connect_info, FromRequestParts, State},
     http::{request::Parts, status::StatusCode},
 };
 use tokio::sync::mpsc;
 
 use crate::{
-    dispatching::update_listeners::{webhooks::Options, UpdateListener},
+    dispatching::update_listeners::{webhooks, UpdateListener},
     requests::Requester,
     stop::StopFlag,
     types::Update,
 };
+
+use futures::ready;
+use hyper::{
+    client::connect::{Connected, Connection},
+    server::accept::Accept,
+};
+use std::{io, sync::Arc, task::Poll};
+use tokio::{
+    io::{AsyncRead, AsyncWrite},
+    net::{unix::UCred, UnixListener, UnixStream},
+};
+use tower::BoxError;
 
 /// Webhook implementation based on the [mod@axum] framework.
 ///
@@ -40,28 +52,50 @@ use crate::{
 /// function.
 pub async fn axum<R>(
     bot: R,
-    options: Options,
+    options: webhooks::Options,
 ) -> Result<impl UpdateListener<Err = Infallible>, R::Err>
 where
     R: Requester + Send + 'static,
     <R as Requester>::DeleteWebhook: Send,
 {
-    let Options { address, .. } = options;
+    let location = options.location.clone();
 
     let (mut update_listener, stop_flag, app) = axum_to_router(bot, options).await?;
     let stop_token = update_listener.stop_token();
 
-    tokio::spawn(async move {
-        axum::Server::bind(&address)
-            .serve(app.into_make_service())
-            .with_graceful_shutdown(stop_flag)
-            .await
-            .map_err(|err| {
-                stop_token.stop();
-                err
-            })
-            .expect("Axum server error");
-    });
+    match location {
+        webhooks::Location::IP(socket_address) => {
+            tokio::spawn(async move {
+                axum::Server::bind(&socket_address)
+                    .serve(app.into_make_service())
+                    .with_graceful_shutdown(stop_flag)
+                    .await
+                    .map_err(|err| {
+                        stop_token.stop();
+                        err
+                    })
+                    .expect("Axum server error");
+            });
+        }
+        webhooks::Location::Path(path) => {
+            let _ = tokio::fs::remove_file(&path).await;
+            tokio::fs::create_dir_all(path.parent().unwrap()).await.unwrap();
+
+            let uds = UnixListener::bind(path).unwrap();
+
+            tokio::spawn(async move {
+                axum::Server::builder(ServerAccept { uds })
+                    .serve(app.into_make_service())
+                    .with_graceful_shutdown(stop_flag)
+                    .await
+                    .map_err(|err| {
+                        stop_token.stop();
+                        err
+                    })
+                    .expect("Axum server error");
+            });
+        }
+    };
 
     Ok(update_listener)
 }
@@ -109,7 +143,7 @@ where
 /// versions of this function.
 pub async fn axum_to_router<R>(
     bot: R,
-    mut options: Options,
+    mut options: webhooks::Options,
 ) -> Result<
     (impl UpdateListener<Err = Infallible>, impl Future<Output = ()> + Send, axum::Router),
     R::Err,
@@ -153,7 +187,7 @@ where
 /// [`fn@axum`] and [`axum_to_router`] for higher-level versions of this
 /// function.
 pub fn axum_no_setup(
-    options: Options,
+    options: webhooks::Options,
 ) -> (impl UpdateListener<Err = Infallible>, impl Future<Output = ()>, axum::Router) {
     use crate::{
         dispatching::update_listeners::{self, webhooks::tuple_first_mut},
@@ -207,6 +241,7 @@ pub fn axum_no_setup(
     let (stop_token, stop_flag) = mk_stop_token();
 
     let app = axum::Router::new()
+        .route("/health", axum::routing::get(|| async { StatusCode::OK }))
         .route(options.url.path(), post(telegram_request))
         .layer(TraceLayer::new_for_http())
         .with_state(WebhookState {
@@ -290,5 +325,85 @@ impl<S> FromRequestParts<S> for XTelegramBotApiSecretToken {
             .map(Self);
 
         Box::pin(async { res }) as _
+    }
+}
+
+// axum unix socket handling, see
+// https://github.com/tokio-rs/axum/blob/main/examples/unix-domain-socket/src/main.rs
+
+struct ServerAccept {
+    uds: UnixListener,
+}
+
+impl Accept for ServerAccept {
+    type Conn = UnixStream;
+    type Error = BoxError;
+
+    fn poll_accept(
+        self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Option<Result<Self::Conn, Self::Error>>> {
+        let (stream, _addr) = ready!(self.uds.poll_accept(cx))?;
+        Poll::Ready(Some(Ok(stream)))
+    }
+}
+
+struct ClientConnection {
+    stream: UnixStream,
+}
+
+impl AsyncWrite for ClientConnection {
+    fn poll_write(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+        buf: &[u8],
+    ) -> Poll<Result<usize, io::Error>> {
+        Pin::new(&mut self.stream).poll_write(cx, buf)
+    }
+
+    fn poll_flush(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Result<(), io::Error>> {
+        Pin::new(&mut self.stream).poll_flush(cx)
+    }
+
+    fn poll_shutdown(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Result<(), io::Error>> {
+        Pin::new(&mut self.stream).poll_shutdown(cx)
+    }
+}
+
+impl AsyncRead for ClientConnection {
+    fn poll_read(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+        buf: &mut tokio::io::ReadBuf<'_>,
+    ) -> Poll<io::Result<()>> {
+        Pin::new(&mut self.stream).poll_read(cx, buf)
+    }
+}
+
+impl Connection for ClientConnection {
+    fn connected(&self) -> Connected {
+        Connected::new()
+    }
+}
+
+#[derive(Clone, Debug)]
+#[allow(dead_code)]
+struct UdsConnectInfo {
+    peer_addr: Arc<tokio::net::unix::SocketAddr>,
+    peer_cred: UCred,
+}
+
+impl connect_info::Connected<&UnixStream> for UdsConnectInfo {
+    fn connect_info(target: &UnixStream) -> Self {
+        let peer_addr = target.peer_addr().unwrap();
+        let peer_cred = target.peer_cred().unwrap();
+
+        Self { peer_addr: Arc::new(peer_addr), peer_cred }
     }
 }

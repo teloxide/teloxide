@@ -1,13 +1,20 @@
 //!
-use std::net::SocketAddr;
+use std::{net::SocketAddr, path::PathBuf};
 
 use crate::{requests::Requester, types::InputFile};
 
 /// Options related to setting up webhooks.
 #[must_use]
+#[derive(Clone)]
+pub enum Location {
+    IP(SocketAddr),
+    // filesystem path to unix socket
+    Path(PathBuf),
+}
+
 pub struct Options {
-    /// Local address to listen to.
-    pub address: SocketAddr,
+    /// Local location to listen to.
+    pub location: Location,
 
     /// Public url that Telegram will send updates to.
     ///
@@ -20,7 +27,7 @@ pub struct Options {
     ///   pretend to be Telegram and send fake updates to your bot
     ///
     /// [set_webhook]: https://core.telegram.org/bots/api#setwebhook
-    /// [addr]: (self::Options.address)
+    /// [addr]: (self::Options.location)
     pub url: url::Url,
 
     /// Upload your public key certificate so that the root certificate in use
@@ -54,11 +61,11 @@ pub struct Options {
 }
 
 impl Options {
-    /// Construct a new webhook options, see [`Options::address`] and
+    /// Construct a new webhook options, see [`Options::location`] and
     /// [`Options::url`] for details.
-    pub fn new(address: SocketAddr, url: url::Url) -> Self {
+    pub fn new(location: Location, url: url::Url) -> Self {
         Self {
-            address,
+            location,
             url,
             certificate: None,
             max_connections: None,
