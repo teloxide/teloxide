@@ -241,7 +241,6 @@ pub fn axum_no_setup(
     let (stop_token, stop_flag) = mk_stop_token();
 
     let app = axum::Router::new()
-        .route("/health", axum::routing::get(|| async { StatusCode::OK }))
         .route(options.url.path(), post(telegram_request))
         .layer(TraceLayer::new_for_http())
         .with_state(WebhookState {
