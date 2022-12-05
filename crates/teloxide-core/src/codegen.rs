@@ -15,7 +15,6 @@ pub(crate) mod schema;
 
 use std::{
     fs,
-    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -79,16 +78,7 @@ pub fn ensure_files_contents<'a>(
     let mut err_count = 0;
 
     for (path, contents) in files_and_contents {
-        let mut file = fs::File::options()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .append(false)
-            .open(path)
-            .unwrap();
-        let mut old_contents = String::with_capacity(contents.len());
-        file.read_to_string(&mut old_contents).unwrap();
+        let old_contents = fs::read_to_string(path).unwrap();
 
         if normalize_newlines(&old_contents) == normalize_newlines(contents) {
             // File is already up to date.
@@ -105,7 +95,7 @@ pub fn ensure_files_contents<'a>(
         if let Some(parent) = path.parent() {
             let _ = fs::create_dir_all(parent);
         }
-        file.write_all(contents.as_bytes()).unwrap();
+        fs::write(path, contents.as_bytes()).unwrap();
     }
 
     let (s, were) = match err_count {
