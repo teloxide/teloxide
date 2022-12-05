@@ -231,6 +231,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "text",
                     ty: String,
                     descr: Doc(md: "Text of the message to be sent, 1-4096 characters after entities parsing")
@@ -305,6 +310,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "from_chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
@@ -343,6 +353,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "from_chat_id",
@@ -424,6 +439,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "photo",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -502,6 +522,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "audio",
@@ -604,6 +629,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "document",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -695,6 +725,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "video",
@@ -803,6 +838,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "animation",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -898,13 +938,18 @@ Schema(
                     "Message": "https://core.telegram.org/bots/api#message",
                 },
             ),
-            tg_doc: "https://core.telegram.org/bots/api#sendaudio",
+            tg_doc: "https://core.telegram.org/bots/api#sendvoice",
             tg_category: "Available methods",
             params: [
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "voice",
@@ -987,6 +1032,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "video_note",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -1065,6 +1115,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "media",
                     ty: ArrayOf(RawTy("InputMedia")),
                     descr: Doc(md: "A JSON-serialized array describing messages to be sent, must include 2-10 items")
@@ -1108,6 +1163,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "latitude",
@@ -1393,6 +1453,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "latitude",
                     ty: f64,
                     descr: Doc(md: "Latitude of new location"),
@@ -1487,6 +1552,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "phone_number",
                     ty: String,
                     descr: Doc(md: "Contact's phone number"),
@@ -1559,6 +1629,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "question",
@@ -1673,6 +1748,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "emoji",
@@ -1943,11 +2023,6 @@ Schema(
                     descr: Doc(md: "Pass True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege"),
                 ),
                 Param(
-                    name: "can_change_info",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can change chat title, photo and other settings")
-                ),
-                Param(
                     name: "can_post_messages",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True, if the administrator can create channel posts, channels only")
@@ -1968,24 +2043,34 @@ Schema(
                     descr: Doc(md: "Pass True, if the administrator can manage video chats, supergroups only")
                 ),
                 Param(
-                    name: "can_invite_users",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can invite new users to the chat")
-                ),
-                Param(
                     name: "can_restrict_members",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True, if the administrator can restrict, ban or unban chat members")
-                ),
-                 Param(
-                    name: "can_pin_messages",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can pin messages, supergroups only")
                 ),
                 Param(
                     name: "can_promote_members",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him)")
+                ),
+                Param(
+                    name: "can_change_info",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can change chat title, photo and other settings")
+                ),
+                Param(
+                    name: "can_invite_users",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can invite new users to the chat")
+                ),
+                Param(
+                    name: "can_pin_messages",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can pin messages, supergroups only")
+                ),
+                Param(
+                    name: "can_manage_topics",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the user is allowed to create, rename, close, and reopen forum topics, supergroups only")
                 ),
             ],
         ),
@@ -2486,6 +2571,149 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+            ],
+        ),
+        Method(
+            names: ("getForumTopicIconStickers", "GetForumTopicIconStickers", "get_forum_topic_icon_stickers"),
+            return_ty: ArrayOf(RawTy("Sticker")),
+            doc: Doc(md: "Use this method to get custom emoji stickers, which can be used as a forum topic icon by any user. Requires no parameters. Returns an Array of `Sticker` objects."),
+            tg_doc: "https://core.telegram.org/bots/api#getforumtopiciconstickers",
+            tg_category: "Available methods",
+            params: [],
+        ),
+        Method(
+            names: ("createForumTopic", "CreateForumTopic", "create_forum_topic"),
+            return_ty: RawTy("ForumTopic"),
+            doc: Doc(md: "Use this method to create a topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights. Returns information about the created topic as a `ForumTopic` object."),
+            tg_doc: "https://core.telegram.org/bots/api#createforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Topic name, 1-128 characters")
+                ),
+                Param(
+                    name: "icon_color",
+                    // FIXME: use an Rgb or something
+                    ty: u32,
+                    descr: Doc(md: "Color of the topic icon in RGB format. Currently, must be one of 7322096 (0x6FB9F0), 16766590 (0xFFD67E), 13338331 (0xCB86DB), 9367192 (0x8EEE98), 16749490 (0xFF93B2), or 16478047 (0xFB6F5F)")
+                ),
+                Param(
+                    name: "icon_custom_emoji_id",
+                    ty: String,
+                    descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
+                ),
+            ],
+        ),
+        Method(
+            names: ("editForumTopic", "EditForumTopic", "edit_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have _can\\_manage\\_topics_ administrator rights, unless it is the creator of the topic. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#editforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
+                ),
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Topic name, 1-128 characters")
+                ),
+                Param(
+                    name: "icon_custom_emoji_id",
+                    ty: String,
+                    descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
+                ),
+            ],
+        ),
+        Method(
+            names: ("closeForumTopic", "CloseForumTopic", "close_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to close an open topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights, unless it is the creator of the topic. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#closeforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("reopenForumTopic", "ReopenForumTopic", "reopen_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to reopen a closed topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights, unless it is the creator of the topic. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#reopenforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("deleteForumTopic", "DeleteForumTopic", "delete_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete a forum topic along with all its messages in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_delete\\_messages_ administrator rights. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#deleteforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("unpinAllForumTopicMessages", "UnpinAllForumTopicMessages", "unpin_all_forum_topic_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the chat for this to work and must have the _can\\_pin\\_messages_ administrator right in the supergroup. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#deleteforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
             ],
         ),
@@ -3107,6 +3335,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
                 ),
                 Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
                     name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -3358,6 +3591,11 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target private chat"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "title",
@@ -3710,6 +3948,11 @@ Schema(
                     name: "chat_id",
                     ty: u32,
                     descr: Doc(md: "Unique identifier for the target chat"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
                     name: "game_short_name",

@@ -17,6 +17,8 @@ impl_payload! {
             pub text: String [into],
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options

@@ -20,6 +20,8 @@ impl_payload! {
             pub message_id: MessageId,
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

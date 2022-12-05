@@ -644,6 +644,107 @@ impl Requester for Bot {
         Self::DeleteChatStickerSet::new(self.clone(), payloads::DeleteChatStickerSet::new(chat_id))
     }
 
+    type GetForumTopicIconStickers = JsonRequest<payloads::GetForumTopicIconStickers>;
+
+    fn get_forum_topic_icon_stickers(&self) -> Self::GetForumTopicIconStickers {
+        Self::GetForumTopicIconStickers::new(
+            self.clone(),
+            payloads::GetForumTopicIconStickers::new(),
+        )
+    }
+
+    type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
+
+    fn create_forum_topic<C, N, I>(
+        &self,
+        chat_id: C,
+        name: N,
+        icon_color: u32,
+        icon_custom_emoji_id: I,
+    ) -> Self::CreateForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String>,
+    {
+        Self::CreateForumTopic::new(
+            self.clone(),
+            payloads::CreateForumTopic::new(chat_id, name, icon_color, icon_custom_emoji_id),
+        )
+    }
+
+    type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
+
+    fn edit_forum_topic<C, N, I>(
+        &self,
+        chat_id: C,
+        message_thread_id: i32,
+        name: N,
+        icon_custom_emoji_id: I,
+    ) -> Self::EditForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String>,
+    {
+        Self::EditForumTopic::new(
+            self.clone(),
+            payloads::EditForumTopic::new(chat_id, message_thread_id, name, icon_custom_emoji_id),
+        )
+    }
+
+    type CloseForumTopic = JsonRequest<payloads::CloseForumTopic>;
+
+    fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::CloseForumTopic::new(
+            self.clone(),
+            payloads::CloseForumTopic::new(chat_id, message_thread_id),
+        )
+    }
+
+    type ReopenForumTopic = JsonRequest<payloads::ReopenForumTopic>;
+
+    fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::ReopenForumTopic::new(
+            self.clone(),
+            payloads::ReopenForumTopic::new(chat_id, message_thread_id),
+        )
+    }
+
+    type DeleteForumTopic = JsonRequest<payloads::DeleteForumTopic>;
+
+    fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::DeleteForumTopic::new(
+            self.clone(),
+            payloads::DeleteForumTopic::new(chat_id, message_thread_id),
+        )
+    }
+
+    type UnpinAllForumTopicMessages = JsonRequest<payloads::UnpinAllForumTopicMessages>;
+
+    fn unpin_all_forum_topic_messages<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: i32,
+    ) -> Self::UnpinAllForumTopicMessages
+    where
+        C: Into<Recipient>,
+    {
+        Self::UnpinAllForumTopicMessages::new(
+            self.clone(),
+            payloads::UnpinAllForumTopicMessages::new(chat_id, message_thread_id),
+        )
+    }
+
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
     fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery

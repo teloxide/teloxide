@@ -19,6 +19,8 @@ impl_payload! {
             pub longitude: f64,
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// The radius of uncertainty for the location, measured in meters; 0-1500
             pub horizontal_accuracy: f64,
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400.

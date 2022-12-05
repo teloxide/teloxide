@@ -20,6 +20,8 @@ impl_payload! {
             pub message_id: MessageId,
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
             pub caption: String [into],
             /// Mode for parsing entities in the photo caption. See [formatting options] for more details.
