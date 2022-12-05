@@ -332,6 +332,7 @@ mod test {
             kind: UpdateKind::Message(Message {
                 via_bot: None,
                 id: MessageId(6557),
+                thread_id: None,
                 date,
                 chat: Chat {
                     id: ChatId(218_485_655),
@@ -342,6 +343,7 @@ mod test {
                         bio: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None,
+                        emoji_status_custom_emoji_id: None,
                     }),
                     photo: None,
                     pinned_message: None,
@@ -368,6 +370,7 @@ mod test {
                     reply_markup: None,
                     sender_chat: None,
                     author_signature: None,
+                    is_topic_message: false,
                     is_automatic_forward: false,
                     has_protected_content: false,
                 }),

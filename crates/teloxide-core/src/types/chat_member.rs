@@ -87,6 +87,10 @@ pub struct Administrator {
     /// `true` if the administrator can pin messages, supergroups only.
     pub can_pin_messages: Option<bool>,
 
+    /// `true`, if the user is allowed to create, rename, close, and reopen
+    /// forum topics; supergroups only
+    pub can_manage_topics: Option<bool>,
+
     /// `true` if the administrator can add new administrators with a subset of
     /// his own privileges or demote administrators that he has promoted,
     /// directly or indirectly (promoted by administrators that were appointed
@@ -129,6 +133,10 @@ pub struct Restricted {
 
     /// `true` if the user is allowed to pin messages.
     pub can_pin_messages: bool,
+
+    /// `true`, if the user is allowed to create, rename, close, and reopen
+    /// forum topics
+    pub can_manage_topics: bool,
 
     /// `true` if the user is allowed to send polls.
     pub can_send_polls: bool,
@@ -514,6 +522,27 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true` if the user is allowed to manage topics.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat (even if the chat is not a supergroup)
+    /// - is an administrator in the given chat and has the
+    ///   [`Administrator::can_manage_topics`] privilege.
+    /// - is restricted, but does have [`Restricted::can_manage_topics`]
+    ///   privilege
+    /// Returns `false` otherwise.
+    #[must_use]
+    pub fn can_manage_topics(&self) -> bool {
+        match self {
+            ChatMemberKind::Owner(_) => true,
+            ChatMemberKind::Administrator(Administrator { can_manage_topics, .. }) => {
+                can_manage_topics.unwrap_or_default()
+            }
+            ChatMemberKind::Restricted(Restricted { can_manage_topics, .. }) => *can_manage_topics,
+            ChatMemberKind::Member | ChatMemberKind::Left | ChatMemberKind::Banned(_) => false,
+        }
+    }
+
     /// Returns `true` if the user can add new administrators with a subset of
     /// his own privileges or demote administrators that he has promoted,
     /// directly or indirectly (promoted by administrators that were appointed
@@ -780,6 +809,7 @@ mod tests {
                 can_restrict_members: true,
                 can_pin_messages: Some(true),
                 can_promote_members: true,
+                can_manage_topics: None,
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(json).unwrap();

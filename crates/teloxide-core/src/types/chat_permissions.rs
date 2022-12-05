@@ -46,7 +46,7 @@ bitflags::bitflags! {
     /// ```
     #[derive(Serialize, Deserialize)]
     #[serde(from = "ChatPermissionsRaw", into = "ChatPermissionsRaw")]
-    pub struct ChatPermissions: u8 {
+    pub struct ChatPermissions: u16 {
         /// Set if the user is allowed to send text messages, contacts,
         /// locations and venues.
         const SEND_MESSAGES = 1;
@@ -78,8 +78,13 @@ bitflags::bitflags! {
         /// Set if the user is allowed to pin messages. Ignored in public
         /// supergroups.
         const PIN_MESSAGES = (1 << 7);
+
+        /// Set if the user is allowed to create, rename, close, and reopen forum topics.
+        const MANAGE_TOPICS = (1 << 8);
     }
 }
+
+// FIXME: add `can_*` methods for convinience
 
 /// Helper for (de)serialization
 #[derive(Serialize, Deserialize)]
@@ -107,6 +112,13 @@ struct ChatPermissionsRaw {
 
     #[serde(default, skip_serializing_if = "Not::not")]
     can_pin_messages: bool,
+
+    // HACK: do not `skip_serializing_if = "Not::not"`, from tg docs:
+    //       > If omitted defaults to the value of `can_pin_messages`
+    //       but we don't have two different values for "absent" and "false"...
+    //       or did they mean that `can_pin_messages` implies `can_manage_topics`?..
+    #[serde(default)]
+    can_manage_topics: bool,
 }
 
 impl From<ChatPermissions> for ChatPermissionsRaw {
@@ -120,6 +132,7 @@ impl From<ChatPermissions> for ChatPermissionsRaw {
             can_change_info: this.contains(ChatPermissions::CHANGE_INFO),
             can_invite_users: this.contains(ChatPermissions::INVITE_USERS),
             can_pin_messages: this.contains(ChatPermissions::PIN_MESSAGES),
+            can_manage_topics: this.contains(ChatPermissions::MANAGE_TOPICS),
         }
     }
 }
@@ -135,6 +148,7 @@ impl From<ChatPermissionsRaw> for ChatPermissions {
             can_change_info,
             can_invite_users,
             can_pin_messages,
+            can_manage_topics,
         }: ChatPermissionsRaw,
     ) -> Self {
         let mut this = Self::empty();
@@ -163,6 +177,10 @@ impl From<ChatPermissionsRaw> for ChatPermissions {
         if can_pin_messages {
             this |= Self::PIN_MESSAGES;
         }
+        // FIXME: should we do `|| can_pin_messages` here? (the same tg doc weirdness)
+        if can_manage_topics {
+            this |= Self::MANAGE_TOPICS
+        }
 
         this
     }
@@ -175,8 +193,7 @@ mod tests {
     #[test]
     fn serialization() {
         let permissions = ChatPermissions::SEND_MEDIA_MESSAGES | ChatPermissions::PIN_MESSAGES;
-        let expected =
-            r#"{"can_send_messages":true,"can_send_media_messages":true,"can_pin_messages":true}"#;
+        let expected = r#"{"can_send_messages":true,"can_send_media_messages":true,"can_pin_messages":true,"can_manage_topics":false}"#;
         let actual = serde_json::to_string(&permissions).unwrap();
         assert_eq!(expected, actual);
     }
