@@ -79,7 +79,14 @@ pub fn ensure_files_contents<'a>(
     let mut err_count = 0;
 
     for (path, contents) in files_and_contents {
-        let mut file = fs::File::options().read(true).write(true).create(true).open(path).unwrap();
+        let mut file = fs::File::options()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .append(false)
+            .open(path)
+            .unwrap();
         let mut old_contents = String::with_capacity(contents.len());
         file.read_to_string(&mut old_contents).unwrap();
 
