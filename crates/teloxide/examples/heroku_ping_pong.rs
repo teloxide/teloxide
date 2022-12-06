@@ -35,7 +35,7 @@ async fn main() {
         .parse()
         .expect("PORT env variable value is not an integer");
 
-    let addr = webhooks::Location::IP(([0, 0, 0, 0], port).into());
+    let addr = webhooks::Location::from(([0, 0, 0, 0], port));
 
     // Heroku host example: "heroku-ping-pong-bot.herokuapp.com"
     let host = env::var("HOST").expect("HOST env variable is not set");

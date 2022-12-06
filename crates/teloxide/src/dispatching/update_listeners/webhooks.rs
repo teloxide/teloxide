@@ -1,19 +1,34 @@
 //!
-use std::{net::SocketAddr, path::PathBuf};
+use std::{
+    net::SocketAddr,
+    path::{Path, PathBuf},
+};
 
 use crate::{requests::Requester, types::InputFile};
 
-/// Options related to setting up webhooks.
-#[must_use]
-#[derive(Clone)]
+#[derive(Clone, derive_more::From)]
 pub enum Location {
-    IP(SocketAddr),
+    Ip(SocketAddr),
     // filesystem path to unix socket
     Path(PathBuf),
 }
 
+impl From<&Path> for Location {
+    fn from(path: &Path) -> Self {
+        Self::Path(path.into())
+    }
+}
+
+impl From<([u8; 4], u16)> for Location {
+    fn from(addr_port: ([u8; 4], u16)) -> Self {
+        Self::Ip(addr_port.into())
+    }
+}
+
+/// Options related to setting up webhooks.
+#[must_use]
 pub struct Options {
-    /// Local location to listen to.
+    /// Local address or unix socket to listen to.
     pub location: Location,
 
     /// Public url that Telegram will send updates to.

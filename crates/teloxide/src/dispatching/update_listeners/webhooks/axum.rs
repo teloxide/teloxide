@@ -7,7 +7,10 @@ use axum::{
 use tokio::sync::mpsc;
 
 use crate::{
-    dispatching::update_listeners::{webhooks, UpdateListener},
+    dispatching::update_listeners::{
+        webhooks::{Location, Options},
+        UpdateListener,
+    },
     requests::Requester,
     stop::StopFlag,
     types::Update,
@@ -52,7 +55,7 @@ use tower::BoxError;
 /// function.
 pub async fn axum<R>(
     bot: R,
-    options: webhooks::Options,
+    options: Options,
 ) -> Result<impl UpdateListener<Err = Infallible>, R::Err>
 where
     R: Requester + Send + 'static,
@@ -64,7 +67,7 @@ where
     let stop_token = update_listener.stop_token();
 
     match location {
-        webhooks::Location::IP(socket_address) => {
+        Location::Ip(socket_address) => {
             tokio::spawn(async move {
                 axum::Server::bind(&socket_address)
                     .serve(app.into_make_service())
@@ -77,7 +80,7 @@ where
                     .expect("Axum server error");
             });
         }
-        webhooks::Location::Path(path) => {
+        Location::Path(path) => {
             let _ = tokio::fs::remove_file(&path).await;
             tokio::fs::create_dir_all(path.parent().unwrap()).await.unwrap();
 
@@ -143,7 +146,7 @@ where
 /// versions of this function.
 pub async fn axum_to_router<R>(
     bot: R,
-    mut options: webhooks::Options,
+    mut options: Options,
 ) -> Result<
     (impl UpdateListener<Err = Infallible>, impl Future<Output = ()> + Send, axum::Router),
     R::Err,
@@ -187,7 +190,7 @@ where
 /// [`fn@axum`] and [`axum_to_router`] for higher-level versions of this
 /// function.
 pub fn axum_no_setup(
-    options: webhooks::Options,
+    options: Options,
 ) -> (impl UpdateListener<Err = Infallible>, impl Future<Output = ()>, axum::Router) {
     use crate::{
         dispatching::update_listeners::{self, webhooks::tuple_first_mut},
