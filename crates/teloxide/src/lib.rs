@@ -6,8 +6,10 @@
 //!
 //! [[`examples/throw_dice.rs`](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs)]
 //! ```no_run
+//! # #[cfg(feature = "ctrlc_handler")]
 //! use teloxide::prelude::*;
 //!
+//! # #[cfg(feature = "ctrlc_handler")]
 //! # #[tokio::main]
 //! # async fn main() {
 //! pretty_env_logger::init();
@@ -20,7 +22,7 @@
 //!     Ok(())
 //! })
 //! .await;
-//! # }
+//! # } #[cfg(not(feature = "ctrlc_handler"))] fn main(){}
 //! ```
 //!
 //! <div align="center">
