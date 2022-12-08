@@ -137,41 +137,49 @@ required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
 
 
 [[example]]
-name = "dialogue"
-required-features = ["macros"]
+name = "admin"
+required-features = ["macros", "ctrlc_handler"]
+
+[[example]]
+name = "buttons"
+required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
 name = "command"
-required-features = ["macros"]
+required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
 name = "db_remember"
 required-features = ["sqlite-storage", "redis-storage", "bincode-serializer", "macros"]
 
 [[example]]
-name = "inline"
-required-features = ["macros"]
-
-[[example]]
-name = "buttons"
-required-features = ["macros"]
-
-[[example]]
-name = "admin"
-required-features = ["macros"]
+name = "dialogue"
+required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
 name = "dispatching_features"
-required-features = ["macros"]
-
-[[example]]
-name = "ngrok_ping_pong"
-required-features = ["webhooks-axum"]
+required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
 name = "heroku_ping_pong"
-required-features = ["webhooks-axum"]
+required-features = ["webhooks-axum", "ctrlc_handler"]
+
+[[example]]
+name = "inline"
+required-features = ["macros", "ctrlc_handler"]
+
+[[example]]
+name = "ngrok_ping_pong"
+required-features = ["webhooks-axum", "ctrlc_handler"]
 
 [[example]]
 name = "purchase"
-required-features = ["macros"]
+required-features = ["macros", "ctrlc_handler"]
+
+[[example]]
+name = "shared_state"
+required-features = ["ctrlc_handler"]
+
+[[example]]
+name = "throw_dice"
+required-features = ["ctrlc_handler"]

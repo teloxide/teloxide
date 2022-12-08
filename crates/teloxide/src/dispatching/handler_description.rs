@@ -77,14 +77,15 @@ impl EventKind for Kind {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "macros")]
     use crate::{
+        self as teloxide, // fixup for the `BotCommands` macro
         dispatching::{HandlerExt, UpdateFilterExt},
         types::{AllowedUpdate::*, Update},
         utils::command::BotCommands,
     };
 
-    use crate as teloxide; // fixup for the `BotCommands` macro
-
+    #[cfg(feature = "macros")]
     #[derive(BotCommands, Clone)]
     #[command(rename_rule = "lowercase")]
     enum Cmd {
@@ -93,6 +94,7 @@ mod tests {
 
     // <https://github.com/teloxide/teloxide/discussions/648>
     #[test]
+    #[cfg(feature = "macros")]
     fn discussion_648() {
         let h =
             dptree::entry().branch(Update::filter_my_chat_member().endpoint(|| async {})).branch(
@@ -107,5 +109,12 @@ mod tests {
         v.sort_by_key(|&a| a as u8);
 
         assert_eq!(v, [Message, MyChatMember])
+    }
+
+    #[test]
+    #[ignore = "this test requires `macros` feature"]
+    #[cfg(not(feature = "macros"))]
+    fn discussion_648() {
+        panic!("this test requires `macros` feature")
     }
 }
