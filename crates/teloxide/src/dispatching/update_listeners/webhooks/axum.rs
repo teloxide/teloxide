@@ -1,14 +1,16 @@
 use std::{convert::Infallible, future::Future, pin::Pin};
 
 use axum::{
-    extract::{FromRequest, RequestParts},
-    http::status::StatusCode,
+    extract::{FromRequestParts, State},
+    http::{request::Parts, status::StatusCode},
 };
+use tokio::sync::mpsc;
 
 use crate::{
     dispatching::update_listeners::{webhooks::Options, UpdateListener},
     requests::Requester,
     stop::StopFlag,
+    types::Update,
 };
 
 /// Webhook implementation based on the [mod@axum] framework.
@@ -156,25 +158,17 @@ pub fn axum_no_setup(
     use crate::{
         dispatching::update_listeners::{self, webhooks::tuple_first_mut},
         stop::{mk_stop_token, StopToken},
-        types::Update,
     };
-    use axum::{extract::Extension, response::IntoResponse, routing::post};
-    use tokio::sync::mpsc;
+    use axum::{response::IntoResponse, routing::post};
     use tokio_stream::wrappers::UnboundedReceiverStream;
-    use tower::ServiceBuilder;
     use tower_http::trace::TraceLayer;
 
-    type Sender = mpsc::UnboundedSender<Result<Update, std::convert::Infallible>>;
-    type CSender = ClosableSender<Result<Update, std::convert::Infallible>>;
-
-    let (tx, rx): (Sender, _) = mpsc::unbounded_channel();
+    let (tx, rx): (UpdateSender, _) = mpsc::unbounded_channel();
 
     async fn telegram_request(
-        input: String,
+        State(WebhookState { secret, flag, mut tx }): State<WebhookState>,
         secret_header: XTelegramBotApiSecretToken,
-        secret: Extension<Option<String>>,
-        tx: Extension<CSender>,
-        flag: Extension<StopFlag>,
+        input: String,
     ) -> impl IntoResponse {
         // FIXME: use constant time comparison here
         if secret_header.0.as_deref() != secret.as_deref().map(str::as_bytes) {
@@ -186,7 +180,7 @@ pub fn axum_no_setup(
             // Do not process updates after `.stop()` is called even if the server is still
             // running (useful for when you need to stop the bot but can't stop the server).
             _ if flag.is_stopped() => {
-                { tx.0 }.close();
+                tx.close();
                 return StatusCode::SERVICE_UNAVAILABLE;
             }
             Some(tx) => tx,
@@ -212,14 +206,14 @@ pub fn axum_no_setup(
 
     let (stop_token, stop_flag) = mk_stop_token();
 
-    let app = axum::Router::new().route(options.url.path(), post(telegram_request)).layer(
-        ServiceBuilder::new()
-            .layer(TraceLayer::new_for_http())
-            .layer(Extension(ClosableSender::new(tx)))
-            .layer(Extension(stop_flag.clone()))
-            .layer(Extension(options.secret_token))
-            .into_inner(),
-    );
+    let app = axum::Router::new()
+        .route(options.url.path(), post(telegram_request))
+        .layer(TraceLayer::new_for_http())
+        .with_state(WebhookState {
+            tx: ClosableSender::new(tx),
+            flag: stop_flag.clone(),
+            secret: options.secret_token,
+        });
 
     let stream = UnboundedReceiverStream::new(rx);
 
@@ -233,9 +227,19 @@ pub fn axum_no_setup(
     (listener, stop_flag, app)
 }
 
+type UpdateSender = mpsc::UnboundedSender<Result<Update, std::convert::Infallible>>;
+type UpdateCSender = ClosableSender<Result<Update, std::convert::Infallible>>;
+
+#[derive(Clone)]
+struct WebhookState {
+    tx: UpdateCSender,
+    flag: StopFlag,
+    secret: Option<String>,
+}
+
 /// A terrible workaround to drop axum extension
 struct ClosableSender<T> {
-    origin: std::sync::Arc<std::sync::RwLock<Option<tokio::sync::mpsc::UnboundedSender<T>>>>,
+    origin: std::sync::Arc<std::sync::RwLock<Option<mpsc::UnboundedSender<T>>>>,
 }
 
 impl<T> Clone for ClosableSender<T> {
@@ -245,11 +249,11 @@ impl<T> Clone for ClosableSender<T> {
 }
 
 impl<T> ClosableSender<T> {
-    fn new(sender: tokio::sync::mpsc::UnboundedSender<T>) -> Self {
+    fn new(sender: mpsc::UnboundedSender<T>) -> Self {
         Self { origin: std::sync::Arc::new(std::sync::RwLock::new(Some(sender))) }
     }
 
-    fn get(&self) -> Option<tokio::sync::mpsc::UnboundedSender<T>> {
+    fn get(&self) -> Option<mpsc::UnboundedSender<T>> {
         self.origin.read().unwrap().clone()
     }
 
@@ -260,20 +264,22 @@ impl<T> ClosableSender<T> {
 
 struct XTelegramBotApiSecretToken(Option<Vec<u8>>);
 
-impl<B> FromRequest<B> for XTelegramBotApiSecretToken {
+impl<S> FromRequestParts<S> for XTelegramBotApiSecretToken {
     type Rejection = StatusCode;
 
-    fn from_request<'l0, 'at>(
-        req: &'l0 mut RequestParts<B>,
+    fn from_request_parts<'l0, 'l1, 'at>(
+        req: &'l0 mut Parts,
+        _state: &'l1 S,
     ) -> Pin<Box<dyn Future<Output = Result<Self, Self::Rejection>> + Send + 'at>>
     where
         'l0: 'at,
+        'l1: 'at,
         Self: 'at,
     {
         use crate::dispatching::update_listeners::webhooks::check_secret;
 
         let res = req
-            .headers_mut()
+            .headers
             .remove("x-telegram-bot-api-secret-token")
             .map(|header| {
                 check_secret(header.as_bytes())

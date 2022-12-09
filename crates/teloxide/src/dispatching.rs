@@ -1,6 +1,6 @@
 //! An update dispatching model based on [`dptree`].
 //!
-//! In teloxide, update dispatching is declarative: it takes the form of a
+//! In `teloxide`, update dispatching is declarative: it takes the form of a
 //! [chain of responsibility] pattern enriched with a number of combinator
 //! functions, which together form an instance of the [`dptree::Handler`] type.
 //!
@@ -23,6 +23,7 @@
 //! `/start` or `/help`:
 //!
 //! ```no_run
+//! # #[cfg(feature = "macros")] {
 //! # use teloxide::utils::command::BotCommands;
 //! #[derive(BotCommands, Clone)]
 //! #[command(rename_rule = "lowercase", description = "These commands are supported:")]
@@ -34,6 +35,7 @@
 //!     #[command(description = "cancel the purchase procedure.")]
 //!     Cancel,
 //! }
+//! # }
 //! ```
 //!
 //! Now the key question: how to elegantly dispatch on different combinations of
@@ -43,6 +45,7 @@
 //! solution is to use [`dptree`]:
 //!
 //! ```no_run
+//! # #[cfg(feature = "macros")] {
 //! # // That's a lot of context needed to compile this, oof
 //! # use teloxide::dispatching::{UpdateHandler, UpdateFilterExt, dialogue, dialogue::InMemStorage};
 //! # use teloxide::utils::command::BotCommands;
@@ -81,6 +84,7 @@
 //!         .branch(message_handler)
 //!         .branch(callback_query_handler)
 //! }
+//! # }
 //! ```
 //!
 //! The overall logic should be clear. Throughout the above example, we use
@@ -149,6 +153,7 @@
 //! Inside `main`, we plug the schema into [`Dispatcher`] like this:
 //!
 //! ```no_run
+//! # #[cfg(feature = "ctrlc_handler")] {
 //! # use teloxide::Bot;
 //! # use teloxide::requests::RequesterExt;
 //! # use teloxide::dispatching::{Dispatcher, dialogue::InMemStorage};
@@ -165,6 +170,7 @@
 //!         .dispatch()
 //!         .await;
 //! }
+//! # }
 //! ```
 //!
 //! In a call to [`DispatcherBuilder::dependencies`], we specify a list of

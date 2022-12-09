@@ -90,8 +90,8 @@ use crate::{
 ///
 /// Because of this it's oftentimes more convinient to have a type alias:
 ///
-/// ```rust
-/// # async {
+/// ```rust,no_run
+/// # #[cfg(feature = "throttle")] {
 /// # use teloxide_core::{adaptors::{DefaultParseMode, Throttle}, requests::RequesterExt, types::ParseMode};
 /// type Bot = DefaultParseMode<Throttle<teloxide_core::Bot>>;
 ///

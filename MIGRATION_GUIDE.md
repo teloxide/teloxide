@@ -9,7 +9,7 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 If you are using rocksdb storage, you'll need to either write `Storage` impl yourself, or use a third party crate.
 <!-- FIXME: add a link once there *is* a third party crate -->
 
-## 0.11 -> 0.11.1
+## 0.11 -> 0.11.3
 
 ### teloxide
 

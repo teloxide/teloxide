@@ -2,13 +2,21 @@
 name = "teloxide-macros"
 version = "0.7.0"
 description = "The teloxide's procedural macros"
-license = "MIT"
-edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+rust-version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+documentation = "https://docs.rs/teloxide-core/"
+# FIXME: add a simple readme for teloxide-macros
+#readme = "README.md"
+
 
 [lib]
 proc-macro = true
+
 
 [dependencies]
 quote = "1.0.7"
