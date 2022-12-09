@@ -43,7 +43,7 @@ pub fn client_from_env() -> reqwest::Client {
     let builder = default_reqwest_settings();
 
     match std::env::var(TELOXIDE_PROXY).ok() {
-        Some(proxy) => builder.proxy(Proxy::all(&proxy).expect("reqwest::Proxy creation failed")),
+        Some(proxy) => builder.proxy(Proxy::all(proxy).expect("reqwest::Proxy creation failed")),
         None => builder,
     }
     .build()

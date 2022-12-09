@@ -298,7 +298,7 @@ pub struct CommandDescription<'a> {
 impl<'a> CommandDescriptions<'a> {
     /// Creates new [`CommandDescriptions`] from a list of command descriptions.
     #[must_use]
-    pub fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
+    pub const fn new(descriptions: &'a [CommandDescription<'a>]) -> Self {
         Self { global_description: None, descriptions, bot_username: None }
     }
 

@@ -130,7 +130,7 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
     pub fn from_env_with_client(client: Client) -> Self {
-        Self::with_client(&get_env(TELOXIDE_TOKEN), client)
+        Self::with_client(get_env(TELOXIDE_TOKEN), client)
     }
 
     /// Sets a custom API URL.

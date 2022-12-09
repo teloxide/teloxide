@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `rocksdb-storage` feature and associated items (See [PR #761](https://github.com/teloxide/teloxide/pull/761) for reasoning) [**BC**]
 
+## Changed
+
+- `CommandDescriptions::new` is made `const`
+- The following functions were made `#[must_use]`:
+  - `DispatcherBuilder::{enable_ctrlc_handler, distribution_function}`
+
 ## 0.11.3 - 2022-11-28
 
 ### Fixed

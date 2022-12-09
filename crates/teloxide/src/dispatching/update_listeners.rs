@@ -133,7 +133,7 @@ pub trait AsUpdateStream<'a> {
 }
 
 #[inline(always)]
-pub(crate) fn assert_update_listener<L>(listener: L) -> L
+pub(crate) const fn assert_update_listener<L>(listener: L) -> L
 where
     L: UpdateListener,
 {

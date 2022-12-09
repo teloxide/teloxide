@@ -86,6 +86,7 @@ where
     ///
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
+    #[must_use]
     pub fn enable_ctrlc_handler(self) -> Self {
         Self { ctrlc_handler: true, ..self }
     }
@@ -100,6 +101,7 @@ where
 
     /// Specifies the distribution function that decides how updates are grouped
     /// before execution.
+    #[must_use]
     pub fn distribution_function<K>(
         self,
         f: fn(&Update) -> Option<K>,
