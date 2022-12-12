@@ -93,6 +93,14 @@
 //!
 //! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
+/// This module was moved to [`teloxide::storage`].
+///
+/// [`teloxide::storage`]: crate::storage
+#[deprecated]
+pub mod storage {
+    pub use crate::storage::*;
+}
+
 pub use crate::storage::*;
 pub use get_chat_id::GetChatId;
 

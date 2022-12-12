@@ -217,6 +217,22 @@
 
 pub mod dialogue;
 
+/// This module was moved to [`teloxide::update_listeners`].
+///
+/// [`teloxide::update_listeners`]: crate::update_listeners
+#[deprecated]
+pub mod update_listeners {
+    pub use crate::update_listeners::*;
+}
+
+/// This module was moved to [`teloxide::repls`].
+///
+/// [`teloxide::repls`]: crate::repls
+#[deprecated]
+pub mod repls {
+    pub use crate::repls::*;
+}
+
 mod dispatcher;
 mod distribution;
 mod filter_ext;
