@@ -1,6 +1,8 @@
 use crate::{
-    dispatching::{dialogue::GetChatId, DpHandlerDescription},
-    storage::Storage,
+    dispatching::{
+        dialogue::{GetChatId, Storage},
+        DpHandlerDescription,
+    },
     types::{Me, Message},
     utils::command::BotCommands,
 };

@@ -72,7 +72,6 @@ pub mod prelude;
 #[cfg(all(feature = "ctrlc_handler"))]
 pub mod repls;
 pub mod stop;
-pub mod storage;
 pub mod update_listeners;
 pub mod utils;
 
