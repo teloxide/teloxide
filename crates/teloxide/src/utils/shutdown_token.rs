@@ -10,7 +10,7 @@ use std::{
 
 use tokio::sync::Notify;
 
-use crate::dispatching::update_listeners::UpdateListener;
+use crate::update_listeners::UpdateListener;
 
 /// A token which used to shutdown [`Dispatcher`].
 ///

@@ -94,14 +94,15 @@
 //! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
 
 #[cfg(feature = "redis-storage")]
-pub use crate::dispatching::dialogue::{RedisStorage, RedisStorageError};
+pub use self::{RedisStorage, RedisStorageError};
 
 #[cfg(feature = "sqlite-storage")]
-pub use crate::dispatching::dialogue::{SqliteStorage, SqliteStorageError};
+pub use self::{SqliteStorage, SqliteStorageError};
 
-use dptree::{prelude::DependencyMap, Handler};
 pub use get_chat_id::GetChatId;
 pub use storage::*;
+
+use dptree::{prelude::DependencyMap, Handler};
 use teloxide_core::types::ChatId;
 
 use std::{fmt::Debug, marker::PhantomData, sync::Arc};

@@ -3,9 +3,9 @@ use std::time::Duration;
 use futures::Stream;
 
 use crate::{
-    dispatching::update_listeners::{AsUpdateStream, UpdateListener},
     stop::StopToken,
     types::{AllowedUpdate, Update},
+    update_listeners::{AsUpdateStream, UpdateListener},
 };
 
 /// A listener created from functions.
@@ -15,7 +15,7 @@ use crate::{
 ///
 /// For an example of usage, see [`polling`].
 ///
-/// [`polling`]: crate::dispatching::update_listeners::polling()
+/// [`polling`]: crate::update_listeners::polling()
 #[non_exhaustive]
 pub struct StatefulListener<St, Assf, Sf, Hauf, Thf> {
     /// The state of the listener.

@@ -1,7 +1,7 @@
 // The version of ngrok ping-pong-bot, which uses a webhook to receive updates
 // from Telegram, instead of long polling.
 
-use teloxide::{dispatching::update_listeners::webhooks, prelude::*};
+use teloxide::{prelude::*, update_listeners::webhooks};
 
 #[tokio::main]
 async fn main() {

@@ -1,6 +1,6 @@
 //! Stopping asynchronous tasks, e.g., [listeners].
 //!
-//! [listeners]: crate::dispatching::update_listeners
+//! [listeners]: crate::update_listeners
 
 use std::{convert::Infallible, future::Future, pin::Pin, task};
 

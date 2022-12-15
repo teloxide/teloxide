@@ -10,7 +10,7 @@ pub use crate::dispatching::{
 };
 
 #[cfg(feature = "ctrlc_handler")]
-pub use crate::dispatching::repls::CommandReplExt as _;
+pub use crate::repls::CommandReplExt as _;
 
 pub use teloxide_core::{
     requests::ResponseResult,

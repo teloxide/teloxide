@@ -1,11 +1,12 @@
 use crate::{
     dispatching::{
-        distribution::default_distribution_function, update_listeners,
-        update_listeners::UpdateListener, DefaultKey, DpHandlerDescription, ShutdownToken,
+        distribution::default_distribution_function, DefaultKey, DpHandlerDescription,
+        ShutdownToken,
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::{Request, Requester},
     types::{Update, UpdateKind},
+    update_listeners::{self, UpdateListener},
     utils::shutdown_token::shutdown_check_timeout_for,
 };
 

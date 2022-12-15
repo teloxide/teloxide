@@ -9,16 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated `axum` to v0.6.0.
+- The module structure
+  - `teloxide::dispatching::update_listeners` => `teloxide::update_listeners`
+  - `teloxide::dispatching::repls` => `teloxide::repls`
+- `CommandDescriptions::new` was made `const`
+- The following functions were made `#[must_use]`:
+  - `DispatcherBuilder::{enable_ctrlc_handler, distribution_function}`
 
 ### Removed
 
 - `rocksdb-storage` feature and associated items (See [PR #761](https://github.com/teloxide/teloxide/pull/761) for reasoning) [**BC**]
 
-## Changed
+### Deprecated
 
-- `CommandDescriptions::new` is made `const`
-- The following functions were made `#[must_use]`:
-  - `DispatcherBuilder::{enable_ctrlc_handler, distribution_function}`
+- `teloxide::dispatching::{update_listeners, repls}` (see in the "Changed" section)
 
 ## 0.11.3 - 2022-11-28
 

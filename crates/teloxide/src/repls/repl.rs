@@ -1,8 +1,9 @@
 use crate::{
-    dispatching::{update_listeners, update_listeners::UpdateListener, UpdateFilterExt},
+    dispatching::UpdateFilterExt,
     error_handlers::LoggingErrorHandler,
     requests::{Requester, ResponseResult},
     types::Update,
+    update_listeners::{self, UpdateListener},
 };
 use dptree::di::{DependencyMap, Injectable};
 use std::fmt::Debug;
@@ -65,7 +66,7 @@ where
 #[doc = include_str!("preamble.md")]
 ///
 /// [REPL]: https://en.wikipedia.org/wiki/Read-eval-print_loop
-/// [`UpdateListener`]: crate::dispatching::update_listeners::UpdateListener
+/// [`UpdateListener`]: crate::update_listeners::UpdateListener
 ///
 /// ## Signature
 ///

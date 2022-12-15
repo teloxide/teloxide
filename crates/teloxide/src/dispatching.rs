@@ -215,16 +215,30 @@
 //! [`examples/dispatching_features.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dispatching_features.rs
 //! [`Update`]: crate::types::Update
 
-#[cfg(all(feature = "ctrlc_handler"))]
-pub mod repls;
-
 pub mod dialogue;
+
+/// This module was moved to [`teloxide::update_listeners`].
+///
+/// [`teloxide::update_listeners`]: crate::update_listeners
+#[deprecated = "This module was moved. Use `teloxide::update_listeners` instead."]
+pub mod update_listeners {
+    pub use crate::update_listeners::*;
+}
+
+/// This module was moved to [`teloxide::repls`].
+///
+/// [`teloxide::repls`]: crate::repls
+#[deprecated = "This module was moved. Use `teloxide::repls` instead."]
+#[cfg(all(feature = "ctrlc_handler"))]
+pub mod repls {
+    pub use crate::repls::*;
+}
+
 mod dispatcher;
 mod distribution;
 mod filter_ext;
 mod handler_description;
 mod handler_ext;
-pub mod update_listeners;
 
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
