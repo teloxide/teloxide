@@ -27,6 +27,10 @@ pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
 pub use file::*;
 pub use force_reply::*;
+pub use forum_topic::*;
+pub use forum_topic_closed::*;
+pub use forum_topic_created::*;
+pub use forum_topic_reopened::*;
 pub use game::*;
 pub use game_high_score::*;
 pub use inline_keyboard_button::*;
@@ -86,7 +90,6 @@ pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
 pub use response_parameters::*;
 pub use sent_web_app_message::*;
-use serde::Serialize;
 pub use shipping_address::*;
 pub use shipping_option::*;
 pub use shipping_query::*;
@@ -136,6 +139,10 @@ mod dice_emoji;
 mod document;
 mod file;
 mod force_reply;
+mod forum_topic;
+mod forum_topic_closed;
+mod forum_topic_created;
+mod forum_topic_reopened;
 mod game;
 mod game_high_score;
 mod inline_keyboard_button;
@@ -238,6 +245,8 @@ mod user_id;
 pub use chat_id::*;
 pub use recipient::*;
 pub use user_id::*;
+
+use serde::Serialize;
 
 /// Converts an `i64` timestump to a `choro::DateTime`, producing serde error
 /// for invalid timestumps
@@ -419,4 +428,50 @@ where
     S: serde::Serializer,
 {
     this.map(|MessageId(id)| id).serialize(serializer)
+}
+
+pub(crate) mod serde_rgb {
+    use serde::{de::Visitor, Deserializer, Serializer};
+
+    pub fn serialize<S: Serializer>(&this: &[u8; 3], s: S) -> Result<S::Ok, S::Error> {
+        s.serialize_u32(to_u32(this))
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<[u8; 3], D::Error> {
+        struct V;
+
+        impl Visitor<'_> for V {
+            type Value = [u8; 3];
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("an integer represeting an RGB color")
+            }
+
+            fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                Ok(from_u32(v))
+            }
+        }
+        d.deserialize_u32(V)
+    }
+
+    fn to_u32([r, g, b]: [u8; 3]) -> u32 {
+        u32::from_be_bytes([0, r, g, b])
+    }
+
+    fn from_u32(rgb: u32) -> [u8; 3] {
+        let [_, r, g, b] = rgb.to_be_bytes();
+        [r, g, b]
+    }
+
+    #[test]
+    fn bytes() {
+        assert_eq!(to_u32([0xAA, 0xBB, 0xCC]), 0x00AABBCC);
+        assert_eq!(from_u32(0x00AABBCC), [0xAA, 0xBB, 0xCC]);
+    }
+
+    #[test]
+    fn json() {}
 }

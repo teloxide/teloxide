@@ -908,6 +908,66 @@ macro_rules! requester_forward {
             $body!(delete_chat_sticker_set this (chat_id: C))
         }
     };
+    (@method get_forum_topic_icon_stickers $body:ident $ty:ident) => {
+        type GetForumTopicIconStickers = $ty![GetForumTopicIconStickers];
+
+        fn get_forum_topic_icon_stickers(&self, ) -> Self::GetForumTopicIconStickers {
+            let this = self;
+            $body!(get_forum_topic_icon_stickers this ())
+        }
+    };
+    (@method create_forum_topic $body:ident $ty:ident) => {
+        type CreateForumTopic = $ty![CreateForumTopic];
+
+        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: u32, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String> {
+            let this = self;
+            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: u32, icon_custom_emoji_id: I))
+        }
+    };
+    (@method edit_forum_topic $body:ident $ty:ident) => {
+        type EditForumTopic = $ty![EditForumTopic];
+
+        fn edit_forum_topic<C, N, I>(&self, chat_id: C, message_thread_id: i32, name: N, icon_custom_emoji_id: I) -> Self::EditForumTopic where C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String> {
+            let this = self;
+            $body!(edit_forum_topic this (chat_id: C, message_thread_id: i32, name: N, icon_custom_emoji_id: I))
+        }
+    };
+    (@method close_forum_topic $body:ident $ty:ident) => {
+        type CloseForumTopic = $ty![CloseForumTopic];
+
+        fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(close_forum_topic this (chat_id: C, message_thread_id: i32))
+        }
+    };
+    (@method reopen_forum_topic $body:ident $ty:ident) => {
+        type ReopenForumTopic = $ty![ReopenForumTopic];
+
+        fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(reopen_forum_topic this (chat_id: C, message_thread_id: i32))
+        }
+    };
+    (@method delete_forum_topic $body:ident $ty:ident) => {
+        type DeleteForumTopic = $ty![DeleteForumTopic];
+
+        fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_forum_topic this (chat_id: C, message_thread_id: i32))
+        }
+    };
+    (@method unpin_all_forum_topic_messages $body:ident $ty:ident) => {
+        type UnpinAllForumTopicMessages = $ty![UnpinAllForumTopicMessages];
+
+        fn unpin_all_forum_topic_messages<C>(&self, chat_id: C, message_thread_id: i32) -> Self::UnpinAllForumTopicMessages where C: Into<Recipient> {
+            let this = self;
+            $body!(unpin_all_forum_topic_messages this (chat_id: C, message_thread_id: i32))
+        }
+    };
     (@method answer_callback_query $body:ident $ty:ident) => {
         type AnswerCallbackQuery = $ty![AnswerCallbackQuery];
 

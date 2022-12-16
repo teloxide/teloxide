@@ -25,6 +25,8 @@ impl_payload! {
             pub audio: InputFile,
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Audio caption, 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the audio caption. See [formatting options] for more details.

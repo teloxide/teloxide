@@ -23,6 +23,8 @@ impl_payload! {
             pub address: String [into],
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Foursquare identifier of the venue
             pub foursquare_id: String [into],
             /// Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)

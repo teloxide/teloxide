@@ -88,6 +88,13 @@ pub struct ChatPrivate {
     /// A last name of the other party in a private chat.
     pub last_name: Option<String>,
 
+    /// Custom emoji identifier of emoji status of the other party in a private
+    /// chat. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    // FIXME: CustomEmojiId
+    pub emoji_status_custom_emoji_id: Option<String>,
+
     /// Bio of the other party in a private chat. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
@@ -147,6 +154,16 @@ pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
     pub username: Option<String>,
+
+    /// If non-empty, the list of all active chat usernames; for private chats,
+    /// supergroups and channels. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub active_usernames: Option<Vec<String>>,
+
+    /// `true`, if the supergroup chat is a forum (has topics enabled).
+    #[serde(default)]
+    pub is_forum: bool,
 
     /// For supergroups, name of group sticker set. Returned only from
     /// [`GetChat`].
@@ -485,6 +502,7 @@ mod serde_helper {
         bio: Option<String>,
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
+        emoji_status_custom_emoji_id: Option<String>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -497,6 +515,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                emoji_status_custom_emoji_id,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -506,6 +525,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                emoji_status_custom_emoji_id,
             }
         }
     }
@@ -519,6 +539,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                emoji_status_custom_emoji_id,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -529,6 +550,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                emoji_status_custom_emoji_id,
             }
         }
     }
@@ -574,6 +596,7 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
+                    emoji_status_custom_emoji_id: None
                 }),
                 photo: None,
                 pinned_message: None,
@@ -595,6 +618,7 @@ mod tests {
                 bio: None,
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
+                emoji_status_custom_emoji_id: None,
             }),
             photo: None,
             pinned_message: None,

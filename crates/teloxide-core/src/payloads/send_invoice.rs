@@ -30,6 +30,8 @@ impl_payload! {
             pub prices: Vec<LabeledPrice> [collect],
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// The maximum accepted amount for tips in the smallest units of the currency (integer, **not** float/double). For example, for a maximum tip of `US$ 1.45` pass `max_tip_amount = 145`. See the exp parameter in [`currencies.json`], it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
             ///
             /// [`currencies.json`]: https://core.telegram.org/bots/payments/currencies.json

@@ -233,6 +233,13 @@ where
         get_chat_member,
         set_chat_sticker_set,
         delete_chat_sticker_set,
+        get_forum_topic_icon_stickers,
+        create_forum_topic,
+        edit_forum_topic,
+        close_forum_topic,
+        reopen_forum_topic,
+        delete_forum_topic,
+        unpin_all_forum_topic_messages,
         answer_callback_query,
         set_my_commands,
         get_my_commands,
@@ -604,6 +611,50 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
     ) -> ErasedRequest<'a, DeleteChatStickerSet, Self::Err>;
+
+    fn get_forum_topic_icon_stickers(
+        &self,
+    ) -> ErasedRequest<'a, GetForumTopicIconStickers, Self::Err>;
+
+    fn create_forum_topic(
+        &self,
+        chat_id: Recipient,
+        name: String,
+        icon_color: u32,
+        icon_custom_emoji_id: String,
+    ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
+
+    fn edit_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+        name: String,
+        icon_custom_emoji_id: String,
+    ) -> ErasedRequest<'a, EditForumTopic, Self::Err>;
+
+    fn close_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, CloseForumTopic, Self::Err>;
+
+    fn reopen_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, ReopenForumTopic, Self::Err>;
+
+    fn delete_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, DeleteForumTopic, Self::Err>;
+
+    fn unpin_all_forum_topic_messages(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err>;
 
     fn answer_callback_query(
         &self,
@@ -1277,6 +1328,65 @@ where
         chat_id: Recipient,
     ) -> ErasedRequest<'a, DeleteChatStickerSet, Self::Err> {
         Requester::delete_chat_sticker_set(self, chat_id).erase()
+    }
+
+    fn get_forum_topic_icon_stickers(
+        &self,
+    ) -> ErasedRequest<'a, GetForumTopicIconStickers, Self::Err> {
+        Requester::get_forum_topic_icon_stickers(self).erase()
+    }
+
+    fn create_forum_topic(
+        &self,
+        chat_id: Recipient,
+        name: String,
+        icon_color: u32,
+        icon_custom_emoji_id: String,
+    ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
+        Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
+    }
+
+    fn edit_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+        name: String,
+        icon_custom_emoji_id: String,
+    ) -> ErasedRequest<'a, EditForumTopic, Self::Err> {
+        Requester::edit_forum_topic(self, chat_id, message_thread_id, name, icon_custom_emoji_id)
+            .erase()
+    }
+
+    fn close_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, CloseForumTopic, Self::Err> {
+        Requester::close_forum_topic(self, chat_id, message_thread_id).erase()
+    }
+
+    fn reopen_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, ReopenForumTopic, Self::Err> {
+        Requester::reopen_forum_topic(self, chat_id, message_thread_id).erase()
+    }
+
+    fn delete_forum_topic(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, DeleteForumTopic, Self::Err> {
+        Requester::delete_forum_topic(self, chat_id, message_thread_id).erase()
+    }
+
+    fn unpin_all_forum_topic_messages(
+        &self,
+        chat_id: Recipient,
+        message_thread_id: i32,
+    ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err> {
+        Requester::unpin_all_forum_topic_messages(self, chat_id, message_thread_id).erase()
     }
 
     fn answer_callback_query(

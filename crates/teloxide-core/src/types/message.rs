@@ -5,11 +5,12 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, Game,
-    InlineKeyboardMarkup, Invoice, Location, MessageAutoDeleteTimerChanged, MessageEntity,
-    MessageEntityRef, MessageId, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
-    SuccessfulPayment, True, User, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
-    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData,
+    Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, ForumTopicClosed,
+    ForumTopicCreated, ForumTopicReopened, Game, InlineKeyboardMarkup, Invoice, Location,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
+    PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video,
+    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
+    Voice, WebAppData,
 };
 
 /// This object represents a message.
@@ -20,6 +21,11 @@ pub struct Message {
     /// Unique message identifier inside this chat.
     #[serde(flatten)]
     pub id: MessageId,
+
+    /// Unique identifier of a message thread to which the message belongs; for
+    /// supergroups only.
+    // FIXME: MessageThreadId or such
+    pub thread_id: Option<i32>,
 
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
@@ -55,6 +61,9 @@ pub enum MessageKind {
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
+    ForumTopicCreated(ForumTopicCreated),
+    ForumTopicClosed(ForumTopicClosed),
+    ForumTopicReopened(ForumTopicReopened),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -97,6 +106,10 @@ pub struct MessageCommon {
     /// Inline keyboard attached to the message. `login_url` buttons are
     /// represented as ordinary `url` buttons.
     pub reply_markup: Option<InlineKeyboardMarkup>,
+
+    /// `true`, if the message is sent to a forum topic.
+    #[serde(default)]
+    pub is_topic_message: bool,
 
     /// `true`, if the message is a channel post that was automatically
     /// forwarded to the connected discussion group.
@@ -491,6 +504,24 @@ pub struct MessageProximityAlertTriggered {
     /// Service message. A user in the chat triggered another user's proximity
     /// alert while sharing Live Location.
     pub proximity_alert_triggered: ProximityAlertTriggered,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageForumTopicCreated {
+    /// Service message: forum topic created.
+    pub forum_topic_created: ForumTopicCreated,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageForumTopicClosed {
+    /// Service message: forum topic closed.
+    pub forum_topic_closed: ForumTopicClosed,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageForumTopicReopened {
+    /// Service message: forum topic reopened.
+    pub forum_topic_reopened: ForumTopicReopened,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -1543,6 +1574,8 @@ mod tests {
                     location: None,
                     join_by_request: None,
                     join_to_send_messages: None,
+                    active_usernames: None,
+                    is_forum: false,
                 }),
                 description: None,
                 invite_link: None,

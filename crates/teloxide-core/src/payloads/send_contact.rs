@@ -19,6 +19,8 @@ impl_payload! {
             pub first_name: String [into],
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Contact's last name
             pub last_name: String [into],
             /// Additional data about the contact in the form of a [vCard], 0-2048 bytes

@@ -22,6 +22,8 @@ impl_payload! {
             pub animation: InputFile,
         }
         optional {
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: i32,
             /// Duration of the animation in seconds
             pub duration: u32,
             /// Animation width

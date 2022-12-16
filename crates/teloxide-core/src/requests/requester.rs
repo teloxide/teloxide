@@ -659,6 +659,73 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type GetForumTopicIconStickers: Request<Payload = GetForumTopicIconStickers, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetForumTopicIconStickers`].
+    fn get_forum_topic_icon_stickers(&self) -> Self::GetForumTopicIconStickers;
+
+    type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CreateForumTopic`].
+    fn create_forum_topic<C, N, I>(
+        &self,
+        chat_id: C,
+        name: N,
+        icon_color: u32,
+        icon_custom_emoji_id: I,
+    ) -> Self::CreateForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String>;
+
+    type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditForumTopic`].
+    fn edit_forum_topic<C, N, I>(
+        &self,
+        chat_id: C,
+        message_thread_id: i32,
+        name: N,
+        icon_custom_emoji_id: I,
+    ) -> Self::EditForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>,
+        I: Into<String>;
+
+    type CloseForumTopic: Request<Payload = CloseForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CloseForumTopic`].
+    fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic
+    where
+        C: Into<Recipient>;
+
+    type ReopenForumTopic: Request<Payload = ReopenForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReopenForumTopic`].
+    fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic
+    where
+        C: Into<Recipient>;
+
+    type DeleteForumTopic: Request<Payload = DeleteForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteForumTopic`].
+    fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic
+    where
+        C: Into<Recipient>;
+
+    type UnpinAllForumTopicMessages: Request<Payload = UnpinAllForumTopicMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UnpinAllForumTopicMessages`].
+    fn unpin_all_forum_topic_messages<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: i32,
+    ) -> Self::UnpinAllForumTopicMessages
+    where
+        C: Into<Recipient>;
+
     type AnswerCallbackQuery: Request<Payload = AnswerCallbackQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerCallbackQuery`].
@@ -1103,6 +1170,13 @@ macro_rules! forward_all {
             get_chat_member,
             set_chat_sticker_set,
             delete_chat_sticker_set,
+            get_forum_topic_icon_stickers,
+            create_forum_topic,
+            edit_forum_topic,
+            close_forum_topic,
+            reopen_forum_topic,
+            delete_forum_topic,
+            unpin_all_forum_topic_messages,
             answer_callback_query,
             set_my_commands,
             get_my_commands,
