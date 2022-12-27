@@ -382,7 +382,7 @@ impl ChatMemberKind {
     /// - is restricted, but does have [`Restricted::can_change_info`] privilege
     /// Returns `false` otherwise.
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_change_info` field directly. Details: #781"
     )]
     #[must_use]
@@ -486,7 +486,7 @@ impl ChatMemberKind {
     ///   privilege
     /// Returns `false` otherwise.
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_invite_users` field directly. Details: #781"
     )]
     #[must_use]
@@ -529,7 +529,7 @@ impl ChatMemberKind {
     ///   privilege
     /// Returns `false` otherwise.
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_pin_messages` field directly. Details: #781"
     )]
     #[must_use]
@@ -552,7 +552,7 @@ impl ChatMemberKind {
     ///   privilege
     /// Returns `false` otherwise.
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_manage_topics` field directly. Details: #781"
     )]
     #[must_use]
@@ -601,7 +601,7 @@ impl ChatMemberKind {
     ///
     /// [`can_send_messages`]: Restricted::can_send_messages
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_send_messages` field directly. Details: #781"
     )]
     #[must_use]
@@ -623,7 +623,7 @@ impl ChatMemberKind {
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_send_media_messages` field directly. Details: #781"
     )]
     #[must_use]
@@ -647,7 +647,7 @@ impl ChatMemberKind {
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_send_other_messages` field directly. Details: #781"
     )]
     #[must_use]
@@ -671,7 +671,7 @@ impl ChatMemberKind {
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_add_web_page_previews` field directly. Details: #781"
     )]
     #[must_use]
@@ -694,7 +694,7 @@ impl ChatMemberKind {
     ///
     /// [`can_send_polls`]: Restricted::can_send_polls
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Match manually and use `can_send_polls` field directly. Details: #781"
     )]
     #[must_use]
@@ -806,7 +806,7 @@ impl ChatMemberStatus {
     /// [banned]: ChatMemberKind::Banned
     #[must_use]
     #[deprecated(
-        since = "0.8.1",
+        since = "0.9.0",
         note = "Use `ChatMemberKind::is_present` method instead. Details: #781"
     )]
     pub fn is_present(&self) -> bool {
