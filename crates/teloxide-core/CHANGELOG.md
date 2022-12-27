@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The following functions were made `#[must_use]`:
   - `MaskPoint::{new, point}`
   - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
-- Replaced `Option<bool>` with `bool` for the fields of `Administrator` ([#800][pr800]):
+- `Option<bool>` fields fields of `Administrator` are now `bool` (required) ([#800][pr800]):
   - `can_post_messages`
   - `can_edit_messages`
   - `can_pin_messages`
@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `ChatMemberKind::can_manage_chat` method now correctly returns `false` for non owner/administrator users
+- `ChatMemberKind::can_manage_chat` method now correctly returns `false` for non owner/administrator users ([#800][pr800])
 
 ## 0.8.0 - 2022-10-03
 
