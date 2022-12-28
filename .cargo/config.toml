@@ -4,7 +4,7 @@
 #
 # "tokio/macros" and "tokio/rt-multi-thread" are required for examples
 docs = """doc
--Zrustdoc-scrape-examples=examples
+-Zrustdoc-scrape-examples
 --features=full --features=nightly
 --features=tokio/macros --features=tokio/rt-multi-thread
 """

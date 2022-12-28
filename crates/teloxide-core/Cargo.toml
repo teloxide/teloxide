@@ -94,12 +94,17 @@ features = ["full", "nightly", "tokio/macros", "tokio/rt-multi-thread"]
 rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 
 # https://github.com/rust-lang/rust/issues/88791
-cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
 
 [[example]]
 name = "self_info"
 required-features = ["tokio/macros", "tokio/rt-multi-thread"]
+
+# This is required due to some stuff with dev-dependencies,
+# backwards compatability and cargo:
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#scrape-examples
+doc-scrape-examples = true
 
 [[example]]
 name = "erased"
