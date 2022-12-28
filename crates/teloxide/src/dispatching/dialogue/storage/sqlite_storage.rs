@@ -39,7 +39,7 @@ impl<S> SqliteStorage<S> {
         path: &str,
         serializer: S,
     ) -> Result<Arc<Self>, SqliteStorageError<Infallible>> {
-        let pool = SqlitePool::connect(format!("sqlite:{}?mode=rwc", path).as_str()).await?;
+        let pool = SqlitePool::connect(format!("sqlite:{path}?mode=rwc").as_str()).await?;
         let mut conn = pool.acquire().await?;
         sqlx::query(
             r#"

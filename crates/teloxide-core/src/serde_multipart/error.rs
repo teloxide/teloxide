@@ -25,11 +25,11 @@ impl ser::Error for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Custom(s) => write!(f, "Custom serde error: {}", s),
+            Self::Custom(s) => write!(f, "Custom serde error: {s}"),
             Self::TopLevelNotStruct => write!(f, "Multipart supports only structs at top level"),
-            Self::Fmt(inner) => write!(f, "Formatting error: {}", inner),
-            Self::Io(inner) => write!(f, "Io error: {}", inner),
-            Self::Json(inner) => write!(f, "Json (de)serialization error: {}", inner),
+            Self::Fmt(inner) => write!(f, "Formatting error: {inner}"),
+            Self::Io(inner) => write!(f, "Io error: {inner}"),
+            Self::Json(inner) => write!(f, "Json (de)serialization error: {inner}"),
         }
     }
 }

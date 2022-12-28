@@ -429,18 +429,16 @@ impl Display for ParseError {
         match self {
             ParseError::TooFewArguments { expected, found, message } => write!(
                 f,
-                "Too few arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
+                "Too few arguments (expected {expected}, found {found}, message = '{message}')"
             ),
             ParseError::TooManyArguments { expected, found, message } => write!(
                 f,
-                "Too many arguments (expected {}, found {}, message = '{}')",
-                expected, found, message
+                "Too many arguments (expected {expected}, found {found}, message = '{message}')"
             ),
-            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {}", e),
-            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {}", e),
-            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {}", n),
-            ParseError::Custom(e) => write!(f, "{}", e),
+            ParseError::IncorrectFormat(e) => write!(f, "Incorrect format of command args: {e}"),
+            ParseError::UnknownCommand(e) => write!(f, "Unknown command: {e}"),
+            ParseError::WrongBotName(n) => write!(f, "Wrong bot name: {n}"),
+            ParseError::Custom(e) => write!(f, "{e}"),
         }
     }
 }

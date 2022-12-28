@@ -11,7 +11,7 @@ use teloxide_core::types::User;
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn bold(s: &str) -> String {
-    format!("*{}*", s)
+    format!("*{s}*")
 }
 
 /// Applies the italic font style to the string.
@@ -25,7 +25,7 @@ pub fn italic(s: &str) -> String {
     if s.starts_with("__") && s.ends_with("__") {
         format!(r"_{}\r__", &s[..s.len() - 1])
     } else {
-        format!("_{}_", s)
+        format!("_{s}_")
     }
 }
 
@@ -43,9 +43,9 @@ pub fn underline(s: &str) -> String {
     // ___italic underline_\r__, where \r is a character with code 13, which
     // will be ignored.
     if s.starts_with('_') && s.ends_with('_') {
-        format!(r"__{}\r__", s)
+        format!(r"__{s}\r__")
     } else {
-        format!("__{}__", s)
+        format!("__{s}__")
     }
 }
 
@@ -56,7 +56,7 @@ pub fn underline(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn strike(s: &str) -> String {
-    format!("~{}~", s)
+    format!("~{s}~")
 }
 
 /// Builds an inline link with an anchor.
@@ -72,7 +72,7 @@ pub fn link(url: &str, text: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn user_mention(user_id: i64, text: &str) -> String {
-    link(format!("tg://user?id={}", user_id).as_str(), text)
+    link(format!("tg://user?id={user_id}").as_str(), text)
 }
 
 /// Formats the code block.

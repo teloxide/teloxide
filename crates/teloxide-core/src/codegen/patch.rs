@@ -188,7 +188,7 @@ impl Doc {
                     link.clear();
                     *link += *value;
                 } else if key.is_exact() {
-                    panic!("Patch error: {:?} doesn't have link {}", key, name);
+                    panic!("Patch error: {key:?} doesn't have link {name}");
                 }
             }
             Patch::AddLink { name, value } => {
@@ -228,7 +228,7 @@ fn intra_links(doc: &mut Doc) {
                     }
                     _ => {
                         repls_t.push(k.clone());
-                        *v = format!("crate::types::{}", k);
+                        *v = format!("crate::types::{k}");
                     }
                 }
             }
@@ -236,23 +236,23 @@ fn intra_links(doc: &mut Doc) {
 
     for repl in repls_t {
         if let Some(value) = doc.md_links.remove(repl.as_str()) {
-            doc.md = doc.md.replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repl));
-            doc.md_links.insert(format!("`{}`", repl), value);
+            doc.md = doc.md.replace(format!("[{repl}]").as_str(), &format!("[`{repl}`]"));
+            doc.md_links.insert(format!("`{repl}`"), value);
         }
     }
 
     for repl in repls_m {
         if let Some(value) = doc.md_links.remove(repl.as_str()) {
             let repln = to_uppercase(&repl);
-            doc.md = doc.md.replace(format!("[{}]", repl).as_str(), &format!("[`{}`]", repln));
-            doc.md_links.insert(format!("`{}`", repln), value);
+            doc.md = doc.md.replace(format!("[{repl}]").as_str(), &format!("[`{repln}`]"));
+            doc.md_links.insert(format!("`{repln}`"), value);
         }
     }
 }
 
 fn escape_kw(s: &mut String) {
     if ["type"].contains(&s.as_str()) {
-        *s = format!("{}_", s);
+        *s = format!("{s}_");
     }
 }
 
@@ -309,7 +309,7 @@ fn patch_types(schema: &mut Schema, from: Type, to: Type, list: &[(&str, &str)])
             .find(|p| p.name == param)
             .expect("Couldn't find parameter for patching");
 
-        assert_eq!(p.ty, from, "{}::{}", method, param);
+        assert_eq!(p.ty, from, "{method}::{param}");
         p.ty = to.clone();
     }
 }

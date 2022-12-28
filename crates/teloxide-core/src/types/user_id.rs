@@ -13,7 +13,7 @@ impl UserId {
     /// `tg://user/?id=<...>`.
     #[must_use]
     pub fn url(self) -> reqwest::Url {
-        reqwest::Url::parse(&format!("tg://user/?id={}", self)).unwrap()
+        reqwest::Url::parse(&format!("tg://user/?id={self}")).unwrap()
     }
 
     /// Returns `true` if this is the id of the special user used by telegram
