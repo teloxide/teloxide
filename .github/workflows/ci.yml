@@ -18,7 +18,7 @@ env:
   # When updating this, also update:
   # - crates/teloxide-core/src/codegen.rs
   # - rust-toolchain.toml
-  rust_nightly: nightly-2022-09-23
+  rust_nightly: nightly-2022-12-23
   # When updating this, also update:
   # - **/README.md
   # - **/src/lib.rs
@@ -87,7 +87,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2022-09-23
+            toolchain: nightly-2022-12-23
             features: "--all-features"
           - rust: msrv
             toolchain: 1.64.0
