@@ -132,6 +132,8 @@ macro_rules! impl_payload {
         $vi struct $Method {
             $(
                 $(
+                    // FIXME: fix the cause of this warning
+                    #[allow(rustdoc::invalid_html_tags)]
                     $(
                         #[ $($field_meta)* ]
                     )*
