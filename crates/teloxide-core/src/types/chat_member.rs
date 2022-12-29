@@ -383,7 +383,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_change_info` field directly. Details: #781"
+        note = "Match manually and use `can_change_info` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_change_info(&self) -> bool {
@@ -487,7 +487,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_invite_users` field directly. Details: #781"
+        note = "Match manually and use `can_invite_users` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_invite_users(&self) -> bool {
@@ -530,7 +530,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_pin_messages` field directly. Details: #781"
+        note = "Match manually and use `can_pin_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_pin_messages(&self) -> bool {
@@ -553,7 +553,7 @@ impl ChatMemberKind {
     /// Returns `false` otherwise.
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_manage_topics` field directly. Details: #781"
+        note = "Match manually and use `can_manage_topics` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_manage_topics(&self) -> bool {
@@ -602,7 +602,7 @@ impl ChatMemberKind {
     /// [`can_send_messages`]: Restricted::can_send_messages
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_send_messages` field directly. Details: #781"
+        note = "Match manually and use `can_send_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_send_messages(&self) -> bool {
@@ -624,7 +624,7 @@ impl ChatMemberKind {
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_send_media_messages` field directly. Details: #781"
+        note = "Match manually and use `can_send_media_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_send_media_messages(&self) -> bool {
@@ -648,7 +648,7 @@ impl ChatMemberKind {
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_send_other_messages` field directly. Details: #781"
+        note = "Match manually and use `can_send_other_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_send_other_messages(&self) -> bool {
@@ -672,7 +672,7 @@ impl ChatMemberKind {
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_add_web_page_previews` field directly. Details: #781"
+        note = "Match manually and use `can_add_web_page_previews` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_add_web_page_previews(&self) -> bool {
@@ -695,7 +695,7 @@ impl ChatMemberKind {
     /// [`can_send_polls`]: Restricted::can_send_polls
     #[deprecated(
         since = "0.9.0",
-        note = "Match manually and use `can_send_polls` field directly. Details: #781"
+        note = "Match manually and use `can_send_polls` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     #[must_use]
     pub fn can_send_polls(&self) -> bool {
@@ -807,7 +807,7 @@ impl ChatMemberStatus {
     #[must_use]
     #[deprecated(
         since = "0.9.0",
-        note = "Use `ChatMemberKind::is_present` method instead. Details: #781"
+        note = "Use `ChatMemberKind::is_present` method instead. Details: https://github.com/teloxide/teloxide/issues/781"
     )]
     pub fn is_present(&self) -> bool {
         !(self.is_left() || self.is_banned())
