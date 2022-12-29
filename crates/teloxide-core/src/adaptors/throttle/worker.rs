@@ -183,8 +183,8 @@ pub(super) async fn worker<B>(
         // (waffle)
 
         let now = Instant::now();
-        let min_back = now - MINUTE;
-        let sec_back = now - SECOND;
+        let min_back = now.checked_sub(MINUTE).unwrap_or(now);
+        let sec_back = now.checked_sub(SECOND).unwrap_or(now);
 
         // make history and requests_sent up-to-date
         while let Some((_, time)) = history.front() {

@@ -132,6 +132,8 @@ macro_rules! impl_payload {
         $vi struct $Method {
             $(
                 $(
+                    // FIXME: fix the cause of this warning
+                    #[allow(rustdoc::invalid_html_tags)]
                     $(
                         #[ $($field_meta)* ]
                     )*
@@ -1365,12 +1367,12 @@ fn codegen_requester_forward() {
                 .join(",\n        ");
 
             let generics =
-                if generics.is_empty() { String::from("") } else { format!("<{}>", generics) };
+                if generics.is_empty() { String::from("") } else { format!("<{generics}>") };
 
             let where_clause = if where_clause.is_empty() {
                 String::from("")
             } else {
-                format!(" where {}", where_clause)
+                format!(" where {where_clause}")
             };
 
             format!(

@@ -122,7 +122,7 @@ all-features = true
 # FIXME: Add back "-Znormalize-docs" when https://github.com/rust-lang/rust/issues/93703 is fixed
 rustdoc-args = ["--cfg", "docsrs"]
 rustc-args = ["--cfg", "dep_docsrs"]
-cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
 
 [[test]]
@@ -139,6 +139,11 @@ required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
 [[example]]
 name = "admin"
 required-features = ["macros", "ctrlc_handler"]
+
+# This is required due to some stuff with dev-dependencies,
+# backwards compatability and cargo:
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#scrape-examples
+doc-scrape-examples = true
 
 [[example]]
 name = "buttons"

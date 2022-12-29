@@ -77,7 +77,7 @@ mod tests {
     use super::*;
 
     fn url(n: u32) -> reqwest::Url {
-        reqwest::Url::parse(&format!("https://example.com/{n}", n = n)).unwrap()
+        reqwest::Url::parse(&format!("https://example.com/{n}")).unwrap()
     }
 
     #[test]

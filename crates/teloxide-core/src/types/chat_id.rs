@@ -62,7 +62,7 @@ impl ChatId {
                 Channel((MAX_MARKED_CHANNEL_ID - id) as _)
             }
             id @ MIN_USER_ID..=MAX_USER_ID => User(UserId(id as _)),
-            id => panic!("malformed chat id: {}", id),
+            id => panic!("malformed chat id: {id}"),
         }
     }
 }

@@ -1368,12 +1368,12 @@ fn codegen_requester_methods() {
                 .join(",\n        ");
 
             let generics =
-                if generics.is_empty() { String::from("") } else { format!("<{}>", generics) };
+                if generics.is_empty() { String::from("") } else { format!("<{generics}>") };
 
             let where_clause = if where_clause.is_empty() {
                 String::from("")
             } else {
-                format!(" where {}", where_clause)
+                format!(" where {where_clause}")
             };
 
             format!(

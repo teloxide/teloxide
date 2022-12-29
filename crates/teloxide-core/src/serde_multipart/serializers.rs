@@ -472,9 +472,9 @@ impl SerializeStruct for JsonPartSerializer {
             Empty => {
                 self.state = Rest;
 
-                write!(&mut self.buf, "{{\"{}\":{}", key, value)?
+                write!(&mut self.buf, "{{\"{key}\":{value}")?
             }
-            Rest => write!(&mut self.buf, ",\"{}\":{}", key, value)?,
+            Rest => write!(&mut self.buf, ",\"{key}\":{value}")?,
         }
 
         Ok(())
@@ -511,9 +511,9 @@ impl SerializeSeq for JsonPartSerializer {
             Empty => {
                 self.state = Rest;
 
-                write!(&mut self.buf, "[{}", value)?
+                write!(&mut self.buf, "[{value}")?
             }
-            Rest => write!(&mut self.buf, ",{}", value)?,
+            Rest => write!(&mut self.buf, ",{value}")?,
         }
 
         Ok(())

@@ -56,7 +56,7 @@ where
         D: Send + 'static,
     {
         Box::pin(async move {
-            let to = format!("{:#?}", dialogue);
+            let to = format!("{dialogue:#?}");
             <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue).await?;
             log::trace!("Updated a dialogue #{}: {:#?}", chat_id, to);
             Ok(())
