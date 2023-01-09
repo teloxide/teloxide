@@ -50,9 +50,9 @@ fn impl_commands(infos: &[Command]) -> proc_macro2::TokenStream {
     });
 
     quote! {
-        fn bot_commands() -> Vec<teloxide::types::BotCommand> {
+        fn bot_commands() -> ::std::vec::Vec<teloxide::types::BotCommand> {
             use teloxide::types::BotCommand;
-            vec![#(#commands),*]
+            ::std::vec![#(#commands),*]
         }
     }
 }
@@ -91,7 +91,7 @@ fn impl_parse(
     let matching_values = infos.iter().map(|c| c.get_prefixed_command());
 
     quote! {
-         fn parse(s: &str, bot_name: &str) -> Result<Self, teloxide::utils::command::ParseError> {
+         fn parse(s: &str, bot_name: &str) -> ::std::result::Result<Self, teloxide::utils::command::ParseError> {
               // FIXME: we should probably just call a helper function from `teloxide`, instead of parsing command syntax ourselves
               use std::str::FromStr;
               use teloxide::utils::command::ParseError;
@@ -106,9 +106,9 @@ fn impl_parse(
 
               let bot_username = full_command.next();
               match bot_username {
-                  None => {}
-                  Some(username) if username.eq_ignore_ascii_case(bot_name) => {}
-                  Some(n) => return Err(ParseError::WrongBotName(n.to_owned())),
+                  ::std::option::Option::None => {}
+                  ::std::option::Option::Some(username) if username.eq_ignore_ascii_case(bot_name) => {}
+                  ::std::option::Option::Some(n) => return ::std::result::Result::Err(ParseError::WrongBotName(n.to_owned())),
               }
 
               let args = words.next().unwrap_or("").to_owned();
@@ -116,7 +116,7 @@ fn impl_parse(
                    #(
                         #matching_values => Ok(#variants_initialization),
                    )*
-                   _ => Err(ParseError::UnknownCommand(command.to_owned())),
+                   _ => ::std::result::Result::Err(ParseError::UnknownCommand(command.to_owned())),
               }
          }
     }

@@ -10,7 +10,7 @@ pub(crate) fn compile_error<T>(data: T) -> Error
 where
     T: ToTokens,
 {
-    Error(quote! { compile_error! { #data } })
+    Error(quote! { ::std::compile_error! { #data } })
 }
 
 pub(crate) fn compile_error_at(msg: &str, sp: Span) -> Error {
