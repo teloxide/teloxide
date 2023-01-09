@@ -252,3 +252,14 @@ fn rename_rules() {
         DefaultCommands::descriptions().to_string()
     );
 }
+
+#[test]
+#[cfg(feature = "macros")]
+fn custom_result() {
+    #[allow(dead_code)]
+    type Result = ();
+
+    #[derive(BotCommands, Debug, PartialEq)]
+    enum DefaultCommands {
+    }
+}

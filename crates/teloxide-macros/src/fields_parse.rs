@@ -83,17 +83,17 @@ fn create_parser<'a>(
                 let ty = types.next().unwrap();
                 quote! {
                     (
-                        |s: String| {
+                        |s: ::std::string::String| {
                             let res = <#ty>::from_str(&s)
-                                .map_err(|e| ParseError::IncorrectFormat(e.into()))?;
+                                .map_err(|e| teloxide::utils::command::ParseError::IncorrectFormat(e.into()))?;
 
-                            Ok((res,))
+                            ::std::result::Result::Ok((res,))
                         }
                     )
                 }
             }
             _ => {
-                quote! { compile_error!("Default parser works only with exactly 1 field") }
+                quote! { ::std::compile_error!("Default parser works only with exactly 1 field") }
             }
         },
         ParserType::Split { separator } => {
@@ -118,13 +118,13 @@ fn parser_with_separator<'a>(
             (
                 #(
                     {
-                        let s = splitted.next().ok_or(ParseError::TooFewArguments {
+                        let s = splitted.next().ok_or(teloxide::utils::command::ParseError::TooFewArguments {
                             expected: #expected,
                             found: #found,
                             message: format!("Expected but not found arg number {}", #found + 1),
                         })?;
 
-                        <#types>::from_str(s).map_err(|e| ParseError::IncorrectFormat(e.into()))?
+                        <#types>::from_str(s).map_err(|e| teloxide::utils::command::ParseError::IncorrectFormat(e.into()))?
                     }
                 ),*
             )
@@ -133,18 +133,18 @@ fn parser_with_separator<'a>(
 
     let res = quote! {
         (
-            |s: String| {
+            |s: ::std::string::String| {
                 let mut splitted = s.split(#separator);
 
                 let res = #res;
 
                 match splitted.next() {
-                    Some(d) => Err(ParseError::TooManyArguments {
+                    Some(d) => ::std::result::Result::Err(teloxide::utils::command::ParseError::TooManyArguments {
                         expected: #expected,
                         found: #expected + 1,
                         message: format!("Excess argument: {}", d),
                     }),
-                    None => Ok(res)
+                    None => ::std::result::Result::Ok(res)
                 }
             }
         )
