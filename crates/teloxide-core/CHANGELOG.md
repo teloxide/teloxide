@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The following functions were made `#[must_use]`:
   - `MaskPoint::{new, point}`
   - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
-- `Option<bool>` fields fields of `Administrator` are now `bool` (required) ([#800][pr800]):
+- `Option<bool>` fields of `Administrator` are now `bool` ([#800][pr800]):
   - `can_post_messages`
   - `can_edit_messages`
   - `can_pin_messages`
