@@ -66,11 +66,13 @@ pub struct Administrator {
     pub can_change_info: bool,
 
     /// `true` if the administrator can post in the channel, channels only.
-    pub can_post_messages: Option<bool>,
+    #[serde(default)]
+    pub can_post_messages: bool,
 
     /// `true` if the administrator can edit messages of other users and can pin
     /// messages, channels only.
-    pub can_edit_messages: Option<bool>,
+    #[serde(default)]
+    pub can_edit_messages: bool,
 
     /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
@@ -85,11 +87,13 @@ pub struct Administrator {
     pub can_restrict_members: bool,
 
     /// `true` if the administrator can pin messages, supergroups only.
-    pub can_pin_messages: Option<bool>,
+    #[serde(default)]
+    pub can_pin_messages: bool,
 
     /// `true`, if the user is allowed to create, rename, close, and reopen
     /// forum topics; supergroups only
-    pub can_manage_topics: Option<bool>,
+    #[serde(default)]
+    pub can_manage_topics: bool,
 
     /// `true` if the administrator can add new administrators with a subset of
     /// his own privileges or demote administrators that he has promoted,
@@ -206,7 +210,12 @@ impl ChatMemberKind {
 
     /// Returns `true` if the user is a common [member] of the given chat.
     ///
+    /// ⚠️ Don't confuse this with [`is_present`]. This method merely checks
+    /// for [`ChatMemberKind::Member`] variant which is not enough to determine
+    /// if the user is joinned to the chat. Use [`is_present`] for that instead.
+    ///
     /// [member]: ChatMemberKind::Member
+    /// [`is_present`]: ChatMemberKind::is_present
     #[must_use]
     pub fn is_member(&self) -> bool {
         matches!(self, Self::Member { .. })
@@ -222,7 +231,12 @@ impl ChatMemberKind {
 
     /// Returns `true` if the user [left] the given chat.
     ///
+    /// ⚠️ Don't confuse this with [`is_present`]. This method merely checks
+    /// for [`ChatMemberKind::Left`] variant which is not enough to determine
+    /// if the user is joinned to the chat. Use [`is_present`] for that instead.
+    ///
     /// [left]: ChatMemberKind::Left
+    /// [`is_present`]: ChatMemberKind::is_present
     #[must_use]
     pub fn is_left(&self) -> bool {
         matches!(self, Self::Left { .. })
@@ -354,7 +368,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_manage_chat, .. }) => *can_manage_chat,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => true,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -367,6 +381,10 @@ impl ChatMemberKind {
     ///   [`Administrator::can_change_info`] privilege.
     /// - is restricted, but does have [`Restricted::can_change_info`] privilege
     /// Returns `false` otherwise.
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_change_info` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_change_info(&self) -> bool {
         match self {
@@ -390,9 +408,7 @@ impl ChatMemberKind {
     pub fn can_post_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_post_messages, .. }) => {
-                can_post_messages.unwrap_or_default()
-            }
+            Self::Administrator(Administrator { can_post_messages, .. }) => *can_post_messages,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -411,9 +427,7 @@ impl ChatMemberKind {
     pub fn can_edit_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_edit_messages, .. }) => {
-                can_edit_messages.unwrap_or_default()
-            }
+            Self::Administrator(Administrator { can_edit_messages, .. }) => *can_edit_messages,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -471,6 +485,10 @@ impl ChatMemberKind {
     /// - is restricted, but does have [`Restricted::can_invite_users`]
     ///   privilege
     /// Returns `false` otherwise.
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_invite_users` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_invite_users(&self) -> bool {
         match &self {
@@ -510,14 +528,16 @@ impl ChatMemberKind {
     /// - is restricted, but does have [`Restricted::can_pin_messages`]
     ///   privilege
     /// Returns `false` otherwise.
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_pin_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_pin_messages(&self) -> bool {
         match self {
             Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_pin_messages, .. }) => {
-                can_pin_messages.unwrap_or_default()
-            }
-            Self::Restricted(Restricted { can_pin_messages, .. }) => *can_pin_messages,
+            Self::Administrator(Administrator { can_pin_messages, .. })
+            | Self::Restricted(Restricted { can_pin_messages, .. }) => *can_pin_messages,
             Self::Member | Self::Left | Self::Banned(_) => false,
         }
     }
@@ -531,14 +551,18 @@ impl ChatMemberKind {
     /// - is restricted, but does have [`Restricted::can_manage_topics`]
     ///   privilege
     /// Returns `false` otherwise.
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_manage_topics` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_manage_topics(&self) -> bool {
         match self {
             ChatMemberKind::Owner(_) => true,
-            ChatMemberKind::Administrator(Administrator { can_manage_topics, .. }) => {
-                can_manage_topics.unwrap_or_default()
+            ChatMemberKind::Administrator(Administrator { can_manage_topics, .. })
+            | ChatMemberKind::Restricted(Restricted { can_manage_topics, .. }) => {
+                *can_manage_topics
             }
-            ChatMemberKind::Restricted(Restricted { can_manage_topics, .. }) => *can_manage_topics,
             ChatMemberKind::Member | ChatMemberKind::Left | ChatMemberKind::Banned(_) => false,
         }
     }
@@ -576,6 +600,10 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_messages`]: Restricted::can_send_messages
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_send_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_send_messages(&self) -> bool {
         match &self {
@@ -594,6 +622,10 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_send_media_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_send_media_messages(&self) -> bool {
         match &self {
@@ -614,6 +646,10 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_send_other_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_send_other_messages(&self) -> bool {
         match &self {
@@ -634,6 +670,10 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_add_web_page_previews` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_add_web_page_previews(&self) -> bool {
         match &self {
@@ -653,6 +693,10 @@ impl ChatMemberKind {
     /// Returns `true` otherwise.
     ///
     /// [`can_send_polls`]: Restricted::can_send_polls
+    #[deprecated(
+        since = "0.9.0",
+        note = "Match manually and use `can_send_polls` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     #[must_use]
     pub fn can_send_polls(&self) -> bool {
         match &self {
@@ -701,7 +745,13 @@ impl ChatMemberStatus {
 
     /// Returns `true` if the user is a common [member] of the given chat.
     ///
+    /// ⚠️ Don't confuse this with [`is_present`]. This method merely checks
+    /// for [`ChatMemberStatus::Member`] variant which is not enough to
+    /// determine if the user is joinned to the chat. Use [`is_present`] for
+    /// that instead.
+    ///
     /// [member]: ChatMemberKind::Member
+    /// [`is_present`]: ChatMemberKind::is_present
     #[must_use]
     pub fn is_member(&self) -> bool {
         matches!(self, Self::Member { .. })
@@ -717,7 +767,12 @@ impl ChatMemberStatus {
 
     /// Returns `true` if the user [left] the given chat.
     ///
+    /// ⚠️ Don't confuse this with [`is_present`]. This method merely checks
+    /// for [`ChatMemberStatus::Left`] variant which is not enough to determine
+    /// if the user is joinned to the chat. Use [`is_present`] for that instead.
+    ///
     /// [left]: ChatMemberKind::Left
+    /// [`is_present`]: ChatMemberKind::is_present
     #[must_use]
     pub fn is_left(&self) -> bool {
         matches!(self, Self::Left { .. })
@@ -750,6 +805,10 @@ impl ChatMemberStatus {
     /// [left]: ChatMemberKind::Left
     /// [banned]: ChatMemberKind::Banned
     #[must_use]
+    #[deprecated(
+        since = "0.9.0",
+        note = "Use `ChatMemberKind::is_present` method instead. Details: https://github.com/teloxide/teloxide/issues/781"
+    )]
     pub fn is_present(&self) -> bool {
         !(self.is_left() || self.is_banned())
     }
@@ -801,15 +860,15 @@ mod tests {
                 can_be_edited: false,
                 can_manage_chat: true,
                 can_change_info: true,
-                can_post_messages: None,
-                can_edit_messages: None,
+                can_post_messages: false,
+                can_edit_messages: false,
                 can_delete_messages: true,
                 can_manage_video_chats: true,
                 can_invite_users: true,
                 can_restrict_members: true,
-                can_pin_messages: Some(true),
+                can_pin_messages: true,
                 can_promote_members: true,
-                can_manage_topics: None,
+                can_manage_topics: false,
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(json).unwrap();

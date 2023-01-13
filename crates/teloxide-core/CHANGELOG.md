@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The following functions were made `#[must_use]`:
   - `MaskPoint::{new, point}`
   - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
+- `Option<bool>` fields of `Administrator` are now `bool` ([#800][pr800]):
+  - `can_post_messages`
+  - `can_edit_messages`
+  - `can_pin_messages`
+  - `can_manage_topics`
 
 ### Added
 
@@ -21,6 +26,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ChatMember::can_send_polls` method ([#764][pr764])
 
 [pr764]: https://github.com/teloxide/teloxide/pull/764
+[pr800]: https://github.com/teloxide/teloxide/pull/800
+
+### Deprecated
+
+- `ChatMemberKind` methods ([#800][pr800]):
+  - `can_change_info`
+  - `can_invite_users`
+  - `can_pin_messages`
+  - `can_send_messages`
+  - `can_send_media_messages`
+  - `can_send_other_messages`
+  - `can_send_polls`
+  - `can_add_web_page_previews`
+- `ChatMemberStatus::is_present` method ([#800][pr800])
+
+### Fixed
+
+- `ChatMemberKind::can_manage_chat` method now correctly returns `false` for non owner/administrator users ([#800][pr800])
 
 ## 0.8.0 - 2022-10-03
 
