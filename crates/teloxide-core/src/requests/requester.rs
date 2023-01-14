@@ -682,17 +682,9 @@ pub trait Requester {
     type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`EditForumTopic`].
-    fn edit_forum_topic<C, N, I>(
-        &self,
-        chat_id: C,
-        message_thread_id: i32,
-        name: N,
-        icon_custom_emoji_id: I,
-    ) -> Self::EditForumTopic
+    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic
     where
-        C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String>;
+        C: Into<Recipient>;
 
     type CloseForumTopic: Request<Payload = CloseForumTopic, Err = Self::Err>;
 
@@ -723,6 +715,42 @@ pub trait Requester {
         chat_id: C,
         message_thread_id: i32,
     ) -> Self::UnpinAllForumTopicMessages
+    where
+        C: Into<Recipient>;
+
+    type EditGeneralForumTopic: Request<Payload = EditGeneralForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditGeneralForumTopic`].
+    fn edit_general_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::EditGeneralForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>;
+
+    type CloseGeneralForumTopic: Request<Payload = CloseGeneralForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CloseGeneralForumTopic`].
+    fn close_general_forum_topic<C>(&self, chat_id: C) -> Self::CloseGeneralForumTopic
+    where
+        C: Into<Recipient>;
+
+    type ReopenGeneralForumTopic: Request<Payload = ReopenGeneralForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReopenGeneralForumTopic`].
+    fn reopen_general_forum_topic<C>(&self, chat_id: C) -> Self::ReopenGeneralForumTopic
+    where
+        C: Into<Recipient>;
+
+    type HideGeneralForumTopic: Request<Payload = HideGeneralForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`HideGeneralForumTopic`].
+    fn hide_general_forum_topic<C>(&self, chat_id: C) -> Self::HideGeneralForumTopic
+    where
+        C: Into<Recipient>;
+
+    type UnhideGeneralForumTopic: Request<Payload = UnhideGeneralForumTopic, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UnhideGeneralForumTopic`].
+    fn unhide_general_forum_topic<C>(&self, chat_id: C) -> Self::UnhideGeneralForumTopic
     where
         C: Into<Recipient>;
 
@@ -1177,6 +1205,11 @@ macro_rules! forward_all {
             reopen_forum_topic,
             delete_forum_topic,
             unpin_all_forum_topic_messages,
+            edit_general_forum_topic,
+            close_general_forum_topic,
+            reopen_general_forum_topic,
+            hide_general_forum_topic,
+            unhide_general_forum_topic,
             answer_callback_query,
             set_my_commands,
             get_my_commands,

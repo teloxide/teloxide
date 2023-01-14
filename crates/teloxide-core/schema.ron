@@ -468,6 +468,11 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
+                ),        
+                Param(
+                    name: "has_spoiler",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the photo needs to be covered with a spoiler animation"),
                 ),
                 Param(
                     name: "disable_notification",
@@ -781,6 +786,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "has_spoiler",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the video needs to be covered with a spoiler animation"),
+                ),
+                Param(
                     name: "supports_streaming",
                     ty: Option(bool),
                     descr: Doc(md: "Pass _True_, if the uploaded video is suitable for streaming"),
@@ -890,6 +900,11 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
+                ),
+                Param(
+                    name: "has_spoiler",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the animation needs to be covered with a spoiler animation"),
                 ),
                 Param(
                     name: "disable_notification",
@@ -1809,7 +1824,7 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
-                ),
+                ),   
                 Param(
                     name: "action",
                     ty: RawTy("ChatAction"),
@@ -1826,6 +1841,11 @@ Schema(
                             "video notes": "https://core.telegram.org/bots/api#sendvideonote",
                         }
                     ),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(i32),
+                    descr: Doc(md: "Unique identifier for the target message thread; supergroups only")
                 ),
             ],
         ),
@@ -2631,13 +2651,13 @@ Schema(
                 ),
                 Param(
                     name: "name",
-                    ty: String,
-                    descr: Doc(md: "Topic name, 1-128 characters")
+                    ty: Option(String),
+                    descr: Doc(md: "Topic name, 0-128 characters. If not specified or empty, the current name of the topic will be kept")
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: String,
-                    descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers. Pass an empty string to remove the icon. If not specified, the current icon will be kept")
                 ),
             ],
         ),
@@ -2714,6 +2734,81 @@ Schema(
                     name: "message_thread_id",
                     ty: i32,
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("editGeneralForumTopic", "EditGeneralForumTopic", "edit_general_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to edit the name of the 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have _can\\_manage\\_topics_ administrator rights. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#editgeneralforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "New topic name, 1-128 characters"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("closeGeneralForumTopic", "CloseGeneralForumTopic", "close_general_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to close an open 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#closegeneralforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+            ],
+        ),
+        Method(
+            names: ("reopenGeneralForumTopic", "ReopenGeneralForumTopic", "reopen_general_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to reopen a closed 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights. The topic will be automatically unhidden if it was hidden. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#reopengeneralforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+            ],
+        ),
+        Method(
+            names: ("hideGeneralForumTopic", "HideGeneralForumTopic", "hide_general_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to hide the 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights. The topic will be automatically closed if it was open. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#hidegeneralforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+            ],
+        ),
+        Method(
+            names: ("unhideGeneralForumTopic", "UnhideGeneralForumTopic", "unhide_general_forum_topic"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to unhide the 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the _can\\_manage\\_topics_ administrator rights. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#unhidegeneralforumtopic",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
             ],
         ),

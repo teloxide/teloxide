@@ -80,7 +80,7 @@ pub fn ensure_files_contents<'a>(
     for (path, contents) in files_and_contents {
         if path.exists() {
             let old_contents = fs::read_to_string(path).unwrap();
-    
+
             if normalize_newlines(&old_contents) == normalize_newlines(contents) {
                 // File is already up to date.
                 continue;

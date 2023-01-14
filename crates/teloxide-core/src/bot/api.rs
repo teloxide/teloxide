@@ -675,21 +675,13 @@ impl Requester for Bot {
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
 
-    fn edit_forum_topic<C, N, I>(
-        &self,
-        chat_id: C,
-        message_thread_id: i32,
-        name: N,
-        icon_custom_emoji_id: I,
-    ) -> Self::EditForumTopic
+    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic
     where
         C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String>,
     {
         Self::EditForumTopic::new(
             self.clone(),
-            payloads::EditForumTopic::new(chat_id, message_thread_id, name, icon_custom_emoji_id),
+            payloads::EditForumTopic::new(chat_id, message_thread_id),
         )
     }
 
@@ -742,6 +734,71 @@ impl Requester for Bot {
         Self::UnpinAllForumTopicMessages::new(
             self.clone(),
             payloads::UnpinAllForumTopicMessages::new(chat_id, message_thread_id),
+        )
+    }
+
+    type EditGeneralForumTopic = JsonRequest<payloads::EditGeneralForumTopic>;
+
+    fn edit_general_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::EditGeneralForumTopic
+    where
+        C: Into<Recipient>,
+        N: Into<String>,
+    {
+        Self::EditGeneralForumTopic::new(
+            self.clone(),
+            payloads::EditGeneralForumTopic::new(chat_id, name),
+        )
+    }
+
+    type CloseGeneralForumTopic = JsonRequest<payloads::CloseGeneralForumTopic>;
+
+    /// For Telegram documentation see [`CloseGeneralForumTopic`].
+    fn close_general_forum_topic<C>(&self, chat_id: C) -> Self::CloseGeneralForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::CloseGeneralForumTopic::new(
+            self.clone(),
+            payloads::CloseGeneralForumTopic::new(chat_id),
+        )
+    }
+
+    type ReopenGeneralForumTopic = JsonRequest<payloads::ReopenGeneralForumTopic>;
+
+    /// For Telegram documentation see [`ReopenGeneralForumTopic`].
+    fn reopen_general_forum_topic<C>(&self, chat_id: C) -> Self::ReopenGeneralForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::ReopenGeneralForumTopic::new(
+            self.clone(),
+            payloads::ReopenGeneralForumTopic::new(chat_id),
+        )
+    }
+
+    type HideGeneralForumTopic = JsonRequest<payloads::HideGeneralForumTopic>;
+
+    /// For Telegram documentation see [`HideGeneralForumTopic`].
+    fn hide_general_forum_topic<C>(&self, chat_id: C) -> Self::HideGeneralForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::HideGeneralForumTopic::new(
+            self.clone(),
+            payloads::HideGeneralForumTopic::new(chat_id),
+        )
+    }
+
+    type UnhideGeneralForumTopic = JsonRequest<payloads::UnhideGeneralForumTopic>;
+
+    /// For Telegram documentation see [`UnhideGeneralForumTopic`].
+    fn unhide_general_forum_topic<C>(&self, chat_id: C) -> Self::UnhideGeneralForumTopic
+    where
+        C: Into<Recipient>,
+    {
+        Self::UnhideGeneralForumTopic::new(
+            self.clone(),
+            payloads::UnhideGeneralForumTopic::new(chat_id),
         )
     }
 

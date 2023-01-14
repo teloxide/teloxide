@@ -43,6 +43,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
+            /// Pass True if the video needs to be covered with a spoiler animation
+            pub has_spoiler: bool,
             /// Pass _True_, if the uploaded video is suitable for streaming
             pub supports_streaming: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.

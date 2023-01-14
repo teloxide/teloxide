@@ -240,6 +240,11 @@ where
         reopen_forum_topic,
         delete_forum_topic,
         unpin_all_forum_topic_messages,
+        edit_general_forum_topic,
+        close_general_forum_topic,
+        reopen_general_forum_topic,
+        hide_general_forum_topic,
+        unhide_general_forum_topic,
         answer_callback_query,
         set_my_commands,
         get_my_commands,
@@ -628,8 +633,6 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         message_thread_id: i32,
-        name: String,
-        icon_custom_emoji_id: String,
     ) -> ErasedRequest<'a, EditForumTopic, Self::Err>;
 
     fn close_forum_topic(
@@ -655,6 +658,32 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         message_thread_id: i32,
     ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err>;
+
+    fn edit_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+        name: String,
+    ) -> ErasedRequest<'a, EditGeneralForumTopic, Self::Err>;
+
+    fn close_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, CloseGeneralForumTopic, Self::Err>;
+
+    fn reopen_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, ReopenGeneralForumTopic, Self::Err>;
+
+    fn hide_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, HideGeneralForumTopic, Self::Err>;
+
+    fn unhide_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, UnhideGeneralForumTopic, Self::Err>;
 
     fn answer_callback_query(
         &self,
@@ -1350,11 +1379,8 @@ where
         &self,
         chat_id: Recipient,
         message_thread_id: i32,
-        name: String,
-        icon_custom_emoji_id: String,
     ) -> ErasedRequest<'a, EditForumTopic, Self::Err> {
-        Requester::edit_forum_topic(self, chat_id, message_thread_id, name, icon_custom_emoji_id)
-            .erase()
+        Requester::edit_forum_topic(self, chat_id, message_thread_id).erase()
     }
 
     fn close_forum_topic(
@@ -1387,6 +1413,42 @@ where
         message_thread_id: i32,
     ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err> {
         Requester::unpin_all_forum_topic_messages(self, chat_id, message_thread_id).erase()
+    }
+
+    fn edit_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+        name: String,
+    ) -> ErasedRequest<'a, EditGeneralForumTopic, Self::Err> {
+        Requester::edit_general_forum_topic(self, chat_id, name).erase()
+    }
+
+    fn close_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, CloseGeneralForumTopic, Self::Err> {
+        Requester::close_general_forum_topic(self, chat_id).erase()
+    }
+
+    fn reopen_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, ReopenGeneralForumTopic, Self::Err> {
+        Requester::reopen_general_forum_topic(self, chat_id).erase()
+    }
+
+    fn hide_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, HideGeneralForumTopic, Self::Err> {
+        Requester::hide_general_forum_topic(self, chat_id).erase()
+    }
+
+    fn unhide_general_forum_topic(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, UnhideGeneralForumTopic, Self::Err> {
+        Requester::unhide_general_forum_topic(self, chat_id).erase()
     }
 
     fn answer_callback_query(

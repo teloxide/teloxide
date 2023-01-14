@@ -931,11 +931,9 @@ macro_rules! requester_forward {
     (@method edit_forum_topic $body:ident $ty:ident) => {
         type EditForumTopic = $ty![EditForumTopic];
 
-        fn edit_forum_topic<C, N, I>(&self, chat_id: C, message_thread_id: i32, name: N, icon_custom_emoji_id: I) -> Self::EditForumTopic where C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String> {
+        fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic where C: Into<Recipient> {
             let this = self;
-            $body!(edit_forum_topic this (chat_id: C, message_thread_id: i32, name: N, icon_custom_emoji_id: I))
+            $body!(edit_forum_topic this (chat_id: C, message_thread_id: i32))
         }
     };
     (@method close_forum_topic $body:ident $ty:ident) => {
@@ -968,6 +966,47 @@ macro_rules! requester_forward {
         fn unpin_all_forum_topic_messages<C>(&self, chat_id: C, message_thread_id: i32) -> Self::UnpinAllForumTopicMessages where C: Into<Recipient> {
             let this = self;
             $body!(unpin_all_forum_topic_messages this (chat_id: C, message_thread_id: i32))
+        }
+    };
+    (@method edit_general_forum_topic $body:ident $ty:ident) => {
+        type EditGeneralForumTopic = $ty![EditGeneralForumTopic];
+
+        fn edit_general_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::EditGeneralForumTopic where C: Into<Recipient>,
+        N: Into<String> {
+            let this = self;
+            $body!(edit_general_forum_topic this (chat_id: C, name: N))
+        }
+    };
+    (@method close_general_forum_topic $body:ident $ty:ident) => {
+        type CloseGeneralForumTopic = $ty![CloseGeneralForumTopic];
+
+        fn close_general_forum_topic<C>(&self, chat_id: C) -> Self::CloseGeneralForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(close_general_forum_topic this (chat_id: C))
+        }
+    };
+    (@method reopen_general_forum_topic $body:ident $ty:ident) => {
+        type ReopenGeneralForumTopic = $ty![ReopenGeneralForumTopic];
+
+        fn reopen_general_forum_topic<C>(&self, chat_id: C) -> Self::ReopenGeneralForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(reopen_general_forum_topic this (chat_id: C))
+        }
+    };
+    (@method hide_general_forum_topic $body:ident $ty:ident) => {
+        type HideGeneralForumTopic = $ty![HideGeneralForumTopic];
+
+        fn hide_general_forum_topic<C>(&self, chat_id: C) -> Self::HideGeneralForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(hide_general_forum_topic this (chat_id: C))
+        }
+    };
+    (@method unhide_general_forum_topic $body:ident $ty:ident) => {
+        type UnhideGeneralForumTopic = $ty![UnhideGeneralForumTopic];
+
+        fn unhide_general_forum_topic<C>(&self, chat_id: C) -> Self::UnhideGeneralForumTopic where C: Into<Recipient> {
+            let this = self;
+            $body!(unhide_general_forum_topic this (chat_id: C))
         }
     };
     (@method answer_callback_query $body:ident $ty:ident) => {
