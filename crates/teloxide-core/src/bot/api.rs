@@ -752,7 +752,6 @@ impl Requester for Bot {
 
     type CloseGeneralForumTopic = JsonRequest<payloads::CloseGeneralForumTopic>;
 
-    /// For Telegram documentation see [`CloseGeneralForumTopic`].
     fn close_general_forum_topic<C>(&self, chat_id: C) -> Self::CloseGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -765,7 +764,6 @@ impl Requester for Bot {
 
     type ReopenGeneralForumTopic = JsonRequest<payloads::ReopenGeneralForumTopic>;
 
-    /// For Telegram documentation see [`ReopenGeneralForumTopic`].
     fn reopen_general_forum_topic<C>(&self, chat_id: C) -> Self::ReopenGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -778,7 +776,6 @@ impl Requester for Bot {
 
     type HideGeneralForumTopic = JsonRequest<payloads::HideGeneralForumTopic>;
 
-    /// For Telegram documentation see [`HideGeneralForumTopic`].
     fn hide_general_forum_topic<C>(&self, chat_id: C) -> Self::HideGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -791,7 +788,6 @@ impl Requester for Bot {
 
     type UnhideGeneralForumTopic = JsonRequest<payloads::UnhideGeneralForumTopic>;
 
-    /// For Telegram documentation see [`UnhideGeneralForumTopic`].
     fn unhide_general_forum_topic<C>(&self, chat_id: C) -> Self::UnhideGeneralForumTopic
     where
         C: Into<Recipient>,
