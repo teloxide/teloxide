@@ -2722,7 +2722,7 @@ Schema(
             names: ("unpinAllForumTopicMessages", "UnpinAllForumTopicMessages", "unpin_all_forum_topic_messages"),
             return_ty: True,
             doc: Doc(md: "Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the chat for this to work and must have the _can\\_pin\\_messages_ administrator right in the supergroup. Returns True on success."),
-            tg_doc: "https://core.telegram.org/bots/api#deleteforumtopic",
+            tg_doc: "https://core.telegram.org/bots/api#unpinallforumtopicmessages",
             tg_category: "Available methods",
             params: [
                 Param(
