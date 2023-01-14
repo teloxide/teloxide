@@ -348,6 +348,8 @@ mod test {
                     photo: None,
                     pinned_message: None,
                     message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {

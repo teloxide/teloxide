@@ -594,6 +594,8 @@ mod tests {
             photo: None,
             pinned_message: None,
             message_auto_delete_time: None,
+            has_hidden_members: false,
+            has_aggressive_anti_spam_enabled: false,
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -616,6 +618,8 @@ mod tests {
                 photo: None,
                 pinned_message: None,
                 message_auto_delete_time: None,
+                has_hidden_members: false,
+                has_aggressive_anti_spam_enabled: false,
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
@@ -638,6 +642,8 @@ mod tests {
             photo: None,
             pinned_message: None,
             message_auto_delete_time: None,
+            has_hidden_members: false,
+            has_aggressive_anti_spam_enabled: false,
         };
 
         let json = to_string(&chat).unwrap();

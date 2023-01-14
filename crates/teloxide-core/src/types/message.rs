@@ -1630,6 +1630,8 @@ mod tests {
             message_auto_delete_time: None,
             photo: None,
             pinned_message: None,
+            has_hidden_members: false,
+            has_aggressive_anti_spam_enabled: false,
         };
 
         assert!(message.from().unwrap().is_anonymous());

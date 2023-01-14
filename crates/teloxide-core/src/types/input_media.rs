@@ -573,6 +573,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&photo).unwrap();
@@ -592,6 +593,7 @@ mod tests {
             duration: None,
             supports_streaming: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
@@ -610,6 +612,7 @@ mod tests {
             height: None,
             duration: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
