@@ -1205,6 +1205,8 @@ mod getters {
                 _ => None,
             }
         }
+
+        // FIXME: add more getters for other types of messages
     }
 }
 
