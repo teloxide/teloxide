@@ -30,6 +30,21 @@ pub struct Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub message_auto_delete_time: Option<u32>,
+
+    /// `true`, if non-administrators can only get the list of bots and
+    /// administrators in the chat. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_hidden_members: bool,
+
+    /// `true`, if aggressive anti-spam checks are enabled in the supergroup.
+    /// The field is only available to chat administrators. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_aggressive_anti_spam_enabled: bool,
 }
 
 #[serde_with_macros::skip_serializing_none]

@@ -11,12 +11,19 @@ use crate::types::KeyboardButton;
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
+// FIXME: unoption bools?
 pub struct KeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects
     ///
     /// [`KeyboardButton`]: crate::types::KeyboardButton
     pub keyboard: Vec<Vec<KeyboardButton>>,
+
+    /// Requests clients to always show the keyboard when the regular keyboard
+    /// is hidden. Defaults to `false`, in which case the custom keyboard
+    /// can be hidden and opened with a keyboard icon.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub is_persistent: bool,
 
     /// Requests clients to resize the keyboard vertically for optimal fit
     /// (e.g., make the keyboard smaller if there are just two rows of
@@ -56,6 +63,7 @@ impl KeyboardMarkup {
     {
         Self {
             keyboard: keyboard.into_iter().map(<_>::into_iter).map(<_>::collect).collect(),
+            is_persistent: false,
             resize_keyboard: None,
             one_time_keyboard: None,
             input_field_placeholder: None,
@@ -77,6 +85,14 @@ impl KeyboardMarkup {
             Some(buttons) => buttons.push(button),
             None => self.keyboard.push(vec![button]),
         };
+        self
+    }
+
+    /// Sets [`is_persistent`] to `true`.
+    ///
+    /// [`is_persistent`]: KeyboardMarkup::is_persistent
+    pub fn persistent(mut self) -> Self {
+        self.is_persistent = true;
         self
     }
 

@@ -6,11 +6,12 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, ForumTopicClosed,
-    ForumTopicCreated, ForumTopicReopened, Game, InlineKeyboardMarkup, Invoice, Location,
+    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
+    GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
     PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video,
     VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -58,12 +59,16 @@ pub enum MessageKind {
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
+    WriteAccessAllowed(WriteAccessAllowed),
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
     ForumTopicCreated(ForumTopicCreated),
+    ForumTopicEdited(ForumTopicEdited),
     ForumTopicClosed(ForumTopicClosed),
     ForumTopicReopened(ForumTopicReopened),
+    GeneralForumTopicHidden(GeneralForumTopicHidden),
+    GeneralForumTopicUnhidden(GeneralForumTopicUnhidden),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -339,6 +344,10 @@ pub struct MediaAnimation {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
     // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
@@ -415,6 +424,10 @@ pub struct MediaPhoto {
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
+
     /// The unique identifier of a media message group this message belongs
     /// to.
     pub media_group_id: Option<String>,
@@ -457,6 +470,10 @@ pub struct MediaVideo {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
 
     /// The unique identifier of a media message group this message belongs
     /// to.
@@ -765,6 +782,35 @@ mod getters {
                 }) => Some(caption_entities),
                 _ => None,
             }
+        }
+
+        /// Returns `true` if the message media is covered by a spoiler
+        /// animation.
+        ///
+        /// Getter for [`MediaPhoto::has_media_spoiler`],
+        /// [`MediaVideo::has_media_spoiler`] and
+        /// [`MediaAnimation::has_media_spoiler`].
+        #[must_use]
+        pub fn has_media_spoiler(&self) -> bool {
+            self.common()
+                .map(|m| match m.media_kind {
+                    MediaKind::Animation(MediaAnimation { has_media_spoiler, .. })
+                    | MediaKind::Photo(MediaPhoto { has_media_spoiler, .. })
+                    | MediaKind::Video(MediaVideo { has_media_spoiler, .. }) => has_media_spoiler,
+                    MediaKind::Audio(_)
+                    | MediaKind::Contact(_)
+                    | MediaKind::Document(_)
+                    | MediaKind::Game(_)
+                    | MediaKind::Venue(_)
+                    | MediaKind::Location(_)
+                    | MediaKind::Poll(_)
+                    | MediaKind::Sticker(_)
+                    | MediaKind::Text(_)
+                    | MediaKind::VideoNote(_)
+                    | MediaKind::Voice(_)
+                    | MediaKind::Migration(_) => false,
+                })
+                .unwrap_or(false)
         }
 
         #[must_use]
