@@ -24,9 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Restricted::{is_member, can_change_info, can_invite_users, can_pin_messages, can_send_polls}` fields ([#764][pr764])
 - `ChatMember::can_send_polls` method ([#764][pr764])
+- Support for Telegram Bot API [version 6.3](https://core.telegram.org/bots/api#november-5-2022) ([#789][pr789])
+- Support for Telegram Bot API [version 6.4](https://core.telegram.org/bots/api#december-30-2022) ([#809][pr809])
 
 [pr764]: https://github.com/teloxide/teloxide/pull/764
+[pr764]: https://github.com/teloxide/teloxide/pull/789
 [pr800]: https://github.com/teloxide/teloxide/pull/800
+[pr809]: https://github.com/teloxide/teloxide/pull/809
 
 ### Deprecated
 
