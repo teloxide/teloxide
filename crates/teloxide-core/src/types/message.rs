@@ -42,6 +42,9 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
+// FIXME: this could be a use-case for serde mixed-tags, some variants need to
+//        untagged (`MessageCommon` as an example), while other need to be
+//        tagged (e.g.: Forum*)
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MessageKind {
@@ -59,16 +62,16 @@ pub enum MessageKind {
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
-    WriteAccessAllowed(WriteAccessAllowed),
+    WriteAccessAllowed(MessageWriteAccessAllowed),
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
-    ForumTopicCreated(ForumTopicCreated),
-    ForumTopicEdited(ForumTopicEdited),
-    ForumTopicClosed(ForumTopicClosed),
-    ForumTopicReopened(ForumTopicReopened),
-    GeneralForumTopicHidden(GeneralForumTopicHidden),
-    GeneralForumTopicUnhidden(GeneralForumTopicUnhidden),
+    ForumTopicCreated(MessageForumTopicCreated),
+    ForumTopicEdited(MessageForumTopicEdited),
+    ForumTopicClosed(MessageForumTopicClosed),
+    ForumTopicReopened(MessageForumTopicReopened),
+    GeneralForumTopicHidden(MessageGeneralForumTopicHidden),
+    GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -524,9 +527,22 @@ pub struct MessageProximityAlertTriggered {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageWriteAccessAllowed {
+    /// Service message: the user allowed the bot added to the attachment menu
+    /// to write messages.
+    pub write_access_allowed: WriteAccessAllowed,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicCreated {
     /// Service message: forum topic created.
     pub forum_topic_created: ForumTopicCreated,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageForumTopicEdited {
+    /// Service message: forum topic edited.
+    pub forum_topic_edited: ForumTopicEdited,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -539,6 +555,18 @@ pub struct MessageForumTopicClosed {
 pub struct MessageForumTopicReopened {
     /// Service message: forum topic reopened.
     pub forum_topic_reopened: ForumTopicReopened,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGeneralForumTopicHidden {
+    /// Service message: the 'General' forum topic hidden.
+    pub general_forum_topic_hidden: GeneralForumTopicHidden,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGeneralForumTopicUnhidden {
+    /// Service message: the 'General' forum topic unhidden.
+    pub general_forum_topic_unhidden: GeneralForumTopicUnhidden,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
