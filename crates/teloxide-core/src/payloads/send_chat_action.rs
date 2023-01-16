@@ -29,5 +29,9 @@ impl_payload! {
             /// [video notes]: crate::payloads::SendVideoNote
             pub action: ChatAction,
         }
+        optional {
+            /// Unique identifier for the target message thread; supergroups only
+            pub message_thread_id: i32,
+        }
     }
 }

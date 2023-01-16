@@ -6,11 +6,12 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, ForumTopicClosed,
-    ForumTopicCreated, ForumTopicReopened, Game, InlineKeyboardMarkup, Invoice, Location,
+    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
+    GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
     PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video,
     VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -41,6 +42,9 @@ pub struct Message {
     pub kind: MessageKind,
 }
 
+// FIXME: this could be a use-case for serde mixed-tags, some variants need to
+//        untagged (`MessageCommon` as an example), while other need to be
+//        tagged (e.g.: Forum*)
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MessageKind {
@@ -58,12 +62,16 @@ pub enum MessageKind {
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
+    WriteAccessAllowed(MessageWriteAccessAllowed),
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
-    ForumTopicCreated(ForumTopicCreated),
-    ForumTopicClosed(ForumTopicClosed),
-    ForumTopicReopened(ForumTopicReopened),
+    ForumTopicCreated(MessageForumTopicCreated),
+    ForumTopicEdited(MessageForumTopicEdited),
+    ForumTopicClosed(MessageForumTopicClosed),
+    ForumTopicReopened(MessageForumTopicReopened),
+    GeneralForumTopicHidden(MessageGeneralForumTopicHidden),
+    GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -339,6 +347,10 @@ pub struct MediaAnimation {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
     // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
@@ -415,6 +427,10 @@ pub struct MediaPhoto {
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
+
     /// The unique identifier of a media message group this message belongs
     /// to.
     pub media_group_id: Option<String>,
@@ -457,6 +473,10 @@ pub struct MediaVideo {
     /// bot commands, etc. that appear in the caption.
     #[serde(default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
 
     /// The unique identifier of a media message group this message belongs
     /// to.
@@ -507,9 +527,22 @@ pub struct MessageProximityAlertTriggered {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageWriteAccessAllowed {
+    /// Service message: the user allowed the bot added to the attachment menu
+    /// to write messages.
+    pub write_access_allowed: WriteAccessAllowed,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicCreated {
     /// Service message: forum topic created.
     pub forum_topic_created: ForumTopicCreated,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageForumTopicEdited {
+    /// Service message: forum topic edited.
+    pub forum_topic_edited: ForumTopicEdited,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -522,6 +555,18 @@ pub struct MessageForumTopicClosed {
 pub struct MessageForumTopicReopened {
     /// Service message: forum topic reopened.
     pub forum_topic_reopened: ForumTopicReopened,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGeneralForumTopicHidden {
+    /// Service message: the 'General' forum topic hidden.
+    pub general_forum_topic_hidden: GeneralForumTopicHidden,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGeneralForumTopicUnhidden {
+    /// Service message: the 'General' forum topic unhidden.
+    pub general_forum_topic_unhidden: GeneralForumTopicUnhidden,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -765,6 +810,35 @@ mod getters {
                 }) => Some(caption_entities),
                 _ => None,
             }
+        }
+
+        /// Returns `true` if the message media is covered by a spoiler
+        /// animation.
+        ///
+        /// Getter for [`MediaPhoto::has_media_spoiler`],
+        /// [`MediaVideo::has_media_spoiler`] and
+        /// [`MediaAnimation::has_media_spoiler`].
+        #[must_use]
+        pub fn has_media_spoiler(&self) -> bool {
+            self.common()
+                .map(|m| match m.media_kind {
+                    MediaKind::Animation(MediaAnimation { has_media_spoiler, .. })
+                    | MediaKind::Photo(MediaPhoto { has_media_spoiler, .. })
+                    | MediaKind::Video(MediaVideo { has_media_spoiler, .. }) => has_media_spoiler,
+                    MediaKind::Audio(_)
+                    | MediaKind::Contact(_)
+                    | MediaKind::Document(_)
+                    | MediaKind::Game(_)
+                    | MediaKind::Venue(_)
+                    | MediaKind::Location(_)
+                    | MediaKind::Poll(_)
+                    | MediaKind::Sticker(_)
+                    | MediaKind::Text(_)
+                    | MediaKind::VideoNote(_)
+                    | MediaKind::Voice(_)
+                    | MediaKind::Migration(_) => false,
+                })
+                .unwrap_or(false)
         }
 
         #[must_use]
@@ -1131,6 +1205,8 @@ mod getters {
                 _ => None,
             }
         }
+
+        // FIXME: add more getters for other types of messages
     }
 }
 
@@ -1584,6 +1660,8 @@ mod tests {
             message_auto_delete_time: None,
             photo: None,
             pinned_message: None,
+            has_hidden_members: false,
+            has_aggressive_anti_spam_enabled: false,
         };
 
         assert!(message.from().unwrap().is_anonymous());

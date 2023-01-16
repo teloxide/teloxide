@@ -41,11 +41,15 @@ pub struct InputMediaPhoto {
     /// List of special entities that appear in the caption, which can be
     /// specified instead of `parse_mode`.
     pub caption_entities: Option<Vec<MessageEntity>>,
+
+    /// Pass `true` if the photo needs to be covered with a spoiler animation.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub has_spoiler: bool,
 }
 
 impl InputMediaPhoto {
     pub const fn new(media: InputFile) -> Self {
-        Self { media, caption: None, parse_mode: None, caption_entities: None }
+        Self { media, caption: None, parse_mode: None, caption_entities: None, has_spoiler: false }
     }
 
     pub fn media(mut self, val: InputFile) -> Self {
@@ -71,6 +75,14 @@ impl InputMediaPhoto {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    /// Sets [`has_spoiler`] to `true`.
+    ///
+    /// [`has_spoiler`]: InputMediaPhoto::has_spoiler
+    pub fn spoiler(mut self) -> Self {
+        self.has_spoiler = true;
         self
     }
 }
@@ -117,6 +129,10 @@ pub struct InputMediaVideo {
 
     /// Pass `true`, if the uploaded video is suitable for streaming.
     pub supports_streaming: Option<bool>,
+
+    /// Pass `true` if the video needs to be covered with a spoiler animation.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub has_spoiler: bool,
 }
 
 impl InputMediaVideo {
@@ -131,6 +147,7 @@ impl InputMediaVideo {
             height: None,
             duration: None,
             supports_streaming: None,
+            has_spoiler: false,
         }
     }
 
@@ -184,6 +201,14 @@ impl InputMediaVideo {
         self.supports_streaming = Some(val);
         self
     }
+
+    /// Sets [`has_spoiler`] to `true`.
+    ///
+    /// [`has_spoiler`]: InputMediaVideo::has_spoiler
+    pub fn spoiler(mut self) -> Self {
+        self.has_spoiler = true;
+        self
+    }
 }
 
 /// Represents an animation file (GIF or H.264/MPEG-4 AVC video without
@@ -226,6 +251,11 @@ pub struct InputMediaAnimation {
 
     /// Animation duration.
     pub duration: Option<u16>,
+
+    /// Pass `true` if the animation needs to be covered with a spoiler
+    /// animation.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub has_spoiler: bool,
 }
 
 impl InputMediaAnimation {
@@ -239,6 +269,7 @@ impl InputMediaAnimation {
             height: None,
             duration: None,
             caption_entities: None,
+            has_spoiler: false,
         }
     }
 
@@ -285,6 +316,14 @@ impl InputMediaAnimation {
 
     pub const fn duration(mut self, val: u16) -> Self {
         self.duration = Some(val);
+        self
+    }
+
+    /// Sets [`has_spoiler`] to `true`.
+    ///
+    /// [`has_spoiler`]: InputMediaAnimation::has_spoiler
+    pub fn spoiler(mut self) -> Self {
+        self.has_spoiler = true;
         self
     }
 }
@@ -534,6 +573,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&photo).unwrap();
@@ -553,6 +593,7 @@ mod tests {
             duration: None,
             supports_streaming: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();
@@ -571,6 +612,7 @@ mod tests {
             height: None,
             duration: None,
             caption_entities: None,
+            has_spoiler: false,
         });
 
         let actual_json = serde_json::to_string(&video).unwrap();

@@ -13,9 +13,11 @@ impl_payload! {
             pub chat_id: Recipient [into],
             /// Unique identifier for the target message thread of the forum topic
             pub message_thread_id: i32,
-            /// Topic name, 1-128 characters
+        }
+        optional {
+            /// Topic name, 0-128 characters. If not specified or empty, the current name of the topic will be kept
             pub name: String [into],
-            /// Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.
+            /// Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers. Pass an empty string to remove the icon. If not specified, the current icon will be kept
             pub icon_custom_emoji_id: String [into],
         }
     }

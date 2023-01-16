@@ -260,6 +260,5 @@ fn custom_result() {
     type Result = ();
 
     #[derive(BotCommands, Debug, PartialEq)]
-    enum DefaultCommands {
-    }
+    enum DefaultCommands {}
 }

@@ -78,11 +78,13 @@ pub fn ensure_files_contents<'a>(
     let mut err_count = 0;
 
     for (path, contents) in files_and_contents {
-        let old_contents = fs::read_to_string(path).unwrap();
+        if path.exists() {
+            let old_contents = fs::read_to_string(path).unwrap();
 
-        if normalize_newlines(&old_contents) == normalize_newlines(contents) {
-            // File is already up to date.
-            continue;
+            if normalize_newlines(&old_contents) == normalize_newlines(contents) {
+                // File is already up to date.
+                continue;
+            }
         }
 
         err_count += 1;
