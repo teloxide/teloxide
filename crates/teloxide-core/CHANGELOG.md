@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.9.0 - 2023-01-17
+
 ### Changed
 
 - The methods `ChatMember::{can_pin_messages, can_invite_users, can_change_info}` now take into account the permissions of `Restricted` chat member kind ([#764][pr764])
