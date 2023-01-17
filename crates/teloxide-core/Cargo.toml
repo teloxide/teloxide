@@ -12,7 +12,7 @@ repository.workspace = true
 documentation = "https://docs.rs/teloxide-core/"
 readme = "README.md"
 
-keywords = ["teloxide", "telegram", "telegram-bot", "telegram-bot-api", "bot", "TBA"]
+keywords = ["teloxide", "telegram", "telegram-bot", "telegram-bot-api", "bot"]
 categories = ["api-bindings", "asynchronous"]
 
 
