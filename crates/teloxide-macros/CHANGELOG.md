@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.7.1 - 2023-01-17
+
+### Fixed
+
+- Use fully qualified names in macros
+
 ## 0.7.0 - 2022-10-06
 
 ### Removed
