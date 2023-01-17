@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- Updated `axum` to v0.6.0.
+- The module structure
+  - `teloxide::dispatching::update_listeners` => `teloxide::update_listeners`
+  - `teloxide::dispatching::repls` => `teloxide::repls`
+- `CommandDescriptions::new` was made `const`
+- The following functions were made `#[must_use]`:
+  - `DispatcherBuilder::{enable_ctrlc_handler, distribution_function}`
+
+### Removed
+
+- `rocksdb-storage` feature and associated items (See [PR #761](https://github.com/teloxide/teloxide/pull/761) for reasoning) [**BC**]
+
+### Deprecated
+
+- `teloxide::dispatching::{update_listeners, repls}` (see in the "Changed" section)
+
 ## 0.11.3 - 2022-11-28
 
 ### Fixed
@@ -319,14 +337,14 @@ This release was yanked because it accidentally [breaks backwards compatibility]
 - Export `teloxide_macros::teloxide` in `prelude`.
 - `dispatching::dialogue::serializer::{JSON -> Json, CBOR -> Cbor}`
 - Allow `bot_name` be `N`, where `N: Into<String> + ...` in `commands_repl` & `commands_repl_with_listener`.
-- 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`, 
-   `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline 
+- 'Edit methods' (namely `edit_message_live_location`, `stop_message_live_location`, `edit_message_text`,
+   `edit_message_caption`, `edit_message_media` and `edit_message_reply_markup`) are split into common and inline
    versions (e.g.: `edit_message_text` and `edit_inline_message_text`). Instead of `ChatOrInlineMessage` common versions
-   accept `chat_id: impl Into<ChatId>` and `message_id: i32` whereas inline versions accept 
+   accept `chat_id: impl Into<ChatId>` and `message_id: i32` whereas inline versions accept
    `inline_message_id: impl Into<String>`. Also note that return type of inline versions is `True` ([issue 253], [pr 257])
-- `ChatOrInlineMessage` is renamed to `TargetMessage`, it's `::Chat`  variant is renamed to `::Common`, 
-   `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed 
-   `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use 
+- `ChatOrInlineMessage` is renamed to `TargetMessage`, it's `::Chat`  variant is renamed to `::Common`,
+   `#[non_exhaustive]` annotation is removed from the enum, type of `TargetMessage::Inline::inline_message_id` changed
+   `i32` => `String`. `TargetMessage` now implements `From<String>`, `get_game_high_scores` and `set_game_score` use
    `Into<TargetMessage>` to accept `String`s. ([issue 253], [pr 257])
 - Remove `ResponseResult` from `prelude`.
 
