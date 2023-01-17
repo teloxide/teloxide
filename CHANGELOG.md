@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.12.0 - 2023-01-17
+
 ### Changed
 
+- Updated `teloxide-macros` to v0.7.1; see its [changelog](crates/teloxide-macros/CHANGELOG.md#071---2023-01-17) for more.
+- Updated `teloxide-core` to v0.9.0; see its [changelog](crates/teloxide-core/CHANGELOG.md#090---2023-01-17) for more.
 - Updated `axum` to v0.6.0.
 - The module structure
   - `teloxide::dispatching::update_listeners` => `teloxide::update_listeners`
