@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{any::TypeId, time::Duration};
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
@@ -19,7 +19,7 @@ pub async fn request_multipart<T>(
     _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     // Workaround for [#460]
     //
@@ -58,7 +58,7 @@ pub async fn request_json<T>(
     _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     // Workaround for [#460]
     //
@@ -91,7 +91,7 @@ where
 
 async fn process_response<T>(response: Response) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     if response.status().is_server_error() {
         tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
@@ -100,6 +100,44 @@ where
     let text = response.text().await?;
 
     serde_json::from_str::<TelegramResponse<T>>(&text)
+        .map(|mut response| {
+            use crate::types::{Update, UpdateKind};
+            use std::any::Any;
+
+            // HACK: Fill-in error information into `UpdateKind::Error`.
+            //
+            //       Why? Well, we need `Update` deserialization to be reliable,
+            //       even if Telegram breaks something in their Bot API, we want
+            //       1. Deserialization to """succeed"""
+            //       2. Get the `update.id`
+            //
+            //       Both of these points are required for `get_updates(...) -> Vec<Update>`
+            //       to behave well after Telegram introduces updates that we can't parse.
+            //       (1.) makes it so only some of the updates in a butch need to be skipped
+            //       (otherwise serde'll stop on the first error). (2.) allows us to issue
+            //       the next `get_updates` call with the right offset, even if the last
+            //       update in the batch didn't deserialize well.
+            //
+            //       serde's interface doesn't allows us to implement `Deserialize` in such
+            //       a way, that we could keep the data we couldn't parse, so our
+            //       `Deserialize` impl for `UpdateKind` just returns
+            //       `UpdateKind::Error(/* some empty-ish value */)`. Here, through some
+            //       terrible hacks and downcasting, we fill-in the data we couldn't parse
+            //       so that our users can make actionable bug reports.
+            if TypeId::of::<T>() == TypeId::of::<Update>() {
+                if let TelegramResponse::Ok { response, .. } = &mut response {
+                    if let Some(update) =
+                        (response as &mut T as &mut dyn Any).downcast_mut::<Update>()
+                    {
+                        if let UpdateKind::Error(value) = &mut update.kind {
+                            *value = serde_json::from_str(&text).unwrap_or_default();
+                        }
+                    }
+                }
+            }
+
+            response
+        })
         .map_err(|source| RequestError::InvalidJson { source, raw: text.into() })?
         .into()
 }
