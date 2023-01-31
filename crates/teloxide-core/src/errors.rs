@@ -456,6 +456,14 @@ pub enum ApiError {
     #[error("Bad Request: group is deactivated")]
     GroupDeactivated,
 
+    /// Occurs when image processing fails on telegram's side.
+    ///
+    /// This is likely caused by an incorrectly encoded image, make sure that
+    /// the image is correctly encoded in a format telegram accepts.
+    #[serde(rename = "Bad Request: IMAGE_PROCESS_FAILED")]
+    #[error("Bad Request: IMAGE_PROCESS_FAILED")]
+    ImageProcessFailed,
+
     /// Occurs when bot tries to set chat photo from file ID
     ///
     /// May happen in methods:
