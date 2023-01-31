@@ -741,6 +741,18 @@ pub enum ApiError {
     #[error("Bad Request: invalid file id")]
     FileIdInvalid,
 
+    /// Occurs when bot tries to upload a file which is larger than 50 MB using multipart/form-data.
+    ///
+    /// May happen in methods:
+    /// 1. [`SendVideo`]
+    /// 2. [`SendDocument`]
+    ///
+    /// [`SendVideo`]: crate::payloads::SendVideo
+    /// [`SendDocument`]: crate::payloads::SendDocument
+    #[serde(rename = "Request Entity Too Large")]
+    #[error("Request Entity Too Large")]
+    RequestEntityTooLarge,
+
     /// Error which is not known to `teloxide`.
     ///
     /// If you've received this error, please [open an issue] with the
