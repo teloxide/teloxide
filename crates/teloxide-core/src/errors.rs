@@ -740,8 +740,9 @@ pub enum ApiError {
     #[serde(rename = "Bad Request: invalid file id")]
     #[error("Bad Request: invalid file id")]
     FileIdInvalid,
-    
-    /// Occurs when bot tries to upload a file which is larger than 50 MB using multipart/form-data.
+
+    /// Occurs when bot tries to upload a file which is larger than 50 MB using
+    /// multipart/form-data.
     ///
     /// May happen in methods:
     /// 1. [`SendVideo`]
