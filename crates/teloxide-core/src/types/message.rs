@@ -26,6 +26,7 @@ pub struct Message {
     /// Unique identifier of a message thread to which the message belongs; for
     /// supergroups only.
     // FIXME: MessageThreadId or such
+    #[serde(rename = "message_thread_id")]
     pub thread_id: Option<i32>,
 
     /// Date the message was sent in Unix time.
