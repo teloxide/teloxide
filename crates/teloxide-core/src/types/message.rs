@@ -1863,13 +1863,13 @@ mod tests {
             "message_thread_id":4
         }"#;
 
-        let message: Message = serde_json::from_str(json).unwrap();
+        let _: Message = serde_json::from_str(json).unwrap();
     }
 
     #[test]
     fn topic_message() {
         let json = r#"{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229140,"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":5,"message_thread_id":4,"reply_to_message":{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229139,"forum_topic_created":{"icon_color":9367192,"icon_custom_emoji_id":"5312536423851630001","name":"???"},"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":4,"message_thread_id":4},"text":"blah"}"#;
 
-        let message: Message = serde_json::from_str(json).unwrap();
+        let _: Message = serde_json::from_str(json).unwrap();
     }
 }
