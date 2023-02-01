@@ -100,8 +100,9 @@ pub enum ApiError {
     BotBlocked,
 
     /// Occurs when the bot token is incorrect.
-    #[serde(rename = "Not Found")]
-    #[error("Not Found")]
+    // FIXME: rename this to something akin "InvalidToken"
+    #[serde(rename = "Unauthorized")]
+    #[error("Unauthorized")]
     NotFound,
 
     /// Occurs when bot tries to modify a message without modification content.
