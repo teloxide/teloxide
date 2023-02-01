@@ -461,6 +461,13 @@ pub(crate) mod serde_rgb {
             {
                 Ok(from_u32(v))
             }
+
+            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                self.visit_u32(v.try_into().map_err(|_| E::custom("rgb value doesn't fit u32"))?)
+            }
         }
         d.deserialize_u32(V)
     }
@@ -481,5 +488,16 @@ pub(crate) mod serde_rgb {
     }
 
     #[test]
-    fn json() {}
+    fn json() {
+        #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+        struct Struct {
+            #[serde(with = "self")]
+            color: [u8; 3],
+        }
+
+        let json = format!("{}", 0x00AABBCC);
+        let Struct { color } =  serde_json::from_str(&json).unwrap();
+
+        assert_eq!(color, [0xAA, 0xBB, 0xCC])
+    }
 }
