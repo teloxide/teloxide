@@ -495,7 +495,7 @@ pub(crate) mod serde_rgb {
             color: [u8; 3],
         }
 
-        let json = format!("{}", 0x00AABBCC);
+        let json = format!(r#"{{"color":{}}}"#, 0x00AABBCC);
         let Struct { color } = serde_json::from_str(&json).unwrap();
 
         assert_eq!(color, [0xAA, 0xBB, 0xCC])
