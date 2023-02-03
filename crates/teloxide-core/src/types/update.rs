@@ -62,6 +62,12 @@ impl Update {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum UpdateKind {
+    // NB: When adding new variants, don't forget to update
+    //     - `AllowedUpdate`
+    //     - `Update::user`
+    //     - `Update::chat`
+    //     - `DpHandlerDescription::full_set`
+    //     - `dispatching/filter_ext.rs`
     /// New incoming message of any kind — text, photo, sticker, etc.
     Message(Message),
 
