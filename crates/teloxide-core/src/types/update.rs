@@ -31,32 +31,48 @@ pub struct Update {
 impl Update {
     #[must_use]
     pub fn user(&self) -> Option<&User> {
-        match &self.kind {
-            UpdateKind::Message(m) => m.from(),
-            UpdateKind::EditedMessage(m) => m.from(),
-            UpdateKind::CallbackQuery(query) => Some(&query.from),
-            UpdateKind::ChosenInlineResult(chosen) => Some(&chosen.from),
-            UpdateKind::InlineQuery(query) => Some(&query.from),
-            UpdateKind::ShippingQuery(query) => Some(&query.from),
-            UpdateKind::PreCheckoutQuery(query) => Some(&query.from),
-            UpdateKind::PollAnswer(answer) => Some(&answer.user),
-            _ => None,
-        }
+        use UpdateKind::*;
+
+        let from = match &self.kind {
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => m.from()?,
+
+            CallbackQuery(query) => &query.from,
+            ChosenInlineResult(chosen) => &chosen.from,
+            InlineQuery(query) => &query.from,
+            ShippingQuery(query) => &query.from,
+            PreCheckoutQuery(query) => &query.from,
+            PollAnswer(answer) => &answer.user,
+
+            MyChatMember(m) | ChatMember(m) => &m.from,
+            ChatJoinRequest(r) => &r.from,
+
+            Poll(_) | Error(_) => return None,
+        };
+
+        Some(from)
     }
 
     #[must_use]
     pub fn chat(&self) -> Option<&Chat> {
-        match &self.kind {
-            UpdateKind::Message(m) => Some(&m.chat),
-            UpdateKind::EditedMessage(m) => Some(&m.chat),
-            UpdateKind::ChannelPost(p) => Some(&p.chat),
-            UpdateKind::EditedChannelPost(p) => Some(&p.chat),
-            UpdateKind::CallbackQuery(q) => Some(&q.message.as_ref()?.chat),
-            UpdateKind::ChatMember(m) => Some(&m.chat),
-            UpdateKind::MyChatMember(m) => Some(&m.chat),
-            UpdateKind::ChatJoinRequest(c) => Some(&c.chat),
-            _ => None,
-        }
+        use UpdateKind::*;
+
+        let chat = match &self.kind {
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => &m.chat,
+            CallbackQuery(q) => &q.message.as_ref()?.chat,
+            ChatMember(m) => &m.chat,
+            MyChatMember(m) => &m.chat,
+            ChatJoinRequest(c) => &c.chat,
+
+            InlineQuery(_)
+            | ChosenInlineResult(_)
+            | ShippingQuery(_)
+            | PreCheckoutQuery(_)
+            | Poll(_)
+            | PollAnswer(_)
+            | Error(_) => return None,
+        };
+
+        Some(chat)
     }
 }
 
