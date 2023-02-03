@@ -21,7 +21,7 @@ impl DpHandlerDescription {
     }
 
     pub(crate) fn allowed_updates(&self) -> Vec<AllowedUpdate> {
-        self.allowed.observed.iter().map(|Kind(x)| x).copied().collect()
+        self.allowed.observed.iter().map(|&Kind(x)| x).collect()
     }
 }
 
