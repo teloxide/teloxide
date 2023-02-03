@@ -64,6 +64,7 @@ impl EventKind for Kind {
             PollAnswer,
             MyChatMember,
             ChatMember,
+            ChatJoinRequest,
         ]
         .into_iter()
         .map(Kind)
