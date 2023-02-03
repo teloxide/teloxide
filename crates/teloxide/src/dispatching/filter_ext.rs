@@ -103,7 +103,6 @@ macro_rules! define_update_ext {
     }
 }
 
-// May be expanded in the future.
 define_update_ext! {
     (filter_message, UpdateKind::Message, Message),
     (filter_edited_message, UpdateKind::EditedMessage, EditedMessage),
@@ -118,4 +117,5 @@ define_update_ext! {
     (filter_poll_answer, UpdateKind::PollAnswer, PollAnswer),
     (filter_my_chat_member, UpdateKind::MyChatMember, MyChatMember),
     (filter_chat_member, UpdateKind::ChatMember, ChatMember),
+    (filter_chat_join_request, UpdateKind::ChatJoinRequest, ChatJoinRequest),
 }
