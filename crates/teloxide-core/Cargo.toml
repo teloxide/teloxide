@@ -17,6 +17,8 @@ categories = ["api-bindings", "asynchronous"]
 
 
 [features]
+# NB: When adding features here, don't forget to update teloxide's Cargo.toml
+
 default = ["native-tls"]
 
 rustls = ["reqwest/rustls-tls"]
