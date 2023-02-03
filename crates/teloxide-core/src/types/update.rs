@@ -29,6 +29,13 @@ pub struct Update {
 }
 
 impl Update {
+    // FIXME: rename user => from, add mentioned_users -> impl Iterator<&User>
+
+    /// Returns the user that performed the action that caused this update, if
+    /// known.
+    ///
+    /// This is generally the `from` field (except for `PollAnswer` where it's
+    /// `user` and `Poll` with `Error` which don't have such field at all).
     #[must_use]
     pub fn user(&self) -> Option<&User> {
         use UpdateKind::*;
@@ -52,6 +59,7 @@ impl Update {
         Some(from)
     }
 
+    /// Returns the chat in which is update has happened, if any.
     #[must_use]
     pub fn chat(&self) -> Option<&Chat> {
         use UpdateKind::*;
