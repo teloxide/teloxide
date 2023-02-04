@@ -117,7 +117,7 @@ fn parse_with_split() {
 
     assert_eq!(
         DefaultCommands::Start(10, "hello".to_string()),
-        DefaultCommands::parse("/start 10 hello", "").unwrap()
+        DefaultCommands::parse("/start 10 hello", "").unwrap(),
     );
 }
 
@@ -136,6 +136,34 @@ fn parse_with_split2() {
         DefaultCommands::Start(10, "hello".to_string()),
         DefaultCommands::parse("/start 10|hello", "").unwrap()
     );
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn parse_with_split3() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    #[command(parse_with = "split")]
+    enum DefaultCommands {
+        Start(u8),
+        Help,
+    }
+
+    assert_eq!(DefaultCommands::Start(10), DefaultCommands::parse("/start 10", "").unwrap(),);
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn parse_with_split4() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    #[command(parse_with = "split")]
+    enum DefaultCommands {
+        Start(),
+        Help,
+    }
+
+    assert_eq!(DefaultCommands::Start(), DefaultCommands::parse("/start", "").unwrap(),);
 }
 
 #[test]

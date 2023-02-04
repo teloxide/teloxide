@@ -125,8 +125,8 @@ fn parser_with_separator<'a>(
                         })?;
 
                         <#types>::from_str(s).map_err(|e| teloxide::utils::command::ParseError::IncorrectFormat(e.into()))?
-                    }
-                ),*
+                    },
+                )*
             )
         }
     };
@@ -139,12 +139,12 @@ fn parser_with_separator<'a>(
                 let res = #res;
 
                 match splitted.next() {
-                    Some(d) => ::std::result::Result::Err(teloxide::utils::command::ParseError::TooManyArguments {
+                    Some(d) if !s.is_empty() => ::std::result::Result::Err(teloxide::utils::command::ParseError::TooManyArguments {
                         expected: #expected,
                         found: #expected + 1,
                         message: format!("Excess argument: {}", d),
                     }),
-                    None => ::std::result::Result::Ok(res)
+                    _ => ::std::result::Result::Ok(res)
                 }
             }
         )
