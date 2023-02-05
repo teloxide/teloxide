@@ -21,7 +21,7 @@ impl DpHandlerDescription {
     }
 
     pub(crate) fn allowed_updates(&self) -> Vec<AllowedUpdate> {
-        self.allowed.observed.iter().map(|Kind(x)| x).copied().collect()
+        self.allowed.observed.iter().map(|&Kind(x)| x).collect()
     }
 }
 
@@ -50,6 +50,16 @@ impl EventKind for Kind {
     fn full_set() -> HashSet<Self> {
         use AllowedUpdate::*;
 
+        // NB: We need to specify all update kinds by hand, because telegram doesn't
+        //     enable `ChatMember` by default:
+        //
+        //     > A JSON-serialized list of the update types you want your bot to
+        //     > receive. For example, specify [“message”, “edited_channel_post”,
+        //     > “callback_query”] to only receive updates of these types. See Update
+        //     > for a complete list of available update types. Specify an empty list
+        //     > to receive all update types except chat_member (default). If not
+        //     > specified, the previous setting will be used.
+
         [
             Message,
             EditedMessage,
@@ -64,6 +74,7 @@ impl EventKind for Kind {
             PollAnswer,
             MyChatMember,
             ChatMember,
+            ChatJoinRequest,
         ]
         .into_iter()
         .map(Kind)
