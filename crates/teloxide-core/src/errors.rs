@@ -2,7 +2,6 @@
 
 use std::{io, time::Duration};
 
-use serde::Deserialize;
 use thiserror::Error;
 
 use crate::types::ResponseParameters;
@@ -89,21 +88,93 @@ impl AsResponseParameters for crate::RequestError {
     }
 }
 
+macro_rules! match_prefix {
+    ("") => {{
+        |data: &str| Some(data.to_owned())
+    }};
+    ($prefix: literal) => {{
+        |data: &str| {
+            if data.starts_with($prefix) {
+                Some(data.to_owned())
+            } else {
+                None
+            }
+        }
+    }};
+}
+
+macro_rules! impl_api_error {
+    (
+    $(#[$meta: meta])*
+    $vis: vis enum $ident: ident {
+        $($(#[$var_meta: meta])*
+        $var_name: ident$(($var_inner: ty))? = $var_string: literal $(with $var_parser: block)?),* } ) => {
+
+        $(#[$meta])*
+        #[derive(Error)]
+        $vis enum $ident {
+            $(
+
+            $(#[$var_meta])*
+            #[error($var_string)]
+            $var_name $(($var_inner))*,
+
+            )*
+        }
+
+        const _: () = {
+        struct Visitor;
+
+        impl<'de> ::serde::de::Visitor<'de> for Visitor {
+            type Value = $ident;
+
+            fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
+                formatter.write_str("telegram api error string")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: ::serde::de::Error,
+            {
+                $(impl_api_error!(@de v, $var_name, $var_string $(, $var_parser)*);)*
+                Err(E::unknown_variant(v, &[]))
+            }
+        }
+
+        impl<'de> ::serde::de::Deserialize<'de> for $ident {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: ::serde::de::Deserializer<'de>,
+            {
+                deserializer.deserialize_str(Visitor)
+            }
+        }
+        };
+    };
+    (@de $value: ident, $variant: ident, $val: literal) => {
+        if $value == $val {
+            return Ok(Self::Value::$variant)
+        }
+    };
+    (@de $value: ident, $variant: ident, $val: literal, $block: expr) => {
+        match $block($value) {
+            Some(data) => return Ok(Self::Value::$variant(data)),
+            _ => {}
+        }
+    };
+}
+
+impl_api_error! {
 /// A kind of an API error.
-#[derive(Debug, Error, Deserialize, PartialEq, Hash, Eq, Clone)]
-#[serde(field_identifier)]
+#[derive(Debug, PartialEq, Hash, Eq, Clone)]
 #[non_exhaustive]
 pub enum ApiError {
     /// Occurs when the bot tries to send message to user who blocked the bot.
-    #[serde(rename = "Forbidden: bot was blocked by the user")]
-    #[error("Forbidden: bot was blocked by the user")]
-    BotBlocked,
+    BotBlocked = "Forbidden: bot was blocked by the user",
 
     /// Occurs when the bot token is incorrect.
     // FIXME: rename this to something akin "InvalidToken"
-    #[serde(rename = "Unauthorized")]
-    #[error("Unauthorized")]
-    NotFound,
+    NotFound = "Unauthorized",
 
     /// Occurs when bot tries to modify a message without modification content.
     ///
@@ -111,14 +182,8 @@ pub enum ApiError {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::payloads::EditMessageText
-    #[serde(rename = "Bad Request: message is not modified: specified new message content and \
-                      reply markup are exactly the same as a current content and reply markup \
-                      of the message")]
-    #[error(
-        "Bad Request: message is not modified: specified new message content and reply markup are \
-         exactly the same as a current content and reply markup of the message"
-    )]
-    MessageNotModified,
+    MessageNotModified = "Bad Request: message is not modified: specified new message content and reply markup are \
+         exactly the same as a current content and reply markup of the message",
 
     /// Occurs when bot tries to forward or delete a message which was deleted.
     ///
@@ -128,9 +193,7 @@ pub enum ApiError {
     ///
     /// [`ForwardMessage`]: crate::payloads::ForwardMessage
     /// [`DeleteMessage`]: crate::payloads::DeleteMessage
-    #[serde(rename = "Bad Request: MESSAGE_ID_INVALID")]
-    #[error("Bad Request: MESSAGE_ID_INVALID")]
-    MessageIdInvalid,
+    MessageIdInvalid = "Bad Request: MESSAGE_ID_INVALID",
 
     /// Occurs when bot tries to forward a message which does not exists.
     ///
@@ -138,9 +201,7 @@ pub enum ApiError {
     /// 1. [`ForwardMessage`]
     ///
     /// [`ForwardMessage`]: crate::payloads::ForwardMessage
-    #[serde(rename = "Bad Request: message to forward not found")]
-    #[error("Bad Request: message to forward not found")]
-    MessageToForwardNotFound,
+    MessageToForwardNotFound = "Bad Request: message to forward not found",
 
     /// Occurs when bot tries to delete a message which does not exists.
     ///
@@ -148,9 +209,7 @@ pub enum ApiError {
     /// 1. [`DeleteMessage`]
     ///
     /// [`DeleteMessage`]: crate::payloads::DeleteMessage
-    #[serde(rename = "Bad Request: message to delete not found")]
-    #[error("Bad Request: message to delete not found")]
-    MessageToDeleteNotFound,
+    MessageToDeleteNotFound = "Bad Request: message to delete not found",
 
     /// Occurs when bot tries to send a text message without text.
     ///
@@ -158,9 +217,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: message text is empty")]
-    #[error("Bad Request: message text is empty")]
-    MessageTextIsEmpty,
+    MessageTextIsEmpty = "Bad Request: message text is empty",
 
     /// Occurs when bot tries to edit a message after long time.
     ///
@@ -168,9 +225,7 @@ pub enum ApiError {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::payloads::EditMessageText
-    #[serde(rename = "Bad Request: message can't be edited")]
-    #[error("Bad Request: message can't be edited")]
-    MessageCantBeEdited,
+    MessageCantBeEdited = "Bad Request: message can't be edited",
 
     /// Occurs when bot tries to delete a someone else's message in group where
     /// it does not have enough rights.
@@ -179,9 +234,7 @@ pub enum ApiError {
     /// 1. [`DeleteMessage`]
     ///
     /// [`DeleteMessage`]: crate::payloads::DeleteMessage
-    #[serde(rename = "Bad Request: message can't be deleted")]
-    #[error("Bad Request: message can't be deleted")]
-    MessageCantBeDeleted,
+    MessageCantBeDeleted = "Bad Request: message can't be deleted",
 
     /// Occurs when bot tries to edit a message which does not exists.
     ///
@@ -189,9 +242,7 @@ pub enum ApiError {
     /// 1. [`EditMessageText`]
     ///
     /// [`EditMessageText`]: crate::payloads::EditMessageText
-    #[serde(rename = "Bad Request: message to edit not found")]
-    #[error("Bad Request: message to edit not found")]
-    MessageToEditNotFound,
+    MessageToEditNotFound = "Bad Request: message to edit not found",
 
     /// Occurs when bot tries to reply to a message which does not exists.
     ///
@@ -199,14 +250,10 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: reply message not found")]
-    #[error("Bad Request: reply message not found")]
-    MessageToReplyNotFound,
+    MessageToReplyNotFound = "Bad Request: reply message not found",
 
     /// Occurs when bot tries to
-    #[serde(rename = "Bad Request: message identifier is not specified")]
-    #[error("Bad Request: message identifier is not specified")]
-    MessageIdentifierNotSpecified,
+    MessageIdentifierNotSpecified = "Bad Request: message identifier is not specified",
 
     /// Occurs when bot tries to send a message with text size greater then
     /// 4096 symbols.
@@ -215,9 +262,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: message is too long")]
-    #[error("Bad Request: message is too long")]
-    MessageIsTooLong,
+    MessageIsTooLong = "Bad Request: message is too long",
 
     /// Occurs when bot tries to edit a message with text size greater then
     /// 4096 symbols.
@@ -232,9 +277,7 @@ pub enum ApiError {
     /// [`EditMessageTextInline`]: crate::payloads::EditMessageTextInline
     /// [`EditMessageCaption`]: crate::payloads::EditMessageCaption
     /// [`EditMessageCaptionInline`]: crate::payloads::EditMessageCaptionInline
-    #[serde(rename = "Bad Request: MESSAGE_TOO_LONG")]
-    #[error("Bad Request: MESSAGE_TOO_LONG")]
-    EditedMessageIsTooLong,
+    EditedMessageIsTooLong = "Bad Request: MESSAGE_TOO_LONG",
 
     /// Occurs when bot tries to send media group with more than 10 items.
     ///
@@ -242,9 +285,7 @@ pub enum ApiError {
     /// 1. [`SendMediaGroup`]
     ///
     /// [`SendMediaGroup`]: crate::payloads::SendMediaGroup
-    #[serde(rename = "Bad Request: Too much messages to send as an album")]
-    #[error("Bad Request: Too much messages to send as an album")]
-    ToMuchMessages,
+    ToMuchMessages = "Bad Request: Too much messages to send as an album",
 
     /// Occurs when bot tries to answer an inline query with more than 50
     /// results.
@@ -255,9 +296,7 @@ pub enum ApiError {
     /// 1. [`AnswerInlineQuery`]
     ///
     /// [`AnswerInlineQuery`]: crate::payloads::AnswerInlineQuery
-    #[serde(rename = "Bad Request: RESULTS_TOO_MUCH")]
-    #[error("Bad Request: RESULTS_TOO_MUCH")]
-    TooMuchInlineQueryResults,
+    TooMuchInlineQueryResults = "Bad Request: RESULTS_TOO_MUCH",
 
     /// Occurs when bot tries to stop poll that has already been stopped.
     ///
@@ -265,9 +304,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll has already been closed")]
-    #[error("Bad Request: poll has already been closed")]
-    PollHasAlreadyClosed,
+    PollHasAlreadyClosed = "Bad Request: poll has already been closed",
 
     /// Occurs when bot tries to send poll with less than 2 options.
     ///
@@ -275,9 +312,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll must have at least 2 option")]
-    #[error("Bad Request: poll must have at least 2 option")]
-    PollMustHaveMoreOptions,
+    PollMustHaveMoreOptions = "Bad Request: poll must have at least 2 option",
 
     /// Occurs when bot tries to send poll with more than 10 options.
     ///
@@ -285,9 +320,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll can't have more than 10 options")]
-    #[error("Bad Request: poll can't have more than 10 options")]
-    PollCantHaveMoreOptions,
+    PollCantHaveMoreOptions = "Bad Request: poll can't have more than 10 options",
 
     /// Occurs when bot tries to send poll with empty option (without text).
     ///
@@ -295,9 +328,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll options must be non-empty")]
-    #[error("Bad Request: poll options must be non-empty")]
-    PollOptionsMustBeNonEmpty,
+    PollOptionsMustBeNonEmpty = "Bad Request: poll options must be non-empty",
 
     /// Occurs when bot tries to send poll with empty question (without text).
     ///
@@ -305,9 +336,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll question must be non-empty")]
-    #[error("Bad Request: poll question must be non-empty")]
-    PollQuestionMustBeNonEmpty,
+    PollQuestionMustBeNonEmpty = "Bad Request: poll question must be non-empty",
 
     /// Occurs when bot tries to send poll with total size of options more than
     /// 100 symbols.
@@ -316,9 +345,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll options length must not exceed 100")]
-    #[error("Bad Request: poll options length must not exceed 100")]
-    PollOptionsLengthTooLong,
+    PollOptionsLengthTooLong = "Bad Request: poll options length must not exceed 100",
 
     /// Occurs when bot tries to send poll with question size more than 255
     /// symbols.
@@ -327,9 +354,7 @@ pub enum ApiError {
     /// 1. [`SendPoll`]
     ///
     /// [`SendPoll`]: crate::payloads::SendPoll
-    #[serde(rename = "Bad Request: poll question length must not exceed 255")]
-    #[error("Bad Request: poll question length must not exceed 255")]
-    PollQuestionLengthTooLong,
+    PollQuestionLengthTooLong = "Bad Request: poll question length must not exceed 255",
 
     /// Occurs when bot tries to stop poll with message without poll.
     ///
@@ -337,9 +362,7 @@ pub enum ApiError {
     /// 1. [`StopPoll`]
     ///
     /// [`StopPoll`]: crate::payloads::StopPoll
-    #[serde(rename = "Bad Request: message with poll to stop not found")]
-    #[error("Bad Request: message with poll to stop not found")]
-    MessageWithPollNotFound,
+    MessageWithPollNotFound = "Bad Request: message with poll to stop not found",
 
     /// Occurs when bot tries to stop poll with message without poll.
     ///
@@ -347,9 +370,7 @@ pub enum ApiError {
     /// 1. [`StopPoll`]
     ///
     /// [`StopPoll`]: crate::payloads::StopPoll
-    #[serde(rename = "Bad Request: message is not a poll")]
-    #[error("Bad Request: message is not a poll")]
-    MessageIsNotAPoll,
+    MessageIsNotAPoll = "Bad Request: message is not a poll",
 
     /// Occurs when bot tries to send a message to chat in which it is not a
     /// member.
@@ -358,9 +379,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: chat not found")]
-    #[error("Bad Request: chat not found")]
-    ChatNotFound,
+    ChatNotFound = "Bad Request: chat not found",
 
     /// Occurs when bot tries to send method with unknown user_id.
     ///
@@ -369,9 +388,7 @@ pub enum ApiError {
     ///
     /// [`getUserProfilePhotos`]:
     /// crate::payloads::GetUserProfilePhotos
-    #[serde(rename = "Bad Request: user not found")]
-    #[error("Bad Request: user not found")]
-    UserNotFound,
+    UserNotFound = "Bad Request: user not found",
 
     /// Occurs when bot tries to send [`SetChatDescription`] with same text as
     /// in the current description.
@@ -380,9 +397,7 @@ pub enum ApiError {
     /// 1. [`SetChatDescription`]
     ///
     /// [`SetChatDescription`]: crate::payloads::SetChatDescription
-    #[serde(rename = "Bad Request: chat description is not modified")]
-    #[error("Bad Request: chat description is not modified")]
-    ChatDescriptionIsNotModified,
+    ChatDescriptionIsNotModified = "Bad Request: chat description is not modified",
 
     /// Occurs when bot tries to answer to query after timeout expire.
     ///
@@ -390,10 +405,7 @@ pub enum ApiError {
     /// 1. [`AnswerCallbackQuery`]
     ///
     /// [`AnswerCallbackQuery`]: crate::payloads::AnswerCallbackQuery
-    #[serde(rename = "Bad Request: query is too old and response timeout expired or query id is \
-                      invalid")]
-    #[error("Bad Request: query is too old and response timeout expired or query id is invalid")]
-    InvalidQueryId,
+    InvalidQueryId = "Bad Request: query is too old and response timeout expired or query id is invalid",
 
     /// Occurs when bot tries to send InlineKeyboardMarkup with invalid button
     /// url.
@@ -402,9 +414,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: BUTTON_URL_INVALID")]
-    #[error("Bad Request: BUTTON_URL_INVALID")]
-    ButtonUrlInvalid,
+    ButtonUrlInvalid = "Bad Request: BUTTON_URL_INVALID",
 
     /// Occurs when bot tries to send button with data size more than 64 bytes.
     ///
@@ -412,9 +422,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: BUTTON_DATA_INVALID")]
-    #[error("Bad Request: BUTTON_DATA_INVALID")]
-    ButtonDataInvalid,
+    ButtonDataInvalid = "Bad Request: BUTTON_DATA_INVALID",
 
     /// Occurs when bot tries to send button with data size == 0.
     ///
@@ -422,13 +430,8 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: can't parse inline keyboard button: Text buttons are \
-                      unallowed in the inline keyboard")]
-    #[error(
-        "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in the \
-         inline keyboard"
-    )]
-    TextButtonsAreUnallowed,
+    TextButtonsAreUnallowed = "Bad Request: can't parse inline keyboard button: Text buttons are unallowed in the \
+         inline keyboard",
 
     /// Occurs when bot tries to get file by wrong file id.
     ///
@@ -436,34 +439,24 @@ pub enum ApiError {
     /// 1. [`GetFile`]
     ///
     /// [`GetFile`]: crate::payloads::GetFile
-    #[serde(rename = "Bad Request: wrong file id")]
-    #[error("Bad Request: wrong file id")]
-    WrongFileId,
+    WrongFileId = "Bad Request: wrong file id",
 
     /// Occurs when bot tries to send files with wrong file identifier or HTTP
     /// url
-    #[serde(rename = "Bad Request: wrong file identifier/HTTP URL specified")]
-    #[error("Bad Request: wrong file identifier/HTTP URL specified")]
-    WrongFileIdOrUrl,
+    WrongFileIdOrUrl = "Bad Request: wrong file identifier/HTTP URL specified",
 
     /// Occurs when When sending files with an url to a site that doesn't
     /// respond.
-    #[serde(rename = "Bad Request: failed to get HTTP URL content")]
-    #[error("Bad Request: failed to get HTTP URL content")]
-    FailedToGetUrlContent,
+    FailedToGetUrlContent = "Bad Request: failed to get HTTP URL content",
 
     /// Occurs when bot tries to do some with group which was deactivated.
-    #[serde(rename = "Bad Request: group is deactivated")]
-    #[error("Bad Request: group is deactivated")]
-    GroupDeactivated,
+    GroupDeactivated = "Bad Request: group is deactivated",
 
     /// Occurs when image processing fails on telegram's side.
     ///
     /// This is likely caused by an incorrectly encoded image, make sure that
     /// the image is correctly encoded in a format telegram accepts.
-    #[serde(rename = "Bad Request: IMAGE_PROCESS_FAILED")]
-    #[error("Bad Request: IMAGE_PROCESS_FAILED")]
-    ImageProcessFailed,
+    ImageProcessFailed = "Bad Request: IMAGE_PROCESS_FAILED",
 
     /// Occurs when bot tries to set chat photo from file ID
     ///
@@ -471,9 +464,7 @@ pub enum ApiError {
     /// 1. [`SetChatPhoto`]
     ///
     /// [`SetChatPhoto`]: crate::payloads::SetChatPhoto
-    #[serde(rename = "Bad Request: Photo should be uploaded as an InputFile")]
-    #[error("Bad Request: Photo should be uploaded as an InputFile")]
-    PhotoAsInputFileRequired,
+    PhotoAsInputFileRequired = "Bad Request: Photo should be uploaded as an InputFile",
 
     /// Occurs when bot tries to add sticker to stickerset by invalid name.
     ///
@@ -481,9 +472,7 @@ pub enum ApiError {
     /// 1. [`AddStickerToSet`]
     ///
     /// [`AddStickerToSet`]: crate::payloads::AddStickerToSet
-    #[serde(rename = "Bad Request: STICKERSET_INVALID")]
-    #[error("Bad Request: STICKERSET_INVALID")]
-    InvalidStickersSet,
+    InvalidStickersSet = "Bad Request: STICKERSET_INVALID",
 
     /// Occurs when bot tries to create a sticker set with a name that is
     /// already used by another sticker set.
@@ -492,9 +481,7 @@ pub enum ApiError {
     /// 1. [`CreateNewStickerSet`]
     ///
     /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
-    #[serde(rename = "Bad Request: sticker set name is already occupied")]
-    #[error("Bad Request: sticker set name is already occupied")]
-    StickerSetNameOccupied,
+    StickerSetNameOccupied = "Bad Request: sticker set name is already occupied",
 
     /// Occurs when bot tries to create a sticker set with user id of a bot.
     ///
@@ -502,9 +489,7 @@ pub enum ApiError {
     /// 1. [`CreateNewStickerSet`]
     ///
     /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
-    #[serde(rename = "Bad Request: USER_IS_BOT")]
-    #[error("Bad Request: USER_IS_BOT")]
-    StickerSetOwnerIsBot,
+    StickerSetOwnerIsBot = "Bad Request: USER_IS_BOT",
 
     /// Occurs when bot tries to create a sticker set with invalid name.
     ///
@@ -519,9 +504,7 @@ pub enum ApiError {
     /// 1. [`CreateNewStickerSet`]
     ///
     /// [`CreateNewStickerSet`]: crate::payloads::CreateNewStickerSet
-    #[serde(rename = "Bad Request: invalid sticker set name is specified")]
-    #[error("Bad Request: invalid sticker set name is specified")]
-    InvalidStickerName,
+    InvalidStickerName = "Bad Request: invalid sticker set name is specified",
 
     /// Occurs when bot tries to pin a message without rights to pin in this
     /// chat.
@@ -530,9 +513,7 @@ pub enum ApiError {
     /// 1. [`PinChatMessage`]
     ///
     /// [`PinChatMessage`]: crate::payloads::PinChatMessage
-    #[serde(rename = "Bad Request: not enough rights to pin a message")]
-    #[error("Bad Request: not enough rights to pin a message")]
-    NotEnoughRightsToPinMessage,
+    NotEnoughRightsToPinMessage = "Bad Request: not enough rights to pin a message",
 
     /// Occurs when bot tries to pin or unpin a message without rights to pin
     /// in this chat.
@@ -543,9 +524,7 @@ pub enum ApiError {
     ///
     /// [`PinChatMessage`]: crate::payloads::PinChatMessage
     /// [`UnpinChatMessage`]: crate::payloads::UnpinChatMessage
-    #[serde(rename = "Bad Request: not enough rights to manage pinned messages in the chat")]
-    #[error("Bad Request: not enough rights to manage pinned messages in the chat")]
-    NotEnoughRightsToManagePins,
+    NotEnoughRightsToManagePins = "Bad Request: not enough rights to manage pinned messages in the chat",
 
     /// Occurs when bot tries change default chat permissions without "Ban
     /// Users" permission in this chat.
@@ -554,15 +533,11 @@ pub enum ApiError {
     /// 1. [`SetChatPermissions`]
     ///
     /// [`SetChatPermissions`]: crate::payloads::SetChatPermissions
-    #[serde(rename = "Bad Request: not enough rights to change chat permissions")]
-    #[error("Bad Request: not enough rights to change chat permissions")]
-    NotEnoughRightsToChangeChatPermissions,
+    NotEnoughRightsToChangeChatPermissions = "Bad Request: not enough rights to change chat permissions",
 
     /// Occurs when bot tries to use method in group which is allowed only in a
     /// supergroup or channel.
-    #[serde(rename = "Bad Request: method is available only for supergroups and channel")]
-    #[error("Bad Request: method is available only for supergroups and channel")]
-    MethodNotAvailableInPrivateChats,
+    MethodNotAvailableInPrivateChats = "Bad Request: method is available only for supergroups and channel",
 
     /// Occurs when bot tries to demote chat creator.
     ///
@@ -570,9 +545,7 @@ pub enum ApiError {
     /// 1. [`PromoteChatMember`]
     ///
     /// [`PromoteChatMember`]: crate::payloads::PromoteChatMember
-    #[serde(rename = "Bad Request: can't demote chat creator")]
-    #[error("Bad Request: can't demote chat creator")]
-    CantDemoteChatCreator,
+    CantDemoteChatCreator = "Bad Request: can't demote chat creator",
 
     /// Occurs when bot tries to restrict self in group chats.
     ///
@@ -580,9 +553,7 @@ pub enum ApiError {
     /// 1. [`RestrictChatMember`]
     ///
     /// [`RestrictChatMember`]: crate::payloads::RestrictChatMember
-    #[serde(rename = "Bad Request: can't restrict self")]
-    #[error("Bad Request: can't restrict self")]
-    CantRestrictSelf,
+    CantRestrictSelf = "Bad Request: can't restrict self",
 
     /// Occurs when bot tries to restrict chat member without rights to
     /// restrict in this chat.
@@ -591,15 +562,11 @@ pub enum ApiError {
     /// 1. [`RestrictChatMember`]
     ///
     /// [`RestrictChatMember`]: crate::payloads::RestrictChatMember
-    #[serde(rename = "Bad Request: not enough rights to restrict/unrestrict chat member")]
-    #[error("Bad Request: not enough rights to restrict/unrestrict chat member")]
-    NotEnoughRightsToRestrict,
+    NotEnoughRightsToRestrict = "Bad Request: not enough rights to restrict/unrestrict chat member",
 
     /// Occurs when bot tries to post a message in a channel without "Post
     /// Messages" admin right.
-    #[serde(rename = "Bad Request: need administrator rights in the channel chat")]
-    #[error("Bad Request: need administrator rights in the channel chat")]
-    NotEnoughRightsToPostMessages,
+    NotEnoughRightsToPostMessages = "Bad Request: need administrator rights in the channel chat",
 
     /// Occurs when bot tries set webhook to protocol other than HTTPS.
     ///
@@ -607,9 +574,7 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: HTTPS url must be provided for webhook")]
-    #[error("Bad Request: bad webhook: HTTPS url must be provided for webhook")]
-    WebhookRequireHttps,
+    WebhookRequireHttps = "Bad Request: bad webhook: HTTPS url must be provided for webhook",
 
     /// Occurs when bot tries to set webhook to port other than 80, 88, 443 or
     /// 8443.
@@ -618,10 +583,7 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 \
-                      or 8443")]
-    #[error("Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or 8443")]
-    BadWebhookPort,
+    BadWebhookPort = "Bad Request: bad webhook: Webhook can be set up only on ports 80, 88, 443 or 8443",
 
     /// Occurs when bot tries to set webhook to unknown host.
     ///
@@ -629,9 +591,7 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
-    #[error("Bad Request: bad webhook: Failed to resolve host: Name or service not known")]
-    UnknownHost,
+    UnknownHost = "Bad Request: bad webhook: Failed to resolve host: Name or service not known",
 
     /// Occurs when bot tries to set webhook to invalid URL.
     ///
@@ -639,9 +599,7 @@ pub enum ApiError {
     /// 1. [`SetWebhook`]
     ///
     /// [`SetWebhook`]: crate::payloads::SetWebhook
-    #[serde(rename = "Bad Request: can't parse URL")]
-    #[error("Bad Request: can't parse URL")]
-    CantParseUrl,
+    CantParseUrl = "Bad Request: can't parse URL",
 
     /// Occurs when bot tries to send message with unfinished entities.
     ///
@@ -649,9 +607,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: can't parse entities")]
-    #[error("Bad Request: can't parse entities")]
-    CantParseEntities,
+    CantParseEntities(String) = "{0}" with {match_prefix!("Bad Request: can't parse entities")},
 
     /// Occurs when bot tries to use getUpdates while webhook is active.
     ///
@@ -659,9 +615,7 @@ pub enum ApiError {
     /// 1. [`GetUpdates`]
     ///
     /// [`GetUpdates`]: crate::payloads::GetUpdates
-    #[serde(rename = "can't use getUpdates method while webhook is active")]
-    #[error("can't use getUpdates method while webhook is active")]
-    CantGetUpdates,
+    CantGetUpdates = "can't use getUpdates method while webhook is active",
 
     /// Occurs when bot tries to do some in group where bot was kicked.
     ///
@@ -669,9 +623,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Unauthorized: bot was kicked from a chat")]
-    #[error("Unauthorized: bot was kicked from a chat")]
-    BotKicked,
+    BotKicked = "Unauthorized: bot was kicked from a chat",
 
     /// Occurs when bot tries to do something in a supergroup the bot was
     /// kicked from.
@@ -680,9 +632,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Forbidden: bot was kicked from the supergroup chat")]
-    #[error("Forbidden: bot was kicked from the supergroup chat")]
-    BotKickedFromSupergroup,
+    BotKickedFromSupergroup = "Forbidden: bot was kicked from the supergroup chat",
 
     /// Occurs when bot tries to send a message to a deactivated user (i.e. a
     /// user that was banned by telegram).
@@ -691,9 +641,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Forbidden: user is deactivated")]
-    #[error("Forbidden: user is deactivated")]
-    UserDeactivated,
+    UserDeactivated = "Forbidden: user is deactivated",
 
     /// Occurs when you tries to initiate conversation with a user.
     ///
@@ -701,9 +649,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Unauthorized: bot can't initiate conversation with a user")]
-    #[error("Unauthorized: bot can't initiate conversation with a user")]
-    CantInitiateConversation,
+    CantInitiateConversation = "Unauthorized: bot can't initiate conversation with a user",
 
     /// Occurs when you tries to send message to bot.
     ///
@@ -711,9 +657,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Unauthorized: bot can't send messages to bots")]
-    #[error("Unauthorized: bot can't send messages to bots")]
-    CantTalkWithBots,
+    CantTalkWithBots = "Unauthorized: bot can't send messages to bots",
 
     /// Occurs when bot tries to send button with invalid http url.
     ///
@@ -721,9 +665,7 @@ pub enum ApiError {
     /// 1. [`SendMessage`]
     ///
     /// [`SendMessage`]: crate::payloads::SendMessage
-    #[serde(rename = "Bad Request: wrong HTTP URL")]
-    #[error("Bad Request: wrong HTTP URL")]
-    WrongHttpUrl,
+    WrongHttpUrl = "Bad Request: wrong HTTP URL",
 
     /// Occurs when bot tries GetUpdate before the timeout. Make sure that only
     /// one Updater is running.
@@ -732,13 +674,8 @@ pub enum ApiError {
     /// 1. [`GetUpdates`]
     ///
     /// [`GetUpdates`]: crate::payloads::GetUpdates
-    #[serde(rename = "Conflict: terminated by other getUpdates request; make sure that only one \
-                      bot instance is running")]
-    #[error(
-        "Conflict: terminated by other getUpdates request; make sure that only one bot instance \
-         is running"
-    )]
-    TerminatedByOtherGetUpdates,
+    TerminatedByOtherGetUpdates = "Conflict: terminated by other getUpdates request; make sure that only one bot instance \
+         is running",
 
     /// Occurs when bot tries to get file by invalid file id.
     ///
@@ -746,9 +683,7 @@ pub enum ApiError {
     /// 1. [`GetFile`]
     ///
     /// [`GetFile`]: crate::payloads::GetFile
-    #[serde(rename = "Bad Request: invalid file id")]
-    #[error("Bad Request: invalid file id")]
-    FileIdInvalid,
+    FileIdInvalid = "Bad Request: invalid file id",
 
     /// Occurs when bot tries to upload a file which is larger than 50 MB using
     /// multipart/form-data.
@@ -759,9 +694,8 @@ pub enum ApiError {
     ///
     /// [`SendVideo`]: crate::payloads::SendVideo
     /// [`SendDocument`]: crate::payloads::SendDocument
-    #[serde(rename = "Request Entity Too Large")]
-    #[error("Request Entity Too Large")]
-    RequestEntityTooLarge,
+    RequestEntityTooLarge = "Request Entity Too Large",
+
 
     /// Error which is not known to `teloxide`.
     ///
@@ -769,8 +703,8 @@ pub enum ApiError {
     /// description of the error.
     ///
     /// [open an issue]: https://github.com/teloxide/teloxide/issues/new
-    #[error("Unknown error: {0:?}")]
-    Unknown(String),
+    Unknown(String) = "Unknown error: {0:?}" with {match_prefix!("")}
+}
 }
 
 /// This impl allows to use `?` to propagate [`DownloadError`]s in function
