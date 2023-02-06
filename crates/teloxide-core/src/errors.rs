@@ -92,7 +92,7 @@ macro_rules! match_prefix {
     ("") => {{
         |data: &str| Some(data.to_owned())
     }};
-    ($prefix: literal) => {{
+    ($prefix:literal) => {{
         |data: &str| {
             if data.starts_with($prefix) {
                 Some(data.to_owned())
@@ -105,10 +105,14 @@ macro_rules! match_prefix {
 
 macro_rules! impl_api_error {
     (
-    $(#[$meta: meta])*
-    $vis: vis enum $ident: ident {
-        $($(#[$var_meta: meta])*
-        $var_name: ident$(($var_inner: ty))? = $var_string: literal $(with $var_parser: block)?),* } ) => {
+        $( #[$meta:meta] )*
+        $vis:vis enum $ident:ident {
+            $(
+                $( #[$var_meta:meta] )*
+                $var_name:ident $( ($var_inner:ty) )? = $var_string:literal $(with $var_parser: block)?
+             ),*
+         } 
+    ) => {
 
         $(#[$meta])*
         #[derive(Error)]
