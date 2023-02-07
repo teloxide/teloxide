@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Fix `split` parser for tuple variants with len < 2 ([issue #834](https://github.com/teloxide/teloxide/issues/834))
+
 ## 0.7.1 - 2023-01-17
 
 ### Fixed
