@@ -620,6 +620,7 @@ mod getters {
     /// [Message]: crate::types::Message
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
+        /// Returns the user who sent the message.
         #[must_use]
         pub fn from(&self) -> Option<&User> {
             match &self.kind {
