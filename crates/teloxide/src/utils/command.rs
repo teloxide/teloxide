@@ -45,9 +45,9 @@
 //! assert_eq!(args, vec!["3", "hours"]);
 //! ```
 //!
-//! See [examples/admin_bot] as a more complicated examples.
+//! See [examples/admin] as a more complicated examples.
 //!
-//! [examples/admin_bot]: https://github.com/teloxide/teloxide/blob/master/examples/admin_bot/
+//! [examples/admin]: https://github.com/teloxide/teloxide/blob/master/crates/teloxide/examples/admin.rs
 
 use core::fmt;
 use std::{
