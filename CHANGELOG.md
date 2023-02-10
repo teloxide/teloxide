@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Allow `ChatJoinRequest` updates
-- Fix broken links to examples in the documentation
+- Some example links in documentation
 
 ### Added
 
