@@ -615,7 +615,7 @@ mod getters {
         MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
         MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
         MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        PhotoSize, True, User,
+        MessageVideoChatParticipantsInvited, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -1174,6 +1174,18 @@ mod getters {
                 ProximityAlertTriggered(MessageProximityAlertTriggered {
                     proximity_alert_triggered,
                 }) => Some(proximity_alert_triggered),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn video_chat_participants_invited(
+            &self,
+        ) -> Option<&types::VideoChatParticipantsInvited> {
+            match &self.kind {
+                VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited {
+                    video_chat_participants_invited,
+                }) => Some(video_chat_participants_invited),
                 _ => None,
             }
         }
