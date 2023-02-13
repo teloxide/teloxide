@@ -1406,6 +1406,42 @@ impl Message {
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.caption().zip(self.caption_entities()).map(|(t, e)| MessageEntityRef::parse(t, e))
     }
+
+    /// Returns all users that are "contained" in this `Message` structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function may return quite a few users as it scans
+    /// replies, pinned messages, message entities and more. Also note that this
+    /// function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        use crate::util::{flatten, mentioned_users_from_entities};
+
+        // Lets just hope we didn't forget something here...
+
+        self.from()
+            .into_iter()
+            .chain(self.via_bot.as_ref())
+            .chain(self.chat.mentioned_users_rec())
+            .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
+            .chain(flatten(self.new_chat_members()))
+            .chain(self.left_chat_member())
+            .chain(self.forward_from_user())
+            .chain(flatten(self.forward_from_chat().map(Chat::mentioned_users_rec)))
+            .chain(flatten(self.game().map(Game::mentioned_users)))
+            .chain(flatten(self.entities().map(mentioned_users_from_entities)))
+            .chain(flatten(self.caption_entities().map(mentioned_users_from_entities)))
+            .chain(flatten(self.poll().map(Poll::mentioned_users)))
+            .chain(flatten(self.proximity_alert_triggered().map(|a| [&a.traveler, &a.watcher])))
+            .chain(flatten(self.video_chat_participants_invited().and_then(|i| i.users.as_deref())))
+    }
+
+    /// `Message::mentioned_users` is recursive (due to replies), as such we
+    /// can't use `->impl Iterator` everywhere, as it would make an infinite
+    /// type. So we need to box somewhere.
+    pub(crate) fn mentioned_users_rec(&self) -> Box<dyn Iterator<Item = &User> + Send + Sync + '_> {
+        Box::new(self.mentioned_users())
+    }
 }
 
 #[cfg(test)]

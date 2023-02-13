@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, True};
+use crate::types::{ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, True, User};
 
 /// This object represents a chat.
 ///
@@ -492,6 +492,23 @@ impl Chat {
             ChatKind::Private(this) => this.has_private_forwards,
             _ => None,
         }
+    }
+
+    /// Returns all users that are "contained" in this `Chat`
+    /// structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        crate::util::flatten(self.pinned_message.as_ref().map(|m| m.mentioned_users()))
+    }
+
+    /// `{Message, Chat}::mentioned_users` are mutually recursive, as such we
+    /// can't use `->impl Iterator` everywhere, as it would make an infinite
+    /// type. So we need to box somewhere.
+    pub(crate) fn mentioned_users_rec(&self) -> impl Iterator<Item = &User> {
+        crate::util::flatten(self.pinned_message.as_ref().map(|m| m.mentioned_users_rec()))
     }
 }
 

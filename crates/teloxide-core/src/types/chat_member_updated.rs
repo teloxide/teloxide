@@ -20,3 +20,21 @@ pub struct ChatMemberUpdated {
     /// joining by invite link events only.
     pub invite_link: Option<ChatInviteLink>,
 }
+
+impl ChatMemberUpdated {
+    /// Returns all users that are "contained" in this `ChatMemberUpdated`
+    /// structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        [
+            &self.from,
+            /* ignore `old_chat_member.user`, it should always be the same as the new one */
+            &self.new_chat_member.user,
+        ]
+        .into_iter()
+        .chain(self.chat.mentioned_users())
+    }
+}

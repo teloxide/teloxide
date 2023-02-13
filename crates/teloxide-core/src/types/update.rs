@@ -59,6 +59,48 @@ impl Update {
         Some(from)
     }
 
+    /// Returns all users that are "contained" in this `Update` structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function may return quite a few users as it scans
+    /// replies, pinned messages, message entities, "via bot" fields and more.
+    /// Also note that this function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        use either::Either::{Left, Right};
+        use std::iter::{empty, once};
+
+        let i0 = Left;
+        let i1 = |x| Right(Left(x));
+        let i2 = |x| Right(Right(Left(x)));
+        let i3 = |x| Right(Right(Right(Left(x))));
+        let i4 = |x| Right(Right(Right(Right(Left(x)))));
+        let i5 = |x| Right(Right(Right(Right(Right(Left(x))))));
+        let i6 = |x| Right(Right(Right(Right(Right(Right(x))))));
+
+        match &self.kind {
+            UpdateKind::Message(message)
+            | UpdateKind::EditedMessage(message)
+            | UpdateKind::ChannelPost(message)
+            | UpdateKind::EditedChannelPost(message) => i0(message.mentioned_users()),
+
+            UpdateKind::InlineQuery(query) => i1(once(&query.from)),
+            UpdateKind::ChosenInlineResult(query) => i1(once(&query.from)),
+            UpdateKind::CallbackQuery(query) => i2(query.mentioned_users()),
+            UpdateKind::ShippingQuery(query) => i1(once(&query.from)),
+            UpdateKind::PreCheckoutQuery(query) => i1(once(&query.from)),
+            UpdateKind::Poll(poll) => i3(poll.mentioned_users()),
+
+            UpdateKind::PollAnswer(answer) => i1(once(&answer.user)),
+
+            UpdateKind::MyChatMember(member) | UpdateKind::ChatMember(member) => {
+                i4(member.mentioned_users())
+            }
+            UpdateKind::ChatJoinRequest(request) => i5(request.mentioned_users()),
+            UpdateKind::Error(_) => i6(empty()),
+        }
+    }
+
     /// Returns the chat in which is update has happened, if any.
     #[must_use]
     pub fn chat(&self) -> Option<&Chat> {
