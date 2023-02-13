@@ -84,7 +84,70 @@ bitflags::bitflags! {
     }
 }
 
-// FIXME: add `can_*` methods for convinience
+impl ChatPermissions {
+    /// Checks for [`SEND_MESSAGES`] permission.
+    ///
+    /// [`SEND_MESSAGES`]: ChatPermissions::SEND_MESSAGES
+    pub fn can_send_messages(&self) -> bool {
+        self.contains(ChatPermissions::SEND_MESSAGES)
+    }
+
+    /// Checks for [`SEND_MEDIA_MESSAGES`] permission.
+    ///
+    /// [`SEND_MEDIA_MESSAGES`]: ChatPermissions::SEND_MEDIA_MESSAGES
+    pub fn can_send_media_messages(&self) -> bool {
+        self.contains(ChatPermissions::SEND_MEDIA_MESSAGES)
+    }
+
+    /// Checks for [`SEND_POLLS`] permission.
+    ///
+    /// [`SEND_POLLS`]: ChatPermissions::SEND_POLLS
+    pub fn can_send_polls(&self) -> bool {
+        self.contains(ChatPermissions::SEND_POLLS)
+    }
+
+    /// Checks for [`SEND_OTHER_MESSAGES`] permission.
+    ///
+    /// [`SEND_OTHER_MESSAGES`]: ChatPermissions::SEND_OTHER_MESSAGES
+    pub fn can_send_other_messages(&self) -> bool {
+        self.contains(ChatPermissions::SEND_OTHER_MESSAGES)
+    }
+
+    /// Checks for [`ADD_WEB_PAGE_PREVIEWS`] permission.
+    ///
+    /// [`ADD_WEB_PAGE_PREVIEWS`]: ChatPermissions::ADD_WEB_PAGE_PREVIEWS
+    pub fn can_add_web_page_previews(&self) -> bool {
+        self.contains(ChatPermissions::ADD_WEB_PAGE_PREVIEWS)
+    }
+
+    /// Checks for [`CHANGE_INFO`] permission.
+    ///
+    /// [`CHANGE_INFO`]: ChatPermissions::CHANGE_INFO
+    pub fn can_change_info(&self) -> bool {
+        self.contains(ChatPermissions::CHANGE_INFO)
+    }
+
+    /// Checks for [`INVITE_USERS`] permission.
+    ///
+    /// [`INVITE_USERS`]: ChatPermissions::INVITE_USERS
+    pub fn can_invite_users(&self) -> bool {
+        self.contains(ChatPermissions::INVITE_USERS)
+    }
+
+    /// Checks for [`PIN_MESSAGES`] permission.
+    ///
+    /// [`PIN_MESSAGES`]: ChatPermissions::PIN_MESSAGES
+    pub fn can_pin_messages(&self) -> bool {
+        self.contains(ChatPermissions::PIN_MESSAGES)
+    }
+
+    /// Checks for [`MANAGE_TOPICS`] permission.
+    ///
+    /// [`MANAGE_TOPICS`]: ChatPermissions::MANAGE_TOPICS
+    pub fn can_manage_topics(&self) -> bool {
+        self.contains(ChatPermissions::MANAGE_TOPICS)
+    }
+}
 
 /// Helper for (de)serialization
 #[derive(Serialize, Deserialize)]
@@ -124,15 +187,15 @@ struct ChatPermissionsRaw {
 impl From<ChatPermissions> for ChatPermissionsRaw {
     fn from(this: ChatPermissions) -> Self {
         Self {
-            can_send_messages: this.contains(ChatPermissions::SEND_MESSAGES),
-            can_send_media_messages: this.contains(ChatPermissions::SEND_MEDIA_MESSAGES),
-            can_send_polls: this.contains(ChatPermissions::SEND_POLLS),
-            can_send_other_messages: this.contains(ChatPermissions::SEND_OTHER_MESSAGES),
-            can_add_web_page_previews: this.contains(ChatPermissions::ADD_WEB_PAGE_PREVIEWS),
-            can_change_info: this.contains(ChatPermissions::CHANGE_INFO),
-            can_invite_users: this.contains(ChatPermissions::INVITE_USERS),
-            can_pin_messages: this.contains(ChatPermissions::PIN_MESSAGES),
-            can_manage_topics: this.contains(ChatPermissions::MANAGE_TOPICS),
+            can_send_messages: this.can_send_messages(),
+            can_send_media_messages: this.can_send_media_messages(),
+            can_send_polls: this.can_send_polls(),
+            can_send_other_messages: this.can_send_other_messages(),
+            can_add_web_page_previews: this.can_add_web_page_previews(),
+            can_change_info: this.can_change_info(),
+            can_invite_users: this.can_invite_users(),
+            can_pin_messages: this.can_pin_messages(),
+            can_manage_topics: this.can_manage_topics(),
         }
     }
 }
