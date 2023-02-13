@@ -4,7 +4,7 @@
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
-//! [[`examples/throw_dice.rs`](https://github.com/teloxide/teloxide/blob/master/examples/throw_dice.rs)]
+//! [[`examples/throw_dice.rs`](https://github.com/teloxide/teloxide/blob/master/crates/teloxide/examples/throw_dice.rs)]
 //! ```no_run
 //! # #[cfg(feature = "ctrlc_handler")]
 //! use teloxide::prelude::*;

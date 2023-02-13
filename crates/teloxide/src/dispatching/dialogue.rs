@@ -91,7 +91,7 @@
 //! }
 //! ```
 //!
-//! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/examples/dialogue.rs
+//! [`examples/dialogue.rs`]: https://github.com/teloxide/teloxide/blob/master/crates/teloxide/examples/dialogue.rs
 
 #[cfg(feature = "redis-storage")]
 pub use self::{RedisStorage, RedisStorageError};
