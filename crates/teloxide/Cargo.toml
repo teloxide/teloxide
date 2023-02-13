@@ -22,7 +22,9 @@ default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
 webhooks = ["rand"]
 webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
 
-sqlite-storage = ["sqlx"]
+# FIXME: rename `sqlite-storage` -> `sqlite-storage-nativetls`
+sqlite-storage = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
+sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
@@ -35,7 +37,7 @@ native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
 auto-send = ["teloxide-core/auto_send"]
 throttle = ["teloxide-core/throttle"]
-cache-me = ["teloxide-core/cache_me"]
+cache-me = ["teloxide-core/cache_me"] # FIXME: why teloxide and core use - _ differently?
 trace-adaptor = ["teloxide-core/trace_adaptor"]
 erased = ["teloxide-core/erased"]
 
@@ -44,8 +46,11 @@ erased = ["teloxide-core/erased"]
 nightly = ["teloxide-core/nightly"]
 
 full = [
+    "webhooks",
     "webhooks-axum",
     "sqlite-storage",
+    # "sqlite-storage-rustls" is explicitly ommited here,
+    # since it conflicts with "sqlite-storage"
     "redis-storage",
     "cbor-serializer",
     "bincode-serializer",
@@ -91,7 +96,6 @@ serde_with_macros = "1.4"
 aquamarine = "0.1.11"
 
 sqlx = { version = "0.6", optional = true, default-features = false, features = [
-        "runtime-tokio-native-tls",
         "macros",
         "sqlite",
 ] }

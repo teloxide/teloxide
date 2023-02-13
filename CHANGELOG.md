@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `Update::filter_chat_join_request`
+- `sqlite-storage-rustls` feature, that allows using sqlite storage without `native-tls`
 
 ## 0.12.0 - 2023-01-17
 
