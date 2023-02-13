@@ -29,7 +29,7 @@ pub struct Update {
 }
 
 impl Update {
-    // FIXME: rename user => from, add mentioned_users -> impl Iterator<&User>
+    // FIXME: add mentioned_users -> impl Iterator<&User>
 
     /// Returns the user that performed the action that caused this update, if
     /// known.
@@ -37,7 +37,7 @@ impl Update {
     /// This is generally the `from` field (except for `PollAnswer` where it's
     /// `user` and `Poll` with `Error` which don't have such field at all).
     #[must_use]
-    pub fn user(&self) -> Option<&User> {
+    pub fn from(&self) -> Option<&User> {
         use UpdateKind::*;
 
         let from = match &self.kind {
@@ -81,6 +81,11 @@ impl Update {
         };
 
         Some(chat)
+    }
+
+    #[deprecated(note = "renamed to `from`", since = "0.13.0")]
+    pub fn user(&self) -> Option<&User> {
+        self.from()
     }
 }
 
