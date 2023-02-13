@@ -34,18 +34,22 @@ pub struct KeyboardRemove {
     /// showing the keyboard with poll options to users who haven't voted yet.
     ///
     /// [`Message`]: crate::types::Message
-    pub selective: Option<bool>,
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub selective: bool,
 }
 
 impl KeyboardRemove {
     #[must_use]
     pub const fn new() -> Self {
-        Self { remove_keyboard: True, selective: None }
+        Self { remove_keyboard: True, selective: false }
     }
 
+    /// Sets [`selective`] to `true`.
+    ///
+    /// [`selective`]: KeyboardRemove::selective
     #[must_use]
-    pub const fn selective(mut self, val: bool) -> Self {
-        self.selective = Some(val);
+    pub const fn selective(mut self) -> Self {
+        self.selective = true;
         self
     }
 }

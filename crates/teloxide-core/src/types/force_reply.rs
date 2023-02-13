@@ -29,13 +29,14 @@ pub struct ForceReply {
     /// (has reply_to_message_id), sender of the original message.
     ///
     /// [`Message`]: crate::types::Message
-    pub selective: Option<bool>,
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub selective: bool,
 }
 
 impl ForceReply {
     #[must_use]
     pub const fn new() -> Self {
-        Self { force_reply: True, input_field_placeholder: None, selective: None }
+        Self { force_reply: True, input_field_placeholder: None, selective: false }
     }
 
     pub fn input_field_placeholder<T>(mut self, val: T) -> Self
@@ -46,9 +47,12 @@ impl ForceReply {
         self
     }
 
+    /// Sets [`selective`] to `true`.
+    ///
+    /// [`selective`]: ForceReply::selective
     #[must_use]
-    pub const fn selective(mut self, val: bool) -> Self {
-        self.selective = Some(val);
+    pub const fn selective(mut self) -> Self {
+        self.selective = true;
         self
     }
 }
