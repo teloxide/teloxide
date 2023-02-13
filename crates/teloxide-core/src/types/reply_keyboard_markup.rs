@@ -95,41 +95,36 @@ impl KeyboardMarkup {
     /// Sets [`is_persistent`] to `true`.
     ///
     /// [`is_persistent`]: KeyboardMarkup::is_persistent
-    pub fn persistent(mut self) -> Self {
-        self.is_persistent = true;
-        self
+    pub fn persistent(self) -> Self {
+        Self { is_persistent: true, ..self }
     }
 
     /// Sets [`resize_keyboard`] to `true`.
     ///
     /// [`resize_keyboard`]: KeyboardMarkup::resize_keyboard
-    pub fn resize_keyboard(mut self) -> Self {
-        self.resize_keyboard = true;
-        self
+    pub fn resize_keyboard(self) -> Self {
+        Self { resize_keyboard: true, ..self }
     }
 
     /// Sets [`one_time_keyboard`] to `true`.
     ///
     /// [`one_time_keyboard`]: KeyboardMarkup::one_time_keyboard
-    pub fn one_time_keyboard(mut self) -> Self {
-        self.one_time_keyboard = true;
-        self
+    pub fn one_time_keyboard(self) -> Self {
+        Self { one_time_keyboard: true, ..self }
     }
 
     // FIXME: document + remove Option from signature.
-    pub fn input_field_placeholder<T>(mut self, val: T) -> Self
+    pub fn input_field_placeholder<T>(self, val: T) -> Self
     where
         T: Into<Option<String>>,
     {
-        self.input_field_placeholder = val.into();
-        self
+        Self { input_field_placeholder: val.into(), ..self }
     }
 
     /// Sets [`selective`] to `true`.
     ///
     /// [`selective`]: KeyboardMarkup::selective
-    pub fn selective<T>(mut self) -> Self {
-        self.selective = true;
-        self
+    pub fn selective<T>(self) -> Self {
+        Self { selective: true, ..self }
     }
 }

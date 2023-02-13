@@ -48,8 +48,7 @@ impl KeyboardRemove {
     ///
     /// [`selective`]: KeyboardRemove::selective
     #[must_use]
-    pub const fn selective(mut self) -> Self {
-        self.selective = true;
-        self
+    pub const fn selective(self) -> Self {
+        Self { selective: true, ..self }
     }
 }

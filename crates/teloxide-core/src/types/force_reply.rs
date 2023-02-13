@@ -39,20 +39,18 @@ impl ForceReply {
         Self { force_reply: True, input_field_placeholder: None, selective: false }
     }
 
-    pub fn input_field_placeholder<T>(mut self, val: T) -> Self
+    pub fn input_field_placeholder<T>(self, val: T) -> Self
     where
         T: Into<Option<String>>,
     {
-        self.input_field_placeholder = val.into();
-        self
+        Self { input_field_placeholder: val.into(), ..self }
     }
 
     /// Sets [`selective`] to `true`.
     ///
     /// [`selective`]: ForceReply::selective
     #[must_use]
-    pub const fn selective(mut self) -> Self {
-        self.selective = true;
-        self
+    pub fn selective(self) -> Self {
+        Self { selective: true, ..self }
     }
 }
