@@ -588,17 +588,17 @@ macro_rules! requester_forward {
     (@method stop_message_live_location $body:ident $ty:ident) => {
         type StopMessageLiveLocation = $ty![StopMessageLiveLocation];
 
-        fn stop_message_live_location<C>(&self, chat_id: C, message_id: MessageId, latitude: f64, longitude: f64) -> Self::StopMessageLiveLocation where C: Into<Recipient> {
+        fn stop_message_live_location<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopMessageLiveLocation where C: Into<Recipient> {
             let this = self;
-            $body!(stop_message_live_location this (chat_id: C, message_id: MessageId, latitude: f64, longitude: f64))
+            $body!(stop_message_live_location this (chat_id: C, message_id: MessageId))
         }
     };
     (@method stop_message_live_location_inline $body:ident $ty:ident) => {
         type StopMessageLiveLocationInline = $ty![StopMessageLiveLocationInline];
 
-        fn stop_message_live_location_inline<I>(&self, inline_message_id: I, latitude: f64, longitude: f64) -> Self::StopMessageLiveLocationInline where I: Into<String> {
+        fn stop_message_live_location_inline<I>(&self, inline_message_id: I) -> Self::StopMessageLiveLocationInline where I: Into<String> {
             let this = self;
-            $body!(stop_message_live_location_inline this (inline_message_id: I, latitude: f64, longitude: f64))
+            $body!(stop_message_live_location_inline this (inline_message_id: I))
         }
     };
     (@method send_venue $body:ident $ty:ident) => {

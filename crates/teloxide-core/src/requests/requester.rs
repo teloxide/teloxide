@@ -319,8 +319,6 @@ pub trait Requester {
         &self,
         chat_id: C,
         message_id: MessageId,
-        latitude: f64,
-        longitude: f64,
     ) -> Self::StopMessageLiveLocation
     where
         C: Into<Recipient>;
@@ -334,8 +332,6 @@ pub trait Requester {
     fn stop_message_live_location_inline<I>(
         &self,
         inline_message_id: I,
-        latitude: f64,
-        longitude: f64,
     ) -> Self::StopMessageLiveLocationInline
     where
         I: Into<String>;

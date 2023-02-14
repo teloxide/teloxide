@@ -402,15 +402,11 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         message_id: MessageId,
-        latitude: f64,
-        longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocation, Self::Err>;
 
     fn stop_message_live_location_inline(
         &self,
         inline_message_id: String,
-        latitude: f64,
-        longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocationInline, Self::Err>;
 
     fn send_venue(
@@ -1064,21 +1060,15 @@ where
         &self,
         chat_id: Recipient,
         message_id: MessageId,
-        latitude: f64,
-        longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocation, Self::Err> {
-        Requester::stop_message_live_location(self, chat_id, message_id, latitude, longitude)
-            .erase()
+        Requester::stop_message_live_location(self, chat_id, message_id).erase()
     }
 
     fn stop_message_live_location_inline(
         &self,
         inline_message_id: String,
-        latitude: f64,
-        longitude: f64,
     ) -> ErasedRequest<'a, StopMessageLiveLocationInline, Self::Err> {
-        Requester::stop_message_live_location_inline(self, inline_message_id, latitude, longitude)
-            .erase()
+        Requester::stop_message_live_location_inline(self, inline_message_id).erase()
     }
 
     fn send_venue(

@@ -1314,7 +1314,7 @@ Schema(
         ),
         Method(
             names: ("editMessageLiveLocationInline", "EditMessageLiveLocationInline", "edit_message_live_location_inline"),
-            return_ty: RawTy("Message"),
+            return_ty: True,
             doc: Doc(
                 md: "Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [stopMessageLiveLocation]. On success, True is returned.",
                 md_links: {"stopMessageLiveLocation": "https://core.telegram.org/bots/api#stopmessagelivelocation"},
@@ -1390,16 +1390,6 @@ Schema(
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
-                    name: "latitude",
-                    ty: f64,
-                    descr: Doc(md: "Latitude of new location"),
-                ),
-                Param(
-                    name: "longitude",
-                    ty: f64,
-                    descr: Doc(md: "Longitude of new location"),
-                ),
-                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
@@ -1415,7 +1405,7 @@ Schema(
         ),
         Method(
             names: ("stopMessageLiveLocationInline", "StopMessageLiveLocationInline", "stop_message_live_location_inline"),
-            return_ty: RawTy("Message"),
+            return_ty: True,
             doc: Doc(
                 md: "Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [stopMessageLiveLocation]. On success, True is returned.",
                 md_links: {"stopMessageLiveLocation": "https://core.telegram.org/bots/api#stopmessagelivelocation"},
@@ -1427,16 +1417,6 @@ Schema(
                     name: "inline_message_id",
                     ty: String,
                     descr: Doc(md: "Identifier of the inline message"),
-                ),
-                Param(
-                    name: "latitude",
-                    ty: f64,
-                    descr: Doc(md: "Latitude of new location"),
-                ),
-                Param(
-                    name: "longitude",
-                    ty: f64,
-                    descr: Doc(md: "Longitude of new location"),
                 ),
                 Param(
                     name: "reply_markup",

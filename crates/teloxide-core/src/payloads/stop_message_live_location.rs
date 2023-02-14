@@ -11,7 +11,7 @@ impl_payload! {
     ///
     /// [`Message`]: crate::types::Message
     /// [`StopMessageLiveLocation`]: crate::payloads::StopMessageLiveLocation
-    #[derive(Debug, PartialEq, Clone, Serialize)]
+    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub StopMessageLiveLocation (StopMessageLiveLocationSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
@@ -19,10 +19,6 @@ impl_payload! {
             /// Identifier of the message to edit
             #[serde(flatten)]
             pub message_id: MessageId,
-            /// Latitude of new location
-            pub latitude: f64,
-            /// Longitude of new location
-            pub longitude: f64,
         }
         optional {
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
