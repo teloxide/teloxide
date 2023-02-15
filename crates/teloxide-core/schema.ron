@@ -4112,7 +4112,7 @@ Schema(
         ),
         Method(
             names: ("setGameScoreInline", "SetGameScoreInline", "set_game_score_inline"),
-            return_ty: RawTy("Message"),
+            return_ty: True,
             doc: Doc(md: "Use this method to set the score of the specified user in a game. On success, returns _True_. Returns an error, if the new score is not greater than the user's current score in the chat and force is False."),
             tg_doc: "https://core.telegram.org/bots/api#setgamescore",
             tg_category: "Games",
