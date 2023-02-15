@@ -10,8 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed 
 
 - `Update::user` now handles channel posts, chat member changes and chat join request updates correctly ([#835][pr835])
+- In cases when `teloxide` can't deserialize an update, error now includes the full json value ([#826][pr826])
+
 
 [pr835]: https://github.com/teloxide/teloxide/pull/835
+[pr826]: https://github.com/teloxide/teloxide/pull/826
 
 ## 0.9.0 - 2023-01-17
 

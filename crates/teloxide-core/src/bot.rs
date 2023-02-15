@@ -206,7 +206,7 @@ impl Bot {
     ) -> impl Future<Output = ResponseResult<P::Output>> + 'static
     where
         P: Payload + Serialize,
-        P::Output: DeserializeOwned,
+        P::Output: DeserializeOwned + 'static,
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
@@ -237,7 +237,7 @@ impl Bot {
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
         P: MultipartPayload + Serialize,
-        P::Output: DeserializeOwned,
+        P::Output: DeserializeOwned + 'static,
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
@@ -267,7 +267,7 @@ impl Bot {
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
         P: MultipartPayload + Serialize,
-        P::Output: DeserializeOwned,
+        P::Output: DeserializeOwned + 'static,
     {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);

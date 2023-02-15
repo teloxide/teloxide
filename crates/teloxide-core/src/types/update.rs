@@ -156,7 +156,10 @@ pub enum UpdateKind {
     /// An error that happened during deserialization.
     ///
     /// This allows `teloxide` to continue working even if telegram adds a new
-    /// kind of updates.
+    /// kinds of updates.
+    ///
+    /// **Note that deserialize implementation always returns an empty value**,
+    /// teloxide fills in the data when doing deserialization.
     Error(Value),
 }
 
@@ -182,94 +185,63 @@ impl<'de> Deserialize<'de> for UpdateKind {
 
                 // Try to deserialize a borrowed-str key, or else try deserializing an owned
                 // string key
-                let k = map.next_key::<&str>().or_else(|_| {
+                let key = map.next_key::<&str>().or_else(|_| {
                     map.next_key::<String>().map(|k| {
                         tmp = k;
                         tmp.as_deref()
                     })
                 });
 
-                if let Ok(Some(k)) = k {
-                    let res = match k {
-                        "message" => {
-                            map.next_value::<Message>().map(UpdateKind::Message).map_err(|_| false)
+                let this = key
+                    .ok()
+                    .flatten()
+                    .and_then(|key| match key {
+                        "message" => map.next_value::<Message>().ok().map(UpdateKind::Message),
+                        "edited_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::EditedMessage)
                         }
-                        "edited_message" => map
-                            .next_value::<Message>()
-                            .map(UpdateKind::EditedMessage)
-                            .map_err(|_| false),
-                        "channel_post" => map
-                            .next_value::<Message>()
-                            .map(UpdateKind::ChannelPost)
-                            .map_err(|_| false),
-                        "edited_channel_post" => map
-                            .next_value::<Message>()
-                            .map(UpdateKind::EditedChannelPost)
-                            .map_err(|_| false),
-                        "inline_query" => map
-                            .next_value::<InlineQuery>()
-                            .map(UpdateKind::InlineQuery)
-                            .map_err(|_| false),
+                        "channel_post" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::ChannelPost)
+                        }
+                        "edited_channel_post" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::EditedChannelPost)
+                        }
+                        "inline_query" => {
+                            map.next_value::<InlineQuery>().ok().map(UpdateKind::InlineQuery)
+                        }
                         "chosen_inline_result" => map
                             .next_value::<ChosenInlineResult>()
-                            .map(UpdateKind::ChosenInlineResult)
-                            .map_err(|_| false),
-                        "callback_query" => map
-                            .next_value::<CallbackQuery>()
-                            .map(UpdateKind::CallbackQuery)
-                            .map_err(|_| false),
-                        "shipping_query" => map
-                            .next_value::<ShippingQuery>()
-                            .map(UpdateKind::ShippingQuery)
-                            .map_err(|_| false),
+                            .ok()
+                            .map(UpdateKind::ChosenInlineResult),
+                        "callback_query" => {
+                            map.next_value::<CallbackQuery>().ok().map(UpdateKind::CallbackQuery)
+                        }
+                        "shipping_query" => {
+                            map.next_value::<ShippingQuery>().ok().map(UpdateKind::ShippingQuery)
+                        }
                         "pre_checkout_query" => map
                             .next_value::<PreCheckoutQuery>()
-                            .map(UpdateKind::PreCheckoutQuery)
-                            .map_err(|_| false),
-                        "poll" => map.next_value::<Poll>().map(UpdateKind::Poll).map_err(|_| false),
-                        "poll_answer" => map
-                            .next_value::<PollAnswer>()
-                            .map(UpdateKind::PollAnswer)
-                            .map_err(|_| false),
-                        "my_chat_member" => map
-                            .next_value::<ChatMemberUpdated>()
-                            .map(UpdateKind::MyChatMember)
-                            .map_err(|_| false),
-                        "chat_member" => map
-                            .next_value::<ChatMemberUpdated>()
-                            .map(UpdateKind::ChatMember)
-                            .map_err(|_| false),
+                            .ok()
+                            .map(UpdateKind::PreCheckoutQuery),
+                        "poll" => map.next_value::<Poll>().ok().map(UpdateKind::Poll),
+                        "poll_answer" => {
+                            map.next_value::<PollAnswer>().ok().map(UpdateKind::PollAnswer)
+                        }
+                        "my_chat_member" => {
+                            map.next_value::<ChatMemberUpdated>().ok().map(UpdateKind::MyChatMember)
+                        }
+                        "chat_member" => {
+                            map.next_value::<ChatMemberUpdated>().ok().map(UpdateKind::ChatMember)
+                        }
                         "chat_join_request" => map
                             .next_value::<ChatJoinRequest>()
-                            .map(UpdateKind::ChatJoinRequest)
-                            .map_err(|_| false),
+                            .ok()
+                            .map(UpdateKind::ChatJoinRequest),
+                        _ => Some(empty_error()),
+                    })
+                    .unwrap_or_else(empty_error);
 
-                        _ => Err(true),
-                    };
-
-                    let value_available = match res {
-                        Ok(ok) => return Ok(ok),
-                        Err(e) => e,
-                    };
-
-                    let mut value = serde_json::Map::new();
-                    value.insert(
-                        k.to_owned(),
-                        if value_available {
-                            map.next_value::<Value>().unwrap_or(Value::Null)
-                        } else {
-                            Value::Null
-                        },
-                    );
-
-                    while let Ok(Some((k, v))) = map.next_entry::<_, Value>() {
-                        value.insert(k, v);
-                    }
-
-                    return Ok(UpdateKind::Error(Value::Object(value)));
-                }
-
-                Ok(UpdateKind::Error(Value::Object(<_>::default())))
+                Ok(this)
             }
         }
 
@@ -317,6 +289,10 @@ impl Serialize for UpdateKind {
             UpdateKind::Error(v) => v.serialize(s),
         }
     }
+}
+
+fn empty_error() -> UpdateKind {
+    UpdateKind::Error(Value::Object(<_>::default()))
 }
 
 #[cfg(test)]
