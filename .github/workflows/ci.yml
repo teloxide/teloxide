@@ -89,7 +89,7 @@ jobs:
             features: "--features full"
           - rust: nightly
             toolchain: nightly-2022-12-23
-            features: "--all-features"
+            features: "--features full nightly"
           - rust: msrv
             toolchain: 1.64.0
             features: "--features full"
@@ -188,7 +188,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all-targets --all-features
+          args: --all-targets --features "full nightly"
 
   doc:
     name: check docs
