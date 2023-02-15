@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.12.1 - 2023-02-15
+
 ### Fixed
 
 - Allow `ChatJoinRequest` updates
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Update::filter_chat_join_request`
 - `sqlite-storage-rustls` feature, that allows using sqlite storage without `native-tls`
+
+### Changed
+
+- Updated `teloxide-core` to v0.9.1; see its [changelog](https://github.com/teloxide/teloxide/blob/master/crates/teloxide-core/CHANGELOG.md#091---2023-02-15) for more
 
 ## 0.12.0 - 2023-01-17
 

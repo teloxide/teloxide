@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.12.0"
+version = "0.12.1"
 description = "An elegant Telegram bots framework for Rust"
 
 rust-version.workspace = true
