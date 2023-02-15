@@ -138,9 +138,6 @@ fn parser_with_separator<'a>(
 
                 let res = #res;
 
-                if !s.is_empty() && splitted.count() {
-                }
-
                 match splitted.next() {
                     Some(d) if !s.is_empty() => ::std::result::Result::Err(teloxide::utils::command::ParseError::TooManyArguments {
                         expected: #expected,
