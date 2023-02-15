@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.9.1 - 2023-02-15
+
 ### Fixed 
 
 - `Update::user` now handles channel posts, chat member changes and chat join request updates correctly ([#835][pr835])
