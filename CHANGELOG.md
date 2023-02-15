@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.12.2 - 2023-02-15
+
+### Fixed
+
+- `docs.rs` documentation build
+
 ## 0.12.1 - 2023-02-15
 
 ### Fixed

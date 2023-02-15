@@ -1,6 +1,6 @@
 [package]
 name = "teloxide"
-version = "0.12.1"
+version = "0.12.2"
 description = "An elegant Telegram bots framework for Rust"
 
 rust-version.workspace = true
@@ -120,7 +120,8 @@ tokio-stream = "0.1"
 
 
 [package.metadata.docs.rs]
-all-features = true
+# NB: can't use `all-features = true`, because `sqlite-storage` conflicts with `sqlite-storage-rustls`
+features = ["full", "nightly"]
 # FIXME: Add back "-Znormalize-docs" when https://github.com/rust-lang/rust/issues/93703 is fixed
 rustdoc-args = ["--cfg", "docsrs"]
 rustc-args = ["--cfg", "dep_docsrs"]
