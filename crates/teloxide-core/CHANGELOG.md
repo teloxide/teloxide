@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr826]: https://github.com/teloxide/teloxide/pull/826
 [pr830]: https://github.com/teloxide/teloxide/pull/830
 
+### Added
+
+- `ApiError::ImageProcessFailed` ([#825][pr825])
+
+[pr825]: https://github.com/teloxide/teloxide/pull/825
+
 ## 0.9.0 - 2023-01-17
 
 ### Changed
