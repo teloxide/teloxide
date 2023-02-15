@@ -42,7 +42,8 @@ pub struct KeyboardMarkup {
 
     /// The placeholder to be shown in the input field when the keyboard is
     /// active; 1-64 characters.
-    pub input_field_placeholder: Option<String>,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub input_field_placeholder: String,
 
     /// Use this parameter if you want to show the keyboard to specific users
     /// only. Targets: 1) users that are `@mentioned` in the `text` of the
@@ -70,7 +71,7 @@ impl KeyboardMarkup {
             is_persistent: false,
             resize_keyboard: false,
             one_time_keyboard: false,
-            input_field_placeholder: None,
+            input_field_placeholder: String::new(),
             selective: false,
         }
     }
@@ -113,10 +114,10 @@ impl KeyboardMarkup {
         Self { one_time_keyboard: true, ..self }
     }
 
-    // FIXME: document + remove Option from signature.
+    // FIXME: document
     pub fn input_field_placeholder<T>(self, val: T) -> Self
     where
-        T: Into<Option<String>>,
+        T: Into<String>,
     {
         Self { input_field_placeholder: val.into(), ..self }
     }
