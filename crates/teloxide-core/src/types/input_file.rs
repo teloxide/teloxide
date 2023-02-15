@@ -123,8 +123,8 @@ impl InputFile {
     ///
     /// This is used to coordinate with `attach://`.
     pub(crate) fn id(&self) -> &str {
-        // FIXME: remove extra alloc
-        self.id.get_or_init(|| uuid::Uuid::new_v4().to_string().into())
+        let random = || Arc::from(&*uuid::Uuid::new_v4().as_simple().encode_lower(&mut [0; 32]));
+        self.id.get_or_init(random)
     }
 
     /// Returns `true` if this file needs an attachment i.e. it's not a file_id
