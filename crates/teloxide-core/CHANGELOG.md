@@ -10,8 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ChatPermission::can_*` helper functions ([#851][pr851])
+- `mentioned_users` functions for `CallbackQuery`, `Chat`, `ChatJoinRequest`, `ChatMemberUpdated`, `Game`, `Message`, `Poll`, `Update` which return all contained `User` instances ([#850][pr850])
+- `Message::video_chat_participants_invited` ([#850][pr850])
+- `Update::from`, a replacement for `Update::user` ([#850][pr850])
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
+
+### Deprecated
+
+- `Update::user`, use `Update::from` instead ([#850][pr850])
+
+[pr850]: https://github.com/teloxide/teloxide/pull/850
 
 ## 0.9.1 - 2023-02-15
 
