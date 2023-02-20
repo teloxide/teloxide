@@ -125,7 +125,7 @@ impl Update {
         Some(chat)
     }
 
-    #[deprecated(note = "renamed to `from`", since = "0.13.0")]
+    #[deprecated(note = "renamed to `from`", since = "0.10.0")]
     pub fn user(&self) -> Option<&User> {
         self.from()
     }
