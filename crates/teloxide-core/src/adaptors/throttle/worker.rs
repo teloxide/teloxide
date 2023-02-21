@@ -316,7 +316,7 @@ async fn freeze(
                     match chat.slow_mode_delay() {
                         Some(delay) => {
                             let now = Instant::now();
-                            let new_delay = Duration::from_secs(delay.into());
+                            let new_delay = delay.duration();
                             slow_mode.insert(hash, (new_delay, now));
                         }
                         None => {
