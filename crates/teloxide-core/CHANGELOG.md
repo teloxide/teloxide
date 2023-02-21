@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `ChatPermission::can_*` helper functions ([#851][pr851])
+
+[pr851]: https://github.com/teloxide/teloxide/pull/851
+
 ## 0.9.1 - 2023-02-15
 
 ### Fixed 
