@@ -384,52 +384,6 @@ pub(crate) mod option_url_from_string {
     }
 }
 
-pub(crate) mod duration_secs {
-    use std::time::Duration;
-
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-    pub(crate) fn serialize<S>(this: &Duration, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        this.as_secs().serialize(serializer)
-    }
-
-    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Duration, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        u64::deserialize(deserializer).map(Duration::from_secs)
-    }
-
-    #[test]
-    fn test() {
-        #[derive(Serialize, Deserialize)]
-        struct Struct {
-            #[serde(with = "crate::types::duration_secs")]
-            duration: Duration,
-        }
-
-        {
-            let json = r#"{"duration":0}"#;
-            let duration: Struct = serde_json::from_str(json).unwrap();
-            assert_eq!(duration.duration, Duration::from_secs(0));
-            assert_eq!(serde_json::to_string(&duration).unwrap(), json.to_owned());
-
-            let json = r#"{"duration":12}"#;
-            let duration: Struct = serde_json::from_str(json).unwrap();
-            assert_eq!(duration.duration, Duration::from_secs(12));
-            assert_eq!(serde_json::to_string(&duration).unwrap(), json.to_owned());
-
-            let json = r#"{"duration":1234}"#;
-            let duration: Struct = serde_json::from_str(json).unwrap();
-            assert_eq!(duration.duration, Duration::from_secs(1234));
-            assert_eq!(serde_json::to_string(&duration).unwrap(), json.to_owned());
-        }
-    }
-}
-
 pub(crate) fn serialize_reply_to_message_id<S>(
     this: &Option<MessageId>,
     serializer: S,
