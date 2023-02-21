@@ -1,7 +1,7 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, PhotoSize};
+use crate::types::{FileMeta, PhotoSize, Seconds};
 
 /// This object represents an animation file (GIF or H.264/MPEG-4 AVC video
 /// without sound).
@@ -21,7 +21,7 @@ pub struct Animation {
     pub height: u32,
 
     /// A duration of the video in seconds as defined by a sender.
-    pub duration: u32,
+    pub duration: Seconds,
 
     /// An animation thumbnail as defined by a sender.
     pub thumb: Option<PhotoSize>,
@@ -62,7 +62,7 @@ mod tests {
             file: FileMeta { id: "id".to_string(), unique_id: "".to_string(), size: 6500 },
             width: 320,
             height: 320,
-            duration: 59,
+            duration: Seconds::from_seconds(59),
             thumb: Some(PhotoSize {
                 file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
                 width: 320,

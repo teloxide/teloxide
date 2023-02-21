@@ -1,7 +1,7 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, PhotoSize};
+use crate::types::{FileMeta, PhotoSize, Seconds};
 
 /// This object represents a video file.
 ///
@@ -20,7 +20,7 @@ pub struct Video {
     pub height: u32,
 
     /// Duration of the video in seconds as defined by sender.
-    pub duration: u32,
+    pub duration: Seconds,
 
     /// Video thumbnail.
     pub thumb: Option<PhotoSize>,
