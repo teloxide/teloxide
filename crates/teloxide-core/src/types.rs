@@ -248,10 +248,12 @@ mod non_telegram_types {
 
 mod chat_id;
 mod recipient;
+mod seconds;
 mod user_id;
 
 pub use chat_id::*;
 pub use recipient::*;
+pub use seconds::*;
 pub use user_id::*;
 
 use serde::Serialize;
