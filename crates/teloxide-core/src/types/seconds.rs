@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// A wrapper around `u32` which represents duration is seconds.
+/// A wrapper around `u32` which represents duration in seconds.
 #[derive(Clone, Copy)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Debug, derive_more::Display)]

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Message::video_chat_participants_invited` ([#850][pr850])
 - `Update::from`, a replacement for `Update::user` ([#850][pr850])
 - `Seconds` type, which represents a duration is seconds ([#859][pr859])
+- `VideoChatEnded::duration` field that was previously missed ([#859][pr859])
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 
@@ -21,7 +22,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Types of `Option<bool>` fields of `KeyboardMarkup`, `KeyboardRemove` and `ForceReply` to `bool` ([#853][pr853])
 - Type of `KeyboardMarkup::input_field_placeholder`: `Option<String>` => `String` ([#853][pr853])
-- Some fields now use `Seconds` type instead of `u32` or `Duration` ([#859][pr859])
+- The following fields now use `Seconds` type instead of `u32`, `u16` or `Duration` ([#859][pr859])
+  - `Animation::duration`
+  - `Audio::duration`
+  - `Chat::message_auto_delete_time`
+  - `Chat::slow_mode_delay`
+  - `InlineQueryResultLocation::live_period`
+  - `Location::live_period`
+  - `MessageAutoDeleteTimerChanged::message_auto_delete_time`
+  - `Poll::open_period` 
+  - `Video::duration`
+  - `VideoNote::duration`
+  - `Voice::duration`
 - `RequestError::MigrateToChatId` single fields type to `ChatId` ([#859][pr859])
 - `RequestError::RetryAfter` single fields type to `Seconds` ([#859][pr859])
 
