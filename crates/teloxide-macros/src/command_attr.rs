@@ -53,19 +53,7 @@ impl CommandAttrs {
         let attributes = attributes.iter().map(|attr| {
             if attr.path.is_ident("doc") {
                 // Extract the token literal from the doc attribute.
-                let description = attr
-                    .tokens
-                    .clone()
-                    .into_iter()
-                    .nth(1)
-                    .map(|t| {
-                        // remove first and last quotes only, is expected to be a string literal
-                        let mut s = t.to_string();
-                        s.remove(0);
-                        s.pop();
-                        s.trim().replace(r"\\n", "\n")
-                    })
-                    .unwrap_or_default();
+                let description = parse_doc_comment(attr).unwrap_or_default();
                 // Convert the doc attribute into a command description attribute.
                 let sp = attr.span();
                 let attr = Attribute::parse_outer
@@ -151,4 +139,14 @@ fn is_command_attribute(a: &Attribute) -> bool {
         Some(ident) => ident == "command",
         _ => false,
     }
+}
+
+fn parse_doc_comment(attr: &Attribute) -> Option<String> {
+    #[allow(clippy::collapsible_match)]
+    if let syn::Meta::NameValue(syn::MetaNameValue { lit, .. }) = attr.parse_meta().ok()? {
+        if let syn::Lit::Str(s) = lit {
+            return Some(s.value().trim().replace(r"\n", "\n"));
+        }
+    }
+    None
 }
