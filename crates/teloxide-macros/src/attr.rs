@@ -7,15 +7,14 @@ use syn::{
     Attribute, Ident, Lit, Path, Token,
 };
 
-pub(crate) fn fold_attrs<A, R>(
-    attrs: &[Attribute],
+pub(crate) fn fold_attrs<'a, A, R>(
+    attrs: impl Iterator<Item = &'a Attribute>,
     filter: fn(&Attribute) -> bool,
     parse: impl Fn(Attr) -> Result<R>,
     init: A,
     f: impl Fn(A, R) -> Result<A>,
 ) -> Result<A> {
     attrs
-        .iter()
         .filter(|&a| filter(a))
         .flat_map(|attribute| {
             // FIXME: don't allocate here
