@@ -168,14 +168,16 @@ pub use teloxide_macros::BotCommands;
 /// `rename_rule`).
 ///
 ///  3. `#[command(description = "description")]`
-/// Give your command a description. Write `"off"` for `"description"` to hide a
-/// command.
+/// Give your command a description. It will be shown in the help message.
 ///
 ///  4. `#[command(parse_with = "parser")]`
 /// Parse arguments of one command with a given parser. `parser` must be a
 /// function of the signature `fn(String) -> Result<Tuple, ParseError>`, where
 /// `Tuple` corresponds to the variant's arguments.
 ///
+///  5. `#[command(hide)]`
+/// Hide a command from the help message. It will still be parsed.
+/// 
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
