@@ -17,6 +17,7 @@ pub(crate) struct CommandAttrs {
     pub rename: Option<(String, Span)>,
     pub parser: Option<(ParserType, Span)>,
     pub separator: Option<(String, Span)>,
+    pub hide: Option<((), Span)>,
 }
 
 /// A single k/v attribute for `BotCommands` derive macro.
@@ -41,6 +42,7 @@ enum CommandAttrKind {
     Rename(String),
     ParseWith(ParserType),
     Separator(String),
+    Hide,
 }
 
 impl CommandAttrs {
@@ -58,6 +60,7 @@ impl CommandAttrs {
                 rename: None,
                 parser: None,
                 separator: None,
+                hide: None,
             },
             |mut this, attr| {
                 fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
@@ -77,6 +80,7 @@ impl CommandAttrs {
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
+                    Hide => insert(&mut this.hide, (), attr.sp),
                 }?;
 
                 Ok(this)
@@ -100,10 +104,11 @@ impl CommandAttr {
             "rename" => Rename(value.expect_string()?),
             "parse_with" => ParseWith(ParserType::parse(value)?),
             "separator" => Separator(value.expect_string()?),
+            "hide" => Hide,
             _ => {
                 return Err(compile_error_at(
                     "unexpected attribute name (expected one of `prefix`, `description`, \
-                     `rename`, `parse_with` and `separator`",
+                     `rename`, `parse_with`, `separator` and `hide`",
                     key.span(),
                 ))
             }
