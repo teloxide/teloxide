@@ -244,6 +244,24 @@ fn descriptions_off() {
 
 #[test]
 #[cfg(feature = "macros")]
+fn description_with_doc_attr() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    enum DefaultCommands {
+        /// Start command
+        Start,
+        /// Help command\nwith new line
+        Help,
+    }
+
+    assert_eq!(
+        DefaultCommands::descriptions().to_string(),
+        "/start — Start command\n/help — Help command\nwith new line"
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
 fn rename_rules() {
     #[derive(BotCommands, Debug, PartialEq)]
     enum DefaultCommands {
