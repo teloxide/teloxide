@@ -177,7 +177,7 @@ pub use teloxide_macros::BotCommands;
 ///
 ///  5. `#[command(hide)]`
 /// Hide a command from the help message. It will still be parsed.
-/// 
+///
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
