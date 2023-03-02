@@ -50,39 +50,35 @@ impl CommandAttrs {
     pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
         use CommandAttrKind::*;
         // Convert the `doc` attribute into `command(description = "...")`
-        let attributes = attributes
-            .iter()
-            .map(|attr| {
-                if attr.path.is_ident("doc") {
-                    // Extract the token literal from the doc attribute.
-                    let description = attr
-                        .tokens
-                        .clone()
-                        .into_iter()
-                        .nth(1)
-                        .map(|t| {
-                            // remove first and last quotes only, is expected to be a string literal
-                            let mut s = t.to_string();
-                            s.remove(0);
-                            s.pop();
-                            s.trim().replace(r"\\n", "\n")
-                        })
-                        .unwrap_or_default();
-                    // Convert the doc attribute into a command description attribute.
-                    let sp = attr.span();
-                    let attr = Attribute::parse_outer
-                        .parse2(quote_spanned!(sp => #[command(description = #description)]))
-                        .unwrap();
-                    // SAFETY: `parse_outer` always returns a single attribute.
-                    attr.into_iter().next().unwrap()
-                } else {
-                    attr.clone()
-                }
-            })
-            .collect::<Vec<_>>();
+        let attributes = attributes.iter().map(|attr| {
+            if attr.path.is_ident("doc") {
+                // Extract the token literal from the doc attribute.
+                let description = attr
+                    .tokens
+                    .clone()
+                    .into_iter()
+                    .nth(1)
+                    .map(|t| {
+                        // remove first and last quotes only, is expected to be a string literal
+                        let mut s = t.to_string();
+                        s.remove(0);
+                        s.pop();
+                        s.trim().replace(r"\\n", "\n")
+                    })
+                    .unwrap_or_default();
+                // Convert the doc attribute into a command description attribute.
+                let sp = attr.span();
+                let attr = Attribute::parse_outer
+                    .parse2(quote_spanned!(sp => #[command(description = #description)]))
+                    .unwrap();
+                attr.into_iter().next().unwrap()
+            } else {
+                attr.clone()
+            }
+        });
 
         fold_attrs(
-            attributes.iter(),
+            attributes,
             is_command_attribute,
             CommandAttr::parse,
             Self {
