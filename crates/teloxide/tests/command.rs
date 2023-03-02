@@ -232,8 +232,10 @@ fn descriptions_off() {
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
     enum DefaultCommands {
-        #[command(description = "off")]
+        #[command(hide)]
         Start,
+        #[command(hide)]
+        Username,
         Help,
     }
 
