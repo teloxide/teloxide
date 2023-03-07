@@ -59,6 +59,7 @@ impl Command {
     }
 
     pub(crate) fn description_is_enabled(&self) -> bool {
+        // FIXME: remove the first, `== "off"`, check eventually
         self.description != Some("off".to_owned()) && !self.hidden
     }
 }
