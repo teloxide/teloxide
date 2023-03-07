@@ -49,7 +49,9 @@ impl Command {
         let prefix = prefix.map(|(p, _)| p).unwrap_or_else(|| global_options.prefix.clone());
         let description = description.map(|(d, _)| d);
         let parser = parser.map(|(p, _)| p).unwrap_or_else(|| global_options.parser_type.clone());
-        Ok(Self { prefix, description, parser, name, hidden: hide.is_some() })
+        let hidden = hide.is_some();
+
+        Ok(Self { prefix, description, parser, name, hidden })
     }
 
     pub fn get_prefixed_command(&self) -> String {
