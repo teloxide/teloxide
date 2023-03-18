@@ -120,16 +120,16 @@ pub struct MessageCommon {
     /// `true`, if the message is sent to a forum topic.
     // FIXME: `is_topic_message` is included even in service messages, like ForumTopicCreated.
     //        more this to `Message`
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_topic_message: bool,
 
     /// `true`, if the message is a channel post that was automatically
     /// forwarded to the connected discussion group.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_automatic_forward: bool,
 
     /// `true`, if the message can't be forwarded.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_protected_content: bool,
 }
 
