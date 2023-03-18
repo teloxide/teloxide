@@ -365,7 +365,7 @@ pub struct MediaAnimation {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
     /// `true`, if the message media is covered by a spoiler animation.
@@ -385,7 +385,7 @@ pub struct MediaAudio {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
     /// The unique identifier of a media message group this message belongs
@@ -411,7 +411,7 @@ pub struct MediaDocument {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
     /// The unique identifier of a media message group this message belongs
@@ -447,7 +447,7 @@ pub struct MediaPhoto {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
     /// `true`, if the message media is covered by a spoiler animation.
@@ -482,7 +482,7 @@ pub struct MediaText {
 
     /// For text messages, special entities like usernames, URLs, bot
     /// commands, etc. that appear in the text.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub entities: Vec<MessageEntity>,
 }
 
@@ -497,7 +497,7 @@ pub struct MediaVideo {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 
     /// `true`, if the message media is covered by a spoiler animation.
@@ -529,7 +529,7 @@ pub struct MediaVoice {
 
     /// For messages with a caption, special entities like usernames, URLs,
     /// bot commands, etc. that appear in the caption.
-    #[serde(default = "Vec::new")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub caption_entities: Vec<MessageEntity>,
 }
 
