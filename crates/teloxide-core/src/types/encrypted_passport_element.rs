@@ -6,6 +6,7 @@ use super::PassportFile;
 /// shared with the bot by the user.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#encryptedpassportelement).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct EncryptedPassportElement {
     /// Base64-encoded element hash for using in

@@ -7,6 +7,7 @@ use crate::types::{PhotoSize, Sticker, StickerFormat, StickerType};
 /// This object represents a sticker set.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#stickerset).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StickerSet {
     /// Sticker set name.

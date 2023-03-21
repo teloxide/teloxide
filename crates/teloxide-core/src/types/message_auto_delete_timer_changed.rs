@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// This object represents a service message about a change in auto-delete timer
 /// settings.
+#[serde_with_macros::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct MessageAutoDeleteTimerChanged {
     /// New auto-delete time for messages in the chat
