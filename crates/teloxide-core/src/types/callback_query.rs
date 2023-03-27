@@ -40,8 +40,7 @@ pub struct CallbackQuery {
     /// [games]: https://core.telegram.org/bots/api#games
     pub chat_instance: String,
 
-    /// A data associated with the callback button. Be aware that a bad client
-    /// can send arbitrary data in this field.
+    /// A data associated with the callback button.
     pub data: Option<String>,
 
     /// A short name of a Game to be returned, serves as the unique identifier
