@@ -16,6 +16,7 @@ pub enum RequestError {
     /// The group has been migrated to a supergroup with the specified
     /// identifier.
     #[error("The group has been migrated to a supergroup with ID #{0}")]
+    // FIXME: change to `ChatId` :|
     MigrateToChatId(i64),
 
     /// In case of exceeding flood control, the number of seconds left to wait

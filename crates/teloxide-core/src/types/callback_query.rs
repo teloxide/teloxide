@@ -40,13 +40,26 @@ pub struct CallbackQuery {
     /// [games]: https://core.telegram.org/bots/api#games
     pub chat_instance: String,
 
-    /// A data associated with the callback button. Be aware that a bad client
-    /// can send arbitrary data in this field.
+    /// A data associated with the callback button.
     pub data: Option<String>,
 
     /// A short name of a Game to be returned, serves as the unique identifier
     /// for the game.
     pub game_short_name: Option<String>,
+}
+
+impl CallbackQuery {
+    /// Returns all users that are "contained" in this `CallbackQuery`
+    /// structure.
+    ///
+    /// This might be useful to track information about users.
+    /// Note that this function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        use crate::util::flatten;
+        use std::iter::once;
+
+        once(&self.from).chain(flatten(self.message.as_ref().map(Message::mentioned_users)))
+    }
 }
 
 #[cfg(test)]

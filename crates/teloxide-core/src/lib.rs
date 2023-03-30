@@ -5,7 +5,7 @@
 //! asynchronous and built using [`tokio`].
 //!
 //!```toml
-//! teloxide_core = "0.8"
+//! teloxide_core = "0.9"
 //! ```
 //! _Compiler support: requires rustc 1.64+_.
 //!
@@ -117,6 +117,7 @@ mod bot;
 
 // implementation details
 mod serde_multipart;
+mod util;
 
 #[cfg(test)]
 mod codegen;

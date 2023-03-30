@@ -1,4 +1,4 @@
-use crate::types::{MessageEntity, PollType};
+use crate::types::{MessageEntity, PollType, User};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -65,6 +65,20 @@ pub struct PollOption {
 
     /// Number of users that voted for this option.
     pub voter_count: i32,
+}
+
+impl Poll {
+    /// Returns all users that are "contained" in this `Poll`
+    /// structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        use crate::util::{flatten, mentioned_users_from_entities};
+
+        flatten(self.explanation_entities.as_deref().map(mentioned_users_from_entities))
+    }
 }
 
 #[cfg(test)]

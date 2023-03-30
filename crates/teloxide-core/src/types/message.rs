@@ -26,6 +26,7 @@ pub struct Message {
     /// Unique identifier of a message thread to which the message belongs; for
     /// supergroups only.
     // FIXME: MessageThreadId or such
+    #[serde(rename = "message_thread_id")]
     pub thread_id: Option<i32>,
 
     /// Date the message was sent in Unix time.
@@ -116,6 +117,8 @@ pub struct MessageCommon {
     pub reply_markup: Option<InlineKeyboardMarkup>,
 
     /// `true`, if the message is sent to a forum topic.
+    // FIXME: `is_topic_message` is included even in service messages, like ForumTopicCreated.
+    //        more this to `Message`
     #[serde(default)]
     pub is_topic_message: bool,
 
@@ -612,7 +615,7 @@ mod getters {
         MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
         MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
         MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        PhotoSize, True, User,
+        MessageVideoChatParticipantsInvited, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -620,6 +623,7 @@ mod getters {
     /// [Message]: crate::types::Message
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
+        /// Returns the user who sent the message.
         #[must_use]
         pub fn from(&self) -> Option<&User> {
             match &self.kind {
@@ -1175,6 +1179,18 @@ mod getters {
         }
 
         #[must_use]
+        pub fn video_chat_participants_invited(
+            &self,
+        ) -> Option<&types::VideoChatParticipantsInvited> {
+            match &self.kind {
+                VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited {
+                    video_chat_participants_invited,
+                }) => Some(video_chat_participants_invited),
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn reply_markup(&self) -> Option<&types::InlineKeyboardMarkup> {
             match &self.kind {
                 Common(MessageCommon { reply_markup, .. }) => reply_markup.as_ref(),
@@ -1389,6 +1405,42 @@ impl Message {
     #[must_use]
     pub fn parse_caption_entities(&self) -> Option<Vec<MessageEntityRef<'_>>> {
         self.caption().zip(self.caption_entities()).map(|(t, e)| MessageEntityRef::parse(t, e))
+    }
+
+    /// Returns all users that are "contained" in this `Message` structure.
+    ///
+    /// This might be useful to track information about users.
+    ///
+    /// Note that this function may return quite a few users as it scans
+    /// replies, pinned messages, message entities and more. Also note that this
+    /// function can return duplicate users.
+    pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
+        use crate::util::{flatten, mentioned_users_from_entities};
+
+        // Lets just hope we didn't forget something here...
+
+        self.from()
+            .into_iter()
+            .chain(self.via_bot.as_ref())
+            .chain(self.chat.mentioned_users_rec())
+            .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
+            .chain(flatten(self.new_chat_members()))
+            .chain(self.left_chat_member())
+            .chain(self.forward_from_user())
+            .chain(flatten(self.forward_from_chat().map(Chat::mentioned_users_rec)))
+            .chain(flatten(self.game().map(Game::mentioned_users)))
+            .chain(flatten(self.entities().map(mentioned_users_from_entities)))
+            .chain(flatten(self.caption_entities().map(mentioned_users_from_entities)))
+            .chain(flatten(self.poll().map(Poll::mentioned_users)))
+            .chain(flatten(self.proximity_alert_triggered().map(|a| [&a.traveler, &a.watcher])))
+            .chain(flatten(self.video_chat_participants_invited().and_then(|i| i.users.as_deref())))
+    }
+
+    /// `Message::mentioned_users` is recursive (due to replies), as such we
+    /// can't use `->impl Iterator` everywhere, as it would make an infinite
+    /// type. So we need to box somewhere.
+    pub(crate) fn mentioned_users_rec(&self) -> Box<dyn Iterator<Item = &User> + Send + Sync + '_> {
+        Box::new(self.mentioned_users())
     }
 }
 
@@ -1835,5 +1887,37 @@ mod tests {
         let entities = entities.unwrap();
         assert!(!entities.is_empty());
         assert_eq!(entities[0].kind().clone(), MessageEntityKind::Url);
+    }
+
+    #[test]
+    fn topic_created() {
+        let json = r#"{
+            "chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},
+            "date":1675229139,
+            "forum_topic_created":{
+                "icon_color":9367192,
+                "icon_custom_emoji_id":"5312536423851630001",
+                "name":"???"
+            },
+            "from":{
+                "first_name":"вафель'",
+                "id":1253681278,
+                "is_bot":false,
+                "language_code":"en",
+                "username":"wafflelapkin"
+            },
+            "is_topic_message":true,
+            "message_id":4,
+            "message_thread_id":4
+        }"#;
+
+        let _: Message = serde_json::from_str(json).unwrap();
+    }
+
+    #[test]
+    fn topic_message() {
+        let json = r#"{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229140,"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":5,"message_thread_id":4,"reply_to_message":{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229139,"forum_topic_created":{"icon_color":9367192,"icon_custom_emoji_id":"5312536423851630001","name":"???"},"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":4,"message_thread_id":4},"text":"blah"}"#;
+
+        let _: Message = serde_json::from_str(json).unwrap();
     }
 }

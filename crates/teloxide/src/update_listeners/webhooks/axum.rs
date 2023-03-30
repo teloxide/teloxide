@@ -9,7 +9,7 @@ use tokio::sync::mpsc;
 use crate::{
     requests::Requester,
     stop::StopFlag,
-    types::Update,
+    types::{Update, UpdateKind},
     update_listeners::{webhooks::Options, UpdateListener},
 };
 
@@ -186,8 +186,14 @@ pub fn axum_no_setup(
             Some(tx) => tx,
         };
 
-        match serde_json::from_str(&input) {
-            Ok(update) => {
+        match serde_json::from_str::<Update>(&input) {
+            Ok(mut update) => {
+                // See HACK comment in
+                // `teloxide_core::net::request::process_response::{closure#0}`
+                if let UpdateKind::Error(value) = &mut update.kind {
+                    *value = serde_json::from_str(&input).unwrap_or_default();
+                }
+
                 tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
             }
             Err(error) => {

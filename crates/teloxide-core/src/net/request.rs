@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{any::TypeId, time::Duration};
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
@@ -19,7 +19,7 @@ pub async fn request_multipart<T>(
     _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     // Workaround for [#460]
     //
@@ -58,7 +58,7 @@ pub async fn request_json<T>(
     _timeout_hint: Option<Duration>,
 ) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     // Workaround for [#460]
     //
@@ -91,7 +91,7 @@ where
 
 async fn process_response<T>(response: Response) -> ResponseResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
     if response.status().is_server_error() {
         tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
@@ -99,7 +99,176 @@ where
 
     let text = response.text().await?;
 
+    deserialize_response(text)
+}
+
+fn deserialize_response<T>(text: String) -> Result<T, RequestError>
+where
+    T: DeserializeOwned + 'static,
+{
     serde_json::from_str::<TelegramResponse<T>>(&text)
+        .map(|mut response| {
+            use crate::types::{Update, UpdateKind};
+            use std::{any::Any, iter::zip};
+
+            // HACK: Fill-in error information into `UpdateKind::Error`.
+            //
+            //       Why? Well, we need `Update` deserialization to be reliable,
+            //       even if Telegram breaks something in their Bot API, we want
+            //       1. Deserialization to """succeed"""
+            //       2. Get the `update.id`
+            //
+            //       Both of these points are required for `get_updates(...) -> Vec<Update>`
+            //       to behave well after Telegram introduces updates that we can't parse.
+            //       (1.) makes it so only some of the updates in a butch need to be skipped
+            //       (otherwise serde'll stop on the first error). (2.) allows us to issue
+            //       the next `get_updates` call with the right offset, even if the last
+            //       update in the batch didn't deserialize well.
+            //
+            //       serde's interface doesn't allows us to implement `Deserialize` in such
+            //       a way, that we could keep the data we couldn't parse, so our
+            //       `Deserialize` impl for `UpdateKind` just returns
+            //       `UpdateKind::Error(/* some empty-ish value */)`. Here, through some
+            //       terrible hacks and downcasting, we fill-in the data we couldn't parse
+            //       so that our users can make actionable bug reports.
+            //
+            //       We specifically handle `Vec<Update>` here, because that's the return
+            //       type of the only method that returns updates.
+            if TypeId::of::<T>() == TypeId::of::<Vec<Update>>() {
+                if let TelegramResponse::Ok { response, .. } = &mut response {
+                    if let Some(updates) =
+                        (response as &mut T as &mut dyn Any).downcast_mut::<Vec<Update>>()
+                    {
+                        if updates.iter().any(|u| matches!(u.kind, UpdateKind::Error(_))) {
+                            let re_parsed = serde_json::from_str(&text);
+
+                            if let Ok(TelegramResponse::Ok { response: values, .. }) = re_parsed {
+                                for (update, value) in zip::<_, Vec<_>>(updates, values) {
+                                    if let UpdateKind::Error(dest) = &mut update.kind {
+                                        *dest = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            response
+        })
         .map_err(|source| RequestError::InvalidJson { source, raw: text.into() })?
         .into()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use cool_asserts::assert_matches;
+
+    use crate::{
+        net::request::deserialize_response,
+        types::{True, Update, UpdateKind},
+        ApiError, RequestError,
+    };
+
+    #[test]
+    fn smoke_ok() {
+        let json = r#"{"ok":true,"result":true}"#.to_owned();
+
+        let res = deserialize_response::<True>(json);
+        assert_matches!(res, Ok(True));
+    }
+
+    #[test]
+    fn smoke_err() {
+        let json =
+            r#"{"ok":false,"description":"Forbidden: bot was blocked by the user"}"#.to_owned();
+
+        let res = deserialize_response::<True>(json);
+        assert_matches!(res, Err(RequestError::Api(ApiError::BotBlocked)));
+    }
+
+    #[test]
+    fn migrate() {
+        let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"migrate_to_chat_id":123456}}"#.to_owned();
+
+        let res = deserialize_response::<True>(json);
+        assert_matches!(res, Err(RequestError::MigrateToChatId(123456)));
+    }
+
+    #[test]
+    fn retry_after() {
+        let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"retry_after":123456}}"#.to_owned();
+
+        let res = deserialize_response::<True>(json);
+        assert_matches!(res, Err(RequestError::RetryAfter(duration)) if duration == Duration::from_secs(123456));
+    }
+
+    #[test]
+    fn update_ok() {
+        let json = r#"{
+            "ok":true,
+            "result":[
+                {
+                    "update_id":0,
+                    "poll_answer":{
+                        "poll_id":"POLL_ID",
+                        "user": {"id":42,"is_bot":false,"first_name":"blah"},
+                        "option_ids": []
+                    }
+                }
+            ]
+        }"#
+        .to_owned();
+
+        let res = deserialize_response::<Vec<Update>>(json).unwrap();
+        assert_matches!(res, [Update { id: 0, kind: UpdateKind::PollAnswer(_) }]);
+    }
+
+    /// Check that `get_updates` can work with malformed updates.
+    #[test]
+    fn update_err() {
+        let json = r#"{
+            "ok":true,
+            "result":[
+                {
+                    "update_id":0,
+                    "poll_answer":{
+                        "poll_id":"POLL_ID",
+                        "user": {"id":42,"is_bot":false,"first_name":"blah"},
+                        "option_ids": []
+                    }
+                },
+                {
+                    "update_id":1,
+                    "something unknown to us":17
+                },
+                {
+                    "update_id":2,
+                    "poll_answer":{
+                        "poll_id":"POLL_ID",
+                        "user": {"id":42,"is_bot":false,"first_name":"blah"},
+                        "option_ids": [3, 4, 8]
+                    }
+                },
+                {
+                    "update_id":3,
+                    "message":{"some fields are missing":true}
+                }
+            ]
+        }"#
+        .to_owned();
+
+        let res = deserialize_response::<Vec<Update>>(json).unwrap();
+        assert_matches!(
+            res,
+            [
+                Update { id: 0, kind: UpdateKind::PollAnswer(_) },
+                Update { id: 1, kind: UpdateKind::Error(v) } if v.is_object(),
+                Update { id: 2, kind: UpdateKind::PollAnswer(_) },
+                Update { id: 3, kind: UpdateKind::Error(v) } if v.is_object(),
+            ]
+        );
+    }
 }
