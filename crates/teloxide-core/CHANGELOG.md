@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr850]: https://github.com/teloxide/teloxide/pull/850
 
+### Fixed
+
+- Deserialization of `ApiError::CantParseEntities` ([#839][pr839])
+
+[pr839]: https://github.com/teloxide/teloxide/pull/839
+
 ## 0.9.1 - 2023-02-15
 
 ### Fixed 
