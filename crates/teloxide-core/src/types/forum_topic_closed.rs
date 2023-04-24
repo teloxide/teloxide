@@ -6,4 +6,4 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#forumtopicclosed).
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-pub struct ForumTopicClosed;
+pub struct ForumTopicClosed {}

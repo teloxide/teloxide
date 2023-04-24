@@ -1933,4 +1933,28 @@ mod tests {
         let msg: Message = serde_json::from_str(json).unwrap();
         assert_matches!(msg.kind, MessageKind::Empty {})
     }
+
+    #[test]
+    fn issue_874() {
+        let json = r#"{
+            "chat": {
+                "id": -1001840751935,
+                "is_forum": true,
+                "title": "AI",
+                "type": "supergroup"
+            },
+            "date": 1682191229,
+            "forum_topic_closed": {},
+            "from": {
+                "first_name": "Владислав",
+                "id": 112455916,
+                "is_bot": false,
+                "language_code": "en",
+                "username": "scv977"
+            },
+            "message_id": 62
+        }"#;
+
+        let _: Message = serde_json::from_str(json).unwrap();
+    }
 }

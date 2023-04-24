@@ -43,9 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Voice::duration`
 - `RequestError::MigrateToChatId` single fields type to `ChatId` ([#859][pr859])
 - `RequestError::RetryAfter` single fields type to `Seconds` ([#859][pr859])
+- `CallbackGame`, `ForumTopicClosed`, `ForumTopicReopened`, `GeneralForumTopicHidden`, `GeneralForumTopicUnhidden` and `WriteAccessAllowed` structures
+  are now defined as named (`struct S {}`) instead of unit (`struct S;`) in order to fix their deserialization ([#876][pr876])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
+[pr876]: https://github.com/teloxide/teloxide/pull/876
 
 ### Deprecated
 
