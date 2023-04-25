@@ -228,3 +228,6 @@ pub use distribution::DefaultKey;
 pub use filter_ext::{MessageFilterExt, UpdateFilterExt};
 pub use handler_description::DpHandlerDescription;
 pub use handler_ext::{filter_command, filter_mention_command, HandlerExt};
+
+#[cfg(feature = "tracing")]
+pub use dispatcher::UpdateHandlerTracingExt;
