@@ -616,31 +616,6 @@ impl<R, Err, Key> Dispatcher<R, Err, Key> {
     }
 }
 
-/// Extension methods for adding `tracing` to [`UpdateHandler`].
-///
-/// This trait is only available if the `tracing` feature is enabled.
-#[cfg(feature = "tracing")]
-pub trait UpdateHandlerTracingExt<E> {
-    /// Returns an `UpdateHandler` with tracing enabled.
-    fn with_tracing(self, f: fn(Arc<Update>) -> tracing::Span) -> Self;
-}
-
-#[cfg(feature = "tracing")]
-impl<E: 'static> UpdateHandlerTracingExt<E> for UpdateHandler<E> {
-    fn with_tracing(self, f: fn(Arc<Update>) -> tracing::Span) -> Self {
-        use dptree::HandlerDescription;
-        use tracing::Instrument;
-
-        // This is a hacky replacement for `handler.description().clone()`.
-        // Ideally cloning `DpHandlerDescription` would be supported by `teloxide`.
-        let description = DpHandlerDescription::entry().merge_chain(self.description());
-
-        dptree::from_fn_with_description(description, move |deps: DependencyMap, cont| {
-            let update: Arc<Update> = deps.get();
-            self.clone().execute(deps, cont).instrument(f(update))
-        })
-    }
-}
 
 fn spawn_worker<Err>(
     deps: DependencyMap,

@@ -222,6 +222,9 @@ mod filter_ext;
 mod handler_description;
 mod handler_ext;
 
+#[cfg(feature = "tracing")]
+mod tracing;
+
 pub use crate::utils::shutdown_token::{IdleShutdownError, ShutdownToken};
 pub use dispatcher::{Dispatcher, DispatcherBuilder, UpdateHandler};
 pub use distribution::DefaultKey;
@@ -230,4 +233,4 @@ pub use handler_description::DpHandlerDescription;
 pub use handler_ext::{filter_command, filter_mention_command, HandlerExt};
 
 #[cfg(feature = "tracing")]
-pub use dispatcher::UpdateHandlerTracingExt;
+pub use self::tracing::UpdateHandlerTracingExt;
