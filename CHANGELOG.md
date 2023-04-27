@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved developer experience: ([PR 1255](https://github.com/teloxide/teloxide/pull/1255))
   - Added devcontainer support. It was tested with VS Codium on Fedora/Podman and Ubuntu/Docker, but should work for any platform that supports devcontainers
   - Added Justfile for common tasks. E.g. run `just ci` for a full check, similar to what we do in CI (do it before sending PR!)
+- `tracing` feature, that enables trait `UpdateHandlerExt` that instruments `UpdateHandler` with a custom `tracing::Span` ([PR 877](https://github.com/teloxide/teloxide/pull/877))
 
 ### Changed
 
