@@ -31,7 +31,6 @@ use crate::types::InputSticker;
 /// This object represents the contents of a file to be uploaded.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
-#[serde_with_macros::skip_serializing_none]
 #[derive(Debug, Clone)]
 pub struct InputFile {
     id: OnceCell<Arc<str>>,
