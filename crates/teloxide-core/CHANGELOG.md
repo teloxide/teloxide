@@ -32,8 +32,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Deserialization of `ApiError::CantParseEntities` ([#839][pr839])
+- Deserialization of empty (content-less) messages that can sometimes appear as a part of callback query ([#850][pr850], issue [#873][issue873])
 
 [pr839]: https://github.com/teloxide/teloxide/pull/839
+[pr879]: https://github.com/teloxide/teloxide/pull/879
+[issue873]: https://github.com/teloxide/teloxide/issues/873
 
 ## 0.9.1 - 2023-02-15
 
