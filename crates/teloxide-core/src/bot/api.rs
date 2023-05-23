@@ -198,15 +198,13 @@ impl Requester for Bot {
         &self,
         chat_id: C,
         message_id: MessageId,
-        latitude: f64,
-        longitude: f64,
     ) -> Self::StopMessageLiveLocation
     where
         C: Into<Recipient>,
     {
         Self::StopMessageLiveLocation::new(
             self.clone(),
-            payloads::StopMessageLiveLocation::new(chat_id, message_id, latitude, longitude),
+            payloads::StopMessageLiveLocation::new(chat_id, message_id),
         )
     }
 
@@ -215,15 +213,13 @@ impl Requester for Bot {
     fn stop_message_live_location_inline<I>(
         &self,
         inline_message_id: I,
-        latitude: f64,
-        longitude: f64,
     ) -> Self::StopMessageLiveLocationInline
     where
         I: Into<String>,
     {
         Self::StopMessageLiveLocationInline::new(
             self.clone(),
-            payloads::StopMessageLiveLocationInline::new(inline_message_id, latitude, longitude),
+            payloads::StopMessageLiveLocationInline::new(inline_message_id),
         )
     }
 

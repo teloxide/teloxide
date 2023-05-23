@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 
+### Fixed
+
+- Return types of `edit_message_live_location_inline`, `stop_message_live_location_inline`, and `set_game_score_inline`: `Message` => `True` ([#854][pr854])
+- Remove `latitude` and `longitude` parameters from `stop_message_live_location` and `stop_message_live_location_inline` ([#854][pr854])
+
+[pr854]: https://github.com/teloxide/teloxide/pull/854
+
 ### Changed
 
 - Types of `Option<bool>` fields of `KeyboardMarkup`, `KeyboardRemove` and `ForceReply` to `bool` ([#853][pr853])

@@ -2,14 +2,14 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, UserId};
+use crate::types::{True, UserId};
 
 impl_payload! {
     /// Use this method to set the score of the specified user in a game. On success, returns _True_. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
     ///
     /// See also: [`SetGameScore`](crate::payloads::SetGameScore)
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SetGameScoreInline (SetGameScoreInlineSetters) => Message {
+    pub SetGameScoreInline (SetGameScoreInlineSetters) => True {
         required {
             /// User identifier
             pub user_id: UserId,

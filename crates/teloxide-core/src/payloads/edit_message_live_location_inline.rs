@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, ReplyMarkup};
+use crate::types::{ReplyMarkup, True};
 
 impl_payload! {
     /// Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [`StopMessageLiveLocation`]. On success, True is returned.
@@ -11,7 +11,7 @@ impl_payload! {
     ///
     /// [`StopMessageLiveLocation`]: crate::payloads::StopMessageLiveLocation
     #[derive(Debug, PartialEq, Clone, Serialize)]
-    pub EditMessageLiveLocationInline (EditMessageLiveLocationInlineSetters) => Message {
+    pub EditMessageLiveLocationInline (EditMessageLiveLocationInlineSetters) => True {
         required {
             /// Identifier of the inline message
             pub inline_message_id: String [into],
