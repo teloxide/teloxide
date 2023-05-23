@@ -78,6 +78,9 @@ pub enum MessageKind {
     VideoChatEnded(MessageVideoChatEnded),
     VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited),
     WebAppData(MessageWebAppData),
+    /// An empty, content-less message, that can appear in callback queries
+    /// attached to old messages.
+    Empty {},
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -1446,6 +1449,7 @@ impl Message {
 
 #[cfg(test)]
 mod tests {
+    use cool_asserts::assert_matches;
     use serde_json::from_str;
 
     use crate::types::*;
@@ -1919,5 +1923,14 @@ mod tests {
         let json = r#"{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229140,"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":5,"message_thread_id":4,"reply_to_message":{"chat":{"id":-1001847508954,"is_forum":true,"title":"twest","type":"supergroup"},"date":1675229139,"forum_topic_created":{"icon_color":9367192,"icon_custom_emoji_id":"5312536423851630001","name":"???"},"from":{"first_name":"вафель'","id":1253681278,"is_bot":false,"language_code":"en","username":"wafflelapkin"},"is_topic_message":true,"message_id":4,"message_thread_id":4},"text":"blah"}"#;
 
         let _: Message = serde_json::from_str(json).unwrap();
+    }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/873>
+    #[test]
+    fn empty_message() {
+        let json = r#"{"chat": {"first_name": "FN", "id": 1234567890, "type": "private"}, "date": 0, "message_id": 875400}"#;
+
+        let msg: Message = serde_json::from_str(json).unwrap();
+        assert_matches!(msg.kind, MessageKind::Empty {})
     }
 }
