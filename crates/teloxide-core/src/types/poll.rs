@@ -1,4 +1,4 @@
-use crate::types::{MessageEntity, PollType, User};
+use crate::types::{MessageEntity, PollType, Seconds, User};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -48,7 +48,7 @@ pub struct Poll {
     pub explanation_entities: Option<Vec<MessageEntity>>,
 
     /// Amount of time in seconds the poll will be active after creation.
-    pub open_period: Option<u16>,
+    pub open_period: Option<Seconds>,
 
     /// Point in time when the poll will be automatically closed.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]

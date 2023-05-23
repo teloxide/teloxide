@@ -1,7 +1,7 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, PhotoSize};
+use crate::types::{FileMeta, PhotoSize, Seconds};
 
 /// This object represents an audio file to be treated as music by the Telegram
 /// clients.
@@ -15,7 +15,7 @@ pub struct Audio {
     pub file: FileMeta,
 
     /// A duration of the audio in seconds as defined by a sender.
-    pub duration: u32,
+    pub duration: Seconds,
 
     /// A performer of the audio as defined by a sender or by audio tags.
     pub performer: Option<String>,
@@ -36,7 +36,7 @@ pub struct Audio {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::FileMeta;
+    use crate::types::{FileMeta, Seconds};
 
     use super::*;
 
@@ -60,7 +60,7 @@ mod tests {
         }"#;
         let expected = Audio {
             file: FileMeta { id: "id".to_string(), unique_id: "".to_string(), size: 123_456 },
-            duration: 60,
+            duration: Seconds::from_seconds(60),
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("application/zip".parse().unwrap()),

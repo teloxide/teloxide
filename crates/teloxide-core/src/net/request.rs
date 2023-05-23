@@ -162,7 +162,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
+    use crate::types::{ChatId, Seconds};
 
     use cool_asserts::assert_matches;
 
@@ -194,7 +194,7 @@ mod tests {
         let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"migrate_to_chat_id":123456}}"#.to_owned();
 
         let res = deserialize_response::<True>(json);
-        assert_matches!(res, Err(RequestError::MigrateToChatId(123456)));
+        assert_matches!(res, Err(RequestError::MigrateToChatId(ChatId(123456))));
     }
 
     #[test]
@@ -202,7 +202,7 @@ mod tests {
         let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"retry_after":123456}}"#.to_owned();
 
         let res = deserialize_response::<True>(json);
-        assert_matches!(res, Err(RequestError::RetryAfter(duration)) if duration == Duration::from_secs(123456));
+        assert_matches!(res, Err(RequestError::RetryAfter(duration)) if duration == Seconds::from_seconds(123456));
     }
 
     #[test]

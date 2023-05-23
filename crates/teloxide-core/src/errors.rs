@@ -1,10 +1,10 @@
 //! Possible error types.
 
-use std::{io, time::Duration};
+use std::io;
 
 use thiserror::Error;
 
-use crate::types::ResponseParameters;
+use crate::types::{ChatId, ResponseParameters, Seconds};
 
 /// An error caused by sending a request to Telegram.
 #[derive(Debug, Error)]
@@ -16,13 +16,12 @@ pub enum RequestError {
     /// The group has been migrated to a supergroup with the specified
     /// identifier.
     #[error("The group has been migrated to a supergroup with ID #{0}")]
-    // FIXME: change to `ChatId` :|
-    MigrateToChatId(i64),
+    MigrateToChatId(ChatId),
 
     /// In case of exceeding flood control, the number of seconds left to wait
     /// before the request can be repeated.
-    #[error("Retry after {0:?}")]
-    RetryAfter(Duration),
+    #[error("Retry after {0}")]
+    RetryAfter(Seconds),
 
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
@@ -64,14 +63,14 @@ pub enum DownloadError {
 pub trait AsResponseParameters {
     fn response_parameters(&self) -> Option<ResponseParameters>;
 
-    fn retry_after(&self) -> Option<Duration> {
+    fn retry_after(&self) -> Option<Seconds> {
         self.response_parameters().and_then(|rp| match rp {
             ResponseParameters::RetryAfter(n) => Some(n),
             _ => None,
         })
     }
 
-    fn migrate_to_chat_id(&self) -> Option<i64> {
+    fn migrate_to_chat_id(&self) -> Option<ChatId> {
         self.response_parameters().and_then(|rp| match rp {
             ResponseParameters::MigrateToChatId(id) => Some(id),
             _ => None,

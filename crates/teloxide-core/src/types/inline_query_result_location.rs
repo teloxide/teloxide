@@ -29,7 +29,7 @@ pub struct InlineQueryResultLocation {
 
     /// Period in seconds for which the location can be updated, should be
     /// between 60 and 86400.
-    pub live_period: Option<i32>,
+    pub live_period: Option<u32>,
 
     /// For live locations, a direction in which the user is moving, in degrees.
     /// Must be between 1 and 360 if specified.
@@ -116,7 +116,7 @@ impl InlineQueryResultLocation {
     }
 
     #[must_use]
-    pub fn live_period(mut self, val: i32) -> Self {
+    pub fn live_period(mut self, val: u32) -> Self {
         self.live_period = Some(val);
         self
     }

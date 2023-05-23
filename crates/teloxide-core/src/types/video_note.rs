@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, PhotoSize};
+use crate::types::{FileMeta, PhotoSize, Seconds};
 
 /// This object represents a [video message] (available in Telegram apps as of
 /// [v.4.0]).
@@ -21,7 +21,7 @@ pub struct VideoNote {
     pub length: u32,
 
     /// Duration of the video in seconds as defined by sender.
-    pub duration: u32,
+    pub duration: Seconds,
 
     /// Video thumbnail.
     pub thumb: Option<PhotoSize>,

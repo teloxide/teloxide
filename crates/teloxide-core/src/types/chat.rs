@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, True, User};
+use crate::types::{
+    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
+};
 
 /// This object represents a chat.
 ///
@@ -29,7 +31,7 @@ pub struct Chat {
     /// deleted; in seconds. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
-    pub message_auto_delete_time: Option<u32>,
+    pub message_auto_delete_time: Option<Seconds>,
 
     /// `true`, if non-administrators can only get the list of bots and
     /// administrators in the chat. Returned only in [`GetChat`].
@@ -202,7 +204,7 @@ pub struct PublicChatSupergroup {
     /// unpriviledged user. Returned only from [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
-    pub slow_mode_delay: Option<u32>,
+    pub slow_mode_delay: Option<Seconds>,
 
     /// Unique identifier for the linked chat, i.e. the discussion group
     /// identifier for a channel and vice versa. Returned only in [`GetChat`].
@@ -355,7 +357,7 @@ impl Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     #[must_use]
-    pub fn slow_mode_delay(&self) -> Option<u32> {
+    pub fn slow_mode_delay(&self) -> Option<Seconds> {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
                 return this.slow_mode_delay;
