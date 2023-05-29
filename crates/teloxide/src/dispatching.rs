@@ -229,7 +229,7 @@ pub mod update_listeners {
 ///
 /// [`teloxide::repls`]: crate::repls
 #[deprecated = "This module was moved. Use `teloxide::repls` instead."]
-#[cfg(all(feature = "ctrlc_handler"))]
+#[cfg(feature = "ctrlc_handler")]
 pub mod repls {
     pub use crate::repls::*;
 }
