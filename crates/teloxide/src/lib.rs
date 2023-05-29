@@ -69,7 +69,7 @@ pub use repls::{commands_repl, commands_repl_with_listener};
 pub mod dispatching;
 pub mod error_handlers;
 pub mod prelude;
-#[cfg(all(feature = "ctrlc_handler"))]
+#[cfg(feature = "ctrlc_handler")]
 pub mod repls;
 pub mod stop;
 pub mod update_listeners;

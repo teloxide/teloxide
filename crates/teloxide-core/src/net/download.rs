@@ -12,10 +12,9 @@ use tokio::io::{AsyncWrite, AsyncWriteExt};
 use crate::{errors::DownloadError, net::file_url};
 
 /// A trait for downloading files from Telegram.
-pub trait Download<'w>
-/* FIXME(waffle): ideally, this lifetime ('w) shouldn't be here, but we can't help it without
- * GATs */
-{
+// FIXME(waffle): ideally, this lifetime ('w) shouldn't be here, but we can't
+//                help it without GATs
+pub trait Download<'w> {
     /// An error returned from [`download_file`](Self::download_file).
     type Err;
 

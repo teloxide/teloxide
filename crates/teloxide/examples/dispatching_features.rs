@@ -40,7 +40,7 @@ async fn main() {
             .endpoint(|msg: Message, bot: Bot, cmd: MaintainerCommands| async move {
                 match cmd {
                     MaintainerCommands::Rand { from, to } => {
-                        let mut rng = rand::rngs::OsRng::default();
+                        let mut rng = rand::rngs::OsRng;
                         let value: u64 = rng.gen_range(from..=to);
 
                         bot.send_message(msg.chat.id, value.to_string()).await?;
