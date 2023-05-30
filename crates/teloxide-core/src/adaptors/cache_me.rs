@@ -201,7 +201,6 @@ where
 }
 
 download_forward! {
-    'w
     B
     CacheMe<B>
     { this => this.inner() }

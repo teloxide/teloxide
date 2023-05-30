@@ -372,26 +372,26 @@ macro_rules! impl_payload {
 }
 
 macro_rules! download_forward {
-    ($l:lifetime $T:ident $S:ty {$this:ident => $inner:expr}) => {
-        impl<$l, $T: $crate::net::Download<$l>> $crate::net::Download<$l> for $S {
-            type Err = <$T as $crate::net::Download<$l>>::Err;
+    ($T:ident $S:ty {$this:ident => $inner:expr}) => {
+        impl<$T: $crate::net::Download> $crate::net::Download for $S {
+            type Err<'dst> = <$T as $crate::net::Download>::Err<'dst>;
 
-            type Fut = <$T as $crate::net::Download<$l>>::Fut;
+            type Fut<'dst> = <$T as $crate::net::Download>::Fut<'dst>;
 
-            fn download_file(
+            fn download_file<'dst>(
                 &self,
                 path: &str,
-                destination: &'w mut (dyn tokio::io::AsyncWrite
-                             + core::marker::Unpin
-                             + core::marker::Send),
-            ) -> Self::Fut {
+                destination: &'dst mut (dyn tokio::io::AsyncWrite
+                               + core::marker::Unpin
+                               + core::marker::Send),
+            ) -> Self::Fut<'dst> {
                 let $this = self;
                 ($inner).download_file(path, destination)
             }
 
-            type StreamErr = <$T as $crate::net::Download<$l>>::StreamErr;
+            type StreamErr = <$T as $crate::net::Download>::StreamErr;
 
-            type Stream = <$T as $crate::net::Download<$l>>::Stream;
+            type Stream = <$T as $crate::net::Download>::Stream;
 
             fn download_file_stream(&self, path: &str) -> Self::Stream {
                 let $this = self;
