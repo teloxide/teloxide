@@ -53,33 +53,29 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust ${{ env.rust_nightly }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.rust_nightly }}
-          override: true
           components: rustfmt
 
       - name: Cache Dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Check formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: |
+          cargo fmt --all -- --check
 
   test:
     name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: 
+        rust:
           - stable
           - beta
           - nightly
           - msrv
-    
+
         include:
           - rust: stable
             toolchain: stable
@@ -94,26 +90,22 @@ jobs:
             toolchain: 1.64.0
             features: "--features full"
 
-    steps:      
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Install Rust ${{ matrix.toolchain }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ matrix.toolchain }}
-          override: true
 
       - name: Cache Dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       # NB. Don't test (build) examples so we can use non-msrv features in them (--tests/--doc)
-      - name: Compile 
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --tests --no-run --verbose ${{ matrix.features }}
+      - name: Compile
+        run: |
+          cargo +${{ matrix.toolchain }} test --tests --no-run --verbose ${{ matrix.features }}
 
       - name: Setup redis
         run: |
@@ -121,19 +113,15 @@ jobs:
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
-      
-      - name: Test unit & integration tests 
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --tests --verbose ${{ matrix.features }}
-          
+
+      - name: Test unit & integration tests
+        run: |
+          cargo +${{ matrix.toolchain }} test --tests --verbose ${{ matrix.features }}
+
       - name: Test documentation tests
         if: ${{ matrix.rust != 'msrv' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --doc --verbose ${{ matrix.features }}
+        run: |
+          cargo +${{ matrix.toolchain }} test --doc --verbose ${{ matrix.features }}
 
   check-examples:
     runs-on: ubuntu-latest
@@ -143,27 +131,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - name: Cache Dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Check examples
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --examples --features full
+        run: |
+          cargo +stable check --examples --features full
 
       # TODO: prolly move it to a separate step?
       - name: Check with no default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --no-default-features
+        run: |
+          cargo +stable check --no-default-features
 
   clippy:
     name: Run linter
@@ -174,21 +156,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust ${{ env.rust_nightly }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.rust_nightly }}
-          override: true
           components: clippy
 
       - name: Cache Dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-targets --features "full nightly"
+        run: |
+          cargo clippy --all-targets --features "full nightly"
 
   doc:
     name: check docs
@@ -199,16 +177,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust ${{ env.rust_nightly }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{ env.rust_nightly }}
-          override: true
 
       - name: Cache Dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: rustdoc
-        uses: actions-rs/cargo@v1
-        with:
-          command: docs # from .cargo/config.toml
+        run: |
+          cargo docs # from .cargo/config.toml
