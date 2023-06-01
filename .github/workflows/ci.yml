@@ -132,7 +132,6 @@ jobs:
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@master
-        id: toolchain
         with:
           toolchain: stable
 
@@ -141,12 +140,12 @@ jobs:
 
       - name: Check examples
         run: |
-          cargo +${{ steps.toolchain.outputs.name }} check --examples --features full
+          cargo +stable check --examples --features full
 
       # TODO: prolly move it to a separate step?
       - name: Check with no default features
         run: |
-          cargo +${{ steps.toolchain.outputs.name }} check --no-default-features
+          cargo +stable check --no-default-features
 
   clippy:
     name: Run linter
