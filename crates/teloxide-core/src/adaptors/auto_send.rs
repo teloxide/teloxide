@@ -177,7 +177,6 @@ where
 }
 
 download_forward! {
-    'w
     B
     AutoSend<B>
     { this => this.inner() }

@@ -5,7 +5,7 @@ members = ["crates/*"]
 # The settings below will be applied to all crates in the workspace
 [workspace.package]
 # MSRV (minimal supported Rust version).
-rust-version = "1.64"
+rust-version = "1.65"
 edition = "2021"
 
 license = "MIT"

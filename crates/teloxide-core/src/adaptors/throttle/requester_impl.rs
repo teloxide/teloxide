@@ -182,7 +182,6 @@ where
 }
 
 download_forward! {
-    'w
     B
     Throttle<B>
     { this => this.inner() }

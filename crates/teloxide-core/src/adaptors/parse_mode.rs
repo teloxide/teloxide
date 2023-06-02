@@ -196,7 +196,6 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
 }
 
 download_forward! {
-    'w
     B
     DefaultParseMode<B>
     { this => this.inner() }

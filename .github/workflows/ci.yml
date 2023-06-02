@@ -24,7 +24,7 @@ env:
   # - **/README.md
   # - **/src/lib.rs
   # - down below in a matrix
-  rust_msrv: 1.64.0
+  rust_msrv: 1.65.0
 
   CI: 1
 
@@ -87,7 +87,7 @@ jobs:
             toolchain: nightly-2023-05-28
             features: "--features full nightly"
           - rust: msrv
-            toolchain: 1.64.0
+            toolchain: 1.65.0
             features: "--features full"
 
     steps:
