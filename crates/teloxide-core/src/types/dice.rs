@@ -11,11 +11,7 @@ pub struct Dice {
 
     /// Value of the dice.
     ///
-    /// 1-6 for [`DiceEmoji::Dice`] and [`DiceEmoji::Darts`], 1-5 for
-    /// [`DiceEmoji::Basketball`].
-    ///
-    /// [`DiceEmoji::Dice`]: crate::types::DiceEmoji::Dice
-    /// [`DiceEmoji::Darts`]:crate::types::DiceEmoji::Darts
-    /// [`DiceEmoji::Basketball`]:crate::types::DiceEmoji::Basketball
-    pub value: i32,
+    /// Value of the dice, 1-6 for 🎲, 🎯 and 🎳 base emoji, 1-5 for 🏀 and ⚽
+    /// base emoji, 1-64 for 🎰 base emoji
+    pub value: u8,
 }
