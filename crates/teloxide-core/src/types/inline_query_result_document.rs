@@ -56,10 +56,10 @@ pub struct InlineQueryResultDocument {
     pub thumb_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
-    pub thumb_width: Option<i32>,
+    pub thumb_width: Option<u32>,
 
     /// Thumbnail height.
-    pub thumb_height: Option<i32>,
+    pub thumb_height: Option<u32>,
 }
 
 impl InlineQueryResultDocument {
@@ -140,13 +140,13 @@ impl InlineQueryResultDocument {
     }
 
     #[must_use]
-    pub fn thumb_width(mut self, val: i32) -> Self {
+    pub fn thumb_width(mut self, val: u32) -> Self {
         self.thumb_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_height(mut self, val: i32) -> Self {
+    pub fn thumb_height(mut self, val: u32) -> Self {
         self.thumb_height = Some(val);
         self
     }

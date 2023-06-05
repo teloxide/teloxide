@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode, Seconds};
 
 /// Represents a link to a voice recording in an .ogg container encoded with
 /// OPUS.
@@ -38,7 +38,7 @@ pub struct InlineQueryResultVoice {
     pub caption_entities: Option<Vec<MessageEntity>>,
 
     /// Recording duration in seconds.
-    pub voice_duration: Option<i32>,
+    pub voice_duration: Option<Seconds>,
 
     /// [Inline keyboard] attached to the message.
     ///
@@ -113,7 +113,7 @@ impl InlineQueryResultVoice {
     }
 
     #[must_use]
-    pub fn voice_duration(mut self, value: i32) -> Self {
+    pub fn voice_duration(mut self, value: Seconds) -> Self {
         self.voice_duration = Some(value);
         self
     }

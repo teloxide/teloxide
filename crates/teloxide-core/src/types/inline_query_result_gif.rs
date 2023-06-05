@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode, Seconds};
 
 /// Represents a link to an animated GIF file.
 ///
@@ -19,13 +19,13 @@ pub struct InlineQueryResultGif {
     pub gif_url: reqwest::Url,
 
     /// Width of the GIF.
-    pub gif_width: Option<i32>,
+    pub gif_width: Option<u32>,
 
     /// Height of the GIFv.
-    pub gif_height: Option<i32>,
+    pub gif_height: Option<u32>,
 
     /// Duration of the GIF.
-    pub gif_duration: Option<i32>,
+    pub gif_duration: Option<Seconds>,
 
     /// URL of the static thumbnail for the result (jpeg or gif).
     pub thumb_url: reqwest::Url,
@@ -93,19 +93,19 @@ impl InlineQueryResultGif {
     }
 
     #[must_use]
-    pub fn gif_width(mut self, val: i32) -> Self {
+    pub fn gif_width(mut self, val: u32) -> Self {
         self.gif_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn gif_height(mut self, val: i32) -> Self {
+    pub fn gif_height(mut self, val: u32) -> Self {
         self.gif_height = Some(val);
         self
     }
 
     #[must_use]
-    pub fn gif_duration(mut self, val: i32) -> Self {
+    pub fn gif_duration(mut self, val: Seconds) -> Self {
         self.gif_duration = Some(val);
         self
     }

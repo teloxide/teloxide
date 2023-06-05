@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode, Seconds};
 
 /// Represents a link to a video animation (H.264/MPEG-4 AVC video without
 /// sound).
@@ -16,17 +16,19 @@ pub struct InlineQueryResultMpeg4Gif {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,
 
+    // FIXME: rename everything so that it doesn't have `mpeg4_` (and similarly for other
+    // `InlineQueryResult*`)
     /// A valid URL for the MP4 file. File size must not exceed 1MB.
     pub mpeg4_url: reqwest::Url,
 
     /// Video width.
-    pub mpeg4_width: Option<i32>,
+    pub mpeg4_width: Option<u32>,
 
     /// Video height.
-    pub mpeg4_height: Option<i32>,
+    pub mpeg4_height: Option<u32>,
 
     /// Video duration.
-    pub mpeg4_duration: Option<i32>,
+    pub mpeg4_duration: Option<Seconds>,
 
     /// URL of the static thumbnail (jpeg or gif) for the result.
     pub thumb_url: reqwest::Url,
@@ -94,19 +96,19 @@ impl InlineQueryResultMpeg4Gif {
     }
 
     #[must_use]
-    pub fn mpeg4_width(mut self, val: i32) -> Self {
+    pub fn mpeg4_width(mut self, val: u32) -> Self {
         self.mpeg4_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn mpeg4_height(mut self, val: i32) -> Self {
+    pub fn mpeg4_height(mut self, val: u32) -> Self {
         self.mpeg4_height = Some(val);
         self
     }
 
     #[must_use]
-    pub fn mpeg4_duration(mut self, val: i32) -> Self {
+    pub fn mpeg4_duration(mut self, val: Seconds) -> Self {
         self.mpeg4_duration = Some(val);
         self
     }
