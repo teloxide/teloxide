@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Dice::value` now use `u8`, instead of `i32` ([#887][pr887])
 - `Invoice::total_amount`, `LabeledPrice::amount`, `PreCheckoutQuery::total_amount`, `SuccessfulPayment::total_amout` now use `u32`, instead of `i32` ([#887][pr887])
 - `Forward::message_id` and `Message::forward_from_message_id` now use `MessageId` instead of `i32` ([#887][pr887])
+- `Poll::total_voter_count` and `PollOption::voter_count` now use `u32` instead of `i32` ([#887][pr887])
+- `PollAnswer::option_ids` now use `u8` instead of `i32` ([#887][pr887])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
