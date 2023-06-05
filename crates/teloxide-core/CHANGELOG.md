@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `message_thread_id` method parameters now use `ThreadId` instead of `i32` ([#887][pr887])
 - `DiceEmoji` variant order ([#887][pr887])
 - `Dice::value` now use `u8`, instead of `i32` ([#887][pr887])
+- `Invoice::total_amount`, `LabeledPrice::amount`, `PreCheckoutQuery::total_amount`, `SuccessfulPayment::total_amout` now use `u32`, instead of `i32` ([#887][pr887])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
