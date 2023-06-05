@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   are now defined as named (`struct S {}`) instead of unit (`struct S;`) in order to fix their deserialization ([#876][pr876])
 - `Download` now uses GAT feature on the `Fut` and `Err` associated types, instead of a lifetime on the whole trait ([#885][pr885])
 - MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.65.0`
+- Renamed `ForumTopic::message_thread_id` into `thread_id` ([#887][pr887])
+- `ForumTopic::thread_id` and `Message::thread_id` now use `ThreadId` instead of `i32` ([#887][pr887])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859

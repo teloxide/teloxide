@@ -1,3 +1,5 @@
+use crate::types::ThreadId;
+
 use serde::{Deserialize, Serialize};
 
 /// This object represents a forum topic.
@@ -7,8 +9,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ForumTopic {
     /// Unique identifier of the forum topic
-    // FIXME: MessageThreadId or something
-    pub message_thread_id: i32,
+    #[serde(rename = "message_thread_id")]
+    pub thread_id: ThreadId,
 
     /// Name of the topic.
     pub name: String,

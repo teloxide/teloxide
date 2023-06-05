@@ -11,7 +11,7 @@ use crate::types::{
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
     PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video,
     VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData, WriteAccessAllowed,
+    Voice, WebAppData, WriteAccessAllowed, ThreadId,
 };
 
 /// This object represents a message.
@@ -25,9 +25,8 @@ pub struct Message {
 
     /// Unique identifier of a message thread to which the message belongs; for
     /// supergroups only.
-    // FIXME: MessageThreadId or such
     #[serde(rename = "message_thread_id")]
-    pub thread_id: Option<i32>,
+    pub thread_id: Option<ThreadId>,
 
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
