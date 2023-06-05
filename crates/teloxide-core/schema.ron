@@ -3437,7 +3437,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -3798,7 +3798,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(
@@ -4049,7 +4049,7 @@ Schema(
                 ),
                 Param(
                     name: "reply_to_message_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "If the message is a reply, ID of the original message")
                 ),
                 Param(

@@ -3,7 +3,7 @@
 use serde::Serialize;
 use url::Url;
 
-use crate::types::{InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ThreadId};
+use crate::types::{InlineKeyboardMarkup, LabeledPrice, Message, MessageId, Recipient, ThreadId};
 
 impl_payload! {
     /// Use this method to send invoices. On success, the sent [`Message`] is returned.
@@ -71,7 +71,8 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i32,
+            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
+            pub reply_to_message_id: MessageId,
             /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
             pub allow_sending_without_reply: bool,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.
