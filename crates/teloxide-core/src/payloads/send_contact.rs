@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, Recipient, ReplyMarkup};
+use crate::types::{Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
@@ -20,7 +20,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Contact's last name
             pub last_name: String [into],
             /// Additional data about the contact in the form of a [vCard], 0-2048 bytes

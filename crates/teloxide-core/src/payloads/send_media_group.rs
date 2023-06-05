@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputMedia, Message, MessageId, Recipient};
+use crate::types::{InputMedia, Message, MessageId, Recipient, ThreadId};
 
 impl_payload! {
     /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
@@ -18,7 +18,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

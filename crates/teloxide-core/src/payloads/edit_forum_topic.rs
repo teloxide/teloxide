@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Recipient, True};
+use crate::types::{Recipient, ThreadId, True};
 
 impl_payload! {
     /// Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have _can\_manage\_topics_ administrator rights, unless it is the creator of the topic. Returns True on success.
@@ -12,7 +12,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Unique identifier for the target message thread of the forum topic
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
         }
         optional {
             /// Topic name, 0-128 characters. If not specified or empty, the current name of the topic will be kept

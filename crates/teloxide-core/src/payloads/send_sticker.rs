@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputFile, Message, Recipient, ReplyMarkup};
+use crate::types::{InputFile, Message, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     @[multipart = sticker]
@@ -21,7 +21,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

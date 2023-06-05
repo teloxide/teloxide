@@ -628,31 +628,31 @@ trait ErasableRequester<'a> {
     fn edit_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, EditForumTopic, Self::Err>;
 
     fn close_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, CloseForumTopic, Self::Err>;
 
     fn reopen_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, ReopenForumTopic, Self::Err>;
 
     fn delete_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, DeleteForumTopic, Self::Err>;
 
     fn unpin_all_forum_topic_messages(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err>;
 
     fn edit_general_forum_topic(
@@ -1368,7 +1368,7 @@ where
     fn edit_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, EditForumTopic, Self::Err> {
         Requester::edit_forum_topic(self, chat_id, message_thread_id).erase()
     }
@@ -1376,7 +1376,7 @@ where
     fn close_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, CloseForumTopic, Self::Err> {
         Requester::close_forum_topic(self, chat_id, message_thread_id).erase()
     }
@@ -1384,7 +1384,7 @@ where
     fn reopen_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, ReopenForumTopic, Self::Err> {
         Requester::reopen_forum_topic(self, chat_id, message_thread_id).erase()
     }
@@ -1392,7 +1392,7 @@ where
     fn delete_forum_topic(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, DeleteForumTopic, Self::Err> {
         Requester::delete_forum_topic(self, chat_id, message_thread_id).erase()
     }
@@ -1400,7 +1400,7 @@ where
     fn unpin_all_forum_topic_messages(
         &self,
         chat_id: Recipient,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> ErasedRequest<'a, UnpinAllForumTopicMessages, Self::Err> {
         Requester::unpin_all_forum_topic_messages(self, chat_id, message_thread_id).erase()
     }

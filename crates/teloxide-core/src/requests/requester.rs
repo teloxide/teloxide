@@ -678,28 +678,40 @@ pub trait Requester {
     type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`EditForumTopic`].
-    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic
+    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::EditForumTopic
     where
         C: Into<Recipient>;
 
     type CloseForumTopic: Request<Payload = CloseForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CloseForumTopic`].
-    fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic
+    fn close_forum_topic<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: ThreadId,
+    ) -> Self::CloseForumTopic
     where
         C: Into<Recipient>;
 
     type ReopenForumTopic: Request<Payload = ReopenForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`ReopenForumTopic`].
-    fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic
+    fn reopen_forum_topic<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: ThreadId,
+    ) -> Self::ReopenForumTopic
     where
         C: Into<Recipient>;
 
     type DeleteForumTopic: Request<Payload = DeleteForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`DeleteForumTopic`].
-    fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic
+    fn delete_forum_topic<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: ThreadId,
+    ) -> Self::DeleteForumTopic
     where
         C: Into<Recipient>;
 
@@ -709,7 +721,7 @@ pub trait Requester {
     fn unpin_all_forum_topic_messages<C>(
         &self,
         chat_id: C,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> Self::UnpinAllForumTopicMessages
     where
         C: Into<Recipient>;

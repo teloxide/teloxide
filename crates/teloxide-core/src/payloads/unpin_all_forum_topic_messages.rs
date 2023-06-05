@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Recipient, True};
+use crate::types::{Recipient, ThreadId, True};
 
 impl_payload! {
     /// Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the chat for this to work and must have the _can\_pin\_messages_ administrator right in the supergroup. Returns True on success.
@@ -12,7 +12,7 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
             /// Unique identifier for the target message thread of the forum topic
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
         }
     }
 }

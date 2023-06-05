@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{
-    Message, MessageEntity, MessageId, ParseMode, PollType, Recipient, ReplyMarkup,
+    Message, MessageEntity, MessageId, ParseMode, PollType, Recipient, ReplyMarkup, ThreadId,
 };
 
 impl_payload! {
@@ -23,7 +23,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// True, if the poll needs to be anonymous, defaults to True
             pub is_anonymous: bool,
             /// Poll type, “quiz” or “regular”, defaults to “regular”

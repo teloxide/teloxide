@@ -232,7 +232,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -311,7 +311,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -356,7 +356,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -440,7 +440,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -530,7 +530,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -635,7 +635,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -733,7 +733,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -849,7 +849,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -963,7 +963,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1048,7 +1048,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1131,7 +1131,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1181,7 +1181,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1449,7 +1449,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1548,7 +1548,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1627,7 +1627,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1746,7 +1746,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -1824,7 +1824,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread; supergroups only")
                 ),
             ],
@@ -2626,7 +2626,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: i32,
+                    ty: RawTy("ThreadId"),
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
                 Param(
@@ -2655,7 +2655,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: i32,
+                    ty: RawTy("ThreadId"),
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
             ],
@@ -2674,7 +2674,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: i32,
+                    ty: RawTy("ThreadId"),
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
             ],
@@ -2693,7 +2693,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: i32,
+                    ty: RawTy("ThreadId"),
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
             ],
@@ -2712,7 +2712,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: i32,
+                    ty: RawTy("ThreadId"),
                     descr: Doc(md: "Unique identifier for the target message thread of the forum topic"),
                 ),
             ],
@@ -3411,7 +3411,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -3669,7 +3669,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
@@ -4026,7 +4026,7 @@ Schema(
                 ),
                 Param(
                     name: "message_thread_id",
-                    ty: Option(i32),
+                    ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(

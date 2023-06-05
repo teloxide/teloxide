@@ -931,41 +931,41 @@ macro_rules! requester_forward {
     (@method edit_forum_topic $body:ident $ty:ident) => {
         type EditForumTopic = $ty![EditForumTopic];
 
-        fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic where C: Into<Recipient> {
+        fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::EditForumTopic where C: Into<Recipient> {
             let this = self;
-            $body!(edit_forum_topic this (chat_id: C, message_thread_id: i32))
+            $body!(edit_forum_topic this (chat_id: C, message_thread_id: ThreadId))
         }
     };
     (@method close_forum_topic $body:ident $ty:ident) => {
         type CloseForumTopic = $ty![CloseForumTopic];
 
-        fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic where C: Into<Recipient> {
+        fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::CloseForumTopic where C: Into<Recipient> {
             let this = self;
-            $body!(close_forum_topic this (chat_id: C, message_thread_id: i32))
+            $body!(close_forum_topic this (chat_id: C, message_thread_id: ThreadId))
         }
     };
     (@method reopen_forum_topic $body:ident $ty:ident) => {
         type ReopenForumTopic = $ty![ReopenForumTopic];
 
-        fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic where C: Into<Recipient> {
+        fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::ReopenForumTopic where C: Into<Recipient> {
             let this = self;
-            $body!(reopen_forum_topic this (chat_id: C, message_thread_id: i32))
+            $body!(reopen_forum_topic this (chat_id: C, message_thread_id: ThreadId))
         }
     };
     (@method delete_forum_topic $body:ident $ty:ident) => {
         type DeleteForumTopic = $ty![DeleteForumTopic];
 
-        fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic where C: Into<Recipient> {
+        fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::DeleteForumTopic where C: Into<Recipient> {
             let this = self;
-            $body!(delete_forum_topic this (chat_id: C, message_thread_id: i32))
+            $body!(delete_forum_topic this (chat_id: C, message_thread_id: ThreadId))
         }
     };
     (@method unpin_all_forum_topic_messages $body:ident $ty:ident) => {
         type UnpinAllForumTopicMessages = $ty![UnpinAllForumTopicMessages];
 
-        fn unpin_all_forum_topic_messages<C>(&self, chat_id: C, message_thread_id: i32) -> Self::UnpinAllForumTopicMessages where C: Into<Recipient> {
+        fn unpin_all_forum_topic_messages<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::UnpinAllForumTopicMessages where C: Into<Recipient> {
             let this = self;
-            $body!(unpin_all_forum_topic_messages this (chat_id: C, message_thread_id: i32))
+            $body!(unpin_all_forum_topic_messages this (chat_id: C, message_thread_id: ThreadId))
         }
     };
     (@method edit_general_forum_topic $body:ident $ty:ident) => {

@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, Recipient, ReplyMarkup};
+use crate::types::{Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     /// Use this method to send point on the map. On success, the sent [`Message`] is returned.
@@ -20,7 +20,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// The radius of uncertainty for the location, measured in meters; 0-1500
             pub horizontal_accuracy: f64,
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400.
