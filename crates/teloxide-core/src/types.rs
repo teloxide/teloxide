@@ -386,6 +386,42 @@ pub(crate) mod option_url_from_string {
     }
 }
 
+pub(crate) mod option_msg_id_as_int {
+    use crate::types::MessageId;
+
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(this: &Option<MessageId>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        this.map(|MessageId(id)| id).serialize(serializer)
+    }
+
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Option<MessageId>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Option::<i32>::deserialize(deserializer).map(|r| r.map(MessageId))
+    }
+
+    #[test]
+    fn test() {
+        #[derive(Serialize, Deserialize)]
+        struct Struct {
+            #[serde(with = "crate::types::option_msg_id_as_int")]
+            id: Option<MessageId>,
+        }
+
+        {
+            let json = r#"{"id":123}"#;
+            let id: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(id.id, Some(MessageId(123)));
+            assert_eq!(serde_json::to_string(&id).unwrap(), json.to_owned());
+        }
+    }
+}
+
 pub(crate) fn serialize_reply_to_message_id<S>(
     this: &Option<MessageId>,
     serializer: S,

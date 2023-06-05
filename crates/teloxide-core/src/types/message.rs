@@ -9,9 +9,9 @@ use crate::types::{
     ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
     GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
-    PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, True, User, Venue, Video,
-    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData, WriteAccessAllowed, ThreadId,
+    PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, ThreadId, True, User,
+    Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -290,8 +290,13 @@ pub struct Forward {
 
     /// For messages forwarded from channels, identifier of the original message
     /// in the channel
-    #[serde(rename = "forward_from_message_id")]
-    pub message_id: Option<i32>,
+    #[serde(
+        rename = "forward_from_message_id",
+        with = "crate::types::option_msg_id_as_int",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub message_id: Option<MessageId>,
 }
 
 /// The entity that sent the original message that later was forwarded.
@@ -614,10 +619,10 @@ mod getters {
         MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
         MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
         MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
-        MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData, MessagePinned,
-        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        MessageVideoChatParticipantsInvited, PhotoSize, True, User,
+        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
+        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
+        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MessageSupergroupChatCreated, MessageVideoChatParticipantsInvited, PhotoSize, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -696,7 +701,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn forward_from_message_id(&self) -> Option<i32> {
+        pub fn forward_from_message_id(&self) -> Option<MessageId> {
             self.forward().and_then(|f| f.message_id)
         }
 

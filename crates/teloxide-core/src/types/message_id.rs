@@ -5,6 +5,13 @@ use serde::{Deserialize, Serialize};
 #[serde(from = "MessageIdRaw", into = "MessageIdRaw")]
 pub struct MessageId(pub i32);
 
+// N.B. we [de]serialize `MessageId` as `{"message_id":n}`, which means that if
+//      you want just an integer, you need to special case it with something
+//      like `serde(with = "crate::types::option_msg_id_as_int")]`
+//
+//      (we can't change the default format of `MessageId` because it's returned
+//      by some methods and we can't change serialization there)
+
 #[derive(Serialize, Deserialize)]
 struct MessageIdRaw {
     message_id: i32,
