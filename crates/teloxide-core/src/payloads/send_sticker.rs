@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputFile, Message, Recipient, ReplyMarkup};
+use crate::types::{InputFile, Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     @[multipart = sticker]
@@ -21,7 +21,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
@@ -29,7 +29,8 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// If the message is a reply, ID of the original message
-            pub reply_to_message_id: i32,
+            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
+            pub reply_to_message_id: MessageId,
             /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
             pub allow_sending_without_reply: bool,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.

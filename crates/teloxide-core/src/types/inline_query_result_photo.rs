@@ -23,10 +23,10 @@ pub struct InlineQueryResultPhoto {
     pub thumb_url: reqwest::Url,
 
     /// Width of the photo.
-    pub photo_width: Option<i32>,
+    pub photo_width: Option<u32>,
 
     /// Height of the photo.
-    pub photo_height: Option<i32>,
+    pub photo_height: Option<u32>,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -100,13 +100,13 @@ impl InlineQueryResultPhoto {
     }
 
     #[must_use]
-    pub fn photo_width(mut self, val: i32) -> Self {
+    pub fn photo_width(mut self, val: u32) -> Self {
         self.photo_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn photo_height(mut self, val: i32) -> Self {
+    pub fn photo_height(mut self, val: u32) -> Self {
         self.photo_height = Some(val);
         self
     }

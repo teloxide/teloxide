@@ -1,7 +1,7 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode, Seconds};
 
 /// Represents a link to a page containing an embedded video player or a video
 /// file.
@@ -46,13 +46,13 @@ pub struct InlineQueryResultVideo {
     pub caption_entities: Option<Vec<MessageEntity>>,
 
     /// Video width.
-    pub video_width: Option<i32>,
+    pub video_width: Option<u32>,
 
     /// Video height.
-    pub video_height: Option<i32>,
+    pub video_height: Option<u32>,
 
     /// Video duration in seconds.
-    pub video_duration: Option<i32>,
+    pub video_duration: Option<Seconds>,
 
     /// Short description of the result.
     pub description: Option<String>,
@@ -158,19 +158,19 @@ impl InlineQueryResultVideo {
     }
 
     #[must_use]
-    pub fn video_width(mut self, val: i32) -> Self {
+    pub fn video_width(mut self, val: u32) -> Self {
         self.video_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn video_height(mut self, val: i32) -> Self {
+    pub fn video_height(mut self, val: u32) -> Self {
         self.video_height = Some(val);
         self
     }
 
     #[must_use]
-    pub fn video_duration(mut self, val: i32) -> Self {
+    pub fn video_duration(mut self, val: Seconds) -> Self {
         self.video_duration = Some(val);
         self
     }

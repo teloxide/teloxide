@@ -12,5 +12,5 @@ pub struct PollAnswer {
     /// 0-based identifiers of answer options, chosen by the user.
     ///
     /// May be empty if the user retracted their vote.
-    pub option_ids: Vec<i32>,
+    pub option_ids: Vec<u8>,
 }

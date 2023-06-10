@@ -3,7 +3,7 @@
 use serde::Serialize;
 
 use crate::types::{
-    InputFile, Message, MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup,
+    InputFile, Message, MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ThreadId,
 };
 
 impl_payload! {
@@ -23,7 +23,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile

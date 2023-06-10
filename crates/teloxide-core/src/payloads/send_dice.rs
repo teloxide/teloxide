@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{DiceEmoji, Message, MessageId, Recipient, ReplyMarkup};
+use crate::types::{DiceEmoji, Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     /// Use this method to send an animated emoji that will display a random value. On success, the sent [`Message`] is returned.
@@ -16,7 +16,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
             pub emoji: DiceEmoji,
             /// Sends the message [silently]. Users will receive a notification with no sound.

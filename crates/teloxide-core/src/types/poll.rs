@@ -22,7 +22,7 @@ pub struct Poll {
     pub is_closed: bool,
 
     /// Total number of users that voted in the poll
-    pub total_voter_count: i32,
+    pub total_voter_count: u32,
 
     /// True, if the poll is anonymous
     pub is_anonymous: bool,
@@ -64,7 +64,7 @@ pub struct PollOption {
     pub text: String,
 
     /// Number of users that voted for this option.
-    pub voter_count: i32,
+    pub voter_count: u32,
 }
 
 impl Poll {

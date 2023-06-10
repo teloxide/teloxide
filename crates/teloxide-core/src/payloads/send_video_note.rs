@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputFile, Message, MessageId, Recipient, ReplyMarkup};
+use crate::types::{InputFile, Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     @[multipart = video_note, thumb]
@@ -22,7 +22,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Duration of the video in seconds
             pub duration: u32,
             /// Video width and height, i.e. diameter of the video message

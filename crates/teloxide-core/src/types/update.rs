@@ -29,8 +29,6 @@ pub struct Update {
 }
 
 impl Update {
-    // FIXME: add mentioned_users -> impl Iterator<&User>
-
     /// Returns the user that performed the action that caused this update, if
     /// known.
     ///

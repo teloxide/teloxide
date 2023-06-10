@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup};
+use crate::types::{
+    Message, MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send text messages. On success, the sent [`Message`] is returned.
@@ -18,7 +20,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options

@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, UserId,
+        InputSticker, LabeledPrice, MessageId, Recipient, ThreadId, UserId,
     },
     Bot,
 };
@@ -671,7 +671,7 @@ impl Requester for Bot {
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
 
-    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::EditForumTopic
+    fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::EditForumTopic
     where
         C: Into<Recipient>,
     {
@@ -683,7 +683,7 @@ impl Requester for Bot {
 
     type CloseForumTopic = JsonRequest<payloads::CloseForumTopic>;
 
-    fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::CloseForumTopic
+    fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::CloseForumTopic
     where
         C: Into<Recipient>,
     {
@@ -695,7 +695,11 @@ impl Requester for Bot {
 
     type ReopenForumTopic = JsonRequest<payloads::ReopenForumTopic>;
 
-    fn reopen_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::ReopenForumTopic
+    fn reopen_forum_topic<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: ThreadId,
+    ) -> Self::ReopenForumTopic
     where
         C: Into<Recipient>,
     {
@@ -707,7 +711,11 @@ impl Requester for Bot {
 
     type DeleteForumTopic = JsonRequest<payloads::DeleteForumTopic>;
 
-    fn delete_forum_topic<C>(&self, chat_id: C, message_thread_id: i32) -> Self::DeleteForumTopic
+    fn delete_forum_topic<C>(
+        &self,
+        chat_id: C,
+        message_thread_id: ThreadId,
+    ) -> Self::DeleteForumTopic
     where
         C: Into<Recipient>,
     {
@@ -722,7 +730,7 @@ impl Requester for Bot {
     fn unpin_all_forum_topic_messages<C>(
         &self,
         chat_id: C,
-        message_thread_id: i32,
+        message_thread_id: ThreadId,
     ) -> Self::UnpinAllForumTopicMessages
     where
         C: Into<Recipient>,

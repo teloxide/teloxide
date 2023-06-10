@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, Recipient, ReplyMarkup};
+use crate::types::{Message, MessageId, Recipient, ReplyMarkup, ThreadId};
 
 impl_payload! {
     /// Use this method to send information about a venue. On success, the sent [`Message`] is returned.
@@ -24,7 +24,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
-            pub message_thread_id: i32,
+            pub message_thread_id: ThreadId,
             /// Foursquare identifier of the venue
             pub foursquare_id: String [into],
             /// Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)

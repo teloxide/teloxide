@@ -26,7 +26,7 @@ pub struct PreCheckoutQuery {
     /// majority of currencies).
     ///
     /// [`currencies.json`]: https://core.telegram.org/bots/payments/currencies.json
-    pub total_amount: i32,
+    pub total_amount: u32,
 
     /// Bot specified invoice payload.
     pub invoice_payload: String,
