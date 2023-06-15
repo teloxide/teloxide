@@ -82,7 +82,7 @@ tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 
 ### The dices bot
 
-This bot replies with a die throw to each received message:
+This bot replies with a dice throw to each received message:
 
 [[`examples/throw_dice.rs`](crates/teloxide/examples/throw_dice.rs)]
 
