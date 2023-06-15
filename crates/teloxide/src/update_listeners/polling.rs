@@ -354,7 +354,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                 }
                 Ok(updates) => {
                     if let Some(upd) = updates.last() {
-                        *this.offset = upd.id + 1;
+                        *this.offset = upd.id.as_offset();
                     }
 
                     match *this.drop_pending_updates {

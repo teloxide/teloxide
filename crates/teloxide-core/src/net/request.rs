@@ -162,13 +162,11 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::types::{ChatId, Seconds};
-
     use cool_asserts::assert_matches;
 
     use crate::{
         net::request::deserialize_response,
-        types::{True, Update, UpdateKind},
+        types::{ChatId, Seconds, True, Update, UpdateId, UpdateKind},
         ApiError, RequestError,
     };
 
@@ -223,7 +221,7 @@ mod tests {
         .to_owned();
 
         let res = deserialize_response::<Vec<Update>>(json).unwrap();
-        assert_matches!(res, [Update { id: 0, kind: UpdateKind::PollAnswer(_) }]);
+        assert_matches!(res, [Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) }]);
     }
 
     /// Check that `get_updates` can work with malformed updates.
@@ -264,10 +262,10 @@ mod tests {
         assert_matches!(
             res,
             [
-                Update { id: 0, kind: UpdateKind::PollAnswer(_) },
-                Update { id: 1, kind: UpdateKind::Error(v) } if v.is_object(),
-                Update { id: 2, kind: UpdateKind::PollAnswer(_) },
-                Update { id: 3, kind: UpdateKind::Error(v) } if v.is_object(),
+                Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) },
+                Update { id: UpdateId(1), kind: UpdateKind::Error(v) } if v.is_object(),
+                Update { id: UpdateId(2), kind: UpdateKind::PollAnswer(_) },
+                Update { id: UpdateId(3), kind: UpdateKind::Error(v) } if v.is_object(),
             ]
         );
     }

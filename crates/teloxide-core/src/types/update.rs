@@ -22,10 +22,99 @@ pub struct Update {
     /// week, then identifier of the next update will be chosen randomly
     /// instead of sequentially.
     #[serde(rename = "update_id")]
-    pub id: i32,
+    pub id: UpdateId,
 
     #[serde(flatten)]
     pub kind: UpdateKind,
+}
+
+/// An identifier of a telegram update.
+///
+/// See [`Update::id`] for more information.
+#[derive(Clone, Copy)]
+#[derive(Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct UpdateId(pub u32);
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum UpdateKind {
+    // NB: When adding new variants, don't forget to update
+    //     - `AllowedUpdate`
+    //     - `Update::user`
+    //     - `Update::chat`
+    //     - `DpHandlerDescription::full_set`
+    //     - `dispatching/filter_ext.rs`
+    /// New incoming message of any kind — text, photo, sticker, etc.
+    Message(Message),
+
+    /// New version of a message that is known to the bot and was edited.
+    EditedMessage(Message),
+
+    /// New incoming channel post of any kind — text, photo, sticker, etc.
+    ChannelPost(Message),
+
+    /// New version of a channel post that is known to the bot and was edited.
+    EditedChannelPost(Message),
+
+    /// New incoming [inline] query.
+    ///
+    /// [inline]: https://core.telegram.org/bots/api#inline-mode
+    InlineQuery(InlineQuery),
+
+    /// The result of an [inline] query that was chosen by a user and sent to
+    /// their chat partner. Please see our documentation on the [feedback
+    /// collecting] for details on how to enable these updates for your bot.
+    ///
+    /// [inline]: https://core.telegram.org/bots/api#inline-mode
+    /// [feedback collecting]: https://core.telegram.org/bots/inline#collecting-feedback
+    ChosenInlineResult(ChosenInlineResult),
+
+    /// New incoming callback query.
+    CallbackQuery(CallbackQuery),
+
+    /// New incoming shipping query. Only for invoices with flexible price.
+    ShippingQuery(ShippingQuery),
+
+    /// New incoming pre-checkout query. Contains full information about
+    /// checkout.
+    PreCheckoutQuery(PreCheckoutQuery),
+
+    /// New poll state. Bots receive only updates about stopped polls and
+    /// polls, which are sent by the bot.
+    Poll(Poll),
+
+    /// A user changed their answer in a non-anonymous poll. Bots receive new
+    /// votes only in polls that were sent by the bot itself.
+    PollAnswer(PollAnswer),
+
+    /// The bot's chat member status was updated in a chat. For private chats,
+    /// this update is received only when the bot is blocked or unblocked by the
+    /// user.
+    MyChatMember(ChatMemberUpdated),
+
+    /// A chat member's status was updated in a chat. The bot must be an
+    /// administrator in the chat and must explicitly specify
+    /// [`AllowedUpdate::ChatMember`] in the list of `allowed_updates` to
+    /// receive these updates.
+    ///
+    /// [`AllowedUpdate::ChatMember`]: crate::types::AllowedUpdate::ChatMember
+    ChatMember(ChatMemberUpdated),
+
+    /// A request to join the chat has been sent. The bot must have the
+    /// can_invite_users administrator right in the chat to receive these
+    /// updates.
+    ChatJoinRequest(ChatJoinRequest),
+
+    /// An error that happened during deserialization.
+    ///
+    /// This allows `teloxide` to continue working even if telegram adds a new
+    /// kinds of updates.
+    ///
+    /// **Note that deserialize implementation always returns an empty value**,
+    /// teloxide fills in the data when doing deserialization.
+    Error(Value),
 }
 
 impl Update {
@@ -129,83 +218,16 @@ impl Update {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum UpdateKind {
-    // NB: When adding new variants, don't forget to update
-    //     - `AllowedUpdate`
-    //     - `Update::user`
-    //     - `Update::chat`
-    //     - `DpHandlerDescription::full_set`
-    //     - `dispatching/filter_ext.rs`
-    /// New incoming message of any kind — text, photo, sticker, etc.
-    Message(Message),
-
-    /// New version of a message that is known to the bot and was edited.
-    EditedMessage(Message),
-
-    /// New incoming channel post of any kind — text, photo, sticker, etc.
-    ChannelPost(Message),
-
-    /// New version of a channel post that is known to the bot and was edited.
-    EditedChannelPost(Message),
-
-    /// New incoming [inline] query.
+impl UpdateId {
+    /// Returns the offset for the **next** update that can be used for polling.
     ///
-    /// [inline]: https://core.telegram.org/bots/api#inline-mode
-    InlineQuery(InlineQuery),
+    /// I.e. `self.0 + 1`.
+    #[must_use]
+    pub fn as_offset(self) -> i32 {
+        debug_assert!(self.0 < i32::MAX as u32);
 
-    /// The result of an [inline] query that was chosen by a user and sent to
-    /// their chat partner. Please see our documentation on the [feedback
-    /// collecting] for details on how to enable these updates for your bot.
-    ///
-    /// [inline]: https://core.telegram.org/bots/api#inline-mode
-    /// [feedback collecting]: https://core.telegram.org/bots/inline#collecting-feedback
-    ChosenInlineResult(ChosenInlineResult),
-
-    /// New incoming callback query.
-    CallbackQuery(CallbackQuery),
-
-    /// New incoming shipping query. Only for invoices with flexible price.
-    ShippingQuery(ShippingQuery),
-
-    /// New incoming pre-checkout query. Contains full information about
-    /// checkout.
-    PreCheckoutQuery(PreCheckoutQuery),
-
-    /// New poll state. Bots receive only updates about stopped polls and
-    /// polls, which are sent by the bot.
-    Poll(Poll),
-
-    /// A user changed their answer in a non-anonymous poll. Bots receive new
-    /// votes only in polls that were sent by the bot itself.
-    PollAnswer(PollAnswer),
-
-    /// The bot's chat member status was updated in a chat. For private chats,
-    /// this update is received only when the bot is blocked or unblocked by the
-    /// user.
-    MyChatMember(ChatMemberUpdated),
-
-    /// A chat member's status was updated in a chat. The bot must be an
-    /// administrator in the chat and must explicitly specify
-    /// [`AllowedUpdate::ChatMember`] in the list of `allowed_updates` to
-    /// receive these updates.
-    ///
-    /// [`AllowedUpdate::ChatMember`]: crate::types::AllowedUpdate::ChatMember
-    ChatMember(ChatMemberUpdated),
-
-    /// A request to join the chat has been sent. The bot must have the
-    /// can_invite_users administrator right in the chat to receive these
-    /// updates.
-    ChatJoinRequest(ChatJoinRequest),
-
-    /// An error that happened during deserialization.
-    ///
-    /// This allows `teloxide` to continue working even if telegram adds a new
-    /// kinds of updates.
-    ///
-    /// **Note that deserialize implementation always returns an empty value**,
-    /// teloxide fills in the data when doing deserialization.
-    Error(Value),
+        self.0 as i32 + 1
+    }
 }
 
 impl<'de> Deserialize<'de> for UpdateKind {
@@ -344,7 +366,7 @@ fn empty_error() -> UpdateKind {
 mod test {
     use crate::types::{
         Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageId, MessageKind, Update, UpdateKind, User, UserId,
+        MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
@@ -379,7 +401,7 @@ mod test {
         }"#;
 
         let expected = Update {
-            id: 892_252_934,
+            id: UpdateId(892_252_934),
             kind: UpdateKind::Message(Message {
                 via_bot: None,
                 id: MessageId(6557),

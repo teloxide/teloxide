@@ -60,11 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `PollAnswer::option_ids` now use `u8` instead of `i32` ([#887][pr887])
 - Use `u32` for sizes and `Seconds` for timespans in `InlineQueryResult*` ([#887][pr887])
 - `SendGame::reply_to_message_id`, `SendSticker::reply_to_message_id` and `SendInvoice::reply_to_message_id` now use `MessageId` instead of `i32` ([#887][pr887])
+- Use `UpdateId` for `Update::id` ([#892][pr892])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
 [pr876]: https://github.com/teloxide/teloxide/pull/876
 [pr885]: https://github.com/teloxide/teloxide/pull/885
+[pr892]: https://github.com/teloxide/teloxide/pull/892
 
 ### Deprecated
 
