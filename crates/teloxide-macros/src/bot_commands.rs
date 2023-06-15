@@ -4,7 +4,7 @@ use crate::{
 };
 
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{quote, quote_spanned};
 use syn::DeriveInput;
 
 pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
@@ -45,7 +45,7 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
 fn impl_commands(infos: &[Command]) -> proc_macro2::TokenStream {
     let commands = infos.iter().filter(|command| command.description_is_enabled()).map(|command| {
         let c = command.get_prefixed_command();
-        let d = command.description.as_deref().unwrap_or_default();
+        let d = command.description().unwrap_or_default();
         quote! { BotCommand::new(#c,#d) }
     });
 
@@ -61,10 +61,20 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
     let command_descriptions = infos
         .iter()
         .filter(|command| command.description_is_enabled())
-        .map(|Command { prefix, name, description, ..}| {
-            let description = description.clone().unwrap_or_default();
+        .map(|command @ Command { prefix, name, ..}| {
+            let description = command.description().unwrap_or_default();
             quote! { CommandDescription { prefix: #prefix, command: #name, description: #description } }
         });
+
+    let warnings = infos.iter().filter_map(|command| command.deprecated_description_off_span()).map(|span| {
+        quote_spanned! {  span =>
+            const _: () = {
+                #[deprecated(note="\n`description = \"off\"` is deprecated, use `hide` instead")]
+                struct Deprecated;
+                _ = Deprecated;
+            };
+        }
+    });
 
     let global_description = match global.description.as_deref() {
         Some(gd) => quote! { .global_description(#gd) },
@@ -75,6 +85,8 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
         fn descriptions() -> teloxide::utils::command::CommandDescriptions<'static> {
             use teloxide::utils::command::{CommandDescriptions, CommandDescription};
             use std::borrow::Cow;
+
+            #(#warnings)*
 
             CommandDescriptions::new(&[
                 #(#command_descriptions),*
