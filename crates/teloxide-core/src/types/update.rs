@@ -22,11 +22,21 @@ pub struct Update {
     /// week, then identifier of the next update will be chosen randomly
     /// instead of sequentially.
     #[serde(rename = "update_id")]
-    pub id: i32,
+    pub id: UpdateId,
 
     #[serde(flatten)]
     pub kind: UpdateKind,
 }
+
+/// An identifier of a telegram update.
+///
+/// See [`Update::id`] for more information.
+#[derive(Clone, Copy)]
+#[derive(Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct UpdateId(pub u32);
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum UpdateKind {
@@ -208,6 +218,18 @@ impl Update {
     }
 }
 
+impl UpdateId {
+    /// Returns the offset for the **next** update that can be used for polling.
+    ///
+    /// I.e. `self.0 + 1`.
+    #[must_use]
+    pub fn as_offset(self) -> i32 {
+        debug_assert!(self.0 < i32::MAX as u32);
+
+        self.0 as i32 + 1
+    }
+}
+
 impl<'de> Deserialize<'de> for UpdateKind {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -344,7 +366,7 @@ fn empty_error() -> UpdateKind {
 mod test {
     use crate::types::{
         Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageId, MessageKind, Update, UpdateKind, User, UserId,
+        MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::{DateTime, NaiveDateTime, Utc};
@@ -379,7 +401,7 @@ mod test {
         }"#;
 
         let expected = Update {
-            id: 892_252_934,
+            id: UpdateId(892_252_934),
             kind: UpdateKind::Message(Message {
                 via_bot: None,
                 id: MessageId(6557),
