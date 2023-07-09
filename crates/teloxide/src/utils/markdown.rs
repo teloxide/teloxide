@@ -2,7 +2,7 @@
 //!
 //! [spec]: https://core.telegram.org/bots/api#markdownv2-style
 
-use teloxide_core::types::User;
+use teloxide_core::types::{User, UserId};
 
 /// Applies the bold font style to the string.
 ///
@@ -71,7 +71,7 @@ pub fn link(url: &str, text: &str) -> String {
 /// Builds an inline user mention link with an anchor.
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
-pub fn user_mention(user_id: u64, text: &str) -> String {
+pub fn user_mention(user_id: UserId, text: &str) -> String {
     link(format!("tg://user?id={user_id}").as_str(), text)
 }
 
@@ -203,7 +203,10 @@ mod tests {
 
     #[test]
     fn test_user_mention() {
-        assert_eq!(user_mention(123_456_789, "pwner666"), "[pwner666](tg://user?id=123456789)");
+        assert_eq!(
+            user_mention(UserId(123_456_789), "pwner666"),
+            "[pwner666](tg://user?id=123456789)"
+        );
     }
 
     #[test]
