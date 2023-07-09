@@ -71,7 +71,7 @@ pub fn link(url: &str, text: &str) -> String {
 /// Builds an inline user mention link with an anchor.
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
-pub fn user_mention(user_id: i64, text: &str) -> String {
+pub fn user_mention(user_id: u64, text: &str) -> String {
     link(format!("tg://user?id={user_id}").as_str(), text)
 }
 
