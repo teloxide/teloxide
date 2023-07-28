@@ -238,7 +238,7 @@ impl_api_error! {
         /// [`DeleteMessage`]: crate::payloads::DeleteMessage
         MessageCantBeDeleted = "Bad Request: message can't be deleted",
 
-        /// Occurs when a bot tries to delete a message created by the bot 
+        /// Occurs when a bot tries to delete a message created by the bot
         /// in a group they belong to but have no rights to delete the message
         /// for all in the group.
         ///
@@ -882,7 +882,6 @@ mod tests {
                 ApiError::PollQuestionMustBeNonEmpty,
             ),
             (
-
                 "{\"data\": \"Bad Request: poll options length must not exceed 100\"}",
                 ApiError::PollOptionsLengthTooLong,
             ),
