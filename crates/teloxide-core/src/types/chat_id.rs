@@ -50,6 +50,15 @@ impl ChatId {
         matches!(self.to_bare(), BareChatId::Channel(_))
     }
 
+    /// Returns user id, if this is an id of a user.
+    #[must_use]
+    pub fn as_user(self) -> Option<UserId> {
+        match self.to_bare() {
+            BareChatId::User(u) => Some(u),
+            BareChatId::Group(_) | BareChatId::Channel(_) => None,
+        }
+    }
+
     /// Converts this id to "bare" MTProto peer id.
     ///
     /// See [`BareChatId`] for more.
