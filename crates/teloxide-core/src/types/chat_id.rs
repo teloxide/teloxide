@@ -82,6 +82,12 @@ impl From<UserId> for ChatId {
     }
 }
 
+impl PartialEq<UserId> for ChatId {
+    fn eq(&self, other: &UserId) -> bool {
+        self.is_user() && *self == ChatId::from(*other)
+    }
+}
+
 impl BareChatId {
     /// Converts bare chat id back to normal bot API [`ChatId`].
     #[allow(unused)]
@@ -151,5 +157,17 @@ mod tests {
     #[test]
     fn display() {
         assert_eq!(ChatId(1).to_string(), "1");
+    }
+
+    #[test]
+    fn user_id_eq() {
+        assert_eq!(ChatId(12), UserId(12));
+        assert_eq!(ChatId(4652762), UserId(4652762));
+        assert_ne!(ChatId(17), UserId(42));
+
+        // The user id is not well formed, so even though `-1 == max` is true,
+        // we don't want user id to match
+        assert_eq!(-1i64, u64::MAX as i64);
+        assert_ne!(ChatId(-1), UserId(u64::MAX));
     }
 }

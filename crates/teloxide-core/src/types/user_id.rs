@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::ChatId;
+
 /// Identifier of a user.
 #[derive(Clone, Copy)]
 #[derive(Debug, derive_more::Display)]
@@ -49,6 +51,13 @@ impl UserId {
         const TELEGRAM_USER_ID: UserId = UserId(777000);
 
         self == TELEGRAM_USER_ID
+    }
+}
+
+impl PartialEq<ChatId> for UserId {
+    fn eq(&self, other: &ChatId) -> bool {
+        // Reuse `PartialEq<UserId> for ChatId` impl
+        other == self
     }
 }
 
