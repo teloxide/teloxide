@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// default.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#maskposition).
+#[serde_with_macros::skip_serializing_none]
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MaskPosition {
     /// The part of the face relative to which the mask should be placed. One

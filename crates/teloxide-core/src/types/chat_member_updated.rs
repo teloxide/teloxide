@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Chat, ChatInviteLink, ChatMember, User};
 
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatMemberUpdated {
     /// Chat the user belongs to

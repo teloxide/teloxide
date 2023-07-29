@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::{Chat, ChatInviteLink, User};
 
 /// Represents a join request sent to a chat.
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatJoinRequest {
     /// Chat to which the request was sent
