@@ -107,8 +107,8 @@ const MIN_MARKED_CHANNEL_ID: i64 = -1997852516352;
 const MAX_MARKED_CHANNEL_ID: i64 = -1000000000000;
 const MIN_MARKED_CHAT_ID: i64 = MAX_MARKED_CHANNEL_ID + 1;
 const MAX_MARKED_CHAT_ID: i64 = MIN_USER_ID - 1;
-const MIN_USER_ID: i64 = 0;
-const MAX_USER_ID: i64 = (1 << 40) - 1;
+pub(crate) const MIN_USER_ID: i64 = 0;
+pub(crate) const MAX_USER_ID: i64 = (1 << 40) - 1;
 
 #[cfg(test)]
 mod tests {
