@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Allow to specify Dispatcher.max_number_of_active_workers ([PR 910](https://github.com/teloxide/teloxide/pull/910))
+
 ### Fixed
 - Use `UserId` instead of `i64` for `user_id` in `html::user_mention` and `markdown::user_mention` ([PR 896](https://github.com/teloxide/teloxide/pull/896))
 

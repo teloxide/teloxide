@@ -40,6 +40,7 @@ pub struct DispatcherBuilder<R, Err, Key> {
     ctrlc_handler: bool,
     distribution_f: fn(&Update) -> Option<Key>,
     worker_queue_size: usize,
+    max_number_of_active_workers: u32,
 }
 
 impl<R, Err, Key> DispatcherBuilder<R, Err, Key>
@@ -100,6 +101,14 @@ where
         Self { worker_queue_size: size, ..self }
     }
 
+    /// Specifies max number of active workers.
+    ///
+    /// By default it's 0
+    #[must_use]
+    pub fn max_number_of_active_workers(self, number: u32) -> Self {
+        Self { max_number_of_active_workers: number, ..self }
+    }
+
     /// Specifies the distribution function that decides how updates are grouped
     /// before execution.
     #[must_use]
@@ -119,6 +128,7 @@ where
             ctrlc_handler,
             distribution_f: _,
             worker_queue_size,
+            max_number_of_active_workers,
         } = self;
 
         DispatcherBuilder {
@@ -130,6 +140,7 @@ where
             ctrlc_handler,
             distribution_f: f,
             worker_queue_size,
+            max_number_of_active_workers,
         }
     }
 
@@ -144,6 +155,7 @@ where
             error_handler,
             distribution_f,
             worker_queue_size,
+            max_number_of_active_workers,
             ctrlc_handler,
         } = self;
 
@@ -162,7 +174,7 @@ where
             workers: HashMap::new(),
             default_worker: None,
             current_number_of_active_workers: Default::default(),
-            max_number_of_active_workers: Default::default(),
+            max_number_of_active_workers: Arc::new(max_number_of_active_workers.into()),
         };
 
         #[cfg(feature = "ctrlc_handler")]
@@ -237,6 +249,7 @@ where
         Err: Debug,
     {
         const DEFAULT_WORKER_QUEUE_SIZE: usize = 64;
+        const DEFAULT_MAX_NUMBER_OF_ACTIVE_WORKERS: u32 = 0;
 
         DispatcherBuilder {
             bot,
@@ -249,6 +262,7 @@ where
             error_handler: LoggingErrorHandler::new(),
             ctrlc_handler: false,
             worker_queue_size: DEFAULT_WORKER_QUEUE_SIZE,
+            max_number_of_active_workers: DEFAULT_MAX_NUMBER_OF_ACTIVE_WORKERS,
             distribution_f: default_distribution_function,
         }
     }
