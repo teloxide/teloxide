@@ -60,7 +60,7 @@
 #![allow(clippy::nonstandard_macro_braces)]
 
 #[cfg(feature = "ctrlc_handler")]
-pub use repls::{repl, repl_with_listener};
+pub use repls::{repl, repl_with_listener, try_repl, try_repl_with_listener};
 
 #[cfg(feature = "ctrlc_handler")]
 #[allow(deprecated)]

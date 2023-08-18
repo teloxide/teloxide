@@ -295,15 +295,39 @@ where
     /// [`shutdown`]: ShutdownToken::shutdown
     pub async fn dispatch_with_listener<'a, UListener, Eh>(
         &'a mut self,
-        mut update_listener: UListener,
+        update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
     ) where
         UListener: UpdateListener + 'a,
         Eh: ErrorHandler<UListener::Err> + 'a,
         UListener::Err: Debug,
     {
+        self.try_dispatch_with_listener(update_listener, update_listener_error_handler)
+            .await
+            .expect("try_dispatch_with_listener failed")
+    }
+
+    /// Same as `dispatch_with_listener` but returns a Result<_> instead of
+    /// panicking
+    ///
+    /// Starts your bot with custom `update_listener` and
+    /// `update_listener_error_handler`.
+    ///
+    /// This method adds the same dependencies as [`Dispatcher::dispatch`].
+    ///
+    /// [`shutdown`]: ShutdownToken::shutdown
+    pub async fn try_dispatch_with_listener<'a, UListener, Eh>(
+        &'a mut self,
+        mut update_listener: UListener,
+        update_listener_error_handler: Arc<Eh>,
+    ) -> Result<(), R::Err>
+    where
+        UListener: UpdateListener + 'a,
+        Eh: ErrorHandler<UListener::Err> + 'a,
+        UListener::Err: Debug,
+    {
         // FIXME: there should be a way to check if dependency is already inserted
-        let me = self.bot.get_me().send().await.expect("Failed to retrieve 'me'");
+        let me = self.bot.get_me().send().await?;
         self.dependencies.insert(me);
         self.dependencies.insert(self.bot.clone());
 
@@ -353,6 +377,7 @@ where
             .await;
 
         self.state.done();
+        Ok(())
     }
 
     async fn process_update<LErr, LErrHandler>(
