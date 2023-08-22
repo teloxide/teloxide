@@ -29,14 +29,19 @@ async fn main() -> ResponseResult<()> {
                                 // method and a closure for debug purposes
         })
         .branch(
-            Update::filter_chat_member() // We use filter_chat_member method for filter the updates
-                .filter(|m: ChatMemberUpdated| {
-                    // Don't forget to use the filter method for filter the updates
-                    m.old_chat_member.is_left() && m.new_chat_member.is_present()
-                        || m.old_chat_member.is_present() && m.new_chat_member.is_left()
-                    // In this case, is a welcome message branch
-                })
-                .endpoint(chat_member_handler),
+            Update::filter_chat_member()
+                .branch(
+                    dptree::filter(|m: ChatMemberUpdated| {
+                        m.old_chat_member.is_left() && m.new_chat_member.is_present()
+                    })
+                    .endpoint(new_chat_member),
+                )
+                .branch(
+                    dptree::filter(|m: ChatMemberUpdated| {
+                        m.old_chat_member.is_present() && m.new_chat_member.is_left()
+                    })
+                    .endpoint(left_chat_member),
+                ),
         );
 
     // We create a dispatcher for our bot
@@ -48,7 +53,7 @@ async fn main() -> ResponseResult<()> {
 /// Welcome Function
 /// We use ChatMemberUpdated instead of Message for our function because
 /// Chat member updates != messages
-async fn chat_member_handler(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
+async fn new_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
     // We use this variable for get the user
     let user = chat_member.old_chat_member.user.clone();
 
@@ -58,10 +63,6 @@ async fn chat_member_handler(bot: Bot, chat_member: ChatMemberUpdated) -> Respon
     // We use this variable for get the group name
     let telegram_group_name = chat_member.chat.title().unwrap_or("");
 
-    // We use this variable for get the status of the user and filter if the user is
-    // present or is gone
-    let chat_member_status = chat_member.old_chat_member;
-
     // We get the full_name of the user via `mention()` method and we use
     // `unwrap_or_else` for get the first_name via `full_name` method
     // if the user don't have a username
@@ -69,16 +70,27 @@ async fn chat_member_handler(bot: Bot, chat_member: ChatMemberUpdated) -> Respon
         user.mention().unwrap_or_else(|| html::user_mention(user_id, user.full_name().as_str()));
 
     // If the user is present, we send a welcome message
-    if !chat_member_status.is_present() {
-        bot.send_message(
-            chat_member.chat.id,
-            format!("Welcome to {telegram_group_name} {username}!"),
-        )
+    bot.send_message(chat_member.chat.id, format!("Welcome to {telegram_group_name} {username}!"))
         .await?;
-    }
+
+    Ok(())
+}
+
+async fn left_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
+    // We use this variable for get the user
+    let user = &chat_member.old_chat_member.user;
+
+    // We use this variable for get the user_id
+    let user_id = user.id;
+
+    // We get the full_name of the user via `mention()` method and we use
+    // `unwrap_or_else` for get the first_name via `full_name` method
+    // if the user don't have a username
+    let username =
+        user.mention().unwrap_or_else(|| html::user_mention(user_id, user.full_name().as_str()));
 
     // If the user is gone, we send a goodbye message
-    bot.send_message(chat_member.chat.id, format!("See you later {username}!")).await?;
+    bot.send_message(*&chat_member.chat.id, format!("Goodbye {username}!")).await?;
 
     Ok(())
 }
