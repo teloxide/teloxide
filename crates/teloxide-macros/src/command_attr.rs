@@ -6,7 +6,7 @@ use crate::{
     Result,
 };
 
-use proc_macro2::Span;
+use proc_macro2::{Span, TokenTree};
 use quote::quote_spanned;
 use syn::{parse::Parser, spanned::Spanned, Attribute};
 
@@ -49,24 +49,32 @@ enum CommandAttrKind {
 impl CommandAttrs {
     pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
         use CommandAttrKind::*;
-        // Convert the `doc` attribute into `command(description = "...")`
-        let attributes = attributes.iter().map(|attr| {
-            if attr.path.is_ident("doc") {
-                // Extract the token literal from the doc attribute.
-                let description = parse_doc_comment(attr).unwrap_or_default();
-                // Convert the doc attribute into a command description attribute.
-                let sp = attr.span();
-                let attr = Attribute::parse_outer
-                    .parse2(quote_spanned!(sp => #[command(description = #description)]))
-                    .unwrap();
-                attr.into_iter().next().unwrap()
-            } else {
-                attr.clone()
+
+        let docs = attributes
+            .iter()
+            .filter_map(|attr| parse_doc_comment(attr).map(|doc| (doc, attr.span())));
+
+        let mut attributes = attributes.to_vec();
+        if docs.clone().count() != 0 {
+            if let Some(des_sp) = get_descripation_span(&attributes) {
+                return Err(compile_error_at(
+                    "You cannot use doc comments and #[command(description = \"...\")] \
+                     simultaneously\nYou can use only one of them",
+                    des_sp,
+                ));
             }
-        });
+            let description = docs.clone().map(|(doc, _)| doc).collect::<Vec<_>>().join("\n");
+            let sp = docs
+                .map(|(_, sp)| sp)
+                .reduce(|acc, sp| acc.join(sp).expect("The spans are in the same file"))
+                .expect("There is at least one doc comment");
+            let attr = Attribute::parse_outer
+                .parse2(quote_spanned! { sp => #[command(description = #description)] })?;
+            attributes.push(attr.into_iter().next().unwrap());
+        }
 
         fold_attrs(
-            attributes,
+            attributes.into_iter(),
             is_command_attribute,
             CommandAttr::parse,
             Self {
@@ -139,6 +147,24 @@ fn is_command_attribute(a: &Attribute) -> bool {
         Some(ident) => ident == "command",
         _ => false,
     }
+}
+
+/// Returns the span of the first attribute with a description meta item.
+fn get_descripation_span(attrs: &[Attribute]) -> Option<Span> {
+    for attr in attrs {
+        for token in attr.tokens.clone() {
+            if let TokenTree::Group(group) = token {
+                for token in group.stream() {
+                    if let TokenTree::Ident(ident) = token {
+                        if ident == "description" {
+                            return Some(group.span());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    None
 }
 
 fn parse_doc_comment(attr: &Attribute) -> Option<String> {
