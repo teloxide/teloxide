@@ -124,7 +124,7 @@ impl AttrValue {
     ///   #[blahblah(key = "puff", value = 12, nope )]
     ///                    ^^^^^^          ^^      ^
     /// ```
-    fn span(&self) -> Span {
+    pub fn span(&self) -> Span {
         match self {
             Self::Path(p) => p.span(),
             Self::Lit(l) => l.span(),
