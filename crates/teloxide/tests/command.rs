@@ -266,6 +266,30 @@ fn description_with_doc_attr() {
 
 #[test]
 #[cfg(feature = "macros")]
+fn description_with_doc_attr_and_command() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    enum DefaultCommands {
+        /// Start command
+        #[command(description = "Start command")]
+        Start,
+        #[command(description = "Help command\nwith new line")]
+        Help,
+        /// Foo command
+        /// with new line
+        #[command(description = "Foo command\nwith new line")]
+        Foo,
+    }
+
+    assert_eq!(
+        DefaultCommands::descriptions().to_string(),
+        "/start — Start command\nStart command\n/help — Help command\nwith new line\n/foo — Foo command\nwith \
+         new line\nFoo command\nwith new line"
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
 fn rename_rules() {
     #[derive(BotCommands, Debug, PartialEq)]
     enum DefaultCommands {
