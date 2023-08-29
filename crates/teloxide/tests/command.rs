@@ -283,8 +283,8 @@ fn description_with_doc_attr_and_command() {
 
     assert_eq!(
         DefaultCommands::descriptions().to_string(),
-        "/start — Start command\nStart command\n/help — Help command\nwith new line\n/foo — Foo command\nwith \
-         new line\nFoo command\nwith new line"
+        "/start — Start command\nStart command\n/help — Help command\nwith new line\n/foo — Foo \
+         command\nwith new line\nFoo command\nwith new line"
     );
 }
 
