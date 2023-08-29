@@ -50,24 +50,23 @@ impl CommandAttrs {
     pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
         use CommandAttrKind::*;
 
-        let docs = attributes
-            .iter()
-            .filter_map(|attr| parse_doc_comment(attr).map(|doc| (doc, attr.span())));
+        let docs = attributes.iter().filter_map(|attr| {
+            parse_doc_comment(attr)
+                .or_else(|| parse_command_description(attr))
+                .map(|doc| (doc, attr.span()))
+        });
 
         let mut attributes = attributes.to_vec();
         if docs.clone().count() != 0 {
-            if let Some(des_sp) = get_descripation_span(&attributes) {
-                return Err(compile_error_at(
-                    "You cannot use doc comments and #[command(description = \"...\")] \
-                     simultaneously\nYou can use only one of them",
-                    des_sp,
-                ));
-            }
+            // Remove all command description attributes, to avoid duplication
+            attributes.retain(|attr| !is_command_description(attr));
             let description = docs.clone().map(|(doc, _)| doc).collect::<Vec<_>>().join("\n");
             let sp = docs
                 .map(|(_, sp)| sp)
                 .reduce(|acc, sp| acc.join(sp).expect("The spans are in the same file"))
                 .expect("There is at least one doc comment");
+            // Insert a new command description attribute, with all descriptions and doc
+            // comments
             let attr = Attribute::parse_outer
                 .parse2(quote_spanned! { sp => #[command(description = #description)] })?;
             attributes.push(attr.into_iter().next().unwrap());
@@ -149,21 +148,44 @@ fn is_command_attribute(a: &Attribute) -> bool {
     }
 }
 
-/// Returns the span of the first attribute with a description meta item.
-fn get_descripation_span(attrs: &[Attribute]) -> Option<Span> {
-    for attr in attrs {
+fn is_command_description(attr: &Attribute) -> bool {
+    for token in attr.tokens.clone() {
+        if let TokenTree::Group(group) = token {
+            for token in group.stream() {
+                if let TokenTree::Ident(ident) = token {
+                    if ident == "description" {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
+fn parse_command_description(attr: &Attribute) -> Option<String> {
+    if is_command_attribute(attr) {
         for token in attr.tokens.clone() {
             if let TokenTree::Group(group) = token {
                 for token in group.stream() {
                     if let TokenTree::Ident(ident) = token {
                         if ident == "description" {
-                            return Some(group.span());
+                            for token in group.stream() {
+                                if let TokenTree::Literal(lit) = token {
+                                    let description = lit.to_string();
+                                    return Some(
+                                        lit.to_string().trim()[1..description.len() - 1]
+                                            .replace(r"\n", "\n"),
+                                    );
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
+
     None
 }
 
