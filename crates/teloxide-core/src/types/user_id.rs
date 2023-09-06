@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::{ChatId, MAX_USER_ID, MIN_USER_ID};
+
 /// Identifier of a user.
 #[derive(Clone, Copy)]
 #[derive(Debug, derive_more::Display)]
@@ -49,6 +51,19 @@ impl UserId {
         const TELEGRAM_USER_ID: UserId = UserId(777000);
 
         self == TELEGRAM_USER_ID
+    }
+
+    /// The smallest user id that could possibly be returned by Telegram.
+    pub const MIN: Self = Self(MIN_USER_ID as u64);
+
+    /// The largest user id that could possibly be returned by Telegram.
+    pub const MAX: Self = Self(MAX_USER_ID as u64);
+}
+
+impl PartialEq<ChatId> for UserId {
+    fn eq(&self, other: &ChatId) -> bool {
+        // Reuse `PartialEq<UserId> for ChatId` impl
+        other == self
     }
 }
 
