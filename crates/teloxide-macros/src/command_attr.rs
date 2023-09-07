@@ -1,5 +1,5 @@
 use crate::{
-    attr::{fold_attrs, Attr, AttrValue},
+    attr::{fold_attrs, Attr},
     error::compile_error_at,
     fields_parse::ParserType,
     rename_rules::RenameRule,
@@ -104,16 +104,7 @@ impl CommandAttr {
             "rename" => Rename(value.expect_string()?),
             "parse_with" => ParseWith(ParserType::parse(value)?),
             "separator" => Separator(value.expect_string()?),
-            "hide" => {
-                if let AttrValue::None(_) = value {
-                    Hide
-                } else {
-                    return Err(compile_error_at(
-                        "The hide attribute should not have a value, remove it ",
-                        value.span(),
-                    ));
-                }
-            }
+            "hide" => value.expect_none("hide").map(|_| Hide)?,
             _ => {
                 return Err(compile_error_at(
                     "unexpected attribute name (expected one of `prefix`, `description`, \
