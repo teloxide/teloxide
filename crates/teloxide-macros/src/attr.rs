@@ -87,6 +87,17 @@ impl AttrValue {
         })
     }
 
+    /// Unwraps this value if it's a nothing.
+    pub fn expect_none(self, option_name: &str) -> Result<()> {
+        match self {
+            AttrValue::None(_) => Ok(()),
+            _ => Err(compile_error_at(
+                &format!("The {option_name} option should not have a value, remove it"),
+                self.span(),
+            )),
+        }
+    }
+
     // /// Unwraps this value if it's a path.
     // pub fn expect_path(self) -> Result<Path> {
     //     self.expect("a path", |this| match this {
@@ -124,7 +135,7 @@ impl AttrValue {
     ///   #[blahblah(key = "puff", value = 12, nope )]
     ///                    ^^^^^^          ^^      ^
     /// ```
-    fn span(&self) -> Span {
+    pub fn span(&self) -> Span {
         match self {
             Self::Path(p) => p.span(),
             Self::Lit(l) => l.span(),

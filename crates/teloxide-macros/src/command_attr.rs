@@ -104,7 +104,7 @@ impl CommandAttr {
             "rename" => Rename(value.expect_string()?),
             "parse_with" => ParseWith(ParserType::parse(value)?),
             "separator" => Separator(value.expect_string()?),
-            "hide" => Hide,
+            "hide" => value.expect_none("hide").map(|_| Hide)?,
             _ => {
                 return Err(compile_error_at(
                     "unexpected attribute name (expected one of `prefix`, `description`, \
