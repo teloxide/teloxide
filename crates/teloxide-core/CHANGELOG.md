@@ -16,9 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Seconds` type, which represents a duration is seconds ([#859][pr859])
 - `VideoChatEnded::duration` field that was previously missed ([#859][pr859])
 - `ThreadId` newtype over `MessageId`, used for identifying reply threads ([#887][pr887])
+- `ChatId::as_user` ([#905][pr905])
+- Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
+- `ChatId::{MIN, MAX}` ([#905][pr905])
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
+[pr905]: https://github.com/teloxide/teloxide/pull/905
 
 ### Fixed
 

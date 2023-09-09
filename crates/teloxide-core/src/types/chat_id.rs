@@ -50,6 +50,15 @@ impl ChatId {
         matches!(self.to_bare(), BareChatId::Channel(_))
     }
 
+    /// Returns user id, if this is an id of a user.
+    #[must_use]
+    pub fn as_user(self) -> Option<UserId> {
+        match self.to_bare() {
+            BareChatId::User(u) => Some(u),
+            BareChatId::Group(_) | BareChatId::Channel(_) => None,
+        }
+    }
+
     /// Converts this id to "bare" MTProto peer id.
     ///
     /// See [`BareChatId`] for more.
@@ -73,6 +82,12 @@ impl From<UserId> for ChatId {
     }
 }
 
+impl PartialEq<UserId> for ChatId {
+    fn eq(&self, other: &UserId) -> bool {
+        self.is_user() && *self == ChatId::from(*other)
+    }
+}
+
 impl BareChatId {
     /// Converts bare chat id back to normal bot API [`ChatId`].
     #[allow(unused)]
@@ -92,8 +107,8 @@ const MIN_MARKED_CHANNEL_ID: i64 = -1997852516352;
 const MAX_MARKED_CHANNEL_ID: i64 = -1000000000000;
 const MIN_MARKED_CHAT_ID: i64 = MAX_MARKED_CHANNEL_ID + 1;
 const MAX_MARKED_CHAT_ID: i64 = MIN_USER_ID - 1;
-const MIN_USER_ID: i64 = 0;
-const MAX_USER_ID: i64 = (1 << 40) - 1;
+pub(crate) const MIN_USER_ID: i64 = 0;
+pub(crate) const MAX_USER_ID: i64 = (1 << 40) - 1;
 
 #[cfg(test)]
 mod tests {
@@ -142,5 +157,17 @@ mod tests {
     #[test]
     fn display() {
         assert_eq!(ChatId(1).to_string(), "1");
+    }
+
+    #[test]
+    fn user_id_eq() {
+        assert_eq!(ChatId(12), UserId(12));
+        assert_eq!(ChatId(4652762), UserId(4652762));
+        assert_ne!(ChatId(17), UserId(42));
+
+        // The user id is not well formed, so even though `-1 == max` is true,
+        // we don't want user id to match
+        assert_eq!(-1i64, u64::MAX as i64);
+        assert_ne!(ChatId(-1), UserId(u64::MAX));
     }
 }
