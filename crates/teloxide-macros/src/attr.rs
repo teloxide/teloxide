@@ -4,7 +4,7 @@ use proc_macro2::Span;
 use syn::{
     parse::{Parse, ParseBuffer, ParseStream},
     spanned::Spanned,
-    Attribute, Ident, Lit, Path, Token,
+    Attribute, Ident, Lit, LitStr, Path, Token,
 };
 
 pub(crate) fn fold_attrs<A, R>(
@@ -18,14 +18,26 @@ pub(crate) fn fold_attrs<A, R>(
         .filter(filter)
         .flat_map(|attribute| {
             // FIXME: don't allocate here
-            let attrs = match attribute.parse_args_with(|input: &ParseBuffer| {
-                input.parse_terminated::<_, Token![,]>(Attr::parse)
-            }) {
-                Ok(ok) => ok,
-                Err(err) => return vec![Err(err.into())],
-            };
-
-            attrs.into_iter().map(&parse).collect()
+            if crate::command_attr::is_doc_comment(&attribute) {
+                vec![parse(Attr {
+                    key: Ident::new("description", Span::call_site()),
+                    value: AttrValue::Lit(
+                        LitStr::new(
+                            &crate::command_attr::parse_doc_comment(&attribute)
+                                .expect("it is doc comment"),
+                            Span::call_site(),
+                        )
+                        .into(),
+                    ),
+                })]
+            } else {
+                match attribute.parse_args_with(|input: &ParseBuffer| {
+                    input.parse_terminated::<_, Token![,]>(Attr::parse)
+                }) {
+                    Ok(ok) => ok.into_iter().map(&parse).collect(),
+                    Err(err) => vec![Err(err.into())],
+                }
+            }
         })
         .try_fold(init, |acc, r| r.and_then(|r| f(acc, r)))
 }

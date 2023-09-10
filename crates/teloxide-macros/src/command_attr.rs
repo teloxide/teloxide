@@ -6,9 +6,8 @@ use crate::{
     Result,
 };
 
-use proc_macro2::{Span, TokenTree};
-use quote::quote_spanned;
-use syn::{parse::Parser, spanned::Spanned, Attribute};
+use proc_macro2::Span;
+use syn::Attribute;
 
 /// All attributes that can be used for `derive(BotCommands)`
 pub(crate) struct CommandAttrs {
@@ -50,31 +49,9 @@ impl CommandAttrs {
     pub fn from_attributes(attributes: &[Attribute]) -> Result<Self> {
         use CommandAttrKind::*;
 
-        let docs = attributes.iter().filter_map(|attr| {
-            parse_doc_comment(attr)
-                .or_else(|| parse_command_description(attr))
-                .map(|doc| (doc, attr.span()))
-        });
-
-        let mut attributes = attributes.to_vec();
-        if docs.clone().count() != 0 {
-            // Remove all command description attributes, to avoid duplication
-            attributes.retain(|attr| !is_command_description(attr));
-            let description = docs.clone().map(|(doc, _)| doc).collect::<Vec<_>>().join("\n");
-            let sp = docs
-                .map(|(_, sp)| sp)
-                .reduce(|acc, sp| acc.join(sp).expect("The spans are in the same file"))
-                .expect("There is at least one doc comment");
-            // Insert a new command description attribute, with all descriptions and doc
-            // comments
-            let attr = Attribute::parse_outer
-                .parse2(quote_spanned! { sp => #[command(description = #description)] })?;
-            attributes.push(attr.into_iter().next().unwrap());
-        }
-
         fold_attrs(
-            attributes.into_iter(),
-            is_command_attribute,
+            attributes.iter().cloned(),
+            |attr| is_command_attribute(attr) || is_doc_comment(attr),
             CommandAttr::parse,
             Self {
                 prefix: None,
@@ -96,9 +73,26 @@ impl CommandAttrs {
                     }
                 }
 
+                fn join_string(
+                    opt: &mut Option<(String, Span)>,
+                    new_str: String,
+                    sp: Span,
+                ) -> Result<()> {
+                    match opt {
+                        slot @ None => {
+                            *slot = Some((new_str, sp));
+                            Ok(())
+                        }
+                        Some((old_str, _)) => {
+                            *old_str = format!("{old_str}\n{new_str}");
+                            Ok(())
+                        }
+                    }
+                }
+
                 match attr.kind {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
-                    Description(d) => insert(&mut this.description, d, attr.sp),
+                    Description(d) => join_string(&mut this.description, d, attr.sp),
                     RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
@@ -148,51 +142,18 @@ fn is_command_attribute(a: &Attribute) -> bool {
     }
 }
 
-fn is_command_description(attr: &Attribute) -> bool {
-    for token in attr.tokens.clone() {
-        if let TokenTree::Group(group) = token {
-            for token in group.stream() {
-                if let TokenTree::Ident(ident) = token {
-                    if ident == "description" {
-                        return true;
-                    }
-                }
-            }
-        }
+pub(crate) fn is_doc_comment(a: &Attribute) -> bool {
+    match a.path.get_ident() {
+        Some(ident) => ident == "doc",
+        _ => false,
     }
-    false
 }
 
-fn parse_command_description(attr: &Attribute) -> Option<String> {
-    if is_command_attribute(attr) {
-        for token in attr.tokens.clone() {
-            if let TokenTree::Group(group) = token {
-                for token in group.stream() {
-                    if let TokenTree::Ident(ident) = token {
-                        if ident == "description" {
-                            for token in group.stream() {
-                                if let TokenTree::Literal(lit) = token {
-                                    let description = lit.to_string();
-                                    return Some(
-                                        lit.to_string().trim()[1..description.len() - 1]
-                                            .replace(r"\n", "\n"),
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    None
-}
-
-fn parse_doc_comment(attr: &Attribute) -> Option<String> {
-    #[allow(clippy::collapsible_match)]
-    if let syn::Meta::NameValue(syn::MetaNameValue { lit, .. }) = attr.parse_meta().ok()? {
-        if let syn::Lit::Str(s) = lit {
+pub(crate) fn parse_doc_comment(attr: &Attribute) -> Option<String> {
+    if is_doc_comment(attr) {
+        if let syn::Meta::NameValue(syn::MetaNameValue { lit: syn::Lit::Str(s), .. }) =
+            attr.parse_meta().ok()?
+        {
             return Some(s.value().trim().replace(r"\n", "\n"));
         }
     }
