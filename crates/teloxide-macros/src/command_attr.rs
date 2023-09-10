@@ -154,7 +154,7 @@ pub(crate) fn parse_doc_comment(attr: &Attribute) -> Option<String> {
         if let syn::Meta::NameValue(syn::MetaNameValue { lit: syn::Lit::Str(s), .. }) =
             attr.parse_meta().ok()?
         {
-            return Some(s.value().trim().replace(r"\n", "\n"));
+            return Some(s.value().trim().to_owned());
         }
     }
     None

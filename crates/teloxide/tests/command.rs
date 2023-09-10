@@ -250,7 +250,7 @@ fn description_with_doc_attr() {
     enum DefaultCommands {
         /// Start command
         Start,
-        /// Help command\nwith new line
+        /// Help command\nwithout replace the `\n`
         Help,
         /// Foo command
         /// with new line
@@ -259,8 +259,8 @@ fn description_with_doc_attr() {
 
     assert_eq!(
         DefaultCommands::descriptions().to_string(),
-        "/start — Start command\n/help — Help command\nwith new line\n/foo — Foo command\nwith \
-         new line"
+        "/start — Start command\n/help — Help command\\nwithout replace the `\\n`\n/foo — Foo \
+         command\nwith new line"
     );
 }
 
