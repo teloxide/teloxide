@@ -144,7 +144,7 @@ fn is_command_attribute(a: &Attribute) -> bool {
 
 pub(crate) fn is_doc_comment(a: &Attribute) -> bool {
     match a.path.get_ident() {
-        Some(ident) => ident == "doc",
+        Some(ident) => ident == "doc" && a.tokens.to_string().starts_with("= \""),
         _ => false,
     }
 }
