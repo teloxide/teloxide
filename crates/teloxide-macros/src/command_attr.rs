@@ -111,22 +111,63 @@ impl CommandAttr {
         use CommandAttrKind::*;
 
         let sp = attr.span();
-        let Attr { key, value } = attr;
-        let kind = match &*key.to_string() {
-            "prefix" => Prefix(value.expect_string()?),
-            "description" => Description(value.expect_string()?),
-            "rename_rule" => {
-                RenameRule(value.expect_string().and_then(|r| self::RenameRule::parse(&r))?)
+        let Attr { mut key, value } = attr;
+
+        let outermost_key = key.pop().unwrap(); // `Attr`'s invariants ensure `key.len() > 0`
+
+        let kind = match &*outermost_key.to_string() {
+            "doc" => {
+                if let Some(unexpected_key) = key.last() {
+                    return Err(compile_error_at(
+                        "`doc` can't have nested attributes",
+                        unexpected_key.span(),
+                    ));
+                }
+
+                // FIXME(awiteb): flag here that this is a doc comment
+                Description(value.expect_string()?)
             }
-            "rename" => Rename(value.expect_string()?),
-            "parse_with" => ParseWith(ParserType::parse(value)?),
-            "separator" => Separator(value.expect_string()?),
-            "hide" => value.expect_none("hide").map(|_| Hide)?,
+
+            "command" => {
+                let Some(attr) = key.pop()
+                    else {
+                        return Err(compile_error_at(
+                            "expected an attribute name",
+                            outermost_key.span(),
+                        ))
+                    };
+
+                if let Some(unexpected_key) = key.last() {
+                    return Err(compile_error_at(
+                        &format!("{attr} can't have nested attributes"),
+                        unexpected_key.span(),
+                    ));
+                }
+
+                match &*attr.to_string() {
+                    "prefix" => Prefix(value.expect_string()?),
+                    "description" => Description(value.expect_string()?),
+                    "rename_rule" => {
+                        RenameRule(value.expect_string().and_then(|r| self::RenameRule::parse(&r))?)
+                    }
+                    "rename" => Rename(value.expect_string()?),
+                    "parse_with" => ParseWith(ParserType::parse(value)?),
+                    "separator" => Separator(value.expect_string()?),
+                    "hide" => value.expect_none("hide").map(|_| Hide)?,
+                    _ => {
+                        return Err(compile_error_at(
+                            "unexpected attribute name (expected one of `prefix`, `description`, \
+                             `rename`, `parse_with`, `separator` and `hide`",
+                            attr.span(),
+                        ))
+                    }
+                }
+            }
+
             _ => {
                 return Err(compile_error_at(
-                    "unexpected attribute name (expected one of `prefix`, `description`, \
-                     `rename`, `parse_with`, `separator` and `hide`",
-                    key.span(),
+                    "unexpected attribute (expected `command` or `doc`)",
+                    outermost_key.span(),
                 ))
             }
         };
@@ -147,15 +188,4 @@ pub(crate) fn is_doc_comment(a: &Attribute) -> bool {
         Some(ident) => ident == "doc" && a.tokens.to_string().starts_with("= \""),
         _ => false,
     }
-}
-
-pub(crate) fn parse_doc_comment(attr: &Attribute) -> Option<String> {
-    if is_doc_comment(attr) {
-        if let syn::Meta::NameValue(syn::MetaNameValue { lit: syn::Lit::Str(s), .. }) =
-            attr.parse_meta().ok()?
-        {
-            return Some(s.value().trim().to_owned());
-        }
-    }
-    None
 }

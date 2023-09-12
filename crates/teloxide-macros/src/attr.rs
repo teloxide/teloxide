@@ -1,10 +1,10 @@
 use crate::{error::compile_error_at, Result};
 
-use proc_macro2::Span;
+use proc_macro2::{Delimiter, Span};
 use syn::{
-    parse::{Parse, ParseBuffer, ParseStream},
+    parse::{Parse, ParseStream, Parser},
     spanned::Spanned,
-    Attribute, Ident, Lit, LitStr, Path, Token,
+    Attribute, Ident, Lit, Path, Token,
 };
 
 pub(crate) fn fold_attrs<A, R>(
@@ -17,30 +17,37 @@ pub(crate) fn fold_attrs<A, R>(
     attrs
         .filter(filter)
         .flat_map(|attribute| {
-            // FIXME: don't allocate here
-            if crate::command_attr::is_doc_comment(&attribute) {
-                vec![parse(Attr {
-                    key: Ident::new("description", Span::call_site()),
-                    value: AttrValue::Lit(
-                        LitStr::new(
-                            &crate::command_attr::parse_doc_comment(&attribute)
-                                .expect("it is doc comment"),
-                            Span::call_site(),
-                        )
-                        .into(),
-                    ),
-                })]
-            } else {
-                match attribute.parse_args_with(|input: &ParseBuffer| {
-                    input.parse_terminated::<_, Token![,]>(Attr::parse)
-                }) {
-                    Ok(ok) => ok.into_iter().map(&parse).collect(),
-                    Err(err) => vec![Err(err.into())],
-                }
+            let Some(key) = attribute.path.get_ident().cloned()
+                else { return vec![Err(compile_error_at("expected an ident", attribute.path.span()))] };
+
+            match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key))
+                .parse(attribute.tokens.into())
+            {
+                Ok(ok) => ok.0.into_iter().map(&parse).collect(),
+                Err(err) => vec![Err(err.into())],
             }
         })
-        .try_fold(init, |acc, r| r.and_then(|r| f(acc, r)))
+        .try_fold(init, |acc, r| f(acc, r?))
 }
+
+/// A helper to parse a set of attributes.
+///
+/// For example:
+/// ```text
+///   #[blahblah(key = "puff", value = 12, nope, inner(what = some::path))]
+/// ```
+///
+/// The code above will produce
+/// ```test
+/// [
+///     Attr { key: [key, blahblah], value: "puff" },
+///     Attr { key: [value, blahblah], value: 12 },
+///     Attr { key: [nope, blahblah], value: none },
+///     Attr { key: [what, inner, blahblah], value: some::path },
+/// ]
+/// ```
+#[derive(Default, Debug)]
+struct Attrs(Vec<Attr>);
 
 /// An attribute key-value pair.
 ///
@@ -49,8 +56,17 @@ pub(crate) fn fold_attrs<A, R>(
 ///   #[blahblah(key = "puff", value = 12, nope)]
 ///              ^^^^^^^^^^^^  ^^^^^^^^^^  ^^^^
 /// ```
+#[derive(Debug)]
 pub(crate) struct Attr {
-    pub key: Ident,
+    /// The key captures the full "path" in the reverse order, for example here:
+    ///
+    /// ```text
+    ///   #[blahblah(key = "puff")]
+    ///              ^^^^^^^^^^^^
+    /// ```
+    ///
+    /// The `key` will be `[key, blahblah]`. See [Attrs] for more examples.
+    pub key: Vec<Ident>,
     pub value: AttrValue,
 }
 
@@ -61,16 +77,53 @@ pub(crate) struct Attr {
 ///   #[blahblah(key = "puff", value = 12, nope)]
 ///                    ^^^^^^          ^^     ^-- (None pseudo-value)
 /// ```
+#[derive(Debug)]
 pub(crate) enum AttrValue {
     Path(Path),
     Lit(Lit),
     None(Span),
 }
 
-impl Parse for Attr {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
+impl Parse for Attrs {
+    fn parse(input: ParseStream) -> syn::Result<Attrs> {
         let key = input.parse::<Ident>()?;
 
+        Attrs::parse_with_key(input, key)
+    }
+}
+
+impl Attrs {
+    fn parse_with_key(input: ParseStream, key: Ident) -> syn::Result<Attrs> {
+        // Parse an attribute group
+        let attrs = input.step(|cursor| {
+            if let Some((group, _sp, next_cursor)) = cursor.group(Delimiter::Parenthesis) {
+                if !next_cursor.eof() {
+                    return Err(syn::Error::new(next_cursor.span(), "unexpected tokens"));
+                }
+
+                let mut attrs =
+                    (|input: ParseStream<'_>| input.parse_terminated::<_, Token![,]>(Attrs::parse))
+                        .parse(group.token_stream().into())?
+                        .into_iter()
+                        .reduce(|mut l, r| {
+                            l.0.extend(r.0);
+                            l
+                        })
+                        .unwrap_or_default();
+
+                attrs.0.iter_mut().for_each(|attr| attr.key.push(key.clone()));
+
+                Ok((Some(attrs), next_cursor))
+            } else {
+                Ok((None, *cursor))
+            }
+        })?;
+
+        if let Some(attrs) = attrs {
+            return Ok(attrs);
+        }
+
+        // Parse a single attribute
         let value = match input.peek(Token![=]) {
             true => {
                 input.parse::<Token![=]>()?;
@@ -79,13 +132,18 @@ impl Parse for Attr {
             false => AttrValue::None(input.span()),
         };
 
-        Ok(Self { key, value })
+        Ok(Attrs(vec![Attr { key: vec![key], value }]))
     }
 }
 
 impl Attr {
     pub(crate) fn span(&self) -> Span {
-        self.key.span().join(self.value.span()).unwrap_or_else(|| self.key.span())
+        self.key().span().join(self.value.span()).unwrap_or_else(|| self.key().span())
+    }
+
+    fn key(&self) -> &Ident {
+        // It's an invariant of the type that `self.key` is non-empty
+        self.key.first().unwrap()
     }
 }
 
