@@ -79,12 +79,12 @@ impl CommandAttrs {
 
                 fn join_string(
                     opt: &mut Option<(String, Span)>,
-                    new_str: String,
+                    new_str: &str,
                     sp: Span,
                 ) -> Result<()> {
                     match opt {
                         slot @ None => {
-                            *slot = Some((new_str, sp));
+                            *slot = Some((new_str.to_owned(), sp));
                             Ok(())
                         }
                         Some((old_str, _)) => {
@@ -96,7 +96,12 @@ impl CommandAttrs {
 
                 match attr.kind {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
-                    Description(d) => join_string(&mut this.description, d, attr.sp),
+                    Description(d) => join_string(
+                        &mut this.description,
+                        // Sometimes doc comments include a space before them, this removes it
+                        d.strip_prefix(' ').unwrap_or(&d),
+                        attr.sp,
+                    ),
                     RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
