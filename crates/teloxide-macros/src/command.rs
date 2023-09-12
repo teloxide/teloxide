@@ -65,12 +65,19 @@ impl Command {
         self.description.as_ref().map(|(d, ..)| &**d)
     }
 
+    pub fn contains_doc_comment(&self) -> bool {
+        self.description.as_ref().map(|(_, is_doc, ..)| *is_doc).unwrap_or(false)
+    }
+
     pub(crate) fn description_is_enabled(&self) -> bool {
         // FIXME: remove the first, `== "off"`, check eventually
-        self.description() != Some("off") && !self.hidden
+        !((self.description() == Some("off") && !self.contains_doc_comment()) || self.hidden)
     }
 
     pub(crate) fn deprecated_description_off_span(&self) -> Option<Span> {
-        self.description.as_ref().filter(|(d, ..)| d == "off").map(|&(.., span)| span)
+        self.description
+            .as_ref()
+            .filter(|(d, ..)| d == "off" && !self.description_is_enabled())
+            .map(|&(.., span)| span)
     }
 }

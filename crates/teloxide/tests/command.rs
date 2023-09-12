@@ -229,6 +229,7 @@ fn parse_named_fields() {
 #[test]
 #[cfg(feature = "macros")]
 fn descriptions_off() {
+    // FIXME: Remove `off` doc comment when `off` removed.
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
     enum DefaultCommands {
@@ -236,10 +237,11 @@ fn descriptions_off() {
         Start,
         #[command(hide)]
         Username,
+        /// off
         Help,
     }
 
-    assert_eq!(DefaultCommands::descriptions().to_string(), "/help".to_owned());
+    assert_eq!(DefaultCommands::descriptions().to_string(), "/help — off".to_owned());
 }
 
 #[test]
