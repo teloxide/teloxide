@@ -77,7 +77,7 @@ impl Command {
     pub(crate) fn deprecated_description_off_span(&self) -> Option<Span> {
         self.description
             .as_ref()
-            .filter(|(d, ..)| d == "off" && !self.description_is_enabled())
+            .filter(|(d, ..)| d == "off" && !self.contains_doc_comment())
             .map(|&(.., span)| span)
     }
 }
