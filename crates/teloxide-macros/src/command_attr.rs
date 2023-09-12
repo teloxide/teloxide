@@ -16,7 +16,8 @@ use syn::{
 /// All attributes that can be used for `derive(BotCommands)`
 pub(crate) struct CommandAttrs {
     pub prefix: Option<(String, Span)>,
-    pub description: Option<(String, Span)>,
+    /// The bool is true if the description contains a doc comment
+    pub description: Option<(String, bool, Span)>,
     pub rename_rule: Option<(RenameRule, Span)>,
     pub rename: Option<(String, Span)>,
     pub parser: Option<(ParserType, Span)>,
@@ -41,7 +42,8 @@ struct CommandAttr {
 /// Kind of [`CommandAttr`].
 enum CommandAttrKind {
     Prefix(String),
-    Description(String),
+    /// Description of the command. and if its doc comment or not
+    Description(String, bool),
     RenameRule(RenameRule),
     Rename(String),
     ParseWith(ParserType),
@@ -77,31 +79,33 @@ impl CommandAttrs {
                     }
                 }
 
-                fn join_string(
-                    opt: &mut Option<(String, Span)>,
-                    new_str: &str,
-                    sp: Span,
-                ) -> Result<()> {
+                fn join_string(opt: &mut Option<(String, bool, Span)>, new_str: &str, sp: Span) {
                     match opt {
                         slot @ None => {
-                            *slot = Some((new_str.to_owned(), sp));
-                            Ok(())
+                            *slot = Some((new_str.to_owned(), false, sp));
                         }
-                        Some((old_str, _)) => {
+                        Some((old_str, ..)) => {
                             *old_str = format!("{old_str}\n{new_str}");
-                            Ok(())
                         }
                     }
                 }
 
                 match attr.kind {
                     Prefix(p) => insert(&mut this.prefix, p, attr.sp),
-                    Description(d) => join_string(
-                        &mut this.description,
-                        // Sometimes doc comments include a space before them, this removes it
-                        d.strip_prefix(' ').unwrap_or(&d),
-                        attr.sp,
-                    ),
+                    Description(d, is_doc) => {
+                        join_string(
+                            &mut this.description,
+                            // Sometimes doc comments include a space before them, this removes it
+                            d.strip_prefix(' ').unwrap_or(&d),
+                            attr.sp,
+                        );
+                        if is_doc {
+                            if let Some((_, is_doc, _)) = &mut this.description {
+                                *is_doc = true;
+                            }
+                        }
+                        Ok(())
+                    }
                     RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
@@ -133,8 +137,7 @@ impl CommandAttr {
                     ));
                 }
 
-                // FIXME(awiteb): flag here that this is a doc comment
-                Description(value.expect_string()?)
+                Description(value.expect_string()?, true)
             }
 
             "command" => {
@@ -155,7 +158,7 @@ impl CommandAttr {
 
                 match &*attr.to_string() {
                     "prefix" => Prefix(value.expect_string()?),
-                    "description" => Description(value.expect_string()?),
+                    "description" => Description(value.expect_string()?, false),
                     "rename_rule" => {
                         RenameRule(value.expect_string().and_then(|r| self::RenameRule::parse(&r))?)
                     }

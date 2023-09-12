@@ -9,7 +9,8 @@ pub(crate) struct Command {
     /// Prefix of this command, for example "/".
     pub prefix: String,
     /// Description for the command.
-    pub description: Option<(String, Span)>,
+    /// The bool is true if the description contains a doc comment.
+    pub description: Option<(String, bool, Span)>,
     /// Name of the command, with all renames already applied.
     pub name: String,
     /// Parser for arguments of this command.
@@ -61,7 +62,7 @@ impl Command {
     }
 
     pub fn description(&self) -> Option<&str> {
-        self.description.as_ref().map(|(d, _span)| &**d)
+        self.description.as_ref().map(|(d, ..)| &**d)
     }
 
     pub(crate) fn description_is_enabled(&self) -> bool {
@@ -70,6 +71,6 @@ impl Command {
     }
 
     pub(crate) fn deprecated_description_off_span(&self) -> Option<Span> {
-        self.description.as_ref().filter(|(d, _)| d == "off").map(|&(_, span)| span)
+        self.description.as_ref().filter(|(d, ..)| d == "off").map(|&(.., span)| span)
     }
 }

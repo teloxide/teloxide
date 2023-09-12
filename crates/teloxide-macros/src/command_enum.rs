@@ -5,7 +5,8 @@ use crate::{
 
 pub(crate) struct CommandEnum {
     pub prefix: String,
-    pub description: Option<String>,
+    /// The bool is true if the description contains a doc comment
+    pub description: Option<(String, bool)>,
     pub rename_rule: RenameRule,
     pub parser_type: ParserType,
 }
@@ -37,7 +38,7 @@ impl CommandEnum {
 
         Ok(Self {
             prefix: prefix.map(|(p, _)| p).unwrap_or_else(|| "/".to_owned()),
-            description: description.map(|(d, _)| d),
+            description: description.map(|(d, is_doc, _)| (d, is_doc)),
             rename_rule: rename_rule.map(|(rr, _)| rr).unwrap_or(RenameRule::Identity),
             parser_type: parser,
         })
