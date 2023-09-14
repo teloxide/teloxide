@@ -99,7 +99,7 @@ impl CommandAttrs {
                             d.strip_prefix(' ').unwrap_or(&d),
                             attr.sp,
                         );
-                        if is_doc {
+                        if is_doc && matches!(this.description, Some((_, false, _))) {
                             if let Some((_, is_doc, _)) = &mut this.description {
                                 *is_doc = true;
                             }
