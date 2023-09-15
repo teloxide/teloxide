@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Now you can use `#[command(command_separator="sep")]` (default is a whitespace character) to set the separator between command and its arguments (issue [https://github.com/teloxide/teloxide/issues/897])
+
 ### Fixed
 
 - Fix `split` parser for tuple variants with len < 2 ([issue #834](https://github.com/teloxide/teloxide/issues/834))
