@@ -168,6 +168,40 @@ fn parse_with_split4() {
 
 #[test]
 #[cfg(feature = "macros")]
+fn parse_with_command_separator1() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    #[command(parse_with = "split", separator = "|", command_separator = "_")]
+    enum DefaultCommands {
+        Start(u8, String),
+        Help,
+    }
+
+    assert_eq!(
+        DefaultCommands::Start(10, "hello".to_string()),
+        DefaultCommands::parse("/start_10|hello", "").unwrap()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn parse_with_command_separator2() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "lowercase")]
+    #[command(parse_with = "split", separator = "_", command_separator = "_")]
+    enum DefaultCommands {
+        Start(u8, String),
+        Help,
+    }
+
+    assert_eq!(
+        DefaultCommands::Start(10, "hello".to_string()),
+        DefaultCommands::parse("/start_10_hello", "").unwrap()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
 fn parse_custom_parser() {
     mod parser {
         use teloxide::utils::command::ParseError;
