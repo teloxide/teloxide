@@ -228,13 +228,13 @@ fn parse_named_fields() {
 
 #[test]
 #[cfg(feature = "macros")]
+#[allow(deprecated)]
 fn descriptions_off() {
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
     enum DefaultCommands {
         #[command(hide)]
         Start,
-        #[allow(deprecated)]
         #[command(description = "off")]
         Username,
         /// off
