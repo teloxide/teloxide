@@ -169,8 +169,6 @@ pub use teloxide_macros::BotCommands;
 ///
 ///  3. `#[command(description = "description")]` and `/// description`
 /// Give your command a description. It will be shown in the help message.
-/// You can also write doc comment above the command, and it will be used as a
-/// description as well.
 ///
 ///  4. `#[command(parse_with = "parser")]`
 /// Parse arguments of one command with a given parser. `parser` must be a
