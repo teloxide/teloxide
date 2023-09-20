@@ -234,6 +234,7 @@ fn descriptions_off() {
     enum DefaultCommands {
         #[command(hide)]
         Start,
+        #[allow(deprecated)]
         #[command(description = "off")]
         Username,
         /// off
