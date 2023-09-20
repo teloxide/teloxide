@@ -8,20 +8,21 @@ use syn::{
 };
 
 pub(crate) fn fold_attrs<A, R>(
-    attrs: impl Iterator<Item = Attribute>,
+    attrs: &[Attribute],
     filter: fn(&Attribute) -> bool,
     parse: impl Fn(Attr) -> Result<R>,
     init: A,
     f: impl Fn(A, R) -> Result<A>,
 ) -> Result<A> {
     attrs
-        .filter(filter)
+    .iter()
+    .filter(|&a| filter(a))
         .flat_map(|attribute| {
             let Some(key) = attribute.path.get_ident().cloned()
                 else { return vec![Err(compile_error_at("expected an ident", attribute.path.span()))] };
 
             match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key))
-                .parse(attribute.tokens.into())
+                .parse(attribute.tokens.clone().into())
             {
                 Ok(ok) => ok.0.into_iter().map(&parse).collect(),
                 Err(err) => vec![Err(err.into())],

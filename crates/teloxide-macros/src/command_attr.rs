@@ -56,7 +56,7 @@ impl CommandAttrs {
         use CommandAttrKind::*;
 
         fold_attrs(
-            attributes.iter().cloned(),
+            attributes,
             |attr| is_command_attribute(attr) || is_doc_comment(attr),
             CommandAttr::parse,
             Self {
