@@ -229,7 +229,6 @@ fn parse_named_fields() {
 #[test]
 #[cfg(feature = "macros")]
 fn descriptions_off() {
-    // FIXME: Remove `off` doc comment when `off` removed.
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
     enum DefaultCommands {
