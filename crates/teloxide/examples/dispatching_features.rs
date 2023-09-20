@@ -95,21 +95,24 @@ struct ConfigParameters {
     maintainer_username: Option<String>,
 }
 
+/// Simple commands
 #[derive(BotCommands, Clone)]
-#[command(rename_rule = "lowercase", description = "Simple commands")]
+#[command(rename_rule = "lowercase")]
 enum SimpleCommand {
-    #[command(description = "shows this message.")]
+    /// Shows this message.
     Help,
-    #[command(description = "shows maintainer info.")]
+    /// Shows maintainer info.
     Maintainer,
-    #[command(description = "shows your ID.")]
+    /// Shows your ID.
     MyId,
 }
 
+/// Maintainer commands
 #[derive(BotCommands, Clone)]
-#[command(rename_rule = "lowercase", description = "Maintainer commands")]
+#[command(rename_rule = "lowercase")]
 enum MaintainerCommands {
-    #[command(parse_with = "split", description = "generate a number within range")]
+    /// Generate a number within range
+    #[command(parse_with = "split")]
     Rand { from: u64, to: u64 },
 }
 

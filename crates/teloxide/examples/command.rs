@@ -10,14 +10,16 @@ async fn main() {
     Command::repl(bot, answer).await;
 }
 
+/// These commands are supported:
 #[derive(BotCommands, Clone)]
-#[command(rename_rule = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase")]
 enum Command {
-    #[command(description = "display this text.")]
+    /// Display this text.
     Help,
-    #[command(description = "handle a username.")]
+    /// Handle a username.
     Username(String),
-    #[command(description = "handle a username and an age.", parse_with = "split")]
+    /// Handle a username and an age.
+    #[command(parse_with = "split")]
     UsernameAndAge { username: String, age: u8 },
 }
 

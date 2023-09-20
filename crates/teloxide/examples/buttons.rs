@@ -9,12 +9,13 @@ use teloxide::{
     utils::command::BotCommands,
 };
 
+/// These commands are supported:
 #[derive(BotCommands)]
-#[command(rename_rule = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase")]
 enum Command {
-    #[command(description = "Display this text")]
+    /// Display this text
     Help,
-    #[command(description = "Start")]
+    /// Start
     Start,
 }
 
