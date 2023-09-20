@@ -28,8 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Return types of `edit_message_live_location_inline`, `stop_message_live_location_inline`, and `set_game_score_inline`: `Message` => `True` ([#854][pr854])
 - Remove `latitude` and `longitude` parameters from `stop_message_live_location` and `stop_message_live_location_inline` ([#854][pr854])
+- Fix the type of `photo_size`,`photo_width` and `photo_height` in the `send_invoice` method ([#936][pr936])
 
 [pr854]: https://github.com/teloxide/teloxide/pull/854
+[pr936]: https://github.com/teloxide/teloxide/pull/936
 
 ### Changed
 
