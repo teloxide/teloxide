@@ -76,7 +76,7 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
         }
     });
 
-    let global_description = match global.description.as_deref() {
+    let global_description = match global.description.as_ref().map(|(d, _)| d) {
         Some(gd) => quote! { .global_description(#gd) },
         None => quote! {},
     };

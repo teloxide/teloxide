@@ -90,7 +90,7 @@ pub use teloxide_macros::BotCommands;
 ///  2. `#[command(prefix = "prefix")]`
 /// Change a prefix for all commands (the default is `/`).
 ///
-///  3. `#[command(description = "description")]`
+///  3. `#[command(description = "description")]` and `/// description`
 /// Add a summary description of commands before all commands.
 ///
 ///  4. `#[command(parse_with = "parser")]`
@@ -167,7 +167,7 @@ pub use teloxide_macros::BotCommands;
 /// Rename one command to `name` (literal renaming; do not confuse with
 /// `rename_rule`).
 ///
-///  3. `#[command(description = "description")]`
+///  3. `#[command(description = "description")]` and `/// description`
 /// Give your command a description. It will be shown in the help message.
 ///
 ///  4. `#[command(parse_with = "parser")]`
