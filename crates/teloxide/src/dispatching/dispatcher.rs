@@ -304,7 +304,7 @@ where
     {
         self.try_dispatch_with_listener(update_listener, update_listener_error_handler)
             .await
-            .expect("try_dispatch_with_listener failed")
+            .expect("Couldn't prepare dispatching context")
     }
 
     /// Same as `dispatch_with_listener` but returns a `Err(_)` instead of
