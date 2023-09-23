@@ -307,8 +307,8 @@ where
             .expect("try_dispatch_with_listener failed")
     }
 
-    /// Same as `dispatch_with_listener` but returns a Result<_> instead of
-    /// panicking
+    /// Same as `dispatch_with_listener` but returns a `Err(_)` instead of
+    /// panicking when the initial `get_me` call fails.
     ///
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
