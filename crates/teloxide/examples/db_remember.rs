@@ -21,12 +21,13 @@ pub enum State {
     GotNumber(i32),
 }
 
+/// These commands are supported:
 #[derive(Clone, BotCommands)]
-#[command(rename_rule = "lowercase", description = "These commands are supported:")]
+#[command(rename_rule = "lowercase")]
 pub enum Command {
-    #[command(description = "get your number.")]
+    /// Get your number.
     Get,
-    #[command(description = "reset your number.")]
+    /// Reset your number.
     Reset,
 }
 

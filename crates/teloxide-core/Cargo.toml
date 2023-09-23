@@ -72,7 +72,7 @@ takecell = "0.1"
 take_mut = "0.2"
 rc-box = "1.1.1"
 never = "0.1.0"
-chrono = { version = "0.4.19", default-features = false }
+chrono = { version = "0.4.30", default-features = false }
 either = "1.6.1"
 bitflags = { version = "1.2" }
 

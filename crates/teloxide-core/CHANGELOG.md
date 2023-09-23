@@ -16,16 +16,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Seconds` type, which represents a duration is seconds ([#859][pr859])
 - `VideoChatEnded::duration` field that was previously missed ([#859][pr859])
 - `ThreadId` newtype over `MessageId`, used for identifying reply threads ([#887][pr887])
+- `ChatId::as_user` ([#905][pr905])
+- Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
+- `ChatId::{MIN, MAX}` ([#905][pr905])
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
+[pr905]: https://github.com/teloxide/teloxide/pull/905
 
 ### Fixed
 
 - Return types of `edit_message_live_location_inline`, `stop_message_live_location_inline`, and `set_game_score_inline`: `Message` => `True` ([#854][pr854])
 - Remove `latitude` and `longitude` parameters from `stop_message_live_location` and `stop_message_live_location_inline` ([#854][pr854])
+- Fix the type of `photo_size`,`photo_width` and `photo_height` in the `send_invoice` method ([#936][pr936])
 
 [pr854]: https://github.com/teloxide/teloxide/pull/854
+[pr936]: https://github.com/teloxide/teloxide/pull/936
 
 ### Changed
 

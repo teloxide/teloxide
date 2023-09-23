@@ -12,21 +12,19 @@ use teloxide::{prelude::*, types::ChatPermissions, utils::command::BotCommands};
 // your commands in this format:
 // %GENERAL-DESCRIPTION%
 // %PREFIX%%COMMAND% - %DESCRIPTION%
+
+/// Use commands in format /%command% %num% %unit%
 #[derive(BotCommands, Clone)]
-#[command(
-    rename_rule = "lowercase",
-    description = "Use commands in format /%command% %num% %unit%",
-    parse_with = "split"
-)]
+#[command(rename_rule = "lowercase", parse_with = "split")]
 enum Command {
-    #[command(description = "kick user from chat.")]
+    /// Kick user from chat.
     Kick,
-    #[command(description = "ban user in chat.")]
+    /// Ban user in chat.
     Ban {
         time: u64,
         unit: UnitOfTime,
     },
-    #[command(description = "mute user in chat.")]
+    /// Mute user in chat.
     Mute {
         time: u64,
         unit: UnitOfTime,

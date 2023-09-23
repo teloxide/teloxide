@@ -213,6 +213,13 @@ impl_api_error! {
         /// [`DeleteMessage`]: crate::payloads::DeleteMessage
         MessageToDeleteNotFound = "Bad Request: message to delete not found",
 
+        /// Occurs when bot tries to copy a message which does not exists.
+        /// May happen in methods:
+        /// 1. [`CopyMessage`]
+        ///
+        /// [`CopyMessage`]: crate::payloads::CopyMessage
+        MessageToCopyNotFound = "Bad Request: message to copy not found",
+
         /// Occurs when bot tries to send a text message without text.
         ///
         /// May happen in methods:
@@ -821,6 +828,10 @@ mod tests {
             (
                 "{\"data\": \"Bad Request: message to delete not found\"}",
                 ApiError::MessageToDeleteNotFound,
+            ),
+            (
+                "{\"data\": \"Bad Request: message to copy not found\"}",
+                ApiError::MessageToCopyNotFound,
             ),
             ("{\"data\": \"Bad Request: message text is empty\"}", ApiError::MessageTextIsEmpty),
             ("{\"data\": \"Bad Request: message can't be edited\"}", ApiError::MessageCantBeEdited),
