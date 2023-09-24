@@ -98,6 +98,14 @@ rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 # https://github.com/rust-lang/rust/issues/88791
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
+[package.metadata.release]
+tag-prefix = "core-"
+enable-features = ["full"]
+pre-release-replacements = [
+    {file="README.md", search="teloxide-core = \"[^\"]+\"", replace="teloxide-core = \"{{version}}\""},
+    {file="src/lib.rs", search="teloxide-core = \"[^\"]+\"", replace="teloxide-core = \"{{version}}\""},
+    {file="CHANGELOG.md", search="## unreleased", replace="## unreleased\n\n## {{version}} - {{date}}", exactly=1},
+]
 
 [[example]]
 name = "self_info"

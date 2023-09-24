@@ -127,6 +127,13 @@ rustdoc-args = ["--cfg", "docsrs"]
 rustc-args = ["--cfg", "dep_docsrs"]
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
+[package.metadata.release]
+tag-prefix = ""
+enable-features = ["full"]
+pre-release-replacements = [
+  {file="../../README.md", search="teloxide = \\{ version = \"[^\"]+\"", replace="teloxide = { version = \"{{version}}\""},
+  {file="../../CHANGELOG.md", search="## unreleased", replace="## unreleased\n\n## {{version}} - {{date}}", exactly=1},
+]
 
 [[test]]
 name = "redis"
