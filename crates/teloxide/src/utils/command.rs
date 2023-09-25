@@ -348,8 +348,18 @@ impl<'a> CommandDescriptions<'a> {
     /// use teloxide::utils::command::{CommandDescription, CommandDescriptions};
     ///
     /// let descriptions = CommandDescriptions::new(&[
-    ///     CommandDescription { prefix: "/", command: "start", description: "start this bot" },
-    ///     CommandDescription { prefix: "/", command: "help", description: "show this message" },
+    ///     CommandDescription {
+    ///         prefix: "/",
+    ///         command: "start",
+    ///         description: "start this bot",
+    ///         aliases: &[],
+    ///     },
+    ///     CommandDescription {
+    ///         prefix: "/",
+    ///         command: "help",
+    ///         description: "show this message",
+    ///         aliases: &[],
+    ///     },
     /// ]);
     ///
     /// assert_eq!(descriptions.to_string(), "/start — start this bot\n/help — show this message");
