@@ -202,6 +202,15 @@ pub use teloxide_macros::BotCommands;
 ///  5. `#[command(hide)]`
 /// Hide a command from the help message. It will still be parsed.
 ///
+/// 6. `#[command(alias = "alias")]`
+/// Add an alias to a command. It will be shown in the help message.
+///
+/// 7. `#[command(aliases = ["alias1", "alias2"])]`
+/// Add multiple aliases to a command. They will be shown in the help message.
+///
+/// 8. `#[command(hide_aliases)]`
+/// Hide all aliases of a command from the help message.
+///
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
