@@ -72,7 +72,7 @@ takecell = "0.1"
 take_mut = "0.2"
 rc-box = "1.1.1"
 never = "0.1.0"
-chrono = { version = "0.4.19", default-features = false }
+chrono = { version = "0.4.30", default-features = false }
 either = "1.6.1"
 bitflags = { version = "1.2" }
 
@@ -98,6 +98,14 @@ rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 # https://github.com/rust-lang/rust/issues/88791
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
+[package.metadata.release]
+tag-prefix = "core-"
+enable-features = ["full"]
+pre-release-replacements = [
+    {file="README.md", search="teloxide-core = \"[^\"]+\"", replace="teloxide-core = \"{{version}}\""},
+    {file="src/lib.rs", search="teloxide-core = \"[^\"]+\"", replace="teloxide-core = \"{{version}}\""},
+    {file="CHANGELOG.md", search="## unreleased", replace="## unreleased\n\n## {{version}} - {{date}}", exactly=1},
+]
 
 [[example]]
 name = "self_info"

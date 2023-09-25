@@ -269,7 +269,7 @@ pub(crate) fn serde_timestamp<E: serde::de::Error>(
 
     NaiveDateTime::from_timestamp_opt(timestamp, 0)
         .ok_or_else(|| E::custom("invalid timestump"))
-        .map(|naive| DateTime::from_utc(naive, Utc))
+        .map(|naive| DateTime::from_naive_utc_and_offset(naive, Utc))
 }
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
@@ -305,8 +305,10 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
 
         {
             let json = r#"{"date":1}"#;
-            let expected =
-                DateTime::from_utc(chrono::NaiveDateTime::from_timestamp_opt(1, 0).unwrap(), Utc);
+            let expected = DateTime::from_naive_utc_and_offset(
+                chrono::NaiveDateTime::from_timestamp_opt(1, 0).unwrap(),
+                Utc,
+            );
 
             let Struct { date } = serde_json::from_str(json).unwrap();
             assert_eq!(date, Some(expected));

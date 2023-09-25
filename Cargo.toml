@@ -11,3 +11,7 @@ edition = "2021"
 license = "MIT"
 homepage = "https://github.com/teloxide/teloxide"
 repository = "https://github.com/teloxide/teloxide"
+
+[workspace.metadata.release]
+tag-message = "Release {{crate_name}} version {{version}}"
+tag-name = "{{prefix}}v{{version}}"

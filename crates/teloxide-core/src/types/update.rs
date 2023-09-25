@@ -155,16 +155,35 @@ impl Update {
     /// replies, pinned messages, message entities, "via bot" fields and more.
     /// Also note that this function can return duplicate users.
     pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
-        use either::Either::{Left, Right};
+        use either::Either::{Left as L, Right as R};
         use std::iter::{empty, once};
 
-        let i0 = Left;
-        let i1 = |x| Right(Left(x));
-        let i2 = |x| Right(Right(Left(x)));
-        let i3 = |x| Right(Right(Right(Left(x))));
-        let i4 = |x| Right(Right(Right(Right(Left(x)))));
-        let i5 = |x| Right(Right(Right(Right(Right(Left(x))))));
-        let i6 = |x| Right(Right(Right(Right(Right(Right(x))))));
+        //          [root]
+        //         /      \
+        // left - /        \ - right
+        //       /          \
+        //      /\          /\
+        //     /  \        /  \
+        //    /    \      /    \
+        //   0     /\    /\    /\
+        //        /  \  /  \  /  \
+        //       1    2 3  4  5  6
+        //
+        // 0 = LL
+        // 1 = LRL
+        // 2 = LRR
+        // 3 = RLL
+        // 4 = RLR
+        // 5 = RRL
+        // 6 = RRR
+
+        let i0 = |x| L(L(x));
+        let i1 = |x| L(R(L(x)));
+        let i2 = |x| L(R(R(x)));
+        let i3 = |x| R(L(L(x)));
+        let i4 = |x| R(L(R(x)));
+        let i5 = |x| R(R(L(x)));
+        let i6 = |x| R(R(R(x)));
 
         match &self.kind {
             UpdateKind::Message(message)
@@ -376,8 +395,10 @@ mod test {
     #[test]
     fn message() {
         let timestamp = 1_569_518_342;
-        let date =
-            DateTime::from_utc(NaiveDateTime::from_timestamp_opt(timestamp, 0).unwrap(), Utc);
+        let date = DateTime::from_naive_utc_and_offset(
+            NaiveDateTime::from_timestamp_opt(timestamp, 0).unwrap(),
+            Utc,
+        );
 
         let json = r#"{
             "update_id":892252934,

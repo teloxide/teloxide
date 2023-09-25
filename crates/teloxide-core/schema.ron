@@ -3735,17 +3735,17 @@ Schema(
                 ),
                 Param(
                     name: "photo_size",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo size in bytes")
                 ),
                 Param(
                     name: "photo_width",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo width")
                 ),
                 Param(
                     name: "photo_height",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo height")
                 ),
                 Param(
