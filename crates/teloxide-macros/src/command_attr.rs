@@ -25,6 +25,7 @@ pub(crate) struct CommandAttrs {
     pub separator: Option<(String, Span)>,
     pub command_separator: Option<(String, Span)>,
     pub hide: Option<((), Span)>,
+    pub hide_aliases: Option<((), Span)>,
 }
 
 /// A single k/v attribute for `BotCommands` derive macro.
@@ -53,6 +54,7 @@ enum CommandAttrKind {
     Separator(String),
     CommandSeparator(String),
     Hide,
+    HideAliases,
 }
 
 impl CommandAttrs {
@@ -73,6 +75,7 @@ impl CommandAttrs {
                 separator: None,
                 command_separator: None,
                 hide: None,
+                hide_aliases: None,
             },
             |mut this, attr| {
                 fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
@@ -119,6 +122,7 @@ impl CommandAttrs {
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
                     CommandSeparator(s) => insert(&mut this.command_separator, s, attr.sp),
                     Hide => insert(&mut this.hide, (), attr.sp),
+                    HideAliases => insert(&mut this.hide_aliases, (), attr.sp),
                 }?;
 
                 Ok(this)
@@ -174,6 +178,7 @@ impl CommandAttr {
                     "separator" => Separator(value.expect_string()?),
                     "command_separator" => CommandSeparator(value.expect_string()?),
                     "hide" => value.expect_none("hide").map(|_| Hide)?,
+                    "hide_aliases" => value.expect_none("hide_aliases").map(|_| HideAliases)?,
                     "alias" => Aliases(vec![value.expect_string()?]),
                     "aliases" => Aliases(
                         value

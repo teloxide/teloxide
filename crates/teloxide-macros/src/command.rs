@@ -19,6 +19,8 @@ pub(crate) struct Command {
     pub parser: ParserType,
     /// Whether the command is hidden from the help message.
     pub hidden: bool,
+    /// Whether the aliases of the command are hidden from the help message.
+    pub hidden_aliases: bool,
 }
 
 impl Command {
@@ -40,6 +42,7 @@ impl Command {
             // FIXME: error on/do not ignore command separator
             command_separator: _,
             hide,
+            hide_aliases,
         } = attrs;
 
         let name = match (rename, rename_rule) {
@@ -57,8 +60,9 @@ impl Command {
         let prefix = prefix.map(|(p, _)| p).unwrap_or_else(|| global_options.prefix.clone());
         let parser = parser.map(|(p, _)| p).unwrap_or_else(|| global_options.parser_type.clone());
         let hidden = hide.is_some();
+        let hidden_aliases = hide_aliases.is_some();
 
-        Ok(Self { prefix, description, parser, name, aliases, hidden })
+        Ok(Self { prefix, description, parser, name, aliases, hidden, hidden_aliases })
     }
 
     pub fn get_prefixed_command(&self) -> String {
