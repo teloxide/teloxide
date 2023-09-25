@@ -394,6 +394,103 @@ fn rename_rules() {
 
 #[test]
 #[cfg(feature = "macros")]
+fn alias() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "snake_case")]
+    enum DefaultCommands {
+        #[command(alias = "s")]
+        Start,
+        #[command(alias = "h")]
+        Help,
+        #[command(alias = "привет_мир")]
+        HelloWorld(String),
+    }
+
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/start", "").unwrap());
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/s", "").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("/help", "").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("/h", "").unwrap());
+    assert_eq!(
+        DefaultCommands::HelloWorld("username".to_owned()),
+        DefaultCommands::parse("/hello_world username", "").unwrap()
+    );
+    assert_eq!(
+        DefaultCommands::HelloWorld("username".to_owned()),
+        DefaultCommands::parse("/привет_мир username", "").unwrap()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn alias_help_message() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "snake_case")]
+    enum DefaultCommands {
+        /// Start command
+        Start,
+        /// Help command
+        #[command(alias = "h")]
+        Help,
+        #[command(alias = "привет_мир")]
+        HelloWorld(String),
+    }
+
+    assert_eq!(
+        "/start — Start command\n/help, /h — Help command\n/hello_world, /привет_мир",
+        DefaultCommands::descriptions().to_string()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn aliases() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "snake_case")]
+    enum DefaultCommands {
+        Start,
+        #[command(aliases = ["h", "помощь"])]
+        Help,
+        #[command(aliases = ["привет_мир"])]
+        HelloWorld(String),
+    }
+
+    assert_eq!(DefaultCommands::Start, DefaultCommands::parse("/start", "").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("/help", "").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("/h", "").unwrap());
+    assert_eq!(DefaultCommands::Help, DefaultCommands::parse("/помощь", "").unwrap());
+    assert_eq!(
+        DefaultCommands::HelloWorld("username".to_owned()),
+        DefaultCommands::parse("/hello_world username", "").unwrap()
+    );
+    assert_eq!(
+        DefaultCommands::HelloWorld("username".to_owned()),
+        DefaultCommands::parse("/привет_мир username", "").unwrap()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
+fn aliases_help_message() {
+    #[derive(BotCommands, Debug, PartialEq)]
+    #[command(rename_rule = "snake_case")]
+    enum DefaultCommands {
+        /// Start command
+        Start,
+        /// Help command
+        #[command(aliases = ["h", "помощь"])]
+        Help,
+        #[command(aliases = ["привет_мир"])]
+        HelloWorld(String),
+    }
+
+    assert_eq!(
+        "/start — Start command\n/help, /h, /помощь — Help command\n/hello_world, /привет_мир",
+        DefaultCommands::descriptions().to_string()
+    );
+}
+
+#[test]
+#[cfg(feature = "macros")]
 fn custom_result() {
     #[allow(dead_code)]
     type Result = ();
