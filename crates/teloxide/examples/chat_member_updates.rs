@@ -78,7 +78,7 @@ async fn new_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseRe
 
 async fn left_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
     // We use this variable for get the user
-    let user = &chat_member.old_chat_member.user;
+    let user = chat_member.old_chat_member.user;
 
     // We use this variable for get the user_id
     let user_id = user.id;
@@ -90,7 +90,7 @@ async fn left_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseR
         user.mention().unwrap_or_else(|| html::user_mention(user_id, user.full_name().as_str()));
 
     // If the user is gone, we send a goodbye message
-    bot.send_message(*&chat_member.chat.id, format!("Goodbye {username}!")).await?;
+    bot.send_message(chat_member.chat.id, format!("Goodbye {username}!")).await?;
 
     Ok(())
 }
