@@ -406,8 +406,10 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             .send();
         this.in_flight.set(Some(req));
 
-        // Recurse to poll `self.in_flight`
-        self.poll_next(cx)
+        // Immediately wake up to poll `self.in_flight`
+        // (without this this stream becomes a zombie)
+        cx.waker().wake_by_ref();
+        Poll::Pending
     }
 }
 
