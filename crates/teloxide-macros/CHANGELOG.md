@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Now you can use `#[command(command_separator="sep")]` (default is a whitespace character) to set the separator between command and its arguments (issue [https://github.com/teloxide/teloxide/issues/897])
+- Now you can use `#[command(command_separator="sep")]` (default is a whitespace character) to set the separator between command and its arguments ([issue #897](https://github.com/teloxide/teloxide/issues/897))
 
 ### Fixed
 
