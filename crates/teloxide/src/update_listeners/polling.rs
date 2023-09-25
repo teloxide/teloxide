@@ -301,10 +301,6 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
         // before
         self.allowed_updates = Some(hint.collect());
     }
-
-    fn timeout_hint(&self) -> Option<Duration> {
-        self.timeout
-    }
 }
 
 impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
