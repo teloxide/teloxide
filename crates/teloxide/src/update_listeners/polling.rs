@@ -333,6 +333,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
     type Item = Result<Update, B::Err>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> Poll<Option<Self::Item>> {
+        log::trace!("polling polling stream");
         let mut this = self.as_mut().project();
 
         if *this.force_stop {
@@ -342,6 +343,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
         // Poll in-flight future until completion
         if let Some(in_flight) = this.in_flight.as_mut().as_pin_mut() {
             let res = ready!(in_flight.poll(cx));
+            log::trace!("in-flight completed");
             this.in_flight.set(None);
 
             match res {
@@ -380,7 +382,10 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             //
             // When stopping we set `timeout = 0` and `limit = 1` so that `get_updates()`
             // set last seen update (offset) and return immediately
-            (true, _) => (*this.offset, Some(1), Some(0)),
+            (true, _) => {
+                log::trace!("graceful shutdown `get_updates` call");
+                (*this.offset, Some(1), Some(0))
+            }
             // Drop pending updates
             (_, true) => (-1, Some(1), Some(0)),
         };
