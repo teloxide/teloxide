@@ -21,8 +21,9 @@ impl CommandEnum {
             rename_rule,
             rename,
             parser,
-            separator,
+            aliases,
             command_separator,
+            separator,
             hide,
         } = attrs;
 
@@ -34,6 +35,11 @@ impl CommandEnum {
         } else if let Some((_hide, sp)) = hide {
             return Err(compile_error_at(
                 "`hide` attribute can only be applied to enums *variants*",
+                sp,
+            ));
+        } else if let Some((_aliases, sp)) = aliases {
+            return Err(compile_error_at(
+                "`aliases` attribute can only be applied to enums *variants*",
                 sp,
             ));
         }

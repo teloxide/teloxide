@@ -317,6 +317,8 @@ pub struct CommandDescription<'a> {
     pub prefix: &'a str,
     /// The command itself, e.g. `start`.
     pub command: &'a str,
+    /// The command aliases, e.g. `["help", "h"]`.
+    pub aliases: &'a [&'a str],
     /// Human-readable description of the command.
     pub description: &'a str,
 }
@@ -478,17 +480,25 @@ impl Display for CommandDescriptions<'_> {
             f.write_str("\n\n")?;
         }
 
-        let mut write = |&CommandDescription { prefix, command, description }, nls| {
+        let format_command = |command: &str, prefix: &str, formater: &mut fmt::Formatter<'_>| {
+            formater.write_str(prefix)?;
+            formater.write_str(command)?;
+            if let Some(username) = self.bot_username {
+                formater.write_char('@')?;
+                formater.write_str(username)?;
+            }
+            fmt::Result::Ok(())
+        };
+
+        let mut write = |&CommandDescription { prefix, command, aliases, description }, nls| {
             if nls {
                 f.write_char('\n')?;
             }
 
-            f.write_str(prefix)?;
-            f.write_str(command)?;
-
-            if let Some(username) = self.bot_username {
-                f.write_char('@')?;
-                f.write_str(username)?;
+            format_command(command, prefix, f)?;
+            for alias in aliases {
+                f.write_str(", ")?;
+                format_command(alias, prefix, f)?;
             }
 
             if !description.is_empty() {
