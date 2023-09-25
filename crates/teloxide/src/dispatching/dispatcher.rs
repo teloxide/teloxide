@@ -7,12 +7,10 @@ use crate::{
     requests::{Request, Requester},
     types::{Update, UpdateKind},
     update_listeners::{self, UpdateListener},
-    utils::shutdown_token::shutdown_check_timeout_for,
 };
 
 use dptree::di::{DependencyMap, DependencySupplier};
 use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
-use tokio::time::timeout;
 use tokio_stream::wrappers::ReceiverStream;
 
 use std::{
@@ -312,7 +310,6 @@ where
         log::debug!("hinting allowed updates: {:?}", allowed_updates);
         update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
-        let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
 
         self.state.start_dispatching();
@@ -324,19 +321,16 @@ where
             loop {
                 self.remove_inactive_workers_if_needed().await;
 
-                // False positive
-                #[allow(clippy::collapsible_match)]
-                if let Ok(upd) = timeout(shutdown_check_timeout, stream.next()).await {
-                    match upd {
+                tokio::select! {
+                    upd = stream.next() => match upd {
                         None => break,
                         Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
-                    }
-                }
-
-                if self.state.is_shutting_down() {
-                    if let Some(token) = stop_token.take() {
-                        log::debug!("Start shutting down dispatching...");
-                        token.stop();
+                    },
+                    () = self.state.wait_for_changes() => if self.state.is_shutting_down() {
+                        if let Some(token) = stop_token.take() {
+                            log::debug!("Start shutting down dispatching...");
+                            token.stop();
+                        }
                     }
                 }
             }
