@@ -336,10 +336,23 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             return Ready(None);
         }
 
+        // If there are any buffered updates, return one
+        if let Some(upd) = this.buffer.next() {
+            return Ready(Some(Ok(upd)));
+        }
+
+        // Check if we should stop and if so — drop in flight request,
+        // we don't care about updates that happened *after* we started stopping
+        if !*this.stopping && this.polling.flag.is_stopped() {
+            *this.stopping = true;
+
+            log::trace!("dropping in-flight request");
+            this.in_flight.set(None);
+        }
         // Poll in-flight future until completion
-        if let Some(in_flight) = this.in_flight.as_mut().as_pin_mut() {
+        else if let Some(in_flight) = this.in_flight.as_mut().as_pin_mut() {
             let res = ready!(in_flight.poll(cx));
-            log::trace!("in-flight completed");
+            log::trace!("in-flight request completed");
             this.in_flight.set(None);
 
             match res {
@@ -364,12 +377,6 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             }
         }
 
-        // If there are any buffered updates, return one
-        if let Some(upd) = this.buffer.next() {
-            return Ready(Some(Ok(upd)));
-        }
-
-        *this.stopping = this.polling.flag.is_stopped();
         let (offset, limit, timeout) = match (this.stopping, this.drop_pending_updates) {
             // Normal `get_updates()` call
             (false, false) => (*this.offset, this.polling.limit, *this.timeout),
