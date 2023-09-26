@@ -34,6 +34,8 @@ impl Command {
             parser,
             // FIXME: error on/do not ignore separator
             separator: _,
+            // FIXME: error on/do not ignore command separator
+            command_separator: _,
             hide,
         } = attrs;
 
