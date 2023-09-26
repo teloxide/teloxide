@@ -74,7 +74,7 @@ bitflags::bitflags! {
         const SEND_POLLS = (1 << 7) | Self::SEND_MESSAGES.bits;
 
         /// Set if the user is allowed to send animations, games, stickers and
-        /// use inline bots, implies `SEND_MEDIA_MESSAGES`.
+        /// use inline bots, implies midia messages permissions.
         const SEND_OTHER_MESSAGES = (1 << 8) | Self::SEND_AUDIOS.bits
                                             | Self::SEND_DOCUMENTS.bits
                                             | Self::SEND_PHOTOS.bits
@@ -83,7 +83,7 @@ bitflags::bitflags! {
                                             | Self::SEND_VOICE_NOTES.bits;
 
         /// Set if the user is allowed to add web page previews to
-        /// their messages, implies `SEND_MEDIA_MESSAGES`.
+        /// their messages, implies midia messages permissions.
         const ADD_WEB_PAGE_PREVIEWS = (1 << 9) | Self::SEND_AUDIOS.bits
                                             | Self::SEND_DOCUMENTS.bits
                                             | Self::SEND_PHOTOS.bits
@@ -113,20 +113,6 @@ impl ChatPermissions {
     /// [`SEND_MESSAGES`]: ChatPermissions::SEND_MESSAGES
     pub fn can_send_messages(&self) -> bool {
         self.contains(ChatPermissions::SEND_MESSAGES)
-    }
-
-    /// Checks for [`SEND_MEDIA_MESSAGES`] permission.
-    ///
-    /// [`SEND_MEDIA_MESSAGES`]: ChatPermissions::SEND_MEDIA_MESSAGES
-    pub fn can_send_media_messages(&self) -> bool {
-        self.contains(
-            ChatPermissions::SEND_AUDIOS
-                | ChatPermissions::SEND_DOCUMENTS
-                | ChatPermissions::SEND_PHOTOS
-                | ChatPermissions::SEND_VIDEOS
-                | ChatPermissions::SEND_VIDEO_NOTES
-                | ChatPermissions::SEND_VOICE_NOTES,
-        )
     }
 
     /// Checks for [`SEND_AUDIOS`] permission.
