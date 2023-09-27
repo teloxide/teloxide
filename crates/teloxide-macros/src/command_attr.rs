@@ -145,13 +145,12 @@ impl CommandAttr {
             }
 
             "command" => {
-                let Some(attr) = key.pop()
-                    else {
-                        return Err(compile_error_at(
-                            "expected an attribute name",
-                            outermost_key.span(),
-                        ))
-                    };
+                let Some(attr) = key.pop() else {
+                    return Err(compile_error_at(
+                        "expected an attribute name",
+                        outermost_key.span(),
+                    ));
+                };
 
                 if let Some(unexpected_key) = key.last() {
                     return Err(compile_error_at(
