@@ -120,9 +120,23 @@ pub struct Restricted {
     /// venues.
     pub can_send_messages: bool,
 
-    /// `true` if the user is allowed to send audios, documents, photos, videos,
-    /// video notes and voice notes.
-    pub can_send_media_messages: bool,
+    /// `true` if the user can send audios.
+    pub can_send_audios: bool,
+
+    /// `true` if the user can send documents.
+    pub can_send_documents: bool,
+
+    /// `true` if the user can send photos.
+    pub can_send_photos: bool,
+
+    /// `true` if the user can send videos.
+    pub can_send_videos: bool,
+
+    /// `true` if the user can send video notes.
+    pub can_send_video_notes: bool,
+
+    /// `true` if the user can send voice notes.
+    pub can_send_voice_notes: bool,
 
     /// `true` if the user is allowed to send animations, games, stickers and
     /// use inline bots.
@@ -618,30 +632,6 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user is allowed to send audios, documents, photos,
-    /// videos, video notes and voice notes.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned in the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_send_media_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_send_media_messages(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_send_media_messages, .. }) => {
-                *can_send_media_messages
-            }
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
-        }
-    }
-
     /// Returns `true` if the user is allowed to send animations, games,
     /// stickers and use inline bots.
     ///
@@ -826,7 +816,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserialize() {
+    fn deserialize_administrator() {
         let json = r#"{
             "user":{
                 "id":1029940401,
@@ -874,6 +864,71 @@ mod tests {
                 can_pin_messages: true,
                 can_promote_members: true,
                 can_manage_topics: false,
+            }),
+        };
+        let actual = serde_json::from_str::<ChatMember>(json).unwrap();
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn deserialize_restricted() {
+        let json = r#"{
+            "user":{
+                "id":1029940401,
+                "is_bot":false,
+                "first_name":"First",
+                "last_name":"Last",
+                "username":"fl",
+                "language_code":"en"
+            },
+            "status":"restricted",
+            "is_member": true,
+            "can_send_messages": true,
+            "can_send_audios": false,
+            "can_send_documents": false,
+            "can_send_photos": true,
+            "can_send_videos": true,
+            "can_send_video_notes": false,
+            "can_send_voice_notes": true,
+            "can_manage_topics": false,
+            "can_send_polls": true,
+            "can_send_other_messages": true,
+            "can_add_web_page_previews": true,
+            "can_change_info": true,
+            "can_invite_users": true,
+            "can_pin_messages": true,
+            "until_date": 1620000000
+        }"#;
+        let expected = ChatMember {
+            user: User {
+                id: UserId(1029940401),
+                is_bot: false,
+                first_name: "First".to_string(),
+                last_name: Some("Last".to_string()),
+                username: Some("fl".to_string()),
+                language_code: Some("en".to_string()),
+                is_premium: false,
+                added_to_attachment_menu: false,
+            },
+            kind: ChatMemberKind::Restricted(Restricted {
+                is_member: true,
+                can_send_messages: true,
+                can_send_audios: false,
+                can_send_documents: false,
+                can_send_photos: true,
+                can_send_videos: true,
+                can_send_video_notes: false,
+                can_send_voice_notes: true,
+                can_manage_topics: false,
+                can_send_polls: true,
+                can_send_other_messages: true,
+                can_add_web_page_previews: true,
+                can_change_info: true,
+                can_invite_users: true,
+                can_pin_messages: true,
+                until_date: UntilDate::Date(
+                    chrono::NaiveDateTime::from_timestamp_opt(1620000000, 0).unwrap().and_utc(),
+                ),
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(json).unwrap();
