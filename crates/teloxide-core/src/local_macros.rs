@@ -1333,6 +1333,8 @@ macro_rules! requester_forward {
 }
 
 #[test]
+// waffle: efficiency is not important here, and I don't want to rewrite this
+#[allow(clippy::format_collect)]
 fn codegen_requester_forward() {
     use crate::codegen::{
         add_hidden_preamble,

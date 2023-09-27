@@ -203,8 +203,8 @@ impl PassportElementErrorReverseSide {
     }
 }
 
-//// Represents an issue with the selfie with a document.
-//
+/// Represents an issue with the selfie with a document.
+///
 /// The error is considered resolved when the file with the selfie changes.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportelementerrorselfie).
