@@ -29,12 +29,25 @@ pub struct Message {
     #[serde(rename = "message_thread_id")]
     pub thread_id: Option<ThreadId>,
 
+    /// Sender, empty for messages sent to channels.
+    pub from: Option<User>,
+
+    /// Sender of the message, sent on behalf of a chat. The channel itself for
+    /// channel messages. The supergroup itself for messages from anonymous
+    /// group administrators. The linked channel for messages automatically
+    /// forwarded to the discussion group
+    pub sender_chat: Option<Chat>,
+
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
 
     /// Conversation the message belongs to.
     pub chat: Chat,
+
+    /// `true`, if the message is sent to a forum topic.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_topic_message: bool,
 
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
@@ -86,15 +99,6 @@ pub enum MessageKind {
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
-    /// Sender, empty for messages sent to channels.
-    pub from: Option<User>,
-
-    /// Sender of the message, sent on behalf of a chat. The channel itself for
-    /// channel messages. The supergroup itself for messages from anonymous
-    /// group administrators. The linked channel for messages automatically
-    /// forwarded to the discussion group
-    pub sender_chat: Option<Chat>,
-
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
@@ -118,12 +122,6 @@ pub struct MessageCommon {
     /// Inline keyboard attached to the message. `login_url` buttons are
     /// represented as ordinary `url` buttons.
     pub reply_markup: Option<InlineKeyboardMarkup>,
-
-    /// `true`, if the message is sent to a forum topic.
-    // FIXME: `is_topic_message` is included even in service messages, like ForumTopicCreated.
-    //        more this to `Message`
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub is_topic_message: bool,
 
     /// `true`, if the message is a channel post that was automatically
     /// forwarded to the connected discussion group.
@@ -671,10 +669,7 @@ mod getters {
         /// Returns the user who sent the message.
         #[must_use]
         pub fn from(&self) -> Option<&User> {
-            match &self.kind {
-                Common(MessageCommon { from, .. }) => from.as_ref(),
-                _ => None,
-            }
+            self.from.as_ref()
         }
 
         #[must_use]
@@ -687,10 +682,7 @@ mod getters {
 
         #[must_use]
         pub fn sender_chat(&self) -> Option<&Chat> {
-            match &self.kind {
-                Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
-                _ => None,
-            }
+            self.sender_chat.as_ref()
         }
 
         #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]

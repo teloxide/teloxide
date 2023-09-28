@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([PR 950][https://github.com/teloxide/teloxide/pull/950])
+- Fields `from`, `sender_chat`, `is_topic_message` are moved from `MessageCommon` to `Message` ([issue 945](https://github.com/teloxide/teloxide/issues/945))
 
 ### Removed
 
