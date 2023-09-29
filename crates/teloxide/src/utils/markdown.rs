@@ -283,9 +283,6 @@ mod tests {
             is_premium: false,
             added_to_attachment_menu: false,
         };
-        assert_eq!(
-            user_mention_or_link(&user_without_username),
-            r#"[Name](tg://user/?id=123456789)"#
-        )
+        assert_eq!(user_mention_or_link(&user_without_username), "[Name](tg://user/?id=123456789)")
     }
 }

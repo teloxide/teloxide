@@ -19,10 +19,7 @@ pub(crate) fn fold_attrs<A, R>(
         .filter(|&a| filter(a))
         .flat_map(|attribute| {
             let Some(key) = attribute.path.get_ident().cloned() else {
-                return vec![Err(compile_error_at(
-                    "expected an ident",
-                    attribute.path.span(),
-                ))];
+                return vec![Err(compile_error_at("expected an ident", attribute.path.span()))];
             };
 
             match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key))

@@ -315,7 +315,7 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
         }
 
         {
-            let json = r#"{}"#;
+            let json = "{}";
 
             let Struct { date } = serde_json::from_str(json).unwrap();
             assert_eq!(date, None);

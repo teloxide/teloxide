@@ -155,18 +155,18 @@ pub(super) async fn worker<B>(
         //
         // Reasons (not to use `spawn_blocking`):
         //
-        // 1. The work seems not very CPU-bound, it's not heavy computations,
-        //    it's more like light computations.
+        // 1. The work seems not very CPU-bound, it's not heavy computations, it's more
+        //    like light computations.
         //
         // 2. `spawn_blocking` is not zero-cost — it spawns a new system thread
         //    + do so other work. This may actually be *worse* then current
         //    "just do everything in this async fn" approach.
         //
-        // 3. With `rt-threaded` feature, tokio uses [`num_cpus()`] threads
-        //    which should be enough to work fine with one a-bit-blocking task.
-        //    Crucially current behaviour will be problem mostly with
-        //    single-threaded runtimes (and in case you're using one, you
-        //    probably don't want to spawn unnecessary threads anyway).
+        // 3. With `rt-threaded` feature, tokio uses [`num_cpus()`] threads which should
+        //    be enough to work fine with one a-bit-blocking task. Crucially current
+        //    behaviour will be problem mostly with single-threaded runtimes (and in
+        //    case you're using one, you probably don't want to spawn unnecessary
+        //    threads anyway).
         //
         // I think if we'll ever change this behaviour, we need to make it
         // _configurable_.
