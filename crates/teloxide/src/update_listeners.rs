@@ -32,8 +32,6 @@ pub mod webhooks;
 
 use futures::Stream;
 
-use std::time::Duration;
-
 use crate::{
     stop::StopToken,
     types::{AllowedUpdate, Update},
@@ -93,19 +91,6 @@ pub trait UpdateListener:
     /// crate::payloads::GetUpdates::allowed_updates
     fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>) {
         let _ = hint;
-    }
-
-    /// The timeout duration hint.
-    ///
-    /// This hints how often dispatcher should check for a shutdown. E.g., for
-    /// [`polling()`] this returns the [`timeout`].
-    ///
-    /// [`timeout`]: crate::payloads::GetUpdates::timeout
-    ///
-    /// If you are implementing this trait and not sure what to return from this
-    /// function, just leave it with the default implementation.
-    fn timeout_hint(&self) -> Option<Duration> {
-        None
     }
 }
 
