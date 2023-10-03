@@ -1,17 +1,26 @@
 use super::{DpHandlerDescription, UpdateHandler};
 
-use dptree::{di::Injectable, prelude::DependencyMap, HandlerDescription};
+use dptree::{
+    di::{Asyncify, Injectable},
+    prelude::DependencyMap,
+    HandlerDescription,
+};
 use tracing::{Instrument, Span};
 
 pub trait UpdateHandlerTracingExt<E> {
-    /// Returns an `UpdateHandler` wrapped in a span.
-    fn with_tracing_span<F, FnArgs>(self, f: F) -> Self
+    /// Returns an `UpdateHandler` wrapped in an async span.
+    fn instrument_with_async<F, FnArgs>(self, f: F) -> Self
     where
         F: Injectable<DependencyMap, Span, FnArgs> + Send + Sync + Clone + 'static;
+
+    /// Returns an `UpdateHandler` wrapped in a span.
+    fn instrument_with<F, FnArgs>(self, f: F) -> Self
+    where
+        Asyncify<F>: Injectable<DependencyMap, Span, FnArgs> + Send + Sync + Clone + 'static;
 }
 
 impl<E: 'static> UpdateHandlerTracingExt<E> for UpdateHandler<E> {
-    fn with_tracing_span<F, FnArgs>(self, f: F) -> UpdateHandler<E>
+    fn instrument_with_async<F, FnArgs>(self, f: F) -> UpdateHandler<E>
     where
         F: Injectable<DependencyMap, Span, FnArgs> + Send + Sync + Clone + 'static,
     {
@@ -27,5 +36,12 @@ impl<E: 'static> UpdateHandlerTracingExt<E> for UpdateHandler<E> {
                 self_c.execute(deps, cont).instrument(span).await
             }
         })
+    }
+
+    fn instrument_with<F, FnArgs>(self, f: F) -> Self
+    where
+        Asyncify<F>: Injectable<DependencyMap, Span, FnArgs> + Send + Sync + Clone + 'static,
+    {
+        self.instrument_with_async(Asyncify(f))
     }
 }
