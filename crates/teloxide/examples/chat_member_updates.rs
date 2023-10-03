@@ -6,27 +6,27 @@ use teloxide::{
 };
 use teloxide_core::adaptors::DefaultParseMode;
 
-/// We need the Bot alias type because we need use the
-/// `ParseMode::Html` by default
-/// (This is optional for this example, use the `parse_mode` method
-/// for set the parse mode in a specific message)
+/// We use a type alias to be able to write just `bot: Bot` in handlers, instead of a lengthy `DefaultParseMode<Bot>`.
+///
+/// `DefaultParseMode` here is a [requester adaptor], that allows us to specify a default parse mode.
+/// The other option would be to use `.parse_mode(...)`
+/// after each API call manually (e.g. `bot.send_message(...).parse_mode(...).await?`).
+///
+/// [requester adaptor]: teloxide::requests::Requester#adaptors
 type Bot = DefaultParseMode<teloxide::Bot>;
 
 #[tokio::main]
 async fn main() -> ResponseResult<()> {
     pretty_env_logger::init();
 
-    // We need use `ParseMode::Html` by default because the `first_name` or
-    // `username` is formatted from `<a href="tg://user?
-    // id={user_id}>{username}</a>"` to a message with link in the
-    // chat_member_handler function
+    // We specify default parse mode to be `Html`, so that later we can use `html::user_mention`
     let bot = teloxide::Bot::from_env().parse_mode(ParseMode::Html);
 
-    // We create a handler for our bot
+    // Create a handler for our bot, that will process updates from Telegram
     let handler = dptree::entry()
         .inspect(|u: Update| {
-            println!("{u:#?}"); // Print the update to the console with inspect
-                                // method and a closure for debug purposes
+            eprintln!("{u:#?}"); // Print the update to the console with inspect
+                                 // method and a closure for debug purposes
         })
         .branch(
             Update::filter_chat_member()
@@ -44,32 +44,24 @@ async fn main() -> ResponseResult<()> {
                 ),
         );
 
-    // We create a dispatcher for our bot
+    // Create a dispatcher for our bot
     Dispatcher::builder(bot, handler).enable_ctrlc_handler().build().dispatch().await;
 
     Ok(())
 }
 
-/// Welcome Function
-/// We use ChatMemberUpdated instead of Message for our function because
-/// Chat member updates != messages
+/// Welcome Endpoint
 async fn new_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
     // We use this variable for get the user
     let user = chat_member.old_chat_member.user.clone();
 
-    // We use this variable for get the user_id
-    let user_id = user.id;
-
-    // We use this variable for get the group name
     let telegram_group_name = chat_member.chat.title().unwrap_or("");
 
-    // We get the full_name of the user via `mention()` method and we use
-    // `unwrap_or_else` for get the first_name via `full_name` method
-    // if the user don't have a username
+    // We get a "@username" mention via `mention()` method if the user has a username,
+    // otherwise we create a textual mention with "Full Name" as the text linking to the user
     let username =
-        user.mention().unwrap_or_else(|| html::user_mention(user_id, user.full_name().as_str()));
+        user.mention().unwrap_or_else(|| html::user_mention(user.id, user.full_name().as_str()));
 
-    // If the user is present, we send a welcome message
     bot.send_message(chat_member.chat.id, format!("Welcome to {telegram_group_name} {username}!"))
         .await?;
 
@@ -77,19 +69,11 @@ async fn new_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseRe
 }
 
 async fn left_chat_member(bot: Bot, chat_member: ChatMemberUpdated) -> ResponseResult<()> {
-    // We use this variable for get the user
     let user = chat_member.old_chat_member.user;
 
-    // We use this variable for get the user_id
-    let user_id = user.id;
-
-    // We get the full_name of the user via `mention()` method and we use
-    // `unwrap_or_else` for get the first_name via `full_name` method
-    // if the user don't have a username
     let username =
-        user.mention().unwrap_or_else(|| html::user_mention(user_id, user.full_name().as_str()));
+        user.mention().unwrap_or_else(|| html::user_mention(user.id, user.full_name().as_str()));
 
-    // If the user is gone, we send a goodbye message
     bot.send_message(chat_member.chat.id, format!("Goodbye {username}!")).await?;
 
     Ok(())
