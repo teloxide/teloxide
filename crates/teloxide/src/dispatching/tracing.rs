@@ -3,9 +3,6 @@ use super::{DpHandlerDescription, UpdateHandler};
 use dptree::{di::Injectable, prelude::DependencyMap, HandlerDescription};
 use tracing::{Instrument, Span};
 
-/// Extension methods for adding `tracing` to [`UpdateHandler`].
-///
-/// This trait is only available if the `tracing` feature is enabled.
 pub trait UpdateHandlerTracingExt<E> {
     /// Returns an `UpdateHandler` with tracing enabled.
     fn with_tracing_span<F, FnArgs>(self, f: F) -> Self
