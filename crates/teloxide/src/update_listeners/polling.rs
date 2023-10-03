@@ -1,6 +1,7 @@
 use std::{
     convert::TryInto,
     future::Future,
+    mem,
     pin::Pin,
     task::{
         self,
@@ -97,8 +98,16 @@ where
     pub fn build(self) -> Polling<R> {
         let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
         let (token, flag) = mk_stop_token();
-        let polling =
-            Polling { bot, timeout, limit, allowed_updates, drop_pending_updates, flag, token };
+        let polling = Polling {
+            bot,
+            timeout,
+            limit,
+            allowed_updates,
+            drop_pending_updates,
+            flag: Some(flag),
+            token,
+            stop_token_cloned: false,
+        };
 
         assert_update_listener(polling)
     }
@@ -240,17 +249,21 @@ pub struct Polling<B: Requester> {
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
     drop_pending_updates: bool,
-    flag: StopFlag,
+    flag: Option<StopFlag>,
     token: StopToken,
+    stop_token_cloned: bool,
 }
 
 impl<R> Polling<R>
 where
-    R: Requester + Send + 'static,
-    <R as Requester>::GetUpdates: Send,
+    R: Requester,
 {
     /// Returns a builder for polling update listener.
-    pub fn builder(bot: R) -> PollingBuilder<R> {
+    pub fn builder(bot: R) -> PollingBuilder<R>
+    where
+        R: Send + 'static,
+        <R as Requester>::GetUpdates: Send,
+    {
         PollingBuilder {
             bot,
             timeout: None,
@@ -258,6 +271,19 @@ where
             allowed_updates: None,
             drop_pending_updates: false,
         }
+    }
+
+    /// Returns true if re-initialization happened *and*
+    /// the previous token was cloned.
+    fn reinit_stop_flag_if_needed(&mut self) -> bool {
+        if self.flag.is_some() {
+            return false;
+        }
+
+        let (token, flag) = mk_stop_token();
+        self.token = token;
+        self.flag = Some(flag);
+        mem::replace(&mut self.stop_token_cloned, false)
     }
 }
 
@@ -287,12 +313,18 @@ pub struct PollingStream<'a, B: Requester> {
     /// In-flight `get_updates()` call.
     #[pin]
     in_flight: Option<<B::GetUpdates as Request>::Send>,
+
+    /// The flag that notifies polling to stop polling.
+    #[pin]
+    flag: StopFlag,
 }
 
 impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
     type Err = B::Err;
 
     fn stop_token(&mut self) -> StopToken {
+        self.reinit_stop_flag_if_needed();
+        self.stop_token_cloned = true;
         self.token.clone()
     }
 
@@ -300,10 +332,6 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
         // TODO: we should probably warn if there already were different allowed updates
         // before
         self.allowed_updates = Some(hint.collect());
-    }
-
-    fn timeout_hint(&self) -> Option<Duration> {
-        self.timeout
     }
 }
 
@@ -315,6 +343,21 @@ impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
         let timeout = self.timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
         let allowed_updates = self.allowed_updates.clone();
         let drop_pending_updates = self.drop_pending_updates;
+
+        let token_used_and_updated = self.reinit_stop_flag_if_needed();
+
+        // FIXME: document that `as_stream` is a destructive operation, actually,
+        //        and you need to call `stop_token` *again* after it
+        if token_used_and_updated {
+            panic!(
+                "detected calling `as_stream` a second time after calling `stop_token`. \
+                 `as_stream` updates the stop token, thus you need to call it again after calling \
+                 `as_stream`"
+            )
+        }
+
+        // Unwrap: just called reinit
+        let flag = self.flag.take().unwrap();
         PollingStream {
             polling: self,
             drop_pending_updates,
@@ -325,6 +368,7 @@ impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
             stopping: false,
             buffer: Vec::new().into_iter(),
             in_flight: None,
+            flag,
         }
     }
 }
@@ -333,15 +377,33 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
     type Item = Result<Update, B::Err>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> Poll<Option<Self::Item>> {
+        log::trace!("polling polling stream");
         let mut this = self.as_mut().project();
 
         if *this.force_stop {
             return Ready(None);
         }
 
+        // If there are any buffered updates, return one
+        if let Some(upd) = this.buffer.next() {
+            return Ready(Some(Ok(upd)));
+        }
+
+        // Check if we should stop and if so — drop in flight request,
+        // we don't care about updates that happened *after* we started stopping
+        //
+        // N.B.: it's important to use `poll` and not `is_stopped` here,
+        //       so that *this stream* is polled when the flag is set to stop
+        if !*this.stopping && matches!(this.flag.poll(cx), Poll::Ready(())) {
+            *this.stopping = true;
+
+            log::trace!("dropping in-flight request");
+            this.in_flight.set(None);
+        }
         // Poll in-flight future until completion
-        if let Some(in_flight) = this.in_flight.as_mut().as_pin_mut() {
+        else if let Some(in_flight) = this.in_flight.as_mut().as_pin_mut() {
             let res = ready!(in_flight.poll(cx));
+            log::trace!("in-flight request completed");
             this.in_flight.set(None);
 
             match res {
@@ -366,12 +428,6 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             }
         }
 
-        // If there are any buffered updates, return one
-        if let Some(upd) = this.buffer.next() {
-            return Ready(Some(Ok(upd)));
-        }
-
-        *this.stopping = this.polling.flag.is_stopped();
         let (offset, limit, timeout) = match (this.stopping, this.drop_pending_updates) {
             // Normal `get_updates()` call
             (false, false) => (*this.offset, this.polling.limit, *this.timeout),
@@ -380,7 +436,10 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             //
             // When stopping we set `timeout = 0` and `limit = 1` so that `get_updates()`
             // set last seen update (offset) and return immediately
-            (true, _) => (*this.offset, Some(1), Some(0)),
+            (true, _) => {
+                log::trace!("graceful shutdown `get_updates` call");
+                (*this.offset, Some(1), Some(0))
+            }
             // Drop pending updates
             (_, true) => (-1, Some(1), Some(0)),
         };
@@ -398,8 +457,10 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             .send();
         this.in_flight.set(Some(req));
 
-        // Recurse to poll `self.in_flight`
-        self.poll_next(cx)
+        // Immediately wake up to poll `self.in_flight`
+        // (without this this stream becomes a zombie)
+        cx.waker().wake_by_ref();
+        Poll::Pending
     }
 }
 

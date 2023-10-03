@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn smoke_deser() {
-        let json = r#"123"#;
+        let json = "123";
         let mid: ThreadId = serde_json::from_str(json).unwrap();
         assert_eq!(mid, ThreadId(MessageId(123)));
     }
@@ -75,6 +75,6 @@ mod tests {
     fn smoke_ser() {
         let mid: ThreadId = ThreadId(MessageId(123));
         let json = serde_json::to_string(&mid).unwrap();
-        assert_eq!(json, r#"123"#);
+        assert_eq!(json, "123");
     }
 }

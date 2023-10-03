@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use futures::Stream;
 
 use crate::{
@@ -17,7 +15,7 @@ use crate::{
 ///
 /// [`polling`]: crate::update_listeners::polling()
 #[non_exhaustive]
-pub struct StatefulListener<St, Assf, Sf, Hauf, Thf> {
+pub struct StatefulListener<St, Assf, Sf, Hauf> {
     /// The state of the listener.
     pub state: St,
 
@@ -36,38 +34,30 @@ pub struct StatefulListener<St, Assf, Sf, Hauf, Thf> {
     /// Must implement `FnMut(&mut St, &mut dyn Iterator<Item =
     /// AllowedUpdate>)`.
     pub hint_allowed_updates: Option<Hauf>,
-
-    /// The function used as [`UpdateListener::timeout_hint`].
-    ///
-    /// Must implement `Fn(&St) -> Option<Duration>`.
-    pub timeout_hint: Option<Thf>,
 }
 
 type Haufn<State> = for<'a, 'b> fn(&'a mut State, &'b mut dyn Iterator<Item = AllowedUpdate>);
-type Thfn<State> = for<'a> fn(&'a State) -> Option<Duration>;
 
-impl<St, Assf, Sf> StatefulListener<St, Assf, Sf, Haufn<St>, Thfn<St>> {
+impl<St, Assf, Sf> StatefulListener<St, Assf, Sf, Haufn<St>> {
     /// Creates a new stateful listener from its components.
     pub fn new(state: St, stream: Assf, stop_token: Sf) -> Self {
-        Self::new_with_hints(state, stream, stop_token, None, None)
+        Self::new_with_hints(state, stream, stop_token, None)
     }
 }
 
-impl<St, Assf, Sf, Hauf, Thf> StatefulListener<St, Assf, Sf, Hauf, Thf> {
+impl<St, Assf, Sf, Hauf> StatefulListener<St, Assf, Sf, Hauf> {
     /// Creates a new stateful listener from its components.
     pub fn new_with_hints(
         state: St,
         stream: Assf,
         stop_token: Sf,
         hint_allowed_updates: Option<Hauf>,
-        timeout_hint: Option<Thf>,
     ) -> Self {
-        Self { state, stream, stop_token, hint_allowed_updates, timeout_hint }
+        Self { state, stream, stop_token, hint_allowed_updates }
     }
 }
 
-impl<'a, St, Assf, Sf, Hauf, Thf, Strm, E> AsUpdateStream<'a>
-    for StatefulListener<St, Assf, Hauf, Sf, Thf>
+impl<'a, St, Assf, Sf, Hauf, Strm, E> AsUpdateStream<'a> for StatefulListener<St, Assf, Hauf, Sf>
 where
     (St, Strm): 'a,
     Strm: Send,
@@ -82,12 +72,11 @@ where
     }
 }
 
-impl<St, Assf, Sf, Hauf, Thf, E> UpdateListener for StatefulListener<St, Assf, Sf, Hauf, Thf>
+impl<St, Assf, Sf, Hauf, E> UpdateListener for StatefulListener<St, Assf, Sf, Hauf>
 where
     Self: for<'a> AsUpdateStream<'a, StreamErr = E>,
     Sf: FnMut(&mut St) -> StopToken,
     Hauf: FnMut(&mut St, &mut dyn Iterator<Item = AllowedUpdate>),
-    Thf: Fn(&St) -> Option<Duration>,
 {
     type Err = E;
 
@@ -99,9 +88,5 @@ where
         if let Some(f) = &mut self.hint_allowed_updates {
             f(&mut self.state, hint);
         }
-    }
-
-    fn timeout_hint(&self) -> Option<Duration> {
-        self.timeout_hint.as_ref().and_then(|f| f(&self.state))
     }
 }

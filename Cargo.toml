@@ -1,6 +1,6 @@
 [workspace]
 members = ["crates/*"]
-
+resolver = "2"
 
 # The settings below will be applied to all crates in the workspace
 [workspace.package]

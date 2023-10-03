@@ -1,0 +1,60 @@
+[assign]
+warn_non_default_branch = true
+# contributing_url = "https://rustc-dev-guide.rust-lang.org/contributing.html" # FIXME: configure
+
+[assign.adhoc_groups]
+# This is a special group that will be used if none of the `owners` entries matches.
+fallback = ["@WaffleLapkin", "@Hirrolot"]
+
+[assign.owners]
+"crates/teloxide-core" = ["@WaffleLapkin"]
+"crates/teloxide-macros" = ["@WaffleLapkin"]
+"crates/teloxide" = ["@Hirrolot"]
+".github" = ["@WaffleLapkin"]
+
+
+[autolabel."S-waiting-on-review"]
+new_pr = true
+
+#[autolabel."new-issue"]
+#new_issue = true
+
+[autolabel."C-core"]
+trigger_files = ["crates/teloxide-core"]
+
+[autolabel."C-main"]
+trigger_files = ["crates/teloxide"]
+
+[autolabel."C-macros"]
+trigger_files = ["crates/teloxide-macros"]
+
+
+[relabel]
+allow-unauthenticated = [
+    "S-*", # Status
+    "C-*", # Crate
+    "breaking change",
+    "bug",
+    "documentation",
+    "duplicate",
+    "feature-request",
+    "FIXME",
+    "frozen",
+    "proposal",
+    "question",
+    "tba-update",
+    "Unknown API error",
+    "WIP",
+]
+
+
+# https://forge.rust-lang.org/triagebot/github-releases.html?
+
+
+[review-submitted]
+# This label is added when a review is submitted.
+reviewed_label = "S-waiting-on-author"
+# These labels are removed when a review is submitted.
+review_labels = ["S-waiting-on-review"]
+
+[shortcut]

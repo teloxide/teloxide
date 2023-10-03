@@ -22,6 +22,7 @@ pub(crate) struct CommandAttrs {
     pub rename: Option<(String, Span)>,
     pub parser: Option<(ParserType, Span)>,
     pub separator: Option<(String, Span)>,
+    pub command_separator: Option<(String, Span)>,
     pub hide: Option<((), Span)>,
 }
 
@@ -48,6 +49,7 @@ enum CommandAttrKind {
     Rename(String),
     ParseWith(ParserType),
     Separator(String),
+    CommandSeparator(String),
     Hide,
 }
 
@@ -66,6 +68,7 @@ impl CommandAttrs {
                 rename: None,
                 parser: None,
                 separator: None,
+                command_separator: None,
                 hide: None,
             },
             |mut this, attr| {
@@ -110,6 +113,7 @@ impl CommandAttrs {
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
+                    CommandSeparator(s) => insert(&mut this.command_separator, s, attr.sp),
                     Hide => insert(&mut this.hide, (), attr.sp),
                 }?;
 
@@ -141,13 +145,12 @@ impl CommandAttr {
             }
 
             "command" => {
-                let Some(attr) = key.pop()
-                    else {
-                        return Err(compile_error_at(
-                            "expected an attribute name",
-                            outermost_key.span(),
-                        ))
-                    };
+                let Some(attr) = key.pop() else {
+                    return Err(compile_error_at(
+                        "expected an attribute name",
+                        outermost_key.span(),
+                    ));
+                };
 
                 if let Some(unexpected_key) = key.last() {
                     return Err(compile_error_at(
@@ -165,6 +168,7 @@ impl CommandAttr {
                     "rename" => Rename(value.expect_string()?),
                     "parse_with" => ParseWith(ParserType::parse(value)?),
                     "separator" => Separator(value.expect_string()?),
+                    "command_separator" => CommandSeparator(value.expect_string()?),
                     "hide" => value.expect_none("hide").map(|_| Hide)?,
                     _ => {
                         return Err(compile_error_at(

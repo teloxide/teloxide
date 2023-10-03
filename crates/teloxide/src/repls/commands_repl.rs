@@ -165,9 +165,9 @@ where
 ///    the [`Requester`] trait.
 /// 2. `handler` is an `async` function that takes arguments from
 ///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
-/// 3. `cmd` is a type hint for your command enumeration
-///    `MyCommand`: just write `MyCommand::ty()`. Note that `MyCommand` must
-///    implement the [`BotCommands`] trait, typically via
+/// 3. `cmd` is a type hint for your command enumeration `MyCommand`: just write
+///    `MyCommand::ty()`. Note that `MyCommand` must implement the
+///    [`BotCommands`] trait, typically via
 ///   `#[derive(BotCommands)]`.
 ///
 /// All the other requirements are about thread safety and data validity and can
@@ -236,8 +236,8 @@ where
 ///    [`DependencyMap`] (see below) and returns [`ResponseResult`].
 /// 3. `listener` is something that takes updates from a Telegram server and
 ///    implements [`UpdateListener`].
-/// 4. `cmd` is a type hint for your command enumeration `MyCommand`: just
-///    write `MyCommand::ty()`. Note that `MyCommand` must implement the
+/// 4. `cmd` is a type hint for your command enumeration `MyCommand`: just write
+///    `MyCommand::ty()`. Note that `MyCommand` must implement the
 ///   [`BotCommands`] trait, typically via `#[derive(BotCommands)]`.
 ///
 /// All the other requirements are about thread safety and data validity and can

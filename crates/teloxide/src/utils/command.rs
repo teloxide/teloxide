@@ -155,6 +155,30 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
+/// 6. `#[command(command_separator = "sep")]`
+/// Specify separator between command and args. Default is a space character.
+///
+/// ## Example
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::utils::command::BotCommands;
+///
+/// #[derive(BotCommands, PartialEq, Debug)]
+/// #[command(
+///     rename_rule = "lowercase",
+///     parse_with = "split",
+///     separator = "_",
+///     command_separator = "_"
+/// )]
+/// enum Command {
+///     Nums(u8, u16, i32),
+/// }
+///
+/// let command = Command::parse("/nums_1_32_5", "").unwrap();
+/// assert_eq!(command, Command::Nums(1, 32, 5));
+/// # }
+/// ```
+///
 /// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
 ///
