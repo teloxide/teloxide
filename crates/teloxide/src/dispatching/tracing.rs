@@ -4,7 +4,7 @@ use dptree::{di::Injectable, prelude::DependencyMap, HandlerDescription};
 use tracing::{Instrument, Span};
 
 pub trait UpdateHandlerTracingExt<E> {
-    /// Returns an `UpdateHandler` with tracing enabled.
+    /// Returns an `UpdateHandler` wrapped in a span.
     fn with_tracing_span<F, FnArgs>(self, f: F) -> Self
     where
         F: Injectable<DependencyMap, Span, FnArgs> + Send + Sync + Clone + 'static;
