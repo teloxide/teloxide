@@ -33,6 +33,8 @@ macros = ["teloxide-macros"]
 
 ctrlc_handler = ["tokio/signal"]
 
+tracing = ["dep:tracing"]
+
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
 auto-send = ["teloxide-core/auto_send"]
@@ -64,6 +66,7 @@ full = [
     "cache-me",
     "trace-adaptor",
     "erased",
+    "tracing",
 ]
 
 
@@ -107,6 +110,7 @@ tower = { version = "0.4.12", optional = true }
 tower-http = { version = "0.3.4", features = ["trace"], optional = true }
 rand = { version = "0.8.5", optional = true }
 
+tracing = { version = "0.1", optional = true }
 
 [dev-dependencies]
 rand = "0.8.3"
