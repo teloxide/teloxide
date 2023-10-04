@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Chat, ChatInviteLink, User};
+use crate::types::{Chat, ChatId, ChatInviteLink, User};
 
 /// Represents a join request sent to a chat.
 #[serde_with_macros::skip_serializing_none]
@@ -11,6 +11,11 @@ pub struct ChatJoinRequest {
     pub chat: Chat,
     /// User that sent the join request
     pub from: User,
+    /// Identifier of a private chat with the user who sent the join request.
+    /// The bot can use this identifier for 5 minutes to send messages until
+    /// the join request is processed, assuming no other administrator
+    /// contacted the user.
+    pub user_chat_id: ChatId,
     /// Date the request was sent in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
