@@ -1,8 +1,11 @@
 use std::{
     collections::{hash_map::Entry, HashMap, VecDeque},
+    pin::pin,
     time::{Duration, Instant},
 };
 
+use either::Either;
+use futures::{future, FutureExt as _};
 use tokio::sync::{mpsc, mpsc::error::TryRecvError, oneshot::Sender};
 use vecrem::VecExt;
 
@@ -129,17 +132,19 @@ pub(super) async fn worker<B>(
         answer_info(&mut info_rx, &mut limits);
 
         loop {
-            tokio::select! {
-                freeze_until = freeze_rx.recv() => {
-                    freeze(
-                        &mut freeze_rx,
-                        slow_mode.as_mut(),
-                        &bot,
-                        freeze_until
-                    )
-                    .await;
-                },
-                () = read_from_rx(&mut rx, &mut queue, &mut rx_is_closed) => break,
+            let res = future::select(
+                pin!(freeze_rx.recv()),
+                pin!(read_from_rx(&mut rx, &mut queue, &mut rx_is_closed)),
+            )
+            .map(either)
+            .await
+            .map_either(|l| l.0, |r| r.0);
+
+            match res {
+                Either::Left(freeze_until) => {
+                    freeze(&mut freeze_rx, slow_mode.as_mut(), &bot, freeze_until).await;
+                }
+                Either::Right(()) => break,
             }
         }
         //debug_assert_eq!(queue.capacity(), limits.messages_per_sec_overall as usize);
@@ -369,6 +374,13 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
             // There are no items in queue.
             Err(TryRecvError::Empty) => break,
         }
+    }
+}
+
+fn either<L, R>(x: future::Either<L, R>) -> Either<L, R> {
+    match x {
+        future::Either::Left(l) => Either::Left(l),
+        future::Either::Right(r) => Either::Right(r),
     }
 }
 
