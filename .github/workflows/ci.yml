@@ -24,7 +24,9 @@ env:
   # - **/README.md
   # - **/src/lib.rs
   # - down below in a matrix
-  rust_msrv: 1.65.0
+  # - `Cargo.toml`
+  # - **/CHANGELOG.md
+  rust_msrv: 1.68.0
 
   CI: 1
 
@@ -87,7 +89,7 @@ jobs:
             toolchain: nightly-2023-09-27
             features: "--features full nightly"
           - rust: msrv
-            toolchain: 1.65.0
+            toolchain: 1.68.0
             features: "--features full"
 
     steps:
