@@ -297,6 +297,8 @@ fn answer_info(rx: &mut mpsc::Receiver<InfoMessage>, limits: &mut Limits) {
     }
 }
 
+// FIXME: https://github.com/rust-lang/rust-clippy/issues/11610
+#[allow(clippy::needless_pass_by_ref_mut)]
 async fn freeze(
     rx: &mut mpsc::Receiver<FreezeUntil>,
     mut slow_mode: Option<&mut HashMap<ChatIdHash, (Duration, Instant)>>,
