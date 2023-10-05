@@ -4,6 +4,7 @@ version = "0.12.2"
 description = "An elegant Telegram bots framework for Rust"
 
 rust-version.workspace = true
+
 edition.workspace = true
 license.workspace = true
 homepage.workspace = true
@@ -17,7 +18,7 @@ categories = ["web-programming", "api-bindings", "asynchronous"]
 
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default",  "auto-send"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default", "auto-send"]
 
 webhooks = ["rand"]
 webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
@@ -37,7 +38,9 @@ native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
 auto-send = ["teloxide-core/auto_send"]
 throttle = ["teloxide-core/throttle"]
-cache-me = ["teloxide-core/cache_me"] # FIXME: why teloxide and core use - _ differently?
+cache-me = [
+    "teloxide-core/cache_me",
+] # FIXME: why teloxide and core use - _ differently?
 trace-adaptor = ["teloxide-core/trace_adaptor"]
 erased = ["teloxide-core/erased"]
 
@@ -94,10 +97,11 @@ futures = "0.3.15"
 pin-project = "1.0"
 serde_with_macros = "1.4"
 aquamarine = "0.1.11"
+either = "1.9.0"
 
 sqlx = { version = "0.6", optional = true, default-features = false, features = [
-        "macros",
-        "sqlite",
+    "macros",
+    "sqlite",
 ] }
 redis = { version = "0.21", features = ["tokio-comp"], optional = true }
 serde_cbor = { version = "0.11", optional = true }
@@ -131,8 +135,8 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 tag-prefix = ""
 enable-features = ["full"]
 pre-release-replacements = [
-  {file="../../README.md", search="teloxide = \\{ version = \"[^\"]+\"", replace="teloxide = { version = \"{{version}}\""},
-  {file="../../CHANGELOG.md", search="## unreleased", replace="## unreleased\n\n## {{version}} - {{date}}", exactly=1},
+    { file = "../../README.md", search = "teloxide = \\{ version = \"[^\"]+\"", replace = "teloxide = { version = \"{{version}}\"" },
+    { file = "../../CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
 ]
 
 [[test]]
@@ -165,7 +169,12 @@ required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
 name = "db_remember"
-required-features = ["sqlite-storage", "redis-storage", "bincode-serializer", "macros"]
+required-features = [
+    "sqlite-storage",
+    "redis-storage",
+    "bincode-serializer",
+    "macros",
+]
 
 [[example]]
 name = "dialogue"

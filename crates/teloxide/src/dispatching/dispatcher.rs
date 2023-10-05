@@ -10,7 +10,12 @@ use crate::{
 };
 
 use dptree::di::{DependencyMap, DependencySupplier};
-use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
+use either::Either;
+use futures::{
+    future::{self, BoxFuture},
+    stream::FuturesUnordered,
+    FutureExt as _, StreamExt as _,
+};
 use tokio_stream::wrappers::ReceiverStream;
 
 use std::{
@@ -19,6 +24,7 @@ use std::{
     future::Future,
     hash::Hash,
     ops::{ControlFlow, Deref},
+    pin::pin,
     sync::{
         atomic::{AtomicBool, AtomicU32, Ordering},
         Arc,
@@ -321,15 +327,22 @@ where
             loop {
                 self.remove_inactive_workers_if_needed().await;
 
-                tokio::select! {
-                    upd = stream.next() => match upd {
-                        None => break,
+                let res = future::select(stream.next(), pin!(self.state.wait_for_changes()))
+                    .map(either)
+                    .await
+                    .map_either(|l| l.0, |r| r.0);
+
+                match res {
+                    Either::Left(upd) => match upd {
                         Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
+                        None => break,
                     },
-                    () = self.state.wait_for_changes() => if self.state.is_shutting_down() {
-                        if let Some(token) = stop_token.take() {
-                            log::debug!("Start shutting down dispatching...");
-                            token.stop();
+                    Either::Right(()) => {
+                        if self.state.is_shutting_down() {
+                            if let Some(token) = stop_token.take() {
+                                log::debug!("Start shutting down dispatching...");
+                                token.stop();
+                            }
                         }
                     }
                 }
@@ -578,6 +591,12 @@ async fn handle_update<Err>(
     }
 }
 
+fn either<L, R>(x: future::Either<L, R>) -> Either<L, R> {
+    match x {
+        future::Either::Left(l) => Either::Left(l),
+        future::Either::Right(r) => Either::Right(r),
+    }
+}
 #[cfg(test)]
 mod tests {
     use std::convert::Infallible;
