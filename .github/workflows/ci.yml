@@ -35,6 +35,7 @@ jobs:
   ci-pass:
     name: CI succeeded
     runs-on: ubuntu-latest
+    if: always()
 
     needs:
       - fmt
@@ -44,7 +45,10 @@ jobs:
       - doc
 
     steps:
-      - run: exit 0
+      - name: Check whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   fmt:
     name: fmt
