@@ -277,7 +277,6 @@ where
     ///  - An update from Telegram;
     ///  - [`crate::types::Me`] (can be used in [`HandlerExt::filter_command`]).
     ///
-    /// [`shutdown`]: ShutdownToken::shutdown
     /// [`HandlerExt::filter_command`]: crate::dispatching::HandlerExt::filter_command
     pub async fn dispatch(&mut self)
     where
@@ -295,8 +294,6 @@ where
     /// `update_listener_error_handler`.
     ///
     /// This method adds the same dependencies as [`Dispatcher::dispatch`].
-    ///
-    /// [`shutdown`]: ShutdownToken::shutdown
     pub async fn dispatch_with_listener<'a, UListener, Eh>(
         &'a mut self,
         update_listener: UListener,
@@ -312,14 +309,12 @@ where
     }
 
     /// Same as `dispatch_with_listener` but returns a `Err(_)` instead of
-    /// panicking when the initial `get_me` call fails.
+    /// panicking when the initial telegram api call (`get_me`) fails.
     ///
     /// Starts your bot with custom `update_listener` and
     /// `update_listener_error_handler`.
     ///
     /// This method adds the same dependencies as [`Dispatcher::dispatch`].
-    ///
-    /// [`shutdown`]: ShutdownToken::shutdown
     pub async fn try_dispatch_with_listener<'a, UListener, Eh>(
         &'a mut self,
         mut update_listener: UListener,
@@ -487,8 +482,7 @@ where
         }
     }
 
-    /// Setups the `^C` handler that [`shutdown`]s dispatching.
-    ///
+    /// Setups the `^C` handler in order to call [`shutdown`] when pressed.
     /// [`shutdown`]: ShutdownToken::shutdown
     #[cfg(feature = "ctrlc_handler")]
     #[deprecated(since = "0.10.0", note = "use `enable_ctrlc_handler` on builder instead")]
@@ -496,9 +490,10 @@ where
         self.setup_ctrlc_handler_inner();
         self
     }
-
+    
     /// Returns a shutdown token, which can later be used to shutdown
     /// dispatching.
+    /// [`shutdown`]: ShutdownToken::shutdown
     pub fn shutdown_token(&self) -> ShutdownToken {
         self.state.clone()
     }
