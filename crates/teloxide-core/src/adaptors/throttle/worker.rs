@@ -1,8 +1,11 @@
 use std::{
     collections::{hash_map::Entry, HashMap, VecDeque},
+    pin::pin,
     time::{Duration, Instant},
 };
 
+use either::Either;
+use futures::{future, FutureExt as _};
 use tokio::sync::{mpsc, mpsc::error::TryRecvError, oneshot::Sender};
 use vecrem::VecExt;
 
@@ -129,17 +132,19 @@ pub(super) async fn worker<B>(
         answer_info(&mut info_rx, &mut limits);
 
         loop {
-            tokio::select! {
-                freeze_until = freeze_rx.recv() => {
-                    freeze(
-                        &mut freeze_rx,
-                        slow_mode.as_mut(),
-                        &bot,
-                        freeze_until
-                    )
-                    .await;
-                },
-                () = read_from_rx(&mut rx, &mut queue, &mut rx_is_closed) => break,
+            let res = future::select(
+                pin!(freeze_rx.recv()),
+                pin!(read_from_rx(&mut rx, &mut queue, &mut rx_is_closed)),
+            )
+            .map(either)
+            .await
+            .map_either(|l| l.0, |r| r.0);
+
+            match res {
+                Either::Left(freeze_until) => {
+                    freeze(&mut freeze_rx, slow_mode.as_mut(), &bot, freeze_until).await;
+                }
+                Either::Right(()) => break,
             }
         }
         //debug_assert_eq!(queue.capacity(), limits.messages_per_sec_overall as usize);
@@ -155,18 +160,18 @@ pub(super) async fn worker<B>(
         //
         // Reasons (not to use `spawn_blocking`):
         //
-        // 1. The work seems not very CPU-bound, it's not heavy computations,
-        //    it's more like light computations.
+        // 1. The work seems not very CPU-bound, it's not heavy computations, it's more
+        //    like light computations.
         //
         // 2. `spawn_blocking` is not zero-cost — it spawns a new system thread
         //    + do so other work. This may actually be *worse* then current
         //    "just do everything in this async fn" approach.
         //
-        // 3. With `rt-threaded` feature, tokio uses [`num_cpus()`] threads
-        //    which should be enough to work fine with one a-bit-blocking task.
-        //    Crucially current behaviour will be problem mostly with
-        //    single-threaded runtimes (and in case you're using one, you
-        //    probably don't want to spawn unnecessary threads anyway).
+        // 3. With `rt-threaded` feature, tokio uses [`num_cpus()`] threads which should
+        //    be enough to work fine with one a-bit-blocking task. Crucially current
+        //    behaviour will be problem mostly with single-threaded runtimes (and in
+        //    case you're using one, you probably don't want to spawn unnecessary
+        //    threads anyway).
         //
         // I think if we'll ever change this behaviour, we need to make it
         // _configurable_.
@@ -292,6 +297,8 @@ fn answer_info(rx: &mut mpsc::Receiver<InfoMessage>, limits: &mut Limits) {
     }
 }
 
+// FIXME: https://github.com/rust-lang/rust-clippy/issues/11610
+#[allow(clippy::needless_pass_by_ref_mut)]
 async fn freeze(
     rx: &mut mpsc::Receiver<FreezeUntil>,
     mut slow_mode: Option<&mut HashMap<ChatIdHash, (Duration, Instant)>>,
@@ -369,6 +376,13 @@ async fn read_from_rx<T>(rx: &mut mpsc::Receiver<T>, queue: &mut Vec<T>, rx_is_c
             // There are no items in queue.
             Err(TryRecvError::Empty) => break,
         }
+    }
+}
+
+fn either<L, R>(x: future::Either<L, R>) -> Either<L, R> {
+    match x {
+        future::Either::Left(l) => Either::Left(l),
+        future::Either::Right(r) => Either::Right(r),
     }
 }
 

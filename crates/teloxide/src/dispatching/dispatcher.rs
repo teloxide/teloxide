@@ -7,12 +7,15 @@ use crate::{
     requests::{Request, Requester},
     types::{Update, UpdateKind},
     update_listeners::{self, UpdateListener},
-    utils::shutdown_token::shutdown_check_timeout_for,
 };
 
 use dptree::di::{DependencyMap, DependencySupplier};
-use futures::{future::BoxFuture, stream::FuturesUnordered, StreamExt};
-use tokio::time::timeout;
+use either::Either;
+use futures::{
+    future::{self, BoxFuture},
+    stream::FuturesUnordered,
+    FutureExt as _, StreamExt as _,
+};
 use tokio_stream::wrappers::ReceiverStream;
 
 use std::{
@@ -21,6 +24,7 @@ use std::{
     future::Future,
     hash::Hash,
     ops::{ControlFlow, Deref},
+    pin::pin,
     sync::{
         atomic::{AtomicBool, AtomicU32, Ordering},
         Arc,
@@ -336,7 +340,6 @@ where
         log::debug!("hinting allowed updates: {:?}", allowed_updates);
         update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
-        let shutdown_check_timeout = shutdown_check_timeout_for(&update_listener);
         let mut stop_token = Some(update_listener.stop_token());
 
         self.state.start_dispatching();
@@ -348,19 +351,23 @@ where
             loop {
                 self.remove_inactive_workers_if_needed().await;
 
-                // False positive
-                #[allow(clippy::collapsible_match)]
-                if let Ok(upd) = timeout(shutdown_check_timeout, stream.next()).await {
-                    match upd {
-                        None => break,
-                        Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
-                    }
-                }
+                let res = future::select(stream.next(), pin!(self.state.wait_for_changes()))
+                    .map(either)
+                    .await
+                    .map_either(|l| l.0, |r| r.0);
 
-                if self.state.is_shutting_down() {
-                    if let Some(token) = stop_token.take() {
-                        log::debug!("Start shutting down dispatching...");
-                        token.stop();
+                match res {
+                    Either::Left(upd) => match upd {
+                        Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
+                        None => break,
+                    },
+                    Either::Right(()) => {
+                        if self.state.is_shutting_down() {
+                            if let Some(token) = stop_token.take() {
+                                log::debug!("Start shutting down dispatching...");
+                                token.stop();
+                            }
+                        }
                     }
                 }
             }
@@ -609,6 +616,12 @@ async fn handle_update<Err>(
     }
 }
 
+fn either<L, R>(x: future::Either<L, R>) -> Either<L, R> {
+    match x {
+        future::Either::Left(l) => Either::Left(l),
+        future::Either::Right(r) => Either::Right(r),
+    }
+}
 #[cfg(test)]
 mod tests {
     use std::convert::Infallible;

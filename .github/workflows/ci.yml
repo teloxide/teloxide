@@ -19,12 +19,14 @@ env:
   # When updating this, also update:
   # - crates/teloxide-core/src/codegen.rs
   # - rust-toolchain.toml
-  rust_nightly: nightly-2023-05-28
+  rust_nightly: nightly-2023-09-27
   # When updating this, also update:
   # - **/README.md
   # - **/src/lib.rs
   # - down below in a matrix
-  rust_msrv: 1.65.0
+  # - `Cargo.toml`
+  # - **/CHANGELOG.md
+  rust_msrv: 1.68.0
 
   CI: 1
 
@@ -33,6 +35,7 @@ jobs:
   ci-pass:
     name: CI succeeded
     runs-on: ubuntu-latest
+    if: always()
 
     needs:
       - fmt
@@ -42,7 +45,10 @@ jobs:
       - doc
 
     steps:
-      - run: exit 0
+      - name: Check whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   fmt:
     name: fmt
@@ -84,10 +90,10 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2023-05-28
+            toolchain: nightly-2023-09-27
             features: "--features full nightly"
           - rust: msrv
-            toolchain: 1.65.0
+            toolchain: 1.68.0
             features: "--features full"
 
     steps:

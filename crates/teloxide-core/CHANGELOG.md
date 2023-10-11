@@ -54,7 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CallbackGame`, `ForumTopicClosed`, `ForumTopicReopened`, `GeneralForumTopicHidden`, `GeneralForumTopicUnhidden` and `WriteAccessAllowed` structures
   are now defined as named (`struct S {}`) instead of unit (`struct S;`) in order to fix their deserialization ([#876][pr876])
 - `Download` now uses GAT feature on the `Fut` and `Err` associated types, instead of a lifetime on the whole trait ([#885][pr885])
-- MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.65.0`
 - Renamed `ForumTopic::message_thread_id` into `thread_id` ([#887][pr887])
 - `ForumTopic::thread_id` and `Message::thread_id` now use `ThreadId` instead of `i32` ([#887][pr887])
 - `message_thread_id` method parameters now use `ThreadId` instead of `i32` ([#887][pr887])
@@ -67,12 +66,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `u32` for sizes and `Seconds` for timespans in `InlineQueryResult*` ([#887][pr887])
 - `SendGame::reply_to_message_id`, `SendSticker::reply_to_message_id` and `SendInvoice::reply_to_message_id` now use `MessageId` instead of `i32` ([#887][pr887])
 - Use `UpdateId` for `Update::id` ([#892][pr892])
+- MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([#950][pr950])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
 [pr876]: https://github.com/teloxide/teloxide/pull/876
 [pr885]: https://github.com/teloxide/teloxide/pull/885
 [pr892]: https://github.com/teloxide/teloxide/pull/892
+[pr950]: https://github.com/teloxide/teloxide/pull/950
 
 ### Deprecated
 

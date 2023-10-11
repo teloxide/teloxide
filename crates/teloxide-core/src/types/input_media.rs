@@ -452,7 +452,7 @@ pub struct InputMediaDocument {
     /// using multipart/form-data.
     pub thumb: Option<InputFile>,
 
-    /// Caption of the document to be sent, 0-1024 charactersю
+    /// Caption of the document to be sent, 0-1024 characters.
     pub caption: Option<String>,
 
     /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,

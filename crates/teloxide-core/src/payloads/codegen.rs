@@ -1,3 +1,6 @@
+// waffle: efficiency is not important here, and I don't want to rewrite this
+#![allow(clippy::format_collect)]
+
 use std::{borrow::Borrow, collections::HashSet, ops::Deref};
 
 use itertools::Itertools;
@@ -51,7 +54,7 @@ fn codegen_payloads() {
 
         let multipart = multipart_input_file_fields(&method)
             .map(|field| format!("    @[multipart = {}]\n", field.join(", ")))
-            .unwrap_or_else(String::new);
+            .unwrap_or_default();
 
         let derive = if !multipart.is_empty()
             || matches!(

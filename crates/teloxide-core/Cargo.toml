@@ -31,7 +31,7 @@ native-tls = ["reqwest/native-tls"]
 nightly = []
 
 # Throttling bot adaptor
-throttle = ["vecrem", "tokio/macros"]
+throttle = ["vecrem"]
 
 # Trace bot adaptor
 trace_adaptor = []
@@ -55,15 +55,19 @@ tokio = { version = "1.12.0", features = ["fs"] }
 tokio-util = { version = "0.7.0", features = ["codec"] }
 pin-project = "1.0.12"
 bytes = "1.0.0"
-reqwest = { version = "0.11.10", features = ["json", "stream", "multipart"], default-features = false }
+reqwest = { version = "0.11.10", features = [
+    "json",
+    "stream",
+    "multipart",
+], default-features = false }
 url = { version = "2", features = ["serde"] }
 log = "0.4"
 
 serde = { version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.55"
 serde_with_macros = "1.5.2"
-uuid = { version = "1.1.0", features = ["v4"] } # for attaching input files
- 
+uuid = { version = "1.1.0", features = ["v4"] }        # for attaching input files
+
 derive_more = "0.99.9"
 mime = "0.3.16"
 thiserror = "1.0.20"
@@ -81,7 +85,12 @@ vecrem = { version = "0.1", optional = true }
 
 [dev-dependencies]
 pretty_env_logger = "0.4"
-tokio = { version = "1.8.0", features = ["fs", "macros", "macros", "rt-multi-thread"] }
+tokio = { version = "1.8.0", features = [
+    "fs",
+    "macros",
+    "macros",
+    "rt-multi-thread",
+] }
 cool_asserts = "2.0.3"
 
 xshell = "0.2"
@@ -98,6 +107,14 @@ rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
 # https://github.com/rust-lang/rust/issues/88791
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
+[package.metadata.release]
+tag-prefix = "core-"
+enable-features = ["full"]
+pre-release-replacements = [
+    { file = "README.md", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
+    { file = "src/lib.rs", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
+    { file = "CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
+]
 
 [[example]]
 name = "self_info"
@@ -110,4 +127,9 @@ doc-scrape-examples = true
 
 [[example]]
 name = "erased"
-required-features = ["tokio/macros", "tokio/rt-multi-thread", "erased", "trace_adaptor"]
+required-features = [
+    "tokio/macros",
+    "tokio/rt-multi-thread",
+    "erased",
+    "trace_adaptor",
+]

@@ -31,7 +31,7 @@ mod tests {
 
     #[test]
     fn chat_id_id_serialization() {
-        let expected_json = String::from(r#"123456"#);
+        let expected_json = String::from("123456");
         let actual_json = serde_json::to_string(&Recipient::Id(ChatId(123_456))).unwrap();
 
         assert_eq!(expected_json, actual_json)

@@ -1337,6 +1337,8 @@ where
 // }
 
 #[test]
+// waffle: efficiency is not important here, and I don't want to rewrite this
+#[allow(clippy::format_collect)]
 fn codegen_requester_methods() {
     use crate::codegen::{
         add_hidden_preamble,

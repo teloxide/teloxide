@@ -5,18 +5,16 @@ use std::{
         atomic::{AtomicU8, Ordering},
         Arc,
     },
-    time::Duration,
 };
 
 use tokio::sync::Notify;
-
-use crate::update_listeners::UpdateListener;
 
 /// A token which used to shutdown [`Dispatcher`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[derive(Clone)]
 pub struct ShutdownToken {
+    // FIXME: use a single arc
     dispatcher_state: Arc<DispatcherState>,
     shutdown_notify_back: Arc<Notify>,
 }
@@ -49,9 +47,14 @@ impl ShutdownToken {
         Self {
             dispatcher_state: Arc::new(DispatcherState {
                 inner: AtomicU8::new(ShutdownState::Idle as _),
+                notify: <_>::default(),
             }),
             shutdown_notify_back: <_>::default(),
         }
+    }
+
+    pub(crate) async fn wait_for_changes(&self) {
+        self.dispatcher_state.notify.notified().await;
     }
 
     pub(crate) fn start_dispatching(&self) {
@@ -93,27 +96,20 @@ impl fmt::Display for IdleShutdownError {
 
 impl std::error::Error for IdleShutdownError {}
 
-pub(crate) fn shutdown_check_timeout_for(update_listener: &impl UpdateListener) -> Duration {
-    const MIN_SHUTDOWN_CHECK_TIMEOUT: Duration = Duration::from_secs(1);
-    const DZERO: Duration = Duration::ZERO;
-
-    let shutdown_check_timeout = update_listener.timeout_hint().unwrap_or(DZERO);
-    shutdown_check_timeout.saturating_add(MIN_SHUTDOWN_CHECK_TIMEOUT)
-}
-
 struct DispatcherState {
     inner: AtomicU8,
+    notify: Notify,
 }
 
 impl DispatcherState {
     // Ordering::Relaxed: only one atomic variable, nothing to synchronize.
-
     fn load(&self) -> ShutdownState {
         ShutdownState::from_u8(self.inner.load(Ordering::Relaxed))
     }
 
     fn store(&self, new: ShutdownState) {
-        self.inner.store(new as _, Ordering::Relaxed)
+        self.inner.store(new as _, Ordering::Relaxed);
+        self.notify.notify_waiters();
     }
 
     fn compare_exchange(
@@ -125,6 +121,11 @@ impl DispatcherState {
             .compare_exchange(current as _, new as _, Ordering::Relaxed, Ordering::Relaxed)
             .map(ShutdownState::from_u8)
             .map_err(ShutdownState::from_u8)
+            // FIXME: `Result::inspect` when :(
+            .map(|st| {
+                self.notify.notify_waiters();
+                st
+            })
     }
 }
 

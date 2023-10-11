@@ -114,7 +114,7 @@ impl InputFile {
     }
 
     /// Shorthand for `Self { file_name: None, inner, id: default() }`
-    /// (private because `InnerFile` iы private implementation detail)
+    /// (private because `InnerFile` is private implementation detail)
     fn new(inner: InnerFile) -> Self {
         Self { file_name: None, inner, id: OnceCell::new() }
     }
@@ -258,7 +258,7 @@ impl Read {
             let res = ArcBox::<TakeCell<dyn AsyncRead + Send + Unpin>>::try_from(self.inner);
             match res {
                 // Fast/easy path: this is the only file copy, so we can just forward the underlying
-                // `dyn AsynсRead` via some adaptors to reqwest.
+                // `dyn AsyncRead` via some adaptors to reqwest.
                 Ok(arc_box) => {
                     let fr = FramedRead::new(ExclusiveArcAsyncRead(arc_box), BytesDecoder);
 
@@ -270,7 +270,7 @@ impl Read {
             }
         }
 
-        // Slow path: either wait until someone will read the whole `dyn AsynсRead` into
+        // Slow path: either wait until someone will read the whole `dyn AsyncRead` into
         // a buffer, or be the one who reads
         let body = self.into_shared_body().await;
 
@@ -321,7 +321,7 @@ impl Read {
                 let _ = self.notify.send(());
             }
 
-            // Wait until `dyn AsynсRead` is read into a buffer, if it hasn't been read yet
+            // Wait until `dyn AsyncRead` is read into a buffer, if it hasn't been read yet
             None if self.buf.get().is_none() => {
                 // Error indicates that the sender was dropped, by we hold `Arc<Sender>`, so
                 // this can't happen

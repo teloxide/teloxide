@@ -28,7 +28,7 @@ pub(crate) fn bot_commands_impl(input: DeriveInput) -> Result<TokenStream> {
 
     let type_name = &input.ident;
     let fn_descriptions = impl_descriptions(&var_info, &command_enum);
-    let fn_parse = impl_parse(&var_info, &var_init);
+    let fn_parse = impl_parse(&var_info, &var_init, &command_enum.command_separator);
     let fn_commands = impl_commands(&var_info);
 
     let trait_impl = quote! {
@@ -99,6 +99,7 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
 fn impl_parse(
     infos: &[Command],
     variants_initialization: &[proc_macro2::TokenStream],
+    command_separator: &str,
 ) -> proc_macro2::TokenStream {
     let matching_values = infos.iter().map(|c| c.get_prefixed_command());
 
@@ -110,7 +111,7 @@ fn impl_parse(
 
               // 2 is used to only split once (=> in two parts),
               // we only need to split the command and the rest of arguments.
-              let mut words = s.splitn(2, ' ');
+              let mut words = s.splitn(2, #command_separator);
 
               // Unwrap: split iterators always have at least one item
               let mut full_command = words.next().unwrap().split('@');
