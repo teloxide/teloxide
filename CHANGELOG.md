@@ -21,9 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([PR 950][https://github.com/teloxide/teloxide/pull/950])
 - Fields `from`, `sender_chat`, `is_topic_message` are moved from `MessageCommon` to `Message` ([issue 945](https://github.com/teloxide/teloxide/issues/945))
 
+### Deprecated
+
+- `Message::from()` and `Message::sender_chat()` in favour of fields with the same name
+
 ### Removed
 
 - `UpdateListener::timeout_hint` and related APIs ([PR 938](https://github.com/teloxide/teloxide/pull/938))
+- `dispatching::MessageFilterExt::filter_from()`
 
 ## 0.12.2 - 2023-02-15
 

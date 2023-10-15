@@ -667,6 +667,7 @@ mod getters {
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
         /// Returns the user who sent the message.
+        #[deprecated(since = "0.13.0", note = "use `.from` field instead")]
         #[must_use]
         pub fn from(&self) -> Option<&User> {
             self.from.as_ref()
@@ -680,6 +681,7 @@ mod getters {
             }
         }
 
+        #[deprecated(since = "0.13.0", note = "use `.sender_chat` field instead")]
         #[must_use]
         pub fn sender_chat(&self) -> Option<&Chat> {
             self.sender_chat.as_ref()
@@ -1456,8 +1458,8 @@ impl Message {
 
         // Lets just hope we didn't forget something here...
 
-        self.from()
-            .into_iter()
+        self.from
+            .iter()
             .chain(self.via_bot.as_ref())
             .chain(self.chat.mentioned_users_rec())
             .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
@@ -1754,9 +1756,9 @@ mod tests {
             has_aggressive_anti_spam_enabled: false,
         };
 
-        assert!(message.from().unwrap().is_anonymous());
+        assert!(message.from.as_ref().unwrap().is_anonymous());
         assert_eq!(message.author_signature().unwrap(), "TITLE2");
-        assert_eq!(message.sender_chat().unwrap(), &group);
+        assert_eq!(message.sender_chat.as_ref().unwrap(), &group);
         assert_eq!(&message.chat, &group);
         assert_eq!(message.forward_from_chat().unwrap(), &group);
         assert_eq!(message.forward_signature().unwrap(), "TITLE");
@@ -1779,7 +1781,7 @@ mod tests {
         assert_eq!(message.migrate_to_chat_id(), Some(new));
 
         // The user who initialized the migration
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // Migration from a common group
         let json = r#"{"chat":{"id":-1001555296434,"title":"test","type":"supergroup"},"date":1629404938,"from":{"first_name":"Group","id":1087968824,"is_bot":true,"username":"GroupAnonymousBot"},"message_id":1,"migrate_from_chat_id":-599075523,"sender_chat":{"id":-1001555296434,"title":"test","type":"supergroup"}}"#;
@@ -1790,10 +1792,10 @@ mod tests {
         assert_eq!(message.migrate_from_chat_id(), Some(old));
 
         // Anonymous bot
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // The chat to which the group migrated
-        assert!(message.sender_chat().is_some());
+        assert!(message.sender_chat.is_some());
     }
 
     /// Regression test for <https://github.com/teloxide/teloxide/issues/481>

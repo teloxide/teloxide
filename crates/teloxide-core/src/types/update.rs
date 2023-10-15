@@ -129,7 +129,9 @@ impl Update {
         use UpdateKind::*;
 
         let from = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => m.from()?,
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => {
+                m.from.as_ref()?
+            }
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,

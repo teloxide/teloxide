@@ -68,7 +68,6 @@ macro_rules! define_message_ext {
 
 // May be expanded in the future.
 define_message_ext! {
-    (filter_from, Message::from),
     (filter_animation, Message::animation),
     (filter_audio, Message::audio),
     (filter_contact, Message::contact),
