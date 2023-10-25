@@ -30,13 +30,19 @@ where
     type Err: std::error::Error + Send;
 
     /// The type of the future returned by the [`send`](Request::send) method.
+    #[cfg(not(target_family="wasm"))]
     type Send: Future<Output = Result<Output<Self>, Self::Err>> + Send;
+    #[cfg(target_family="wasm")]
+    type Send: Future<Output = Result<Output<Self>, Self::Err>>;
 
     /// A type of the future returned by the [`send_ref`](Request::send_ref)
     /// method.
     // Note: it intentionally forbids borrowing from `self` though we couldn't allow
     // borrowing without GATs anyway.
+    #[cfg(not(target_family="wasm"))]
     type SendRef: Future<Output = Result<Output<Self>, Self::Err>> + Send;
+    #[cfg(target_family="wasm")]
+    type SendRef: Future<Output = Result<Output<Self>, Self::Err>>;
 
     /// Send this request.
     ///

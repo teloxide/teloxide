@@ -1,3 +1,5 @@
+#![cfg(not(target_family="wasm"))]
+
 use std::future::Future;
 
 use bytes::Bytes;

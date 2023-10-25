@@ -371,6 +371,7 @@ macro_rules! impl_payload {
     (@[] $($ignored:tt)*) => {}
 }
 
+#[cfg(not(target_family="wasm"))]
 macro_rules! download_forward {
     ($T:ident $S:ty {$this:ident => $inner:expr}) => {
         impl<$T: $crate::net::Download> $crate::net::Download for $S {

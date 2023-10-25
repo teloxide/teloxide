@@ -1,3 +1,5 @@
+#![cfg(not(target_family="wasm"))]
+
 use bytes::Bytes;
 use futures::{future::BoxFuture, stream::BoxStream, FutureExt, StreamExt};
 use tokio::io::AsyncWrite;

@@ -94,7 +94,10 @@ where
     T: DeserializeOwned + 'static,
 {
     if response.status().is_server_error() {
+        #[cfg(not(target_family="wasm"))]
         tokio::time::sleep(DELAY_ON_SERVER_ERROR).await;
+        #[cfg(target_family="wasm")]
+        wasmtimer::tokio::sleep(DELAY_ON_SERVER_ERROR).await;
     }
 
     let text = response.text().await?;

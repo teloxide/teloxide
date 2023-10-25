@@ -36,6 +36,7 @@ where
     let iter = vec.into_iter();
 
     let fut = async move {
+        #[cfg(not(target_family="wasm"))]
         for file in iter {
             if file.needs_attach() {
                 let id = file.id().to_owned();
@@ -65,6 +66,7 @@ where
     let iter = vec.into_iter();
 
     let fut = async move {
+        #[cfg(not(target_family="wasm"))]
         for file in iter {
             if file.needs_attach() {
                 let id = file.id().to_owned();

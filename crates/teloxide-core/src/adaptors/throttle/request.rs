@@ -211,7 +211,10 @@ where
 
             if retry {
                 log::warn!("Freezing, before retrying: {:?}", retry_after);
+                #[cfg(not(target_family="wasm"))]
                 tokio::time::sleep_until(until.into()).await;
+                #[cfg(target_family="wasm")]
+                wasmtimer::tokio::sleep_until(until.into()).await;
             }
         }
 

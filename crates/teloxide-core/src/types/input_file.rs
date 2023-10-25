@@ -1,10 +1,12 @@
 use bytes::{Bytes, BytesMut};
+#[cfg(not(target_family="wasm"))]
 use futures::{
     future::{ready, Either},
     stream,
 };
 use once_cell::sync::OnceCell;
 use rc_box::ArcBox;
+#[cfg(not(target_family="wasm"))]
 use reqwest::{multipart::Part, Body};
 use serde::Serialize;
 use takecell::TakeCell;
@@ -200,6 +202,7 @@ impl Serialize for InputFile {
 // internal api
 
 impl InputFile {
+    #[cfg(not(target_family="wasm"))]
     pub(crate) fn into_part(mut self) -> Option<impl Future<Output = Part>> {
         let filename = self.take_or_guess_filename();
 
@@ -253,6 +256,7 @@ impl Read {
         Self { inner: it, buf: Arc::default(), notify: Arc::new(tx), wait: rx }
     }
 
+    #[cfg(not(target_family="wasm"))]
     pub(crate) async fn into_part(mut self, filename: Cow<'static, str>) -> Part {
         if !self.inner.is_taken() {
             let res = ArcBox::<TakeCell<dyn AsyncRead + Send + Unpin>>::try_from(self.inner);
@@ -277,6 +281,7 @@ impl Read {
         Part::stream(body).file_name(filename)
     }
 
+    #[cfg(not(target_family="wasm"))]
     async fn into_shared_body(mut self) -> Body {
         match self.inner.take() {
             // Read `dyn AsyncRead` into a buffer
