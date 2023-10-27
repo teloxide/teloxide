@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-#[cfg(not(target_family="wasm"))]
+#[cfg(not(target_family = "wasm"))]
 pub use self::download::{download_file, download_file_stream, Download};
 
 pub(crate) use self::{
@@ -36,7 +36,7 @@ pub const TELEGRAM_API_URL: &str = "https://api.telegram.org";
 ///
 /// If `TELOXIDE_PROXY` exists, but isn't correct url.
 #[must_use]
-#[cfg(not(target_family="wasm"))]
+#[cfg(not(target_family = "wasm"))]
 pub fn client_from_env() -> reqwest::Client {
     use reqwest::Proxy;
 
@@ -72,12 +72,12 @@ pub fn client_from_env() -> reqwest::Client {
 ///
 /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
 pub fn default_reqwest_settings() -> reqwest::ClientBuilder {
-    #[cfg(not(target_family="wasm"))]
+    #[cfg(not(target_family = "wasm"))]
     return reqwest::Client::builder()
         .connect_timeout(Duration::from_secs(5))
         .timeout(Duration::from_secs(17))
         .tcp_nodelay(true);
-    #[cfg(target_family="wasm")]
+    #[cfg(target_family = "wasm")]
     return reqwest::Client::builder();
 }
 

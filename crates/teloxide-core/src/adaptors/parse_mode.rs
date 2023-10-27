@@ -195,7 +195,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
     }
 }
 
-#[cfg(not(target_family="wasm"))]
+#[cfg(not(target_family = "wasm"))]
 download_forward! {
     B
     DefaultParseMode<B>

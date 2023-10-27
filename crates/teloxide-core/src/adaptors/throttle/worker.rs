@@ -218,9 +218,9 @@ pub(super) async fn worker<B>(
 
         if allowed == 0 {
             requests_sent.per_sec.clear();
-            #[cfg(not(target_family="wasm"))]
+            #[cfg(not(target_family = "wasm"))]
             tokio::time::sleep(DELAY).await;
-            #[cfg(target_family="wasm")]
+            #[cfg(target_family = "wasm")]
             wasmtimer::tokio::sleep(DELAY).await;
             continue;
         }
@@ -282,9 +282,9 @@ pub(super) async fn worker<B>(
         // It's easier to just recompute last second stats, instead of keeping
         // track of it alongside with minute stats, so we just throw this away.
         requests_sent.per_sec.clear();
-        #[cfg(not(target_family="wasm"))]
+        #[cfg(not(target_family = "wasm"))]
         tokio::time::sleep(DELAY).await;
-        #[cfg(target_family="wasm")]
+        #[cfg(target_family = "wasm")]
         wasmtimer::tokio::sleep(DELAY).await;
     }
 }
@@ -354,9 +354,9 @@ async fn freeze(
                 after
             );
 
-            #[cfg(not(target_family="wasm"))]
+            #[cfg(not(target_family = "wasm"))]
             tokio::time::sleep_until(until.into()).await;
-            #[cfg(target_family="wasm")]
+            #[cfg(target_family = "wasm")]
             wasmtimer::tokio::sleep_until(until.into()).await;
 
             log::warn!("unfreezing the bot");

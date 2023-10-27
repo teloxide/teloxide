@@ -35,9 +35,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     bot.send_chat_action(chat_id, ChatAction::Typing).await?;
-    #[cfg(not(target_family="wasm"))]
+    #[cfg(not(target_family = "wasm"))]
     tokio::time::sleep(Duration::from_secs(1)).await;
-    #[cfg(target_family="wasm")]
+    #[cfg(target_family = "wasm")]
     wasmtimer::tokio::sleep(Duration::from_secs(1)).await;
     bot.send_message(chat_id, "Hey hey hey").await?;
 

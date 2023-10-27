@@ -114,9 +114,9 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [`reqwest::Proxy::all`]: https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html#method.all
     pub fn from_env() -> Self {
-        #[cfg(not(target_family="wasm"))]
+        #[cfg(not(target_family = "wasm"))]
         return Self::from_env_with_client(crate::net::client_from_env());
-        #[cfg(target_family="wasm")]
+        #[cfg(target_family = "wasm")]
         return Self::new(get_env(TELOXIDE_TOKEN));
     }
 
