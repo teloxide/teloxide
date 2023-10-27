@@ -490,7 +490,7 @@ where
         self.setup_ctrlc_handler_inner();
         self
     }
-    
+
     /// Returns a shutdown token, which can later be used to shutdown
     /// dispatching.
     /// [`shutdown`]: ShutdownToken::shutdown
