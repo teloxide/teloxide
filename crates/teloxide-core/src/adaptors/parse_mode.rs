@@ -5,8 +5,9 @@ use url::Url;
 use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
-        EditMessageCaptionInline, EditMessageText, EditMessageTextInline, SendAnimation, SendAudio,
-        SendDocument, SendMessage, SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
+        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
+        SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -147,6 +148,9 @@ where
     B::CopyMessage: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
+    B::EditMessageMedia: Clone,
+    B::EditMessageMediaInline: Clone,
+    B::SendMediaGroup: Clone,
 {
     type Err = B::Err;
 
@@ -166,6 +170,9 @@ where
         copy_message,
         answer_inline_query,
         answer_web_app_query,
+        send_media_group,
+        edit_message_media,
+        edit_message_media_inline,
         => f, fty
     }
 
@@ -179,7 +186,6 @@ where
         get_webhook_info,
         forward_message,
         send_video_note,
-        send_media_group,
         send_location,
         edit_message_live_location,
         edit_message_live_location_inline,
@@ -239,8 +245,6 @@ where
         set_my_default_administrator_rights,
         get_my_default_administrator_rights,
         delete_my_commands,
-        edit_message_media,
-        edit_message_media_inline,
         edit_message_reply_markup,
         edit_message_reply_markup_inline,
         stop_poll,
@@ -334,6 +338,26 @@ impl VisitParseModes for AnswerWebAppQuery {
     }
 }
 
+impl VisitParseModes for SendMediaGroup {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        for media in &mut self.media {
+            visit_parse_modes_in_input_media(media, &mut visitor);
+        }
+    }
+}
+
+impl VisitParseModes for EditMessageMedia {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+impl VisitParseModes for EditMessageMediaInline {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
 fn visit_parse_modes_in_inline_query_result(
     result: &mut InlineQueryResult,
     visitor: &mut impl FnMut(&mut Option<ParseMode>),
@@ -381,6 +405,23 @@ fn visit_parse_modes_in_inline_query_result(
 
         // Can't contain `parse_mode` at all
         Game(_r) => return,
+    };
+
+    visitor(parse_mode);
+}
+
+fn visit_parse_modes_in_input_media(
+    media: &mut InputMedia,
+    visitor: &mut impl FnMut(&mut Option<ParseMode>),
+) {
+    use InputMedia::*;
+
+    let parse_mode = match media {
+        Photo(m) => &mut m.parse_mode,
+        Video(m) => &mut m.parse_mode,
+        Animation(m) => &mut m.parse_mode,
+        Audio(m) => &mut m.parse_mode,
+        Document(m) => &mut m.parse_mode,
     };
 
     visitor(parse_mode);
