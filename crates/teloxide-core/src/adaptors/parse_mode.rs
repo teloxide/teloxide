@@ -4,9 +4,9 @@ use url::Url;
 
 use crate::{
     payloads::{
-        EditMessageCaption, EditMessageCaptionInline, EditMessageText, EditMessageTextInline,
-        SendAnimation, SendAudio, SendDocument, SendMessage, SendPhoto, SendPoll, SendVideo,
-        SendVoice,
+        CopyMessage, EditMessageCaption, EditMessageCaptionInline, EditMessageText,
+        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMessage, SendPhoto,
+        SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -144,6 +144,7 @@ where
     B::EditMessageCaption: Clone,
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
+    B::CopyMessage: Clone,
 {
     type Err = B::Err;
 
@@ -159,7 +160,8 @@ where
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
-        edit_message_caption_inline => f, fty
+        edit_message_caption_inline,
+        copy_message => f, fty
     }
 
     requester_forward! {
@@ -171,7 +173,6 @@ where
         delete_webhook,
         get_webhook_info,
         forward_message,
-        copy_message,
         send_video_note,
         send_media_group,
         send_location,
@@ -310,5 +311,8 @@ impl_visit_parse_modes! {
     EditMessageTextInline => [parse_mode],
     EditMessageCaption => [parse_mode],
     EditMessageCaptionInline => [parse_mode],
+    // FIXME: check if `parse_mode` changes anything if `.caption` is not set
+    //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
+    CopyMessage => [parse_mode],
     SendPoll => [explanation_parse_mode],
 }
