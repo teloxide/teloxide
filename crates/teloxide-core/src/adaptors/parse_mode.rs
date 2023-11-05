@@ -326,9 +326,9 @@ impl_visit_parse_modes! {
 
 impl VisitParseModes for AnswerInlineQuery {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
-        for result in &mut self.results {
-            visit_parse_modes_in_inline_query_result(result, &mut visitor);
-        }
+        self.results
+            .iter_mut()
+            .for_each(|result| visit_parse_modes_in_inline_query_result(result, &mut visitor))
     }
 }
 
@@ -340,9 +340,9 @@ impl VisitParseModes for AnswerWebAppQuery {
 
 impl VisitParseModes for SendMediaGroup {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
-        for media in &mut self.media {
-            visit_parse_modes_in_input_media(media, &mut visitor);
-        }
+        self.media
+            .iter_mut()
+            .for_each(|media| visit_parse_modes_in_input_media(media, &mut visitor))
     }
 }
 
