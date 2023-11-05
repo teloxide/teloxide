@@ -1,8 +1,15 @@
+use std::future::IntoFuture;
+
 use url::Url;
 
 use crate::{
+    payloads::{
+        EditMessageCaption, EditMessageCaptionInline, EditMessageText, EditMessageTextInline,
+        SendAnimation, SendAudio, SendDocument, SendMessage, SendPhoto, SendPoll, SendVideo,
+        SendVoice,
+    },
     prelude::Requester,
-    requests::HasPayload,
+    requests::{HasPayload, Output, Request},
     types::{InputFile, ParseMode, Recipient, *},
 };
 
@@ -11,6 +18,13 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct DefaultParseMode<B> {
     bot: B,
+    mode: ParseMode,
+}
+
+/// Request returned by [`DefaultParseMode`] methods.
+#[derive(Clone)]
+pub struct DefaultParseModeRequest<R> {
+    req: R,
     mode: ParseMode,
 }
 
@@ -40,17 +54,70 @@ impl<B> DefaultParseMode<B> {
     }
 }
 
+impl<R> Request for DefaultParseModeRequest<R>
+where
+    R: Request + Clone,
+    R::Payload: VisitParseModes,
+{
+    type Err = R::Err;
+    type Send = R::Send;
+    type SendRef = R::Send;
+
+    // Required methods
+    fn send(mut self) -> Self::Send {
+        self.req.payload_mut().visit_parse_modes(|mode| _ = mode.get_or_insert(self.mode));
+        self.req.send()
+    }
+
+    fn send_ref(&self) -> Self::SendRef {
+        // There is no other way to change the payload, given a `&self` :(
+        self.clone().send()
+    }
+}
+
+impl<R> IntoFuture for DefaultParseModeRequest<R>
+where
+    Self: Request,
+{
+    type Output = Result<Output<Self>, <Self as Request>::Err>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
+    }
+}
+
+impl<R> HasPayload for DefaultParseModeRequest<R>
+where
+    R: Request,
+{
+    type Payload = R::Payload;
+
+    fn payload_mut(&mut self) -> &mut Self::Payload {
+        self.req.payload_mut()
+    }
+
+    fn payload_ref(&self) -> &Self::Payload {
+        self.req.payload_ref()
+    }
+}
+
 macro_rules! f {
     ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
         {
-            let mut req = $this.inner().$m($($arg),*);
-            req.payload_mut().parse_mode = Some($this.mode);
-            req
+            let req = $this.inner().$m($($arg),*);
+            DefaultParseModeRequest { req, mode: $this.mode }
         }
     };
 }
 
 macro_rules! fty {
+    ($T:ident) => {
+        DefaultParseModeRequest<B::$T>
+    };
+}
+
+macro_rules! ftyid {
     ($T:ident) => {
         B::$T
     };
@@ -62,7 +129,22 @@ macro_rules! fid {
     };
 }
 
-impl<B: Requester> Requester for DefaultParseMode<B> {
+impl<B> Requester for DefaultParseMode<B>
+where
+    B: Requester,
+    B::SendMessage: Clone,
+    B::SendPhoto: Clone,
+    B::SendVideo: Clone,
+    B::SendAudio: Clone,
+    B::SendDocument: Clone,
+    B::SendAnimation: Clone,
+    B::SendVoice: Clone,
+    B::EditMessageText: Clone,
+    B::EditMessageTextInline: Clone,
+    B::EditMessageCaption: Clone,
+    B::EditMessageCaptionInline: Clone,
+    B::SendPoll: Clone,
+{
     type Err = B::Err;
 
     requester_forward! {
@@ -73,23 +155,11 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         send_document,
         send_animation,
         send_voice,
+        send_poll,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
         edit_message_caption_inline => f, fty
-    }
-
-    type SendPoll = B::SendPoll;
-
-    fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
-    where
-        C: Into<Recipient>,
-        Q: Into<String>,
-        O: IntoIterator<Item = String>,
-    {
-        let mut req = self.inner().send_poll(chat_id, question, options);
-        req.payload_mut().explanation_parse_mode = Some(self.mode);
-        req
     }
 
     requester_forward! {
@@ -191,7 +261,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         get_game_high_scores,
         approve_chat_join_request,
         decline_chat_join_request
-        => fid, fty
+        => fid, ftyid
     }
 }
 
@@ -199,4 +269,46 @@ download_forward! {
     B
     DefaultParseMode<B>
     { this => this.inner() }
+}
+
+trait VisitParseModes {
+    fn visit_parse_modes(&mut self, visitor: impl FnMut(&mut Option<ParseMode>));
+}
+
+macro_rules! impl_visit_parse_modes {
+    (
+        $(
+            $T:ty => [
+                $(
+                    $field:ident
+                ),*
+            ]
+            ,
+        )*
+    ) => {
+        $(
+            impl VisitParseModes for $T {
+                fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+                    $(
+                        visitor(&mut self.$field);
+                    )*
+                }
+            }
+        )*
+    }
+}
+
+impl_visit_parse_modes! {
+    SendMessage => [parse_mode],
+    SendPhoto => [parse_mode],
+    SendVideo => [parse_mode],
+    SendAudio => [parse_mode],
+    SendDocument => [parse_mode],
+    SendAnimation => [parse_mode],
+    SendVoice => [parse_mode],
+    EditMessageText => [parse_mode],
+    EditMessageTextInline => [parse_mode],
+    EditMessageCaption => [parse_mode],
+    EditMessageCaptionInline => [parse_mode],
+    SendPoll => [explanation_parse_mode],
 }
