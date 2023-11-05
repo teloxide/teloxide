@@ -4,9 +4,9 @@ use url::Url;
 
 use crate::{
     payloads::{
-        CopyMessage, EditMessageCaption, EditMessageCaptionInline, EditMessageText,
-        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMessage, SendPhoto,
-        SendPoll, SendVideo, SendVoice,
+        AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
+        EditMessageCaptionInline, EditMessageText, EditMessageTextInline, SendAnimation, SendAudio,
+        SendDocument, SendMessage, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -145,6 +145,8 @@ where
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
     B::CopyMessage: Clone,
+    B::AnswerInlineQuery: Clone,
+    B::AnswerWebAppQuery: Clone,
 {
     type Err = B::Err;
 
@@ -161,7 +163,10 @@ where
         edit_message_text_inline,
         edit_message_caption,
         edit_message_caption_inline,
-        copy_message => f, fty
+        copy_message,
+        answer_inline_query,
+        answer_web_app_query,
+        => f, fty
     }
 
     requester_forward! {
@@ -234,8 +239,6 @@ where
         set_my_default_administrator_rights,
         get_my_default_administrator_rights,
         delete_my_commands,
-        answer_inline_query,
-        answer_web_app_query,
         edit_message_media,
         edit_message_media_inline,
         edit_message_reply_markup,
@@ -315,4 +318,70 @@ impl_visit_parse_modes! {
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],
     SendPoll => [explanation_parse_mode],
+}
+
+impl VisitParseModes for AnswerInlineQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        for result in &mut self.results {
+            visit_parse_modes_in_inline_query_result(result, &mut visitor);
+        }
+    }
+}
+
+impl VisitParseModes for AnswerWebAppQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
+    }
+}
+
+fn visit_parse_modes_in_inline_query_result(
+    result: &mut InlineQueryResult,
+    visitor: &mut impl FnMut(&mut Option<ParseMode>),
+) {
+    use InlineQueryResult::*;
+
+    let parse_mode = match result {
+        // Simply contain `parse_mode`
+        CachedAudio(r) => &mut r.parse_mode,
+        CachedDocument(r) => &mut r.parse_mode,
+        CachedGif(r) => &mut r.parse_mode,
+        CachedMpeg4Gif(r) => &mut r.parse_mode,
+        CachedPhoto(r) => &mut r.parse_mode,
+        CachedVideo(r) => &mut r.parse_mode,
+        CachedVoice(r) => &mut r.parse_mode,
+        Audio(r) => &mut r.parse_mode,
+        Document(r) => &mut r.parse_mode,
+        Gif(r) => &mut r.parse_mode,
+        Mpeg4Gif(r) => &mut r.parse_mode,
+        Photo(r) => &mut r.parse_mode,
+        Video(r) => &mut r.parse_mode,
+        Voice(r) => &mut r.parse_mode,
+
+        // Can contain parse mode if `InputMessageContent::Text`
+        CachedSticker(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Article(r) => match &mut r.input_message_content {
+            InputMessageContent::Text(t) => &mut t.parse_mode,
+            _ => return,
+        },
+        Contact(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Location(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Venue(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+
+        // Can't contain `parse_mode` at all
+        Game(_r) => return,
+    };
+
+    visitor(parse_mode);
 }
