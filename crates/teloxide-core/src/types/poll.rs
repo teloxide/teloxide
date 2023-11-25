@@ -12,7 +12,7 @@ pub struct Poll {
     /// Unique poll identifier.
     pub id: String,
 
-    /// Poll question, 1-255 characters.
+    /// Poll question, 1-300 characters.
     pub question: String,
 
     /// List of poll options.
