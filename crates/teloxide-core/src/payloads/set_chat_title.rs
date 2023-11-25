@@ -11,7 +11,7 @@ impl_payload! {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
-            /// New chat title, 1-255 characters
+            /// New chat title, 1-128 characters
             pub title: String [into],
         }
     }

@@ -2359,7 +2359,7 @@ Schema(
                 Param(
                     name: "title",
                     ty: String,
-                    descr: Doc(md: "New chat title, 1-255 characters")
+                    descr: Doc(md: "New chat title, 1-128 characters")
                 ),
             ],
         ),
