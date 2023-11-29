@@ -56,7 +56,8 @@ pub enum InlineQueryResult {
 mod tests {
     use crate::types::{
         inline_keyboard_markup::InlineKeyboardMarkup, parse_mode::ParseMode, InlineQueryResult,
-        InlineQueryResultCachedAudio, InputMessageContent, InputMessageContentText,
+        InlineQueryResultAudio, InlineQueryResultCachedAudio, InputMessageContent,
+        InputMessageContentText,
     };
 
     #[test]
@@ -75,6 +76,10 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
+
+        let structure: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+
+        assert!(matches!(structure, InlineQueryResult::CachedAudio(_)));
     }
 
     #[test]
@@ -98,6 +103,66 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
+
+        let structure: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+
+        assert!(matches!(structure, InlineQueryResult::CachedAudio(_)));
+    }
+
+    #[test]
+    fn audio_min_serialize() {
+        let structure = InlineQueryResult::Audio(InlineQueryResultAudio {
+            id: String::from("id"),
+            audio_url: reqwest::Url::parse("http://audio_url/").unwrap(),
+            title: String::from("title"),
+            caption: None,
+            parse_mode: None,
+            caption_entities: None,
+            performer: None,
+            audio_duration: None,
+            reply_markup: None,
+            input_message_content: None,
+        });
+
+        let expected_json =
+            r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title"}"#;
+        let actual_json = serde_json::to_string(&structure).unwrap();
+
+        assert_eq!(expected_json, actual_json);
+
+        let structure: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+
+        assert!(matches!(structure, InlineQueryResult::Audio(_)));
+    }
+
+    #[test]
+    fn audio_full_serialize() {
+        let structure = InlineQueryResult::Audio(InlineQueryResultAudio {
+            id: String::from("id"),
+            audio_url: reqwest::Url::parse("http://audio_url/").unwrap(),
+            title: String::from("title"),
+            caption: Some(String::from("caption")),
+            parse_mode: Some(ParseMode::Html),
+            reply_markup: Some(InlineKeyboardMarkup::default()),
+            input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
+                message_text: String::from("message_text"),
+                parse_mode: Some(ParseMode::MarkdownV2),
+                disable_web_page_preview: Some(true),
+                entities: None,
+            })),
+            caption_entities: None,
+            performer: Some(String::from("performer")),
+            audio_duration: Some("1".into()),
+        });
+
+        let expected_json = r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true},"performer":"performer","audio_duration":1}"#;
+        let actual_json = serde_json::to_string(&structure).unwrap();
+
+        assert_eq!(expected_json, actual_json);
+
+        let structure: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+
+        assert!(matches!(structure, InlineQueryResult::Audio(_)));
     }
 
     // TODO: Add more tests
