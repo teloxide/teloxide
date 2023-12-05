@@ -20,13 +20,13 @@ new_pr = true
 #new_issue = true
 
 [autolabel."C-core"]
-trigger_files = ["crates/teloxide-core"]
+trigger_files = ["crates/teloxide-core/"]
 
 [autolabel."C-main"]
-trigger_files = ["crates/teloxide"]
+trigger_files = ["crates/teloxide/"]
 
 [autolabel."C-macros"]
-trigger_files = ["crates/teloxide-macros"]
+trigger_files = ["crates/teloxide-macros/"]
 
 
 [relabel]
