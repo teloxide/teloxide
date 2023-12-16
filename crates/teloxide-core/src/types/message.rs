@@ -663,6 +663,14 @@ mod getters {
         MessageSupergroupChatCreated, MessageVideoChatParticipantsInvited, PhotoSize, True, User,
     };
 
+    use super::{
+        MessageForumTopicClosed, MessageForumTopicCreated, MessageForumTopicEdited,
+        MessageForumTopicReopened, MessageGeneralForumTopicHidden,
+        MessageGeneralForumTopicUnhidden, MessageMessageAutoDeleteTimerChanged,
+        MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
+        MessageWebAppData, MessageWriteAccessAllowed,
+    };
+
     /// Getters for [Message] fields from [telegram docs].
     ///
     /// [Message]: crate::types::Message
@@ -1090,73 +1098,85 @@ mod getters {
         // TODO: OK, `Option<True>` is weird, can we do something with it?
         //       mb smt like `is_delete_chat_photo(&self) -> bool`?
         #[must_use]
-        pub fn delete_chat_photo(&self) -> Option<True> {
+        pub fn delete_chat_photo(&self) -> Option<&True> {
             match &self.kind {
                 DeleteChatPhoto(MessageDeleteChatPhoto { delete_chat_photo }) => {
-                    Some(*delete_chat_photo)
+                    Some(delete_chat_photo)
                 }
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn group_chat_created(&self) -> Option<True> {
+        pub fn group_chat_created(&self) -> Option<&True> {
             match &self.kind {
                 GroupChatCreated(MessageGroupChatCreated { group_chat_created }) => {
-                    Some(*group_chat_created)
+                    Some(group_chat_created)
                 }
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn super_group_chat_created(&self) -> Option<True> {
+        pub fn super_group_chat_created(&self) -> Option<&True> {
             match &self.kind {
                 SupergroupChatCreated(MessageSupergroupChatCreated { supergroup_chat_created }) => {
-                    Some(*supergroup_chat_created)
+                    Some(supergroup_chat_created)
                 }
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn channel_chat_created(&self) -> Option<True> {
+        pub fn channel_chat_created(&self) -> Option<&True> {
             match &self.kind {
                 ChannelChatCreated(MessageChannelChatCreated { channel_chat_created }) => {
-                    Some(*channel_chat_created)
+                    Some(channel_chat_created)
                 }
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn chat_migration(&self) -> Option<ChatMigration> {
+        pub fn message_auto_delete_timer_changed(
+            &self,
+        ) -> Option<&types::MessageAutoDeleteTimerChanged> {
+            match &self.kind {
+                MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged {
+                    message_auto_delete_timer_changed,
+                }) => Some(message_auto_delete_timer_changed),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn chat_migration(&self) -> Option<&types::ChatMigration> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(chat_migration), ..
-                }) => Some(*chat_migration),
+                }) => Some(chat_migration),
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn migrate_to_chat_id(&self) -> Option<ChatId> {
+        pub fn migrate_to_chat_id(&self) -> Option<&ChatId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(ChatMigration::To { chat_id }),
                     ..
-                }) => Some(*chat_id),
+                }) => Some(chat_id),
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn migrate_from_chat_id(&self) -> Option<ChatId> {
+        pub fn migrate_from_chat_id(&self) -> Option<&ChatId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(ChatMigration::From { chat_id }),
                     ..
-                }) => Some(*chat_id),
+                }) => Some(chat_id),
                 _ => None,
             }
         }
@@ -1198,6 +1218,16 @@ mod getters {
         }
 
         #[must_use]
+        pub fn write_access_allowed(&self) -> Option<&types::WriteAccessAllowed> {
+            match &self.kind {
+                WriteAccessAllowed(MessageWriteAccessAllowed { write_access_allowed }) => {
+                    Some(write_access_allowed)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn passport_data(&self) -> Option<&types::PassportData> {
             match &self.kind {
                 PassportData(MessagePassportData { passport_data }) => Some(passport_data),
@@ -1224,6 +1254,96 @@ mod getters {
         }
 
         #[must_use]
+        pub fn forum_topic_created(&self) -> Option<&types::ForumTopicCreated> {
+            match &self.kind {
+                ForumTopicCreated(MessageForumTopicCreated { forum_topic_created }) => {
+                    Some(forum_topic_created)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn forum_topic_edited(&self) -> Option<&types::ForumTopicEdited> {
+            match &self.kind {
+                ForumTopicEdited(MessageForumTopicEdited { forum_topic_edited }) => {
+                    Some(forum_topic_edited)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn forum_topic_closed(&self) -> Option<&types::ForumTopicClosed> {
+            match &self.kind {
+                ForumTopicClosed(MessageForumTopicClosed { forum_topic_closed }) => {
+                    Some(forum_topic_closed)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn forum_topic_reopened(&self) -> Option<&types::ForumTopicReopened> {
+            match &self.kind {
+                ForumTopicReopened(MessageForumTopicReopened { forum_topic_reopened }) => {
+                    Some(forum_topic_reopened)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn general_forum_topic_hidden(&self) -> Option<&types::GeneralForumTopicHidden> {
+            match &self.kind {
+                GeneralForumTopicHidden(MessageGeneralForumTopicHidden {
+                    general_forum_topic_hidden,
+                }) => Some(general_forum_topic_hidden),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn general_forum_topic_unhidden(&self) -> Option<&types::GeneralForumTopicUnhidden> {
+            match &self.kind {
+                GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden {
+                    general_forum_topic_unhidden,
+                }) => Some(general_forum_topic_unhidden),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn video_chat_scheduled(&self) -> Option<&types::VideoChatScheduled> {
+            match &self.kind {
+                VideoChatScheduled(MessageVideoChatScheduled { video_chat_scheduled }) => {
+                    Some(video_chat_scheduled)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn video_chat_started(&self) -> Option<&types::VideoChatStarted> {
+            match &self.kind {
+                VideoChatStarted(MessageVideoChatStarted { video_chat_started }) => {
+                    Some(video_chat_started)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn video_chat_ended(&self) -> Option<&types::VideoChatEnded> {
+            match &self.kind {
+                VideoChatEnded(MessageVideoChatEnded { video_chat_ended }) => {
+                    Some(video_chat_ended)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn video_chat_participants_invited(
             &self,
         ) -> Option<&types::VideoChatParticipantsInvited> {
@@ -1231,6 +1351,14 @@ mod getters {
                 VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited {
                     video_chat_participants_invited,
                 }) => Some(video_chat_participants_invited),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn web_app_data(&self) -> Option<&types::WebAppData> {
+            match &self.kind {
+                WebAppData(MessageWebAppData { web_app_data }) => Some(web_app_data),
                 _ => None,
             }
         }
@@ -1783,8 +1911,8 @@ mod tests {
         let message: Message = from_str(json).unwrap();
 
         assert_eq!(message.chat.id, old);
-        assert_eq!(message.chat_migration(), Some(ChatMigration::To { chat_id: new }));
-        assert_eq!(message.migrate_to_chat_id(), Some(new));
+        assert_eq!(message.chat_migration(), Some(&ChatMigration::To { chat_id: new }));
+        assert_eq!(message.migrate_to_chat_id(), Some(&new));
 
         // The user who initialized the migration
         assert!(message.from().is_some());
@@ -1794,8 +1922,8 @@ mod tests {
         let message: Message = from_str(json).unwrap();
 
         assert_eq!(message.chat.id, new);
-        assert_eq!(message.chat_migration(), Some(ChatMigration::From { chat_id: old }));
-        assert_eq!(message.migrate_from_chat_id(), Some(old));
+        assert_eq!(message.chat_migration(), Some(&ChatMigration::From { chat_id: old }));
+        assert_eq!(message.migrate_from_chat_id(), Some(&old));
 
         // Anonymous bot
         assert!(message.from().is_some());
