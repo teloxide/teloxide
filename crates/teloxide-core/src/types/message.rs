@@ -660,7 +660,7 @@ mod getters {
         MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
         MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
         MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
-        MessageSupergroupChatCreated, MessageVideoChatParticipantsInvited, PhotoSize, True, User,
+        MessageSupergroupChatCreated, MessageVideoChatParticipantsInvited, PhotoSize, User,
     };
 
     use super::{
@@ -1095,43 +1095,85 @@ mod getters {
             }
         }
 
-        // TODO: OK, `Option<True>` is weird, can we do something with it?
-        //       mb smt like `is_delete_chat_photo(&self) -> bool`?
+        /// Returns `true` if the incoming [`Message`] contains the
+        /// `delete_chat_photo` Service message.
+        ///
+        /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
-        pub fn delete_chat_photo(&self) -> Option<&True> {
+        pub fn is_delete_chat_photo(&self) -> bool {
             match &self.kind {
-                DeleteChatPhoto(MessageDeleteChatPhoto { delete_chat_photo }) => {
-                    Some(delete_chat_photo)
+                DeleteChatPhoto(..) => true,
+                _ => false,
+            }
+        }
+
+        #[must_use]
+        pub fn delete_chat_photo(&self) -> Option<&MessageDeleteChatPhoto> {
+            match &self.kind {
+                DeleteChatPhoto(message_delete_chat_photo) => Some(message_delete_chat_photo),
+                _ => None,
+            }
+        }
+
+        /// Returns `true` if the incoming [`Message`] contains the
+        /// `group_chat_created` Service message.
+        ///
+        /// [More on this](https://core.telegram.org/bots/api#message)
+        #[must_use]
+        pub fn is_group_chat_created(&self) -> bool {
+            match &self.kind {
+                GroupChatCreated(..) => true,
+                _ => false,
+            }
+        }
+
+        #[must_use]
+        pub fn group_chat_created(&self) -> Option<&MessageGroupChatCreated> {
+            match &self.kind {
+                GroupChatCreated(message_group_chat_created) => Some(message_group_chat_created),
+                _ => None,
+            }
+        }
+
+        /// Returns `true` if the incoming [`Message`] contains the
+        /// `supergroup_chat_created` Service message.
+        ///
+        /// [More on this](https://core.telegram.org/bots/api#message)
+        #[must_use]
+        pub fn is_super_group_chat_created(&self) -> bool {
+            match &self.kind {
+                SupergroupChatCreated(..) => true,
+                _ => false,
+            }
+        }
+
+        #[must_use]
+        pub fn super_group_chat_created(&self) -> Option<&MessageSupergroupChatCreated> {
+            match &self.kind {
+                SupergroupChatCreated(message_supergroup_chat_created) => {
+                    Some(message_supergroup_chat_created)
                 }
                 _ => None,
             }
         }
 
+        /// Returns `true` if the incoming [`Message`] contains the
+        /// `channel_chat_created` Service message.
+        ///
+        /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
-        pub fn group_chat_created(&self) -> Option<&True> {
+        pub fn is_channel_chat_created(&self) -> bool {
             match &self.kind {
-                GroupChatCreated(MessageGroupChatCreated { group_chat_created }) => {
-                    Some(group_chat_created)
-                }
-                _ => None,
+                ChannelChatCreated(..) => true,
+                _ => false,
             }
         }
 
         #[must_use]
-        pub fn super_group_chat_created(&self) -> Option<&True> {
+        pub fn channel_chat_created(&self) -> Option<&MessageChannelChatCreated> {
             match &self.kind {
-                SupergroupChatCreated(MessageSupergroupChatCreated { supergroup_chat_created }) => {
-                    Some(supergroup_chat_created)
-                }
-                _ => None,
-            }
-        }
-
-        #[must_use]
-        pub fn channel_chat_created(&self) -> Option<&True> {
-            match &self.kind {
-                ChannelChatCreated(MessageChannelChatCreated { channel_chat_created }) => {
-                    Some(channel_chat_created)
+                ChannelChatCreated(message_channel_chat_created) => {
+                    Some(message_channel_chat_created)
                 }
                 _ => None,
             }
@@ -1150,7 +1192,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn chat_migration(&self) -> Option<&types::ChatMigration> {
+        pub fn chat_migration(&self) -> Option<&ChatMigration> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Migration(chat_migration), ..
