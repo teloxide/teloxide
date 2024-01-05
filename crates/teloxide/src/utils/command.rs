@@ -202,6 +202,15 @@ pub use teloxide_macros::BotCommands;
 ///  5. `#[command(hide)]`
 /// Hide a command from the help message. It will still be parsed.
 ///
+/// 6. `#[command(alias = "alias")]`
+/// Add an alias to a command. It will be shown in the help message.
+///
+/// 7. `#[command(aliases = ["alias1", "alias2"])]`
+/// Add multiple aliases to a command. They will be shown in the help message.
+///
+/// 8. `#[command(hide_aliases)]`
+/// Hide all aliases of a command from the help message.
+///
 /// ## Example
 /// ```
 /// # #[cfg(feature = "macros")] {
@@ -317,6 +326,8 @@ pub struct CommandDescription<'a> {
     pub prefix: &'a str,
     /// The command itself, e.g. `start`.
     pub command: &'a str,
+    /// The command aliases, e.g. `["help", "h"]`.
+    pub aliases: &'a [&'a str],
     /// Human-readable description of the command.
     pub description: &'a str,
 }
@@ -346,8 +357,18 @@ impl<'a> CommandDescriptions<'a> {
     /// use teloxide::utils::command::{CommandDescription, CommandDescriptions};
     ///
     /// let descriptions = CommandDescriptions::new(&[
-    ///     CommandDescription { prefix: "/", command: "start", description: "start this bot" },
-    ///     CommandDescription { prefix: "/", command: "help", description: "show this message" },
+    ///     CommandDescription {
+    ///         prefix: "/",
+    ///         command: "start",
+    ///         description: "start this bot",
+    ///         aliases: &[],
+    ///     },
+    ///     CommandDescription {
+    ///         prefix: "/",
+    ///         command: "help",
+    ///         description: "show this message",
+    ///         aliases: &[],
+    ///     },
     /// ]);
     ///
     /// assert_eq!(descriptions.to_string(), "/start — start this bot\n/help — show this message");
@@ -478,17 +499,25 @@ impl Display for CommandDescriptions<'_> {
             f.write_str("\n\n")?;
         }
 
-        let mut write = |&CommandDescription { prefix, command, description }, nls| {
+        let format_command = |command: &str, prefix: &str, formater: &mut fmt::Formatter<'_>| {
+            formater.write_str(prefix)?;
+            formater.write_str(command)?;
+            if let Some(username) = self.bot_username {
+                formater.write_char('@')?;
+                formater.write_str(username)?;
+            }
+            fmt::Result::Ok(())
+        };
+
+        let mut write = |&CommandDescription { prefix, command, aliases, description }, nls| {
             if nls {
                 f.write_char('\n')?;
             }
 
-            f.write_str(prefix)?;
-            f.write_str(command)?;
-
-            if let Some(username) = self.bot_username {
-                f.write_char('@')?;
-                f.write_str(username)?;
+            format_command(command, prefix, f)?;
+            for alias in aliases {
+                f.write_str(", ")?;
+                format_command(alias, prefix, f)?;
             }
 
             if !description.is_empty() {

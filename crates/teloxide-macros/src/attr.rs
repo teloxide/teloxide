@@ -83,6 +83,7 @@ pub(crate) struct Attr {
 pub(crate) enum AttrValue {
     Path(Path),
     Lit(Lit),
+    Array(Vec<AttrValue>, Span),
     None(Span),
 }
 
@@ -169,6 +170,20 @@ impl AttrValue {
         }
     }
 
+    /// Unwraps this value if it's a vector of `T`.
+    /// ## Example
+    /// ```text
+    ///  #[command(some = [1, 2, 3])]
+    ///                   ^^^^^^^^^
+    ///              this value will be parsed as a vector of integers
+    /// ```
+    pub fn expect_array(self) -> Result<Vec<Self>> {
+        self.expect("an array", |this| match this {
+            AttrValue::Array(a, _) => Ok(a),
+            _ => Err(this),
+        })
+    }
+
     // /// Unwraps this value if it's a path.
     // pub fn expect_path(self) -> Result<Path> {
     //     self.expect("a path", |this| match this {
@@ -196,6 +211,7 @@ impl AttrValue {
                 Bool(_) => "a boolean",
                 Verbatim(_) => ":shrug:",
             },
+            Self::Array(_, _) => "an array",
             Self::Path(_) => "a path",
         }
     }
@@ -211,17 +227,26 @@ impl AttrValue {
             Self::Path(p) => p.span(),
             Self::Lit(l) => l.span(),
             Self::None(sp) => *sp,
+            Self::Array(_, sp) => *sp,
         }
     }
 }
 
 impl Parse for AttrValue {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let this = match input.peek(Lit) {
-            true => Self::Lit(input.parse()?),
-            false => Self::Path(input.parse()?),
-        };
-
-        Ok(this)
+        if input.peek(Lit) {
+            input.parse::<Lit>().map(AttrValue::Lit)
+        } else if input.peek(syn::token::Bracket) {
+            let content;
+            let array_span = syn::bracketed!(content in input).span;
+            let array = content.parse_terminated::<_, Token![,]>(AttrValue::parse)?;
+            Ok(AttrValue::Array(array.into_iter().collect(), array_span))
+        } else {
+            Ok(AttrValue::Path(
+                input
+                    .parse::<Path>()
+                    .map_err(|_| syn::Error::new(input.span(), "Unexpected token"))?,
+            ))
+        }
     }
 }

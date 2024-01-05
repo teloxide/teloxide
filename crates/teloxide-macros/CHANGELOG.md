@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now you can use `#[command(command_separator="sep")]` (default is a whitespace character) to set the separator between command and its arguments ([issue #897](https://github.com/teloxide/teloxide/issues/897))
 - Now you can use `/// doc comment` for the command help message ([PR #861](https://github.com/teloxide/teloxide/pull/861)).
 - Now you can use `#[command(hide)]` to hide a command from the help message ([PR #862](https://github.com/teloxide/teloxide/pull/862))
+- `#[command(alias = "...")]` and `#[command(aliases = "...")]` to specify command aliases ([PR #937](https://github.com/teloxide/teloxide/pull/937))
+- `#[command(hide_aliases)]` to hide aliases from the help message ([PR #937](https://github.com/teloxide/teloxide/pull/937))
 
 ### Fixed
 
