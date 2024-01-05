@@ -53,6 +53,8 @@ mod private {
     impl Sealed for Message {}
 }
 
+// FIXME: rewrite this macro to allow the usage of functions returning small
+// values without borrowing
 macro_rules! define_message_ext {
     ($( ($func:ident, $fn_name:path) ,)*) => {
         define_ext! {

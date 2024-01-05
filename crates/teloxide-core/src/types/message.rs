@@ -1201,6 +1201,8 @@ mod getters {
             }
         }
 
+        // FIXME: remove references to small values (requires changing
+        // `define_message_ext`)
         #[must_use]
         pub fn migrate_to_chat_id(&self) -> Option<&ChatId> {
             match &self.kind {
@@ -1212,6 +1214,8 @@ mod getters {
             }
         }
 
+        // FIXME: remove references to small values (requires changing
+        // `define_message_ext`)
         #[must_use]
         pub fn migrate_from_chat_id(&self) -> Option<&ChatId> {
             match &self.kind {
