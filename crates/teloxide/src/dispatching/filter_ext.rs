@@ -88,7 +88,6 @@ define_message_ext! {
     (filter_migration, Message::chat_migration),
     (filter_migration_from, Message::migrate_from_chat_id),
     (filter_migration_to, Message::migrate_to_chat_id),
-
     (filter_reply_to_message, Message::reply_to_message),
     (filter_forward_from, Message::forward_from),
     // Rest variants of a MessageKind
