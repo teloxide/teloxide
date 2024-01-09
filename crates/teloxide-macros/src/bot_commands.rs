@@ -61,9 +61,10 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
     let command_descriptions = infos
         .iter()
         .filter(|command| command.description_is_enabled())
-        .map(|command @ Command { prefix, name, ..}| {
+        .map(|command @ Command { prefix, name, aliases, ..}| {
             let description = command.description().unwrap_or_default();
-            quote! { CommandDescription { prefix: #prefix, command: #name, description: #description } }
+            let aliases = (!command.hidden_aliases).then(|| aliases.clone().map(|(aliases, _)| aliases).unwrap_or_default()).unwrap_or_default();
+            quote! { CommandDescription { prefix: #prefix, command: #name, description: #description, aliases: &[#(#aliases),*]} }
         });
 
     let warnings = infos.iter().filter_map(|command| command.deprecated_description_off_span()).map(|span| {
@@ -102,6 +103,7 @@ fn impl_parse(
     command_separator: &str,
 ) -> proc_macro2::TokenStream {
     let matching_values = infos.iter().map(|c| c.get_prefixed_command());
+    let aliases = infos.iter().map(|c| c.get_prefixed_aliases().unwrap_or_default());
 
     quote! {
          fn parse(s: &str, bot_name: &str) -> ::std::result::Result<Self, teloxide::utils::command::ParseError> {
@@ -128,6 +130,9 @@ fn impl_parse(
               match command {
                    #(
                         #matching_values => Ok(#variants_initialization),
+                   )*
+                   #(
+                        c if [#(#aliases),*].contains(&c) => Ok(#variants_initialization),
                    )*
                    _ => ::std::result::Result::Err(ParseError::UnknownCommand(command.to_owned())),
               }

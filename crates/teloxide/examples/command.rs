@@ -15,11 +15,13 @@ async fn main() {
 #[command(rename_rule = "lowercase")]
 enum Command {
     /// Display this text.
+    #[command(aliases = ["h", "?"])]
     Help,
     /// Handle a username.
+    #[command(alias = "u")]
     Username(String),
     /// Handle a username and an age.
-    #[command(parse_with = "split")]
+    #[command(parse_with = "split", alias = "ua", hide_aliases)]
     UsernameAndAge { username: String, age: u8 },
 }
 

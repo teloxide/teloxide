@@ -1,8 +1,16 @@
+use std::future::IntoFuture;
+
 use url::Url;
 
 use crate::{
+    payloads::{
+        AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
+        EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
+        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
+        SendPhoto, SendPoll, SendVideo, SendVoice,
+    },
     prelude::Requester,
-    requests::HasPayload,
+    requests::{HasPayload, Output, Request},
     types::{InputFile, ParseMode, Recipient, *},
 };
 
@@ -11,6 +19,13 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct DefaultParseMode<B> {
     bot: B,
+    mode: ParseMode,
+}
+
+/// Request returned by [`DefaultParseMode`] methods.
+#[derive(Clone)]
+pub struct DefaultParseModeRequest<R> {
+    req: R,
     mode: ParseMode,
 }
 
@@ -40,17 +55,70 @@ impl<B> DefaultParseMode<B> {
     }
 }
 
+impl<R> Request for DefaultParseModeRequest<R>
+where
+    R: Request + Clone,
+    R::Payload: VisitParseModes,
+{
+    type Err = R::Err;
+    type Send = R::Send;
+    type SendRef = R::Send;
+
+    // Required methods
+    fn send(mut self) -> Self::Send {
+        self.req.payload_mut().visit_parse_modes(|mode| _ = mode.get_or_insert(self.mode));
+        self.req.send()
+    }
+
+    fn send_ref(&self) -> Self::SendRef {
+        // There is no other way to change the payload, given a `&self` :(
+        self.clone().send()
+    }
+}
+
+impl<R> IntoFuture for DefaultParseModeRequest<R>
+where
+    Self: Request,
+{
+    type Output = Result<Output<Self>, <Self as Request>::Err>;
+    type IntoFuture = <Self as Request>::Send;
+
+    fn into_future(self) -> Self::IntoFuture {
+        self.send()
+    }
+}
+
+impl<R> HasPayload for DefaultParseModeRequest<R>
+where
+    R: Request,
+{
+    type Payload = R::Payload;
+
+    fn payload_mut(&mut self) -> &mut Self::Payload {
+        self.req.payload_mut()
+    }
+
+    fn payload_ref(&self) -> &Self::Payload {
+        self.req.payload_ref()
+    }
+}
+
 macro_rules! f {
     ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
         {
-            let mut req = $this.inner().$m($($arg),*);
-            req.payload_mut().parse_mode = Some($this.mode);
-            req
+            let req = $this.inner().$m($($arg),*);
+            DefaultParseModeRequest { req, mode: $this.mode }
         }
     };
 }
 
 macro_rules! fty {
+    ($T:ident) => {
+        DefaultParseModeRequest<B::$T>
+    };
+}
+
+macro_rules! ftyid {
     ($T:ident) => {
         B::$T
     };
@@ -62,7 +130,28 @@ macro_rules! fid {
     };
 }
 
-impl<B: Requester> Requester for DefaultParseMode<B> {
+impl<B> Requester for DefaultParseMode<B>
+where
+    B: Requester,
+    B::SendMessage: Clone,
+    B::SendPhoto: Clone,
+    B::SendVideo: Clone,
+    B::SendAudio: Clone,
+    B::SendDocument: Clone,
+    B::SendAnimation: Clone,
+    B::SendVoice: Clone,
+    B::EditMessageText: Clone,
+    B::EditMessageTextInline: Clone,
+    B::EditMessageCaption: Clone,
+    B::EditMessageCaptionInline: Clone,
+    B::SendPoll: Clone,
+    B::CopyMessage: Clone,
+    B::AnswerInlineQuery: Clone,
+    B::AnswerWebAppQuery: Clone,
+    B::EditMessageMedia: Clone,
+    B::EditMessageMediaInline: Clone,
+    B::SendMediaGroup: Clone,
+{
     type Err = B::Err;
 
     requester_forward! {
@@ -73,23 +162,18 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         send_document,
         send_animation,
         send_voice,
+        send_poll,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
-        edit_message_caption_inline => f, fty
-    }
-
-    type SendPoll = B::SendPoll;
-
-    fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
-    where
-        C: Into<Recipient>,
-        Q: Into<String>,
-        O: IntoIterator<Item = String>,
-    {
-        let mut req = self.inner().send_poll(chat_id, question, options);
-        req.payload_mut().explanation_parse_mode = Some(self.mode);
-        req
+        edit_message_caption_inline,
+        copy_message,
+        answer_inline_query,
+        answer_web_app_query,
+        send_media_group,
+        edit_message_media,
+        edit_message_media_inline,
+        => f, fty
     }
 
     requester_forward! {
@@ -101,9 +185,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         delete_webhook,
         get_webhook_info,
         forward_message,
-        copy_message,
         send_video_note,
-        send_media_group,
         send_location,
         edit_message_live_location,
         edit_message_live_location_inline,
@@ -163,10 +245,6 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         set_my_default_administrator_rights,
         get_my_default_administrator_rights,
         delete_my_commands,
-        answer_inline_query,
-        answer_web_app_query,
-        edit_message_media,
-        edit_message_media_inline,
         edit_message_reply_markup,
         edit_message_reply_markup_inline,
         stop_poll,
@@ -191,7 +269,7 @@ impl<B: Requester> Requester for DefaultParseMode<B> {
         get_game_high_scores,
         approve_chat_join_request,
         decline_chat_join_request
-        => fid, fty
+        => fid, ftyid
     }
 }
 
@@ -199,4 +277,152 @@ download_forward! {
     B
     DefaultParseMode<B>
     { this => this.inner() }
+}
+
+trait VisitParseModes {
+    fn visit_parse_modes(&mut self, visitor: impl FnMut(&mut Option<ParseMode>));
+}
+
+macro_rules! impl_visit_parse_modes {
+    (
+        $(
+            $T:ty => [
+                $(
+                    $field:ident
+                ),*
+            ]
+            ,
+        )*
+    ) => {
+        $(
+            impl VisitParseModes for $T {
+                fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+                    $(
+                        visitor(&mut self.$field);
+                    )*
+                }
+            }
+        )*
+    }
+}
+
+impl_visit_parse_modes! {
+    SendMessage => [parse_mode],
+    SendPhoto => [parse_mode],
+    SendVideo => [parse_mode],
+    SendAudio => [parse_mode],
+    SendDocument => [parse_mode],
+    SendAnimation => [parse_mode],
+    SendVoice => [parse_mode],
+    EditMessageText => [parse_mode],
+    EditMessageTextInline => [parse_mode],
+    EditMessageCaption => [parse_mode],
+    EditMessageCaptionInline => [parse_mode],
+    // FIXME: check if `parse_mode` changes anything if `.caption` is not set
+    //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
+    CopyMessage => [parse_mode],
+    SendPoll => [explanation_parse_mode],
+}
+
+impl VisitParseModes for AnswerInlineQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        self.results
+            .iter_mut()
+            .for_each(|result| visit_parse_modes_in_inline_query_result(result, &mut visitor))
+    }
+}
+
+impl VisitParseModes for AnswerWebAppQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
+    }
+}
+
+impl VisitParseModes for SendMediaGroup {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        self.media
+            .iter_mut()
+            .for_each(|media| visit_parse_modes_in_input_media(media, &mut visitor))
+    }
+}
+
+impl VisitParseModes for EditMessageMedia {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+impl VisitParseModes for EditMessageMediaInline {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+fn visit_parse_modes_in_inline_query_result(
+    result: &mut InlineQueryResult,
+    visitor: &mut impl FnMut(&mut Option<ParseMode>),
+) {
+    use InlineQueryResult::*;
+
+    let parse_mode = match result {
+        // Simply contain `parse_mode`
+        CachedAudio(r) => &mut r.parse_mode,
+        CachedDocument(r) => &mut r.parse_mode,
+        CachedGif(r) => &mut r.parse_mode,
+        CachedMpeg4Gif(r) => &mut r.parse_mode,
+        CachedPhoto(r) => &mut r.parse_mode,
+        CachedVideo(r) => &mut r.parse_mode,
+        CachedVoice(r) => &mut r.parse_mode,
+        Audio(r) => &mut r.parse_mode,
+        Document(r) => &mut r.parse_mode,
+        Gif(r) => &mut r.parse_mode,
+        Mpeg4Gif(r) => &mut r.parse_mode,
+        Photo(r) => &mut r.parse_mode,
+        Video(r) => &mut r.parse_mode,
+        Voice(r) => &mut r.parse_mode,
+
+        // Can contain parse mode if `InputMessageContent::Text`
+        CachedSticker(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Article(r) => match &mut r.input_message_content {
+            InputMessageContent::Text(t) => &mut t.parse_mode,
+            _ => return,
+        },
+        Contact(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Location(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+        Venue(r) => match &mut r.input_message_content {
+            Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            _ => return,
+        },
+
+        // Can't contain `parse_mode` at all
+        Game(_r) => return,
+    };
+
+    visitor(parse_mode);
+}
+
+fn visit_parse_modes_in_input_media(
+    media: &mut InputMedia,
+    visitor: &mut impl FnMut(&mut Option<ParseMode>),
+) {
+    use InputMedia::*;
+
+    let parse_mode = match media {
+        Photo(m) => &mut m.parse_mode,
+        Video(m) => &mut m.parse_mode,
+        Animation(m) => &mut m.parse_mode,
+        Audio(m) => &mut m.parse_mode,
+        Document(m) => &mut m.parse_mode,
+    };
+
+    visitor(parse_mode);
 }

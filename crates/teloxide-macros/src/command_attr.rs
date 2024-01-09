@@ -1,5 +1,5 @@
 use crate::{
-    attr::{fold_attrs, Attr},
+    attr::{fold_attrs, Attr, AttrValue},
     error::compile_error_at,
     fields_parse::ParserType,
     rename_rules::RenameRule,
@@ -20,10 +20,12 @@ pub(crate) struct CommandAttrs {
     pub description: Option<(String, bool, Span)>,
     pub rename_rule: Option<(RenameRule, Span)>,
     pub rename: Option<(String, Span)>,
+    pub aliases: Option<(Vec<String>, Span)>,
     pub parser: Option<(ParserType, Span)>,
     pub separator: Option<(String, Span)>,
     pub command_separator: Option<(String, Span)>,
     pub hide: Option<((), Span)>,
+    pub hide_aliases: Option<((), Span)>,
 }
 
 /// A single k/v attribute for `BotCommands` derive macro.
@@ -47,10 +49,12 @@ enum CommandAttrKind {
     Description(String, bool),
     RenameRule(RenameRule),
     Rename(String),
+    Aliases(Vec<String>),
     ParseWith(ParserType),
     Separator(String),
     CommandSeparator(String),
     Hide,
+    HideAliases,
 }
 
 impl CommandAttrs {
@@ -66,10 +70,12 @@ impl CommandAttrs {
                 description: None,
                 rename_rule: None,
                 rename: None,
+                aliases: None,
                 parser: None,
                 separator: None,
                 command_separator: None,
                 hide: None,
+                hide_aliases: None,
             },
             |mut this, attr| {
                 fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
@@ -111,10 +117,12 @@ impl CommandAttrs {
                     }
                     RenameRule(r) => insert(&mut this.rename_rule, r, attr.sp),
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
+                    Aliases(a) => insert(&mut this.aliases, a, attr.sp),
                     ParseWith(p) => insert(&mut this.parser, p, attr.sp),
                     Separator(s) => insert(&mut this.separator, s, attr.sp),
                     CommandSeparator(s) => insert(&mut this.command_separator, s, attr.sp),
                     Hide => insert(&mut this.hide, (), attr.sp),
+                    HideAliases => insert(&mut this.hide_aliases, (), attr.sp),
                 }?;
 
                 Ok(this)
@@ -170,10 +178,19 @@ impl CommandAttr {
                     "separator" => Separator(value.expect_string()?),
                     "command_separator" => CommandSeparator(value.expect_string()?),
                     "hide" => value.expect_none("hide").map(|_| Hide)?,
+                    "hide_aliases" => value.expect_none("hide_aliases").map(|_| HideAliases)?,
+                    "alias" => Aliases(vec![value.expect_string()?]),
+                    "aliases" => Aliases(
+                        value
+                            .expect_array()?
+                            .into_iter()
+                            .map(AttrValue::expect_string)
+                            .collect::<Result<_>>()?,
+                    ),
                     _ => {
                         return Err(compile_error_at(
                             "unexpected attribute name (expected one of `prefix`, `description`, \
-                             `rename`, `parse_with`, `separator` and `hide`",
+                             `rename`, `parse_with`, `separator`, `hide`, `alias` and `aliases`",
                             attr.span(),
                         ))
                     }

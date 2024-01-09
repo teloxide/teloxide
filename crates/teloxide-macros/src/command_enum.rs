@@ -3,6 +3,21 @@ use crate::{
     rename_rules::RenameRule, Result,
 };
 
+/// Create a if block that checks if the given attribute is applied to a enum
+/// itself, if so, return an error
+macro_rules! variants_only_attr {
+    ($($attr: ident),+) => {
+        $(
+            if let Some((_, sp)) = $attr {
+                return Err(compile_error_at(
+                    concat!("`", stringify!($attr), "` attribute can only be applied to enums *variants*"),
+                    sp,
+                ));
+            }
+        )+
+    };
+}
+
 pub(crate) struct CommandEnum {
     pub prefix: String,
     /// The bool is true if the description contains a doc comment
@@ -21,22 +36,14 @@ impl CommandEnum {
             rename_rule,
             rename,
             parser,
-            separator,
+            aliases,
             command_separator,
+            separator,
             hide,
+            hide_aliases,
         } = attrs;
 
-        if let Some((_rename, sp)) = rename {
-            return Err(compile_error_at(
-                "`rename` attribute can only be applied to enums *variants*",
-                sp,
-            ));
-        } else if let Some((_hide, sp)) = hide {
-            return Err(compile_error_at(
-                "`hide` attribute can only be applied to enums *variants*",
-                sp,
-            ));
-        }
+        variants_only_attr![rename, hide, hide_aliases, aliases];
 
         let mut parser = parser.map(|(p, _)| p).unwrap_or(ParserType::Default);
 
