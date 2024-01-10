@@ -53,6 +53,8 @@ mod private {
     impl Sealed for Message {}
 }
 
+// FIXME: rewrite this macro to allow the usage of functions returning small
+// values without borrowing
 macro_rules! define_message_ext {
     ($( ($func:ident, $fn_name:path) ,)*) => {
         define_ext! {
@@ -68,22 +70,57 @@ macro_rules! define_message_ext {
 
 // May be expanded in the future.
 define_message_ext! {
+    // MessageCommon
     (filter_from, Message::from),
+    // MediaKind variants of the MessageKind::Common
     (filter_animation, Message::animation),
     (filter_audio, Message::audio),
     (filter_contact, Message::contact),
     (filter_document, Message::document),
+    (filter_game, Message::game),
+    (filter_venue, Message::venue),
     (filter_location, Message::location),
     (filter_photo, Message::photo),
     (filter_poll, Message::poll),
     (filter_sticker, Message::sticker),
     (filter_text, Message::text),
+    (filter_video, Message::video),
+    (filter_video_note, Message::video_note),
+    (filter_voice, Message::voice),
+    (filter_migration, Message::chat_migration),
+    (filter_migration_from, Message::migrate_from_chat_id),
+    (filter_migration_to, Message::migrate_to_chat_id),
     (filter_reply_to_message, Message::reply_to_message),
     (filter_forward_from, Message::forward_from),
+    // Rest variants of a MessageKind
     (filter_new_chat_members, Message::new_chat_members),
     (filter_left_chat_member, Message::left_chat_member),
+    (filter_new_chat_title, Message::new_chat_title),
+    (filter_new_chat_photo, Message::new_chat_photo),
+    (filter_delete_chat_photo, Message::delete_chat_photo),
+    (filter_group_chat_created, Message::group_chat_created),
+    (filter_supergroup_chat_created, Message::super_group_chat_created),
+    (filter_channel_chat_created, Message::channel_chat_created),
+    (filter_message_auto_delete_timer_changed, Message::message_auto_delete_timer_changed),
     (filter_pinned, Message::pinned_message),
+    (filter_invoice, Message::invoice),
+    (filter_successful_payment, Message::successful_payment),
+    (filter_connected_website, Message::connected_website),
+    (filter_write_access_allowed, Message::write_access_allowed),
+    (filter_passport_data, Message::passport_data),
     (filter_dice, Message::dice),
+    (filter_proximity_alert_triggered, Message::proximity_alert_triggered),
+    (filter_forum_topic_created, Message::forum_topic_created),
+    (filter_forum_topic_edited, Message::forum_topic_edited),
+    (filter_forum_topic_closed, Message::forum_topic_closed),
+    (filter_forum_topic_reopened, Message::forum_topic_reopened),
+    (filter_general_forum_topic_hidden, Message::general_forum_topic_hidden),
+    (filter_general_forum_topic_unhidden, Message::general_forum_topic_unhidden),
+    (filter_video_chat_scheduled, Message::video_chat_scheduled),
+    (filter_video_chat_started, Message::video_chat_started),
+    (filter_video_chat_ended, Message::video_chat_ended),
+    (filter_video_chat_participants_invited, Message::video_chat_participants_invited),
+    (filter_web_app_data, Message::web_app_data),
 }
 
 macro_rules! define_update_ext {

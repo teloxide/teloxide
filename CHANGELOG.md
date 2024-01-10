@@ -10,6 +10,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `MessageToCopyNotFound` error to `teloxide::errors::ApiError` ([PR 917](https://github.com/teloxide/teloxide/pull/917)) 
 - `Dispatcher::try_dispatch_with_listener` ([PR 913](https://github.com/teloxide/teloxide/pull/913))
+- Missing Message::filter_* functions ([PR 982](https://github.com/teloxide/teloxide/pull/982)): 
+  - `filter_game`
+  - `filter_venue`
+  - `filter_video`
+  - `filter_video_note`
+  - `filter_voice`
+  - `filter_migration`
+  - `filter_migration_from`
+  - `filter_migration_to`
+  - `filter_new_chat_title`
+  - `filter_new_chat_photo`
+  - `filter_delete_chat_photo`
+  - `filter_group_chat_created`
+  - `filter_supergroup_chat_created`
+  - `filter_channel_chat_created`
+  - `filter_message_auto_delete_timer_changed`
+  - `filter_invoice`
+  - `filter_successful_payment`
+  - `filter_connected_website`
+  - `filter_write_access_allowed`
+  - `filter_passport_data`
+  - `filter_proximity_alert_triggered`
+  - `filter_forum_topic_created`
+  - `filter_forum_topic_edited`
+  - `filter_forum_topic_closed`
+  - `filter_forum_topic_reopened`
+  - `filter_general_forum_topic_hidden`
+  - `filter_general_forum_topic_unhidden`
+  - `filter_video_chat_scheduled`
+  - `filter_video_chat_started`
+  - `filter_video_chat_ended`
+  - `filter_video_chat_participants_invited`
+  - `filter_web_app_data` 
 
 ### Fixed
 

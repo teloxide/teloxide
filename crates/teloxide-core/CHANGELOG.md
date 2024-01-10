@@ -19,10 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ChatId::as_user` ([#905][pr905])
 - Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
 - `ChatId::{MIN, MAX}` ([#905][pr905])
+- Missing `Message` getters ([#982][pr982]): 
+  - `message_auto_delete_timer_changed`
+  - `write_access_allowed`
+  - `forum_topic_created`
+  - `forum_topic_edited`
+  - `forum_topic_closed`
+  - `forum_topic_reopened`
+  - `general_forum_topic_hidden`
+  - `general_forum_topic_unhidden`
+  - `video_chat_scheduled`
+  - `video_chat_started`
+  - `video_chat_ended`
+  - `web_app_data` 
+- `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
 [pr905]: https://github.com/teloxide/teloxide/pull/905
+[pr982]: https://github.com/teloxide/teloxide/pull/982
 
 ### Fixed
 
@@ -70,6 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add proper support for `edit_message_caption_inline`, `copy_message`, `answer_inline_query`, `answer_web_app_query`, `send_media_group`, `edit_message_media`, and `edit_message_media_inline` to `DefaultParseMode` adaptor ([#961][pr961])
   - Note that now `DefaultParseMode` sets the default on `send`, instead of request creation
   - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
+- Methods of the Message type: `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created`, `chat_migration`, `migrate_to_chat_id`, `migrate_from_chat_id` now return shared reference instead of owned value inside `Option` ([#982][pr982])
+- Methods `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created` now return appropriate structs not `Option<True>` ([#982][pr982])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
