@@ -19,6 +19,7 @@ use crate::types::{
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
+#[serde(from = "raw::InlineQueryResult", into = "raw::InlineQueryResult")]
 pub enum InlineQueryResult {
     #[serde(rename = "audio")]
     CachedAudio(InlineQueryResultCachedAudio),
@@ -50,6 +51,207 @@ pub enum InlineQueryResult {
     Venue(InlineQueryResultVenue),
     Video(InlineQueryResultVideo),
     Voice(InlineQueryResultVoice),
+}
+
+mod raw {
+    use super::*;
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum AudioKind {
+        Cached(InlineQueryResultCachedAudio),
+        NonCached(InlineQueryResultAudio),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum DocumentKind {
+        Cached(InlineQueryResultCachedDocument),
+        NonCached(InlineQueryResultDocument),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum GifKind {
+        Cached(InlineQueryResultCachedGif),
+        NonCached(InlineQueryResultGif),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum Mpeg4GifKind {
+        Cached(InlineQueryResultCachedMpeg4Gif),
+        NonCached(InlineQueryResultMpeg4Gif),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum PhotoKind {
+        Cached(InlineQueryResultCachedPhoto),
+        NonCached(InlineQueryResultPhoto),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum VideoKind {
+        Cached(InlineQueryResultCachedVideo),
+        NonCached(InlineQueryResultVideo),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub(super) enum VoiceKind {
+        Cached(InlineQueryResultCachedVoice),
+        NonCached(InlineQueryResultVoice),
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(tag = "type")]
+    #[serde(rename_all = "snake_case")]
+    pub(super) enum InlineQueryResult {
+        // Types which have a cached and non-cached variant must be listed here
+        Audio(AudioKind),
+        Document(DocumentKind),
+        Gif(GifKind),
+        #[serde(rename = "mpeg4_gif")]
+        Mpeg4Gif(Mpeg4GifKind),
+        Photo(PhotoKind),
+        Video(VideoKind),
+        Voice(VoiceKind),
+
+        // Types which have only a cached variant must be listed here
+        #[serde(rename = "sticker")]
+        CachedSticker(InlineQueryResultCachedSticker),
+
+        // Types which have only a non-cached variant must be listed here
+        Article(InlineQueryResultArticle),
+        Contact(InlineQueryResultContact),
+        Game(InlineQueryResultGame),
+        Location(InlineQueryResultLocation),
+        Venue(InlineQueryResultVenue),
+    }
+
+    impl From<InlineQueryResult> for super::InlineQueryResult {
+        fn from(raw: InlineQueryResult) -> Self {
+            match raw {
+                InlineQueryResult::Audio(AudioKind::Cached(audio)) => {
+                    super::InlineQueryResult::CachedAudio(audio)
+                }
+                InlineQueryResult::Audio(AudioKind::NonCached(audio)) => {
+                    super::InlineQueryResult::Audio(audio)
+                }
+                InlineQueryResult::Document(DocumentKind::Cached(document)) => {
+                    super::InlineQueryResult::CachedDocument(document)
+                }
+                InlineQueryResult::Document(DocumentKind::NonCached(document)) => {
+                    super::InlineQueryResult::Document(document)
+                }
+                InlineQueryResult::Gif(GifKind::Cached(gif)) => {
+                    super::InlineQueryResult::CachedGif(gif)
+                }
+                InlineQueryResult::Gif(GifKind::NonCached(gif)) => {
+                    super::InlineQueryResult::Gif(gif)
+                }
+                InlineQueryResult::Mpeg4Gif(Mpeg4GifKind::Cached(gif)) => {
+                    super::InlineQueryResult::CachedMpeg4Gif(gif)
+                }
+                InlineQueryResult::Mpeg4Gif(Mpeg4GifKind::NonCached(gif)) => {
+                    super::InlineQueryResult::Mpeg4Gif(gif)
+                }
+                InlineQueryResult::Photo(PhotoKind::Cached(photo)) => {
+                    super::InlineQueryResult::CachedPhoto(photo)
+                }
+                InlineQueryResult::Photo(PhotoKind::NonCached(photo)) => {
+                    super::InlineQueryResult::Photo(photo)
+                }
+                InlineQueryResult::Video(VideoKind::Cached(video)) => {
+                    super::InlineQueryResult::CachedVideo(video)
+                }
+                InlineQueryResult::Video(VideoKind::NonCached(video)) => {
+                    super::InlineQueryResult::Video(video)
+                }
+                InlineQueryResult::Voice(VoiceKind::Cached(voice)) => {
+                    super::InlineQueryResult::CachedVoice(voice)
+                }
+                InlineQueryResult::Voice(VoiceKind::NonCached(voice)) => {
+                    super::InlineQueryResult::Voice(voice)
+                }
+
+                InlineQueryResult::CachedSticker(sticker) => {
+                    super::InlineQueryResult::CachedSticker(sticker)
+                }
+
+                InlineQueryResult::Article(article) => super::InlineQueryResult::Article(article),
+                InlineQueryResult::Contact(contact) => super::InlineQueryResult::Contact(contact),
+                InlineQueryResult::Game(game) => super::InlineQueryResult::Game(game),
+                InlineQueryResult::Location(location) => {
+                    super::InlineQueryResult::Location(location)
+                }
+                InlineQueryResult::Venue(venue) => super::InlineQueryResult::Venue(venue),
+            }
+        }
+    }
+
+    impl From<super::InlineQueryResult> for InlineQueryResult {
+        fn from(raw: super::InlineQueryResult) -> Self {
+            match raw {
+                super::InlineQueryResult::CachedAudio(audio) => {
+                    InlineQueryResult::Audio(AudioKind::Cached(audio))
+                }
+                super::InlineQueryResult::Audio(audio) => {
+                    InlineQueryResult::Audio(AudioKind::NonCached(audio))
+                }
+                super::InlineQueryResult::CachedDocument(document) => {
+                    InlineQueryResult::Document(DocumentKind::Cached(document))
+                }
+                super::InlineQueryResult::Document(document) => {
+                    InlineQueryResult::Document(DocumentKind::NonCached(document))
+                }
+                super::InlineQueryResult::CachedGif(gif) => {
+                    InlineQueryResult::Gif(GifKind::Cached(gif))
+                }
+                super::InlineQueryResult::Gif(gif) => {
+                    InlineQueryResult::Gif(GifKind::NonCached(gif))
+                }
+                super::InlineQueryResult::CachedMpeg4Gif(gif) => {
+                    InlineQueryResult::Mpeg4Gif(Mpeg4GifKind::Cached(gif))
+                }
+                super::InlineQueryResult::Mpeg4Gif(gif) => {
+                    InlineQueryResult::Mpeg4Gif(Mpeg4GifKind::NonCached(gif))
+                }
+                super::InlineQueryResult::CachedPhoto(photo) => {
+                    InlineQueryResult::Photo(PhotoKind::Cached(photo))
+                }
+                super::InlineQueryResult::Photo(photo) => {
+                    InlineQueryResult::Photo(PhotoKind::NonCached(photo))
+                }
+                super::InlineQueryResult::CachedVideo(video) => {
+                    InlineQueryResult::Video(VideoKind::Cached(video))
+                }
+                super::InlineQueryResult::Video(video) => {
+                    InlineQueryResult::Video(VideoKind::NonCached(video))
+                }
+                super::InlineQueryResult::CachedVoice(voice) => {
+                    InlineQueryResult::Voice(VoiceKind::Cached(voice))
+                }
+                super::InlineQueryResult::Voice(voice) => {
+                    InlineQueryResult::Voice(VoiceKind::NonCached(voice))
+                }
+
+                super::InlineQueryResult::CachedSticker(sticker) => {
+                    InlineQueryResult::CachedSticker(sticker)
+                }
+
+                super::InlineQueryResult::Article(article) => InlineQueryResult::Article(article),
+                super::InlineQueryResult::Contact(contact) => InlineQueryResult::Contact(contact),
+                super::InlineQueryResult::Game(game) => InlineQueryResult::Game(game),
+                super::InlineQueryResult::Location(location) => {
+                    InlineQueryResult::Location(location)
+                }
+                super::InlineQueryResult::Venue(venue) => InlineQueryResult::Venue(venue),
+            }
+        }
+    }
 }
 
 #[cfg(test)]
