@@ -39,15 +39,15 @@
 //!
 //! There is a great number of [update kinds] and [message kinds] to work with!
 //! Usually it's essential to filter specific ones and process them in `handler
-//! functions`. Teloxide provides some `filter methods` for [Update] and
-//! [Message] types in [UpdateFilterExt] and [MessageFilterExt] traits
+//! functions`. Teloxide provides some `filter methods` for [`Update`] and
+//! [`Message`] types in [`UpdateFilterExt`] and [`MessageFilterExt`] traits
 //! respectively. In addition to filtering, these methods will `inject` the
 //! appropriate type into your handler functions. For instance, if you use
-//! [Update::filter_message], the instance of the [Message] will be available as
-//! a parameter for your handler functions. Similarly the use of
-//! [Message::filter_text] will inject a [String] into the context.
+//! [`Update::filter_message`], the instance of the [`Message`] will be
+//! available as a parameter for your handler functions. Similarly the use of
+//! [`Message::filter_text`] will inject a [`String`] into the context.
 //!
-//! Moreover, [filter_map] function can inject some dependencies according to
+//! Moreover, [`filter_map`] function can inject some dependencies according to
 //! the schema flow. More in the example below!
 //!
 //! Here is a quick example (filter text message and inject it's text into the
@@ -96,13 +96,13 @@
 //!
 //! [update kinds]: crate::types::UpdateKind
 //! [message kinds]: crate::types::MessageKind
-//! [Update]: crate::types::Update
-//! [Message]: crate::types::Message
-//! [Message::filter_text]: crate::dispatching::MessageFilterExt::filter_text
-//! [UpdateFilterExt]: crate::dispatching::MessageFilterExt
-//! [MessageFilterExt]: crate::dispatching::UpdateFilterExt
-//! [Update::filter_message]: crate::dispatching::UpdateFilterExt::filter_message
-//! [filter_map]: crate::prelude::Handler::filter_map
+//! [`Update`]: crate::types::Update
+//! [`Message`]: crate::types::Message
+//! [`Message::filter_text`]: crate::dispatching::MessageFilterExt::filter_text
+//! [`UpdateFilterExt`]: crate::dispatching::UpdateFilterExt
+//! [`MessageFilterExt`]: crate::dispatching::MessageFilterExt
+//! [`Update::filter_message`]: crate::dispatching::UpdateFilterExt::filter_message
+//! [`filter_map`]: crate::prelude::Handler::filter_map
 
 // This hack is used to cancel formatting for a Markdown table. See [1], [2], and [3].
 //
