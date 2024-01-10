@@ -1101,10 +1101,7 @@ mod getters {
         /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
         pub fn is_delete_chat_photo(&self) -> bool {
-            match &self.kind {
-                DeleteChatPhoto(..) => true,
-                _ => false,
-            }
+            matches!(&self.kind, DeleteChatPhoto(..))
         }
 
         #[must_use]
@@ -1121,10 +1118,7 @@ mod getters {
         /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
         pub fn is_group_chat_created(&self) -> bool {
-            match &self.kind {
-                GroupChatCreated(..) => true,
-                _ => false,
-            }
+            matches!(&self.kind, GroupChatCreated(..))
         }
 
         #[must_use]
@@ -1141,10 +1135,7 @@ mod getters {
         /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
         pub fn is_super_group_chat_created(&self) -> bool {
-            match &self.kind {
-                SupergroupChatCreated(..) => true,
-                _ => false,
-            }
+            matches!(&self.kind, SupergroupChatCreated(..))
         }
 
         #[must_use]
@@ -1163,10 +1154,7 @@ mod getters {
         /// [More on this](https://core.telegram.org/bots/api#message)
         #[must_use]
         pub fn is_channel_chat_created(&self) -> bool {
-            match &self.kind {
-                ChannelChatCreated(..) => true,
-                _ => false,
-            }
+            matches!(&self.kind, ChannelChatCreated(..))
         }
 
         #[must_use]
