@@ -1,7 +1,6 @@
 use std::{
     convert::TryInto,
     future::Future,
-    mem,
     pin::Pin,
     task::{
         self,
@@ -106,7 +105,6 @@ where
             drop_pending_updates,
             flag: Some(flag),
             token,
-            stop_token_cloned: false,
         };
 
         assert_update_listener(polling)
@@ -251,7 +249,6 @@ pub struct Polling<B> {
     drop_pending_updates: bool,
     flag: Option<StopFlag>,
     token: StopToken,
-    stop_token_cloned: bool,
 }
 
 impl<R> Polling<R>
@@ -275,15 +272,12 @@ where
 
     /// Returns true if re-initialization happened *and*
     /// the previous token was cloned.
-    fn reinit_stop_flag_if_needed(&mut self) -> bool {
-        if self.flag.is_some() {
-            return false;
+    fn reinit_stop_flag_if_needed(&mut self) {
+        if self.flag.is_none() {
+            let (token, flag) = mk_stop_token();
+            self.token = token;
+            self.flag = Some(flag);
         }
-
-        let (token, flag) = mk_stop_token();
-        self.token = token;
-        self.flag = Some(flag);
-        mem::replace(&mut self.stop_token_cloned, false)
     }
 }
 
@@ -332,20 +326,9 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
             let allowed_updates = self.allowed_updates.clone();
             let drop_pending_updates = self.drop_pending_updates;
 
-            let token_used_and_updated = self.reinit_stop_flag_if_needed();
-
             // FIXME: document that `listen` is a destructive operation, actually,
             //        and you need to call `stop_token` *again* after it
-            //
-            //        maybe also remove the panic, it's a lot of additional work, for little
-            //        benefit, it seems like.
-            if token_used_and_updated {
-                panic!(
-                    "detected calling `as_stream` a second time after calling `stop_token`. \
-                     `as_stream` updates the stop token, thus you need to call it again after \
-                     calling `as_stream`"
-                )
-            }
+            self.reinit_stop_flag_if_needed();
 
             // FIXME: do update dropping *here*
 
@@ -370,7 +353,6 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
 
     fn stop_token(&mut self) -> StopToken {
         self.reinit_stop_flag_if_needed();
-        self.stop_token_cloned = true;
         self.token.clone()
     }
 
