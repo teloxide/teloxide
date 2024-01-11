@@ -447,9 +447,9 @@ fn polling_is_send() {
     assert_send(&polling.listen());
     assert_send(&polling.stop_token());
 
-    _ = async {
+    drop(async {
         assert_send(&polling.listen().await.unwrap());
-    };
+    });
 
     fn assert_send(_: &impl Send) {}
 }

@@ -44,6 +44,8 @@ mod polling;
 #[allow(deprecated)]
 pub use self::polling::{polling, polling_default, Polling, PollingBuilder, PollingStream};
 
+type BoxFut<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
+
 /// An update listener.
 ///
 /// Implementors of this trait allow getting updates from Telegram. See
@@ -73,9 +75,7 @@ pub trait UpdateListener {
     /// should call `set_webhook`.
     ///
     /// [`Stream`]: AsUpdateStream::Stream
-    fn listen(
-        &mut self,
-    ) -> Pin<Box<dyn Future<Output = Result<Self::Stream<'_>, Self::SetupErr>> + Send + '_>>;
+    fn listen(&mut self) -> BoxFut<'_, Result<Self::Stream<'_>, Self::SetupErr>>;
 
     /// Hint which updates should the listener listen for.
     ///
