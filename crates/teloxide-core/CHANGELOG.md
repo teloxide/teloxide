@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `u32` for sizes and `Seconds` for timespans in `InlineQueryResult*` ([#887][pr887])
 - `SendGame::reply_to_message_id`, `SendSticker::reply_to_message_id` and `SendInvoice::reply_to_message_id` now use `MessageId` instead of `i32` ([#887][pr887])
 - Use `UpdateId` for `Update::id` ([#892][pr892])
-- MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([#950][pr950])
+- MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.74.0` ([#950][pr950], [#993][pr993])
 - Add proper support for `edit_message_caption_inline`, `copy_message`, `answer_inline_query`, `answer_web_app_query`, `send_media_group`, `edit_message_media`, and `edit_message_media_inline` to `DefaultParseMode` adaptor ([#961][pr961])
   - Note that now `DefaultParseMode` sets the default on `send`, instead of request creation
   - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
@@ -95,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr892]: https://github.com/teloxide/teloxide/pull/892
 [pr950]: https://github.com/teloxide/teloxide/pull/950
 [pr961]: https://github.com/teloxide/teloxide/pull/961
+[pr993]: https://github.com/teloxide/teloxide/pull/
 
 ### Deprecated
 
