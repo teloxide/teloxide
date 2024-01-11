@@ -17,7 +17,7 @@ use crate::{
     requests::{HasPayload, Request, Requester},
     stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
-    update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
+    update_listeners::{assert_update_listener, UpdateListener},
 };
 
 /// Builder for polling update listener.
@@ -243,7 +243,7 @@ where
 /// [get_updates]: crate::requests::Requester::get_updates
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[must_use = "`Polling` is an update listener and does nothing unless used"]
-pub struct Polling<B: Requester> {
+pub struct Polling<B> {
     bot: B,
     timeout: Option<Duration>,
     limit: Option<u8>,
@@ -320,7 +320,53 @@ pub struct PollingStream<'a, B: Requester> {
 }
 
 impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
-    type Err = B::Err;
+    type SetupErr = B::Err;
+    type StreamErr = B::Err;
+    type Stream<'a> = PollingStream<'a, B>;
+
+    fn listen(
+        &mut self,
+    ) -> Pin<Box<dyn Future<Output = Result<Self::Stream<'_>, Self::SetupErr>> + Send + '_>> {
+        Box::pin(async {
+            let timeout = self.timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+            let allowed_updates = self.allowed_updates.clone();
+            let drop_pending_updates = self.drop_pending_updates;
+
+            let token_used_and_updated = self.reinit_stop_flag_if_needed();
+
+            // FIXME: document that `listen` is a destructive operation, actually,
+            //        and you need to call `stop_token` *again* after it
+            //
+            //        maybe also remove the panic, it's a lot of additional work, for little
+            //        benefit, it seems like.
+            if token_used_and_updated {
+                panic!(
+                    "detected calling `as_stream` a second time after calling `stop_token`. \
+                     `as_stream` updates the stop token, thus you need to call it again after \
+                     calling `as_stream`"
+                )
+            }
+
+            // FIXME: do update dropping *here*
+
+            // Unwrap: just called reinit
+            let flag = self.flag.take().unwrap();
+            let stream = PollingStream {
+                polling: self,
+                drop_pending_updates,
+                timeout,
+                allowed_updates,
+                offset: 0,
+                force_stop: false,
+                stopping: false,
+                buffer: Vec::new().into_iter(),
+                in_flight: None,
+                flag,
+            };
+
+            Ok(stream)
+        })
+    }
 
     fn stop_token(&mut self) -> StopToken {
         self.reinit_stop_flag_if_needed();
@@ -332,44 +378,6 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
         // TODO: we should probably warn if there already were different allowed updates
         // before
         self.allowed_updates = Some(hint.collect());
-    }
-}
-
-impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
-    type StreamErr = B::Err;
-    type Stream = PollingStream<'a, B>;
-
-    fn as_stream(&'a mut self) -> Self::Stream {
-        let timeout = self.timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
-        let allowed_updates = self.allowed_updates.clone();
-        let drop_pending_updates = self.drop_pending_updates;
-
-        let token_used_and_updated = self.reinit_stop_flag_if_needed();
-
-        // FIXME: document that `as_stream` is a destructive operation, actually,
-        //        and you need to call `stop_token` *again* after it
-        if token_used_and_updated {
-            panic!(
-                "detected calling `as_stream` a second time after calling `stop_token`. \
-                 `as_stream` updates the stop token, thus you need to call it again after calling \
-                 `as_stream`"
-            )
-        }
-
-        // Unwrap: just called reinit
-        let flag = self.flag.take().unwrap();
-        PollingStream {
-            polling: self,
-            drop_pending_updates,
-            timeout,
-            allowed_updates,
-            offset: 0,
-            force_stop: false,
-            stopping: false,
-            buffer: Vec::new().into_iter(),
-            in_flight: None,
-            flag,
-        }
     }
 }
 
@@ -471,8 +479,12 @@ fn polling_is_send() {
     let mut polling = polling(bot, None, None, None);
 
     assert_send(&polling);
-    assert_send(&polling.as_stream());
+    assert_send(&polling.listen());
     assert_send(&polling.stop_token());
+
+    _ = async {
+        assert_send(&polling.listen().await.unwrap());
+    };
 
     fn assert_send(_: &impl Send) {}
 }

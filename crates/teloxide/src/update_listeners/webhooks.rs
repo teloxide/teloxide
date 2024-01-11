@@ -1,7 +1,7 @@
 //!
 use std::net::SocketAddr;
 
-use crate::{requests::Requester, types::InputFile};
+use crate::{requests::Requester, types::InputFile, update_listeners::AllowedUpdate};
 
 /// Options related to setting up webhooks.
 #[must_use]
@@ -116,7 +116,7 @@ impl Options {
 }
 
 #[cfg(feature = "webhooks-axum")]
-pub use self::axum::{axum, axum_no_setup, axum_to_router};
+pub use self::axum::axum;
 
 #[cfg(feature = "webhooks-axum")]
 mod axum;
@@ -124,25 +124,26 @@ mod axum;
 // TODO: add different implementation (for example: warp)
 
 /// Calls `set_webhook` with arguments from `options`.
-///
-/// Note: this takes out `certificate`.
-async fn setup_webhook<R>(bot: R, options: &mut Options) -> Result<(), R::Err>
+async fn setup_webhook<R>(
+    bot: R,
+    options: &Options,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+) -> Result<(), R::Err>
 where
     R: Requester,
 {
     use crate::requests::Request;
     use teloxide_core::requests::HasPayload;
 
-    let secret = options.get_or_gen_secret_token().to_owned();
-    let &mut Options {
-        ref url, ref mut certificate, max_connections, drop_pending_updates, ..
-    } = options;
+    let Options { url, certificate, secret_token, max_connections, drop_pending_updates, .. } =
+        options;
 
     let mut req = bot.set_webhook(url.clone());
-    req.payload_mut().certificate = certificate.take();
-    req.payload_mut().max_connections = max_connections;
-    req.payload_mut().drop_pending_updates = Some(drop_pending_updates);
-    req.payload_mut().secret_token = Some(secret);
+    req.payload_mut().certificate = certificate.clone();
+    req.payload_mut().max_connections = *max_connections;
+    req.payload_mut().drop_pending_updates = Some(*drop_pending_updates);
+    req.payload_mut().secret_token = secret_token.clone();
+    req.payload_mut().allowed_updates = allowed_updates;
 
     req.send().await?;
 
@@ -181,18 +182,4 @@ fn check_secret(bytes: &[u8]) -> Result<&[u8], &'static str> {
     }
 
     Ok(bytes)
-}
-
-/// Returns first (`.0`) field from a tuple as a `&mut` reference.
-///
-/// This hack is needed because there isn't currently a way to easily force a
-/// closure to be higher-ranked (`for<'a> &'a mut _ -> &'a mut _`) which causes
-/// problems when using [`StatefulListener`] to implement update listener.
-///
-/// This could be probably removed once [rfc#3216] is implemented.
-///
-/// [`StatefulListener`]:
-/// [rfc#3216]: https://github.com/rust-lang/rfcs/pull/3216
-fn tuple_first_mut<A, B>(tuple: &mut (A, B)) -> &mut A {
-    &mut tuple.0
 }

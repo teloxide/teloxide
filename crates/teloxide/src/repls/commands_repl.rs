@@ -85,8 +85,11 @@ pub trait CommandReplExt {
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
         H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
-        L: UpdateListener + Send + 'a,
-        L::Err: Debug + Send + 'a,
+        // FIXME: why do we need + 'static here??? (and in similar cases) (compiler error does not
+        // provide enough info...)
+        L: UpdateListener + Send + 'static,
+        L::SetupErr: Debug,
+        L::StreamErr: Debug + Send + 'a,
         R: Requester + Clone + Send + Sync + 'static,
         <R as Requester>::GetMe: Send;
 }
@@ -120,8 +123,9 @@ where
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
         H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
-        L: UpdateListener + Send + 'a,
-        L::Err: Debug + Send + 'a,
+        L: UpdateListener + Send + 'static,
+        L::SetupErr: Debug,
+        L::StreamErr: Debug + Send + 'a,
         R: Requester + Clone + Send + Sync + 'static,
         <R as Requester>::GetMe: Send,
     {
@@ -277,7 +281,8 @@ pub async fn commands_repl_with_listener<'a, R, Cmd, H, L, Args>(
     Cmd: BotCommands + Send + Sync + 'static,
     H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send + 'a,
-    L::Err: Debug + Send + 'a,
+    L::SetupErr: Debug,
+    L::StreamErr: Debug,
     R: Requester + Clone + Send + Sync + 'static,
 {
     use crate::dispatching::Dispatcher;

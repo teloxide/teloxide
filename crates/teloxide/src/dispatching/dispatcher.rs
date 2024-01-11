@@ -20,7 +20,8 @@ use tokio_stream::wrappers::ReceiverStream;
 
 use std::{
     collections::HashMap,
-    fmt::Debug,
+    error::Error,
+    fmt::{self, Debug, Display},
     future::Future,
     hash::Hash,
     ops::{ControlFlow, Deref},
@@ -214,6 +215,15 @@ pub struct Dispatcher<R, Err, Key> {
     state: ShutdownToken,
 }
 
+/// An error returned from [`Disatcher::try_dispatch_with_listener`].
+pub enum TryDispatchError<R: Requester, L: UpdateListener> {
+    /// An error from calling `get_me` while creating dispatcher context.
+    GetMe(R::Err),
+
+    /// An error during update listener setup.
+    ListenerSetup(L::SetupErr),
+}
+
 struct Worker {
     tx: tokio::sync::mpsc::Sender<Update>,
     handle: tokio::task::JoinHandle<()>,
@@ -300,8 +310,8 @@ where
         update_listener_error_handler: Arc<Eh>,
     ) where
         UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
-        UListener::Err: Debug,
+        Eh: ErrorHandler<UListener::StreamErr> + 'a,
+        UListener::SetupErr: Debug,
     {
         self.try_dispatch_with_listener(update_listener, update_listener_error_handler)
             .await
@@ -319,14 +329,13 @@ where
         &'a mut self,
         mut update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
-    ) -> Result<(), R::Err>
+    ) -> Result<(), TryDispatchError<R, UListener>>
     where
         UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
-        UListener::Err: Debug,
+        Eh: ErrorHandler<UListener::StreamErr> + 'a,
     {
         // FIXME: there should be a way to check if dependency is already inserted
-        let me = self.bot.get_me().send().await?;
+        let me = self.bot.get_me().send().await.map_err(TryDispatchError::GetMe)?;
         self.dependencies.insert(me);
         self.dependencies.insert(self.bot.clone());
 
@@ -340,7 +349,7 @@ where
         self.state.start_dispatching();
 
         {
-            let stream = update_listener.as_stream();
+            let stream = update_listener.listen().await.map_err(TryDispatchError::ListenerSetup)?;
             tokio::pin!(stream);
 
             loop {
@@ -518,6 +527,51 @@ impl<R, Err, Key> Dispatcher<R, Err, Key> {
                 }
             }
         });
+    }
+}
+
+impl<R: Requester, L: UpdateListener> Debug for TryDispatchError<R, L>
+where
+    R: Requester,
+    R::Err: Debug,
+    L: UpdateListener,
+    L::SetupErr: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::GetMe(e) => f.debug_tuple("GetMe").field(&e).finish(),
+            Self::ListenerSetup(e) => f.debug_tuple("ListenerSetup").field(&e).finish(),
+        }
+    }
+}
+
+impl<R, L> fmt::Display for TryDispatchError<R, L>
+where
+    R: Requester,
+    R::Err: Display,
+    L: UpdateListener,
+    L::SetupErr: Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::GetMe(e) => write!(f, "Error while setting up update listener: {e}"),
+            Self::ListenerSetup(e) => write!(f, "Error while setting up update listener: {e}"),
+        }
+    }
+}
+
+impl<R, L> Error for TryDispatchError<R, L>
+where
+    R: Requester,
+    R::Err: Error + Debug + Display + 'static,
+    L: UpdateListener,
+    L::SetupErr: Error + Debug + Display + 'static,
+{
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::GetMe(e) => Some(e),
+            Self::ListenerSetup(e) => Some(e),
+        }
     }
 }
 

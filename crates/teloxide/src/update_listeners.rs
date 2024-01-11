@@ -30,7 +30,9 @@
 #[cfg(feature = "webhooks")]
 pub mod webhooks;
 
-use futures::Stream;
+use std::pin::Pin;
+
+use futures::{Future, Stream};
 
 use crate::{
     stop::StopToken,
@@ -38,30 +40,54 @@ use crate::{
 };
 
 mod polling;
-mod stateful_listener;
 
 #[allow(deprecated)]
-pub use self::{
-    polling::{polling, polling_default, Polling, PollingBuilder, PollingStream},
-    stateful_listener::StatefulListener,
-};
+pub use self::polling::{polling, polling_default, Polling, PollingBuilder, PollingStream};
 
 /// An update listener.
 ///
 /// Implementors of this trait allow getting updates from Telegram. See
 /// [module-level documentation] for more.
 ///
-/// Some functions of this trait are located in the supertrait
-/// ([`AsUpdateStream`]), see also:
-/// - [`AsUpdateStream::Stream`]
-/// - [`AsUpdateStream::as_stream`]
-///
 /// [module-level documentation]: mod@self
-pub trait UpdateListener:
-    for<'a> AsUpdateStream<'a, StreamErr = <Self as UpdateListener>::Err>
-{
-    /// The type of errors that can be returned from this listener.
-    type Err;
+pub trait UpdateListener {
+    type SetupErr;
+
+    /// Error that can be returned from the [`Stream`]
+    ///
+    /// [`Stream`]: UpdateListener::Stream
+    type StreamErr;
+
+    /// The stream of updates from Telegram.
+    // NB: `Send` is not strictly required here, but it makes it easier to return
+    //     `impl AsUpdateStream` and also you want `Send` streams almost (?) always
+    //     anyway.
+    type Stream<'a>: Stream<Item = Result<Update, Self::StreamErr>> + Send + 'a
+    where
+        Self: 'a;
+
+    /// Creates the update [`Stream`].
+    ///
+    /// This function should also do all the necessary setup, and return an
+    /// error if something goes wrong with it. For example for webhooks this
+    /// should call `set_webhook`.
+    ///
+    /// [`Stream`]: AsUpdateStream::Stream
+    fn listen(
+        &mut self,
+    ) -> Pin<Box<dyn Future<Output = Result<Self::Stream<'_>, Self::SetupErr>> + Send + '_>>;
+
+    /// Hint which updates should the listener listen for.
+    ///
+    /// For example [`polling()`] should send the hint as
+    /// [`GetUpdates::allowed_updates`]
+    ///
+    /// Note: this is a very important method, without setting appropriate
+    /// allowed updates, telegram will not send some update kinds.
+    ///
+    /// [`GetUpdates::allowed_updates`]:
+    /// crate::payloads::GetUpdates::allowed_updates
+    fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>);
 
     /// Returns a token which stops this listener.
     ///  
@@ -77,44 +103,6 @@ pub trait UpdateListener:
     #[must_use = "This function doesn't stop listening, to stop listening you need to call `stop` \
                   on the returned token"]
     fn stop_token(&mut self) -> StopToken;
-
-    /// Hint which updates should the listener listen for.
-    ///
-    /// For example [`polling()`] should send the hint as
-    /// [`GetUpdates::allowed_updates`]
-    ///
-    /// Note however that this is a _hint_ and as such, it can be ignored. The
-    /// listener is not guaranteed to only return updates which types are listed
-    /// in the hint.
-    ///
-    /// [`GetUpdates::allowed_updates`]:
-    /// crate::payloads::GetUpdates::allowed_updates
-    fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>) {
-        let _ = hint;
-    }
-}
-
-/// [`UpdateListener`]'s supertrait/extension.
-///
-/// This trait is a workaround to not require GAT.
-pub trait AsUpdateStream<'a> {
-    /// Error that can be returned from the [`Stream`]
-    ///
-    /// [`Stream`]: AsUpdateStream::Stream
-    // NB: This should be named differently to `UpdateListener::Err`, so that it's
-    // unambiguous
-    type StreamErr;
-
-    /// The stream of updates from Telegram.
-    // NB: `Send` is not strictly required here, but it makes it easier to return
-    //     `impl AsUpdateStream` and also you want `Send` streams almost (?) always
-    //     anyway.
-    type Stream: Stream<Item = Result<Update, Self::StreamErr>> + Send + 'a;
-
-    /// Creates the update [`Stream`].
-    ///
-    /// [`Stream`]: AsUpdateStream::Stream
-    fn as_stream(&'a mut self) -> Self::Stream;
 }
 
 #[inline(always)]

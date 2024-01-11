@@ -108,7 +108,8 @@ where
     R: Requester + Clone + Send + Sync + 'static,
     H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send,
-    L::Err: Debug,
+    L::SetupErr: Debug,
+    L::StreamErr: Debug,
 {
     use crate::dispatching::Dispatcher;
 
