@@ -110,14 +110,11 @@ where
     {
         let cloned_bot = bot.clone();
 
-        Box::pin(async move {
-            Self::repl_with_listener(
-                bot,
-                handler,
-                update_listeners::polling_default(cloned_bot).await,
-            )
-            .await
-        })
+        Box::pin(Self::repl_with_listener(
+            bot,
+            handler,
+            update_listeners::polling_default(cloned_bot),
+        ))
     }
 
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
@@ -212,13 +209,8 @@ where
     let cloned_bot = bot.clone();
 
     #[allow(deprecated)]
-    commands_repl_with_listener(
-        bot,
-        handler,
-        update_listeners::polling_default(cloned_bot).await,
-        cmd,
-    )
-    .await;
+    commands_repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot), cmd)
+        .await;
 }
 
 /// A [REPL] for commands, with a custom [`UpdateListener`].

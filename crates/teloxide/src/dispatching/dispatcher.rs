@@ -293,7 +293,7 @@ where
         R: Requester + Clone,
         <R as Requester>::GetUpdates: Send,
     {
-        let listener = update_listeners::polling_default(self.bot.clone()).await;
+        let listener = update_listeners::polling_default(self.bot.clone());
         let error_handler =
             LoggingErrorHandler::with_custom_text("An error from the update listener");
 

@@ -56,7 +56,7 @@ where
     H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
-    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
+    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
 }
 
 /// A [REPL] for messages, with a custom [`UpdateListener`].

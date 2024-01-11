@@ -31,6 +31,7 @@ pub struct PollingBuilder<R> {
     pub limit: Option<u8>,
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
     pub drop_pending_updates: bool,
+    pub delete_webhook: bool,
 }
 
 impl<R> PollingBuilder<R>
@@ -85,10 +86,8 @@ where
     }
 
     /// Deletes webhook if it was set up.
-    pub async fn delete_webhook(self) -> Self {
-        delete_webhook_if_setup(&self.bot).await;
-
-        self
+    pub fn delete_webhook(self) -> Self {
+        Self { delete_webhook: true, ..self }
     }
 
     /// Returns a long polling update listener with configuration from the
@@ -96,7 +95,8 @@ where
     ///
     /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
-        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
+        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates, delete_webhook } =
+            self;
         let (token, flag) = mk_stop_token();
         let polling = Polling {
             bot,
@@ -104,6 +104,7 @@ where
             limit,
             allowed_updates,
             drop_pending_updates,
+            delete_webhook,
             flag: Some(flag),
             token,
         };
@@ -119,13 +120,12 @@ where
 /// ## Notes
 ///
 /// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(bot: R) -> Polling<R>
+pub fn polling_default<R>(bot: R) -> Polling<R>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    let polling =
-        Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build();
+    let polling = Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().build();
 
     assert_update_listener(polling)
 }
@@ -147,27 +147,6 @@ where
     builder.limit = limit;
     builder.allowed_updates = allowed_updates;
     assert_update_listener(builder.build())
-}
-
-async fn delete_webhook_if_setup<R>(requester: &R)
-where
-    R: Requester,
-{
-    let webhook_info = match requester.get_webhook_info().send().await {
-        Ok(ok) => ok,
-        Err(e) => {
-            log::error!("Failed to get webhook info: {:?}", e);
-            return;
-        }
-    };
-
-    let is_webhook_setup = webhook_info.url.is_some();
-
-    if is_webhook_setup {
-        if let Err(e) = requester.delete_webhook().send().await {
-            log::error!("Failed to delete a webhook: {:?}", e);
-        }
-    }
 }
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -248,6 +227,7 @@ pub struct Polling<B> {
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
     drop_pending_updates: bool,
+    delete_webhook: bool,
     flag: Option<StopFlag>,
     token: StopToken,
 }
@@ -268,6 +248,7 @@ where
             limit: None,
             allowed_updates: None,
             drop_pending_updates: false,
+            delete_webhook: false,
         }
     }
 
@@ -326,6 +307,16 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
             // FIXME: document that `listen` is a destructive operation, actually,
             //        and you need to call `stop_token` *again* after it
             self.reinit_stop_flag_if_needed();
+
+            if self.delete_webhook {
+                let webhook_info = self.bot.get_webhook_info().send().await?;
+
+                let is_webhook_setup = webhook_info.url.is_some();
+
+                if is_webhook_setup {
+                    self.bot.delete_webhook().send().await?;
+                }
+            }
 
             if self.drop_pending_updates {
                 self.bot.get_updates().offset(-1).limit(1).timeout(0).await?;
