@@ -198,6 +198,10 @@ name = "ngrok_ping_pong"
 required-features = ["webhooks-axum", "ctrlc_handler"]
 
 [[example]]
+name = "axum_shared_server"
+required-features = ["webhooks-axum", "ctrlc_handler"]
+
+[[example]]
 name = "purchase"
 required-features = ["macros", "ctrlc_handler"]
 
