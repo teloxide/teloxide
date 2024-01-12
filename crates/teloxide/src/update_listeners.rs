@@ -74,7 +74,7 @@ pub trait UpdateListener {
     /// error if something goes wrong with it. For example for webhooks this
     /// should call `set_webhook`.
     ///
-    /// [`Stream`]: AsUpdateStream::Stream
+    /// [`Stream`]: UpdateListener::Stream
     fn listen(&mut self) -> BoxFut<'_, Result<Self::Stream<'_>, Self::SetupErr>>;
 
     /// Hint which updates should the listener listen for.
