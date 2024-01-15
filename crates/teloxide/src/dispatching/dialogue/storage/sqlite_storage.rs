@@ -40,7 +40,6 @@ impl<S> SqliteStorage<S> {
         serializer: S,
     ) -> Result<Arc<Self>, SqliteStorageError<Infallible>> {
         let pool = SqlitePool::connect(format!("sqlite:{path}?mode=rwc").as_str()).await?;
-        let mut conn = pool.acquire().await?;
         sqlx::query(
             "
 CREATE TABLE IF NOT EXISTS teloxide_dialogues (
@@ -49,7 +48,7 @@ CREATE TABLE IF NOT EXISTS teloxide_dialogues (
 );
         ",
         )
-        .execute(&mut conn)
+        .execute(&pool)
         .await?;
 
         Ok(Arc::new(Self { pool, serializer }))
