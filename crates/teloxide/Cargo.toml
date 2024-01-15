@@ -23,8 +23,7 @@ default = ["native-tls", "ctrlc_handler", "teloxide-core/default", "auto-send"]
 webhooks = ["rand"]
 webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
 
-# FIXME: rename `sqlite-storage` -> `sqlite-storage-nativetls`
-sqlite-storage = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
+sqlite-storage-nativetls = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
 sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
@@ -51,9 +50,9 @@ nightly = ["teloxide-core/nightly"]
 full = [
     "webhooks",
     "webhooks-axum",
-    "sqlite-storage",
+    "sqlite-storage-nativetls",
     # "sqlite-storage-rustls" is explicitly ommited here,
-    # since it conflicts with "sqlite-storage"
+    # since it conflicts with "sqlite-storage-nativetls"
     "redis-storage",
     "cbor-serializer",
     "bincode-serializer",
@@ -124,7 +123,7 @@ tokio-stream = "0.1"
 
 
 [package.metadata.docs.rs]
-# NB: can't use `all-features = true`, because `sqlite-storage` conflicts with `sqlite-storage-rustls`
+# NB: can't use `all-features = true`, because `sqlite-storage-nativetls` conflicts with `sqlite-storage-rustls`
 features = ["full", "nightly"]
 # FIXME: Add back "-Znormalize-docs" when https://github.com/rust-lang/rust/issues/93703 is fixed
 rustdoc-args = ["--cfg", "docsrs"]
@@ -147,7 +146,7 @@ required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
 [[test]]
 name = "sqlite"
 path = "tests/sqlite.rs"
-required-features = ["sqlite-storage", "cbor-serializer", "bincode-serializer"]
+required-features = ["sqlite-storage-nativetls", "cbor-serializer", "bincode-serializer"]
 
 
 [[example]]
@@ -170,7 +169,7 @@ required-features = ["macros", "ctrlc_handler"]
 [[example]]
 name = "db_remember"
 required-features = [
-    "sqlite-storage",
+    "sqlite-storage-nativetls",
     "redis-storage",
     "bincode-serializer",
     "macros",
