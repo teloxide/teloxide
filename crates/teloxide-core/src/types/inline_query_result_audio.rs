@@ -124,7 +124,7 @@ impl InlineQueryResultAudio {
     }
 
     pub fn audio_duration(mut self, val: Seconds) -> Self {
-        self.audio_duration = Some(val.into());
+        self.audio_duration = Some(val);
         self
     }
 
