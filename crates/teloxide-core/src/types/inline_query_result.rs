@@ -356,10 +356,10 @@ mod tests {
             })),
             caption_entities: None,
             performer: Some(String::from("performer")),
-            audio_duration: Some("1".into()),
+            audio_duration: Some(Seconds::from_seconds(1)),
         });
 
-        let expected_json = r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title","caption":"caption","parse_mode":"HTML","performer":"performer","audio_duration":"1","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title","caption":"caption","parse_mode":"HTML","performer":"performer","audio_duration":1,"reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
