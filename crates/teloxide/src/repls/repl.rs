@@ -56,7 +56,7 @@ where
     H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
-    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
+    repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot)).await;
 }
 
 /// A [REPL] for messages, with a custom [`UpdateListener`].
@@ -108,7 +108,8 @@ where
     R: Requester + Clone + Send + Sync + 'static,
     H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send,
-    L::Err: Debug,
+    L::SetupErr: Debug,
+    L::StreamErr: Debug,
 {
     use crate::dispatching::Dispatcher;
 

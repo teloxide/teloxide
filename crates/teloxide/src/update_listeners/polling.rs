@@ -1,7 +1,6 @@
 use std::{
     convert::TryInto,
     future::Future,
-    mem,
     pin::Pin,
     task::{
         self,
@@ -14,10 +13,11 @@ use std::{
 use futures::{ready, stream::Stream};
 
 use crate::{
+    payloads::GetUpdatesSetters as _,
     requests::{HasPayload, Request, Requester},
     stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
-    update_listeners::{assert_update_listener, AsUpdateStream, UpdateListener},
+    update_listeners::{assert_update_listener, UpdateListener},
 };
 
 /// Builder for polling update listener.
@@ -31,6 +31,7 @@ pub struct PollingBuilder<R> {
     pub limit: Option<u8>,
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
     pub drop_pending_updates: bool,
+    pub delete_webhook: bool,
 }
 
 impl<R> PollingBuilder<R>
@@ -85,10 +86,8 @@ where
     }
 
     /// Deletes webhook if it was set up.
-    pub async fn delete_webhook(self) -> Self {
-        delete_webhook_if_setup(&self.bot).await;
-
-        self
+    pub fn delete_webhook(self) -> Self {
+        Self { delete_webhook: true, ..self }
     }
 
     /// Returns a long polling update listener with configuration from the
@@ -96,7 +95,8 @@ where
     ///
     /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
-        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
+        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates, delete_webhook } =
+            self;
         let (token, flag) = mk_stop_token();
         let polling = Polling {
             bot,
@@ -104,9 +104,9 @@ where
             limit,
             allowed_updates,
             drop_pending_updates,
+            delete_webhook,
             flag: Some(flag),
             token,
-            stop_token_cloned: false,
         };
 
         assert_update_listener(polling)
@@ -120,13 +120,12 @@ where
 /// ## Notes
 ///
 /// This function will automatically delete a webhook if it was set up.
-pub async fn polling_default<R>(bot: R) -> Polling<R>
+pub fn polling_default<R>(bot: R) -> Polling<R>
 where
     R: Requester + Send + 'static,
     <R as Requester>::GetUpdates: Send,
 {
-    let polling =
-        Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build();
+    let polling = Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().build();
 
     assert_update_listener(polling)
 }
@@ -148,27 +147,6 @@ where
     builder.limit = limit;
     builder.allowed_updates = allowed_updates;
     assert_update_listener(builder.build())
-}
-
-async fn delete_webhook_if_setup<R>(requester: &R)
-where
-    R: Requester,
-{
-    let webhook_info = match requester.get_webhook_info().send().await {
-        Ok(ok) => ok,
-        Err(e) => {
-            log::error!("Failed to get webhook info: {:?}", e);
-            return;
-        }
-    };
-
-    let is_webhook_setup = webhook_info.url.is_some();
-
-    if is_webhook_setup {
-        if let Err(e) = requester.delete_webhook().send().await {
-            log::error!("Failed to delete a webhook: {:?}", e);
-        }
-    }
 }
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
@@ -243,15 +221,15 @@ where
 /// [get_updates]: crate::requests::Requester::get_updates
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
 #[must_use = "`Polling` is an update listener and does nothing unless used"]
-pub struct Polling<B: Requester> {
+pub struct Polling<B> {
     bot: B,
     timeout: Option<Duration>,
     limit: Option<u8>,
     allowed_updates: Option<Vec<AllowedUpdate>>,
     drop_pending_updates: bool,
+    delete_webhook: bool,
     flag: Option<StopFlag>,
     token: StopToken,
-    stop_token_cloned: bool,
 }
 
 impl<R> Polling<R>
@@ -270,20 +248,18 @@ where
             limit: None,
             allowed_updates: None,
             drop_pending_updates: false,
+            delete_webhook: false,
         }
     }
 
     /// Returns true if re-initialization happened *and*
     /// the previous token was cloned.
-    fn reinit_stop_flag_if_needed(&mut self) -> bool {
-        if self.flag.is_some() {
-            return false;
+    fn reinit_stop_flag_if_needed(&mut self) {
+        if self.flag.is_none() {
+            let (token, flag) = mk_stop_token();
+            self.token = token;
+            self.flag = Some(flag);
         }
-
-        let (token, flag) = mk_stop_token();
-        self.token = token;
-        self.flag = Some(flag);
-        mem::replace(&mut self.stop_token_cloned, false)
     }
 }
 
@@ -291,9 +267,6 @@ where
 pub struct PollingStream<'a, B: Requester> {
     /// Parent structure
     polling: &'a mut Polling<B>,
-
-    /// Whatever to drop pending updates or not.
-    drop_pending_updates: bool,
 
     /// Timeout parameter for normal `get_updates()` calls.
     timeout: Option<u32>,
@@ -320,11 +293,55 @@ pub struct PollingStream<'a, B: Requester> {
 }
 
 impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
-    type Err = B::Err;
+    type SetupErr = B::Err;
+    type StreamErr = B::Err;
+    type Stream<'a> = PollingStream<'a, B>;
+
+    fn listen(
+        &mut self,
+    ) -> Pin<Box<dyn Future<Output = Result<Self::Stream<'_>, Self::SetupErr>> + Send + '_>> {
+        Box::pin(async {
+            let timeout = self.timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
+            let allowed_updates = self.allowed_updates.clone();
+
+            // FIXME: document that `listen` is a destructive operation, actually,
+            //        and you need to call `stop_token` *again* after it
+            self.reinit_stop_flag_if_needed();
+
+            if self.delete_webhook {
+                let webhook_info = self.bot.get_webhook_info().send().await?;
+
+                let is_webhook_setup = webhook_info.url.is_some();
+
+                if is_webhook_setup {
+                    self.bot.delete_webhook().send().await?;
+                }
+            }
+
+            if self.drop_pending_updates {
+                self.bot.get_updates().offset(-1).limit(1).timeout(0).await?;
+            }
+
+            // Unwrap: just called reinit
+            let flag = self.flag.take().unwrap();
+            let stream = PollingStream {
+                polling: self,
+                timeout,
+                allowed_updates,
+                offset: 0,
+                force_stop: false,
+                stopping: false,
+                buffer: Vec::new().into_iter(),
+                in_flight: None,
+                flag,
+            };
+
+            Ok(stream)
+        })
+    }
 
     fn stop_token(&mut self) -> StopToken {
         self.reinit_stop_flag_if_needed();
-        self.stop_token_cloned = true;
         self.token.clone()
     }
 
@@ -332,44 +349,6 @@ impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
         // TODO: we should probably warn if there already were different allowed updates
         // before
         self.allowed_updates = Some(hint.collect());
-    }
-}
-
-impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
-    type StreamErr = B::Err;
-    type Stream = PollingStream<'a, B>;
-
-    fn as_stream(&'a mut self) -> Self::Stream {
-        let timeout = self.timeout.map(|t| t.as_secs().try_into().expect("timeout is too big"));
-        let allowed_updates = self.allowed_updates.clone();
-        let drop_pending_updates = self.drop_pending_updates;
-
-        let token_used_and_updated = self.reinit_stop_flag_if_needed();
-
-        // FIXME: document that `as_stream` is a destructive operation, actually,
-        //        and you need to call `stop_token` *again* after it
-        if token_used_and_updated {
-            panic!(
-                "detected calling `as_stream` a second time after calling `stop_token`. \
-                 `as_stream` updates the stop token, thus you need to call it again after calling \
-                 `as_stream`"
-            )
-        }
-
-        // Unwrap: just called reinit
-        let flag = self.flag.take().unwrap();
-        PollingStream {
-            polling: self,
-            drop_pending_updates,
-            timeout,
-            allowed_updates,
-            offset: 0,
-            force_stop: false,
-            stopping: false,
-            buffer: Vec::new().into_iter(),
-            in_flight: None,
-            flag,
-        }
     }
 }
 
@@ -419,29 +398,23 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                         *this.offset = upd.id.as_offset();
                     }
 
-                    match *this.drop_pending_updates {
-                        false => *this.buffer = updates.into_iter(),
-                        true => *this.drop_pending_updates = false,
-                    }
+                    *this.buffer = updates.into_iter();
                 }
                 Err(err) => return Ready(Some(Err(err))),
             }
         }
 
-        let (offset, limit, timeout) = match (this.stopping, this.drop_pending_updates) {
+        let (offset, limit, timeout) = match this.stopping {
             // Normal `get_updates()` call
-            (false, false) => (*this.offset, this.polling.limit, *this.timeout),
-            // Graceful shutdown `get_updates()` call (shutdown takes priority over dropping pending
-            // updates)
+            false => (*this.offset, this.polling.limit, *this.timeout),
+            // Graceful shutdown `get_updates()` call
             //
             // When stopping we set `timeout = 0` and `limit = 1` so that `get_updates()`
             // set last seen update (offset) and return immediately
-            (true, _) => {
+            true => {
                 log::trace!("graceful shutdown `get_updates` call");
                 (*this.offset, Some(1), Some(0))
             }
-            // Drop pending updates
-            (_, true) => (-1, Some(1), Some(0)),
         };
 
         let req = this
@@ -471,8 +444,12 @@ fn polling_is_send() {
     let mut polling = polling(bot, None, None, None);
 
     assert_send(&polling);
-    assert_send(&polling.as_stream());
+    assert_send(&polling.listen());
     assert_send(&polling.stop_token());
+
+    drop(async {
+        assert_send(&polling.listen().await.unwrap());
+    });
 
     fn assert_send(_: &impl Send) {}
 }
