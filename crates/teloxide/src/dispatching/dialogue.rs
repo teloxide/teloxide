@@ -96,7 +96,7 @@
 #[cfg(feature = "redis-storage")]
 pub use self::{RedisStorage, RedisStorageError};
 
-#[cfg(feature = "sqlite-storage")]
+#[cfg(feature = "sqlite-storage-nativetls")]
 pub use self::{SqliteStorage, SqliteStorageError};
 
 pub use get_chat_id::GetChatId;
