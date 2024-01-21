@@ -8,7 +8,7 @@ on:
 name: Continuous integration
 
 env:
-  RUSTFLAGS: "--cfg CI_REDIS CI_POSTGRES -Dwarnings"
+  RUSTFLAGS: "--cfg CI_REDIS --cfg CI_POSTGRES -Dwarnings"
   RUSTDOCFLAGS: -Dwarnings
   RUST_BACKTRACE: short
 
@@ -80,14 +80,11 @@ jobs:
         image: postgres
 
         volumes:
-          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+          - init.sql:/docker-entrypoint-initdb.d/init.sql
 
         env:
           POSTGRES_USER: teloxide
           POSTGRES_PASSWORD: rewrite_it_in_rust
-
-        ports:
-        - 5432:5432
 
     strategy:
       matrix:
