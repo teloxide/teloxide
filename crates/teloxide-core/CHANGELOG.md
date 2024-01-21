@@ -145,6 +145,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `can_edit_messages`
   - `can_pin_messages`
   - `can_manage_topics`
+- `ApiError::NotFound` is replaced with `ApiError::InvalidToken` which correctly parses all currently known errors caused by invalid bot tokens ([#998][pr998])
+
+[pr998]: https://github.com/teloxide/teloxide/pull/998
 
 ### Added
 

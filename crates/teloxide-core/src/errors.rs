@@ -123,7 +123,7 @@ macro_rules! impl_api_error {
                 where
                     E: ::serde::de::Error,
                 {
-                    $(impl_api_error!(@de v, $var_name, $var_string $(, $var_parser)*);)*
+                    $(impl_api_error!(@de v, $var_name $( ($var_inner) )?, $var_string $(, $var_parser)*);)*
                     Err(E::unknown_variant(v, &[]))
                 }
             }
@@ -138,15 +138,20 @@ macro_rules! impl_api_error {
             }
         };
     };
-    (@de $value: ident, $variant: ident, $val: literal) => {
+    (@de $value:ident, $variant:ident, $val:literal) => {
         if $value == $val {
             return Ok(Self::Value::$variant)
         }
     };
-    (@de $value: ident, $variant: ident, $val: literal, $block: expr) => {
+    (@de $value:ident, $variant:ident ($var_inner:ty), $val:literal, $block:expr) => {
         match $block($value) {
             Some(data) => return Ok(Self::Value::$variant(data)),
             _ => {}
+        }
+    };
+    (@de $value:ident, $variant:ident, $val:literal, $block:expr) => {
+        if $block($value) {
+            return Ok(Self::Value::$variant);
         }
     };
 }
@@ -159,9 +164,12 @@ impl_api_error! {
         /// Occurs when the bot tries to send message to user who blocked the bot.
         BotBlocked = "Forbidden: bot was blocked by the user",
 
-        /// Occurs when the bot token is incorrect.
-        // FIXME: rename this to something akin "InvalidToken"
-        NotFound = "Unauthorized",
+        /// Occurs when the bot token is invalid.
+        // N.B. These errors are actually slightly different, "Unauthorized" is when the bot token
+        //      is formatted mostly right, but is incorrect, whereas "Not Found" is when the url is
+        //      not handled by TBA at all. From user POV both of those are "token is invalid", but
+        //      there might be some cases where this is not right...
+        InvalidToken = "Invalid bot token" with |text: &str| text == "Unauthorized" || text == "Not Found",
 
         /// Occurs when bot tries to modify a message without modification content.
         ///
@@ -804,7 +812,8 @@ mod tests {
 
         let cases = &[
             ("{\"data\": \"Forbidden: bot was blocked by the user\"}", ApiError::BotBlocked),
-            ("{\"data\": \"Unauthorized\"}", ApiError::NotFound),
+            ("{\"data\": \"Unauthorized\"}", ApiError::InvalidToken),
+            ("{\"data\": \"Not Found\"}", ApiError::InvalidToken),
             (
                 "{\"data\": \"Bad Request: message is not modified: specified new message content \
                  and reply markup are exactly the same as a current content and reply markup of \
@@ -1019,6 +1028,7 @@ mod tests {
                 ApiError::Unknown(_) => {
                     format!("Unknown error: \"{raw}\"")
                 }
+                ApiError::InvalidToken => "Invalid bot token".to_owned(),
                 _ => raw,
             };
             assert_eq!(parsed.to_string(), expected_error_message);
