@@ -88,28 +88,13 @@ impl AsResponseParameters for crate::RequestError {
     }
 }
 
-macro_rules! match_prefix {
-    ("") => {{
-        |data: &str| Some(data.to_owned())
-    }};
-    ($prefix:literal) => {{
-        |data: &str| {
-            if data.starts_with($prefix) {
-                Some(data.to_owned())
-            } else {
-                None
-            }
-        }
-    }};
-}
-
 macro_rules! impl_api_error {
     (
         $( #[$meta:meta] )*
         $vis:vis enum $ident:ident {
             $(
                 $( #[$var_meta:meta] )*
-                $var_name:ident $( ($var_inner:ty) )? = $var_string:literal $(with $var_parser: block)?
+                $var_name:ident $( ($var_inner:ty) )? = $var_string:literal $(with $var_parser:expr)?
              ),*
          }
     ) => {
@@ -616,7 +601,13 @@ impl_api_error! {
         /// 1. [`SendMessage`]
         ///
         /// [`SendMessage`]: crate::payloads::SendMessage
-        CantParseEntities(String) = "{0}" with {match_prefix!("Bad Request: can't parse entities")},
+        CantParseEntities(String) = "{0}" with |text: &str| {
+            if text.starts_with("Bad Request: can't parse entities") {
+                Some(text.to_owned())
+            } else {
+                None
+            }
+        },
 
         /// Occurs when bot tries to use getUpdates while webhook is active.
         ///
@@ -712,7 +703,7 @@ impl_api_error! {
         /// description of the error.
         ///
         /// [open an issue]: https://github.com/teloxide/teloxide/issues/new
-        Unknown(String) = "Unknown error: {0:?}" with {match_prefix!("")}
+        Unknown(String) = "Unknown error: {0:?}" with |text: &str| Some(text.to_owned())
     }
 }
 
