@@ -129,7 +129,6 @@ tokio-stream = "0.1"
 [package.metadata.docs.rs]
 # NB: can't use `all-features = true`, because `sqlite-storage-nativetls` conflicts with `sqlite-storage-rustls`
 features = ["full", "nightly"]
-# FIXME: Add back "-Znormalize-docs" when https://github.com/rust-lang/rust/issues/93703 is fixed
 rustdoc-args = ["--cfg", "docsrs"]
 rustc-args = ["--cfg", "dep_docsrs"]
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]

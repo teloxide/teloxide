@@ -3,6 +3,8 @@
 # https://github.com/rust-lang/cargo/issues/10333
 #
 # "tokio/macros" and "tokio/rt-multi-thread" are required for examples
+#
+# N.B.: when changing this, also change `package.metadata.docs.rs`
 docs = """doc
 -Zrustdoc-scrape-examples
 --features=full --features=nightly
@@ -11,4 +13,10 @@ docs = """doc
 
 [build]
 # We pass "--cfg docsrs" when building docs to add `This is supported on feature="..." only.`
-rustdocflags = ["--cfg", "docsrs", "-Znormalize-docs"]
+#
+# FIXME: add back `-Znormalize-docs` once <https://github.com/rust-lang/rust/issues/81091> is fixed
+#        or we don't depend on `generic-array` anymore
+#
+# N.B.: when changing this, also change `RUSTDOCFLAGS` in `.github/workflows/ci.yml` and
+#      `package.metadata.docs.rs.rustdoc-args` in `crates/teloxide/Cargo.toml`
+rustdocflags = ["--cfg", "docsrs"]
