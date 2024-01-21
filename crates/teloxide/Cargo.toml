@@ -25,7 +25,10 @@ webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
 
 sqlite-storage-nativetls = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
 sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
+postgres-storage-nativetls = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
+postgres-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
 redis-storage = ["redis"]
+
 cbor-serializer = ["serde_cbor"]
 bincode-serializer = ["bincode"]
 
@@ -101,6 +104,7 @@ either = "1.9.0"
 sqlx = { version = "0.7.3", optional = true, default-features = false, features = [
     "macros",
     "sqlite",
+    "postgres"
 ] }
 redis = { version = "0.21", features = ["tokio-comp"], optional = true }
 serde_cbor = { version = "0.11", optional = true }
