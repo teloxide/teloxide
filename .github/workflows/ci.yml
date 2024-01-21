@@ -8,7 +8,7 @@ on:
 name: Continuous integration
 
 env:
-  RUSTFLAGS: "--cfg CI_REDIS -Dwarnings"
+  RUSTFLAGS: "--cfg CI_REDIS CI_POSTGRES -Dwarnings"
   RUSTDOCFLAGS: -Dwarnings
   RUST_BACKTRACE: short
 
@@ -74,6 +74,21 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    services:
+      # Setup Postgres for testing PostgresStorage
+      postgres:
+        image: postgres
+
+        volumes:
+          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+        env:
+          POSTGRES_USER: teloxide
+          POSTGRES_PASSWORD: rewrite_it_in_rust
+
+        ports:
+        - 5432:5432
+
     strategy:
       matrix:
         rust:
