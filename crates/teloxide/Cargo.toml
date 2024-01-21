@@ -57,6 +57,7 @@ full = [
     # "sqlite-storage-rustls" is explicitly ommited here,
     # since it conflicts with "sqlite-storage-nativetls"
     "redis-storage",
+    "postgres-storage-nativetls",
     "cbor-serializer",
     "bincode-serializer",
     "macros",
