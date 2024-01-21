@@ -152,6 +152,10 @@ name = "sqlite"
 path = "tests/sqlite.rs"
 required-features = ["sqlite-storage-nativetls", "cbor-serializer", "bincode-serializer"]
 
+[[test]]
+name = "postgres"
+path = "tests/postgres.rs"
+required-features = ["postgres-storage-nativetls", "cbor-serializer", "bincode-serializer"]
 
 [[example]]
 name = "admin"
