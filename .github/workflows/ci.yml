@@ -74,18 +74,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    services:
-      # Setup Postgres for testing PostgresStorage
-      postgres:
-        image: postgres
-
-        volumes:
-          - init.sql:/docker-entrypoint-initdb.d/init.sql
-
-        env:
-          POSTGRES_USER: teloxide
-          POSTGRES_PASSWORD: rewrite_it_in_rust
-
     strategy:
       matrix:
         rust:
@@ -131,7 +119,11 @@ jobs:
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
-
+      - name: Start PostgreSQL servers
+        run: |
+          docker run -d -p 5432:5432 -e POSTGRES_USER=teloxide -e POSTGRES_PASSWORD=rewrite_it_in_rust -e POSTGRES_DB=test_postgres_json postgres
+          docker run -d -p 5433:5432 -e POSTGRES_USER=teloxide -e POSTGRES_PASSWORD=rewrite_it_in_rust -e POSTGRES_DB=test_postgres_bincode postgres
+          docker run -d -p 5434:5432 -e POSTGRES_USER=teloxide -e POSTGRES_PASSWORD=rewrite_it_in_rust -e POSTGRES_DB=test_postgres_cbor postgres
       - name: Test unit & integration tests
         run: |
           cargo +${{ matrix.toolchain }} test --tests --verbose ${{ matrix.features }}

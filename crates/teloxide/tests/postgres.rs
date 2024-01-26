@@ -7,12 +7,14 @@ use teloxide::{
     types::ChatId,
 };
 
+// These examples are meant to run under the CI with the postgres service
+// Were checked locally
 #[tokio::test]
 #[cfg_attr(not(CI_POSTGRES), ignore)]
 async fn test_postgres_json() {
     let storage = PostgresStorage::open(
         "postgres://teloxide:rewrite_it_in_rust@localhost:5432/test_postgres_json",
-        4,
+        1,
         teloxide::dispatching::dialogue::serializer::Json,
     )
     .await
@@ -25,8 +27,8 @@ async fn test_postgres_json() {
 #[cfg_attr(not(CI_POSTGRES), ignore)]
 async fn test_postgres_bincode() {
     let storage = PostgresStorage::open(
-        "postgres://teloxide:rewrite_it_in_rust@localhost:5432/test_postgres_bincode",
-        4,
+        "postgres://teloxide:rewrite_it_in_rust@localhost:5433/test_postgres_bincode",
+        1,
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
     .await
@@ -39,8 +41,8 @@ async fn test_postgres_bincode() {
 #[cfg_attr(not(CI_POSTGRES), ignore)]
 async fn test_postgres_cbor() {
     let storage = PostgresStorage::open(
-        "postgres://teloxide:rewrite_it_in_rust@localhost:5432/test_postgres_cbor",
-        4,
+        "postgres://teloxide:rewrite_it_in_rust@localhost:5434/test_postgres_cbor",
+        1,
         teloxide::dispatching::dialogue::serializer::Cbor,
     )
     .await
