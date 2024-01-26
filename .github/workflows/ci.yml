@@ -135,7 +135,7 @@ jobs:
           redis-server --port 7779 > /dev/null &
       - name: Install psql
         run: |
-          apt install postgresql-client  -y
+          sudo apt install postgresql-client -y
       - name: Create PostgreSQL databases
         run: |
           psql -h localhost -U teloxide -c "CREATE DATABASE test_postgres_json;"
