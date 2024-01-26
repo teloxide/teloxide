@@ -27,7 +27,7 @@ async fn test_postgres_json() {
 #[cfg_attr(not(CI_POSTGRES), ignore)]
 async fn test_postgres_bincode() {
     let storage = PostgresStorage::open(
-        "postgres://teloxide:rewrite_it_in_rust@localhost:5433/test_postgres_bincode",
+        "postgres://teloxide:rewrite_it_in_rust@localhost:5432/test_postgres_bincode",
         1,
         teloxide::dispatching::dialogue::serializer::Bincode,
     )
@@ -41,7 +41,7 @@ async fn test_postgres_bincode() {
 #[cfg_attr(not(CI_POSTGRES), ignore)]
 async fn test_postgres_cbor() {
     let storage = PostgresStorage::open(
-        "postgres://teloxide:rewrite_it_in_rust@localhost:5434/test_postgres_cbor",
+        "postgres://teloxide:rewrite_it_in_rust@localhost:5432/test_postgres_cbor",
         1,
         teloxide::dispatching::dialogue::serializer::Cbor,
     )
