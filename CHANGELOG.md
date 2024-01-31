@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Greatly improved the speed of graceful shutdown (`^C`) ([PR 938](https://github.com/teloxide/teloxide/pull/938))
 - Fix typos in docstrings ([PR 953](https://github.com/teloxide/teloxide/pull/953))
 - Use `Seconds` instead of `String` in `InlineQueryResultAudio` for `audio_duration` ([PR 994](https://github.com/teloxide/teloxide/pull/994))
+- Issue [#780](https://github.com/teloxide/teloxide/issues/780) ([PR 1002](https://github.com/teloxide/teloxide/pull/1002))
 
 ### Changed
 
