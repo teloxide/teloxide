@@ -135,7 +135,7 @@ pub use repls::{repl, repl_with_listener};
 #[allow(deprecated)]
 pub use repls::{commands_repl, commands_repl_with_listener};
 
-pub mod backoff_strategy;
+pub mod backoff;
 pub mod dispatching;
 pub mod error_handlers;
 pub mod prelude;

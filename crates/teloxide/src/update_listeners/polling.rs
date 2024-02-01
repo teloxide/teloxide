@@ -15,7 +15,7 @@ use futures::{ready, stream::Stream};
 use tokio::time::{sleep, Sleep};
 
 use crate::{
-    backoff_strategy::{exponential_backoff_strategy, BackoffStrategy},
+    backoff::{exponential_backoff_strategy, BackoffStrategy},
     requests::{HasPayload, Request, Requester},
     stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
@@ -91,8 +91,11 @@ where
     /// reconnections caused by network errors.
     ///
     /// By default, the [`exponential_backoff_strategy`] is used.
-    pub fn backoff_strategy(self, backoff_strategy: BackoffStrategy) -> Self {
-        Self { backoff_strategy, ..self }
+    pub fn backoff_strategy(
+        self,
+        backoff_strategy: impl 'static + Send + Fn(u32) -> Duration,
+    ) -> Self {
+        Self { backoff_strategy: Box::new(backoff_strategy), ..self }
     }
 
     /// Deletes webhook if it was set up.
@@ -463,16 +466,12 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
         }
         // Poll eepy future until completion, needed for backoff strategy
         else if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
-            match eepy.poll(cx) {
-                Poll::Ready(_) => {
-                    // As soon as delay is waited we increment the counter
-                    *this.error_count = this.error_count.saturating_add(1);
-                    log::trace!("current error count: {}", *this.error_count);
-                    log::trace!("backoff delay completed");
-                    this.eepy.set(None);
-                }
-                Poll::Pending => return Poll::Pending,
-            }
+            ready!(eepy.poll(cx));
+            // As soon as delay is waited we increment the counter
+            *this.error_count = this.error_count.saturating_add(1);
+            log::trace!("current error count: {}", *this.error_count);
+            log::trace!("backoff delay completed");
+            this.eepy.as_mut().set(None);
         }
 
         let (offset, limit, timeout) = match (this.stopping, this.drop_pending_updates) {
