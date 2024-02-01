@@ -88,9 +88,9 @@ where
     }
 
     /// The backoff strategy that will be used for delay calculation between
-    /// reconnections
+    /// reconnections caused by network errors.
     ///
-    /// By default, the [`exponential_backoff_strategy`] is used
+    /// By default, the [`exponential_backoff_strategy`] is used.
     pub fn backoff_strategy(self, backoff_strategy: BackoffStrategy) -> Self {
         Self { backoff_strategy, ..self }
     }
@@ -462,7 +462,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
             }
         }
         // Poll eepy future until completion, needed for backoff strategy
-        if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
+        else if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
             match eepy.poll(cx) {
                 Poll::Ready(_) => {
                     // As soon as delay is waited we increment the counter
