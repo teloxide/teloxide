@@ -118,6 +118,8 @@ pub use web_app_data::*;
 pub use web_app_info::*;
 pub use webhook_info::*;
 pub use write_access_allowed::*;
+pub use reaction_emoji::*;
+pub use reaction_type::*;
 
 mod allowed_update;
 mod animation;
@@ -210,6 +212,8 @@ mod web_app_data;
 mod web_app_info;
 mod webhook_info;
 mod write_access_allowed;
+mod reaction_emoji;
+mod reaction_type;
 
 mod inline_query;
 mod inline_query_result;

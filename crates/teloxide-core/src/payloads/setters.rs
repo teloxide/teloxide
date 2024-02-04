@@ -36,7 +36,7 @@ pub use crate::payloads::{
     SetChatAdministratorCustomTitleSetters as _, SetChatDescriptionSetters as _,
     SetChatMenuButtonSetters as _, SetChatPermissionsSetters as _, SetChatPhotoSetters as _,
     SetChatStickerSetSetters as _, SetChatTitleSetters as _, SetGameScoreInlineSetters as _,
-    SetGameScoreSetters as _, SetMyCommandsSetters as _,
+    SetGameScoreSetters as _, SetMessageReactionSetters as _, SetMyCommandsSetters as _,
     SetMyDefaultAdministratorRightsSetters as _, SetPassportDataErrorsSetters as _,
     SetStickerPositionInSetSetters as _, SetStickerSetThumbSetters as _, SetWebhookSetters as _,
     StopMessageLiveLocationInlineSetters as _, StopMessageLiveLocationSetters as _,

@@ -109,6 +109,7 @@ mod set_chat_sticker_set;
 mod set_chat_title;
 mod set_game_score;
 mod set_game_score_inline;
+mod set_message_reaction;
 mod set_my_commands;
 mod set_my_default_administrator_rights;
 mod set_passport_data_errors;
@@ -230,6 +231,7 @@ pub use set_chat_sticker_set::{SetChatStickerSet, SetChatStickerSetSetters};
 pub use set_chat_title::{SetChatTitle, SetChatTitleSetters};
 pub use set_game_score::{SetGameScore, SetGameScoreSetters};
 pub use set_game_score_inline::{SetGameScoreInline, SetGameScoreInlineSetters};
+pub use set_message_reaction::{SetMessageReaction, SetMessageReactionSetters};
 pub use set_my_commands::{SetMyCommands, SetMyCommandsSetters};
 pub use set_my_default_administrator_rights::{
     SetMyDefaultAdministratorRights, SetMyDefaultAdministratorRightsSetters,

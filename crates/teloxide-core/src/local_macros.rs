@@ -1329,6 +1329,15 @@ macro_rules! requester_forward {
             let this = self;
             $body!(get_game_high_scores this (user_id: UserId, target: T))
         }
+    };
+    (@method set_message_reaction $body:ident $ty:ident) => {
+        type SetMessageReaction = $ty![SetMessageReaction];
+
+        fn set_message_reaction<C, E>(&self, chat_id: C, message_id: MessageId, emoji: E) -> Self::SetMessageReaction where C: Into<Recipient>,
+        E: IntoIterator<Item = ReactionType> {
+            let this = self;
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId, emoji: E))
+        }
     };// END BLOCK requester_forward_at_method
 }
 

@@ -1130,6 +1130,19 @@ pub trait Requester {
     fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores
     where
         T: Into<TargetMessage>;
+
+    type SetMessageReaction: Request<Payload = SetMessageReaction, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMessageReaction`].
+    fn set_message_reaction<C, E>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+        emoji: E,
+    ) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>,
+        E: IntoIterator<Item = ReactionType>;
     // END BLOCK requester_methods
 }
 
@@ -1257,7 +1270,8 @@ macro_rules! forward_all {
             set_game_score_inline,
             get_game_high_scores,
             approve_chat_join_request,
-            decline_chat_join_request
+            decline_chat_join_request,
+            set_message_reaction
             => $body, $ty
         }
     };
