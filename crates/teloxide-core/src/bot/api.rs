@@ -6,11 +6,10 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, ThreadId, UserId,
+        InputSticker, LabeledPrice, MessageId, ReactionType, Recipient, ThreadId, UserId,
     },
     Bot,
 };
-use crate::types::ReactionType;
 
 impl Requester for Bot {
     type Err = crate::errors::RequestError;
@@ -1357,7 +1356,19 @@ impl Requester for Bot {
 
     type SetMessageReaction = JsonRequest<payloads::SetMessageReaction>;
 
-    fn set_message_reaction<C, E>(&self, chat_id: C, message_id: MessageId, reaction: E) -> Self::SetMessageReaction where C: Into<Recipient>, E: IntoIterator<Item=ReactionType> {
-        Self::SetMessageReaction::new(self.clone(), payloads::SetMessageReaction::new(chat_id, message_id, reaction))
+    fn set_message_reaction<C, E>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+        reaction: E,
+    ) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>,
+        E: IntoIterator<Item = ReactionType>,
+    {
+        Self::SetMessageReaction::new(
+            self.clone(),
+            payloads::SetMessageReaction::new(chat_id, message_id, reaction),
+        )
     }
 }

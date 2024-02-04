@@ -9,15 +9,15 @@ pub enum ReactionType {
     /// The reaction is based on an emoji.
     Emoji {
         /// Reaction emoji.
-        emoji: ReactionEmoji
+        emoji: ReactionEmoji,
     },
 
     /// The reaction is based on an emoji.
     CustomEmoji {
         /// Custom emoji identifier.
         #[serde(rename = "custom_emoji_id")]
-        id: String
-    }
+        id: String,
+    },
 }
 
 impl ReactionType {
