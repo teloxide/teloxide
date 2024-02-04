@@ -1134,15 +1134,15 @@ pub trait Requester {
     type SetMessageReaction: Request<Payload = SetMessageReaction, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetMessageReaction`].
-    fn set_message_reaction<C, E>(
+    fn set_message_reaction<C, R>(
         &self,
         chat_id: C,
         message_id: MessageId,
-        emoji: E,
+        reaction: R,
     ) -> Self::SetMessageReaction
     where
         C: Into<Recipient>,
-        E: IntoIterator<Item = ReactionType>;
+        R: IntoIterator<Item = ReactionType>;
     // END BLOCK requester_methods
 }
 

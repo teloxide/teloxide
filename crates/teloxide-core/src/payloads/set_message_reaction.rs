@@ -15,7 +15,7 @@ impl_payload! {
             #[serde(flatten)]
             pub message_id: MessageId,
             /// New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message. A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators.
-            pub emoji: Vec<ReactionType> [collect],
+            pub reaction: Vec<ReactionType> [collect],
         }
         optional {
             /// Pass True to set the reaction with a big animation.

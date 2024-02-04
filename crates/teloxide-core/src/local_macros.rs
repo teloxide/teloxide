@@ -1333,10 +1333,10 @@ macro_rules! requester_forward {
     (@method set_message_reaction $body:ident $ty:ident) => {
         type SetMessageReaction = $ty![SetMessageReaction];
 
-        fn set_message_reaction<C, E>(&self, chat_id: C, message_id: MessageId, emoji: E) -> Self::SetMessageReaction where C: Into<Recipient>,
-        E: IntoIterator<Item = ReactionType> {
+        fn set_message_reaction<C, R>(&self, chat_id: C, message_id: MessageId, reaction: R) -> Self::SetMessageReaction where C: Into<Recipient>,
+        R: IntoIterator<Item = ReactionType> {
             let this = self;
-            $body!(set_message_reaction this (chat_id: C, message_id: MessageId, emoji: E))
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId, reaction: R))
         }
     };// END BLOCK requester_forward_at_method
 }
