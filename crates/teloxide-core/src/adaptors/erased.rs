@@ -163,6 +163,9 @@ macro_rules! fwd_erased {
     (@convert $m:ident, $arg:ident, custom_emoji_ids : $T:ty) => {
         $arg.into_iter().collect()
     };
+    (@convert $m:ident, $arg:ident, reaction : $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert $m:ident, $arg:ident, $arg_:ident : $T:ty) => {
         $arg.into()
     };
@@ -284,7 +287,8 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        set_message_reaction
         => fwd_erased, fty
     }
 }
@@ -900,6 +904,13 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
+
+    fn set_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+        reaction: Vec<ReactionType>,
+    ) -> ErasedRequest<'a, SetMessageReaction, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -1752,5 +1763,14 @@ where
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err> {
         Requester::get_game_high_scores(self, user_id, target).erase()
+    }
+
+    fn set_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+        reaction: Vec<ReactionType>,
+    ) -> ErasedRequest<'a, SetMessageReaction, Self::Err> {
+        Requester::set_message_reaction(self, chat_id, message_id, reaction).erase()
     }
 }
