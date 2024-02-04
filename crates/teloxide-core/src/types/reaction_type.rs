@@ -19,3 +19,17 @@ pub enum ReactionType {
         id: String
     }
 }
+
+impl ReactionType {
+    /// The reaction is based on an emoji.
+    #[must_use]
+    pub fn emoji(emoji: ReactionEmoji) -> Self {
+        ReactionType::Emoji { emoji }
+    }
+
+    /// The reaction is based on an emoji.
+    #[must_use]
+    pub fn custom_emoji(id: String) -> Self {
+        ReactionType::CustomEmoji { id }
+    }
+}
