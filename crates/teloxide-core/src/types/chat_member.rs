@@ -632,15 +632,46 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true` if the user is allowed to send audios, documents, photos,
+    /// videos, video notes and voice notes.
+    ///
+    /// I.e. returns **`false`** if the user
+    /// - has left or has been banned in the chat
+    /// - is restricted and doesn't have all send media right
+    /// Returns `true` otherwise.
+    #[must_use]
+    pub fn can_send_media_messages(&self) -> bool {
+        match &self {
+            Self::Restricted(Restricted {
+                can_send_audios,
+                can_send_documents,
+                can_send_photos,
+                can_send_videos,
+                can_send_video_notes,
+                can_send_voice_notes,
+                ..
+            }) => {
+                *can_send_audios
+                    && *can_send_documents
+                    && *can_send_photos
+                    && *can_send_videos
+                    && *can_send_video_notes
+                    && *can_send_voice_notes
+            }
+            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
+            Self::Left | Self::Banned(_) => false,
+        }
+    }
+
     /// Returns `true` if the user is allowed to send animations, games,
     /// stickers and use inline bots.
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been banned from the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
+    /// - is restricted and has no [`can_send_other_messages`] right
     /// Returns `true` otherwise.
     ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    /// [`can_send_other_messages`]: Restricted::can_send_other_messages
     #[deprecated(
         since = "0.9.0",
         note = "Match manually and use `can_send_other_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
@@ -661,10 +692,10 @@ impl ChatMemberKind {
     ///
     /// I.e. returns **`false`** if the user
     /// - has left or has been banned from the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
+    /// - is restricted and has no [`can_add_web_page_previews`] right
     /// Returns `true` otherwise.
     ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
+    /// [`can_add_web_page_previews`]: Restricted::can_add_web_page_previews
     #[deprecated(
         since = "0.9.0",
         note = "Match manually and use `can_add_web_page_previews` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
@@ -884,6 +915,7 @@ mod tests {
             "status":"restricted",
             "is_member": true,
             "can_send_messages": true,
+            "can_send_media_messages": true,
             "can_send_audios": false,
             "can_send_documents": false,
             "can_send_photos": true,
