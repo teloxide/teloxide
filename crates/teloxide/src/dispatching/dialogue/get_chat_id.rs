@@ -1,6 +1,6 @@
 use crate::types::{
     BotCommandScope, CallbackQuery, Chat, ChatId, ChatJoinRequest, ChatMemberUpdated, Message,
-    MessageCommon, Recipient, ResponseParameters, TargetMessage, Update, UpdateKind,
+    MessageCommon, Recipient, ResponseParameters, TargetMessage, Update,
 };
 
 /// Something that may have a chat ID.
@@ -56,28 +56,6 @@ impl GetChatId for Chat {
     }
 }
 
-impl GetChatId for UpdateKind {
-    fn chat_id(&self) -> Option<ChatId> {
-        match self {
-            UpdateKind::Message(message)
-            | UpdateKind::EditedMessage(message)
-            | UpdateKind::ChannelPost(message)
-            | UpdateKind::EditedChannelPost(message) => GetChatId::chat_id(message),
-            UpdateKind::CallbackQuery(callback_query) => callback_query.chat_id(),
-            UpdateKind::MyChatMember(chat_member_updated) => chat_member_updated.chat_id(),
-            UpdateKind::ChatMember(chat_member_updated) => chat_member_updated.chat_id(),
-            UpdateKind::ChatJoinRequest(chat_join_request) => chat_join_request.chat_id(),
-            UpdateKind::InlineQuery(_)
-            | UpdateKind::ChosenInlineResult(_)
-            | UpdateKind::ShippingQuery(_)
-            | UpdateKind::PreCheckoutQuery(_)
-            | UpdateKind::Poll(_)
-            | UpdateKind::PollAnswer(_)
-            | UpdateKind::Error(_) => None,
-        }
-    }
-}
-
 impl GetChatId for ResponseParameters {
     fn chat_id(&self) -> Option<ChatId> {
         match self {
@@ -96,19 +74,20 @@ impl GetChatId for TargetMessage {
     }
 }
 
-/// Implements [`GetChatId`] for all types passed in, as long as they have a
-/// `chat` field with a `Chat` type
-macro_rules! impl_GetChatId_for_chat_field {
-    // Comma-separated list of types bound to `t`
-    ($($t:ty),* $(,)?) => {
-        $(
-            impl GetChatId for $t {
-                fn chat_id(&self) -> Option<ChatId> {
-                    Some(self.chat.id)
-                }
-            }
-        )*
-    };
+impl GetChatId for Message {
+    fn chat_id(&self) -> Option<ChatId> {
+        Some(self.chat.id)
+    }
 }
 
-impl_GetChatId_for_chat_field!(Message, ChatMemberUpdated, ChatJoinRequest);
+impl GetChatId for ChatMemberUpdated {
+    fn chat_id(&self) -> Option<ChatId> {
+        Some(self.chat.id)
+    }
+}
+
+impl GetChatId for ChatJoinRequest {
+    fn chat_id(&self) -> Option<ChatId> {
+        Some(self.chat.id)
+    }
+}
