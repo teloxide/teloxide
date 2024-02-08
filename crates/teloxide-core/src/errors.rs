@@ -144,12 +144,14 @@ macro_rules! impl_api_error {
         }
     };
     (@de $value:ident, $variant:ident ($var_inner:ty), $val:literal, $block:expr) => {
+        #[allow(clippy::redundant_closure_call)]
         match $block($value) {
             Some(data) => return Ok(Self::Value::$variant(data)),
             _ => {}
         }
     };
     (@de $value:ident, $variant:ident, $val:literal, $block:expr) => {
+        #[allow(clippy::redundant_closure_call)]
         if $block($value) {
             return Ok(Self::Value::$variant);
         }
