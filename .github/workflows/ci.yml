@@ -43,6 +43,7 @@ jobs:
       - check-examples
       - clippy
       - doc
+      - semver-checks
 
     steps:
       - name: Check whether the needed jobs succeeded or failed
@@ -193,3 +194,20 @@ jobs:
       - name: rustdoc
         run: |
           cargo docs # from .cargo/config.toml
+
+  semver-checks:
+    name: Check semver
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Cache Dependencies
+      uses: Swatinem/rust-cache@v2
+    
+    - name: Check semver
+      uses: obi1kenobi/cargo-semver-checks-action@v2
+      with:
+        feature-group: only-explicit-features
+        features: full
