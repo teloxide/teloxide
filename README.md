@@ -286,6 +286,11 @@ async fn receive_location(
 
 [More examples >>](crates/teloxide/examples/)
 
+## Tutorials
+
+ - [_"Migrating my family finance bot from Python to Rust (teloxide) because I am tired of exceptions (part 1)"_](https://trkohler.com/posts/i-migrated-my-family-finance-bot-from-python-to-rust-because-i-am-tired-of-exceptions/) by Troy Köhler.
+ - [_"Migrating my family finance bot from Python to Rust (teloxide) [part 2]"_](https://trkohler.com/posts/migrating-my-family-finance-bot-from-python-to-rust-teloxide-part-2/) by Troy Köhler.
+
 ## FAQ
 
 **Q: Where I can ask questions?**
