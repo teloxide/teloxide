@@ -23,7 +23,11 @@ default = ["native-tls", "ctrlc_handler", "teloxide-core/default", "auto-send"]
 webhooks = ["rand"]
 webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
 
-sqlite-storage-nativetls = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
+sqlite-storage-nativetls = [
+    "sqlx",
+    "sqlx/runtime-tokio-native-tls",
+    "native-tls",
+]
 sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
 redis-storage = ["redis"]
 cbor-serializer = ["serde_cbor"]
@@ -110,6 +114,9 @@ tower = { version = "0.4.12", optional = true }
 tower-http = { version = "0.3.4", features = ["trace"], optional = true }
 rand = { version = "0.8.5", optional = true }
 
+# HACK: ahash 0.8.7 bumped MSRV to 1.72, to keep MVSR 1.68 we need to depend on an older version.
+#       this can be removed once our MSRV crosses 1.72.
+ahash = "=0.8.7"
 
 [dev-dependencies]
 rand = "0.8.3"
@@ -146,7 +153,11 @@ required-features = ["redis-storage", "cbor-serializer", "bincode-serializer"]
 [[test]]
 name = "sqlite"
 path = "tests/sqlite.rs"
-required-features = ["sqlite-storage-nativetls", "cbor-serializer", "bincode-serializer"]
+required-features = [
+    "sqlite-storage-nativetls",
+    "cbor-serializer",
+    "bincode-serializer",
+]
 
 
 [[example]]
