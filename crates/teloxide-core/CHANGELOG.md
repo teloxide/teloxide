@@ -33,6 +33,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `video_chat_ended`
   - `web_app_data` 
 - `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
+- Support for TBA 6.5  ([#954][pr954])
+  - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
+  - Add `use_independent_chat_permissions` optional parameter to `restrict_chat_member` and `set_chat_permissions`
+  - Add `user_chat_id` field to `ChatJoinRequest`
+  - Add `KeyboardButtonRequestChat` and `ChatShared` types
+  - Add `RequestChat` variant to `ButtonRequest`
+  - Add `ChatShared` variant to `MessageKind`
+  - Add `shared_chat` method to `Message`
+  - Add `KeyboardButtonRequestUser` and `UserShared` types
+  - Add `RequestUser` variant to `ButtonRequest`
+  - Add  `UserShared` variant to `MessageKind`
+  - Add `shared_user` method to `Message`
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -103,6 +115,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Update::user`, use `Update::from` instead ([#850][pr850])
 
 [pr850]: https://github.com/teloxide/teloxide/pull/850
+
+### Removed
+- Remove `can_send_media_messages` from `ChatPermissions` ([#954][pr954])
+- Remove `can_send_media_messages` field from `Restricted` ([#954][pr954])
+
+[pr954]: https://github.com/teloxide/teloxide/pull/954
 
 ### Fixed
 
