@@ -2,7 +2,6 @@
 
 pub use crate::error_handlers::{LoggingErrorHandler, OnError};
 
-#[allow(deprecated)]
 pub use crate::respond;
 
 pub use crate::dispatching::{
