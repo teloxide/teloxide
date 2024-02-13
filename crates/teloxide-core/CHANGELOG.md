@@ -134,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `InlineKeyboardButton::{text, kind}`
   `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
   - `Dispatcher::setup_ctrlc_handler` (use `enable_ctrlc_handler` on the builder instead)
+  - `BotCommands::ty` and `repls::{commands_repl, commands_repl_with_listener}` (use `CommandsRepl::{repl, repl_with_listener}` instead)
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
