@@ -47,7 +47,6 @@
 //! - `nightly` — enables nightly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
-//! - `auto_send` — enables [`AutoSend`] bot adaptor (deprecated)
 //!
 //! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace

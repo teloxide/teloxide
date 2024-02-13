@@ -20,10 +20,6 @@ pub use teloxide_core::{
     },
 };
 
-#[cfg(feature = "auto-send")]
-#[allow(deprecated)]
-pub use crate::adaptors::AutoSend;
-
 #[doc(no_inline)]
 pub use teloxide_core::prelude::*;
 
