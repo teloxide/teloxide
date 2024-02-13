@@ -137,6 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `BotCommands::ty` and `repls::{commands_repl, commands_repl_with_listener}` (use `CommandsRepl::{repl, repl_with_listener}` instead)
   - `Message::chat_id` (use `.chat.id`)
   - `Update::user` (use `Update::from`)
+  - `update_listeners::polling` (use `Polling::builder` instead)
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
