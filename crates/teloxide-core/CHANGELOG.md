@@ -132,6 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ChatMemberKind::{can_change_info, can_pin_messages, can_invite_users, can_manage_topics, can_send_polls, can_add_web_page_previews, can_send_other_messages, can_send_media_messages, can_send_messages}` (match on `ChatMemberKind` yourself)
   - `ChatMemberStatus::is_present` (use `ChatMemberKind::is_present` instead)
   - `InlineKeyboardButton::{text, kind}`
+  `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
