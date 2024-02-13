@@ -133,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ChatMemberStatus::is_present` (use `ChatMemberKind::is_present` instead)
   - `InlineKeyboardButton::{text, kind}`
   `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
+  - `Dispatcher::setup_ctrlc_handler` (use `enable_ctrlc_handler` on the builder instead)
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
