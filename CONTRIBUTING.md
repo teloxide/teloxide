@@ -1,8 +1,8 @@
 # Contributing
 
-Before contributing, please read [our code style](./CODE_STYLE.md) and [the license](./LICENSE).
+Before contributing, please read [the license](./LICENSE).
 
-> **Note**
+> [!NOTE]
 >
 > These contributing instructions might not be fully up-to-date or complete.
 > However, they should be a good starting point.
@@ -20,6 +20,10 @@ If you want to ask a question, you can either
 
 ## Code
 
+### Style guide
+
+Before writing code, please read [our code style](./CODE_STYLE.md).
+
 ### Git
 
 To change the source code, you need a local copy of it.
@@ -30,7 +34,28 @@ This way it will be easier to manage when you want to do other things.
 
 When your changes are ready, you can open a github pull request.
 
+### Pull Requests
+
+If your pull request fixes/resolves an existing [github issue] please specify so in the PR description.
+For example:
+
+> Fixes #991
+
+You can learn more about [Using keywords in issues and pull requests] in github documentation.
+
+If your pull request suggests new functionality or new changes,
+please explain your point of view and all the necessary details.
+(pros, cons, why you chose design you chose, your use cases, etc)
+
+In general try to make PR title/description clear, as they are the primary ways of communicating your intent to the reviewer 
+
+[github issue]: https://github.com/teloxide/teloxide/issues
+[Using keywords in issues and pull requests]: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests
+
+### Merge conflicts
+
 If your branch has conflicts with master please resolve them by doing something like this:
+
 ```shell
 # Temporary switch to master branch
 git switch master
