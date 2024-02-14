@@ -482,15 +482,6 @@ where
         }
     }
 
-    /// Setups the `^C` handler in order to call [`ShutdownToken::shutdown`]
-    /// when pressed.
-    #[cfg(feature = "ctrlc_handler")]
-    #[deprecated(since = "0.10.0", note = "use `enable_ctrlc_handler` on builder instead")]
-    pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
-        self.setup_ctrlc_handler_inner();
-        self
-    }
-
     /// Returns a shutdown token, which can later be used to
     /// [`ShutdownToken::shutdown`].
     pub fn shutdown_token(&self) -> ShutdownToken {

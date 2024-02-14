@@ -42,11 +42,8 @@ erased = []
 # CacheMe bot adaptor
 cache_me = []
 
-# AutoSend bot adaptor
-auto_send = []
-
 # All features except nightly and tls-related
-full = ["throttle", "trace_adaptor", "erased", "cache_me", "auto_send"]
+full = ["throttle", "trace_adaptor", "erased", "cache_me"]
 
 
 [dependencies]

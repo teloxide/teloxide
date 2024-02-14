@@ -18,7 +18,7 @@ categories = ["web-programming", "api-bindings", "asynchronous"]
 
 
 [features]
-default = ["native-tls", "ctrlc_handler", "teloxide-core/default", "auto-send"]
+default = ["native-tls", "ctrlc_handler", "teloxide-core/default"]
 
 webhooks = ["rand"]
 webhooks-axum = ["webhooks", "axum", "tower", "tower-http"]
@@ -39,7 +39,6 @@ ctrlc_handler = ["tokio/signal"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
-auto-send = ["teloxide-core/auto_send"]
 throttle = ["teloxide-core/throttle"]
 cache-me = [
     "teloxide-core/cache_me",
@@ -65,7 +64,6 @@ full = [
     "teloxide-core/full",
     "native-tls",
     "rustls",
-    "auto-send",
     "throttle",
     "cache-me",
     "trace-adaptor",

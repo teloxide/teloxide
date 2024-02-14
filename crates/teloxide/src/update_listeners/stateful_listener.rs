@@ -11,9 +11,9 @@ use crate::{
 /// This type allows to turn a stream of updates (+ some additional functions)
 /// into an [`UpdateListener`].
 ///
-/// For an example of usage, see [`polling`].
+/// For an example of usage, see [`Polling`].
 ///
-/// [`polling`]: crate::update_listeners::polling()
+/// [`Polling`]: crate::update_listeners::Polling
 #[non_exhaustive]
 pub struct StatefulListener<St, Assf, Sf, Hauf> {
     /// The state of the listener.

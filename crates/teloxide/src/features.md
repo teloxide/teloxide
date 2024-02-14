@@ -6,7 +6,6 @@
 | `webhooks-axum`      | Enables webhook implementation based on axum framework. |
 | `macros`             | Re-exports macros from [`teloxide-macros`]. |
 | `ctrlc_handler`      | Enables the [`DispatcherBuilder::enable_ctrlc_handler`] function (**enabled by default**). |
-| `auto-send`          | Enables the [`AutoSend`](adaptors::AutoSend) bot adaptor (**enabled by default; DEPRECATED**). |
 | `throttle`           | Enables the [`Throttle`](adaptors::Throttle) bot adaptor. |
 | `cache-me`           | Enables the [`CacheMe`](adaptors::CacheMe) bot adaptor. |
 | `trace-adaptor`      | Enables the [`Trace`](adaptors::Trace) bot adaptor. |

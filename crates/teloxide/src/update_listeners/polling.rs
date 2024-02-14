@@ -147,25 +147,6 @@ where
     assert_update_listener(polling)
 }
 
-/// Returns a long polling update listener with some additional options.
-#[deprecated(since = "0.10.0", note = "use `Polling::builder()` instead")]
-pub fn polling<R>(
-    bot: R,
-    timeout: Option<Duration>,
-    limit: Option<u8>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> Polling<R>
-where
-    R: Requester + Send + 'static,
-    <R as Requester>::GetUpdates: Send,
-{
-    let mut builder = Polling::builder(bot);
-    builder.timeout = timeout;
-    builder.limit = limit;
-    builder.allowed_updates = allowed_updates;
-    assert_update_listener(builder.build())
-}
-
 async fn delete_webhook_if_setup<R>(requester: &R)
 where
     R: Requester,
@@ -513,8 +494,8 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
 #[test]
 fn polling_is_send() {
     let bot = crate::Bot::new("TOKEN");
-    #[allow(deprecated)]
-    let mut polling = polling(bot, None, None, None);
+
+    let mut polling = Polling::builder(bot).build();
 
     assert_send(&polling);
     assert_send(&polling.as_stream());

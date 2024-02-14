@@ -716,12 +716,6 @@ mod getters {
             }
         }
 
-        #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]
-        #[must_use]
-        pub fn chat_id(&self) -> ChatId {
-            self.chat.id
-        }
-
         #[must_use]
         pub fn forward(&self) -> Option<&Forward> {
             self.common().and_then(|m| m.forward.as_ref())

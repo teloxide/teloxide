@@ -192,27 +192,3 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::Pay(True))
     }
 }
-
-impl InlineKeyboardButton {
-    #[deprecated(
-        since = "0.7.0",
-        note = "set correct text in the constructor or access the field directly"
-    )]
-    pub fn text<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.text = val.into();
-        self
-    }
-
-    #[deprecated(
-        since = "0.7.0",
-        note = "set correct kind in the constructor or access the field directly"
-    )]
-    #[must_use]
-    pub fn kind(mut self, val: InlineKeyboardButtonKind) -> Self {
-        self.kind = val;
-        self
-    }
-}
