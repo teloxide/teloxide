@@ -1,7 +1,5 @@
 # Contributing
 
-Before contributing, please read [the license](./LICENSE).
-
 > [!NOTE]
 >
 > These contributing instructions might not be fully up-to-date or complete.
@@ -43,11 +41,10 @@ For example:
 
 You can learn more about [Using keywords in issues and pull requests] in github documentation.
 
-If your pull request suggests new functionality or new changes,
-please explain your point of view and all the necessary details.
+If your pull request suggests new functionality or new changes, please explain your point of view and all the necessary details.
 (pros, cons, why you chose design you chose, your use cases, etc)
 
-In general try to make PR title/description clear, as they are the primary ways of communicating your intent to the reviewer 
+In general try to make PR title/description clear, as they are the primary ways of communicating your intent to the reviewer.
 
 [github issue]: https://github.com/teloxide/teloxide/issues
 [Using keywords in issues and pull requests]: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests
