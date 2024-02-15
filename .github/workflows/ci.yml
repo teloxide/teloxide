@@ -9,7 +9,7 @@ name: Continuous integration
 
 env:
   RUSTFLAGS: "--cfg CI_REDIS -Dwarnings"
-  RUSTDOCFLAGS: -Dwarnings
+  RUSTDOCFLAGS: "--cfg docsrs -Dwarnings"
   RUST_BACKTRACE: short
 
   CARGO_INCREMENTAL: 0
