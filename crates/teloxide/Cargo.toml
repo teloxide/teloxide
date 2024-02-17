@@ -96,7 +96,6 @@ derive_more = "0.99"
 thiserror = "1.0"
 futures = "0.3.15"
 pin-project = "1.0"
-serde_with_macros = "3.4"
 aquamarine = "0.5.0"
 either = "1.9.0"
 
