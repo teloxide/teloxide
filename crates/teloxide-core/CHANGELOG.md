@@ -33,6 +33,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `video_chat_ended`
   - `web_app_data` 
 - `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
+- Support for TBA 6.5  ([#954][pr954])
+  - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
+  - Add `use_independent_chat_permissions` optional parameter to `restrict_chat_member` and `set_chat_permissions`
+  - Add `user_chat_id` field to `ChatJoinRequest`
+  - Add `KeyboardButtonRequestChat` and `ChatShared` types
+  - Add `RequestChat` variant to `ButtonRequest`
+  - Add `ChatShared` variant to `MessageKind`
+  - Add `shared_chat` method to `Message`
+  - Add `KeyboardButtonRequestUser` and `UserShared` types
+  - Add `RequestUser` variant to `ButtonRequest`
+  - Add  `UserShared` variant to `MessageKind`
+  - Add `shared_user` method to `Message`
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -45,7 +57,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `latitude` and `longitude` parameters from `stop_message_live_location` and `stop_message_live_location_inline` ([#854][pr854])
 - Fix the type of `photo_size`,`photo_width` and `photo_height` in the `send_invoice` method ([#936][pr936])
 - Fix roundtrip de/serialization of `InlineQueryResult` ([#990][pr990])
+- Deserialization of `ApiError::CantParseEntities` ([#839][pr839])
+- Deserialization of empty (content-less) messages that can sometimes appear as a part of callback query ([#850][pr850], issue [#873][issue873])
 
+[pr839]: https://github.com/teloxide/teloxide/pull/839
+[pr879]: https://github.com/teloxide/teloxide/pull/879
+[issue873]: https://github.com/teloxide/teloxide/issues/873
 [pr854]: https://github.com/teloxide/teloxide/pull/854
 [pr936]: https://github.com/teloxide/teloxide/pull/936
 [pr990]: https://github.com/teloxide/teloxide/pull/990
@@ -76,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `message_thread_id` method parameters now use `ThreadId` instead of `i32` ([#887][pr887])
 - `DiceEmoji` variant order ([#887][pr887])
 - `Dice::value` now use `u8`, instead of `i32` ([#887][pr887])
-- `Invoice::total_amount`, `LabeledPrice::amount`, `PreCheckoutQuery::total_amount`, `SuccessfulPayment::total_amout` now use `u32`, instead of `i32` ([#887][pr887])
+- `Invoice::total_amount`, `LabeledPrice::amount`, `PreCheckoutQuery::total_amount`, `SuccessfulPayment::total_amount` now use `u32`, instead of `i32` ([#887][pr887])
 - `Forward::message_id` and `Message::forward_from_message_id` now use `MessageId` instead of `i32` ([#887][pr887])
 - `Poll::total_voter_count` and `PollOption::voter_count` now use `u32` instead of `i32` ([#887][pr887])
 - `PollAnswer::option_ids` now use `u8` instead of `i32` ([#887][pr887])
@@ -106,14 +123,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr850]: https://github.com/teloxide/teloxide/pull/850
 
-### Fixed
+### Removed
 
-- Deserialization of `ApiError::CantParseEntities` ([#839][pr839])
-- Deserialization of empty (content-less) messages that can sometimes appear as a part of callback query ([#850][pr850], issue [#873][issue873])
+- Remove `can_send_media_messages` from `ChatPermissions` ([#954][pr954])
+- Remove `can_send_media_messages` field from `Restricted` ([#954][pr954])
+- Previously deprecated items ([#1013][pr1013])
+  - `AutoSend` bot adaptor
+  - `ChatMemberKind::is_kicked` (use `is_banned` instead)
+  - `ChatMemberKind::is_creator` (use `is_owner` instead)
+  - `ChatMemberKind::{can_change_info, can_pin_messages, can_invite_users, can_manage_topics, can_send_polls, can_add_web_page_previews, can_send_other_messages, can_send_media_messages, can_send_messages}` (match on `ChatMemberKind` yourself)
+  - `ChatMemberStatus::is_present` (use `ChatMemberKind::is_present` instead)
+  - `InlineKeyboardButton::{text, kind}`
+  `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
+  - `Dispatcher::setup_ctrlc_handler` (use `enable_ctrlc_handler` on the builder instead)
+  - `BotCommands::ty` and `repls::{commands_repl, commands_repl_with_listener}` (use `CommandsRepl::{repl, repl_with_listener}` instead)
+  - `Message::chat_id` (use `.chat.id`)
+  - `Update::user` (use `Update::from`)
+  - `update_listeners::polling` (use `Polling::builder` instead)
 
-[pr839]: https://github.com/teloxide/teloxide/pull/839
-[pr879]: https://github.com/teloxide/teloxide/pull/879
-[issue873]: https://github.com/teloxide/teloxide/issues/873
+[pr954]: https://github.com/teloxide/teloxide/pull/954
+[pr1013]: https://github.com/teloxide/teloxide/pull/1013
+
 
 ## 0.9.1 - 2023-02-15
 
@@ -147,6 +177,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `can_edit_messages`
   - `can_pin_messages`
   - `can_manage_topics`
+- `ApiError::NotFound` is replaced with `ApiError::InvalidToken` which correctly parses all currently known errors caused by invalid bot tokens ([#998][pr998])
+
+[pr998]: https://github.com/teloxide/teloxide/pull/998
 
 ### Added
 
@@ -365,7 +398,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` [**BC**]
-- Improve `Throttling` adoptor ([#130][pr130])
+- Improve `Throttling` adaptor ([#130][pr130])
   - Freeze when getting `RetryAfter(_)` error
   - Retry requests that previously returned `RetryAfter(_)` error
 - `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
@@ -491,7 +524,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
 - How forwarded messages are represented ([#151][pr151])
-- `RequestError::InvalidJson` now has a `raw` field with raw json for easier debugability ([#150][pr150])
+- `RequestError::InvalidJson` now has a `raw` field with raw json for easier debuggability ([#150][pr150])
 - `ChatPermissions` is now bitflags ([#157][pr157])
 - Type of `WebhookInfo::ip_address` from `Option<String>` to `Option<std::net::IpAddr>` ([#172][pr172])
 - Type of `WebhookInfo::allowed_updates` from `Option<Vec<String>>` to `Option<Vec<AllowedUpdate>>` ([#174][pr174])
@@ -569,7 +602,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `impl Clone` for {`CacheMe`, `DefaultParseMode`, `Throttle`} ([#76][pr76])
 - `DefaultParseMode::parse_mode` which allows to get currently used default parse mode ([#77][pr77])
-- `Thrrotle::{limits,set_limits}` functions ([#77][pr77])
+- `Throttle::{limits,set_limits}` functions ([#77][pr77])
 - `Throttle::{with_settings,spawn_with_settings}` and `throttle::Settings` ([#96][pr96])
 - Getters for fields nested in `Chat` ([#80][pr80])
 - API errors: `ApiError::NotEnoughRightsToManagePins`, `ApiError::BotKickedFromSupergroup` ([#84][pr84])
@@ -646,7 +679,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
   - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
-  - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` consructors
+  - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` constructors
   - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
   - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
   - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
@@ -660,7 +693,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `GetUpdatesFaultTolerant` - fault toletant version of `GetUpdates` ([#58][pr58]) (**BC**)
+- `GetUpdatesFaultTolerant` - fault tolerant version of `GetUpdates` ([#58][pr58]) (**BC**)
 - Derive `Clone` for `AutoSend`.
 
 [pr58]: https://github.com/teloxide/teloxide-core/pull/58
@@ -762,7 +795,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Make `net::{TELEGRAM_API_URL, download_file{,_stream}}` pub
 - Refactor `Bot` ([#29][pr29]):
   - Move default parse mode to an adaptor (`DefaultParseMode`)
-  - Remove bot builder (it's not usefull anymore, since parse_mode is moved away)
+  - Remove bot builder (it's not useful anymore, since parse_mode is moved away)
   - Undeprecate bot constructors (`Bot::{new, with_client, from_env_with_client}`)
 - Rename `StickerType` => `InputSticker`, `{CreateNewStickerSet,AddStickerToSet}::sticker_type}` => `sticker` ([#23][pr23], [#43][pr43])
 - Use `_: IntoIterator<Item = T>` bound instead of `_: Into<Vec<T>>` in telegram methods which accept collections ([#21][pr21])
@@ -790,7 +823,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- `unstable-stream` feature (now `Bot::download_file_stream` is accesable by default)
+- `unstable-stream` feature (now `Bot::download_file_stream` is accessible by default)
 - old `Request` trait
 - `RequestWithFile`, now multipart requests use `Request`
 - Remove all `#[non_exhaustive]` annotations ([#4][pr4])

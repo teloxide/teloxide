@@ -145,8 +145,11 @@ pub enum ParseMode {
     MarkdownV2,
     #[serde(rename = "HTML")]
     Html,
-    #[deprecated = "This is a legacy mode, retained for backward compatibility. Use `MarkdownV2` \
-                    instead."]
+    #[deprecated(
+        since = "0.1.0",
+        note = "This is a legacy mode, retained for backward compatibility. Use `MarkdownV2` \
+                instead."
+    )]
     Markdown,
 }
 

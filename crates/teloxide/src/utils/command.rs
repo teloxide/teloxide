@@ -55,7 +55,6 @@ use std::{
     fmt::{Display, Formatter, Write},
 };
 
-use std::marker::PhantomData;
 use teloxide_core::types::{BotCommand, Me};
 #[cfg(feature = "macros")]
 pub use teloxide_macros::BotCommands;
@@ -265,15 +264,6 @@ pub trait BotCommands: Sized {
     /// [`BotCommand`]: crate::types::BotCommand
     /// [`set_my_commands`]: crate::requests::Requester::set_my_commands
     fn bot_commands() -> Vec<BotCommand>;
-
-    /// Returns `PhantomData<Self>` that is used as a param of [`commands_repl`]
-    ///
-    /// [`commands_repl`]: (crate::repls::commands_repl)
-    #[must_use]
-    #[deprecated(note = "Use `CommandReplExt` instead")]
-    fn ty() -> PhantomData<Self> {
-        PhantomData
-    }
 }
 
 pub type PrefixedBotCommand = String;

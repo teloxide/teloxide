@@ -231,11 +231,6 @@ impl Update {
 
         Some(chat)
     }
-
-    #[deprecated(note = "renamed to `from`", since = "0.10.0")]
-    pub fn user(&self) -> Option<&User> {
-        self.from()
-    }
 }
 
 impl UpdateId {

@@ -12,8 +12,10 @@ use std::{
 };
 
 use futures::{ready, stream::Stream};
+use tokio::time::{sleep, Sleep};
 
 use crate::{
+    backoff::{exponential_backoff_strategy, BackoffStrategy},
     requests::{HasPayload, Request, Requester},
     stop::{mk_stop_token, StopFlag, StopToken},
     types::{AllowedUpdate, Update},
@@ -31,6 +33,7 @@ pub struct PollingBuilder<R> {
     pub limit: Option<u8>,
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
     pub drop_pending_updates: bool,
+    pub backoff_strategy: BackoffStrategy,
 }
 
 impl<R> PollingBuilder<R>
@@ -84,6 +87,17 @@ where
         Self { drop_pending_updates: true, ..self }
     }
 
+    /// The backoff strategy that will be used for delay calculation between
+    /// reconnections caused by network errors.
+    ///
+    /// By default, the [`exponential_backoff_strategy`] is used.
+    pub fn backoff_strategy(
+        self,
+        backoff_strategy: impl 'static + Send + Fn(u32) -> Duration,
+    ) -> Self {
+        Self { backoff_strategy: Box::new(backoff_strategy), ..self }
+    }
+
     /// Deletes webhook if it was set up.
     pub async fn delete_webhook(self) -> Self {
         delete_webhook_if_setup(&self.bot).await;
@@ -96,7 +110,8 @@ where
     ///
     /// See also: [`polling_default`], [`Polling`].
     pub fn build(self) -> Polling<R> {
-        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates } = self;
+        let Self { bot, timeout, limit, allowed_updates, drop_pending_updates, backoff_strategy } =
+            self;
         let (token, flag) = mk_stop_token();
         let polling = Polling {
             bot,
@@ -107,6 +122,7 @@ where
             flag: Some(flag),
             token,
             stop_token_cloned: false,
+            backoff_strategy,
         };
 
         assert_update_listener(polling)
@@ -129,25 +145,6 @@ where
         Polling::builder(bot).timeout(Duration::from_secs(10)).delete_webhook().await.build();
 
     assert_update_listener(polling)
-}
-
-/// Returns a long polling update listener with some additional options.
-#[deprecated(since = "0.10.0", note = "use `Polling::builder()` instead")]
-pub fn polling<R>(
-    bot: R,
-    timeout: Option<Duration>,
-    limit: Option<u8>,
-    allowed_updates: Option<Vec<AllowedUpdate>>,
-) -> Polling<R>
-where
-    R: Requester + Send + 'static,
-    <R as Requester>::GetUpdates: Send,
-{
-    let mut builder = Polling::builder(bot);
-    builder.timeout = timeout;
-    builder.limit = limit;
-    builder.allowed_updates = allowed_updates;
-    assert_update_listener(builder.build())
 }
 
 async fn delete_webhook_if_setup<R>(requester: &R)
@@ -252,6 +249,7 @@ pub struct Polling<B: Requester> {
     flag: Option<StopFlag>,
     token: StopToken,
     stop_token_cloned: bool,
+    backoff_strategy: BackoffStrategy,
 }
 
 impl<R> Polling<R>
@@ -270,6 +268,7 @@ where
             limit: None,
             allowed_updates: None,
             drop_pending_updates: false,
+            backoff_strategy: Box::new(exponential_backoff_strategy),
         }
     }
 
@@ -317,6 +316,14 @@ pub struct PollingStream<'a, B: Requester> {
     /// The flag that notifies polling to stop polling.
     #[pin]
     flag: StopFlag,
+
+    /// How long it takes to make next reconnection attempt
+    #[pin]
+    eepy: Option<Sleep>,
+
+    /// Counter for network errors occured during the current series of
+    /// reconnections
+    error_count: u32,
 }
 
 impl<B: Requester + Send + 'static> UpdateListener for Polling<B> {
@@ -369,6 +376,8 @@ impl<'a, B: Requester + Send + 'a> AsUpdateStream<'a> for Polling<B> {
             buffer: Vec::new().into_iter(),
             in_flight: None,
             flag,
+            eepy: None,
+            error_count: 0,
         }
     }
 }
@@ -415,6 +424,9 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                     return Ready(Some(Err(err)));
                 }
                 Ok(updates) => {
+                    // Once we got the update hense the backoff reconnection strategy worked
+                    *this.error_count = 0;
+
                     if let Some(upd) = updates.last() {
                         *this.offset = upd.id.as_offset();
                     }
@@ -424,8 +436,23 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                         true => *this.drop_pending_updates = false,
                     }
                 }
-                Err(err) => return Ready(Some(Err(err))),
+                Err(err) => {
+                    // Prevents the CPU spike occuring at network connection lose: <https://github.com/teloxide/teloxide/issues/780>
+                    let backoff_strategy = &this.polling.backoff_strategy;
+                    this.eepy.set(Some(sleep(backoff_strategy(*this.error_count))));
+                    log::trace!("set {:?} reconnection delay", backoff_strategy(*this.error_count));
+                    return Ready(Some(Err(err)));
+                }
             }
+        }
+        // Poll eepy future until completion, needed for backoff strategy
+        else if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
+            ready!(eepy.poll(cx));
+            // As soon as delay is waited we increment the counter
+            *this.error_count = this.error_count.saturating_add(1);
+            log::trace!("current error count: {}", *this.error_count);
+            log::trace!("backoff delay completed");
+            this.eepy.as_mut().set(None);
         }
 
         let (offset, limit, timeout) = match (this.stopping, this.drop_pending_updates) {
@@ -467,8 +494,8 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
 #[test]
 fn polling_is_send() {
     let bot = crate::Bot::new("TOKEN");
-    #[allow(deprecated)]
-    let mut polling = polling(bot, None, None, None);
+
+    let mut polling = Polling::builder(bot).build();
 
     assert_send(&polling);
     assert_send(&polling.as_stream());

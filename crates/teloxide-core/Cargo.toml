@@ -42,11 +42,8 @@ erased = []
 # CacheMe bot adaptor
 cache_me = []
 
-# AutoSend bot adaptor
-auto_send = []
-
 # All features except nightly and tls-related
-full = ["throttle", "trace_adaptor", "erased", "cache_me", "auto_send"]
+full = ["throttle", "trace_adaptor", "erased", "cache_me"]
 
 
 [dependencies]
@@ -75,7 +72,6 @@ once_cell = "1.5.0"
 takecell = "0.1"
 take_mut = "0.2"
 rc-box = "1.1.1"
-never = "0.1.0"
 chrono = { version = "0.4.30", default-features = false }
 either = "1.6.1"
 bitflags = { version = "1.2" }

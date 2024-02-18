@@ -106,6 +106,59 @@ where
 
     /// Specifies the distribution function that decides how updates are grouped
     /// before execution.
+    ///
+    /// ## Update grouping
+    ///
+    /// When [`Dispatcher`] receives updates, it runs dispatching tree
+    /// (handlers) concurrently. This means that multiple updates can be
+    /// processed at the same time.
+    ///
+    /// However, this is not always convenient. For example, if you have global
+    /// state, then you may want to process some updates sequentially, to
+    /// prevent state inconsistencies.
+    ///
+    /// This is why `teloxide` allows grouping updates. Updates for which the
+    /// distribution function `f` returns the same "distribution key" `K` will
+    /// be run in sequence (while still being processed concurrently with the
+    /// updates with different distribution keys).
+    ///
+    /// Updates for which `f` returns `None` will always be processed in
+    /// parallel.
+    ///
+    /// ## Default distribution function
+    ///
+    /// By default the distribution function is equivalent to `|upd|
+    /// upd.chat().map(|chat| chat.id)`, so updates from the same chat will be
+    /// processed sequentially.
+    ///
+    /// This pair nicely with dialogue system, which has state attached to
+    /// chats.
+    ///
+    /// ## Examples
+    ///
+    /// Grouping updates by user who caused this update to happen:
+    ///
+    /// ```
+    /// use teloxide::{dispatching::Dispatcher, dptree, Bot};
+    ///
+    /// let bot = Bot::new("TOKEN");
+    /// let handler = dptree::entry() /* ... */;
+    /// let dp = Dispatcher::builder(bot, handler)
+    ///     .distribution_function(|upd| upd.from().map(|user| user.id))
+    ///     .build();
+    /// # let _: Dispatcher<_, (), _> = dp;
+    /// ```
+    ///
+    /// Not grouping updates at all, always processing updates concurrently:
+    ///
+    /// ```
+    /// use teloxide::{dispatching::Dispatcher, dptree, Bot};
+    ///
+    /// let bot = Bot::new("TOKEN");
+    /// let handler = dptree::entry() /* ... */;
+    /// let dp = Dispatcher::builder(bot, handler).distribution_function(|_| None::<()>).build();
+    /// # let _: Dispatcher<_, (), _> = dp;
+    /// ```
     #[must_use]
     pub fn distribution_function<K>(
         self,
@@ -184,10 +237,13 @@ where
 
 /// The base for update dispatching.
 ///
-/// Updates from different chats are handled concurrently, whereas updates from
-/// the same chats are handled sequentially. If the dispatcher is unable to
-/// determine a chat ID of an incoming update, it will be handled concurrently.
-/// Note that this behaviour can be altered with [`distribution_function`].
+/// ## Update grouping
+///
+/// `Dispatcher` generally processes updates concurrently. However, by default,
+/// updates from the same chat are processed sequentially. [Learn more about
+/// update grouping].
+///
+/// [update grouping]: distribution_function#update-grouping
 ///
 /// See also: ["Dispatching or
 /// REPLs?"](../dispatching/index.html#dispatching-or-repls)
@@ -480,15 +536,6 @@ where
             // is waiting in between it received the update and set the flag.
             let _ = handle.await;
         }
-    }
-
-    /// Setups the `^C` handler in order to call [`ShutdownToken::shutdown`]
-    /// when pressed.
-    #[cfg(feature = "ctrlc_handler")]
-    #[deprecated(since = "0.10.0", note = "use `enable_ctrlc_handler` on builder instead")]
-    pub fn setup_ctrlc_handler(&mut self) -> &mut Self {
-        self.setup_ctrlc_handler_inner();
-        self
     }
 
     /// Returns a shutdown token, which can later be used to

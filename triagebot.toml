@@ -28,6 +28,29 @@ trigger_files = ["crates/teloxide/"]
 [autolabel."C-macros"]
 trigger_files = ["crates/teloxide-macros/"]
 
+[autolabel."A-dialogue"]
+trigger_files = ["crates/teloxide/src/dispatching/dialogue/"]
+
+[autolabel."A-dispatching"]
+trigger_files = ["crates/teloxide/src/dispatching/"]
+
+[autolabel."A-macros"]
+trigger_files = ["crates/teloxide-macros/"]
+
+[autolabel."A-requester"]
+trigger_files = ["crates/teloxide-core/src/requests/requester.rs", "crates/teloxide-core/src/requests/requester_ext.rs"]
+
+[autolabel."A-requests"]
+trigger_files = ["crates/teloxide-core/src/requests/", "crates/teloxide-core/src/payloads/"]
+
+[autolabel."A-tba-errors"]
+trigger_files = ["crates/teloxide-core/src/errors.rs"]
+
+[autolabel."A-tba-types"]
+trigger_files = ["crates/teloxide-core/src/types"]
+
+[autolabel."A-update-listeners"]
+trigger_files = ["crates/teloxide/src/update_listeners"]
 
 [relabel]
 allow-unauthenticated = [

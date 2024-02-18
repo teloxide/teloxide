@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: 'Feature Request: <feature>'
-labels: feature-request
+labels: K-feature-request
 assignees: Hirrolot, WaffleLapkin
 
 ---

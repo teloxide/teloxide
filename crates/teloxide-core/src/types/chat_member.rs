@@ -120,9 +120,23 @@ pub struct Restricted {
     /// venues.
     pub can_send_messages: bool,
 
-    /// `true` if the user is allowed to send audios, documents, photos, videos,
-    /// video notes and voice notes.
-    pub can_send_media_messages: bool,
+    /// `true` if the user can send audios.
+    pub can_send_audios: bool,
+
+    /// `true` if the user can send documents.
+    pub can_send_documents: bool,
+
+    /// `true` if the user can send photos.
+    pub can_send_photos: bool,
+
+    /// `true` if the user can send videos.
+    pub can_send_videos: bool,
+
+    /// `true` if the user can send video notes.
+    pub can_send_video_notes: bool,
+
+    /// `true` if the user can send voice notes.
+    pub can_send_voice_notes: bool,
 
     /// `true` if the user is allowed to send animations, games, stickers and
     /// use inline bots.
@@ -254,24 +268,6 @@ impl ChatMemberKind {
     pub fn is_banned(&self) -> bool {
         matches!(self, Self::Banned { .. })
     }
-
-    /// Returns `true` if the user is [kicked] from the given chat.
-    ///
-    /// [kicked]: ChatMemberKind::Banned
-    #[deprecated = "use `is_banned` instead"]
-    #[must_use]
-    pub fn is_kicked(&self) -> bool {
-        self.is_banned()
-    }
-
-    /// Returns `true` if the user is the [creator] (owner) of the given chat.
-    ///
-    /// [creator]: ChatMemberKind::Owner
-    #[deprecated = "use `is_owner` instead"]
-    #[must_use]
-    pub fn is_creator(&self) -> bool {
-        self.is_owner()
-    }
 }
 
 /// Compound methods for checking a user status.
@@ -377,29 +373,6 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can change the chat title, photo and other
-    /// settings.
-    ///
-    /// I.e. returns `true` if the user
-    /// - is the owner of the chat
-    /// - is an administrator in the given chat and has the
-    ///   [`Administrator::can_change_info`] privilege.
-    /// - is restricted, but does have [`Restricted::can_change_info`] privilege
-    /// Returns `false` otherwise.
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_change_info` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_change_info(&self) -> bool {
-        match self {
-            Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_change_info, .. })
-            | Self::Restricted(Restricted { can_change_info, .. }) => *can_change_info,
-            Self::Member | Self::Left | Self::Banned(_) => false,
-        }
-    }
-
     /// Returns `true` if the user can post in the channel, channels only.
     ///
     /// I.e. returns `true` if the user
@@ -475,35 +448,6 @@ impl ChatMemberKind {
         }
     }
 
-    #[deprecated(since = "0.6.0", note = "renamed to `can_manage_video_chats`")]
-    #[must_use]
-    pub fn can_manage_voice_chats(&self) -> bool {
-        self.can_manage_video_chats()
-    }
-
-    /// Returns `true` if the user can can invite new users to the chat.
-    ///
-    /// I.e. returns `true` if the user
-    /// - is the owner of the chat
-    /// - is an administrator in the given chat and has the
-    ///   [`Administrator::can_invite_users`] privilege.
-    /// - is restricted, but does have [`Restricted::can_invite_users`]
-    ///   privilege
-    /// Returns `false` otherwise.
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_invite_users` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_invite_users(&self) -> bool {
-        match &self {
-            Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_invite_users, .. })
-            | Self::Restricted(Restricted { can_invite_users, .. }) => *can_invite_users,
-            Self::Member | Self::Left | Self::Banned(_) => false,
-        }
-    }
-
     /// Returns `true` if the user can restrict, ban or unban chat members.
     ///
     /// I.e. returns `true` if the user
@@ -521,54 +465,6 @@ impl ChatMemberKind {
                 *can_restrict_members
             }
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user can pin messages, supergroups only.
-    ///
-    /// I.e. returns `true` if the user
-    /// - is the owner of the chat (even if the chat is not a supergroup)
-    /// - is an administrator in the given chat and has the
-    ///   [`Administrator::can_pin_messages`] privilege.
-    /// - is restricted, but does have [`Restricted::can_pin_messages`]
-    ///   privilege
-    /// Returns `false` otherwise.
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_pin_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_pin_messages(&self) -> bool {
-        match self {
-            Self::Owner(_) => true,
-            Self::Administrator(Administrator { can_pin_messages, .. })
-            | Self::Restricted(Restricted { can_pin_messages, .. }) => *can_pin_messages,
-            Self::Member | Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user is allowed to manage topics.
-    ///
-    /// I.e. returns `true` if the user
-    /// - is the owner of the chat (even if the chat is not a supergroup)
-    /// - is an administrator in the given chat and has the
-    ///   [`Administrator::can_manage_topics`] privilege.
-    /// - is restricted, but does have [`Restricted::can_manage_topics`]
-    ///   privilege
-    /// Returns `false` otherwise.
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_manage_topics` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_manage_topics(&self) -> bool {
-        match self {
-            ChatMemberKind::Owner(_) => true,
-            ChatMemberKind::Administrator(Administrator { can_manage_topics, .. })
-            | ChatMemberKind::Restricted(Restricted { can_manage_topics, .. }) => {
-                *can_manage_topics
-            }
-            ChatMemberKind::Member | ChatMemberKind::Left | ChatMemberKind::Banned(_) => false,
         }
     }
 
@@ -590,124 +486,6 @@ impl ChatMemberKind {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_promote_members, .. }) => *can_promote_members,
             Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
-        }
-    }
-}
-
-/// Methods for checking member rights.
-impl ChatMemberKind {
-    /// Returns `true` if the user can send text messages, contacts, locations
-    /// and venues.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned in the chat
-    /// - is restricted and doesn't have the [`can_send_messages`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_messages`]: Restricted::can_send_messages
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_send_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_send_messages(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_send_messages, .. }) => *can_send_messages,
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user is allowed to send audios, documents, photos,
-    /// videos, video notes and voice notes.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned in the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_send_media_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_send_media_messages(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_send_media_messages, .. }) => {
-                *can_send_media_messages
-            }
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user is allowed to send animations, games,
-    /// stickers and use inline bots.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned from the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_send_other_messages` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_send_other_messages(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_send_other_messages, .. }) => {
-                *can_send_other_messages
-            }
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user is allowed to add web page previews to their
-    /// messages.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned from the chat
-    /// - is restricted and doesn't have the [`can_send_media_messages`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_media_messages`]: Restricted::can_send_media_messages
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_add_web_page_previews` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_add_web_page_previews(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_add_web_page_previews, .. }) => {
-                *can_add_web_page_previews
-            }
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
-        }
-    }
-
-    /// Returns `true` if the user is allowed to send polls.
-    ///
-    /// I.e. returns **`false`** if the user
-    /// - has left or has been banned from the chat
-    /// - is restricted and doesn't have the [`can_send_polls`] right
-    /// Returns `true` otherwise.
-    ///
-    /// [`can_send_polls`]: Restricted::can_send_polls
-    #[deprecated(
-        since = "0.9.0",
-        note = "Match manually and use `can_send_polls` field directly. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    #[must_use]
-    pub fn can_send_polls(&self) -> bool {
-        match &self {
-            Self::Restricted(Restricted { can_send_polls, .. }) => *can_send_polls,
-            Self::Owner(_) | Self::Administrator(_) | Self::Member => true,
-            Self::Left | Self::Banned(_) => false,
         }
     }
 }
@@ -803,20 +581,6 @@ impl ChatMemberStatus {
     pub fn is_privileged(&self) -> bool {
         self.is_administrator() || self.is_owner()
     }
-
-    /// Returns `true` if the user is currently present in the chat. i.e. if the
-    /// user **hasn't** [left] or been [banned].
-    ///
-    /// [left]: ChatMemberKind::Left
-    /// [banned]: ChatMemberKind::Banned
-    #[must_use]
-    #[deprecated(
-        since = "0.9.0",
-        note = "Use `ChatMemberKind::is_present` method instead. Details: https://github.com/teloxide/teloxide/issues/781"
-    )]
-    pub fn is_present(&self) -> bool {
-        !(self.is_left() || self.is_banned())
-    }
 }
 
 #[cfg(test)]
@@ -826,7 +590,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserialize() {
+    fn deserialize_administrator() {
         let json = r#"{
             "user":{
                 "id":1029940401,
@@ -874,6 +638,72 @@ mod tests {
                 can_pin_messages: true,
                 can_promote_members: true,
                 can_manage_topics: false,
+            }),
+        };
+        let actual = serde_json::from_str::<ChatMember>(json).unwrap();
+        assert_eq!(actual, expected)
+    }
+
+    #[test]
+    fn deserialize_restricted() {
+        let json = r#"{
+            "user":{
+                "id":1029940401,
+                "is_bot":false,
+                "first_name":"First",
+                "last_name":"Last",
+                "username":"fl",
+                "language_code":"en"
+            },
+            "status":"restricted",
+            "is_member": true,
+            "can_send_messages": true,
+            "can_send_media_messages": true,
+            "can_send_audios": false,
+            "can_send_documents": false,
+            "can_send_photos": true,
+            "can_send_videos": true,
+            "can_send_video_notes": false,
+            "can_send_voice_notes": true,
+            "can_manage_topics": false,
+            "can_send_polls": true,
+            "can_send_other_messages": true,
+            "can_add_web_page_previews": true,
+            "can_change_info": true,
+            "can_invite_users": true,
+            "can_pin_messages": true,
+            "until_date": 1620000000
+        }"#;
+        let expected = ChatMember {
+            user: User {
+                id: UserId(1029940401),
+                is_bot: false,
+                first_name: "First".to_string(),
+                last_name: Some("Last".to_string()),
+                username: Some("fl".to_string()),
+                language_code: Some("en".to_string()),
+                is_premium: false,
+                added_to_attachment_menu: false,
+            },
+            kind: ChatMemberKind::Restricted(Restricted {
+                is_member: true,
+                can_send_messages: true,
+                can_send_audios: false,
+                can_send_documents: false,
+                can_send_photos: true,
+                can_send_videos: true,
+                can_send_video_notes: false,
+                can_send_voice_notes: true,
+                can_manage_topics: false,
+                can_send_polls: true,
+                can_send_other_messages: true,
+                can_add_web_page_previews: true,
+                can_change_info: true,
+                can_invite_users: true,
+                can_pin_messages: true,
+                until_date: UntilDate::Date(
+                    chrono::NaiveDateTime::from_timestamp_opt(1620000000, 0).unwrap().and_utc(),
+                ),
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(json).unwrap();

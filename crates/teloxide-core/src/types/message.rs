@@ -5,12 +5,12 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, Chat, ChatId, Contact, Dice, Document, ForumTopicClosed,
-    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
-    GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
+    Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
+    ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
+    GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
     PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, ThreadId, True, User,
-    Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
     VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
@@ -60,6 +60,8 @@ pub enum MessageKind {
     ChannelChatCreated(MessageChannelChatCreated),
     MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged),
     Pinned(MessagePinned),
+    ChatShared(MessageChatShared),
+    UserShared(MessageUserShared),
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
@@ -245,6 +247,18 @@ pub struct MessagePinned {
     /// is itself a reply.
     #[serde(rename = "pinned_message")]
     pub pinned: Box<Message>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChatShared {
+    /// A chat was shared with the bot.
+    pub chat_shared: ChatShared,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageUserShared {
+    /// A chat was shared with the bot.
+    pub user_shared: UserShared,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -655,12 +669,13 @@ mod getters {
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
         MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
         MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
-        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
+        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageChatShared,
+        MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
         MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
         MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
         MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
-        MessageSupergroupChatCreated, MessageVideoChatParticipantsInvited, PhotoSize, User,
+        MessageSupergroupChatCreated, MessageUserShared, MessageVideoChatParticipantsInvited,
+        PhotoSize, User,
     };
 
     use super::{
@@ -699,12 +714,6 @@ mod getters {
                 Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
                 _ => None,
             }
-        }
-
-        #[deprecated(since = "0.4.2", note = "use `.chat.id` field instead")]
-        #[must_use]
-        pub fn chat_id(&self) -> ChatId {
-            self.chat.id
         }
 
         #[must_use]
@@ -1270,6 +1279,22 @@ mod getters {
         }
 
         #[must_use]
+        pub fn shared_chat(&self) -> Option<&types::ChatShared> {
+            match &self.kind {
+                ChatShared(MessageChatShared { chat_shared }) => Some(chat_shared),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn shared_user(&self) -> Option<&types::UserShared> {
+            match &self.kind {
+                UserShared(MessageUserShared { user_shared }) => Some(user_shared),
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn dice(&self) -> Option<&types::Dice> {
             match &self.kind {
                 Dice(MessageDice { dice }) => Some(dice),
@@ -1697,6 +1722,56 @@ mod tests {
         }"#;
         let message = from_str::<Message>(json);
         assert!(message.is_ok());
+    }
+
+    #[test]
+    fn de_shared_chat() {
+        let json = r#"{
+            "message_id": 198283,
+            "chat": {
+              "id": 250918540,
+              "first_name": "Андрей",
+              "last_name": "Власов",
+              "username": "aka_dude",
+              "type": "private"
+            },
+            "date": 1567927221,
+            "chat_shared": {
+                "request_id": 348349,
+                "chat_id": 384939
+            }
+          }"#;
+        let message = from_str::<Message>(json);
+        assert!(message.is_ok());
+        assert_eq!(
+            message.unwrap(),
+            Message {
+                id: MessageId(198283),
+                thread_id: None,
+                date: chrono::NaiveDateTime::from_timestamp_opt(1567927221, 0).unwrap().and_utc(),
+                chat: Chat {
+                    id: ChatId(250918540),
+                    kind: ChatKind::Private(ChatPrivate {
+                        first_name: Some("Андрей".to_string()),
+                        last_name: Some("Власов".to_string()),
+                        username: Some("aka_dude".to_string()),
+                        bio: None,
+                        emoji_status_custom_emoji_id: None,
+                        has_private_forwards: None,
+                        has_restricted_voice_and_video_messages: None
+                    }),
+                    photo: None,
+                    has_aggressive_anti_spam_enabled: false,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false
+                },
+                kind: MessageKind::ChatShared(MessageChatShared {
+                    chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
+                }),
+                via_bot: None
+            }
+        );
     }
 
     #[test]

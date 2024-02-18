@@ -5,7 +5,7 @@
 //!
 //! - [`polling_default`] function, which returns a default long polling
 //!   listener.
-//! - [`polling`] function, which returns a long polling listener with your
+//! - [`Polling`] function, which returns a long polling listener with your
 //!   configuration.
 //! - Various functions in the [`webhooks`] module that return webhook listeners
 //!
@@ -13,12 +13,11 @@
 //! [`Dispatcher`].
 //!
 //! Telegram supports two ways of [getting updates]: [long polling] and
-//! [webhooks]. For the former see [`polling`] and [`polling_default`], for the
+//! [webhooks]. For the former see [`Polling`] and [`polling_default`], for the
 //! latter see the [`webhooks`] module.
 //!
 //! [`UpdateListener`]: UpdateListener
 //! [`polling_default`]: polling_default
-//! [`polling`]: polling()
 //! [`Dispatcher`]: crate::dispatching::Dispatcher
 //! [`Box::get_updates`]: crate::requests::Requester::get_updates
 //! [getting updates]: https://core.telegram.org/bots/api#getting-updates
@@ -26,7 +25,7 @@
 //! [webhooks]: https://en.wikipedia.org/wiki/Webhook
 
 /// Implementations of webhook update listeners - an alternative (to
-/// [`fn@polling`]) way of receiving updates from telegram.
+/// [`Polling`]) way of receiving updates from telegram.
 #[cfg(feature = "webhooks")]
 pub mod webhooks;
 
@@ -42,7 +41,7 @@ mod stateful_listener;
 
 #[allow(deprecated)]
 pub use self::{
-    polling::{polling, polling_default, Polling, PollingBuilder, PollingStream},
+    polling::{polling_default, Polling, PollingBuilder, PollingStream},
     stateful_listener::StatefulListener,
 };
 
@@ -80,7 +79,7 @@ pub trait UpdateListener:
 
     /// Hint which updates should the listener listen for.
     ///
-    /// For example [`polling()`] should send the hint as
+    /// For example [`Polling`] should send the hint as
     /// [`GetUpdates::allowed_updates`]
     ///
     /// Note however that this is a _hint_ and as such, it can be ignored. The
