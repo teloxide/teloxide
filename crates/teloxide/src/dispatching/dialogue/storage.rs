@@ -6,7 +6,7 @@ mod trace_storage;
 #[cfg(feature = "redis-storage")]
 mod redis_storage;
 
-#[cfg(feature = "sqlite-storage-nativetls")]
+#[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 mod sqlite_storage;
 
 use futures::future::BoxFuture;
@@ -22,7 +22,7 @@ pub use redis_storage::{RedisStorage, RedisStorageError};
 pub use serializer::Serializer;
 use std::sync::Arc;
 
-#[cfg(feature = "sqlite-storage-nativetls")]
+#[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
 
 /// A storage with an erased error type.
