@@ -677,13 +677,19 @@ impl_api_error! {
         /// [`SendMessage`]: crate::payloads::SendMessage
         WrongHttpUrl = "Bad Request: wrong HTTP URL",
 
-        /// Occurs when bot tries GetUpdate before the timeout. Make sure that only
-        /// one Updater is running.
+        /// Occurs when multiple [`GetUpdates`] calls happen at the same time.
+        ///
+        /// This can happen if
+        /// 1. You are running multiple bot instances
+        /// 2. You are running multiple update consumers (like [`Dispatcher`] or [`repl`])
+        /// 3. You are calling [`GetUpdates`] yourself and the second call is done before the first one finishes
         ///
         /// May happen in methods:
         /// 1. [`GetUpdates`]
         ///
         /// [`GetUpdates`]: crate::payloads::GetUpdates
+        /// [`Dispatcher`]: crate::dispatching::Dispatcher
+        /// [`repl`]: crate::repl
         TerminatedByOtherGetUpdates = "Conflict: terminated by other getUpdates request; make sure that only one bot instance \
             is running",
 
