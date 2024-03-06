@@ -1,6 +1,6 @@
 use crate::types::{
-    BotCommandScope, CallbackQuery, Chat, ChatId, ChatJoinRequest, ChatMemberUpdated, Message,
-    MessageCommon, Recipient, ResponseParameters, TargetMessage, Update,
+    CallbackQuery, Chat, ChatId, ChatJoinRequest, ChatMemberUpdated, Message,
+    Recipient, TargetMessage, Update,
 };
 
 /// Something that may have a chat ID.
@@ -9,15 +9,15 @@ pub trait GetChatId {
     fn chat_id(&self) -> Option<ChatId>;
 }
 
-impl GetChatId for CallbackQuery {
+impl GetChatId for Message {
     fn chat_id(&self) -> Option<ChatId> {
-        self.message.as_ref().map(|mes| mes.chat.id)
+        Some(self.chat.id)
     }
 }
 
-impl GetChatId for MessageCommon {
+impl GetChatId for CallbackQuery {
     fn chat_id(&self) -> Option<ChatId> {
-        self.sender_chat.as_ref().map(|chat| chat.id)
+        self.message.as_ref().map(|mes| mes.chat.id)
     }
 }
 
@@ -36,32 +36,9 @@ impl GetChatId for Recipient {
     }
 }
 
-impl GetChatId for BotCommandScope {
-    fn chat_id(&self) -> Option<ChatId> {
-        match self {
-            BotCommandScope::Default
-            | BotCommandScope::AllPrivateChats
-            | BotCommandScope::AllGroupChats
-            | BotCommandScope::AllChatAdministrators => None,
-            BotCommandScope::Chat { chat_id: recipient }
-            | BotCommandScope::ChatAdministrators { chat_id: recipient }
-            | BotCommandScope::ChatMember { chat_id: recipient, .. } => recipient.chat_id(),
-        }
-    }
-}
-
 impl GetChatId for Chat {
     fn chat_id(&self) -> Option<ChatId> {
         Some(self.id)
-    }
-}
-
-impl GetChatId for ResponseParameters {
-    fn chat_id(&self) -> Option<ChatId> {
-        match self {
-            ResponseParameters::MigrateToChatId(chat_id) => Some(*chat_id),
-            ResponseParameters::RetryAfter(_) => None,
-        }
     }
 }
 
@@ -71,12 +48,6 @@ impl GetChatId for TargetMessage {
             TargetMessage::Common { chat_id: recipient, .. } => recipient.chat_id(),
             TargetMessage::Inline { .. } => None,
         }
-    }
-}
-
-impl GetChatId for Message {
-    fn chat_id(&self) -> Option<ChatId> {
-        Some(self.chat.id)
     }
 }
 
