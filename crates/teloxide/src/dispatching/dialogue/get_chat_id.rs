@@ -1,6 +1,5 @@
 use crate::types::{
-    CallbackQuery, Chat, ChatId, ChatJoinRequest, ChatMemberUpdated, Message,
-    Recipient, TargetMessage, Update,
+    CallbackQuery, Chat, ChatId, ChatJoinRequest, ChatMemberUpdated, Message, Update,
 };
 
 /// Something that may have a chat ID.
@@ -27,27 +26,9 @@ impl GetChatId for Update {
     }
 }
 
-impl GetChatId for Recipient {
-    fn chat_id(&self) -> Option<ChatId> {
-        match self {
-            Recipient::Id(chat_id) => Some(*chat_id),
-            Recipient::ChannelUsername(_) => None,
-        }
-    }
-}
-
 impl GetChatId for Chat {
     fn chat_id(&self) -> Option<ChatId> {
         Some(self.id)
-    }
-}
-
-impl GetChatId for TargetMessage {
-    fn chat_id(&self) -> Option<ChatId> {
-        match self {
-            TargetMessage::Common { chat_id: recipient, .. } => recipient.chat_id(),
-            TargetMessage::Inline { .. } => None,
-        }
     }
 }
 
