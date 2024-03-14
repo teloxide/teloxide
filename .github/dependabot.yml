@@ -30,7 +30,7 @@ updates:
     # makes "bump everything" every once in a while
     groups:
       lock:
-      - patterns: ["*"]
+        patterns: ["*"]
 
     # Allow both direct and indirect updates for all packages
     allow:
