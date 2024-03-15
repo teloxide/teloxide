@@ -118,10 +118,12 @@ jobs:
       # MSRV CI specifically instead. This allows as to
       # 1. Not update MSRV unless we really need to
       # 2. Test newest (or at least newer) versions of crates in CI
+      #
+      # Example command: `cargo update -p atomic-write-file@0.1.3 --precise 0.1.2`
       - name: Downgrade deps for MSRV
         if: ${{ matrix.rust == 'msrv' }}
         run: |
-            cargo update -p atomic-write-file@0.1.3 --precise 0.1.2
+            exit 0
         
 
       # NB. Don't test (build) examples so we can use non-msrv features in them (--tests/--doc)
