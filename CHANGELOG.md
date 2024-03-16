@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `filter_video_chat_ended`
   - `filter_video_chat_participants_invited`
   - `filter_web_app_data` 
+- Implement `GetChatId` for `teloxide_core::types::{Chat, ChatJoinRequest, ChatMemberUpdated}`.
 
 ### Fixed
 
