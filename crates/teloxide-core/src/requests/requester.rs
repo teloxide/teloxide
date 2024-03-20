@@ -776,6 +776,17 @@ pub trait Requester {
     where
         C: IntoIterator<Item = BotCommand>;
 
+    type SetMessageReaction: Request<Payload = SetMessageReaction, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMessageReaction`].
+    fn set_message_reaction<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>;
+
     type GetMyCommands: Request<Payload = GetMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetMyCommands`].
@@ -1257,7 +1268,8 @@ macro_rules! forward_all {
             set_game_score_inline,
             get_game_high_scores,
             approve_chat_join_request,
-            decline_chat_join_request
+            decline_chat_join_request,
+            set_message_reaction
             => $body, $ty
         }
     };

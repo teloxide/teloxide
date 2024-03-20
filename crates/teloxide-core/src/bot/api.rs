@@ -835,6 +835,18 @@ impl Requester for Bot {
         Self::SetChatMenuButton::new(self.clone(), payloads::SetChatMenuButton::new())
     }
 
+    type SetMessageReaction = JsonRequest<payloads::SetMessageReaction>;
+
+    fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>,
+    {
+        Self::SetMessageReaction::new(
+            self.clone(),
+            payloads::SetMessageReaction::new(chat_id.into(), message_id),
+        )
+    }
+
     type GetChatMenuButton = JsonRequest<payloads::GetChatMenuButton>;
 
     fn get_chat_menu_button(&self) -> Self::GetChatMenuButton {

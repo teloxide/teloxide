@@ -268,7 +268,8 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        set_message_reaction
         => fid, ftyid
     }
 }

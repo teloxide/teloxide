@@ -1025,6 +1025,14 @@ macro_rules! requester_forward {
             $body!(set_my_commands this (commands: C))
         }
     };
+    (@method set_message_reaction $body:ident $ty:ident) => {
+        type SetMessageReaction = $ty![SetMessageReaction];
+
+        fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId))
+        }
+    };
     (@method get_my_commands $body:ident $ty:ident) => {
         type GetMyCommands = $ty![GetMyCommands];
 
