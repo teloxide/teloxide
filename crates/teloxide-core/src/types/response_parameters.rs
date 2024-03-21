@@ -20,7 +20,6 @@ pub enum ResponseParameters {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{ChatId, Seconds};
 
     #[test]
     fn migrate_to_chat_id_deserialization() {

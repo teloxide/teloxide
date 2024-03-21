@@ -702,7 +702,7 @@ mod tests {
                 can_invite_users: true,
                 can_pin_messages: true,
                 until_date: UntilDate::Date(
-                    chrono::NaiveDateTime::from_timestamp_opt(1620000000, 0).unwrap().and_utc(),
+                    chrono::DateTime::from_timestamp(1620000000, 0).unwrap(),
                 ),
             }),
         };

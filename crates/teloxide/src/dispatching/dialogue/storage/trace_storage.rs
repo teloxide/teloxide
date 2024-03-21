@@ -1,8 +1,4 @@
-use std::{
-    fmt::Debug,
-    marker::{Send, Sync},
-    sync::Arc,
-};
+use std::{fmt::Debug, sync::Arc};
 
 use futures::future::BoxFuture;
 use teloxide_core::types::ChatId;

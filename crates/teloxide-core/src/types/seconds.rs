@@ -26,8 +26,11 @@ impl Seconds {
     }
 
     /// Returns [`chrono::Duration`] equivalent of this duration.
+    // FIXME: rename to `time_delta` (the new name of `chrono::Duration`)?
     pub fn chrono_duration(self) -> chrono::Duration {
-        chrono::Duration::seconds(self.seconds() as i64)
+        // Unwrap: `self.seconds()` is a `u32`, which is always between `-i64::MAX/1000`
+        // and `i64::MAX/1000`
+        chrono::Duration::try_seconds(self.seconds() as i64).unwrap()
     }
 }
 

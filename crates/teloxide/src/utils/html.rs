@@ -115,8 +115,6 @@ pub fn user_mention_or_link(user: &User) -> String {
 
 #[cfg(test)]
 mod tests {
-    use teloxide_core::types::UserId;
-
     use super::*;
 
     #[test]

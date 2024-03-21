@@ -1,9 +1,4 @@
-use teloxide::{
-    dispatching::Dispatcher,
-    prelude::*,
-    types::{ChatMemberUpdated, ParseMode, Update},
-    utils::html,
-};
+use teloxide::{prelude::*, types::ParseMode, utils::html};
 use teloxide_core::adaptors::DefaultParseMode;
 
 /// We use a type alias to be able to write just `bot: Bot` in handlers, instead

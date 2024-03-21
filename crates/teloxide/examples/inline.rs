@@ -3,7 +3,6 @@ use teloxide::{
     types::{
         InlineQueryResult, InlineQueryResultArticle, InputMessageContent, InputMessageContentText,
     },
-    Bot,
 };
 
 #[tokio::main]

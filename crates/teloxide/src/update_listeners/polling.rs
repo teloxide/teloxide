@@ -1,5 +1,4 @@
 use std::{
-    convert::TryInto,
     future::Future,
     mem,
     pin::Pin,

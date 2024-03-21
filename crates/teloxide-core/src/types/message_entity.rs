@@ -264,7 +264,6 @@ pub enum MessageEntityKind {
 mod tests {
     use super::*;
     use cool_asserts::assert_matches;
-    use MessageEntity;
     use MessageEntityKind::*;
 
     #[test]
