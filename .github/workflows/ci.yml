@@ -124,6 +124,8 @@ jobs:
       - name: Downgrade deps for MSRV
         if: ${{ matrix.rust == 'msrv' }}
         run: |
+            cargo update -p sqlx --precise 0.7.3
+            cargo update -p atomic-write-file --precise 0.1.2
             exit 0
         
 
