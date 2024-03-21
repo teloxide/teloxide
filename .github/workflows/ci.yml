@@ -19,7 +19,8 @@ env:
   # When updating this, also update:
   # - crates/teloxide-core/src/codegen.rs
   # - rust-toolchain.toml
-  rust_nightly: nightly-2023-09-27
+  # - below in the test matrix
+  rust_nightly: nightly-2024-03-20
   # When updating this, also update:
   # - **/README.md
   # - **/src/lib.rs
@@ -90,7 +91,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2023-09-27
+            toolchain: nightly-2024-03-20
             features: "--features full nightly"
           - rust: msrv
             toolchain: 1.68.0
