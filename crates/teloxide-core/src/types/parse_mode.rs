@@ -2,10 +2,7 @@
 // (for built ins there no warnings, but for (De)Serialize, there are)
 #![allow(deprecated)]
 
-use std::{
-    convert::{TryFrom, TryInto},
-    str::FromStr,
-};
+use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
@@ -184,8 +181,8 @@ impl FromStr for ParseMode {
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod tests {
-    #![allow(deprecated)]
 
     use super::*;
 

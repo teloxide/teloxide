@@ -11,7 +11,7 @@ use crate::{
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
-    types::{InputFile, ParseMode, Recipient, *},
+    types::*,
 };
 
 /// Default parse mode adaptor, see

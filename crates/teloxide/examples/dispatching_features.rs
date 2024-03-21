@@ -3,11 +3,7 @@
 
 use rand::Rng;
 
-use teloxide::{
-    prelude::*,
-    types::{Dice, Update, UserId},
-    utils::command::BotCommands,
-};
+use teloxide::{prelude::*, types::Dice, utils::command::BotCommands};
 
 #[tokio::main]
 async fn main() {

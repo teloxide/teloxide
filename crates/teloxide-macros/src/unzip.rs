@@ -1,5 +1,3 @@
-use std::iter::FromIterator;
-
 pub(crate) struct Unzip<A, B>(pub A, pub B);
 
 impl<A, B, T, U> FromIterator<(T, U)> for Unzip<A, B>

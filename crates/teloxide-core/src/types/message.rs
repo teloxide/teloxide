@@ -1748,7 +1748,7 @@ mod tests {
             Message {
                 id: MessageId(198283),
                 thread_id: None,
-                date: chrono::NaiveDateTime::from_timestamp_opt(1567927221, 0).unwrap().and_utc(),
+                date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 chat: Chat {
                     id: ChatId(250918540),
                     kind: ChatKind::Private(ChatPrivate {

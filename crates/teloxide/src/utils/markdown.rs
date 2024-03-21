@@ -157,7 +157,6 @@ pub fn user_mention_or_link(user: &User) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use teloxide_core::types::{User, UserId};
 
     #[test]
     fn test_bold() {

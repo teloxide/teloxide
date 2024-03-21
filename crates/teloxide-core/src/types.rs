@@ -268,16 +268,12 @@ pub use user_id::*;
 
 use serde::Serialize;
 
-/// Converts an `i64` timestump to a `choro::DateTime`, producing serde error
-/// for invalid timestumps
+/// Converts an `i64` timestamp to a `choro::DateTime`, producing serde error
+/// for invalid timestamps
 pub(crate) fn serde_timestamp<E: serde::de::Error>(
     timestamp: i64,
 ) -> Result<chrono::DateTime<chrono::Utc>, E> {
-    use chrono::{DateTime, NaiveDateTime, Utc};
-
-    NaiveDateTime::from_timestamp_opt(timestamp, 0)
-        .ok_or_else(|| E::custom("invalid timestump"))
-        .map(|naive| DateTime::from_naive_utc_and_offset(naive, Utc))
+    chrono::DateTime::from_timestamp(timestamp, 0).ok_or_else(|| E::custom("invalid timestump"))
 }
 
 pub(crate) mod serde_opt_date_from_unix_timestamp {
@@ -313,10 +309,7 @@ pub(crate) mod serde_opt_date_from_unix_timestamp {
 
         {
             let json = r#"{"date":1}"#;
-            let expected = DateTime::from_naive_utc_and_offset(
-                chrono::NaiveDateTime::from_timestamp_opt(1, 0).unwrap(),
-                Utc,
-            );
+            let expected = DateTime::from_timestamp(1, 0).unwrap();
 
             let Struct { date } = serde_json::from_str(json).unwrap();
             assert_eq!(date, Some(expected));

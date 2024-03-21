@@ -3,11 +3,7 @@
 
 use url::Url;
 
-use crate::{
-    payloads::{GetMe, SendMessage, *},
-    requests::Request,
-    types::*,
-};
+use crate::{payloads::*, requests::Request, types::*};
 
 /// Telegram Bot API client.
 ///
