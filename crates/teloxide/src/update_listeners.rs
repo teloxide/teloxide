@@ -63,7 +63,7 @@ pub trait UpdateListener:
     type Err;
 
     /// Returns a token which stops this listener.
-    ///  
+    ///
     /// The [`stop`] function of the token is not guaranteed to have an
     /// immediate effect. That is, some listeners can return updates even
     /// after [`stop`] is called (e.g.: because of buffering).
