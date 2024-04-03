@@ -45,6 +45,8 @@ impl_payload! {
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
             pub reply_markup: ReplyMarkup [into],
+            /// Business connection identifier
+            pub business_connection_id: String [into],
         }
     }
 }

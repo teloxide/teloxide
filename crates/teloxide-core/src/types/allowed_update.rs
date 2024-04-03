@@ -17,4 +17,6 @@ pub enum AllowedUpdate {
     MyChatMember,
     ChatMember,
     ChatJoinRequest,
+    BusinessMessage,
+    EditedBusinessMessage,
 }

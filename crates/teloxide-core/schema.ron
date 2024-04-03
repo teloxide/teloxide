@@ -292,6 +292,11 @@ Schema(
                         }
                     ),
                 ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Business connection identifier"),
+                ),
             ],
         ),
         Method(

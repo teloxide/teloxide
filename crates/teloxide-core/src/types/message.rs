@@ -41,6 +41,8 @@ pub struct Message {
 
     #[serde(flatten)]
     pub kind: MessageKind,
+
+    pub business_connection_id: Option<String>,
 }
 
 // FIXME: this could be a use-case for serde mixed-tags, some variants need to
@@ -1769,7 +1771,8 @@ mod tests {
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
                 }),
-                via_bot: None
+                via_bot: None,
+                business_connection_id: None,
             }
         );
     }

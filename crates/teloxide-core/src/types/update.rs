@@ -108,6 +108,12 @@ pub enum UpdateKind {
     /// updates.
     ChatJoinRequest(ChatJoinRequest),
 
+    /// New non-service message from a connected business account.
+    BusinessMessage(Message),
+
+    /// New version of a message from a connected business account.
+    EditedBusinessMessage(Message),
+
     /// An error that happened during deserialization.
     ///
     /// This allows `teloxide` to continue working even if telegram adds a new
@@ -129,7 +135,12 @@ impl Update {
         use UpdateKind::*;
 
         let from = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => m.from()?,
+            Message(m)
+            | EditedMessage(m)
+            | ChannelPost(m)
+            | EditedChannelPost(m)
+            | BusinessMessage(m)
+            | EditedBusinessMessage(m) => m.from()?,
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
@@ -189,7 +200,9 @@ impl Update {
             UpdateKind::Message(message)
             | UpdateKind::EditedMessage(message)
             | UpdateKind::ChannelPost(message)
-            | UpdateKind::EditedChannelPost(message) => i0(message.mentioned_users()),
+            | UpdateKind::EditedChannelPost(message)
+            | UpdateKind::BusinessMessage(message)
+            | UpdateKind::EditedBusinessMessage(message) => i0(message.mentioned_users()),
 
             UpdateKind::InlineQuery(query) => i1(once(&query.from)),
             UpdateKind::ChosenInlineResult(query) => i1(once(&query.from)),
@@ -214,7 +227,8 @@ impl Update {
         use UpdateKind::*;
 
         let chat = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => &m.chat,
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m)  => &m.chat,
+            BusinessMessage(m) | EditedBusinessMessage(m) => &m.chat,
             CallbackQuery(q) => &q.message.as_ref()?.chat,
             ChatMember(m) => &m.chat,
             MyChatMember(m) => &m.chat,
@@ -319,6 +333,12 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<ChatJoinRequest>()
                             .ok()
                             .map(UpdateKind::ChatJoinRequest),
+                        "business_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::BusinessMessage)
+                        }
+                        "edited_business_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::EditedBusinessMessage)
+                        }
                         _ => Some(empty_error()),
                     })
                     .unwrap_or_else(empty_error);
@@ -367,6 +387,12 @@ impl Serialize for UpdateKind {
             UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 12, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
                 s.serialize_newtype_variant(name, 13, "chat_join_request", v)
+            }
+            UpdateKind::BusinessMessage(v) => {
+                s.serialize_newtype_variant(name, 14, "business_message", v)
+            }
+            UpdateKind::EditedBusinessMessage(v) => {
+                s.serialize_newtype_variant(name, 15, "edited_business_message", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }
@@ -438,6 +464,7 @@ mod test {
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
                 },
+                business_connection_id: None,
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {
                         id: UserId(218_485_655),
