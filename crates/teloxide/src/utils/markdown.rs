@@ -109,24 +109,17 @@ pub fn code_inline(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape(s: &str) -> String {
-    s.replace('_', r"\_")
-        .replace('*', r"\*")
-        .replace('[', r"\[")
-        .replace(']', r"\]")
-        .replace('(', r"\(")
-        .replace(')', r"\)")
-        .replace('~', r"\~")
-        .replace('`', r"\`")
-        .replace('>', r"\>")
-        .replace('#', r"\#")
-        .replace('+', r"\+")
-        .replace('-', r"\-")
-        .replace('=', r"\=")
-        .replace('|', r"\|")
-        .replace('{', r"\{")
-        .replace('}', r"\}")
-        .replace('.', r"\.")
-        .replace('!', r"\!")
+    const CHARS: [char; 18] = [
+        '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!',
+    ];
+
+    s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
+        if CHARS.contains(&c) {
+            s.push('\\');
+        }
+        s.push(c);
+        s
+    })
 }
 
 /// Escapes all markdown special characters specific for the inline link URL
@@ -134,7 +127,13 @@ pub fn escape(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape_link_url(s: &str) -> String {
-    s.replace('`', r"\`").replace(')', r"\)")
+    s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
+        if ['`', ')'].contains(&c) {
+            s.push('\\');
+        }
+        s.push(c);
+        s
+    })
 }
 
 /// Escapes all markdown special characters specific for the code block (``` and
@@ -142,7 +141,13 @@ pub fn escape_link_url(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape_code(s: &str) -> String {
-    s.replace('\\', r"\\").replace('`', r"\`")
+    s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
+        if ['`', '\\'].contains(&c) {
+            s.push('\\');
+        }
+        s.push(c);
+        s
+    })
 }
 
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
