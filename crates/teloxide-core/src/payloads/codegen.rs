@@ -56,10 +56,15 @@ fn codegen_payloads() {
             .map(|field| format!("    @[multipart = {}]\n", field.join(", ")))
             .unwrap_or_default();
 
+        // FIXME: CreateNewStickerSet has to be be only Debug + Clone + Serialize (maybe
+        // better fix?)
         let derive = if !multipart.is_empty()
             || matches!(
                 &*method.names.1,
-                "SendMediaGroup" | "EditMessageMedia" | "EditMessageMediaInline"
+                "SendMediaGroup"
+                    | "EditMessageMedia"
+                    | "EditMessageMediaInline"
+                    | "CreateNewStickerSet"
             ) {
             "#[derive(Debug, Clone, Serialize)]".to_owned()
         } else {
@@ -188,7 +193,9 @@ fn eq_hash_suitable(method: &Method) -> bool {
 
             Type::Url | Type::DateTime => true,
 
-            Type::RawTy(raw) => raw != "MaskPosition" && raw != "InlineQueryResult",
+            Type::RawTy(raw) => {
+                raw != "InputSticker" && raw != "MaskPosition" && raw != "InlineQueryResult"
+            }
         }
     }
 
