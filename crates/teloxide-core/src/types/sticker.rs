@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, MaskPosition, PhotoSize};
+use crate::types::{FileMeta, MaskPosition, PhotoSize, True};
 
 /// This object represents a sticker.
 ///
@@ -51,6 +51,11 @@ pub struct Sticker {
 
     /// Name of the sticker set to which the sticker belongs.
     pub set_name: Option<String>,
+
+    /// True, if the sticker must be repainted to a text color in messages, the
+    /// color of the Telegram Premium badge in emoji status, white color on
+    /// chat photos, or another appropriate color in other places
+    pub needs_repainting: Option<True>,
 }
 
 /// Kind of a [`Sticker`] - regular, mask or custom emoji.
@@ -94,11 +99,11 @@ pub enum StickerType {
 }
 
 /// Format of a [`Sticker`] - regular/webp, animated/tgs or video/webm.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "StickerFormatRaw", into = "StickerFormatRaw")]
 pub enum StickerFormat {
-    /// "Normal", raster, `.webp` sticker.
-    Raster,
+    /// Image in `.png` or `.webp` format.
+    Static,
     /// [Animated], `.tgs` sticker.
     ///
     /// [Animated]: https://telegram.org/blog/animated-stickers
@@ -135,10 +140,10 @@ impl Sticker {
     ///
     /// Alias to [`self.format.is_raster()`].
     ///
-    /// [`self.format.is_raster()`]: StickerFormat::is_raster
+    /// [`self.format.is_static()`]: StickerFormat::is_static
     #[must_use]
-    pub fn is_raster(&self) -> bool {
-        self.format.is_raster()
+    pub fn is_static(&self) -> bool {
+        self.format.is_static()
     }
 
     /// Returns `true` is this is an [animated] sticker.
@@ -257,12 +262,12 @@ impl StickerType {
 }
 
 impl StickerFormat {
-    /// Returns `true` if the sticker format is [`Raster`].
+    /// Returns `true` if the sticker format is [`Static`].
     ///
-    /// [`Raster`]: StickerFormat::Raster
+    /// [`Static`]: StickerFormat::Static
     #[must_use]
-    pub fn is_raster(&self) -> bool {
-        matches!(self, Self::Raster)
+    pub fn is_static(&self) -> bool {
+        matches!(self, Self::Static)
     }
 
     /// Returns `true` if the sticker format is [`Animated`].
@@ -295,7 +300,7 @@ impl TryFrom<StickerFormatRaw> for StickerFormat {
         StickerFormatRaw { is_animated, is_video }: StickerFormatRaw,
     ) -> Result<Self, Self::Error> {
         let ret = match (is_animated, is_video) {
-            (false, false) => Self::Raster,
+            (false, false) => Self::Static,
             (true, false) => Self::Animated,
             (false, true) => Self::Video,
             (true, true) => return Err("`is_animated` and `is_video` present at the same time"),
@@ -308,7 +313,7 @@ impl TryFrom<StickerFormatRaw> for StickerFormat {
 impl From<StickerFormat> for StickerFormatRaw {
     fn from(kind: StickerFormat) -> Self {
         match kind {
-            StickerFormat::Raster => Self { is_animated: false, is_video: false },
+            StickerFormat::Static => Self { is_animated: false, is_video: false },
             StickerFormat::Animated => Self { is_animated: true, is_video: false },
             StickerFormat::Video => Self { is_animated: false, is_video: true },
         }
@@ -411,7 +416,7 @@ mod tests {
         {
             let json = r#"{"is_animated":false,"is_video":false}"#;
             let fmt: StickerFormat = serde_json::from_str(json).unwrap();
-            assert_eq!(fmt, StickerFormat::Raster);
+            assert_eq!(fmt, StickerFormat::Static);
 
             let json2 = serde_json::to_string(&fmt).unwrap();
             assert_eq!(json, json2);

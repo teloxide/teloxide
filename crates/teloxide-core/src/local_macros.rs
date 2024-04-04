@@ -1231,28 +1231,27 @@ macro_rules! requester_forward {
     (@method upload_sticker_file $body:ident $ty:ident) => {
         type UploadStickerFile = $ty![UploadStickerFile];
 
-        fn upload_sticker_file(&self, user_id: UserId, png_sticker: InputFile) -> Self::UploadStickerFile {
+        fn upload_sticker_file(&self, user_id: UserId, sticker: InputFile, sticker_format: StickerFormat) -> Self::UploadStickerFile {
             let this = self;
-            $body!(upload_sticker_file this (user_id: UserId, png_sticker: InputFile))
+            $body!(upload_sticker_file this (user_id: UserId, sticker: InputFile, sticker_format: StickerFormat))
         }
     };
     (@method create_new_sticker_set $body:ident $ty:ident) => {
         type CreateNewStickerSet = $ty![CreateNewStickerSet];
 
-        fn create_new_sticker_set<N, T, E>(&self, user_id: UserId, name: N, title: T, sticker: InputSticker, emojis: E) -> Self::CreateNewStickerSet where N: Into<String>,
+        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat) -> Self::CreateNewStickerSet where N: Into<String>,
         T: Into<String>,
-        E: Into<String> {
+        S: IntoIterator<Item = InputSticker> {
             let this = self;
-            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, sticker: InputSticker, emojis: E))
+            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat))
         }
     };
     (@method add_sticker_to_set $body:ident $ty:ident) => {
         type AddStickerToSet = $ty![AddStickerToSet];
 
-        fn add_sticker_to_set<N, E>(&self, user_id: UserId, name: N, sticker: InputSticker, emojis: E) -> Self::AddStickerToSet where N: Into<String>,
-        E: Into<String> {
+        fn add_sticker_to_set<N>(&self, user_id: UserId, name: N, sticker: InputSticker) -> Self::AddStickerToSet where N: Into<String> {
             let this = self;
-            $body!(add_sticker_to_set this (user_id: UserId, name: N, sticker: InputSticker, emojis: E))
+            $body!(add_sticker_to_set this (user_id: UserId, name: N, sticker: InputSticker))
         }
     };
     (@method set_sticker_position_in_set $body:ident $ty:ident) => {
@@ -1271,12 +1270,62 @@ macro_rules! requester_forward {
             $body!(delete_sticker_from_set this (sticker: S))
         }
     };
-    (@method set_sticker_set_thumb $body:ident $ty:ident) => {
-        type SetStickerSetThumb = $ty![SetStickerSetThumb];
+    (@method set_sticker_set_thumbnail $body:ident $ty:ident) => {
+        type SetStickerSetThumbnail = $ty![SetStickerSetThumbnail];
 
-        fn set_sticker_set_thumb<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumb where N: Into<String> {
+        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail where N: Into<String> {
             let this = self;
-            $body!(set_sticker_set_thumb this (name: N, user_id: UserId))
+            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId))
+        }
+    };
+    (@method set_custom_emoji_sticker_set_thumbnail $body:ident $ty:ident) => {
+        type SetCustomEmojiStickerSetThumbnail = $ty![SetCustomEmojiStickerSetThumbnail];
+
+        fn set_custom_emoji_sticker_set_thumbnail<N>(&self, name: N) -> Self::SetCustomEmojiStickerSetThumbnail where N: Into<String> {
+            let this = self;
+            $body!(set_custom_emoji_sticker_set_thumbnail this (name: N))
+        }
+    };
+    (@method set_sticker_set_title $body:ident $ty:ident) => {
+        type SetStickerSetTitle = $ty![SetStickerSetTitle];
+
+        fn set_sticker_set_title<N, T>(&self, name: N, title: T) -> Self::SetStickerSetTitle where N: Into<String>,
+        T: Into<String> {
+            let this = self;
+            $body!(set_sticker_set_title this (name: N, title: T))
+        }
+    };
+    (@method delete_sticker_set $body:ident $ty:ident) => {
+        type DeleteStickerSet = $ty![DeleteStickerSet];
+
+        fn delete_sticker_set<N>(&self, name: N) -> Self::DeleteStickerSet where N: Into<String> {
+            let this = self;
+            $body!(delete_sticker_set this (name: N))
+        }
+    };
+    (@method set_sticker_emoji_list $body:ident $ty:ident) => {
+        type SetStickerEmojiList = $ty![SetStickerEmojiList];
+
+        fn set_sticker_emoji_list<S, E>(&self, sticker: S, emoji_list: E) -> Self::SetStickerEmojiList where S: Into<String>,
+        E: IntoIterator<Item = String> {
+            let this = self;
+            $body!(set_sticker_emoji_list this (sticker: S, emoji_list: E))
+        }
+    };
+    (@method set_sticker_keywords $body:ident $ty:ident) => {
+        type SetStickerKeywords = $ty![SetStickerKeywords];
+
+        fn set_sticker_keywords<S>(&self, sticker: S) -> Self::SetStickerKeywords where S: Into<String> {
+            let this = self;
+            $body!(set_sticker_keywords this (sticker: S))
+        }
+    };
+    (@method set_sticker_mask_position $body:ident $ty:ident) => {
+        type SetStickerMaskPosition = $ty![SetStickerMaskPosition];
+
+        fn set_sticker_mask_position<S>(&self, sticker: S) -> Self::SetStickerMaskPosition where S: Into<String> {
+            let this = self;
+            $body!(set_sticker_mask_position this (sticker: S))
         }
     };
     (@method send_invoice $body:ident $ty:ident) => {

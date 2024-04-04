@@ -90,7 +90,7 @@ mod tests {
         types::{
             ChatId, InputFile, InputMedia, InputMediaAnimation, InputMediaAudio,
             InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity,
-            MessageEntityKind, ParseMode, UserId,
+            MessageEntityKind, ParseMode, StickerFormat, UserId,
         },
     };
 
@@ -146,11 +146,20 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_sticker_to_set() {
+        // FIXME: rewrite according to the new schema
         to_form_ref(&payloads::AddStickerToSet::new(
             UserId(0),
             "name",
-            InputSticker::Png(InputFile::file("../../media/teloxide-core-logo.png")),
-            "✈️⚙️",
+            InputSticker {
+                sticker: InputFile::file(
+                    "../../media/
+                teloxide-core-logo.png",
+                ),
+                format: StickerFormat::Static,
+                emoji_list: vec!["✈️⚙️".to_owned()],
+                keywords: None,
+                mask_position: None,
+            },
         ))
         .unwrap()
         .await;

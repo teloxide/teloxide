@@ -163,6 +163,12 @@ macro_rules! fwd_erased {
     (@convert $m:ident, $arg:ident, custom_emoji_ids : $T:ty) => {
         $arg.into_iter().collect()
     };
+    (@convert $m:ident, $arg:ident, stickers: $T:ty) => {
+        $arg.into_iter().collect()
+    };
+    (@convert $m:ident, $arg:ident, emoji_list: $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert $m:ident, $arg:ident, $arg_:ident : $T:ty) => {
         $arg.into()
     };
@@ -277,7 +283,13 @@ where
         add_sticker_to_set,
         set_sticker_position_in_set,
         delete_sticker_from_set,
-        set_sticker_set_thumb,
+        set_sticker_set_thumbnail,
+        set_custom_emoji_sticker_set_thumbnail,
+        set_sticker_set_title,
+        delete_sticker_set,
+        set_sticker_emoji_list,
+        set_sticker_keywords,
+        set_sticker_mask_position,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -807,7 +819,8 @@ trait ErasableRequester<'a> {
     fn upload_sticker_file(
         &self,
         user_id: UserId,
-        png_sticker: InputFile,
+        sticker: InputFile,
+        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, UploadStickerFile, Self::Err>;
 
     fn create_new_sticker_set(
@@ -815,8 +828,8 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         name: String,
         title: String,
-        sticker: InputSticker,
-        emojis: String,
+        stickers: Vec<InputSticker>,
+        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err>;
 
     fn add_sticker_to_set(
@@ -824,7 +837,6 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         name: String,
         sticker: InputSticker,
-        emojis: String,
     ) -> ErasedRequest<'a, AddStickerToSet, Self::Err>;
 
     fn set_sticker_position_in_set(
@@ -838,11 +850,40 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, DeleteStickerFromSet, Self::Err>;
 
-    fn set_sticker_set_thumb(
+    fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
-    ) -> ErasedRequest<'a, SetStickerSetThumb, Self::Err>;
+    ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err>;
+
+    fn set_custom_emoji_sticker_set_thumbnail(
+        &self,
+        name: String,
+    ) -> ErasedRequest<'a, SetCustomEmojiStickerSetThumbnail, Self::Err>;
+
+    fn set_sticker_set_title(
+        &self,
+        name: String,
+        title: String,
+    ) -> ErasedRequest<'a, SetStickerSetTitle, Self::Err>;
+
+    fn delete_sticker_set(&self, name: String) -> ErasedRequest<'a, DeleteStickerSet, Self::Err>;
+
+    fn set_sticker_emoji_list(
+        &self,
+        sticker: String,
+        emoji_list: Vec<String>,
+    ) -> ErasedRequest<'a, SetStickerEmojiList, Self::Err>;
+
+    fn set_sticker_keywords(
+        &self,
+        sticker: String,
+    ) -> ErasedRequest<'a, SetStickerKeywords, Self::Err>;
+
+    fn set_sticker_mask_position(
+        &self,
+        sticker: String,
+    ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err>;
 
     // we can't change telegram API
     #[allow(clippy::too_many_arguments)]
@@ -1629,9 +1670,10 @@ where
     fn upload_sticker_file(
         &self,
         user_id: UserId,
-        png_sticker: InputFile,
+        sticker: InputFile,
+        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, UploadStickerFile, Self::Err> {
-        Requester::upload_sticker_file(self, user_id, png_sticker).erase()
+        Requester::upload_sticker_file(self, user_id, sticker, sticker_format).erase()
     }
 
     fn create_new_sticker_set(
@@ -1639,10 +1681,11 @@ where
         user_id: UserId,
         name: String,
         title: String,
-        sticker: InputSticker,
-        emojis: String,
+        stickers: Vec<InputSticker>,
+        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err> {
-        Requester::create_new_sticker_set(self, user_id, name, title, sticker, emojis).erase()
+        Requester::create_new_sticker_set(self, user_id, name, title, stickers, sticker_format)
+            .erase()
     }
 
     fn add_sticker_to_set(
@@ -1650,9 +1693,8 @@ where
         user_id: UserId,
         name: String,
         sticker: InputSticker,
-        emojis: String,
     ) -> ErasedRequest<'a, AddStickerToSet, Self::Err> {
-        Requester::add_sticker_to_set(self, user_id, name, sticker, emojis).erase()
+        Requester::add_sticker_to_set(self, user_id, name, sticker).erase()
     }
 
     fn set_sticker_position_in_set(
@@ -1670,12 +1712,53 @@ where
         Requester::delete_sticker_from_set(self, sticker).erase()
     }
 
-    fn set_sticker_set_thumb(
+    fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
-    ) -> ErasedRequest<'a, SetStickerSetThumb, Self::Err> {
-        Requester::set_sticker_set_thumb(self, name, user_id).erase()
+    ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err> {
+        Requester::set_sticker_set_thumbnail(self, name, user_id).erase()
+    }
+
+    fn set_custom_emoji_sticker_set_thumbnail(
+        &self,
+        name: String,
+    ) -> ErasedRequest<'a, SetCustomEmojiStickerSetThumbnail, Self::Err> {
+        Requester::set_custom_emoji_sticker_set_thumbnail(self, name).erase()
+    }
+
+    fn set_sticker_set_title(
+        &self,
+        name: String,
+        title: String,
+    ) -> ErasedRequest<'a, SetStickerSetTitle, Self::Err> {
+        Requester::set_sticker_set_title(self, name, title).erase()
+    }
+
+    fn delete_sticker_set(&self, name: String) -> ErasedRequest<'a, DeleteStickerSet, Self::Err> {
+        Requester::delete_sticker_set(self, name).erase()
+    }
+
+    fn set_sticker_emoji_list(
+        &self,
+        sticker: String,
+        emoji_list: Vec<String>,
+    ) -> ErasedRequest<'a, SetStickerEmojiList, Self::Err> {
+        Requester::set_sticker_emoji_list(self, sticker, emoji_list).erase()
+    }
+
+    fn set_sticker_keywords(
+        &self,
+        sticker: String,
+    ) -> ErasedRequest<'a, SetStickerKeywords, Self::Err> {
+        Requester::set_sticker_keywords(self, sticker).erase()
+    }
+
+    fn set_sticker_mask_position(
+        &self,
+        sticker: String,
+    ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err> {
+        Requester::set_sticker_mask_position(self, sticker).erase()
     }
 
     fn send_invoice(

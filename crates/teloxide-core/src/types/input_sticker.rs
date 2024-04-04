@@ -1,39 +1,33 @@
 use serde::Serialize;
 
-use crate::types::InputFile;
+use crate::types::{InputFile, MaskPosition, StickerFormat};
 
-/// Sticker file that may be uploaded to telegram.
+/// This object describes a sticker to be added to a sticker set.
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
-pub enum InputSticker {
-    /// PNG image with the sticker, must be up to 512 kilobytes in size,
-    /// dimensions must not exceed 512px, and either width or height must be
-    /// exactly 512px.
+pub struct InputSticker {
+    /// The added sticker. Pass a file_id as a String to send a file that
+    /// already exists on the Telegram servers, pass an HTTP URL as a String
+    /// for Telegram to get a file from the Internet, upload a new one using
+    /// multipart/form-data, or pass “attach://<file_attach_name>” to upload a
+    /// new one using multipart/form-data under <file_attach_name> name.
+    /// Animated and video stickers can't be uploaded via HTTP URL.
     ///
-    /// Pass [`InputFile::file_id`] to send a file that exists on
-    /// the Telegram servers (recommended), pass an [`InputFile::url`] for
-    /// Telegram to get a .webp file from the Internet, or upload a new one
-    /// using [`InputFile::file`], [`InputFile::memory`] or [`InputFile::read`].
-    /// [More info on Sending Files »].
-    ///
-    /// [`InputFile::file_id`]: InputFile::file_id
-    /// [`InputFile::url`]: InputFile::url
-    /// [`InputFile::file`]: InputFile::file
-    /// [`InputFile::memory`]: InputFile::memory
-    /// [`InputFile::read`]: InputFile::read
-    ///
-    /// [More info on Sending Files »]: https://core.telegram.org/bots/api#sending-files
-    #[serde(rename = "png_sticker")]
-    Png(InputFile),
+    /// More information on Sending Files <https://core.telegram.org/bots/api#sending-files>
+    pub sticker: InputFile,
 
-    /// TGS animation with the sticker, uploaded using multipart/form-data.
-    ///
-    /// See <https://core.telegram.org/animated_stickers#technical-requirements> for technical requirements.
-    #[serde(rename = "tgs_sticker")]
-    Tgs(InputFile),
+    /// Format of the added sticker, must be one of “static” for a .WEBP or .PNG
+    /// image, “animated” for a .TGS animation, “video” for a WEBM video
+    pub format: StickerFormat,
 
-    /// WEBM video with the sticker, uploaded using multipart/form-data.
-    ///
-    /// See <https://core.telegram.org/stickers#video-sticker-requirements> for technical requirements.
-    #[serde(rename = "webm_sticker")]
-    Webm(InputFile),
+    /// List of 1-20 emoji associated with the sticker
+    pub emoji_list: Vec<String>,
+
+    /// Position where the mask should be placed on faces. For “mask” stickers
+    /// only.
+    pub mask_position: Option<MaskPosition>,
+
+    /// List of 0-20 search keywords for the sticker with total length of up to
+    /// 64 characters. For “regular” and “custom_emoji” stickers only.
+    pub keywords: Option<Vec<String>>,
 }

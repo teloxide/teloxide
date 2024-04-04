@@ -52,12 +52,12 @@ impl Deref for StickerSet {
 impl StickerSet {
     /// Returns `true` is this is a "normal" raster sticker.
     ///
-    /// Alias to [`self.format.is_raster()`].
+    /// Alias to [`self.format.is_static()`].
     ///
-    /// [`self.format.is_raster()`]: StickerFormat::is_raster
+    /// [`self.format.is_static()`]: StickerFormat::is_static
     #[must_use]
-    pub fn is_raster(&self) -> bool {
-        self.format.is_raster()
+    pub fn is_static(&self) -> bool {
+        self.format.is_static()
     }
 
     /// Returns `true` is this is an [animated] sticker.
@@ -141,7 +141,7 @@ mod tests {
 
         let set: StickerSet = serde_json::from_str(json).unwrap();
 
-        assert!(set.is_raster());
+        assert!(set.is_static());
         assert!(set.is_regular());
         assert!(set.thumb.is_none());
         assert_eq!(set.stickers.len(), 2);

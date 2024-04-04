@@ -2,20 +2,22 @@
 
 use serde::Serialize;
 
-use crate::types::{FileMeta, InputFile, UserId};
+use crate::types::{FileMeta, InputFile, StickerFormat, UserId};
 
 impl_payload! {
-    @[multipart = png_sticker]
+    @[multipart = sticker]
     /// Use this method to upload a .PNG file with a sticker for later use in _createNewStickerSet_ and _addStickerToSet_ methods (can be used multiple times). Returns the uploaded File on success.
     #[derive(Debug, Clone, Serialize)]
     pub UploadStickerFile (UploadStickerFileSetters) => FileMeta {
         required {
             /// User identifier of sticker file owner
             pub user_id: UserId,
-            /// PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. [More info on Sending Files »]
+            /// A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. See https://core.telegram.org/stickers for technical requirements. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
-            pub png_sticker: InputFile,
+            pub sticker: InputFile,
+            /// Format of the sticker, must be one of “static”, “animated”, “video”
+            pub sticker_format: StickerFormat,
         }
     }
 }
