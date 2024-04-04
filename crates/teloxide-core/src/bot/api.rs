@@ -829,6 +829,29 @@ impl Requester for Bot {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
     }
 
+    type SetMyDescription = JsonRequest<payloads::SetMyDescription>;
+
+    fn set_my_description(&self) -> Self::SetMyDescription {
+        Self::SetMyDescription::new(self.clone(), payloads::SetMyDescription::new())
+    }
+
+    type GetMyDescription = JsonRequest<payloads::GetMyDescription>;
+
+    fn get_my_description(&self) -> Self::GetMyDescription {
+        Self::GetMyDescription::new(self.clone(), payloads::GetMyDescription::new())
+    }
+
+    type SetMyShortDescription = JsonRequest<payloads::SetMyShortDescription>;
+
+    fn set_my_short_description(&self) -> Self::SetMyShortDescription {
+        Self::SetMyShortDescription::new(self.clone(), payloads::SetMyShortDescription::new())
+    }
+
+    type GetMyShortDescription = JsonRequest<payloads::GetMyShortDescription>;
+    fn get_my_short_description(&self) -> Self::GetMyShortDescription {
+        Self::GetMyShortDescription::new(self.clone(), payloads::GetMyShortDescription::new())
+    }
+
     type SetChatMenuButton = JsonRequest<payloads::SetChatMenuButton>;
 
     fn set_chat_menu_button(&self) -> Self::SetChatMenuButton {

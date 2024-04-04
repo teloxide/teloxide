@@ -777,6 +777,26 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMyCommands`].
     fn get_my_commands(&self) -> Self::GetMyCommands;
 
+    type SetMyDescription: Request<Payload = SetMyDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMyDescription`].
+    fn set_my_description(&self) -> Self::SetMyDescription;
+
+    type GetMyDescription: Request<Payload = GetMyDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyDescription`].
+    fn get_my_description(&self) -> Self::GetMyDescription;
+
+    type SetMyShortDescription: Request<Payload = SetMyShortDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMyShortDescription`].
+    fn set_my_short_description(&self) -> Self::SetMyShortDescription;
+
+    type GetMyShortDescription: Request<Payload = GetMyShortDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyShortDescription`].
+    fn get_my_short_description(&self) -> Self::GetMyShortDescription;
+
     type SetChatMenuButton: Request<Payload = SetChatMenuButton, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetChatMenuButton`].
@@ -1217,6 +1237,10 @@ macro_rules! forward_all {
             answer_callback_query,
             set_my_commands,
             get_my_commands,
+            set_my_description,
+            get_my_description,
+            set_my_short_description,
+            get_my_short_description,
             set_chat_menu_button,
             get_chat_menu_button,
             set_my_default_administrator_rights,

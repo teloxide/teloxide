@@ -248,6 +248,10 @@ where
         answer_callback_query,
         set_my_commands,
         get_my_commands,
+        set_my_description,
+        get_my_description,
+        set_my_short_description,
+        get_my_short_description,
         set_chat_menu_button,
         get_chat_menu_button,
         set_my_default_administrator_rights,
@@ -692,6 +696,14 @@ trait ErasableRequester<'a> {
     ) -> ErasedRequest<'a, SetMyCommands, Self::Err>;
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err>;
+
+    fn set_my_description(&self) -> ErasedRequest<'a, SetMyDescription, Self::Err>;
+
+    fn get_my_description(&self) -> ErasedRequest<'a, GetMyDescription, Self::Err>;
+
+    fn set_my_short_description(&self) -> ErasedRequest<'a, SetMyShortDescription, Self::Err>;
+
+    fn get_my_short_description(&self) -> ErasedRequest<'a, GetMyShortDescription, Self::Err>;
 
     fn set_chat_menu_button(&self) -> ErasedRequest<'a, SetChatMenuButton, Self::Err>;
 
@@ -1457,6 +1469,22 @@ where
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err> {
         Requester::get_my_commands(self).erase()
+    }
+
+    fn set_my_description(&self) -> ErasedRequest<'a, SetMyDescription, Self::Err> {
+        Requester::set_my_description(self).erase()
+    }
+
+    fn get_my_description(&self) -> ErasedRequest<'a, GetMyDescription, Self::Err> {
+        Requester::get_my_description(self).erase()
+    }
+
+    fn set_my_short_description(&self) -> ErasedRequest<'a, SetMyShortDescription, Self::Err> {
+        Requester::set_my_short_description(self).erase()
+    }
+
+    fn get_my_short_description(&self) -> ErasedRequest<'a, GetMyShortDescription, Self::Err> {
+        Requester::get_my_short_description(self).erase()
     }
 
     fn set_chat_menu_button(&self) -> ErasedRequest<'a, SetChatMenuButton, Self::Err> {

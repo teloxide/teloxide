@@ -1033,6 +1033,38 @@ macro_rules! requester_forward {
             $body!(get_my_commands this ())
         }
     };
+    (@method set_my_description $body:ident $ty:ident) => {
+        type SetMyDescription = $ty![SetMyDescription];
+
+        fn set_my_description(&self, ) -> Self::SetMyDescription {
+            let this = self;
+            $body!(set_my_description this ())
+        }
+    };
+    (@method get_my_description $body:ident $ty:ident) => {
+        type GetMyDescription = $ty![GetMyDescription];
+
+        fn get_my_description(&self, ) -> Self::GetMyDescription {
+            let this = self;
+            $body!(get_my_description this ())
+        }
+    };
+    (@method set_my_short_description $body:ident $ty:ident) => {
+        type SetMyShortDescription = $ty![SetMyShortDescription];
+
+        fn set_my_short_description(&self, ) -> Self::SetMyShortDescription {
+            let this = self;
+            $body!(set_my_short_description this ())
+        }
+    };
+    (@method get_my_short_description $body:ident $ty:ident) => {
+        type GetMyShortDescription = $ty![GetMyShortDescription];
+
+        fn get_my_short_description(&self, ) -> Self::GetMyShortDescription {
+            let this = self;
+            $body!(get_my_short_description this ())
+        }
+    };
     (@method set_chat_menu_button $body:ident $ty:ident) => {
         type SetChatMenuButton = $ty![SetChatMenuButton];
 
