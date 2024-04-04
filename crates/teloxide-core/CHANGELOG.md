@@ -45,11 +45,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `RequestUser` variant to `ButtonRequest`
   - Add  `UserShared` variant to `MessageKind`
   - Add `shared_user` method to `Message`
+- Support for TBA 6.6 ([#1040](pr1040))
+  - Add methods for working with bot's description:
+    - `set_my_description`
+    - `get_my_description`
+    - `set_my_short_description`
+    - `get_my_short_description`
+  - Add methods for working with sticker sets:
+    - `set_custom_emoji_sticker_set_thumbnail`
+    - `set_sticker_set_title`
+    - `delete_sticker_set`
+    - `set_sticker_emoji_list`
+    - `set_sticker_keywords`
+    - `set_sticker_mask_position`
+  - Add parameter `emoji` to the `send_sticker` method
+  - Add field `needs_repainting` to the struct `Sticker`
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
 [pr905]: https://github.com/teloxide/teloxide/pull/905
 [pr982]: https://github.com/teloxide/teloxide/pull/982
+[pr1040]: https://github.com/teloxide/teloxide/pull/1040
 
 ### Fixed
 
@@ -106,6 +122,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
 - Methods of the Message type: `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created`, `chat_migration`, `migrate_to_chat_id`, `migrate_from_chat_id` now return shared reference instead of owned value inside `Option` ([#982][pr982])
 - Methods `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created` now return appropriate structs not `Option<True>` ([#982][pr982])
+- Method `upload_sticker_file` now use `sticker` and `sticker_format` parameters instead of `png_sticker` ([#1040][pr1040])
+- Renamed `SendAnimation::thumb`, `SendAudio::thumb`, `SendDocument::thumb`, `SendVideo::thumb`, `SendVideoNote::thumb` into `thumbnail`([#1040][pr1040])
+- Renamed `set_sticker_set_thumb` into `set_sticker_set_thumbnail` ([#1040][pr1040])
+- Renamed `thumb_url`, `thumb_width`, `thumb_height` into `thumbnail_url`, `thumbnail_width`, `thumbnail_height` in `InlineQueryResultArticle`, `InlineQueryResultContact`, `InlineQueryResultDocument`, `InlineQueryResultLocation`, `InlineQueryResultVenue` ([#1040][pr1040])
+- Renamed `thumb_url` into `thumbnail_url` in `InlineQueryResultPhoto`, `InlineQueryResultVideo` ([#1040][pr1040])
+- Renamed `thumb_url` into `thumbnail_url` in `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif` ([#1040][pr1040])
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
