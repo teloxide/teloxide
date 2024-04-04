@@ -28,7 +28,7 @@ pub struct InlineQueryResultGif {
     pub gif_duration: Option<Seconds>,
 
     /// URL of the static thumbnail for the result (jpeg or gif).
-    pub thumb_url: reqwest::Url,
+    pub thumbnail_url: reqwest::Url,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -68,7 +68,7 @@ impl InlineQueryResultGif {
             gif_width: None,
             gif_height: None,
             gif_duration: None,
-            thumb_url,
+            thumbnail_url: thumb_url,
             title: None,
             caption: None,
             parse_mode: None,
@@ -111,8 +111,8 @@ impl InlineQueryResultGif {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = val;
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = val;
         self
     }
 

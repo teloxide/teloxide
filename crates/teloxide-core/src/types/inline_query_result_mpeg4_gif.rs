@@ -31,7 +31,7 @@ pub struct InlineQueryResultMpeg4Gif {
     pub mpeg4_duration: Option<Seconds>,
 
     /// URL of the static thumbnail (jpeg or gif) for the result.
-    pub thumb_url: reqwest::Url,
+    pub thumbnail_url: reqwest::Url,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -68,7 +68,7 @@ impl InlineQueryResultMpeg4Gif {
         Self {
             id: id.into(),
             mpeg4_url,
-            thumb_url,
+            thumbnail_url: thumb_url,
             mpeg4_width: None,
             mpeg4_height: None,
             mpeg4_duration: None,
@@ -114,8 +114,8 @@ impl InlineQueryResultMpeg4Gif {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = val;
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = val;
         self
     }
 

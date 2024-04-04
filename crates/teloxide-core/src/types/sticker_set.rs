@@ -28,7 +28,7 @@ pub struct StickerSet {
     pub stickers: Vec<Sticker>,
 
     /// Sticker set thumbnail in the `.webp`, `.tgs` or `.webm` format.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 }
 
 /// This allows calling [`StickerType`]'s methods directly on [`StickerSet`].
@@ -143,7 +143,7 @@ mod tests {
 
         assert!(set.is_static());
         assert!(set.is_regular());
-        assert!(set.thumb.is_none());
+        assert!(set.thumbnail.is_none());
         assert_eq!(set.stickers.len(), 2);
     }
 }

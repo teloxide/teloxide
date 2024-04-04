@@ -20,7 +20,7 @@ pub struct InlineQueryResultPhoto {
     pub photo_url: reqwest::Url,
 
     /// URL of the thumbnail for the photo.
-    pub thumb_url: reqwest::Url,
+    pub thumbnail_url: reqwest::Url,
 
     /// Width of the photo.
     pub photo_width: Option<u32>,
@@ -66,7 +66,7 @@ impl InlineQueryResultPhoto {
         Self {
             id: id.into(),
             photo_url,
-            thumb_url,
+            thumbnail_url: thumb_url,
             photo_width: None,
             photo_height: None,
             title: None,
@@ -94,8 +94,8 @@ impl InlineQueryResultPhoto {
     }
 
     #[must_use]
-    pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = val;
+    pub fn thumbnail_url<S>(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = val;
         self
     }
 

@@ -126,7 +126,7 @@ mod tests {
                     InputMediaAnimation::new(InputFile::read(
                         File::open("../../media/example.gif").await.unwrap(),
                     ))
-                    .thumb(InputFile::read(
+                    .thumbnail(InputFile::read(
                         File::open("../../media/teloxide-core-logo.png").await.unwrap(),
                     ))
                     .duration(17),

@@ -44,7 +44,7 @@ pub struct Sticker {
     pub format: StickerFormat,
 
     /// Sticker thumbnail in the `.webp` or `.jpg` format.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 
     /// Emoji associated with the sticker.
     pub emoji: Option<String>,
@@ -341,7 +341,7 @@ mod tests {
                 "y_shift": 0.5525,
                 "scale": 1.94
             },
-            "thumb": {
+            "thumbnail": {
                 "file_id": "AAMCAQADFQABYzA0qlYHijpjMzMwBFKnEVE5XdkAAjIKAAK_jJAE1TRw7D936M8BAAdtAAMpBA",
                 "file_unique_id": "AQADMgoAAr-MkARy",
                 "file_size": 11028,
@@ -360,7 +360,7 @@ mod tests {
         assert_eq!(sticker.mask_position().unwrap().point, MaskPoint::Forehead);
         assert_eq!(sticker.is_animated(), false);
         assert_eq!(sticker.is_video(), false);
-        assert_eq!(sticker.thumb.clone().unwrap().file.size, 11028);
+        assert_eq!(sticker.thumbnail.clone().unwrap().file.size, 11028);
         assert_eq!(sticker.file.size, 18290);
         assert_eq!(sticker.width, 512);
         assert_eq!(sticker.height, 512);
@@ -381,7 +381,7 @@ mod tests {
             "is_animated": false,
             "is_video": false,
             "type": "regular",
-            "thumb": {
+            "thumbnail": {
                 "file_id": "AAMCAgADFQABYzBxOJ1GWrttqL7FSRwdAtrq-AkAAtkHAALBGJ4LUUUh5CUew90BAAdtAAMpBA",
                 "file_unique_id": "AQAD2QcAAsEYngty",
                 "file_size": 4558,
@@ -400,7 +400,7 @@ mod tests {
         assert_eq!(sticker.premium_animation(), None);
         assert_eq!(sticker.is_animated(), false);
         assert_eq!(sticker.is_video(), false);
-        assert_eq!(sticker.thumb.clone().unwrap().file.size, 4558);
+        assert_eq!(sticker.thumbnail.clone().unwrap().file.size, 4558);
         assert_eq!(sticker.file.size, 25734);
         assert_eq!(sticker.width, 463);
         assert_eq!(sticker.height, 512);
