@@ -173,7 +173,9 @@ mod tests {
                 InputFile::file("../../media/teloxide-core-logo.png"),
             )
             .caption_entities(entities())
-            .thumb(InputFile::read(File::open("../../media/teloxide-core-logo.png").await.unwrap()))
+            .thumbnail(InputFile::read(
+                File::open("../../media/teloxide-core-logo.png").await.unwrap(),
+            ))
             .allow_sending_without_reply(true),
         )
         .unwrap()
