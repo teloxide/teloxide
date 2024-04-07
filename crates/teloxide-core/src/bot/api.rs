@@ -1102,7 +1102,7 @@ impl Requester for Bot {
         )
     }
 
-    type CreateNewStickerSet = JsonRequest<payloads::CreateNewStickerSet>;
+    type CreateNewStickerSet = MultipartRequest<payloads::CreateNewStickerSet>;
 
     fn create_new_sticker_set<N, T, S>(
         &self,
