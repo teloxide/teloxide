@@ -227,7 +227,7 @@ impl Update {
         use UpdateKind::*;
 
         let chat = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m)  => &m.chat,
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => &m.chat,
             BusinessMessage(m) | EditedBusinessMessage(m) => &m.chat,
             CallbackQuery(q) => &q.message.as_ref()?.chat,
             ChatMember(m) => &m.chat,
