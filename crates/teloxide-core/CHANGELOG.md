@@ -126,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
 - Methods of the Message type: `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created`, `chat_migration`, `migrate_to_chat_id`, `migrate_from_chat_id` now return shared reference instead of owned value inside `Option` ([#982][pr982])
 - Methods `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created` now return appropriate structs not `Option<True>` ([#982][pr982])
+- MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([#996][pr996])
 - Renamed `SendAnimation::thumb`, `SendAudio::thumb`, `SendDocument::thumb`, `SendSticker::thumb`, `SendVideo::thumb`, `SendVideoNote::thumb` into `thumbnail`([#1040][pr1040])
 - Renamed `{Animation, Audio, Document, Sticker, Video, VideoNote, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaVideo, StickerSet}::thumb` into `thumbnail` ([#1040][pr1040])
 - Renamed `StickerFormat::Raster` into `StickerFormat::Static` ([#1040][pr1040])
@@ -142,6 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr892]: https://github.com/teloxide/teloxide/pull/892
 [pr950]: https://github.com/teloxide/teloxide/pull/950
 [pr961]: https://github.com/teloxide/teloxide/pull/961
+[pr996]: https://github.com/teloxide/teloxide/pull/996
 
 ### Deprecated
 

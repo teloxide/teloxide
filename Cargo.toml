@@ -5,7 +5,7 @@ resolver = "2"
 # The settings below will be applied to all crates in the workspace
 [workspace.package]
 # MSRV (minimal supported Rust version).
-rust-version = "1.68"
+rust-version = "1.70"
 edition = "2021"
 
 license = "MIT"

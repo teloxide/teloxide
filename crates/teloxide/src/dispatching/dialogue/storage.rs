@@ -9,6 +9,9 @@ mod redis_storage;
 #[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 mod sqlite_storage;
 
+#[cfg(feature = "postgres-storage-nativetls")]
+mod postgres_storage;
+
 use futures::future::BoxFuture;
 use teloxide_core::types::ChatId;
 
@@ -24,6 +27,9 @@ use std::sync::Arc;
 
 #[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
+
+#[cfg(feature = "postgres-storage-nativetls")]
+pub use postgres_storage::{PostgresStorage, PostgresStorageError};
 
 /// A storage with an erased error type.
 pub type ErasedStorage<D> =
