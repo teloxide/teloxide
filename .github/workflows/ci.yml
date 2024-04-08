@@ -8,7 +8,7 @@ on:
 name: Continuous integration
 
 env:
-  RUSTFLAGS: "--cfg CI_REDIS -Dwarnings"
+  RUSTFLAGS: "--cfg CI_REDIS --cfg CI_POSTGRES -Dwarnings"
   RUSTDOCFLAGS: "--cfg docsrs -Dwarnings"
   RUST_BACKTRACE: short
 
@@ -27,7 +27,7 @@ env:
   # - down below in a matrix
   # - `Cargo.toml`
   # - **/CHANGELOG.md
-  rust_msrv: 1.68.0
+  rust_msrv: 1.70.0
 
   CI: 1
 
@@ -75,6 +75,20 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    services:
+      # Setup Postgres for testing PostgresStorage
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: teloxide
+          POSTGRES_PASSWORD: rewrite_it_in_rust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     strategy:
       matrix:
         rust:
@@ -94,7 +108,7 @@ jobs:
             toolchain: nightly-2024-03-20
             features: "--features full nightly"
           - rust: msrv
-            toolchain: 1.68.0
+            toolchain: 1.70.0
             features: "--features full"
 
     steps:
@@ -140,7 +154,16 @@ jobs:
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
-
+      - name: Install psql
+        run: |
+          sudo apt install postgresql-client -y
+      - name: Create PostgreSQL databases
+        run: |
+          psql -h localhost -U teloxide -c "CREATE DATABASE test_postgres_json;"
+          psql -h localhost -U teloxide -c "CREATE DATABASE test_postgres_bincode;"
+          psql -h localhost -U teloxide -c "CREATE DATABASE test_postgres_cbor;"
+        env:
+          PGPASSWORD: rewrite_it_in_rust
       - name: Test unit & integration tests
         run: |
           cargo +${{ matrix.toolchain }} test --tests --verbose ${{ matrix.features }}

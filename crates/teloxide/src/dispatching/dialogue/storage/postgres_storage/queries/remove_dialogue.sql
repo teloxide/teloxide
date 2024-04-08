@@ -1,0 +1,1 @@
+DELETE FROM teloxide_dialogues WHERE chat_id = $1
