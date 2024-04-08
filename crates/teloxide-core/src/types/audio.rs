@@ -36,8 +36,6 @@ pub struct Audio {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::{FileMeta, Seconds};
-
     use super::*;
 
     #[test]

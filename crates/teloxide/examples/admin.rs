@@ -129,9 +129,11 @@ async fn mute_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()>
 
 // Calculates time of user restriction.
 fn calc_restrict_time(time: u64, unit: UnitOfTime) -> Duration {
+    // FIXME: actually handle the case of too big integers correctly, instead of
+    // unwrapping
     match unit {
-        UnitOfTime::Hours => Duration::hours(time as i64),
-        UnitOfTime::Minutes => Duration::minutes(time as i64),
-        UnitOfTime::Seconds => Duration::seconds(time as i64),
+        UnitOfTime::Hours => Duration::try_hours(time as i64).unwrap(),
+        UnitOfTime::Minutes => Duration::try_minutes(time as i64).unwrap(),
+        UnitOfTime::Seconds => Duration::try_seconds(time as i64).unwrap(),
     }
 }

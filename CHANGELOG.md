@@ -44,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `filter_video_chat_ended`
   - `filter_video_chat_participants_invited`
   - `filter_web_app_data` 
-- `PostgresStorage` a persistent dialogue storage based on [PostgreSQL](https://www.postgresql.org/)([PR 996](https://github.com/teloxide/teloxide/pull/996))
+- Implement `PostgresStorage`, a persistent dialogue storage based on [PostgreSQL](https://www.postgresql.org/)([PR 996](https://github.com/teloxide/teloxide/pull/996)).
+- Implement `GetChatId` for `teloxide_core::types::{Chat, ChatJoinRequest, ChatMemberUpdated}`.
 
 ### Fixed
 
@@ -53,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix typos in documentation ([PR 953](https://github.com/teloxide/teloxide/pull/953))
 - Use `Seconds` instead of `String` in `InlineQueryResultAudio` for `audio_duration` ([PR 994](https://github.com/teloxide/teloxide/pull/994))
 - High CPU usage on network errors ([PR 1002](https://github.com/teloxide/teloxide/pull/1002), [Issue 780](https://github.com/teloxide/teloxide/issues/780))
+- Fix app build errors when using items gated behind sqlite-storage with the feature sqlite-storage-rustls ([PR 1018](https://github.com/teloxide/teloxide/pull/1018))
 
 ### Changed
 

@@ -96,7 +96,7 @@
 #[cfg(feature = "redis-storage")]
 pub use self::{RedisStorage, RedisStorageError};
 
-#[cfg(feature = "sqlite-storage-nativetls")]
+#[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 pub use self::{SqliteStorage, SqliteStorageError};
 
 #[cfg(feature = "postgres-storage-nativetls")]

@@ -36,8 +36,6 @@ pub struct Animation {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::FileMeta;
-
     use super::*;
 
     #[test]

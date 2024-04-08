@@ -49,7 +49,7 @@ impl<R> From<TelegramResponse<R>> for ResponseResult<R> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{errors::ApiError, types::Update};
+    use crate::types::Update;
 
     #[test]
     fn parse_terminated_by_other_get_updates() {

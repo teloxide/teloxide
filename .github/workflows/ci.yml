@@ -19,7 +19,8 @@ env:
   # When updating this, also update:
   # - crates/teloxide-core/src/codegen.rs
   # - rust-toolchain.toml
-  rust_nightly: nightly-2023-09-27
+  # - below in the test matrix
+  rust_nightly: nightly-2024-03-20
   # When updating this, also update:
   # - **/README.md
   # - **/src/lib.rs
@@ -104,7 +105,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2023-09-27
+            toolchain: nightly-2024-03-20
             features: "--features full nightly"
           - rust: msrv
             toolchain: 1.70.0
@@ -121,6 +122,26 @@ jobs:
 
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v2
+
+      # Generally MSRV dump is not considered a breaking change in by the Rust community.
+      # Thus a minor or a patch version dump of a dependency of ours, can bump MSRV.
+      # (remember that `cargo` uses newest semver compatible versions by default)
+      #
+      # It's silly to bump MSRV every time minor dependency update does (note that this update can
+      # happen even after our crate is published; so users may need to downgrade crates in
+      # `Cargo.lock` independently of how we test our crates), so we downgrade their versions in
+      # MSRV CI specifically instead. This allows as to
+      # 1. Not update MSRV unless we really need to
+      # 2. Test newest (or at least newer) versions of crates in CI
+      #
+      # Example command: `cargo update -p atomic-write-file@0.1.3 --precise 0.1.2`
+      - name: Downgrade deps for MSRV
+        if: ${{ matrix.rust == 'msrv' }}
+        run: |
+            cargo update -p sqlx --precise 0.7.3
+            cargo update -p atomic-write-file --precise 0.1.2
+            exit 0
+        
 
       # NB. Don't test (build) examples so we can use non-msrv features in them (--tests/--doc)
       - name: Compile

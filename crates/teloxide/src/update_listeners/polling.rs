@@ -1,5 +1,4 @@
 use std::{
-    convert::TryInto,
     future::Future,
     mem,
     pin::Pin,
@@ -196,20 +195,20 @@ where
 /// telegram.
 ///
 /// ```mermaid
-/// sequenceDiagram    
+/// sequenceDiagram
 ///     participant C as Consumer
 ///     participant P as Polling
 ///     participant T as Telegram
 ///
 ///     link C: Dispatcher @ ../struct.Dispatcher.html
 ///     link C: repl @ ../../fn.repl.html
-///     
+///
 ///     C->>P: next
 ///
 ///     P->>+T: Updates? (offset = 0)
 ///     Note right of T: timeout
 ///     T->>-P: None
-///     
+///
 ///     P->>+T: Updates? (offset = 0)
 ///     Note right of T: <= timeout
 ///     T->>-P: updates with ids [3, 4]
@@ -218,10 +217,10 @@ where
 ///
 ///     C->>P: next
 ///     P->>C: update(4)
-///     
+///
 ///     C->>P: next
 ///
-///     P->>+T: Updates? (offset = 5)    
+///     P->>+T: Updates? (offset = 5)
 ///     Note right of T: <= timeout
 ///     T->>-P: updates with ids [5]
 ///
