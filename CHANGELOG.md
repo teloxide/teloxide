@@ -57,7 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix app build errors when using items gated behind sqlite-storage with the feature sqlite-storage-rustls ([PR 1018](https://github.com/teloxide/teloxide/pull/1018))
 - Fix typo in ApiError::ToMuchMessages enum ([PR 1046](https://github.com/teloxide/teloxide/pull/1046))
 
-
 ### Changed
 
 - MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([PR 950][https://github.com/teloxide/teloxide/pull/950])
