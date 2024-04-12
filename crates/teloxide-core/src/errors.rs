@@ -289,7 +289,7 @@ impl_api_error! {
         /// 1. [`SendMediaGroup`]
         ///
         /// [`SendMediaGroup`]: crate::payloads::SendMediaGroup
-        ToMuchMessages = "Bad Request: Too much messages to send as an album",
+        TooMuchMessages = "Bad Request: Too much messages to send as an album",
 
         /// Occurs when bot tries to answer an inline query with more than 50
         /// results.
@@ -861,7 +861,7 @@ mod tests {
             ("{\"data\": \"Bad Request: MESSAGE_TOO_LONG\"}", ApiError::EditedMessageIsTooLong),
             (
                 "{\"data\": \"Bad Request: Too much messages to send as an album\"}",
-                ApiError::ToMuchMessages,
+                ApiError::TooMuchMessages,
             ),
             ("{\"data\": \"Bad Request: RESULTS_TOO_MUCH\"}", ApiError::TooMuchInlineQueryResults),
             (
