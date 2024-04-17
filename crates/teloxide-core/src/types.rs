@@ -122,6 +122,7 @@ pub use web_app_data::*;
 pub use web_app_info::*;
 pub use webhook_info::*;
 pub use write_access_allowed::*;
+pub use birthdate::*;
 
 mod allowed_update;
 mod animation;
@@ -260,6 +261,7 @@ mod chat_id;
 mod recipient;
 mod seconds;
 mod user_id;
+mod birthdate;
 
 pub use chat_id::*;
 pub use recipient::*;

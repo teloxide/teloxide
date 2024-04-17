@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
+    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User, Birthdate,
 };
 
 /// This object represents a chat.
@@ -130,6 +130,12 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub has_restricted_voice_and_video_messages: Option<True>,
+
+    /// For private chats, the date of birth of the user.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub birthdate: Option<Birthdate>,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -496,6 +502,18 @@ impl Chat {
         }
     }
 
+    /// For private chats, the date of birth of the user.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
+    pub fn birthday(&self) -> Option<&Birthdate> {
+        match &self.kind {
+            ChatKind::Private(this) => this.birthdate.as_ref(),
+            _ => None,
+        }
+    }
+
     /// Returns all users that are "contained" in this `Chat`
     /// structure.
     ///
@@ -515,7 +533,7 @@ impl Chat {
 }
 
 mod serde_helper {
-    use crate::types::True;
+    use crate::types::{Birthdate, True};
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -537,6 +555,7 @@ mod serde_helper {
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
         emoji_status_custom_emoji_id: Option<String>,
+        birthdate: Option<Birthdate>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -550,6 +569,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 emoji_status_custom_emoji_id,
+                birthdate,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -560,6 +580,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 emoji_status_custom_emoji_id,
+                birthdate,
             }
         }
     }
@@ -574,6 +595,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 emoji_status_custom_emoji_id,
+                birthdate,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -585,6 +607,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 emoji_status_custom_emoji_id,
+                birthdate,
             }
         }
     }
@@ -632,7 +655,8 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
-                    emoji_status_custom_emoji_id: None
+                    emoji_status_custom_emoji_id: None,
+                    birthdate: None
                 }),
                 photo: None,
                 pinned_message: None,
@@ -657,6 +681,7 @@ mod tests {
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
                 emoji_status_custom_emoji_id: None,
+                birthdate: None,
             }),
             photo: None,
             pinned_message: None,

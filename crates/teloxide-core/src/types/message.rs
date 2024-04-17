@@ -1758,7 +1758,8 @@ mod tests {
                         bio: None,
                         emoji_status_custom_emoji_id: None,
                         has_private_forwards: None,
-                        has_restricted_voice_and_video_messages: None
+                        has_restricted_voice_and_video_messages: None,
+                        birthdate: None
                     }),
                     photo: None,
                     has_aggressive_anti_spam_enabled: false,
