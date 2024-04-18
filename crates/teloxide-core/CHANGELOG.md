@@ -140,9 +140,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Message::chat_id` (use `.chat.id`)
   - `Update::user` (use `Update::from`)
   - `update_listeners::polling` (use `Polling::builder` instead)
+- Remove `format` field and methods `is_raster`, `is_animated`, `is_video` from `StickerSet` ([#TODO][prTODO])
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
+[prTODO]: https://github.com/teloxide/teloxide/pull/TODO
 
 
 ## 0.9.1 - 2023-02-15
