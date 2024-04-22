@@ -343,7 +343,22 @@ where
         let error_handler =
             LoggingErrorHandler::with_custom_text("An error from the update listener");
 
-        self.dispatch_with_listener(listener, error_handler).await;
+        #[cfg(feature = "ctrlc_handler")]
+        {
+            let ctrlc = async {
+                tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
+                tokio::signal::ctrl_c().await.expect("Failed to listen for ^C");
+            };
+
+            tokio::select!(
+                _ = self.dispatch_with_listener(listener, error_handler) => (),
+                _ = ctrlc => (),
+            );
+        }
+        #[cfg(not(feature = "ctrlc_handler"))]
+        {
+            self.dispatch_with_listener(listener, error_handler).await
+        }
     }
 
     /// Starts your bot with custom `update_listener` and
