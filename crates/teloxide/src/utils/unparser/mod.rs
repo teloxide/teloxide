@@ -20,15 +20,15 @@ pub struct Unparser<'a> {
 impl<'a> Unparser<'a> {
     /// Creates a new `Unparser` instance with the given text and entities.
     ///
-    /// The `Unparser` is responsible for parsing the text and entities to produce
-    /// the final formatted output. This constructor sets up the initial state
-    /// needed for the parsing process.
+    /// The `Unparser` is responsible for parsing the text and entities to
+    /// produce the final formatted output. This constructor sets up the
+    /// initial state needed for the parsing process.
     ///
     /// # Arguments
     ///
     /// - `text`: The input text to be parsed.
-    /// - `entities`: The message entities (formatting, links, etc.) to be applied
-    ///   to the text.
+    /// - `entities`: The message entities (formatting, links, etc.) to be
+    ///   applied to the text.
     ///
     /// # Returns
     ///
@@ -124,9 +124,9 @@ impl<'a> Unparser<'a> {
 
     /// Unparsers the text with the given [`TagWriter`] implementation.
     ///
-    /// This method iterates through the text and the associated position tags, and
-    /// writes the text with the appropriate tags to a buffer. The resulting buffer
-    /// is then returned as a `String`.
+    /// This method iterates through the text and the associated position tags,
+    /// and writes the text with the appropriate tags to a buffer. The
+    /// resulting buffer is then returned as a `String`.
     ///
     /// If the `pos_tags` vector is empty, the original text is returned as-is.
     fn unparse<T: TagWriter>(&self) -> String {

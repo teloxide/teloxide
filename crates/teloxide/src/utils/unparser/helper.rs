@@ -1,4 +1,5 @@
-//! A helprt trait for unparsing text and entities back to rendered html or markdown
+//! A helprt trait for unparsing text and entities back to rendered html or
+//! markdown
 
 use teloxide_core::types::{
     MediaAnimation, MediaAudio, MediaDocument, MediaKind, MediaPhoto, MediaText, MediaVideo,
@@ -7,24 +8,28 @@ use teloxide_core::types::{
 
 use super::Unparser;
 
-/// The [`MessageTextUnparser`] trait provides methods to generate HTML and Markdown representations
-/// of the text and captions in a Telegram message.
+/// The [`MessageTextUnparser`] trait provides methods to generate HTML and
+/// Markdown representations of the text and captions in a Telegram message.
 pub trait MessageTextUnparser {
-    /// Returns the HTML representation of the message text, if the message contains text.
-    /// This method will parse the text and any entities (such as bold, italic, links, etc.)
-    /// and return the HTML-formatted string.
+    /// Returns the HTML representation of the message text, if the message
+    /// contains text. This method will parse the text and any entities
+    /// (such as bold, italic, links, etc.) and return the HTML-formatted
+    /// string.
     fn html_text(&self) -> Option<String>;
-    /// Returns the Markdown representation of the message text, if the message contains text.
-    /// This method will parse the text and any entities (such as bold, italic, links, etc.)
-    /// and return the Markdown-formatted string.
+    /// Returns the Markdown representation of the message text, if the message
+    /// contains text. This method will parse the text and any entities
+    /// (such as bold, italic, links, etc.) and return the
+    /// Markdown-formatted string.
     fn markdown_text(&self) -> Option<String>;
-    /// Returns the HTML representation of the message caption, if the message contains caption.
-    /// This method will parse the caption and any entities (such as bold, italic, links, etc.)
-    /// and return the HTML-formatted string.
+    /// Returns the HTML representation of the message caption, if the message
+    /// contains caption. This method will parse the caption and any
+    /// entities (such as bold, italic, links, etc.) and return the
+    /// HTML-formatted string.
     fn html_caption(&self) -> Option<String>;
-    /// Returns the Markdown representation of the message caption, if the message contains caption.
-    /// This method will parse the caption and any entities (such as bold, italic, links, etc.)
-    /// and return the Markdown-formatted string.
+    /// Returns the Markdown representation of the message caption, if the
+    /// message contains caption. This method will parse the caption and any
+    /// entities (such as bold, italic, links, etc.) and return the
+    /// Markdown-formatted string.
     fn markdown_caption(&self) -> Option<String>;
 }
 
