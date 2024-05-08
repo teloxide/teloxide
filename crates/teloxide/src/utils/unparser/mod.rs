@@ -4,14 +4,16 @@ use std::cmp::Ordering;
 
 use teloxide_core::types::{MessageEntity, MessageEntityKind as MEK};
 
-pub use helper::MessageTextUnparser;
 use html::Html;
 use markdown::Markdown;
+
+pub use helper::MessageTextUnparser;
 
 mod helper;
 mod html;
 mod markdown;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Unparser<'a> {
     text: &'a str,
     pos_tags: Vec<(Position, Tag<'a>)>,
@@ -33,6 +35,7 @@ impl<'a> Unparser<'a> {
     /// # Returns
     ///
     /// A new [`Unparser`] instance.
+    #[must_use]
     pub fn new(text: &'a str, entities: &'a [MessageEntity]) -> Self {
         // get the needed size for the new tags that we want to parse from entities
         let needed_size: usize = entities
@@ -129,7 +132,11 @@ impl<'a> Unparser<'a> {
     /// resulting buffer is then returned as a `String`.
     ///
     /// If the `pos_tags` vector is empty, the original text is returned as-is.
-    fn unparse<T: TagWriter>(&self) -> String {
+    #[must_use]
+    fn unparse<T>(&self) -> String
+    where
+        T: TagWriter,
+    {
         if self.pos_tags.is_empty() {
             return self.text.to_owned();
         }
@@ -178,16 +185,19 @@ impl<'a> Unparser<'a> {
     }
 
     /// Render and return the text as Html-Formatted string.
+    #[must_use]
     pub fn as_html(&self) -> String {
         self.unparse::<Html>()
     }
 
     /// Render and return the text as Markdown-Formatted string.
+    #[must_use]
     pub fn as_markdown(&self) -> String {
         self.unparse::<Markdown>()
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 enum Tag<'a> {
     BoldStart,
     BoldEnd,
@@ -211,13 +221,13 @@ enum Tag<'a> {
     CustomEmojiEnd(&'a str),
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum Side {
     After,
     Before,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Position {
     offset: usize,
     side: Side,

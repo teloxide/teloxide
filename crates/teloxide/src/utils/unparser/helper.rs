@@ -15,21 +15,25 @@ pub trait MessageTextUnparser {
     /// contains text. This method will parse the text and any entities
     /// (such as bold, italic, links, etc.) and return the HTML-formatted
     /// string.
+    #[must_use]
     fn html_text(&self) -> Option<String>;
     /// Returns the Markdown representation of the message text, if the message
     /// contains text. This method will parse the text and any entities
     /// (such as bold, italic, links, etc.) and return the
     /// Markdown-formatted string.
+    #[must_use]
     fn markdown_text(&self) -> Option<String>;
     /// Returns the HTML representation of the message caption, if the message
     /// contains caption. This method will parse the caption and any
     /// entities (such as bold, italic, links, etc.) and return the
     /// HTML-formatted string.
+    #[must_use]
     fn html_caption(&self) -> Option<String>;
     /// Returns the Markdown representation of the message caption, if the
     /// message contains caption. This method will parse the caption and any
     /// entities (such as bold, italic, links, etc.) and return the
     /// Markdown-formatted string.
+    #[must_use]
     fn markdown_caption(&self) -> Option<String>;
 }
 
