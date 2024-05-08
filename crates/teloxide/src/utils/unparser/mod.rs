@@ -251,85 +251,82 @@ impl PartialOrd for Position {
     }
 }
 
+struct SimpleTag {
+    start: &'static str,
+    end: &'static str,
+}
+
+impl SimpleTag {
+    const fn new(start: &'static str, end: &'static str) -> Self {
+        Self { start, end }
+    }
+}
+
+struct ComplexTag {
+    start: &'static str,
+    middle: &'static str,
+    end: &'static str,
+}
+
+impl ComplexTag {
+    const fn new(start: &'static str, middle: &'static str, end: &'static str) -> Self {
+        Self { start, middle, end }
+    }
+}
+
 trait TagWriter {
-    const BOLD_START: &'static str;
-    const BOLD_END: &'static str;
-
-    const ITALIC_START: &'static str;
-    const ITALIC_END: &'static str;
-
-    const UNDERLINE_START: &'static str;
-    const UNDERLINE_END: &'static str;
-
-    const STRIKETHROUGH_START: &'static str;
-    const STRIKETHROUGH_END: &'static str;
-
-    const SPOILER_START: &'static str;
-    const SPOILER_END: &'static str;
-
-    const CODE_START: &'static str;
-    const CODE_END: &'static str;
-
-    const PRE_NO_LANG_START: &'static str;
-    const PRE_NO_LANG_END: &'static str;
-
-    const PRE_START: &'static str;
-    const PRE_MIDDLE: &'static str;
-    const PRE_END: &'static str;
-
-    const TEXT_LINK_START: &'static str;
-    const TEXT_LINK_MIDDLE: &'static str;
-    const TEXT_LINK_END: &'static str;
-
-    const TEXT_MENTION_START: &'static str;
-    const TEXT_MENTION_MIDDLE: &'static str;
-    const TEXT_MENTION_END: &'static str;
-
-    const CUSTOM_EMOJI_START: &'static str;
-    const CUSTOM_EMOJI_MIDDLE: &'static str;
-    const CUSTOM_EMOJI_END: &'static str;
-
+    const BOLD: SimpleTag;
+    const ITALIC: SimpleTag;
+    const UNDERLINE: SimpleTag;
+    const STRIKETHROUGH: SimpleTag;
+    const SPOILER: SimpleTag;
+    const CODE: SimpleTag;
+    const PRE_NO_LANG: SimpleTag;
+    const PRE: ComplexTag;
+    const TEXT_LINK: ComplexTag;
+    const TEXT_MENTION: ComplexTag;
+    const CUSTOM_EMOJI: ComplexTag;
     // TODO: add Blockquote when its added
 
     /// Get the extra size needed for tags
     fn get_tags_sizes(tags: &[(Position, Tag)]) -> usize {
         tags.iter()
             .map(|(_, t)| match t {
-                Tag::BoldStart => Self::BOLD_START.len(),
-                Tag::BoldEnd => Self::BOLD_END.len(),
-                Tag::ItalicStart => Self::ITALIC_START.len(),
-                Tag::ItalicEnd => Self::ITALIC_END.len(),
-                Tag::UnderlineStart => Self::UNDERLINE_START.len(),
-                Tag::UnderlineEnd => Self::UNDERLINE_END.len(),
-                Tag::StrikethroughStart => Self::STRIKETHROUGH_START.len(),
-                Tag::StrikethroughEnd => Self::STRIKETHROUGH_END.len(),
-                Tag::SpoilerStart => Self::SPOILER_START.len(),
-                Tag::SpoilerEnd => Self::SPOILER_END.len(),
-                Tag::CodeStart => Self::CODE_START.len(),
-                Tag::CodeEnd => Self::CODE_END.len(),
+                Tag::BoldStart => Self::BOLD.start.len(),
+                Tag::BoldEnd => Self::BOLD.end.len(),
+                Tag::ItalicStart => Self::ITALIC.start.len(),
+                Tag::ItalicEnd => Self::ITALIC.end.len(),
+                Tag::UnderlineStart => Self::UNDERLINE.start.len(),
+                Tag::UnderlineEnd => Self::UNDERLINE.end.len(),
+                Tag::StrikethroughStart => Self::STRIKETHROUGH.start.len(),
+                Tag::StrikethroughEnd => Self::STRIKETHROUGH.end.len(),
+                Tag::SpoilerStart => Self::SPOILER.start.len(),
+                Tag::SpoilerEnd => Self::SPOILER.end.len(),
+                Tag::CodeStart => Self::CODE.start.len(),
+                Tag::CodeEnd => Self::CODE.end.len(),
                 Tag::PreStart(lang) => {
-                    lang.map_or(Self::PRE_NO_LANG_START.len(), |l| Self::PRE_START.len() + l.len())
+                    lang.map_or(Self::PRE_NO_LANG.start.len(), |l| Self::PRE.start.len() + l.len())
                 }
                 Tag::PreEnd(have_lang) => {
                     if *have_lang {
-                        Self::PRE_MIDDLE.len() + Self::PRE_END.len()
+                        Self::PRE.middle.len() + Self::PRE.end.len()
                     } else {
-                        Self::PRE_NO_LANG_END.len()
+                        Self::PRE_NO_LANG.end.len()
                     }
                 }
-                Tag::TextLinkStart(url) => Self::TEXT_LINK_START.len() + url.len(),
-                Tag::TextLinkEnd(_) => Self::TEXT_LINK_MIDDLE.len() + Self::TEXT_LINK_END.len(),
+                Tag::TextLinkStart(url) => Self::TEXT_LINK.start.len() + url.len(),
+                Tag::TextLinkEnd(_) => Self::TEXT_LINK.middle.len() + Self::TEXT_LINK.end.len(),
                 Tag::TextMentionStart(id) => {
-                    Self::TEXT_MENTION_START.len() + id.ilog10() as usize + 1
+                    Self::TEXT_MENTION.start.len() + id.ilog10() as usize + 1
                 }
                 Tag::TextMentionEnd(_) => {
-                    Self::TEXT_MENTION_MIDDLE.len() + Self::TEXT_MENTION_END.len()
+                    Self::TEXT_MENTION.middle.len() + Self::TEXT_MENTION.end.len()
                 }
                 Tag::CustomEmojiStart(custom_emoji_id) => {
-                    Self::CUSTOM_EMOJI_START.len() + custom_emoji_id.len()
+                    Self::CUSTOM_EMOJI.start.len() + custom_emoji_id.len()
                 }
                 Tag::CustomEmojiEnd(_) => {
-                    Self::CUSTOM_EMOJI_MIDDLE.len() + Self::CUSTOM_EMOJI_END.len()
+                    Self::CUSTOM_EMOJI.middle.len() + Self::CUSTOM_EMOJI.end.len()
                 }
             })
             .sum()
