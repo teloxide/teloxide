@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use crate::types::{
     BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
-    ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
+    ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, CustomQuery, InlineQuery, Message,
     MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery,
     ShippingQuery, User,
 };
@@ -148,6 +148,9 @@ pub enum UpdateKind {
     /// A boost was removed from a chat. The bot must be an administrator in the
     /// chat to receive these updates.
     RemovedChatBoost(ChatBoostRemoved),
+    /// All webhooks related to payments will be delivered in the
+    /// custom_query field of Update object.
+    CustomQuery(CustomQuery),
 
     /// An error that happened during deserialization.
     ///
@@ -192,7 +195,7 @@ impl Update {
             ChatBoost(b) => return b.boost.source.user(),
             RemovedChatBoost(b) => return b.source.user(),
 
-            MessageReactionCount(_) | DeletedBusinessMessages(_) | Poll(_) | Error(_) => {
+            MessageReactionCount(_) | DeletedBusinessMessages(_) | CustomQuery(_) | Poll(_) | Error(_) => {
                 return None
             }
         };
@@ -288,6 +291,7 @@ impl Update {
             UpdateKind::MessageReactionCount(_)
             | UpdateKind::BusinessConnection(_)
             | UpdateKind::DeletedBusinessMessages(_)
+            | UpdateKind::CustomQuery(_)
             | UpdateKind::Error(_) => i6(empty()),
         }
     }
@@ -321,6 +325,7 @@ impl Update {
             | PreCheckoutQuery(_)
             | Poll(_)
             | PollAnswer(_)
+            | CustomQuery(_)
             | Error(_) => return None,
         };
 
@@ -443,6 +448,9 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<ChatBoostRemoved>()
                             .ok()
                             .map(UpdateKind::RemovedChatBoost),
+                        "custom_query" => {
+                            map.next_value::<CustomQuery>().ok().map(UpdateKind::CustomQuery)
+                        }
                         _ => Some(empty_error()),
                     })
                     .unwrap_or_else(empty_error);
@@ -514,6 +522,7 @@ impl Serialize for UpdateKind {
             UpdateKind::RemovedChatBoost(v) => {
                 s.serialize_newtype_variant(name, 21, "removed_chat_boost", v)
             }
+            UpdateKind::CustomQuery(v) => s.serialize_newtype_variant(name, 14, "custom_query", v),
             UpdateKind::Error(v) => v.serialize(s),
         }
     }

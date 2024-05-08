@@ -38,6 +38,7 @@ pub use chat_shared::*;
 pub use chat_type::*;
 pub use chosen_inline_result::*;
 pub use contact::*;
+pub use custom_query::*;
 pub use dice::*;
 pub use dice_emoji::*;
 pub use document::*;
@@ -199,6 +200,7 @@ mod chat_shared;
 mod chat_type;
 mod chosen_inline_result;
 mod contact;
+mod custom_query;
 mod dice;
 mod dice_emoji;
 mod document;
@@ -332,6 +334,9 @@ mod non_telegram_types {
     pub(crate) mod mime;
     pub(super) mod until_date;
 }
+
+pub use payments::*;
+mod payments;
 
 mod chat_id;
 mod recipient;

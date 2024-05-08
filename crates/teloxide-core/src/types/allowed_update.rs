@@ -25,4 +25,5 @@ pub enum AllowedUpdate {
     ChatJoinRequest,
     ChatBoost,
     RemovedChatBoost,
+    CustomQuery,
 }
