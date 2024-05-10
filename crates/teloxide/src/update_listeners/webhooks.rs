@@ -184,7 +184,7 @@ where
     let mut req = bot.set_webhook(url.clone());
     req.payload_mut().certificate = certificate.take();
     req.payload_mut().max_connections = max_connections;
-    req.payload_mut().allowed_updates = allowed_updates.clone();
+    req.payload_mut().allowed_updates.clone_from(allowed_updates);
     req.payload_mut().drop_pending_updates = Some(drop_pending_updates);
     req.payload_mut().secret_token = Some(secret);
 
