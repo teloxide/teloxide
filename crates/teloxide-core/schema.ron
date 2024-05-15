@@ -3717,6 +3717,25 @@ Schema(
             ],
         ),
         Method(
+            names: ("deleteMessages", "DeleteMessages", "delete_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped.\nReturns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#deletemessages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: RawTy("MessageIds"),
+                    descr: Doc(md: "A JSON-serialized list of 1-100 identifiers of messages to delete. See deleteMessage for limitations on which messages can be deleted")
+                ),  
+            ],
+        ),
+        Method(
             names: ("sendSticker", "SendSticker", "send_sticker"),
             return_ty: RawTy("Message"),
             doc: Doc(
