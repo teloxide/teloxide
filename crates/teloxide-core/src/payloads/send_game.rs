@@ -12,7 +12,7 @@ impl_payload! {
     pub SendGame (SendGameSetters) => Message {
         required {
             /// Unique identifier for the target chat
-            pub chat_id: u32,
+            pub chat_id: i64,
             /// Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
             pub game_short_name: String [into],
         }
