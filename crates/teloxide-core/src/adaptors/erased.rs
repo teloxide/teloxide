@@ -876,7 +876,7 @@ trait ErasableRequester<'a> {
 
     fn send_game(
         &self,
-        chat_id: i64,
+        chat_id: ChatId,
         game_short_name: String,
     ) -> ErasedRequest<'a, SendGame, Self::Err>;
 
@@ -1721,7 +1721,7 @@ where
 
     fn send_game(
         &self,
-        chat_id: i64,
+        chat_id: ChatId,
         game_short_name: String,
     ) -> ErasedRequest<'a, SendGame, Self::Err> {
         Requester::send_game(self, chat_id, game_short_name).erase()
