@@ -4031,7 +4031,7 @@ Schema(
             params: [
                 Param(
                     name: "chat_id",
-                    ty: i64,
+                    ty: RawTy("ChatId"),
                     descr: Doc(md: "Unique identifier for the target chat"),
                 ),
                 Param(
