@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, ReplyMarkup, ThreadId};
+use crate::types::{ChatId, Message, MessageId, ReplyMarkup, ThreadId};
 
 impl_payload! {
     /// Use this method to send a game. On success, the sent [`Message`] is returned.
@@ -12,7 +12,7 @@ impl_payload! {
     pub SendGame (SendGameSetters) => Message {
         required {
             /// Unique identifier for the target chat
-            pub chat_id: u32,
+            pub chat_id: ChatId [into],
             /// Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
             pub game_short_name: String [into],
         }
