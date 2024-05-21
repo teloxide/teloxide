@@ -173,11 +173,8 @@ impl<'a> Unparser<'a> {
             T::write_char(ch, &mut buffer);
         }
 
-        if let Some((_, tag)) = current_tag {
-            T::write_tag(tag, &mut buffer);
-        }
-
-        for (_, tag) in pos_tags {
+        // Write the rest of tags (if any)
+        for (_, tag) in current_tag.into_iter().chain(pos_tags) {
             T::write_tag(tag, &mut buffer);
         }
 
