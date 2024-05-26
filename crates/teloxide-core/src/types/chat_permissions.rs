@@ -379,7 +379,9 @@ mod tests {
 
     #[test]
     fn modfiy_permission() {
-        let before = ChatPermissions::SEND_MESSAGES | ChatPermissions::SEND_PHOTOS | ChatPermissions::SEND_AUDIOS;
+        let before = ChatPermissions::SEND_MESSAGES
+            | ChatPermissions::SEND_PHOTOS
+            | ChatPermissions::SEND_AUDIOS;
         let after = before - ChatPermissions::SEND_MESSAGES;
         let expected = ChatPermissions::SEND_PHOTOS | ChatPermissions::SEND_AUDIOS;
         assert_eq!(after, expected);
