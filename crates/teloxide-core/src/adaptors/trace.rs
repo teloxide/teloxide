@@ -71,7 +71,7 @@ bitflags::bitflags! {
         /// Trace requests verbosely (with all parameters).
         ///
         /// Implies [`TRACE_REQUESTS`]
-        const TRACE_REQUESTS_VERBOSE = (1 << 1) | Self::TRACE_REQUESTS.bits();
+        const TRACE_REQUESTS_VERBOSE = (1 << 1) | Self::TRACE_REQUESTS.bits;
 
         /// Trace responses (only request kind, e.g. `send_message`)
         const TRACE_RESPONSES = 1 << 2;
@@ -79,7 +79,7 @@ bitflags::bitflags! {
         /// Trace responses verbosely (with full response).
         ///
         /// Implies [`TRACE_RESPONSES`]
-        const TRACE_RESPONSES_VERBOSE = (1 << 3) | Self::TRACE_RESPONSES.bits();
+        const TRACE_RESPONSES_VERBOSE = (1 << 3) | Self::TRACE_RESPONSES.bits;
 
         /// Trace everything.
         ///
