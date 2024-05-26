@@ -84,12 +84,12 @@ bitflags::bitflags! {
         /// Trace everything.
         ///
         /// Implies [`TRACE_REQUESTS`] and [`TRACE_RESPONSES`].
-        const TRACE_EVERYTHING = Self::TRACE_REQUESTS.bits() | Self::TRACE_RESPONSES.bits();
+        const TRACE_EVERYTHING = Self::TRACE_REQUESTS.bits | Self::TRACE_RESPONSES.bits;
 
         /// Trace everything verbosely.
         ///
         /// Implies [`TRACE_REQUESTS_VERBOSE`] and [`TRACE_RESPONSES_VERBOSE`].
-        const TRACE_EVERYTHING_VERBOSE = Self::TRACE_REQUESTS_VERBOSE.bits() | Self::TRACE_RESPONSES_VERBOSE.bits();
+        const TRACE_EVERYTHING_VERBOSE = Self::TRACE_REQUESTS_VERBOSE.bits | Self::TRACE_RESPONSES_VERBOSE.bits;
     }
 }
 
