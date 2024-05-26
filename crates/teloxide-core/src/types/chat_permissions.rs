@@ -100,12 +100,12 @@ bitflags::bitflags! {
         /// `SEND_AUDIOS`, `SEND_DOCUMENTS`, `SEND_PHOTOS`,
         /// `SEND_VIDEOS`, `SEND_VIDEO_NOTES` and `SEND_VOICE_NOTES`.
         /// Note: this is not a separate permission on it's own, this is just a alias for all the permissions mentioned.
-        const SEND_MEDIA_MESSAGES = Self::SEND_AUDIOS.bits()
-                                            | Self::SEND_DOCUMENTS.bits()
-                                            | Self::SEND_PHOTOS.bits()
-                                            | Self::SEND_VIDEOS.bits()
-                                            | Self::SEND_VIDEO_NOTES.bits()
-                                            | Self::SEND_VOICE_NOTES.bits();
+        const SEND_MEDIA_MESSAGES = Self::SEND_AUDIOS.bits
+                                            | Self::SEND_DOCUMENTS.bits
+                                            | Self::SEND_PHOTOS.bits
+                                            | Self::SEND_VIDEOS.bits
+                                            | Self::SEND_VIDEO_NOTES.bits
+                                            | Self::SEND_VOICE_NOTES.bits;
 
     }
 }
