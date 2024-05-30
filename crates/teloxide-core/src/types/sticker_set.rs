@@ -119,4 +119,14 @@ mod tests {
         assert!(set.thumb.is_none());
         assert_eq!(set.stickers.len(), 2);
     }
+
+    /// Regression test for <https://github.com/teloxide/teloxide/issues/1038>
+    #[test]
+    fn issue_1038() {
+        let json = r#"{"name":"***","title":"***","sticker_type":"regular","contains_masks":false,"stickers":[{"width":512,"height":288,"emoji":"\\ud83d\\udcad","set_name":"***","is_animated":false,"is_video":false,"type":"regular","thumbnail":{"file_id":"***","file_unique_id":"***","file_size":7896,"width":320,"height":180},"thumb":{"file_id":"***","file_unique_id":"***","file_size":7896,"width":320,"height":180},"file_id":"***","file_unique_id":"***","file_size":14572}]}"#;
+
+        let set: StickerSet = serde_json::from_str(json).unwrap();
+
+        assert_eq!(set.stickers.len(), 1);
+    }
 }
