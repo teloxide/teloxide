@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - High CPU usage on network errors ([PR 1002](https://github.com/teloxide/teloxide/pull/1002), [Issue 780](https://github.com/teloxide/teloxide/issues/780))
 - Fix app build errors when using items gated behind sqlite-storage with the feature sqlite-storage-rustls ([PR 1018](https://github.com/teloxide/teloxide/pull/1018))
 - Fix typo in `ApiError::ToMuchMessages` variant (rename it to `TooMuchMessages`) ([PR 1046](https://github.com/teloxide/teloxide/pull/1046))
+- Fix `ChatPermission` behavior to accurately reflect Telegram's functionality ([PR 1068](https://github.com/teloxide/teloxide/pull/1068))
 
 ### Changed
 
