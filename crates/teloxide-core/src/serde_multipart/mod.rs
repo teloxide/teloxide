@@ -155,7 +155,6 @@ mod tests {
                     "../../media/
                 teloxide-core-logo.png",
                 ),
-                format: StickerFormat::Static,
                 emoji_list: vec!["✈️⚙️".to_owned()],
                 keywords: None,
                 mask_position: None,
