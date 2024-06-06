@@ -11,7 +11,7 @@ impl_payload! {
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
     pub GetMyDescription (GetMyDescriptionSetters) => BotDescription {
         optional {
-            /// A two-letter ISO 639-1 language code or an empty string
+            /// A two-letter ISO 639-1 language code
             pub language_code: String [into],
         }
     }

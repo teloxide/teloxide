@@ -3639,7 +3639,7 @@ Schema(
                 Param(
                     name: "needs_repainting",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only")
+                    descr: Doc(md: "Pass _True_ if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only")
                 )
             ],
         ),
