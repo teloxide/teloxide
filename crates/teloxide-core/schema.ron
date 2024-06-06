@@ -2916,14 +2916,17 @@ Schema(
         Method(
             names: ("getMyDescription", "GetMyDescription", "get_my_description"),
             return_ty: RawTy("BotDescription"),
-            doc: Doc(md: "Use this method to get the current bot description for the given user language. Returns BotDescription on success."),
+            doc: Doc(
+                md: "Use this method to get the current bot description for the given user language. Returns [BotDescription] on success.",
+                md_links: {"BotDescription": "https://core.telegram.org/bots/api#botdescription"}
+            ),
             tg_doc: "https://core.telegram.org/bots/api#getmydescription",
             tg_category: "Available methods",
             params: [
                 Param(
                     name: "language_code",
                     ty: Option(String),
-                    descr: Doc(md: "A two-letter ISO 639-1 language code or an empty string")
+                    descr: Doc(md: "A two-letter ISO 639-1 language code")
                 )
             ]
         ),
@@ -2949,19 +2952,17 @@ Schema(
         Method(
             names: ("getMyShortDescription", "GetMyShortDescription", "get_my_short_description"),
             return_ty: RawTy("BotShortDescription"),
-            doc: Doc(md: "Use this method to change the bot's short description, which is shown on the bot's profile page and is sent together with the link when users share the bot. Returns True on success."),
-            tg_doc: "https://core.telegram.org/bots/api#setmyshortdescription",
+            doc: Doc(
+                md: "Use this method to get the current bot short description for the given user language. Returns [BotShortDescription] on success.",
+                md_links: {"BotShortDescription": "https://core.telegram.org/bots/api#botshortdescription"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmyshortdescription",
             tg_category: "Available methods",
             params: [
                 Param(
-                    name: "short_description",
-                    ty: Option(String),
-                    descr: Doc(md: "New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.")
-                ),
-                Param(
                     name: "language_code",
                     ty: Option(String),
-                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the short description will be applied to all users for whose language there is no dedicated short description.")
+                    descr: Doc(md: "A two-letter ISO 639-1 language code")
                 ),
             ]
         ),

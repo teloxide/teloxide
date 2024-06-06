@@ -5,13 +5,13 @@ use serde::Serialize;
 use crate::types::BotShortDescription;
 
 impl_payload! {
-    /// Use this method to change the bot's short description, which is shown on the bot's profile page and is sent together with the link when users share the bot. Returns True on success.
+    /// Use this method to get the current bot short description for the given user language. Returns [`BotShortDescription`] on success.
+    ///
+    /// [`BotShortDescription`]: crate::types::BotShortDescription
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
     pub GetMyShortDescription (GetMyShortDescriptionSetters) => BotShortDescription {
         optional {
-            /// New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
-            pub short_description: String [into],
-            /// A two-letter ISO 639-1 language code. If empty, the short description will be applied to all users for whose language there is no dedicated short description.
+            /// A two-letter ISO 639-1 language code or an empty string
             pub language_code: String [into],
         }
     }

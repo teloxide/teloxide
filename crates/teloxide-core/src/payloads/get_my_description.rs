@@ -5,7 +5,9 @@ use serde::Serialize;
 use crate::types::BotDescription;
 
 impl_payload! {
-    /// Use this method to get the current bot description for the given user language. Returns BotDescription on success.
+    /// Use this method to get the current bot description for the given user language. Returns [`BotDescription`] on success.
+    ///
+    /// [`BotDescription`]: crate::types::BotDescription
     #[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Serialize)]
     pub GetMyDescription (GetMyDescriptionSetters) => BotDescription {
         optional {
