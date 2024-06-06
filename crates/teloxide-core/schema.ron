@@ -3575,7 +3575,14 @@ Schema(
         Method(
             names: ("uploadStickerFile", "UploadStickerFile", "upload_sticker_file"),
             return_ty: RawTy("FileMeta"),
-            doc: Doc(md: "Use this method to upload a .PNG file with a sticker for later use in _createNewStickerSet_ and _addStickerToSet_ methods (can be used multiple times). Returns the uploaded File on success."),
+            doc: Doc(
+                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet] and [AddStickerToSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
+                md_links: {
+                    "CreateNewStickerSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.CreateNewStickerSet.html",
+                    "AddStickerToSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html",
+                    "File": "https://core.telegram.org/bots/api#file"
+                }
+            ),
             tg_doc: "https://core.telegram.org/bots/api#uploadstickerfile",
             tg_category: "Stickers",
             params: [
@@ -3588,8 +3595,11 @@ Schema(
                     name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. See https://core.telegram.org/stickers for technical requirements. [More info on Sending Files »]",
-                        md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
+                        md: "A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. [Technical requirements]. [More info on Sending Files »]",
+                        md_links: {
+                            "More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files",
+                            "Technical requirements": "https://core.telegram.org/stickers"
+                        },
                     ),
                 ),
                 Param(
