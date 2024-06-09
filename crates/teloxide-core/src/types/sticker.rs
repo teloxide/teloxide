@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, MaskPosition, PhotoSize, True};
+use crate::types::{FileMeta, MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
@@ -58,7 +58,8 @@ pub struct Sticker {
     /// True, if the sticker must be repainted to a text color in messages, the
     /// color of the Telegram Premium badge in emoji status, white color on
     /// chat photos, or another appropriate color in other places
-    pub needs_repainting: Option<True>,
+    #[serde(default)]
+    pub needs_repainting: bool,
 }
 
 /// Kind of a [`Sticker`] - regular, mask or custom emoji.
@@ -425,6 +426,39 @@ mod tests {
         assert_eq!(sticker.width, 463);
         assert_eq!(sticker.height, 512);
         assert_eq!(sticker.set_name.as_deref(), Some("menhera2"));
+
+        let json2 = serde_json::to_string(&sticker).unwrap();
+        let sticker2: Sticker = serde_json::from_str(&json2).unwrap();
+        assert_eq!(sticker, sticker2);
+    }
+
+    #[test]
+    fn regular_serde_with_options() {
+        let json = r#"{
+            "width": 463,
+            "height": 512,
+            "is_animated": false,
+            "is_video": false,
+            "type": "regular",
+            "file_id": "CAACAgIAAxUAAWMwcTidRlq7bai-xUkcHQLa6vgJAALZBwACwRieC1FFIeQlHsPdKQQ",
+            "file_unique_id": "AgAD2QcAAsEYngs",
+            "file_size": 25734
+        }"#;
+
+        let sticker: Sticker = serde_json::from_str(json).unwrap();
+
+        // Assert some basic properties are correctly deserialized
+        assert_eq!(sticker.type_(), StickerType::Regular);
+        assert_eq!(sticker.premium_animation(), None);
+        assert_eq!(sticker.is_animated(), false);
+        assert_eq!(sticker.is_video(), false);
+        assert_eq!(sticker.thumbnail, None);
+        assert_eq!(sticker.emoji, None);
+        assert_eq!(sticker.file.size, 25734);
+        assert_eq!(sticker.width, 463);
+        assert_eq!(sticker.height, 512);
+        assert_eq!(sticker.set_name, None);
+        assert_eq!(sticker.needs_repainting, false);
 
         let json2 = serde_json::to_string(&sticker).unwrap();
         let sticker2: Sticker = serde_json::from_str(&json2).unwrap();
