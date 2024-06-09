@@ -36,12 +36,15 @@ pub struct Sticker {
     #[serde(flatten)]
     pub kind: StickerKind,
 
-    /// Format of this sticker - raster/`.webp`, animated/`.tgs` or
-    /// video/`.webm`.
+    /// Format flags of this sticker:
+    ///
+    /// `(is_animated, is_video)` == `(false, false)` - raster/`.webp` or
+    /// `is_animated == true` - animated/`.tgs` or
+    /// `is_video == true` - video/`.webm`.
     ///
     /// In other words this represents how the sticker is encoded.
     #[serde(flatten)]
-    pub format: StickerFormat,
+    pub flags: StickerFormatFlags,
 
     /// Sticker thumbnail in the `.webp` or `.jpg` format.
     pub thumbnail: Option<PhotoSize>,
@@ -98,9 +101,17 @@ pub enum StickerType {
     CustomEmoji,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct StickerFormatFlags {
+    /// True, if the sticker is animated
+    pub is_animated: bool,
+    /// True, if the sticker is a video sticker
+    pub is_video: bool,
+}
+
 /// Format of a [`Sticker`] - regular/webp, animated/tgs or video/webm.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(try_from = "StickerFormatRaw", into = "StickerFormatRaw")]
+#[serde(rename_all = "snake_case")]
 pub enum StickerFormat {
     /// Image in `.png` or `.webp` format.
     Static,
@@ -136,36 +147,45 @@ impl Deref for Sticker {
 }
 
 impl Sticker {
+    /// Returns the format of the [`Sticker`] based on the [`self.flags`] values
+    ///
+    /// [`Sticker`]: Sticker
+    /// [`self.flags`]: Sticker::flags
+    #[must_use]
+    pub fn format(&self) -> StickerFormat {
+        self.flags.format()
+    }
+
     /// Returns `true` is this is a "normal" raster sticker.
     ///
-    /// Alias to [`self.format.is_raster()`].
+    /// Alias to [`self.format().is_raster()`].
     ///
-    /// [`self.format.is_static()`]: StickerFormat::is_static
+    /// [`self.format().is_static()`]: StickerFormat::is_static
     #[must_use]
     pub fn is_static(&self) -> bool {
-        self.format.is_static()
+        self.format().is_static()
     }
 
     /// Returns `true` is this is an [animated] sticker.
     ///
-    /// Alias to [`self.format.is_animated()`].
+    /// Alias to [`self.format().is_animated()`].
     ///
-    /// [`self.format.is_animated()`]: StickerFormat::is_animated
+    /// [`self.format().is_animated()`]: StickerFormat::is_animated
     /// [animated]: https://telegram.org/blog/animated-stickers
     #[must_use]
     pub fn is_animated(&self) -> bool {
-        self.format.is_animated()
+        self.format().is_animated()
     }
 
     /// Returns `true` is this is a [video] sticker.
     ///
-    /// Alias to [`self.format.is_video()`].
+    /// Alias to [`self.format().is_video()`].
     ///
-    /// [`self.format.is_video()`]: StickerFormat::is_video
+    /// [`self.format().is_video()`]: StickerFormat::is_video
     /// [video]: https://telegram.org/blog/video-stickers-better-reactions
     #[must_use]
     pub fn is_video(&self) -> bool {
-        self.format.is_video()
+        self.format().is_video()
     }
 }
 
@@ -261,6 +281,17 @@ impl StickerType {
     }
 }
 
+impl StickerFormatFlags {
+    pub fn format(&self) -> StickerFormat {
+        match (self.is_animated, self.is_video) {
+            (false, false) => StickerFormat::Static,
+            (true, false) => StickerFormat::Animated,
+            (false, true) => StickerFormat::Video,
+            (true, true) => panic!("`is_animated` and `is_video` flags present at the same time"),
+        }
+    }
+}
+
 impl StickerFormat {
     /// Returns `true` if the sticker format is [`Static`].
     ///
@@ -287,42 +318,31 @@ impl StickerFormat {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-struct StickerFormatRaw {
-    is_animated: bool,
-    is_video: bool,
-}
-
-impl TryFrom<StickerFormatRaw> for StickerFormat {
-    type Error = &'static str;
-
-    fn try_from(
-        StickerFormatRaw { is_animated, is_video }: StickerFormatRaw,
-    ) -> Result<Self, Self::Error> {
-        let ret = match (is_animated, is_video) {
-            (false, false) => Self::Static,
-            (true, false) => Self::Animated,
-            (false, true) => Self::Video,
-            (true, true) => return Err("`is_animated` and `is_video` present at the same time"),
-        };
-
-        Ok(ret)
-    }
-}
-
-impl From<StickerFormat> for StickerFormatRaw {
-    fn from(kind: StickerFormat) -> Self {
-        match kind {
-            StickerFormat::Static => Self { is_animated: false, is_video: false },
-            StickerFormat::Animated => Self { is_animated: true, is_video: false },
-            StickerFormat::Video => Self { is_animated: false, is_video: true },
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::types::{MaskPoint, Sticker, StickerFormat, StickerType};
+    use crate::types::{MaskPoint, Sticker, StickerFormat, StickerFormatFlags, StickerType};
+
+    #[test]
+    fn sticker_format_serde() {
+        // Ser
+        assert_eq!(serde_json::to_string(&StickerFormat::Static).unwrap(), r#""static""#);
+        assert_eq!(serde_json::to_string(&StickerFormat::Animated).unwrap(), r#""animated""#);
+        assert_eq!(serde_json::to_string(&StickerFormat::Video).unwrap(), r#""video""#);
+
+        // De
+        assert_eq!(
+            serde_json::from_str::<StickerFormat>(r#""static""#).unwrap(),
+            StickerFormat::Static
+        );
+        assert_eq!(
+            serde_json::from_str::<StickerFormat>(r#""animated""#).unwrap(),
+            StickerFormat::Animated
+        );
+        assert_eq!(
+            serde_json::from_str::<StickerFormat>(r#""video""#).unwrap(),
+            StickerFormat::Video
+        );
+    }
 
     #[test]
     fn mask_serde() {
@@ -412,35 +432,40 @@ mod tests {
     }
 
     #[test]
-    fn sticker_format_serde() {
+    fn sticker_format_flags_serde() {
         {
             let json = r#"{"is_animated":false,"is_video":false}"#;
-            let fmt: StickerFormat = serde_json::from_str(json).unwrap();
-            assert_eq!(fmt, StickerFormat::Static);
+            let fmt_flags: StickerFormatFlags = serde_json::from_str(json).unwrap();
+            assert_eq!(fmt_flags.format(), StickerFormat::Static);
 
-            let json2 = serde_json::to_string(&fmt).unwrap();
+            let json2 = serde_json::to_string(&fmt_flags).unwrap();
             assert_eq!(json, json2);
         }
         {
             let json = r#"{"is_animated":true,"is_video":false}"#;
-            let fmt: StickerFormat = serde_json::from_str(json).unwrap();
-            assert_eq!(fmt, StickerFormat::Animated);
+            let fmt_flags: StickerFormatFlags = serde_json::from_str(json).unwrap();
+            assert_eq!(fmt_flags.format(), StickerFormat::Animated);
 
-            let json2 = serde_json::to_string(&fmt).unwrap();
+            let json2 = serde_json::to_string(&fmt_flags).unwrap();
             assert_eq!(json, json2);
         }
         {
             let json = r#"{"is_animated":false,"is_video":true}"#;
-            let fmt: StickerFormat = serde_json::from_str(json).unwrap();
-            assert_eq!(fmt, StickerFormat::Video);
+            let fmt_flags: StickerFormatFlags = serde_json::from_str(json).unwrap();
+            assert_eq!(fmt_flags.format(), StickerFormat::Video);
 
-            let json2 = serde_json::to_string(&fmt).unwrap();
+            let json2 = serde_json::to_string(&fmt_flags).unwrap();
             assert_eq!(json, json2);
         }
+    }
+
+    #[test]
+    #[should_panic]
+    fn wrong_sticker_format_flags_serde() {
         {
             let json = r#"{"is_animated":true,"is_video":true}"#;
-            let fmt: Result<StickerFormat, _> = serde_json::from_str(json);
-            assert!(fmt.is_err());
+            let fmt_flags: StickerFormatFlags = serde_json::from_str(json).unwrap();
+            fmt_flags.format();
         }
     }
 }

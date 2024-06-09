@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PhotoSize, Sticker, StickerFormat, StickerType};
+use crate::types::{PhotoSize, Sticker, StickerFormat, StickerFormatFlags, StickerType};
 
 /// This object represents a sticker set.
 ///
@@ -20,9 +20,9 @@ pub struct StickerSet {
     #[serde(flatten)]
     pub kind: StickerType,
 
-    /// Sticker format shared by all stickers in this set.
+    /// Sticker format flags shared by all stickers in this set.
     #[serde(flatten)]
-    pub format: StickerFormat,
+    pub flags: StickerFormatFlags,
 
     /// List of all set stickers.
     pub stickers: Vec<Sticker>,
@@ -50,36 +50,42 @@ impl Deref for StickerSet {
 }
 
 impl StickerSet {
+    /// Returns the format of the stickers in this set
+    #[must_use]
+    pub fn format(&self) -> StickerFormat {
+        self.flags.format()
+    }
+
     /// Returns `true` is this is a "normal" raster sticker.
     ///
-    /// Alias to [`self.format.is_static()`].
+    /// Alias to [`self.format().is_static()`].
     ///
-    /// [`self.format.is_static()`]: StickerFormat::is_static
+    /// [`self.format().is_static()`]: StickerFormat::is_static
     #[must_use]
     pub fn is_static(&self) -> bool {
-        self.format.is_static()
+        self.format().is_static()
     }
 
     /// Returns `true` is this is an [animated] sticker.
     ///
-    /// Alias to [`self.format.is_animated()`].
+    /// Alias to [`self.format().is_animated()`].
     ///
-    /// [`self.format.is_animated()`]: StickerFormat::is_animated
+    /// [`self.format().is_animated()`]: StickerFormat::is_animated
     /// [animated]: https://telegram.org/blog/animated-stickers
     #[must_use]
     pub fn is_animated(&self) -> bool {
-        self.format.is_animated()
+        self.format().is_animated()
     }
 
     /// Returns `true` is this is a [video] sticker.
     ///
-    /// Alias to [`self.format.is_video()`].
+    /// Alias to [`self.format().is_video()`].
     ///
-    /// [`self.format.is_video()`]: StickerFormat::is_video
+    /// [`self.format().is_video()`]: StickerFormat::is_video
     /// [video]: https://telegram.org/blog/video-stickers-better-reactions
     #[must_use]
     pub fn is_video(&self) -> bool {
-        self.format.is_video()
+        self.format().is_video()
     }
 }
 
