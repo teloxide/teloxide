@@ -90,7 +90,7 @@ mod tests {
         types::{
             ChatId, InputFile, InputMedia, InputMediaAnimation, InputMediaAudio,
             InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity,
-            MessageEntityKind, ParseMode, StickerFormat, UserId,
+            MessageEntityKind, ParseMode, UserId,
         },
     };
 
