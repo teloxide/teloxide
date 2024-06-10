@@ -105,8 +105,10 @@ pub enum StickerType {
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct StickerFormatFlags {
     /// True, if the sticker is animated
+    #[serde(default)]
     pub is_animated: bool,
     /// True, if the sticker is a video sticker
+    #[serde(default)]
     pub is_video: bool,
 }
 

@@ -20,6 +20,7 @@ pub struct StickerSet {
     #[serde(flatten)]
     pub kind: StickerType,
 
+    // FIXME: remove it in 7.2 https://core.telegram.org/bots/api#march-31-2024
     /// Sticker format flags shared by all stickers in this set.
     #[serde(flatten)]
     pub flags: StickerFormatFlags,
@@ -112,7 +113,7 @@ mod tests {
                     "is_animated": false,
                     "is_video": false,
                     "type": "regular",
-                    "thumb": {
+                    "thumbnail": {
                         "file_id": "AAMCAQADFQABYzB4ATH0sqXx351gZ5GpY1Z3Tl8AAlgCAAJ1t4hFbxNCoAg1-akBAAdtAAMpBA",
                         "file_unique_id": "AQADWAIAAnW3iEVy",
                         "file_size": 7698,
@@ -131,7 +132,7 @@ mod tests {
                     "is_animated": false,
                     "is_video": false,
                     "type": "regular",
-                    "thumb": {
+                    "thumbnail": {
                         "file_id": "AAMCAQADFQABYzB4AcABR8-MuvGagis9Pk6liSAAAs8DAAL2YYBFNbvduoN1p7oBAAdtAAMpBA",
                         "file_unique_id": "AQADzwMAAvZhgEVy",
                         "file_size": 7780,
@@ -141,6 +142,79 @@ mod tests {
                     "file_id": "CAACAgEAAxUAAWMweAHAAUfPjLrxmoIrPT5OpYkgAALPAwAC9mGARTW73bqDdae6KQQ",
                     "file_unique_id": "AgADzwMAAvZhgEU",
                     "file_size": 12158
+                }
+            ]
+        }"#;
+
+        let set: StickerSet = serde_json::from_str(json).unwrap();
+
+        assert!(set.is_static());
+        assert!(set.is_regular());
+        assert!(set.thumbnail.is_none());
+        assert_eq!(set.stickers.len(), 2);
+    }
+
+    #[test]
+    // In TBA7.2 fields `is_video` and `is_audio` are removed, so it's the breaking
+    // change.
+    fn test() {
+        let json = r#"{
+            "name": "tba66_by_memorization_helper_bot",
+            "title": "Teloxide TBA6.6 TEST",
+            "sticker_type": "regular",
+            "contains_masks": false,
+            "stickers": [
+                {
+                    "width": 512,
+                    "height": 512,
+                    "emoji": "\\ud83e\\udd80",
+                    "set_name": "tba66_by_memorization_helper_bot",
+                    "is_animated": false,
+                    "is_video": false,
+                    "type": "regular",
+                    "thumbnail": {
+                        "file_id": "AAMCAgADFQABZmbS1r0a5NWqrPIHJSCabGw3LUwAAh5MAAKRGTlL-H1XHcgw5coBAAdtAAM1BA",
+                        "file_unique_id": "AQADHkwAApEZOUty",
+                        "file_size": 7786,
+                        "width": 320,
+                        "height": 320
+                    },
+                    "thumb": {
+                        "file_id": "AAMCAgADFQABZmbS1r0a5NWqrPIHJSCabGw3LUwAAh5MAAKRGTlL-H1XHcgw5coBAAdtAAM1BA",
+                        "file_unique_id": "AQADHkwAApEZOUty",
+                        "file_size": 7786,
+                        "width": 320,
+                        "height": 320
+                    },
+                    "file_id": "CAACAgIAAxUAAWZm0ta9GuTVqqzyByUgmmxsNy1MAAIeTAACkRk5S_h9Vx3IMOXKNQQ",
+                    "file_unique_id": "AgADHkwAApEZOUs",
+                    "file_size": 11936
+                },
+                {
+                    "width": 512,
+                    "height": 512,
+                    "emoji": "\\ud83e\\udd80",
+                    "set_name": "tba66_by_memorization_helper_bot",
+                    "is_animated": false,
+                    "is_video": false,
+                    "type": "regular",
+                    "thumbnail": {
+                        "file_id": "AAMCAgADFQABZmbS1jN5O3rMp4gsH3eeBPajWVUAAoxIAAKtXDhLhabEKw0iE9sBAAdtAAM1BA",
+                        "file_unique_id": "AQADjEgAAq1cOEty",
+                        "file_size": 7768,
+                        "width": 320,
+                        "height": 320
+                    },
+                    "thumb": {
+                        "file_id": "AAMCAgADFQABZmbS1jN5O3rMp4gsH3eeBPajWVUAAoxIAAKtXDhLhabEKw0iE9sBAAdtAAM1BA",
+                        "file_unique_id": "AQADjEgAAq1cOEty",
+                        "file_size": 7768,
+                        "width": 320,
+                        "height": 320
+                    },
+                    "file_id": "CAACAgIAAxUAAWZm0tYzeTt6zKeILB93ngT2o1lVAAKMSAACrVw4S4WmxCsNIhPbNQQ",
+                    "file_unique_id": "AgADjEgAAq1cOEs",
+                    "file_size": 12092
                 }
             ]
         }"#;
