@@ -146,7 +146,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_sticker_to_set() {
-        // FIXME: rewrite according to the new schema
         to_form_ref(&payloads::AddStickerToSet::new(
             UserId(0),
             "name",
