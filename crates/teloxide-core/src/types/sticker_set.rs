@@ -54,8 +54,9 @@ impl StickerSet {
     // FIXME: remove deprecation, when it will be a way to determine the format of
     // the sticker set
     /// Returns the format of the stickers in this set
-    /// 
-    /// Note: this method currently is useless, so the format is always StickerFormat::Static
+    ///
+    /// Note: this method currently is useless, so the format is always
+    /// StickerFormat::Static
     #[must_use]
     #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
                          were removed, so currently there is no way to determine the format of \
