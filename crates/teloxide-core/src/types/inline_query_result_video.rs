@@ -76,7 +76,7 @@ impl InlineQueryResultVideo {
         id: S1,
         video_url: reqwest::Url,
         mime_type: Mime,
-        thumb_url: reqwest::Url,
+        thumbnail_url: reqwest::Url,
         title: S2,
     ) -> Self
     where
@@ -87,7 +87,7 @@ impl InlineQueryResultVideo {
             id: id.into(),
             video_url,
             mime_type,
-            thumbnail_url: thumb_url,
+            thumbnail_url,
             title: title.into(),
             caption: None,
             parse_mode: None,

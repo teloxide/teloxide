@@ -59,14 +59,14 @@ pub struct InlineQueryResultPhoto {
 }
 
 impl InlineQueryResultPhoto {
-    pub fn new<S>(id: S, photo_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
+    pub fn new<S>(id: S, photo_url: reqwest::Url, thumbnail_url: reqwest::Url) -> Self
     where
         S: Into<String>,
     {
         Self {
             id: id.into(),
             photo_url,
-            thumbnail_url: thumb_url,
+            thumbnail_url,
             photo_width: None,
             photo_height: None,
             title: None,
