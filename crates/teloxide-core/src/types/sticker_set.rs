@@ -54,6 +54,8 @@ impl StickerSet {
     // FIXME: remove deprecation, when it will be a way to determine the format of
     // the sticker set
     /// Returns the format of the stickers in this set
+    /// 
+    /// Note: this method currently is useless, so the format is always StickerFormat::Static
     #[must_use]
     #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
                          were removed, so currently there is no way to determine the format of \
@@ -72,6 +74,7 @@ impl StickerSet {
                          were removed, so currently there is no way to determine the format of \
                          the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_static(&self) -> bool {
+        #[allow(deprecated)]
         self.format().is_static()
     }
 
@@ -86,6 +89,7 @@ impl StickerSet {
                          were removed, so currently there is no way to determine the format of \
                          the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_animated(&self) -> bool {
+        #[allow(deprecated)]
         self.format().is_animated()
     }
 
@@ -100,6 +104,7 @@ impl StickerSet {
                          were removed, so currently there is no way to determine the format of \
                          the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_video(&self) -> bool {
+        #[allow(deprecated)]
         self.format().is_video()
     }
 }
@@ -162,7 +167,6 @@ mod tests {
 
         let set: StickerSet = serde_json::from_str(json).unwrap();
 
-        assert!(set.is_static());
         assert!(set.is_regular());
         assert!(set.thumbnail.is_none());
         assert_eq!(set.stickers.len(), 2);
@@ -170,7 +174,8 @@ mod tests {
 
     #[test]
     // In TBA7.2 fields `is_video` and `is_audio` are removed, so it's the breaking
-    // change.
+    // change (previously, sticker set format inference heavily relied upon these
+    // fields)
     fn test() {
         let json = r#"{
             "name": "tba66_by_memorization_helper_bot",
@@ -235,7 +240,6 @@ mod tests {
 
         let set: StickerSet = serde_json::from_str(json).unwrap();
 
-        assert!(set.is_static());
         assert!(set.is_regular());
         assert!(set.thumbnail.is_none());
         assert_eq!(set.stickers.len(), 2);
