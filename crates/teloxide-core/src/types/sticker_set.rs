@@ -51,8 +51,13 @@ impl Deref for StickerSet {
 }
 
 impl StickerSet {
+    // FIXME: remove deprecation, when it will be a way to determine the format of
+    // the sticker set
     /// Returns the format of the stickers in this set
     #[must_use]
+    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
+                         were removed, so currently there is no way to determine the format of \
+                         the sticker set in the currently supported version (TBA6.6)")]
     pub fn format(&self) -> StickerFormat {
         self.flags.format()
     }
@@ -63,6 +68,9 @@ impl StickerSet {
     ///
     /// [`self.format().is_static()`]: StickerFormat::is_static
     #[must_use]
+    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
+                         were removed, so currently there is no way to determine the format of \
+                         the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_static(&self) -> bool {
         self.format().is_static()
     }
@@ -74,6 +82,9 @@ impl StickerSet {
     /// [`self.format().is_animated()`]: StickerFormat::is_animated
     /// [animated]: https://telegram.org/blog/animated-stickers
     #[must_use]
+    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
+                         were removed, so currently there is no way to determine the format of \
+                         the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_animated(&self) -> bool {
         self.format().is_animated()
     }
@@ -85,6 +96,9 @@ impl StickerSet {
     /// [`self.format().is_video()`]: StickerFormat::is_video
     /// [video]: https://telegram.org/blog/video-stickers-better-reactions
     #[must_use]
+    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
+                         were removed, so currently there is no way to determine the format of \
+                         the sticker set in the currently supported version (TBA6.6)")]
     pub fn is_video(&self) -> bool {
         self.format().is_video()
     }
