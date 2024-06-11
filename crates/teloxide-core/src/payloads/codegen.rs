@@ -219,10 +219,7 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
                      \"crate::types::serialize_reply_to_message_id\")]"
                 }
                 Type::RawTy(s)
-                    if s == "MessageId"
-                        || s == "InputSticker"
-                        || s == "TargetMessage"
-                        || s == "StickerType" =>
+                    if s == "MessageId" || s == "TargetMessage" || s == "StickerType" =>
                 {
                     "\n            #[serde(flatten)]"
                 }

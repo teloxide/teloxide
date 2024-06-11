@@ -15,7 +15,6 @@ impl_payload! {
             /// Sticker set name
             pub name: String [into],
             /// A JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.
-            #[serde(flatten)]
             pub sticker: InputSticker,
         }
     }
