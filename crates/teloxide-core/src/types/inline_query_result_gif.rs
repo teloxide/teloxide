@@ -21,14 +21,20 @@ pub struct InlineQueryResultGif {
     /// Width of the GIF.
     pub gif_width: Option<u32>,
 
-    /// Height of the GIFv.
+    /// Height of the GIF.
     pub gif_height: Option<u32>,
 
     /// Duration of the GIF.
     pub gif_duration: Option<Seconds>,
 
-    /// URL of the static thumbnail for the result (jpeg or gif).
+    /// URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the
+    /// result
     pub thumbnail_url: reqwest::Url,
+
+    // FIXME: maybe make dedicated enum for the mime type?
+    /// MIME type of the thumbnail, must be one of “image/jpeg”,
+    /// “image/gif”, or “video/mp4”. Defaults to “image/jpeg”
+    pub thumbnail_mime_type: Option<String>,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -58,7 +64,7 @@ pub struct InlineQueryResultGif {
 }
 
 impl InlineQueryResultGif {
-    pub fn new<S>(id: S, gif_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
+    pub fn new<S>(id: S, gif_url: reqwest::Url, thumbnail_url: reqwest::Url) -> Self
     where
         S: Into<String>,
     {
@@ -68,7 +74,8 @@ impl InlineQueryResultGif {
             gif_width: None,
             gif_height: None,
             gif_duration: None,
-            thumbnail_url: thumb_url,
+            thumbnail_url,
+            thumbnail_mime_type: None,
             title: None,
             caption: None,
             parse_mode: None,
