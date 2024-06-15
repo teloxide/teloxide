@@ -141,7 +141,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Methods `StickerSet::{format, is_static, is_animated, is_video}` are deprecated now, due to the breaking change in TBA 7.2 API (which removes `StickerFormatFlags::{is_video, is_animated}` from the `StickerSet` class)
   - Method `set_sticker_set_thumb` and it's parameter `thumb` have been renamed to `set_sticker_set_thumbnail` and `thumbnail` respectively
   - Fields `{InlineQueryResultArticle, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultLocation, InlineQueryResultVenue}::{thumb_url, thumb_width, thumb_height}` have been renamed to `{thumbnail_url, thumbnail_width, thumbnail_height}` respectively
-  - Field `{InlineQueryResultPhoto, InlineQueryResultVideo}::thumb_url` has been renamed to `thumbnail_url`
   - Field `{InlineQueryResultPhoto, InlineQueryResultVideo, InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumb_url` has been renamed to `thumbnail_url`
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
