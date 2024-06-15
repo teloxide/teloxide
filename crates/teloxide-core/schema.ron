@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.6", date: "March 9, 2023"),
+    api_version: ApiVersion(ver: "6.7", date: "April 21, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -2891,6 +2891,42 @@ Schema(
                     name: "language_code",
                     ty: Option(String),
                     descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, commands will be applied to all users from the given scope, for whose language there are no dedicated commands")
+                ),
+            ],
+        ),
+        Method(
+            names: ("setMyName", "SetMyName", "set_my_name"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the bot's name. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.")
+                ),
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose language there is no dedicated name.")
+                ),
+            ],
+        ),
+        Method(
+            names: ("getMyName", "GetMyName", "get_my_name"),
+            return_ty: RawTy("BotName"),
+            doc: Doc(
+                md: "Use this method to get the current bot name for the given user language. Returns [BotName] on success.",
+                md_links: {"BotName": "https://core.telegram.org/bots/api#botname"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code or an empty string")
                 ),
             ],
         ),

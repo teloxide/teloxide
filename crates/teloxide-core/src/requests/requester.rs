@@ -777,6 +777,16 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMyCommands`].
     fn get_my_commands(&self) -> Self::GetMyCommands;
 
+    type SetMyName: Request<Payload = SetMyName, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMyName`].
+    fn set_my_name(&self) -> Self::SetMyName;
+
+    type GetMyName: Request<Payload = GetMyName, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyName`].
+    fn get_my_name(&self) -> Self::GetMyName;
+
     type SetMyDescription: Request<Payload = SetMyDescription, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetMyDescription`].
@@ -1290,6 +1300,8 @@ macro_rules! forward_all {
             answer_callback_query,
             set_my_commands,
             get_my_commands,
+            set_my_name,
+            get_my_name,
             set_my_description,
             get_my_description,
             set_my_short_description,
