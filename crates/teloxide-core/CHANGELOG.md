@@ -45,11 +45,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `RequestUser` variant to `ButtonRequest`
   - Add  `UserShared` variant to `MessageKind`
   - Add `shared_user` method to `Message`
+- Support for TBA 6.6 ([#1040](pr1040))
+  - Add methods for working with bot's description:
+    - `set_my_description`
+    - `get_my_description`
+    - `set_my_short_description`
+    - `get_my_short_description`
+  - Add methods for working with sticker sets:
+    - `set_custom_emoji_sticker_set_thumbnail`
+    - `set_sticker_set_title`
+    - `delete_sticker_set`
+    - `set_sticker_emoji_list`
+    - `set_sticker_keywords`
+    - `set_sticker_mask_position`
+  - Add parameter `emoji` to the `send_sticker` method to specify an emoji for just uploaded stickers
+  - Add support for the creation of custom emoji sticker sets in `create_new_sticker_set`
+  - Add parameter `needs_repainting` to the `create_new_sticker_set` methodto automatically change the color of emoji based on context (e.g., use text color in messages, accent color in statuses, etc.)
+  - Add field `needs_repainting` to the `Sticker` struct 
+  - Add support for the creation of sticker sets with multiple initial stickers in `create_new_sticker_set` by replacing the parameters `sticker`, `emojis` and `mask_position` with the parameters `stickers` and `sticker_format`.
+  - Add support for .WEBP files in `create_new_sticker_set` and `add_sticker_to_set`
+  - Add support for .WEBP, .TGS, and .WEBM files in `upload_sticker_file` by replacing the parameter `png_sticker` with the parameters `sticker` and `sticker_format`
+  - Add the ability to specify search keywords for stickers added to sticker sets
+  - Add new type `StickerFormatFlags` with fields `is_animated` and `is_video`
+  - Add new method `Sticker::format` which returns the format of the sticker, the format is determined by the `StickerFormatFlags` of the `Sticker`
+  - Add missing fields `{InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumbnail_mime_type`
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
 [pr905]: https://github.com/teloxide/teloxide/pull/905
 [pr982]: https://github.com/teloxide/teloxide/pull/982
+[pr1040]: https://github.com/teloxide/teloxide/pull/1040
 
 ### Fixed
 
@@ -107,6 +132,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Methods of the Message type: `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created`, `chat_migration`, `migrate_to_chat_id`, `migrate_from_chat_id` now return shared reference instead of owned value inside `Option` ([#982][pr982])
 - Methods `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created` now return appropriate structs not `Option<True>` ([#982][pr982])
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([#996][pr996])
+- Changes in the existing API to support TBA6.6 ([#1040](pr1040))
+  - `InputSticker` was changed from enum to the struct
+  - `{Animation, Audio, Document, Sticker, Video, VideoNote, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaVideo, StickerSet}::thumb` has been renamed to `thumbnail`
+  - `{SendAnimation, SendAudio, SendDocument, SendSticker,  SendVideo, SendVideoNote}::thumb` has been renamed to`thumbnail`
+  - Now `StickerFormat` is defined as the enum with the variants: `Static`, `Video`, `Animated`, so the previous variant `Raster` has been renamed to `Static`
+  - Method `StickerFormat::is_raster` has been renamed to `StickerFormat::is_static`
+  - Methods `StickerSet::{format, is_static, is_animated, is_video}` are deprecated now, due to the breaking change in TBA 7.2 API (which removes `StickerFormatFlags::{is_video, is_animated}` from the `StickerSet` class)
+  - Method `set_sticker_set_thumb` and it's parameter `thumb` have been renamed to `set_sticker_set_thumbnail` and `thumbnail` respectively
+  - Fields `{InlineQueryResultArticle, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultLocation, InlineQueryResultVenue}::{thumb_url, thumb_width, thumb_height}` have been renamed to `{thumbnail_url, thumbnail_width, thumbnail_height}` respectively
+  - Field `{InlineQueryResultPhoto, InlineQueryResultVideo, InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumb_url` has been renamed to `thumbnail_url`
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859

@@ -19,7 +19,7 @@ pub struct Document {
     pub file: FileMeta,
 
     /// A document thumbnail as defined by a sender.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 
     /// An original filename as defined by a sender.
     pub file_name: Option<String>,

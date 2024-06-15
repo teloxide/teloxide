@@ -777,6 +777,26 @@ pub trait Requester {
     /// For Telegram documentation see [`GetMyCommands`].
     fn get_my_commands(&self) -> Self::GetMyCommands;
 
+    type SetMyDescription: Request<Payload = SetMyDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMyDescription`].
+    fn set_my_description(&self) -> Self::SetMyDescription;
+
+    type GetMyDescription: Request<Payload = GetMyDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyDescription`].
+    fn get_my_description(&self) -> Self::GetMyDescription;
+
+    type SetMyShortDescription: Request<Payload = SetMyShortDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMyShortDescription`].
+    fn set_my_short_description(&self) -> Self::SetMyShortDescription;
+
+    type GetMyShortDescription: Request<Payload = GetMyShortDescription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyShortDescription`].
+    fn get_my_short_description(&self) -> Self::GetMyShortDescription;
+
     type SetChatMenuButton: Request<Payload = SetChatMenuButton, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetChatMenuButton`].
@@ -961,38 +981,37 @@ pub trait Requester {
     fn upload_sticker_file(
         &self,
         user_id: UserId,
-        png_sticker: InputFile,
+        sticker: InputFile,
+        sticker_format: StickerFormat,
     ) -> Self::UploadStickerFile;
 
     type CreateNewStickerSet: Request<Payload = CreateNewStickerSet, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateNewStickerSet`].
-    fn create_new_sticker_set<N, T, E>(
+    fn create_new_sticker_set<N, T, S>(
         &self,
         user_id: UserId,
         name: N,
         title: T,
-        sticker: InputSticker,
-        emojis: E,
+        stickers: S,
+        sticker_format: StickerFormat,
     ) -> Self::CreateNewStickerSet
     where
         N: Into<String>,
         T: Into<String>,
-        E: Into<String>;
+        S: IntoIterator<Item = InputSticker>;
 
     type AddStickerToSet: Request<Payload = AddStickerToSet, Err = Self::Err>;
 
     /// For Telegram documentation see [`AddStickerToSet`].
-    fn add_sticker_to_set<N, E>(
+    fn add_sticker_to_set<N>(
         &self,
         user_id: UserId,
         name: N,
         sticker: InputSticker,
-        emojis: E,
     ) -> Self::AddStickerToSet
     where
-        N: Into<String>,
-        E: Into<String>;
+        N: Into<String>;
 
     type SetStickerPositionInSet: Request<Payload = SetStickerPositionInSet, Err = Self::Err>;
 
@@ -1012,12 +1031,66 @@ pub trait Requester {
     where
         S: Into<String>;
 
-    type SetStickerSetThumb: Request<Payload = SetStickerSetThumb, Err = Self::Err>;
+    type SetStickerSetThumbnail: Request<Payload = SetStickerSetThumbnail, Err = Self::Err>;
 
-    /// For Telegram documentation see [`SetStickerSetThumb`].
-    fn set_sticker_set_thumb<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumb
+    /// For Telegram documentation see [`SetStickerSetThumbnail`].
+    fn set_sticker_set_thumbnail<N>(
+        &self,
+        name: N,
+        user_id: UserId,
+    ) -> Self::SetStickerSetThumbnail
     where
         N: Into<String>;
+
+    type SetCustomEmojiStickerSetThumbnail: Request<
+        Payload = SetCustomEmojiStickerSetThumbnail,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetCustomEmojiStickerSetThumbnail`].
+    fn set_custom_emoji_sticker_set_thumbnail<N>(
+        &self,
+        name: N,
+    ) -> Self::SetCustomEmojiStickerSetThumbnail
+    where
+        N: Into<String>;
+
+    type SetStickerSetTitle: Request<Payload = SetStickerSetTitle, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetStickerSetTitle`].
+    fn set_sticker_set_title<N, T>(&self, name: N, title: T) -> Self::SetStickerSetTitle
+    where
+        N: Into<String>,
+        T: Into<String>;
+
+    type DeleteStickerSet: Request<Payload = DeleteStickerSet, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteStickerSet`].
+    fn delete_sticker_set<N>(&self, name: N) -> Self::DeleteStickerSet
+    where
+        N: Into<String>;
+
+    type SetStickerEmojiList: Request<Payload = SetStickerEmojiList, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetStickerEmojiList`].
+    fn set_sticker_emoji_list<S, E>(&self, sticker: S, emoji_list: E) -> Self::SetStickerEmojiList
+    where
+        S: Into<String>,
+        E: IntoIterator<Item = String>;
+
+    type SetStickerKeywords: Request<Payload = SetStickerKeywords, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetStickerKeywords`].
+    fn set_sticker_keywords<S>(&self, sticker: S) -> Self::SetStickerKeywords
+    where
+        S: Into<String>;
+
+    type SetStickerMaskPosition: Request<Payload = SetStickerMaskPosition, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetStickerMaskPosition`].
+    fn set_sticker_mask_position<S>(&self, sticker: S) -> Self::SetStickerMaskPosition
+    where
+        S: Into<String>;
 
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
@@ -1217,6 +1290,10 @@ macro_rules! forward_all {
             answer_callback_query,
             set_my_commands,
             get_my_commands,
+            set_my_description,
+            get_my_description,
+            set_my_short_description,
+            get_my_short_description,
             set_chat_menu_button,
             get_chat_menu_button,
             set_my_default_administrator_rights,
@@ -1242,7 +1319,13 @@ macro_rules! forward_all {
             add_sticker_to_set,
             set_sticker_position_in_set,
             delete_sticker_from_set,
-            set_sticker_set_thumb,
+            set_sticker_set_thumbnail,
+            set_custom_emoji_sticker_set_thumbnail,
+            set_sticker_set_title,
+            delete_sticker_set,
+            set_sticker_emoji_list,
+            set_sticker_keywords,
+            set_sticker_mask_position,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

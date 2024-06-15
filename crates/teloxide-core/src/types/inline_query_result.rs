@@ -426,9 +426,9 @@ mod tests {
             description: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         });
 
         let expected_json = r#"{"type":"document","id":"id","title":"title","document_url":"http://document_url/","mime_type":"application/pdf"}"#;
@@ -456,12 +456,12 @@ mod tests {
                 disable_web_page_preview: Some(true),
                 entities: None,
             })),
-            thumb_url: Some(reqwest::Url::parse("http://thumb_url/").unwrap()),
-            thumb_width: Some(1),
-            thumb_height: Some(1),
+            thumbnail_url: Some(reqwest::Url::parse("http://thumb_url/").unwrap()),
+            thumbnail_width: Some(1),
+            thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"document","id":"id","title":"title","caption":"caption","parse_mode":"HTML","document_url":"http://document_url/","mime_type":"application/pdf","description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true},"thumb_url":"http://thumb_url/","thumb_width":1,"thumb_height":1}"#;
+        let expected_json = r#"{"type":"document","id":"id","title":"title","caption":"caption","parse_mode":"HTML","document_url":"http://document_url/","mime_type":"application/pdf","description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -521,7 +521,8 @@ mod tests {
             gif_width: None,
             gif_height: None,
             gif_duration: None,
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_mime_type: None,
             title: None,
             caption: None,
             parse_mode: None,
@@ -530,7 +531,7 @@ mod tests {
             input_message_content: None,
         });
 
-        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","thumb_url":"http://thumb_url/"}"#;
+        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","thumbnail_url":"http://thumb_url/"}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -545,7 +546,8 @@ mod tests {
             gif_width: Some(1),
             gif_height: Some(1),
             gif_duration: Some(Seconds::from_seconds(1)),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_mime_type: None,
             title: Some(String::from("title")),
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
@@ -559,7 +561,7 @@ mod tests {
             })),
         });
 
-        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","gif_width":1,"gif_height":1,"gif_duration":1,"thumb_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","gif_width":1,"gif_height":1,"gif_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -619,7 +621,8 @@ mod tests {
             mpeg4_width: None,
             mpeg4_height: None,
             mpeg4_duration: None,
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_mime_type: None,
             title: None,
             caption: None,
             parse_mode: None,
@@ -628,7 +631,7 @@ mod tests {
             input_message_content: None,
         });
 
-        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","thumb_url":"http://thumb_url/"}"#;
+        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","thumbnail_url":"http://thumb_url/"}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -643,7 +646,8 @@ mod tests {
             mpeg4_width: Some(1),
             mpeg4_height: Some(1),
             mpeg4_duration: Some(Seconds::from_seconds(1)),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_mime_type: None,
             title: Some(String::from("title")),
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
@@ -657,7 +661,7 @@ mod tests {
             })),
         });
 
-        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","mpeg4_width":1,"mpeg4_height":1,"mpeg4_duration":1,"thumb_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","mpeg4_width":1,"mpeg4_height":1,"mpeg4_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -716,7 +720,7 @@ mod tests {
         let structure = InlineQueryResult::Photo(InlineQueryResultPhoto {
             id: String::from("id"),
             photo_url: Url::parse("http://photo_url/").unwrap(),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
             photo_width: None,
             photo_height: None,
             title: None,
@@ -728,7 +732,7 @@ mod tests {
             input_message_content: None,
         });
 
-        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumb_url":"http://thumb_url/"}"#;
+        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumbnail_url":"http://thumb_url/"}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -740,7 +744,7 @@ mod tests {
         let structure = InlineQueryResult::Photo(InlineQueryResultPhoto {
             id: String::from("id"),
             photo_url: Url::parse("http://photo_url/").unwrap(),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
             photo_width: Some(1),
             photo_height: Some(1),
             title: Some(String::from("title")),
@@ -757,7 +761,7 @@ mod tests {
             })),
         });
 
-        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumb_url":"http://thumb_url/","photo_width":1,"photo_height":1,"title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumbnail_url":"http://thumb_url/","photo_width":1,"photo_height":1,"title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -859,7 +863,7 @@ mod tests {
             id: String::from("id"),
             video_url: Url::parse("http://video_url/").unwrap(),
             mime_type: Mime::from_str("video/mp4").unwrap(),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
             title: String::from("title"),
             caption: None,
             parse_mode: None,
@@ -872,7 +876,7 @@ mod tests {
             input_message_content: None,
         });
 
-        let expected_json = r#"{"type":"video","id":"id","video_url":"http://video_url/","mime_type":"video/mp4","thumb_url":"http://thumb_url/","title":"title"}"#;
+        let expected_json = r#"{"type":"video","id":"id","video_url":"http://video_url/","mime_type":"video/mp4","thumbnail_url":"http://thumb_url/","title":"title"}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -885,7 +889,7 @@ mod tests {
             id: String::from("id"),
             video_url: Url::parse("http://video_url/").unwrap(),
             mime_type: Mime::from_str("video/mp4").unwrap(),
-            thumb_url: Url::parse("http://thumb_url/").unwrap(),
+            thumbnail_url: Url::parse("http://thumb_url/").unwrap(),
             title: String::from("title"),
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
@@ -907,7 +911,7 @@ mod tests {
             )),
         });
 
-        let expected_json = r#"{"type":"video","id":"id","video_url":"http://video_url/","mime_type":"video/mp4","thumb_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","video_width":1,"video_height":1,"video_duration":1,"description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"latitude":1.0,"longitude":1.0}}"#;
+        let expected_json = r#"{"type":"video","id":"id","video_url":"http://video_url/","mime_type":"video/mp4","thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","video_width":1,"video_height":1,"video_duration":1,"description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"latitude":1.0,"longitude":1.0}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -1031,9 +1035,9 @@ mod tests {
             url: None,
             hide_url: None,
             description: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         });
 
         let expected_json = r#"{"type":"article","id":"id","title":"title","input_message_content":{"message_text":"message_text"}}"#;
@@ -1058,12 +1062,12 @@ mod tests {
             url: Some(Url::parse("http://url/").unwrap()),
             hide_url: Some(true),
             description: Some(String::from("description")),
-            thumb_url: Some(Url::parse("http://thumb_url/").unwrap()),
-            thumb_width: Some(1),
-            thumb_height: Some(1),
+            thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
+            thumbnail_width: Some(1),
+            thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"article","id":"id","title":"title","input_message_content":{"message_text":"message_text"},"reply_markup":{"inline_keyboard":[]},"url":"http://url/","hide_url":true,"description":"description","thumb_url":"http://thumb_url/","thumb_width":1,"thumb_height":1}"#;
+        let expected_json = r#"{"type":"article","id":"id","title":"title","input_message_content":{"message_text":"message_text"},"reply_markup":{"inline_keyboard":[]},"url":"http://url/","hide_url":true,"description":"description","thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -1080,9 +1084,9 @@ mod tests {
             vcard: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         });
 
         let expected_json = r#"{"type":"contact","id":"id","phone_number":"phone_number","first_name":"first_name"}"#;
@@ -1107,12 +1111,12 @@ mod tests {
                 parse_mode: None,
                 disable_web_page_preview: None,
             })),
-            thumb_url: Some(Url::parse("http://thumb_url/").unwrap()),
-            thumb_width: Some(1),
-            thumb_height: Some(1),
+            thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
+            thumbnail_width: Some(1),
+            thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"contact","id":"id","phone_number":"phone_number","first_name":"first_name","last_name":"last_name","vcard":"vcard","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumb_url":"http://thumb_url/","thumb_width":1,"thumb_height":1}"#;
+        let expected_json = r#"{"type":"contact","id":"id","phone_number":"phone_number","first_name":"first_name","last_name":"last_name","vcard":"vcard","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -1162,9 +1166,9 @@ mod tests {
             proximity_alert_radius: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         });
 
         let expected_json =
@@ -1193,12 +1197,12 @@ mod tests {
                 parse_mode: None,
                 disable_web_page_preview: None,
             })),
-            thumb_url: Some(Url::parse("http://thumb_url/").unwrap()),
-            thumb_width: Some(1),
-            thumb_height: Some(1),
+            thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
+            thumbnail_width: Some(1),
+            thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"location","id":"id","latitude":1.0,"longitude":1.0,"title":"title","horizontal_accuracy":1.0,"live_period":1,"heading":1,"proximity_alert_radius":1,"reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumb_url":"http://thumb_url/","thumb_width":1,"thumb_height":1}"#;
+        let expected_json = r#"{"type":"location","id":"id","latitude":1.0,"longitude":1.0,"title":"title","horizontal_accuracy":1.0,"live_period":1,"heading":1,"proximity_alert_radius":1,"reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -1219,9 +1223,9 @@ mod tests {
             google_place_type: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         });
 
         let expected_json = r#"{"type":"venue","id":"id","latitude":1.0,"longitude":1.0,"title":"title","address":"address"}"#;
@@ -1250,12 +1254,12 @@ mod tests {
                 parse_mode: None,
                 disable_web_page_preview: None,
             })),
-            thumb_url: Some(Url::parse("http://thumb_url/").unwrap()),
-            thumb_width: Some(1),
-            thumb_height: Some(1),
+            thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
+            thumbnail_width: Some(1),
+            thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"venue","id":"id","latitude":1.0,"longitude":1.0,"title":"title","address":"address","foursquare_id":"foursquare_id","foursquare_type":"foursquare_type","google_place_id":"google_place_id","google_place_type":"google_place_type","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumb_url":"http://thumb_url/","thumb_width":1,"thumb_height":1}"#;
+        let expected_json = r#"{"type":"venue","id":"id","latitude":1.0,"longitude":1.0,"title":"title","address":"address","foursquare_id":"foursquare_id","foursquare_type":"foursquare_type","google_place_id":"google_place_id","google_place_type":"google_place_type","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text"},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);

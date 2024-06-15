@@ -7,7 +7,7 @@ use crate::types::{
 };
 
 impl_payload! {
-    @[multipart = audio, thumb]
+    @[multipart = audio, thumbnail]
     /// Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .MP3 or .M4A format. On success, the sent [`Message`] is returned. Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// For sending voice messages, use the [`SendVoice`] method instead.
@@ -44,7 +44,7 @@ impl_payload! {
             /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
-            pub thumb: InputFile,
+            pub thumbnail: InputFile,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

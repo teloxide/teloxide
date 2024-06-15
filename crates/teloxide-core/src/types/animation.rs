@@ -24,7 +24,7 @@ pub struct Animation {
     pub duration: Seconds,
 
     /// An animation thumbnail as defined by a sender.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 
     /// An original animation filename as defined by a sender.
     pub file_name: Option<String>,
@@ -46,7 +46,7 @@ mod tests {
         "width":320,
         "height":320,
         "duration":59,
-        "thumb":{
+        "thumbnail":{
             "file_id":"id",
             "file_unique_id":"",
             "width":320,
@@ -61,7 +61,7 @@ mod tests {
             width: 320,
             height: 320,
             duration: Seconds::from_seconds(59),
-            thumb: Some(PhotoSize {
+            thumbnail: Some(PhotoSize {
                 file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
                 width: 320,
                 height: 320,

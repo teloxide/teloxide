@@ -2,11 +2,11 @@
 
 use serde::Serialize;
 
-use crate::types::{InputSticker, MaskPosition, True, UserId};
+use crate::types::{InputSticker, True, UserId};
 
 impl_payload! {
     @[multipart = sticker]
-    /// Use this method to add a new sticker to a set created by the bot. Animated stickers can be added to animated sticker sets and only to them. Animated sticker sets can have up to 50 stickers. Static sticker sets can have up to 120 stickers. Returns _True_ on success.
+    /// Use this method to add a new sticker to a set created by the bot. Emoji sticker sets can have up to 200 stickers. Other sticker sets can have up to 120 stickers. Returns True on success.
     #[derive(Debug, Clone, Serialize)]
     pub AddStickerToSet (AddStickerToSetSetters) => True {
         required {
@@ -14,17 +14,8 @@ impl_payload! {
             pub user_id: UserId,
             /// Sticker set name
             pub name: String [into],
-            /// **PNG** or **TGS** image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a _file\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]
-            ///
-            /// [More info on Sending Files »]: crate::types::InputFile
-            #[serde(flatten)]
+            /// A JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.
             pub sticker: InputSticker,
-            /// One or more emoji corresponding to the sticker
-            pub emojis: String [into],
-        }
-        optional {
-            /// A JSON-serialized object for position where the mask should be placed on faces
-            pub mask_position: MaskPosition,
         }
     }
 }

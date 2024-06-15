@@ -7,7 +7,7 @@ use crate::types::{
 };
 
 impl_payload! {
-    @[multipart = video, thumb]
+    @[multipart = video, thumbnail]
     /// Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// [`Document`]: crate::types::Document
@@ -34,7 +34,7 @@ impl_payload! {
             /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
-            pub thumb: InputFile,
+            pub thumbnail: InputFile,
             /// Video caption (may also be used when resending videos by _file\_id_), 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the video caption. See [formatting options] for more details.
