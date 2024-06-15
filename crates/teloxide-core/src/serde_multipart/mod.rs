@@ -155,7 +155,7 @@ mod tests {
                 teloxide-core-logo.png",
                 ),
                 emoji_list: vec!["✈️⚙️".to_owned()],
-                keywords: None,
+                keywords: vec![],
                 mask_position: None,
             },
         ))
