@@ -81,22 +81,22 @@ pub use teloxide_macros::BotCommands;
 /// ```
 ///
 /// # Enum attributes
-///  1. `#[command(rename_rule = "rule")]`
-/// Rename all commands by `rule`. Allowed rules are `lowercase`, `UPPERCASE`,
-/// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
-/// `kebab-case`, and `SCREAMING-KEBAB-CASE`.
+///  1. `#[command(rename_rule = "rule")]` Rename all commands by `rule`.
+///     Allowed rules are `lowercase`, `UPPERCASE`, `PascalCase`, `camelCase`,
+///     `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`, and
+///     `SCREAMING-KEBAB-CASE`.
 ///
-///  2. `#[command(prefix = "prefix")]`
-/// Change a prefix for all commands (the default is `/`).
+///  2. `#[command(prefix = "prefix")]` Change a prefix for all commands (the
+///     default is `/`).
 ///
-///  3. `#[command(description = "description")]` and `/// description`
-/// Add a summary description of commands before all commands.
+///  3. `#[command(description = "description")]` and `/// description` Add a
+///     summary description of commands before all commands.
 ///
-///  4. `#[command(parse_with = "parser")]`
-/// Change the parser of arguments. Possible values:
-///    - `default` - the same as the unspecified parser. It only puts all text
-///    after the first space into the first argument, which must implement
-///    [`FromStr`].
+///  4. `#[command(parse_with = "parser")]` Change the parser of arguments.
+///     Possible values:
+///       - `default` - the same as the unspecified parser. It only puts all
+///         text after the first space into the first argument, which must
+///         implement [`FromStr`].
 ///
 /// ## Example
 /// ```
@@ -134,9 +134,8 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
-/// 5. `#[command(separator = "sep")]`
-/// Specify separator used by the `split` parser. It will be ignored when
-/// accompanied by another type of parsers.
+/// 5. `#[command(separator = "sep")]` Specify separator used by the `split`
+///    parser. It will be ignored when accompanied by another type of parsers.
 ///
 /// ## Example
 /// ```
@@ -154,8 +153,8 @@ pub use teloxide_macros::BotCommands;
 /// # }
 /// ```
 ///
-/// 6. `#[command(command_separator = "sep")]`
-/// Specify separator between command and args. Default is a space character.
+/// 6. `#[command(command_separator = "sep")]` Specify separator between command
+///    and args. Default is a space character.
 ///
 /// ## Example
 /// ```
@@ -181,34 +180,33 @@ pub use teloxide_macros::BotCommands;
 /// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
 ///
-///  1. `#[command(rename_rule = "rule")]`
-/// Rename one command by a rule. Allowed rules are `lowercase`, `UPPERCASE`,
-/// `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`,
-/// `kebab-case`, `SCREAMING-KEBAB-CASE`.
+///  1. `#[command(rename_rule = "rule")]` Rename one command by a rule. Allowed
+///     rules are `lowercase`, `UPPERCASE`, `PascalCase`, `camelCase`,
+///     `snake_case`, `SCREAMING_SNAKE_CASE`, `kebab-case`,
+///     `SCREAMING-KEBAB-CASE`.
 ///
-///  2. `#[command(rename = "name")]`
-/// Rename one command to `name` (literal renaming; do not confuse with
-/// `rename_rule`).
+///  2. `#[command(rename = "name")]` Rename one command to `name` (literal
+///     renaming; do not confuse with `rename_rule`).
 ///
-///  3. `#[command(description = "description")]` and `/// description`
-/// Give your command a description. It will be shown in the help message.
+///  3. `#[command(description = "description")]` and `/// description` Give
+///     your command a description. It will be shown in the help message.
 ///
-///  4. `#[command(parse_with = "parser")]`
-/// Parse arguments of one command with a given parser. `parser` must be a
-/// function of the signature `fn(String) -> Result<Tuple, ParseError>`, where
-/// `Tuple` corresponds to the variant's arguments.
+///  4. `#[command(parse_with = "parser")]` Parse arguments of one command with
+///     a given parser. `parser` must be a function of the signature `fn(String)
+///     -> Result<Tuple, ParseError>`, where `Tuple` corresponds to the
+///     variant's arguments.
 ///
-///  5. `#[command(hide)]`
-/// Hide a command from the help message. It will still be parsed.
+///  5. `#[command(hide)]` Hide a command from the help message. It will still
+///     be parsed.
 ///
-/// 6. `#[command(alias = "alias")]`
-/// Add an alias to a command. It will be shown in the help message.
+/// 6. `#[command(alias = "alias")]` Add an alias to a command. It will be shown
+///    in the help message.
 ///
-/// 7. `#[command(aliases = ["alias1", "alias2"])]`
-/// Add multiple aliases to a command. They will be shown in the help message.
+/// 7. `#[command(aliases = ["alias1", "alias2"])]` Add multiple aliases to a
+///    command. They will be shown in the help message.
 ///
-/// 8. `#[command(hide_aliases)]`
-/// Hide all aliases of a command from the help message.
+/// 8. `#[command(hide_aliases)]` Hide all aliases of a command from the help
+///    message.
 ///
 /// ## Example
 /// ```

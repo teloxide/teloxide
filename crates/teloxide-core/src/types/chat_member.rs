@@ -361,6 +361,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has [`can_manage_chat`]
     ///   privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: Administrator::can_manage_chat
@@ -379,6 +380,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has [`can_post_messages`]
     ///   privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_post_messages`]: Administrator::can_post_messages
@@ -398,6 +400,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has the
     ///   [`can_edit_messages`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_edit_messages`]: Administrator::can_edit_messages
@@ -416,6 +419,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_delete_messages`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_delete_messages`]: Administrator::can_delete_messages
@@ -434,6 +438,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_manage_video_chats`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_video_chats`]: Administrator::can_manage_video_chats
@@ -454,6 +459,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_restrict_members`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_restrict_members`]: Administrator::can_restrict_members
@@ -477,6 +483,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has the
     ///   [`can_promote_members`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_promote_members`]: Administrator::can_promote_members
