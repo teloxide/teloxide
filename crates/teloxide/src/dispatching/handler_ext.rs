@@ -28,11 +28,11 @@ pub trait HandlerExt<Output> {
     /// It does so by the following steps:
     ///
     ///  1. If an incoming update has no chat ID ([`GetChatId::chat_id`] returns
-    /// `None`), the rest of the chain will not be executed. Otherwise, passes
-    /// `Dialogue::new(storage, chat_id)` forwards.
+    ///     `None`), the rest of the chain will not be executed. Otherwise,
+    ///     passes `Dialogue::new(storage, chat_id)` forwards.
     ///  2. If [`Dialogue::get_or_default`] on the passed dialogue returns `Ok`,
-    /// passes the dialogue state forwards. Otherwise, logs an error and the
-    /// rest of the chain is not executed.
+    ///     passes the dialogue state forwards. Otherwise, logs an error and the
+    ///     rest of the chain is not executed.
     ///
     /// ## Dependency requirements
     ///

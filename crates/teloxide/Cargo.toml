@@ -165,6 +165,12 @@ name = "postgres"
 path = "tests/postgres.rs"
 required-features = ["postgres-storage-nativetls", "cbor-serializer", "bincode-serializer"]
 
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(CI_POSTGRES)',
+    'cfg(CI_REDIS)',
+] }
+
 [[example]]
 name = "admin"
 required-features = ["macros", "ctrlc_handler"]
