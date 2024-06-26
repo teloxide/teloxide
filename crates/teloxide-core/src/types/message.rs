@@ -1783,7 +1783,8 @@ mod tests {
                     has_aggressive_anti_spam_enabled: false,
                     pinned_message: None,
                     message_auto_delete_time: None,
-                    has_hidden_members: false
+                    has_hidden_members: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
@@ -2016,6 +2017,7 @@ mod tests {
             pinned_message: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
 
         assert!(message.from().unwrap().is_anonymous());

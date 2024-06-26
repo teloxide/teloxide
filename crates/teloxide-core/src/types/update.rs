@@ -385,8 +385,8 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
+        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message,
+        MessageCommon, MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
@@ -442,6 +442,7 @@ mod test {
                     message_auto_delete_time: None,
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {
