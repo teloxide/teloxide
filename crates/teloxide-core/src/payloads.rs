@@ -135,6 +135,7 @@ mod unban_chat_sender_chat;
 mod unhide_general_forum_topic;
 mod unpin_all_chat_messages;
 mod unpin_all_forum_topic_messages;
+mod unpin_all_general_forum_topic_messages;
 mod unpin_chat_message;
 mod upload_sticker_file;
 
@@ -275,6 +276,9 @@ pub use unhide_general_forum_topic::{UnhideGeneralForumTopic, UnhideGeneralForum
 pub use unpin_all_chat_messages::{UnpinAllChatMessages, UnpinAllChatMessagesSetters};
 pub use unpin_all_forum_topic_messages::{
     UnpinAllForumTopicMessages, UnpinAllForumTopicMessagesSetters,
+};
+pub use unpin_all_general_forum_topic_messages::{
+    UnpinAllGeneralForumTopicMessages, UnpinAllGeneralForumTopicMessagesSetters,
 };
 pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};
