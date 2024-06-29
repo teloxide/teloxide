@@ -3,7 +3,7 @@ use crate::{
         distribution::default_distribution_function, DefaultKey, DpHandlerDescription,
         ShutdownToken,
     },
-    error_handlers::{ErrorHandler, LoggingErrorHandler},
+    error_handlers::{ErrorHandlerExt, LoggingErrorHandler},
     requests::{Request, Requester},
     types::{Update, UpdateKind},
     update_listeners::{self, UpdateListener},
@@ -40,7 +40,7 @@ pub struct DispatcherBuilder<R, Err, Key> {
     dependencies: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    error_handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>,
     ctrlc_handler: bool,
     distribution_f: fn(&Update) -> Option<Key>,
     worker_queue_size: usize,
@@ -75,7 +75,7 @@ where
     ///
     /// By default, it is [`LoggingErrorHandler`].
     #[must_use]
-    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err> + Send + Sync>) -> Self {
+    pub fn error_handler(self, handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>) -> Self {
         Self { error_handler: handler, ..self }
     }
 
@@ -265,7 +265,7 @@ pub struct Dispatcher<R, Err, Key> {
     // The default TX part that consume updates concurrently.
     default_worker: Option<Worker>,
 
-    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    error_handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>,
 
     state: ShutdownToken,
 }
@@ -356,7 +356,7 @@ where
         update_listener_error_handler: Arc<Eh>,
     ) where
         UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
+        Eh: ErrorHandlerExt<UListener::Err> + 'a,
         UListener::Err: Debug,
     {
         self.try_dispatch_with_listener(update_listener, update_listener_error_handler)
@@ -378,7 +378,7 @@ where
     ) -> Result<(), R::Err>
     where
         UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
+        Eh: ErrorHandlerExt<UListener::Err> + 'a,
         UListener::Err: Debug,
     {
         // FIXME: there should be a way to check if dependency is already inserted
@@ -443,7 +443,7 @@ where
         update: Result<Update, LErr>,
         err_handler: &Arc<LErrHandler>,
     ) where
-        LErrHandler: ErrorHandler<LErr>,
+        LErrHandler: ErrorHandlerExt<LErr>,
     {
         match update {
             Ok(upd) => {
@@ -492,7 +492,7 @@ where
 
                 worker.tx.send(upd).await.expect("TX is dead");
             }
-            Err(err) => err_handler.clone().handle_error(err).await,
+            Err(err) => err_handler.clone().handle_error_with_deps(DependencyMap::new(), err).await,
         }
     }
 
@@ -572,7 +572,7 @@ fn spawn_worker<Err>(
     deps: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    error_handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>,
     current_number_of_active_workers: Arc<AtomicU32>,
     max_number_of_active_workers: Arc<AtomicU32>,
     queue_size: usize,
@@ -613,7 +613,7 @@ fn spawn_default_worker<Err>(
     deps: DependencyMap,
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    error_handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>,
     queue_size: usize,
 ) -> Worker
 where
@@ -640,16 +640,18 @@ async fn handle_update<Err>(
     deps: Arc<DependencyMap>,
     handler: Arc<UpdateHandler<Err>>,
     default_handler: DefaultHandler,
-    error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>,
+    error_handler: Arc<dyn ErrorHandlerExt<Err> + Send + Sync>,
 ) where
     Err: Send + Sync + 'static,
 {
     let mut deps = deps.deref().clone();
     deps.insert(update);
 
-    match handler.dispatch(deps).await {
+    match handler.dispatch(deps.clone()).await {
         ControlFlow::Break(Ok(())) => {}
-        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err).await,
+        ControlFlow::Break(Err(err)) => {
+            error_handler.clone().handle_error_with_deps(deps, err).await
+        }
         ControlFlow::Continue(deps) => {
             let update = deps.get();
             (default_handler)(update).await;
