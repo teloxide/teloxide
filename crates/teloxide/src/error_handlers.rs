@@ -1,7 +1,9 @@
 //! Convenient error handling.
 
-use futures::future::BoxFuture;
 use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
+
+use dptree::di::DependencyMap;
+use futures::future::BoxFuture;
 
 /// An asynchronous handler of an error.
 ///
@@ -20,6 +22,31 @@ where
 {
     fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
         Box::pin(async move { self(error).await })
+    }
+}
+
+/// An asynchronous handler of an error with dependencies
+pub trait ErrorHandlerExt<E> {
+    #[must_use]
+    fn handle_error_with_deps(
+        self: Arc<Self>,
+        deps: DependencyMap,
+        error: E,
+    ) -> BoxFuture<'static, ()>;
+}
+
+impl<E, F, Fut> ErrorHandlerExt<E> for F
+where
+    F: Fn(DependencyMap, E) -> Fut + Send + Sync + 'static,
+    E: Send + 'static,
+    Fut: Future<Output = ()> + Send,
+{
+    fn handle_error_with_deps(
+        self: Arc<Self>,
+        deps: DependencyMap,
+        error: E,
+    ) -> BoxFuture<'static, ()> {
+        Box::pin(async move { self(deps, error).await })
     }
 }
 
@@ -118,6 +145,16 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
     }
 }
 
+impl<E> ErrorHandlerExt<E> for IgnoringErrorHandler {
+    fn handle_error_with_deps(
+        self: Arc<Self>,
+        _deps: DependencyMap,
+        _: E,
+    ) -> BoxFuture<'static, ()> {
+        Box::pin(async {})
+    }
+}
+
 /// A handler that silently ignores all errors that can never happen (e.g.:
 /// [`!`] or [`Infallible`]).
 ///
@@ -164,6 +201,17 @@ impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
     }
 }
 
+#[allow(unreachable_code)]
+impl ErrorHandlerExt<Infallible> for IgnoringErrorHandlerSafe {
+    fn handle_error_with_deps(
+        self: Arc<Self>,
+        _deps: DependencyMap,
+        _: Infallible,
+    ) -> BoxFuture<'static, ()> {
+        Box::pin(async {})
+    }
+}
+
 /// A handler that log all errors passed into it.
 ///
 /// ## Example
@@ -206,6 +254,20 @@ where
     E: Debug,
 {
     fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
+        log::error!("{text}: {:?}", error, text = self.text);
+        Box::pin(async {})
+    }
+}
+
+impl<E> ErrorHandlerExt<E> for LoggingErrorHandler
+where
+    E: Debug,
+{
+    fn handle_error_with_deps(
+        self: Arc<Self>,
+        _deps: DependencyMap,
+        error: E,
+    ) -> BoxFuture<'static, ()> {
         log::error!("{text}: {:?}", error, text = self.text);
         Box::pin(async {})
     }
