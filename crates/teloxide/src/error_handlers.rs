@@ -143,10 +143,10 @@ impl<E> ErrorHandler<E> for IgnoringErrorHandler {
 /// let result: Result<String, Infallible> = "str".try_into();
 /// match result {
 ///     Ok(string) => println!("{}", string),
-///     Err(inf) => IgnoringErrorHandlerSafe::new().handle_error(inf).await,
+///     Err(inf) => IgnoringErrorHandlerSafe::new().handle_error(inf, None).await,
 /// }
 ///
-/// IgnoringErrorHandlerSafe::new().handle_error(return).await; // return type of `return` is `!` (aka never)
+/// IgnoringErrorHandlerSafe::new().handle_error(return, None).await; // return type of `return` is `!` (aka never)
 /// # }
 /// ```
 ///
