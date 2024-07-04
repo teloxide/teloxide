@@ -44,9 +44,8 @@ impl<S> PostgresStorage<S> {
     /// - database_url: full url to the postgres database, for example
     ///   `"postgres://postgres:password@localhost/test")`
     /// - max_connections: number of connections in creating connection pool. Be
-    ///   mindful of the connection limits for your database, each
-    /// connection established with the Postgres creates a new process on the
-    /// server side
+    ///   mindful of the connection limits for your database, each connection
+    ///   established with the Postgres creates a new process on the server side
     /// - serializer: what [`Serializer`] will be used to encode the dialogue
     ///   data. Available ones are: [`Json`], [`Bincode`], [`Cbor`]
     ///

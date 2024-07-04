@@ -112,6 +112,9 @@ pre-release-replacements = [
     { file = "CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
 ]
 
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(dep_docsrs)'] }
+
 [[example]]
 name = "self_info"
 required-features = ["tokio/macros", "tokio/rt-multi-thread"]
