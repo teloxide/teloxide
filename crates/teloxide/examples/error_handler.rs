@@ -59,7 +59,18 @@ async fn main() {
         .await;
 }
 
-async fn error_handler(deps: DependencyMap, error: PublicError) {
+async fn error_handler(error: PublicError, deps: Option<DependencyMap>) {
+    /*
+       When the error is returned from one of the handlers, deps will contain actual initial_dependencies
+
+       In this example it's not valuable to handle errors with no dependencies, so just log them and ignore
+    */
+    if deps.is_none() {
+        log::error!("Error occured: {}", error);
+        return;
+    }
+    let deps = deps.unwrap();
+
     /*
        The Bot is always present in the dependencies, so it's safe to query it here
 

@@ -5,48 +5,31 @@ use std::{convert::Infallible, fmt::Debug, future::Future, sync::Arc};
 use dptree::di::DependencyMap;
 use futures::future::BoxFuture;
 
-/// An asynchronous handler of an error.
+/// An asynchronous handler of an error with dependencies
 ///
 /// See [the module-level documentation for the design
 /// overview](crate::dispatching).
 pub trait ErrorHandler<E> {
     #[must_use]
-    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()>;
+    fn handle_error(
+        self: Arc<Self>,
+        error: E,
+        deps: Option<DependencyMap>,
+    ) -> BoxFuture<'static, ()>;
 }
 
 impl<E, F, Fut> ErrorHandler<E> for F
 where
-    F: Fn(E) -> Fut + Send + Sync + 'static,
+    F: Fn(E, Option<DependencyMap>) -> Fut + Send + Sync + 'static,
     E: Send + 'static,
     Fut: Future<Output = ()> + Send,
 {
-    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
-        Box::pin(async move { self(error).await })
-    }
-}
-
-/// An asynchronous handler of an error with dependencies
-pub trait ErrorHandlerExt<E> {
-    #[must_use]
-    fn handle_error_with_deps(
+    fn handle_error(
         self: Arc<Self>,
-        deps: DependencyMap,
         error: E,
-    ) -> BoxFuture<'static, ()>;
-}
-
-impl<E, F, Fut> ErrorHandlerExt<E> for F
-where
-    F: Fn(DependencyMap, E) -> Fut + Send + Sync + 'static,
-    E: Send + 'static,
-    Fut: Future<Output = ()> + Send,
-{
-    fn handle_error_with_deps(
-        self: Arc<Self>,
-        deps: DependencyMap,
-        error: E,
+        deps: Option<DependencyMap>,
     ) -> BoxFuture<'static, ()> {
-        Box::pin(async move { self(deps, error).await })
+        Box::pin(async move { self(error, deps).await })
     }
 }
 
@@ -110,7 +93,7 @@ where
     {
         Box::pin(async move {
             if let Err(error) = self {
-                eh.handle_error(error).await;
+                eh.handle_error(error, None).await;
             }
         })
     }
@@ -122,11 +105,12 @@ where
 /// ```
 /// # #[tokio::main]
 /// # async fn main_() {
+/// use dptree::di::DependencyMap;
 /// use teloxide::error_handlers::{ErrorHandler, IgnoringErrorHandler};
 ///
-/// IgnoringErrorHandler::new().handle_error(()).await;
-/// IgnoringErrorHandler::new().handle_error(404).await;
-/// IgnoringErrorHandler::new().handle_error("error").await;
+/// IgnoringErrorHandler::new().handle_error((), None).await;
+/// IgnoringErrorHandler::new().handle_error(404, None).await;
+/// IgnoringErrorHandler::new().handle_error("error", None).await;
 /// # }
 /// ```
 #[derive(Clone, Copy)]
@@ -140,17 +124,7 @@ impl IgnoringErrorHandler {
 }
 
 impl<E> ErrorHandler<E> for IgnoringErrorHandler {
-    fn handle_error(self: Arc<Self>, _: E) -> BoxFuture<'static, ()> {
-        Box::pin(async {})
-    }
-}
-
-impl<E> ErrorHandlerExt<E> for IgnoringErrorHandler {
-    fn handle_error_with_deps(
-        self: Arc<Self>,
-        _deps: DependencyMap,
-        _: E,
-    ) -> BoxFuture<'static, ()> {
+    fn handle_error(self: Arc<Self>, _: E, _: Option<DependencyMap>) -> BoxFuture<'static, ()> {
         Box::pin(async {})
     }
 }
@@ -196,17 +170,10 @@ impl IgnoringErrorHandlerSafe {
 
 #[allow(unreachable_code)]
 impl ErrorHandler<Infallible> for IgnoringErrorHandlerSafe {
-    fn handle_error(self: Arc<Self>, _: Infallible) -> BoxFuture<'static, ()> {
-        Box::pin(async {})
-    }
-}
-
-#[allow(unreachable_code)]
-impl ErrorHandlerExt<Infallible> for IgnoringErrorHandlerSafe {
-    fn handle_error_with_deps(
+    fn handle_error(
         self: Arc<Self>,
-        _deps: DependencyMap,
         _: Infallible,
+        _: Option<DependencyMap>,
     ) -> BoxFuture<'static, ()> {
         Box::pin(async {})
     }
@@ -220,9 +187,9 @@ impl ErrorHandlerExt<Infallible> for IgnoringErrorHandlerSafe {
 /// # async fn main_() {
 /// use teloxide::error_handlers::{ErrorHandler, LoggingErrorHandler};
 ///
-/// LoggingErrorHandler::new().handle_error(()).await;
-/// LoggingErrorHandler::with_custom_text("Omg1").handle_error(404).await;
-/// LoggingErrorHandler::with_custom_text("Omg2").handle_error("Invalid data type!").await;
+/// LoggingErrorHandler::new().handle_error((), None).await;
+/// LoggingErrorHandler::with_custom_text("Omg1").handle_error(404, None).await;
+/// LoggingErrorHandler::with_custom_text("Omg2").handle_error("Invalid data type!", None).await;
 /// # }
 /// ```
 pub struct LoggingErrorHandler {
@@ -253,21 +220,7 @@ impl<E> ErrorHandler<E> for LoggingErrorHandler
 where
     E: Debug,
 {
-    fn handle_error(self: Arc<Self>, error: E) -> BoxFuture<'static, ()> {
-        log::error!("{text}: {:?}", error, text = self.text);
-        Box::pin(async {})
-    }
-}
-
-impl<E> ErrorHandlerExt<E> for LoggingErrorHandler
-where
-    E: Debug,
-{
-    fn handle_error_with_deps(
-        self: Arc<Self>,
-        _deps: DependencyMap,
-        error: E,
-    ) -> BoxFuture<'static, ()> {
+    fn handle_error(self: Arc<Self>, error: E, _: Option<DependencyMap>) -> BoxFuture<'static, ()> {
         log::error!("{text}: {:?}", error, text = self.text);
         Box::pin(async {})
     }
