@@ -59,29 +59,18 @@ async fn main() {
         .await;
 }
 
-async fn error_handler(error: PublicError, deps: Option<DependencyMap>) {
+async fn error_handler(error: PublicError, deps: DependencyMap) {
     /*
-       When the error is returned from one of the handlers, deps will contain actual initial_dependencies
-
-       In this example it's not valuable to handle errors with no dependencies, so just log them and ignore
-    */
-    if deps.is_none() {
-        log::error!("Error occured: {}", error);
-        return;
-    }
-    let deps = deps.unwrap();
-
-    /*
-       The Bot is always present in the dependencies, so it's safe to query it here
-
-       Note that you can access only initial dependencies, such as:
-       - Bot
-       - Update
-       - Me
-       - and the ones you've provided to the Dispatcher's dependencies
+        When an error is occured in one of your handlers, you can access only initial dependencies, such as:
+        - Update
+        - Bot
+        - Me
+        - and the ones you've provided to the Dispatcher's dependencies at the beginning
     */
 
     let bot: Arc<Bot> = deps.get();
+    // It worth to note that in case of UpdateListener::Error there will be no
+    // Update value
     let update: Arc<Update> = deps.get();
     let chat_id = update.chat().map(|c| c.id);
 
@@ -89,7 +78,7 @@ async fn error_handler(error: PublicError, deps: Option<DependencyMap>) {
         PublicError::Dummy => {
             // Some updates don't have a chat id
             if let Some(chat_id) = chat_id {
-                // TODO, maybe retry queue?
+                // TODO, maybe retry queue? backon?
                 let _ = bot.send_message(chat_id, error.to_string()).await;
             }
         }

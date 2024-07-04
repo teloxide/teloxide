@@ -492,7 +492,7 @@ where
 
                 worker.tx.send(upd).await.expect("TX is dead");
             }
-            Err(err) => err_handler.clone().handle_error(err, None).await,
+            Err(err) => err_handler.clone().handle_error(err, self.dependencies.clone()).await,
         }
     }
 
@@ -649,7 +649,7 @@ async fn handle_update<Err>(
 
     match handler.dispatch(deps.clone()).await {
         ControlFlow::Break(Ok(())) => {}
-        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err, Some(deps)).await,
+        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err, deps).await,
         ControlFlow::Continue(deps) => {
             let update = deps.get();
             (default_handler)(update).await;
