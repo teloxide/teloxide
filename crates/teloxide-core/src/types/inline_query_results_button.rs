@@ -9,7 +9,7 @@ use crate::types::WebAppInfo;
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultsButton {
-    ///  	Label text on the button
+    /// Label text on the button
     pub text: String,
 
     #[serde(flatten)]
