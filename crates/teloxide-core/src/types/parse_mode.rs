@@ -47,6 +47,7 @@ use serde::{Deserialize, Serialize};
 /// *bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ __underline italic bold___ bold*
 /// [inline URL](http://www.example.com/)
 /// [inline mention of a user](tg://user?id=123456789)
+/// ![👍](tg://emoji?id=5368324170671202286)
 /// `inline fixed-width code`
 /// ```
 /// pre-formatted fixed-width code block
@@ -72,6 +73,12 @@ use serde::{Deserialize, Serialize};
 ///   `underline` entity, so instead of `___italic underline___` use `___italic
 ///   underline_\r__`, where `\r` is a character with code `13`, which will be
 ///   ignored.
+/// - A valid emoji must be provided as an alternative value for the custom
+///   emoji. The emoji will be shown instead of the custom emoji in places where
+///   a custom emoji cannot be displayed (e.g., system notifications) or if the
+///   message is forwarded by a non-premium user. It is recommended to use the
+///   emoji from the emoji field of the custom emoji [sticker](https://core.telegram.org/bots/api#sticker).
+/// - Custom emoji entities can only be used by bots that purchased additional usernames on [Fragment](https://fragment.com/).
 ///
 /// ## HTML style
 ///
@@ -86,6 +93,7 @@ use serde::{Deserialize, Serialize};
 /// <b>bold <i>italic bold <s>italic bold strikethrough <span class="tg-spoiler">italic bold strikethrough spoiler</span></s> <u>underline italic bold</u></i> bold</b>
 /// <a href="http://www.example.com/">inline URL</a>
 /// <a href="tg://user?id=123456789">inline mention of a user</a>
+/// <tg-emoji emoji-id="5368324170671202286">👍</tg-emoji>
 /// <code>inline fixed-width code</code>
 /// <pre>pre-formatted fixed-width code block</pre>
 #[doc = "<pre><code class=\"language-rust\">pre-formatted fixed-width code block written in the \
@@ -104,6 +112,8 @@ use serde::{Deserialize, Serialize};
 /// - Use nested `pre` and `code` tags, to define programming language for `pre`
 ///   entity.
 /// - Programming language can't be specified for standalone `code` tags.
+/// - A valid emoji must be used as the content of the `tg-emoji` tag. The emoji will be shown instead of the custom emoji in places where a custom emoji cannot be displayed (e.g., system notifications) or if the message is forwarded by a non-premium user. It is recommended to use the emoji from the emoji field of the custom emoji [sticker](https://core.telegram.org/bots/api#sticker).
+/// - Custom emoji entities can only be used by bots that purchased additional usernames on [Fragment](https://fragment.com/).
 ///
 /// ## Markdown style
 ///

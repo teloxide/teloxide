@@ -70,6 +70,7 @@ mod get_me;
 mod get_my_commands;
 mod get_my_default_administrator_rights;
 mod get_my_description;
+mod get_my_name;
 mod get_my_short_description;
 mod get_sticker_set;
 mod get_updates;
@@ -116,6 +117,7 @@ mod set_game_score_inline;
 mod set_my_commands;
 mod set_my_default_administrator_rights;
 mod set_my_description;
+mod set_my_name;
 mod set_my_short_description;
 mod set_passport_data_errors;
 mod set_sticker_emoji_list;
@@ -199,6 +201,7 @@ pub use get_my_default_administrator_rights::{
     GetMyDefaultAdministratorRights, GetMyDefaultAdministratorRightsSetters,
 };
 pub use get_my_description::{GetMyDescription, GetMyDescriptionSetters};
+pub use get_my_name::{GetMyName, GetMyNameSetters};
 pub use get_my_short_description::{GetMyShortDescription, GetMyShortDescriptionSetters};
 pub use get_sticker_set::{GetStickerSet, GetStickerSetSetters};
 pub use get_updates::{GetUpdates, GetUpdatesSetters};
@@ -251,6 +254,7 @@ pub use set_my_default_administrator_rights::{
     SetMyDefaultAdministratorRights, SetMyDefaultAdministratorRightsSetters,
 };
 pub use set_my_description::{SetMyDescription, SetMyDescriptionSetters};
+pub use set_my_name::{SetMyName, SetMyNameSetters};
 pub use set_my_short_description::{SetMyShortDescription, SetMyShortDescriptionSetters};
 pub use set_passport_data_errors::{SetPassportDataErrors, SetPassportDataErrorsSetters};
 pub use set_sticker_emoji_list::{SetStickerEmojiList, SetStickerEmojiListSetters};

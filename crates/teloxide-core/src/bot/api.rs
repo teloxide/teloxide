@@ -829,6 +829,18 @@ impl Requester for Bot {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
     }
 
+    type SetMyName = JsonRequest<payloads::SetMyName>;
+
+    fn set_my_name(&self) -> Self::SetMyName {
+        Self::SetMyName::new(self.clone(), payloads::SetMyName::new())
+    }
+
+    type GetMyName = JsonRequest<payloads::GetMyName>;
+
+    fn get_my_name(&self) -> Self::GetMyName {
+        Self::GetMyName::new(self.clone(), payloads::GetMyName::new())
+    }
+
     type SetMyDescription = JsonRequest<payloads::SetMyDescription>;
 
     fn set_my_description(&self) -> Self::SetMyDescription {

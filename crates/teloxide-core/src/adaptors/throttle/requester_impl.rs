@@ -142,6 +142,8 @@ where
         answer_callback_query,
         set_my_commands,
         get_my_commands,
+        set_my_name,
+        get_my_name,
         set_my_description,
         get_my_description,
         set_my_short_description,

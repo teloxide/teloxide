@@ -69,12 +69,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add new type `StickerFormatFlags` with fields `is_animated` and `is_video`
   - Add new method `Sticker::format` which returns the format of the sticker, the format is determined by the `StickerFormatFlags` of the `Sticker`
   - Add missing fields `{InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumbnail_mime_type`
+- Support for TBA 6.7 ([#1086](pr1086))
+  - Add support for launching [Web Apps](https://core.telegram.org/bots/webapps) from inline query results by replacing the parameters `switch_pm_text` and `switch_pm_parameter` of the method `answer_inline_query` with the parameter `button` of type `InlineQueryResultsButton`
+  - Add new fields:
+    - `web_app_name` to `WriteAccessAllowed`
+    - `switch_inline_query_chosen_chat` of the type `SwitchInlineQueryChosenChat` to `InlineKeyboardButton`
+    - `via_chat_folder_invite_link` to `ChatMemberUpdated`
+  - Add methods for working with bot's name:
+    - `set_my_name`
+    - `get_my_name`
+  - Add the ability to specify custom emoji entities using `HTML` and `MarkdownV2` formatting options for bots that purchased additional usernames on [Fragment](https://fragment.com/)
+
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
 [pr905]: https://github.com/teloxide/teloxide/pull/905
 [pr982]: https://github.com/teloxide/teloxide/pull/982
 [pr1040]: https://github.com/teloxide/teloxide/pull/1040
+[pr1086]: https://github.com/teloxide/teloxide/pull/1086
 
 ### Fixed
 

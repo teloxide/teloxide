@@ -1033,6 +1033,22 @@ macro_rules! requester_forward {
             $body!(get_my_commands this ())
         }
     };
+    (@method set_my_name $body:ident $ty:ident) => {
+        type SetMyName = $ty![SetMyName];
+
+        fn set_my_name(&self, ) -> Self::SetMyName {
+            let this = self;
+            $body!(set_my_name this ())
+        }
+    };
+    (@method get_my_name $body:ident $ty:ident) => {
+        type GetMyName = $ty![GetMyName];
+
+        fn get_my_name(&self, ) -> Self::GetMyName {
+            let this = self;
+            $body!(get_my_name this ())
+        }
+    };
     (@method set_my_description $body:ident $ty:ident) => {
         type SetMyDescription = $ty![SetMyDescription];
 

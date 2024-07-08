@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.6", date: "March 9, 2023"),
+    api_version: ApiVersion(ver: "6.7", date: "April 21, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -2895,6 +2895,42 @@ Schema(
             ],
         ),
         Method(
+            names: ("setMyName", "SetMyName", "set_my_name"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the bot's name. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.")
+                ),
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose language there is no dedicated name.")
+                ),
+            ],
+        ),
+        Method(
+            names: ("getMyName", "GetMyName", "get_my_name"),
+            return_ty: RawTy("BotName"),
+            doc: Doc(
+                md: "Use this method to get the current bot name for the given user language. Returns [BotName] on success.",
+                md_links: {"BotName": "https://core.telegram.org/bots/api#botname"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code or an empty string")
+                ),
+            ],
+        ),
+        Method(
             names: ("setMyDescription", "SetMyDescription", "set_my_description"),
             return_ty: True,
             doc: Doc(md: "Use this method to change the bot's description, which is shown in the chat with the bot if the chat is empty. Returns True on success."),
@@ -3087,21 +3123,10 @@ Schema(
                     descr: Doc(md: "Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes.")
                 ),
                 Param(
-                    name: "switch_pm_text",
-                    ty: Option(String),
-                    descr: Doc(md: "If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter")
-                ),
-                Param(
-                    name: "switch_pm_parameter",
-                    ty: Option(String),
-                    descr: Doc(
-                        md: "[Deep-linking] parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only `A-Z`, `a-z`, `0-9`, `_` and `-` are allowed.\n\n_Example_: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an oauth link. Once done, the bot can offer a [switch_inline] button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.",
-                        md_links: {
-                            "Deep-linking": "https://core.telegram.org/bots#deep-linking",
-                            "switch_inline": "https://core.telegram.org/bots/api#inlinekeyboardmarkup",
-                        },
-                    ),
-                ),
+                    name: "button",
+                    ty: Option(RawTy("InlineQueryResultsButton")),
+                    descr: Doc(md: "A JSON-serialized object describing a button to be shown above inline query results")
+                )
             ],
         ),
         Method(
