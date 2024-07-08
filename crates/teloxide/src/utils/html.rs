@@ -101,7 +101,15 @@ pub fn code_inline(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape(s: &str) -> String {
-    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+    s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
+        match c {
+            '&' => s.push_str("&amp;"),
+            '<' => s.push_str("&lt;"),
+            '>' => s.push_str("&gt;"),
+            c => s.push(c),
+        }
+        s
+    })
 }
 
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \

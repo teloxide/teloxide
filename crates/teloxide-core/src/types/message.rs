@@ -1009,17 +1009,16 @@ mod getters {
         #[must_use]
         pub fn caption(&self) -> Option<&str> {
             match &self.kind {
-                Common(MessageCommon { media_kind, .. }) => match media_kind {
-                    MediaKind::Animation(MediaAnimation { caption, .. })
-                    | MediaKind::Audio(MediaAudio { caption, .. })
-                    | MediaKind::Document(MediaDocument { caption, .. })
-                    | MediaKind::Photo(MediaPhoto { caption, .. })
-                    | MediaKind::Video(MediaVideo { caption, .. })
-                    | MediaKind::Voice(MediaVoice { caption, .. }) => {
-                        caption.as_ref().map(Deref::deref)
-                    }
-                    _ => None,
-                },
+                Common(MessageCommon {
+                    media_kind:
+                        MediaKind::Animation(MediaAnimation { caption, .. })
+                        | MediaKind::Audio(MediaAudio { caption, .. })
+                        | MediaKind::Document(MediaDocument { caption, .. })
+                        | MediaKind::Photo(MediaPhoto { caption, .. })
+                        | MediaKind::Video(MediaVideo { caption, .. })
+                        | MediaKind::Voice(MediaVoice { caption, .. }),
+                    ..
+                }) => caption.as_ref().map(Deref::deref),
                 _ => None,
             }
         }
