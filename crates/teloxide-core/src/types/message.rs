@@ -1707,7 +1707,7 @@ mod tests {
             "width": 512,
             "height": 640,
             "mime_type": "video/mp4",
-            "thumb": {
+            "thumbnail": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
               "file_unique_id":"",
               "file_size": 10339,
@@ -1799,7 +1799,7 @@ mod tests {
             "width": 512,
             "height": 640,
             "mime_type": "video/mp4",
-            "thumb": {
+            "thumbnail": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
               "file_unique_id":"",
               "file_size": 10339,
@@ -1869,7 +1869,7 @@ mod tests {
                 "is_animated": true,
                 "is_video": false,
                 "type": "regular",
-                "thumb": {
+                "thumbnail": {
                     "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
                     "file_unique_id": "AQADIwADsND4DHI",
                     "file_size": 4118,
