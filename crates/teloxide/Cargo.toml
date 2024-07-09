@@ -206,6 +206,10 @@ name = "dispatching_features"
 required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
+name = "error_handler"
+required-features = ["macros", "throttle"]
+
+[[example]]
 name = "heroku_ping_pong"
 required-features = ["webhooks-axum", "ctrlc_handler"]
 

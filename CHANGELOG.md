@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `filter_web_app_data` 
 - Implement `PostgresStorage`, a persistent dialogue storage based on [PostgreSQL](https://www.postgresql.org/)([PR 996](https://github.com/teloxide/teloxide/pull/996)).
 - Implement `GetChatId` for `teloxide_core::types::{Chat, ChatJoinRequest, ChatMemberUpdated}`.
+- Ability to use initial dependencies in the `ErrorHandler::handle_error` ([PR 1080](https://github.com/teloxide/teloxide/pull/1080))
 
 ### Fixed
 

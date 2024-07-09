@@ -75,8 +75,8 @@ where
     ///
     /// By default, it is [`LoggingErrorHandler`].
     #[must_use]
-    pub fn error_handler(self, handler: Arc<dyn ErrorHandler<Err> + Send + Sync>) -> Self {
-        Self { error_handler: handler, ..self }
+    pub fn error_handler(self, error_handler: Arc<dyn ErrorHandler<Err> + Send + Sync>) -> Self {
+        Self { error_handler, ..self }
     }
 
     /// Specifies dependencies that can be used inside of handlers.
@@ -492,7 +492,7 @@ where
 
                 worker.tx.send(upd).await.expect("TX is dead");
             }
-            Err(err) => err_handler.clone().handle_error(err).await,
+            Err(err) => err_handler.clone().handle_error(err, self.dependencies.clone()).await,
         }
     }
 
@@ -647,9 +647,9 @@ async fn handle_update<Err>(
     let mut deps = deps.deref().clone();
     deps.insert(update);
 
-    match handler.dispatch(deps).await {
+    match handler.dispatch(deps.clone()).await {
         ControlFlow::Break(Ok(())) => {}
-        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err).await,
+        ControlFlow::Break(Err(err)) => error_handler.clone().handle_error(err, deps).await,
         ControlFlow::Continue(deps) => {
             let update = deps.get();
             (default_handler)(update).await;
