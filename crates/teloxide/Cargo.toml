@@ -42,6 +42,7 @@ ctrlc_handler = ["tokio/signal"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
+rustls-native-roots = ["teloxide-core/rustls-native-roots"]
 throttle = ["teloxide-core/throttle"]
 cache-me = [
     "teloxide-core/cache_me",

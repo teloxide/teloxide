@@ -22,6 +22,7 @@ categories = ["api-bindings", "asynchronous"]
 default = ["native-tls"]
 
 rustls = ["reqwest/rustls-tls"]
+rustls-native-roots = ["reqwest/rustls-tls-native-roots"]
 native-tls = ["reqwest/native-tls"]
 
 # Features which require nightly compiler.
