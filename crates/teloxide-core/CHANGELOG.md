@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- type of chat_id in `send_game` should be `ChatId` not u32
+
+[pr1066]: https://github.com/teloxide/teloxide/pull/1066
+
 ### Added
 
 - `ChatPermission::can_*` helper functions ([#851][pr851])
