@@ -23,7 +23,7 @@ pub struct Video {
     pub duration: Seconds,
 
     /// Video thumbnail.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 
     /// Original filename as defined by sender
     pub file_name: Option<String>,

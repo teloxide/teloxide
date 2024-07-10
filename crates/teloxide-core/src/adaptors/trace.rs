@@ -66,20 +66,20 @@ bitflags::bitflags! {
     /// ```
     pub struct Settings: u8 {
         /// Trace requests (only request kind, e.g. `send_message`)
-        const TRACE_REQUESTS = 0b00000001;
+        const TRACE_REQUESTS = 1;
 
         /// Trace requests verbosely (with all parameters).
         ///
         /// Implies [`TRACE_REQUESTS`]
-        const TRACE_REQUESTS_VERBOSE = 0b00000011;
+        const TRACE_REQUESTS_VERBOSE = (1 << 1) | Self::TRACE_REQUESTS.bits;
 
         /// Trace responses (only request kind, e.g. `send_message`)
-        const TRACE_RESPONSES = 0b00000100;
+        const TRACE_RESPONSES = 1 << 2;
 
         /// Trace responses verbosely (with full response).
         ///
         /// Implies [`TRACE_RESPONSES`]
-        const TRACE_RESPONSES_VERBOSE = 0b00001100;
+        const TRACE_RESPONSES_VERBOSE = (1 << 3) | Self::TRACE_RESPONSES.bits;
 
         /// Trace everything.
         ///
@@ -188,6 +188,12 @@ where
         answer_callback_query,
         set_my_commands,
         get_my_commands,
+        set_my_name,
+        get_my_name,
+        set_my_description,
+        get_my_description,
+        set_my_short_description,
+        get_my_short_description,
         set_chat_menu_button,
         get_chat_menu_button,
         set_my_default_administrator_rights,
@@ -213,7 +219,13 @@ where
         add_sticker_to_set,
         set_sticker_position_in_set,
         delete_sticker_from_set,
-        set_sticker_set_thumb,
+        set_sticker_set_thumbnail,
+        set_custom_emoji_sticker_set_thumbnail,
+        set_sticker_set_title,
+        delete_sticker_set,
+        set_sticker_emoji_list,
+        set_sticker_keywords,
+        set_sticker_mask_position,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,

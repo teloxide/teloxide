@@ -26,7 +26,6 @@
 //!   + `PollType` type of poll, either “quiz” or “regular”
 //!   + `DiceEmoji` emoji that can be used in `sendDice` one of “🎲”, “🎯”, or “🏀”
 //!   + `TargetMessage` either `inline_message_id: String` or `chat_id: ChatId` and `message_id: i64`
-//!   + `InputSticker`
 //! * Integers represented with more strict (when possible) types, e.g.:
 //!   `u8` (unsigned, 8-bit integer), `u32` (unsigned, 32-bit), 
 //!   `i64` (signed, 64-bit), etc
@@ -40,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.1", date: "June 20, 2022"),
+    api_version: ApiVersion(ver: "6.7", date: "April 21, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -575,7 +574,7 @@ Schema(
                     descr: Doc(md: "Track name"),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
@@ -647,7 +646,7 @@ Schema(
                     ),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
@@ -760,7 +759,7 @@ Schema(
                     descr: Doc(md: "Video height"),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
@@ -876,7 +875,7 @@ Schema(
                     descr: Doc(md: "Animation height"),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
@@ -1070,7 +1069,7 @@ Schema(
                     descr: Doc(md: "Video width and height, i.e. diameter of the video message"),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
@@ -2896,6 +2895,114 @@ Schema(
             ],
         ),
         Method(
+            names: ("setMyName", "SetMyName", "set_my_name"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the bot's name. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.")
+                ),
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose language there is no dedicated name.")
+                ),
+            ],
+        ),
+        Method(
+            names: ("getMyName", "GetMyName", "get_my_name"),
+            return_ty: RawTy("BotName"),
+            doc: Doc(
+                md: "Use this method to get the current bot name for the given user language. Returns [BotName] on success.",
+                md_links: {"BotName": "https://core.telegram.org/bots/api#botname"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmyname",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code or an empty string")
+                ),
+            ],
+        ),
+        Method(
+            names: ("setMyDescription", "SetMyDescription", "set_my_description"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the bot's description, which is shown in the chat with the bot if the chat is empty. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setmydescription",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "description",
+                    ty: Option(String),
+                    descr: Doc(md: "New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.")
+                ),
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for whose language there is no dedicated description.")
+                )
+            ]
+        ),
+        Method(
+            names: ("getMyDescription", "GetMyDescription", "get_my_description"),
+            return_ty: RawTy("BotDescription"),
+            doc: Doc(
+                md: "Use this method to get the current bot description for the given user language. Returns [BotDescription] on success.",
+                md_links: {"BotDescription": "https://core.telegram.org/bots/api#botdescription"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmydescription",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code")
+                )
+            ]
+        ),
+        Method(
+            names: ("setMyShortDescription", "SetMyShortDescription", "set_my_short_description"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the bot's short description, which is shown on the bot's profile page and is sent together with the link when users share the bot. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setmyshortdescription",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "short_description",
+                    ty: Option(String),
+                    descr: Doc(md: "New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.")
+                ),
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, the short description will be applied to all users for whose language there is no dedicated short description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("getMyShortDescription", "GetMyShortDescription", "get_my_short_description"),
+            return_ty: RawTy("BotShortDescription"),
+            doc: Doc(
+                md: "Use this method to get the current bot short description for the given user language. Returns [BotShortDescription] on success.",
+                md_links: {"BotShortDescription": "https://core.telegram.org/bots/api#botshortdescription"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmyshortdescription",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "language_code",
+                    ty: Option(String),
+                    descr: Doc(md: "A two-letter ISO 639-1 language code")
+                ),
+            ]
+        ),
+        Method(
             names: ("setChatMenuButton", "SetChatMenuButton", "set_chat_menu_button"),
             return_ty: True,
             doc: Doc(md: "Use this method to change the bot's menu button in a private chat, or the default menu button."),
@@ -3016,21 +3123,10 @@ Schema(
                     descr: Doc(md: "Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes.")
                 ),
                 Param(
-                    name: "switch_pm_text",
-                    ty: Option(String),
-                    descr: Doc(md: "If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter")
-                ),
-                Param(
-                    name: "switch_pm_parameter",
-                    ty: Option(String),
-                    descr: Doc(
-                        md: "[Deep-linking] parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only `A-Z`, `a-z`, `0-9`, `_` and `-` are allowed.\n\n_Example_: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an oauth link. Once done, the bot can offer a [switch_inline] button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.",
-                        md_links: {
-                            "Deep-linking": "https://core.telegram.org/bots#deep-linking",
-                            "switch_inline": "https://core.telegram.org/bots/api#inlinekeyboardmarkup",
-                        },
-                    ),
-                ),
+                    name: "button",
+                    ty: Option(RawTy("InlineQueryResultsButton")),
+                    descr: Doc(md: "A JSON-serialized object describing a button to be shown above inline query results")
+                )
             ],
         ),
         Method(
@@ -3433,6 +3529,11 @@ Schema(
                     )
                 ),
                 Param(
+                    name: "emoji",
+                    ty: Option(String),
+                    descr: Doc(md: "Emoji associated with the sticker; only for just uploaded stickers")
+                ),
+                Param(
                     name: "disable_notification",
                     ty: Option(bool), 
                     descr: Doc(
@@ -3499,7 +3600,14 @@ Schema(
         Method(
             names: ("uploadStickerFile", "UploadStickerFile", "upload_sticker_file"),
             return_ty: RawTy("FileMeta"),
-            doc: Doc(md: "Use this method to upload a .PNG file with a sticker for later use in _createNewStickerSet_ and _addStickerToSet_ methods (can be used multiple times). Returns the uploaded File on success."),
+            doc: Doc(
+                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet] and [AddStickerToSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
+                md_links: {
+                    "CreateNewStickerSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.CreateNewStickerSet.html",
+                    "AddStickerToSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html",
+                    "File": "https://core.telegram.org/bots/api#file"
+                }
+            ),
             tg_doc: "https://core.telegram.org/bots/api#uploadstickerfile",
             tg_category: "Stickers",
             params: [
@@ -3509,19 +3617,27 @@ Schema(
                     descr: Doc(md: "User identifier of sticker file owner"),
                 ),
                 Param(
-                    name: "png_sticker",
+                    name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. [More info on Sending Files »]",
-                        md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
+                        md: "A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. [Technical requirements]. [More info on Sending Files »]",
+                        md_links: {
+                            "More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files",
+                            "Technical requirements": "https://core.telegram.org/stickers"
+                        },
                     ),
                 ),
+                Param(
+                    name: "sticker_format",
+                    ty: RawTy("StickerFormat"),
+                    descr: Doc(md: "Format of the sticker, must be one of “static”, “animated”, “video”")
+                )
             ],
         ),
         Method(
             names: ("createNewStickerSet", "CreateNewStickerSet", "create_new_sticker_set"),
             return_ty: True,
-            doc: Doc(md: "Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. You must use exactly one of the fields _png\\_sticker_ or _tgs\\_sticker_. Returns _True_ on success."),
+            doc: Doc(md: "Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. Returns True on success."),
             tg_doc: "https://core.telegram.org/bots/api#createstickerset",
             tg_category: "Stickers",
             params: [
@@ -3541,34 +3657,31 @@ Schema(
                     descr: Doc(md: "Sticker set title, 1-64 characters"),
                 ),
                 Param(
-                    name: "sticker",
-                    ty: RawTy("InputSticker"),
-                    descr: Doc(
-                        md: "**PNG** image, **TGS** animation or **WEBM** video with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a _file\\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
-                        md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
-                    ),
+                    name: "stickers",
+                    ty: ArrayOf(RawTy("InputSticker")),
+                    descr: Doc(md: "A JSON-serialized list of 1-50 initial stickers to be added to the sticker set")
                 ),
                 Param(
-                    name: "emojis",
-                    ty: String,
-                    descr: Doc(md: "One or more emoji corresponding to the sticker"),
+                    name: "sticker_format",
+                    ty: RawTy("StickerFormat"),
+                    descr: Doc(md: "Format of the sticker, must be one of “static”, “animated”, “video”")
                 ),
                 Param(
                     name: "sticker_type",
                     ty: Option(RawTy("StickerType")),
-                    descr: Doc(md: "Type of stickers in the set, pass “regular” or “mask”. Custom emoji sticker sets can't be created via the Bot API at the moment. By default, a regular sticker set is created."),
+                    descr: Doc(md: "Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created."),
                 ),
                 Param(
-                    name: "mask_position",
-                    ty: Option(RawTy("MaskPosition")),
-                    descr: Doc(md: "A JSON-serialized object for position where the mask should be placed on faces"),
-                ),
+                    name: "needs_repainting",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _True_ if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only")
+                )
             ],
         ),
         Method(
             names: ("addStickerToSet", "AddStickerToSet", "add_sticker_to_set"),
             return_ty: True,
-            doc: Doc(md: "Use this method to add a new sticker to a set created by the bot. You **must** use exactly one of the fields _png\\_sticker_ or _tgs\\_sticker_. Animated stickers can be added to animated sticker sets and only to them. Animated sticker sets can have up to 50 stickers. Static sticker sets can have up to 120 stickers. Returns _True_ on success."),
+            doc: Doc(md: "Use this method to add a new sticker to a set created by the bot. Emoji sticker sets can have up to 200 stickers. Other sticker sets can have up to 120 stickers. Returns True on success."),
             tg_doc: "https://core.telegram.org/bots/api#addstickertoset",
             tg_category: "Stickers",
             params: [
@@ -3586,19 +3699,8 @@ Schema(
                     name: "sticker",
                     ty: RawTy("InputSticker"),
                     descr: Doc(
-                        md: "**PNG** or **TGS** image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a _file\\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
-                        md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
+                        md: "A JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.",
                     ),
-                ),
-                Param(
-                    name: "emojis",
-                    ty: String,
-                    descr: Doc(md: "One or more emoji corresponding to the sticker"),
-                ),
-                Param(
-                    name: "mask_position",
-                    ty: Option(RawTy("MaskPosition")),
-                    descr: Doc(md: "A JSON-serialized object for position where the mask should be placed on faces"),
                 ),
             ],
         ),
@@ -3636,10 +3738,10 @@ Schema(
             ],
         ),
         Method(
-            names: ("setStickerSetThumb", "SetStickerSetThumb", "set_sticker_set_thumb"),
+            names: ("setStickerSetThumbnail", "SetStickerSetThumbnail", "set_sticker_set_thumbnail"),
             return_ty: True,
-            doc: Doc(md: "Use this method to set the thumbnail of a sticker set. Animated thumbnails can be set for animated sticker sets only. Returns _True_ on success."),
-            tg_doc: "https://core.telegram.org/bots/api#setstickersetthumb",
+            doc: Doc(md: "Use this method to set the thumbnail of a regular or mask sticker set. The format of the thumbnail file must match the format of the stickers in the set. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setstickersetthumbnail",
             tg_category: "Stickers",
             params: [
                 Param(
@@ -3653,14 +3755,123 @@ Schema(
                     descr: Doc(md: "User identifier of sticker file owner"),
                 ),
                 Param(
-                    name: "thumb",
+                    name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
-                        md: "A **PNG** image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a **TGS** animation with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/animated_stickers#technical-requirements for animated sticker technical requirements. Pass a _file\\_id_ as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]. Animated sticker set thumbnail can't be uploaded via HTTP URL.",
+                        md: "A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
             ],
+        ),
+        Method(
+            names: ("setCustomEmojiStickerSetThumbnail", "SetCustomEmojiStickerSetThumbnail", "set_custom_emoji_sticker_set_thumbnail"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to set the thumbnail of a custom emoji sticker set. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setcustomemojistickersetthumbnail",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Sticker set name"),
+                ),
+                Param(
+                    name: "custom_emoji_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail."),
+                )
+            ]
+        ),
+        Method(
+            names: ("setStickerSetTitle", "SetStickerSetTitle", "set_sticker_set_title"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to set the title of a created sticker set. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setstickersettitle",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Sticker set name"),
+                ),
+                Param(
+                    name: "title",
+                    ty: String,
+                    descr: Doc(md: "Sticker set title, 1-64 characters"),
+                )
+            ]
+        ),
+        Method(
+            names: ("deleteStickerSet", "DeleteStickerSet", "delete_sticker_set"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete a sticker set that was created by the bot. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#deletestickerset",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Sticker set name"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("setStickerEmojiList", "SetStickerEmojiList", "set_sticker_emoji_list"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the list of emoji assigned to a regular or custom emoji sticker. The sticker must belong to a sticker set created by the bot. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setstickeremojilist",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "sticker",
+                    ty: String,
+                    descr: Doc(md: "File identifier of the sticker"),
+                ),
+                Param(
+                    name: "emoji_list",
+                    ty: ArrayOf(String),
+                    descr: Doc(md: "A JSON-serialized list of 1-20 emoji associated with the sticker"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("setStickerKeywords", "SetStickerKeywords", "set_sticker_keywords"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change search keywords assigned to a regular or custom emoji sticker. The sticker must belong to a sticker set created by the bot. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setstickerkeywords",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "sticker",
+                    ty: String,
+                    descr: Doc(md: "File identifier of the sticker"),
+                ),
+                Param(
+                    name: "keywords",
+                    ty: Option(ArrayOf(String)),
+                    descr: Doc(md: "A JSON-serialized list of 0-20 search keywords for the sticker with total length of up to 64 characters"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("setStickerMaskPosition", "SetStickerMaskPosition", "set_sticker_mask_position"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to change the mask position of a mask sticker. The sticker must belong to a sticker set that was created by the bot. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#setstickermaskposition",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "sticker",
+                    ty: String,
+                    descr: Doc(md: "File identifier of the sticker"),
+                ),
+                Param(
+                    name: "mask_position",
+                    ty: Option(RawTy("MaskPosition")),
+                    descr: Doc(md: "A JSON-serialized object with the position where the mask should be placed on faces. Omit the parameter to remove the mask position."),
+                ),
+            ]
         ),
         Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),

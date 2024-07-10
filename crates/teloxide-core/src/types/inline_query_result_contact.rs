@@ -39,13 +39,13 @@ pub struct InlineQueryResultContact {
     pub input_message_content: Option<InputMessageContent>,
 
     /// Url of the thumbnail for the result.
-    pub thumb_url: Option<reqwest::Url>,
+    pub thumbnail_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
-    pub thumb_width: Option<u32>,
+    pub thumbnail_width: Option<u32>,
 
     /// Thumbnail height.
-    pub thumb_height: Option<u32>,
+    pub thumbnail_height: Option<u32>,
 }
 
 impl InlineQueryResultContact {
@@ -63,9 +63,9 @@ impl InlineQueryResultContact {
             vcard: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         }
     }
 
@@ -122,20 +122,20 @@ impl InlineQueryResultContact {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = Some(val);
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_width(mut self, val: u32) -> Self {
-        self.thumb_width = Some(val);
+    pub fn thumbnail_width(mut self, val: u32) -> Self {
+        self.thumbnail_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_height(mut self, val: u32) -> Self {
-        self.thumb_height = Some(val);
+    pub fn thumbnail_height(mut self, val: u32) -> Self {
+        self.thumbnail_height = Some(val);
         self
     }
 }
