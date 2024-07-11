@@ -758,6 +758,19 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type UnpinAllGeneralForumTopicMessages: Request<
+        Payload = UnpinAllGeneralForumTopicMessages,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`UnpinAllGeneralForumTopicMessages`].
+    fn unpin_all_general_forum_topic_messages<C>(
+        &self,
+        chat_id: C,
+    ) -> Self::UnpinAllGeneralForumTopicMessages
+    where
+        C: Into<Recipient>;
+
     type AnswerCallbackQuery: Request<Payload = AnswerCallbackQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerCallbackQuery`].
@@ -1297,6 +1310,7 @@ macro_rules! forward_all {
             reopen_general_forum_topic,
             hide_general_forum_topic,
             unhide_general_forum_topic,
+            unpin_all_general_forum_topic_messages,
             answer_callback_query,
             set_my_commands,
             get_my_commands,

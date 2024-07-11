@@ -79,7 +79,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `set_my_name`
     - `get_my_name`
   - Add the ability to specify custom emoji entities using `HTML` and `MarkdownV2` formatting options for bots that purchased additional usernames on [Fragment](https://fragment.com/)
-
+- Support for TBA 6.8 ([#1087](pr1087))
+  - Add the `MediaKind::Story`
+  - Add new fields
+    - `PollAnswer::voter` to support anonymous poll answers in chats
+    - `emoji_status_expiration_date` to `Chat` as part of the future `ChatFullInfo` type TBA type
+  - Add the `unpin_all_general_forum_topic_messages` method
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -87,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr982]: https://github.com/teloxide/teloxide/pull/982
 [pr1040]: https://github.com/teloxide/teloxide/pull/1040
 [pr1086]: https://github.com/teloxide/teloxide/pull/1086
+[pr1087]: https://github.com/teloxide/teloxide/pull/1087
 
 ### Fixed
 

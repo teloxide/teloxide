@@ -9,9 +9,9 @@ use crate::types::{
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
-    PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, ThreadId, True, User,
-    UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, ThreadId, True,
+    User, UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -366,6 +366,7 @@ pub enum MediaKind {
     Photo(MediaPhoto),
     Poll(MediaPoll),
     Sticker(MediaSticker),
+    Story(MediaStory),
     Text(MediaText),
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
@@ -492,6 +493,13 @@ pub struct MediaPoll {
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
+}
+
+#[serde_with_macros::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MediaStory {
+    /// Message is a forwarded story
+    pub story: Story,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -668,14 +676,14 @@ mod getters {
     use crate::types::{
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
         MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
-        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
-        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageChatShared,
-        MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
-        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
-        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
-        MessageSupergroupChatCreated, MessageUserShared, MessageVideoChatParticipantsInvited,
-        PhotoSize, User,
+        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue,
+        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated,
+        MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
+        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
+        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
+        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUserShared,
+        MessageVideoChatParticipantsInvited, PhotoSize, User,
     };
 
     use super::{
@@ -899,6 +907,7 @@ mod getters {
                     | MediaKind::Location(_)
                     | MediaKind::Poll(_)
                     | MediaKind::Sticker(_)
+                    | MediaKind::Story(_)
                     | MediaKind::Text(_)
                     | MediaKind::VideoNote(_)
                     | MediaKind::Voice(_)
@@ -969,6 +978,17 @@ mod getters {
                     media_kind: MediaKind::Sticker(MediaSticker { sticker, .. }),
                     ..
                 }) => Some(sticker),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn story(&self) -> Option<&types::Story> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Story(MediaStory { story, .. }),
+                    ..
+                }) => Some(story),
                 _ => None,
             }
         }
@@ -1763,7 +1783,8 @@ mod tests {
                     has_aggressive_anti_spam_enabled: false,
                     pinned_message: None,
                     message_auto_delete_time: None,
-                    has_hidden_members: false
+                    has_hidden_members: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
@@ -1996,6 +2017,7 @@ mod tests {
             pinned_message: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
 
         assert!(message.from().unwrap().is_anonymous());

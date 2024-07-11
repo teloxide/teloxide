@@ -802,6 +802,22 @@ impl Requester for Bot {
         )
     }
 
+    type UnpinAllGeneralForumTopicMessages =
+        JsonRequest<payloads::UnpinAllGeneralForumTopicMessages>;
+
+    fn unpin_all_general_forum_topic_messages<C>(
+        &self,
+        chat_id: C,
+    ) -> Self::UnpinAllGeneralForumTopicMessages
+    where
+        C: Into<Recipient>,
+    {
+        Self::UnpinAllGeneralForumTopicMessages::new(
+            self.clone(),
+            payloads::UnpinAllGeneralForumTopicMessages::new(chat_id),
+        )
+    }
+
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
     fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery

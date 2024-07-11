@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
+    ChatFullInfo, ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
 };
 
 /// This object represents a chat.
@@ -47,6 +47,9 @@ pub struct Chat {
     /// [`GetChat`]: crate::payloads::GetChat
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_aggressive_anti_spam_enabled: bool,
+
+    #[serde(flatten)]
+    pub chat_full_info: ChatFullInfo,
 }
 
 #[serde_with_macros::skip_serializing_none]
@@ -615,6 +618,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -639,6 +643,7 @@ mod tests {
                 message_auto_delete_time: None,
                 has_hidden_members: false,
                 has_aggressive_anti_spam_enabled: false,
+                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
@@ -663,6 +668,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
 
         let json = to_string(&chat).unwrap();

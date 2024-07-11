@@ -47,6 +47,6 @@ pub use crate::payloads::{
     StopMessageLiveLocationInlineSetters as _, StopMessageLiveLocationSetters as _,
     StopPollSetters as _, UnbanChatMemberSetters as _, UnbanChatSenderChatSetters as _,
     UnhideGeneralForumTopicSetters as _, UnpinAllChatMessagesSetters as _,
-    UnpinAllForumTopicMessagesSetters as _, UnpinChatMessageSetters as _,
-    UploadStickerFileSetters as _,
+    UnpinAllForumTopicMessagesSetters as _, UnpinAllGeneralForumTopicMessagesSetters as _,
+    UnpinChatMessageSetters as _, UploadStickerFileSetters as _,
 };
