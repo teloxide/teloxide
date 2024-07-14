@@ -47,13 +47,13 @@ where
     <R as Requester>::DeleteWebhook: Send,
 {
     let Options { address, .. } = options;
+    let tcp_listener = tokio::net::TcpListener::bind(address).await.unwrap();
 
     let (mut update_listener, stop_flag, app) = axum_to_router(bot, options).await?;
     let stop_token = update_listener.stop_token();
 
     tokio::spawn(async move {
-        axum::Server::bind(&address)
-            .serve(app.into_make_service())
+        axum::serve(tcp_listener, app)
             .with_graceful_shutdown(stop_flag)
             .await
             .map_err(|err| {
@@ -90,7 +90,7 @@ where
 /// [`delete_webhook`]: crate::payloads::DeleteWebhook
 /// [`stop`]: crate::stop::StopToken::stop
 /// [`options.address`]: Options::address
-/// [`with_graceful_shutdown`]: axum::Server::with_graceful_shutdown
+/// [`with_graceful_shutdown`]: axum::serve::Serve::with_graceful_shutdown
 ///
 /// ## Returns
 ///
