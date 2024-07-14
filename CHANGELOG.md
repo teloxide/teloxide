@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sqlx version was bumped from `0.6` to `0.7.3`([PR 995](https://github.com/teloxide/teloxide/pull/995))
 - Feature `sqlite-storage` was renamed to `sqlite-storage-nativetls`([PR 995](https://github.com/teloxide/teloxide/pull/995))
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([PR 996][https://github.com/teloxide/teloxide/pull/996])
+- `axum` was bumped to `0.7`, along with related libraries used for webhooks ([PR 1093][https://github.com/teloxide/teloxide/pull/1093])
 
 ### Removed
 
