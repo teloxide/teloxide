@@ -47,12 +47,18 @@ where
     <R as Requester>::DeleteWebhook: Send,
 {
     let Options { address, .. } = options;
-    let tcp_listener = tokio::net::TcpListener::bind(address).await.unwrap();
 
     let (mut update_listener, stop_flag, app) = axum_to_router(bot, options).await?;
     let stop_token = update_listener.stop_token();
 
     tokio::spawn(async move {
+        let tcp_listener = tokio::net::TcpListener::bind(address)
+            .await
+            .map_err(|err| {
+                stop_token.stop();
+                err
+            })
+            .expect("Couldn't bind to the address");
         axum::serve(tcp_listener, app)
             .with_graceful_shutdown(stop_flag)
             .await
