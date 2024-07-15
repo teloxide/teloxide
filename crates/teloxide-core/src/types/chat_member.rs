@@ -80,6 +80,21 @@ pub struct Administrator {
     /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
 
+    /// `true` if the administrator can post stories in the channel, channels
+    /// only.
+    #[serde(default)]
+    pub can_post_stories: bool,
+
+    /// `true` if the administrator can edit stories posted by other users,
+    /// channels only.
+    #[serde(default)]
+    pub can_edit_stories: bool,
+
+    /// `true` if the administrator can delete stories posted by other users,
+    /// channels only.
+    #[serde(default)]
+    pub can_delete_stories: bool,
+
     /// `true` if the administrator can manage video chats.
     pub can_manage_video_chats: bool,
 
@@ -432,6 +447,66 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true` if the user can post stories in the channel, channels
+    /// only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat (even if the chat is not a channel)
+    /// - is an administrator in the given chat and has [`can_post_stories`]
+    ///   privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_post_stories`]: Administrator::can_post_stories
+    #[must_use]
+    pub fn can_post_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_post_stories, .. }) => *can_post_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
+    /// Returns `true` if the user can edit stories posted by other users,
+    /// channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat (even if the chat is not a channel)
+    /// - is an administrator in the given chat and has the [`can_edit_stories`]
+    ///   privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_edit_stories`]: Administrator::can_edit_stories
+    #[must_use]
+    pub fn can_edit_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_edit_stories, .. }) => *can_edit_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
+    /// Returns `true` if the user can delete stories posted by other users,
+    /// channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat
+    /// - is an administrator in the given chat and has the
+    ///   [`can_delete_stories`] privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_delete_stories`]: Administrator::can_delete_stories
+    #[must_use]
+    pub fn can_delete_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_delete_stories, .. }) => *can_delete_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
     /// Returns `true` if the user can manage video chats.
     ///
     /// I.e. returns `true` if the user
@@ -639,6 +714,9 @@ mod tests {
                 can_post_messages: false,
                 can_edit_messages: false,
                 can_delete_messages: true,
+                can_post_stories: false,
+                can_edit_stories: false,
+                can_delete_stories: false,
                 can_manage_video_chats: true,
                 can_invite_users: true,
                 can_restrict_members: true,
