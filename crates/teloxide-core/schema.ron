@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.9", date: "September 22, 2023"),
+    api_version: ApiVersion(ver: "7.0", date: "December 29, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -339,6 +339,51 @@ Schema(
             ],
         ),
         Method(
+            names: ("forwardMessages", "ForwardMessages", "forward_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped. Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {"MessageId": "https://core.telegram.org/bots/api#messageid"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#forwardmessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(md: "A JSON-serialized list of 1-100 identifiers of messages in the chat _from\\_chat\\_id_ to forward. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool), 
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+            ],
+        ),
+        Method(
             names: ("copyMessage", "CopyMessage", "copy_message"),
             return_ty: RawTy("MessageId"),
             doc: Doc(
@@ -420,6 +465,60 @@ Schema(
                         },
                     ),
                 ),
+            ],
+        ),
+        Method(
+            names: ("copyMessages", "CopyMessages", "copy_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [poll] can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {
+                    "poll": "https://core.telegram.org/bots/api#poll",
+                    "forwardMessages": "https://core.telegram.org/bots/api#forwardmessages",
+                    "MessageId": "https://core.telegram.org/bots/api#messageid"
+                },
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#copymessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")), 
+                    descr: Doc(md: "Identifiers of 1-100 messages in the chat _from\\_chat\\_id_ to copy. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool), 
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "remove_caption",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _True_ to copy the messages without their captions")
+                )
             ],
         ),
         Method(
@@ -3526,6 +3625,28 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to delete")
+                ),  
+            ],
+        ),
+        Method(
+            names: ("deleteMessages", "DeleteMessages", "delete_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped. Returns _True_ on success."),
+            tg_doc: "https://core.telegram.org/bots/api#delete_messages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "Identifiers of 1-100 messages to delete. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
                 ),  
             ],
         ),

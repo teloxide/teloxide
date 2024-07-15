@@ -203,6 +203,20 @@ pub trait Requester {
         C: Into<Recipient>,
         F: Into<Recipient>;
 
+    type ForwardMessages: Request<Payload = ForwardMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ForwardMessages`].
+    fn forward_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::ForwardMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
+
     type CopyMessage: Request<Payload = CopyMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`CopyMessage`].
@@ -215,6 +229,20 @@ pub trait Requester {
     where
         C: Into<Recipient>,
         F: Into<Recipient>;
+
+    type CopyMessages: Request<Payload = CopyMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CopyMessages`].
+    fn copy_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::CopyMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
 
     type SendPhoto: Request<Payload = SendPhoto, Err = Self::Err>;
 
@@ -977,6 +1005,14 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type DeleteMessages: Request<Payload = DeleteMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteMessages`].
+    fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
+
     type SendSticker: Request<Payload = SendSticker, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendSticker`].
@@ -1249,7 +1285,9 @@ macro_rules! forward_all {
             delete_webhook,
             get_webhook_info,
             forward_message,
+            forward_messages,
             copy_message,
+            copy_messages,
             send_message,
             send_photo,
             send_audio,
@@ -1338,6 +1376,7 @@ macro_rules! forward_all {
             edit_message_reply_markup_inline,
             stop_poll,
             delete_message,
+            delete_messages,
             send_sticker,
             get_sticker_set,
             get_custom_emoji_stickers,
