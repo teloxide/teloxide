@@ -692,7 +692,8 @@ mod getters {
     use super::{
         MessageForumTopicClosed, MessageForumTopicCreated, MessageForumTopicEdited,
         MessageForumTopicReopened, MessageGeneralForumTopicHidden,
-        MessageGeneralForumTopicUnhidden, MessageMessageAutoDeleteTimerChanged,
+        MessageGeneralForumTopicUnhidden, MessageGiveaway, MessageGiveawayCompleted,
+        MessageGiveawayCreated, MessageGiveawayWinners, MessageMessageAutoDeleteTimerChanged,
         MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
         MessageWebAppData, MessageWriteAccessAllowed,
     };
@@ -1409,6 +1410,44 @@ mod getters {
                 GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden {
                     general_forum_topic_unhidden,
                 }) => Some(general_forum_topic_unhidden),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway(&self) -> Option<&types::Giveaway> {
+            match &self.kind {
+                Giveaway(MessageGiveaway { giveaway }) => Some(giveaway),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_completed(&self) -> Option<&types::GiveawayCompleted> {
+            match &self.kind {
+                GiveawayCompleted(MessageGiveawayCompleted { giveaway_completed }) => {
+                    Some(giveaway_completed)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_created(&self) -> Option<&types::GiveawayCreated> {
+            match &self.kind {
+                GiveawayCreated(MessageGiveawayCreated { giveaway_created }) => {
+                    Some(giveaway_created)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_winners(&self) -> Option<&types::GiveawayWinners> {
+            match &self.kind {
+                GiveawayWinners(MessageGiveawayWinners { giveaway_winners }) => {
+                    Some(giveaway_winners)
+                }
                 _ => None,
             }
         }
