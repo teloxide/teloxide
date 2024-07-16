@@ -7,7 +7,7 @@ use url::Url;
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
-    GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCreated,
+    GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCreated, GiveawayWinners,
     InlineKeyboardMarkup, Invoice, Location, MaybeInaccessibleMessage,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
     PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
@@ -79,6 +79,7 @@ pub enum MessageKind {
     GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
     Giveaway(MessageGiveaway),
     GiveawayCreated(MessageGiveawayCreated),
+    GiveawayWinners(MessageGiveawayWinners),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -613,6 +614,16 @@ pub struct MessageGiveawayCreated {
     ///
     /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
     pub giveaway_created: GiveawayCreated,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveawayWinners {
+    /// Message is giveaway winners, information about the completion of a
+    /// giveaway with public winners. [More about giveaways »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway_winners: GiveawayWinners,
 }
 
 #[serde_with::skip_serializing_none]
