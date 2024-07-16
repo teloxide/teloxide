@@ -10,7 +10,7 @@ use crate::types::{
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
     PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, ThreadId, True,
-    User, UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
     VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
@@ -61,7 +61,7 @@ pub enum MessageKind {
     MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged),
     Pinned(MessagePinned),
     ChatShared(MessageChatShared),
-    UserShared(MessageUserShared),
+    UsersShared(MessageUsersShared),
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
@@ -256,9 +256,9 @@ pub struct MessageChatShared {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageUserShared {
-    /// A chat was shared with the bot.
-    pub user_shared: UserShared,
+pub struct MessageUsersShared {
+    /// Users were shared with the bot
+    pub users_shared: UsersShared,
 }
 
 #[serde_with::skip_serializing_none]
@@ -682,7 +682,7 @@ mod getters {
         MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
         MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
         MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUserShared,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
         MessageVideoChatParticipantsInvited, PhotoSize, User,
     };
 
@@ -1306,9 +1306,9 @@ mod getters {
         }
 
         #[must_use]
-        pub fn shared_user(&self) -> Option<&types::UserShared> {
+        pub fn shared_users(&self) -> Option<&types::UsersShared> {
             match &self.kind {
-                UserShared(MessageUserShared { user_shared }) => Some(user_shared),
+                UsersShared(MessageUsersShared { users_shared }) => Some(users_shared),
                 _ => None,
             }
         }

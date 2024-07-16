@@ -1,7 +1,7 @@
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::types::{
-    KeyboardButtonPollType, KeyboardButtonRequestChat, KeyboardButtonRequestUser, True, WebAppInfo,
+    KeyboardButtonPollType, KeyboardButtonRequestChat, KeyboardButtonRequestUsers, True, WebAppInfo,
 };
 
 /// This object represents one button of the reply keyboard.
@@ -68,10 +68,10 @@ pub enum ButtonRequest {
     /// [`chat_shared`]: crate::types::MessageKind::ChatShared
     RequestChat(KeyboardButtonRequestChat),
 
-    /// If this variant is used, pressing the button will open a list of
-    /// suitable users. Tapping on any user will send their identifier to the
-    /// bot in a “user_shared” service message.
-    RequestUser(KeyboardButtonRequestUser),
+    /// If specified, pressing the button will open a list of suitable users.
+    /// Identifiers of selected users will be sent to the bot in a
+    /// “users_shared” service message. Available in private chats only.
+    RequestUsers(KeyboardButtonRequestUsers),
 
     /// If this variant is used, the user will be asked to create a poll and
     /// send it to the bot when the button is pressed.
@@ -110,10 +110,10 @@ struct RawRequest {
     chat: Option<KeyboardButtonRequestChat>,
 
     /// If specified, pressing the button will open a list of suitable users.
-    /// Tapping on any user will send their identifier to the bot in a
-    /// “user_shared” service message. Available in private chats only.
-    #[serde(rename = "request_user")]
-    user: Option<KeyboardButtonRequestUser>,
+    /// Identifiers of selected users will be sent to the bot in a
+    /// “users_shared” service message. Available in private chats only.
+    #[serde(rename = "request_users")]
+    users: Option<KeyboardButtonRequestUsers>,
 
     /// If specified, the user will be asked to create a poll and
     /// send it to the bot when the button is pressed. Available in private
@@ -134,11 +134,11 @@ impl<'de> Deserialize<'de> for ButtonRequest {
     {
         let raw = RawRequest::deserialize(deserializer)?;
         match raw {
-            RawRequest { contact, location, chat, user, poll, web_app }
+            RawRequest { contact, location, chat, users, poll, web_app }
                 if 1 < (contact.is_some() as u8
                     + location.is_some() as u8
                     + chat.is_some() as u8
-                    + user.is_some() as u8
+                    + users.is_some() as u8
                     + poll.is_some() as u8
                     + web_app.is_some() as u8) =>
             {
@@ -150,7 +150,7 @@ impl<'de> Deserialize<'de> for ButtonRequest {
             RawRequest { contact: Some(True), .. } => Ok(Self::Contact),
             RawRequest { location: Some(True), .. } => Ok(Self::Location),
             RawRequest { chat: Some(request_chat), .. } => Ok(Self::RequestChat(request_chat)),
-            RawRequest { user: Some(request_user), .. } => Ok(Self::RequestUser(request_user)),
+            RawRequest { users: Some(request_users), .. } => Ok(Self::RequestUsers(request_users)),
             RawRequest { poll: Some(poll_type), .. } => Ok(Self::Poll(poll_type)),
             RawRequest { web_app: Some(web_app), .. } => Ok(Self::WebApp(web_app)),
 
@@ -158,11 +158,11 @@ impl<'de> Deserialize<'de> for ButtonRequest {
                 contact: None,
                 location: None,
                 chat: None,
-                user: None,
+                users: None,
                 poll: None,
                 web_app: None,
             } => Err(D::Error::custom(
-                "Either one of `request_contact`, `request_chat`, `request_user`, \
+                "Either one of `request_contact`, `request_chat`, `request_users`, \
                  `request_location`, `request_poll` and `web_app` fields is required",
             )),
         }
@@ -178,7 +178,7 @@ impl Serialize for ButtonRequest {
             contact: None,
             location: None,
             chat: None,
-            user: None,
+            users: None,
             poll: None,
             web_app: None,
         };
@@ -187,7 +187,7 @@ impl Serialize for ButtonRequest {
             Self::Contact => raw.contact = Some(True),
             Self::Location => raw.location = Some(True),
             Self::RequestChat(request_chat) => raw.chat = Some(request_chat.clone()),
-            Self::RequestUser(request_user) => raw.user = Some(request_user.clone()),
+            Self::RequestUsers(request_users) => raw.users = Some(request_users.clone()),
             Self::Poll(poll_type) => raw.poll = Some(poll_type.clone()),
             Self::WebApp(web_app) => raw.web_app = Some(web_app.clone()),
         };
