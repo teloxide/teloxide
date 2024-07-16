@@ -7,12 +7,13 @@ use url::Url;
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
-    GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, InlineKeyboardMarkup, Invoice,
-    Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity,
-    MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
-    ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
-    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCreated,
+    InlineKeyboardMarkup, Invoice, Location, MaybeInaccessibleMessage,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
+    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
+    TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -77,6 +78,7 @@ pub enum MessageKind {
     GeneralForumTopicHidden(MessageGeneralForumTopicHidden),
     GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
     Giveaway(MessageGiveaway),
+    GiveawayCreated(MessageGiveawayCreated),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -601,6 +603,16 @@ pub struct MessageGiveaway {
     ///
     /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
     pub giveaway: Giveaway,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveawayCreated {
+    /// Service message: a scheduled 'Giveaway' created. [More about giveaways
+    /// »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway_created: GiveawayCreated,
 }
 
 #[serde_with::skip_serializing_none]
