@@ -1009,6 +1009,14 @@ macro_rules! requester_forward {
             $body!(unhide_general_forum_topic this (chat_id: C))
         }
     };
+    (@method unpin_all_general_forum_topic_messages $body:ident $ty:ident) => {
+        type UnpinAllGeneralForumTopicMessages = $ty![UnpinAllGeneralForumTopicMessages];
+
+        fn unpin_all_general_forum_topic_messages<C>(&self, chat_id: C) -> Self::UnpinAllGeneralForumTopicMessages where C: Into<Recipient> {
+            let this = self;
+            $body!(unpin_all_general_forum_topic_messages this (chat_id: C))
+        }
+    };
     (@method answer_callback_query $body:ident $ty:ident) => {
         type AnswerCallbackQuery = $ty![AnswerCallbackQuery];
 

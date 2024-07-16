@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.7", date: "April 21, 2023"),
+    api_version: ApiVersion(ver: "6.8", date: "August 18, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -2798,6 +2798,20 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+            ],
+        ),
+        Method(
+            names: ("unpinAllGeneralForumTopicMessages", "UnpinAllGeneralForumTopicMessages", "unpin_all_general_forum_topic_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to clear the list of pinned messages in a General forum topic. The bot must be an administrator in the chat for this to work and must have the _can\\_pin\\_messages_ administrator right in the supergroup. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#unpinallgeneralforumtopicmessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)")
                 ),
             ],
         ),

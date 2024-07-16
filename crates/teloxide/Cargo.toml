@@ -42,6 +42,7 @@ ctrlc_handler = ["tokio/signal"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
+rustls-native-roots = ["teloxide-core/rustls-native-roots"]
 throttle = ["teloxide-core/throttle"]
 cache-me = [
     "teloxide-core/cache_me",
@@ -111,9 +112,9 @@ sqlx = { version = "0.7.3", optional = true, default-features = false, features 
 redis = { version = "0.24", features = ["tokio-comp"], optional = true }
 serde_cbor = { version = "0.11", optional = true }
 bincode = { version = "1.3", optional = true }
-axum = { version = "0.6.0", optional = true }
-tower = { version = "0.4.12", optional = true }
-tower-http = { version = "0.3.4", features = ["trace"], optional = true }
+axum = { version = "0.7.0", optional = true }
+tower = { version = "0.4.13", optional = true }
+tower-http = { version = "0.5.2", features = ["trace"], optional = true }
 rand = { version = "0.8.5", optional = true }
 
 # HACK: ahash 0.8.7 bumped MSRV to 1.72, to keep MVSR 1.68 we need to depend on an older version.

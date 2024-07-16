@@ -251,6 +251,7 @@ where
         reopen_general_forum_topic,
         hide_general_forum_topic,
         unhide_general_forum_topic,
+        unpin_all_general_forum_topic_messages,
         answer_callback_query,
         set_my_commands,
         get_my_commands,
@@ -698,6 +699,11 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
     ) -> ErasedRequest<'a, UnhideGeneralForumTopic, Self::Err>;
+
+    fn unpin_all_general_forum_topic_messages(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, UnpinAllGeneralForumTopicMessages, Self::Err>;
 
     fn answer_callback_query(
         &self,
@@ -1498,6 +1504,13 @@ where
         chat_id: Recipient,
     ) -> ErasedRequest<'a, UnhideGeneralForumTopic, Self::Err> {
         Requester::unhide_general_forum_topic(self, chat_id).erase()
+    }
+
+    fn unpin_all_general_forum_topic_messages(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, UnpinAllGeneralForumTopicMessages, Self::Err> {
+        Requester::unpin_all_general_forum_topic_messages(self, chat_id).erase()
     }
 
     fn answer_callback_query(

@@ -185,6 +185,7 @@ where
         reopen_general_forum_topic,
         hide_general_forum_topic,
         unhide_general_forum_topic,
+        unpin_all_general_forum_topic_messages,
         answer_callback_query,
         set_my_commands,
         get_my_commands,
