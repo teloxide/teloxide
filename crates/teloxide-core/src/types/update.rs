@@ -435,14 +435,13 @@ mod test {
                         bio: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None,
-                        emoji_status_custom_emoji_id: None,
                     }),
                     photo: None,
                     pinned_message: None,
                     message_auto_delete_time: None,
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+                    chat_full_info: ChatFullInfo::default(),
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {

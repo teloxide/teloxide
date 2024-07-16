@@ -108,13 +108,6 @@ pub struct ChatPrivate {
     /// A last name of the other party in a private chat.
     pub last_name: Option<String>,
 
-    /// Custom emoji identifier of emoji status of the other party in a private
-    /// chat. Returned only in [`GetChat`].
-    ///
-    /// [`GetChat`]: crate::payloads::GetChat
-    // FIXME: CustomEmojiId
-    pub emoji_status_custom_emoji_id: Option<String>,
-
     /// Bio of the other party in a private chat. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
@@ -539,7 +532,6 @@ mod serde_helper {
         bio: Option<String>,
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
-        emoji_status_custom_emoji_id: Option<String>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -552,7 +544,6 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -562,7 +553,6 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
             }
         }
     }
@@ -576,7 +566,6 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -587,7 +576,6 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
             }
         }
     }
@@ -618,7 +606,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -636,14 +624,13 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
-                    emoji_status_custom_emoji_id: None
                 }),
                 photo: None,
                 pinned_message: None,
                 message_auto_delete_time: None,
                 has_hidden_members: false,
                 has_aggressive_anti_spam_enabled: false,
-                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                chat_full_info: ChatFullInfo::default()
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
@@ -661,14 +648,13 @@ mod tests {
                 bio: None,
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
-                emoji_status_custom_emoji_id: None,
             }),
             photo: None,
             pinned_message: None,
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
 
         let json = to_string(&chat).unwrap();

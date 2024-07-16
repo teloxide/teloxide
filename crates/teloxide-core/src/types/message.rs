@@ -1775,7 +1775,6 @@ mod tests {
                         last_name: Some("Власов".to_string()),
                         username: Some("aka_dude".to_string()),
                         bio: None,
-                        emoji_status_custom_emoji_id: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None
                     }),
@@ -1784,7 +1783,7 @@ mod tests {
                     pinned_message: None,
                     message_auto_delete_time: None,
                     has_hidden_members: false,
-                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                    chat_full_info: ChatFullInfo::default()
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
@@ -2017,7 +2016,7 @@ mod tests {
             pinned_message: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
 
         assert!(message.from().unwrap().is_anonymous());
