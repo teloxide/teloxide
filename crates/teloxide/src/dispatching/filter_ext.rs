@@ -149,6 +149,8 @@ define_update_ext! {
     (filter_edited_message, UpdateKind::EditedMessage, EditedMessage),
     (filter_channel_post, UpdateKind::ChannelPost, ChannelPost),
     (filter_edited_channel_post, UpdateKind::EditedChannelPost, EditedChannelPost),
+    (filter_message_reaction_updated, UpdateKind::MessageReaction, MessageReaction),
+    (filter_message_reaction_count_updated, UpdateKind::MessageReactionCount, MessageReactionCount),
     (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),
     (filter_chosen_inline_result, UpdateKind::ChosenInlineResult, ChosenInlineResult),
     (filter_callback_query, UpdateKind::CallbackQuery, CallbackQuery),

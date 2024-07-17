@@ -4,7 +4,8 @@ use serde_json::Value;
 
 use crate::types::{
     CallbackQuery, Chat, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery,
-    Message, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    Message, MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer,
+    PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -58,6 +59,24 @@ pub enum UpdateKind {
 
     /// New version of a channel post that is known to the bot and was edited.
     EditedChannelPost(Message),
+
+    /// A reaction to a message was changed by a user. The bot must be an
+    /// administrator in the chat and must explicitly specify
+    /// [`AllowedUpdate::MessageReaction`] in the list of `allowed_updates`
+    /// to receive these updates. The update isn't received for reactions
+    /// set by bots.
+    ///
+    /// [`AllowedUpdate::MessageReaction`]: crate::types::AllowedUpdate::MessageReaction
+    MessageReaction(MessageReactionUpdated),
+
+    /// Reactions to a message with anonymous reactions were changed. The bot
+    /// must be an administrator in the chat and must explicitly specify
+    /// [`AllowedUpdate::MessageReactionCount`] in the list of `allowed_updates`
+    /// to receive these updates. The updates are grouped and can be sent
+    /// with delay up to a few minutes.
+    ///
+    /// [`AllowedUpdate::MessageReactionCount`]: crate::types::AllowedUpdate::MessageReactionCount
+    MessageReactionCount(MessageReactionCountUpdated),
 
     /// New incoming [inline] query.
     ///
@@ -133,6 +152,7 @@ impl Update {
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
+            MessageReaction(reaction) => return reaction.user(),
             InlineQuery(query) => &query.from,
             ShippingQuery(query) => &query.from,
             PreCheckoutQuery(query) => &query.from,
@@ -141,7 +161,7 @@ impl Update {
             MyChatMember(m) | ChatMember(m) => &m.from,
             ChatJoinRequest(r) => &r.from,
 
-            Poll(_) | Error(_) => return None,
+            MessageReactionCount(_) | Poll(_) | Error(_) => return None,
         };
 
         Some(from)
@@ -191,6 +211,13 @@ impl Update {
             | UpdateKind::ChannelPost(message)
             | UpdateKind::EditedChannelPost(message) => i0(message.mentioned_users()),
 
+            UpdateKind::MessageReaction(answer) => {
+                if let Some(user) = answer.user() {
+                    return i1(once(user));
+                }
+                i6(empty())
+            }
+
             UpdateKind::InlineQuery(query) => i1(once(&query.from)),
             UpdateKind::ChosenInlineResult(query) => i1(once(&query.from)),
             UpdateKind::CallbackQuery(query) => i2(query.mentioned_users()),
@@ -209,7 +236,7 @@ impl Update {
                 i4(member.mentioned_users())
             }
             UpdateKind::ChatJoinRequest(request) => i5(request.mentioned_users()),
-            UpdateKind::Error(_) => i6(empty()),
+            UpdateKind::MessageReactionCount(_) | UpdateKind::Error(_) => i6(empty()),
         }
     }
 
@@ -224,6 +251,8 @@ impl Update {
             ChatMember(m) => &m.chat,
             MyChatMember(m) => &m.chat,
             ChatJoinRequest(c) => &c.chat,
+            MessageReaction(r) => &r.chat,
+            MessageReactionCount(r) => &r.chat,
 
             InlineQuery(_)
             | ChosenInlineResult(_)
@@ -293,6 +322,14 @@ impl<'de> Deserialize<'de> for UpdateKind {
                         "edited_channel_post" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedChannelPost)
                         }
+                        "message_reaction" => map
+                            .next_value::<MessageReactionUpdated>()
+                            .ok()
+                            .map(UpdateKind::MessageReaction),
+                        "message_reaction_count" => map
+                            .next_value::<MessageReactionCountUpdated>()
+                            .ok()
+                            .map(UpdateKind::MessageReactionCount),
                         "inline_query" => {
                             map.next_value::<InlineQuery>().ok().map(UpdateKind::InlineQuery)
                         }
@@ -351,27 +388,33 @@ impl Serialize for UpdateKind {
             UpdateKind::EditedChannelPost(v) => {
                 s.serialize_newtype_variant(name, 3, "edited_channel_post", v)
             }
-            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 4, "inline_query", v),
+            UpdateKind::MessageReaction(v) => {
+                s.serialize_newtype_variant(name, 4, "message_reaction", v)
+            }
+            UpdateKind::MessageReactionCount(v) => {
+                s.serialize_newtype_variant(name, 5, "message_reaction_count", v)
+            }
+            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 6, "inline_query", v),
             UpdateKind::ChosenInlineResult(v) => {
-                s.serialize_newtype_variant(name, 5, "chosen_inline_result", v)
+                s.serialize_newtype_variant(name, 7, "chosen_inline_result", v)
             }
             UpdateKind::CallbackQuery(v) => {
-                s.serialize_newtype_variant(name, 6, "callback_query", v)
+                s.serialize_newtype_variant(name, 8, "callback_query", v)
             }
             UpdateKind::ShippingQuery(v) => {
-                s.serialize_newtype_variant(name, 7, "shipping_query", v)
+                s.serialize_newtype_variant(name, 9, "shipping_query", v)
             }
             UpdateKind::PreCheckoutQuery(v) => {
-                s.serialize_newtype_variant(name, 8, "pre_checkout_query", v)
+                s.serialize_newtype_variant(name, 10, "pre_checkout_query", v)
             }
-            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 9, "poll", v),
-            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 10, "poll_answer", v),
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 11, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 12, "poll_answer", v),
             UpdateKind::MyChatMember(v) => {
-                s.serialize_newtype_variant(name, 11, "my_chat_member", v)
+                s.serialize_newtype_variant(name, 13, "my_chat_member", v)
             }
-            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 12, "chat_member", v),
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 14, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
-                s.serialize_newtype_variant(name, 13, "chat_join_request", v)
+                s.serialize_newtype_variant(name, 15, "chat_join_request", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }
@@ -385,8 +428,10 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message,
-        MessageCommon, MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
+        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic, MediaKind, MediaText,
+        Message, MessageCommon, MessageId, MessageKind, MessageReactionCountUpdated,
+        MessageReactionUpdated, PublicChatChannel, PublicChatKind, PublicChatSupergroup,
+        ReactionCount, ReactionType, ReactionTypeKind, Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
@@ -725,5 +770,170 @@ mod test {
             UpdateKind::MyChatMember(_) => {}
             _ => panic!("Expected `MyChatMember`"),
         }
+    }
+
+    #[test]
+    fn message_reaction_updated() {
+        let json = r#"
+        {
+            "update_id": 71651249,
+            "message_reaction": {
+                "chat": {
+                    "id": -1002184233434,
+                    "title": "Test",
+                    "type": "supergroup"
+                },
+                "message_id": 35,
+                "user": {
+                    "id": 1459074222,
+                    "is_bot": false,
+                    "first_name": "shadowchain",
+                    "username": "shdwchn10",
+                    "language_code": "en",
+                    "is_premium": true
+                },
+                "date": 1721306082,
+                "old_reaction": [],
+                "new_reaction": [
+                    {
+                        "type": "emoji",
+                        "emoji": "🌭"
+                    }
+                ]
+            }
+        }
+        "#;
+
+        let expected = Update {
+            id: UpdateId(71651249),
+            kind: UpdateKind::MessageReaction(MessageReactionUpdated {
+                chat: Chat {
+                    id: ChatId(-1002184233434),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Supergroup(PublicChatSupergroup {
+                            username: None,
+                            active_usernames: None,
+                            is_forum: false,
+                            sticker_set_name: None,
+                            can_set_sticker_set: None,
+                            permissions: None,
+                            slow_mode_delay: None,
+                            linked_chat_id: None,
+                            location: None,
+                            join_to_send_messages: None,
+                            join_by_request: None,
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None,
+                    }),
+                    photo: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+                },
+                message_id: MessageId(35),
+                user: Some(User {
+                    id: UserId(1459074222),
+                    is_bot: false,
+                    first_name: "shadowchain".to_owned(),
+                    last_name: None,
+                    username: Some("shdwchn10".to_owned()),
+                    language_code: Some("en".to_owned()),
+                    is_premium: true,
+                    added_to_attachment_menu: false,
+                }),
+                actor_chat: None,
+                date: DateTime::from_timestamp(1721306082, 0).unwrap(),
+                old_reaction: vec![],
+                new_reaction: vec![ReactionType {
+                    kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
+                }],
+            }),
+        };
+
+        let actual = serde_json::from_str::<Update>(json).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn message_reaction_count_updated() {
+        let json = r#"
+        {
+            "update_id": 71651251,
+            "message_reaction_count": {
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "message_id": 36,
+                "date": 1721306391,
+                "reactions": [
+                    {
+                        "type": {
+                            "type": "emoji",
+                            "emoji": "🗿"
+                        },
+                        "total_count": 2
+                    },
+                    {
+                        "type": {
+                            "type": "emoji",
+                            "emoji": "🌭"
+                        },
+                        "total_count": 1
+                    }
+                ]
+            }
+        }
+        "#;
+
+        let expected = Update {
+            id: UpdateId(71651251),
+            kind: UpdateKind::MessageReactionCount(MessageReactionCountUpdated {
+                chat: Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None,
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None,
+                    }),
+                    photo: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+                },
+                message_id: MessageId(36),
+                date: DateTime::from_timestamp(1721306391, 0).unwrap(),
+                reactions: vec![
+                    ReactionCount {
+                        r#type: ReactionType {
+                            kind: ReactionTypeKind::Emoji { emoji: "🗿".to_owned() },
+                        },
+                        total_count: 2,
+                    },
+                    ReactionCount {
+                        r#type: ReactionType {
+                            kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
+                        },
+                        total_count: 1,
+                    },
+                ],
+            }),
+        };
+
+        let actual = serde_json::from_str::<Update>(json).unwrap();
+        assert_eq!(expected, actual);
     }
 }
