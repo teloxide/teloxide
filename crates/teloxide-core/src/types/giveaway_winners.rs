@@ -53,3 +53,34 @@ pub struct GiveawayWinners {
     /// Description of additional giveaway prize
     pub prize_description: Option<String>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "giveaway_message_id": 27,
+            "winners_selection_date": 1721162701,
+            "premium_subscription_month_count": 6,
+            "winner_count": 1,
+            "winners": [
+                {
+                    "id": 1459074222,
+                    "is_bot": false,
+                    "first_name": "shadowchain",
+                    "username": "shdwchn10"
+                }
+            ]
+        }
+        "#;
+        serde_json::from_str::<GiveawayWinners>(data).unwrap();
+    }
+}

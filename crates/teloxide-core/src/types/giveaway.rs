@@ -43,3 +43,28 @@ pub struct Giveaway {
     /// giveaway will be active for
     pub premium_subscription_month_count: Option<u8>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "chats": [
+                {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                }
+            ],
+            "winners_selection_date": 1721162701,
+            "winner_count": 1,
+            "has_public_winners": true,
+            "premium_subscription_month_count": 6
+        }
+        "#;
+        serde_json::from_str::<Giveaway>(data).unwrap();
+    }
+}

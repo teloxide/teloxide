@@ -1758,6 +1758,7 @@ impl Message {
 
 #[cfg(test)]
 mod tests {
+    use chrono::DateTime;
     use cool_asserts::assert_matches;
     use serde_json::from_str;
 
@@ -2319,5 +2320,310 @@ mod tests {
         }"#;
 
         let _: Message = serde_json::from_str(json).unwrap();
+    }
+
+    #[test]
+    fn giveaway() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway": {
+                "chats": [
+                    {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    }
+                ],
+                "winners_selection_date": 1721162701,
+                "winner_count": 1,
+                "has_public_winners": true,
+                "premium_subscription_month_count": 6
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway().unwrap(),
+            &Giveaway {
+                chats: vec![Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None
+                    }),
+                    photo: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                }],
+                winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
+                winner_count: 1,
+                only_new_members: false,
+                has_public_winners: true,
+                prize_description: None,
+                country_codes: None,
+                premium_subscription_month_count: Some(6)
+            }
+        )
+    }
+
+    #[test]
+    fn giveaway_created() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway_created": {}
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.giveaway_created().unwrap(), &GiveawayCreated {})
+    }
+
+    #[test]
+    fn giveaway_completed() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway_completed": {
+                "winner_count": 0,
+                "unclaimed_prize_count": 1,
+                "giveaway_message": {
+                    "message_id": 24,
+                    "sender_chat": {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    },
+                    "chat": {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    },
+                    "date": 1721161230,
+                    "giveaway": {
+                        "chats": [
+                            {
+                                "id": -1002236736395,
+                                "title": "Test",
+                                "type": "channel"
+                            }
+                        ],
+                        "winners_selection_date": 1721162701,
+                        "winner_count": 1,
+                        "has_public_winners": true,
+                        "premium_subscription_month_count": 6
+                    }
+                }
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway_completed().unwrap(),
+            &GiveawayCompleted {
+                winner_count: 0,
+                unclaimed_prize_count: Some(1),
+                giveaway_message: Some(Box::new(Message {
+                    id: MessageId(24),
+                    thread_id: None,
+                    date: DateTime::from_timestamp(1721161230, 0).unwrap(),
+                    chat: Chat {
+                        id: ChatId(-1002236736395),
+                        kind: ChatKind::Public(ChatPublic {
+                            title: Some("Test".to_owned()),
+                            kind: PublicChatKind::Channel(PublicChatChannel {
+                                username: None,
+                                linked_chat_id: None
+                            }),
+                            description: None,
+                            invite_link: None,
+                            has_protected_content: None
+                        }),
+                        photo: None,
+                        pinned_message: None,
+                        message_auto_delete_time: None,
+                        has_hidden_members: false,
+                        has_aggressive_anti_spam_enabled: false,
+                        chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                    },
+                    via_bot: None,
+                    kind: MessageKind::Giveaway(MessageGiveaway {
+                        giveaway: Giveaway {
+                            chats: vec![Chat {
+                                id: ChatId(-1002236736395),
+                                kind: ChatKind::Public(ChatPublic {
+                                    title: Some("Test".to_owned()),
+                                    kind: PublicChatKind::Channel(PublicChatChannel {
+                                        username: None,
+                                        linked_chat_id: None
+                                    }),
+                                    description: None,
+                                    invite_link: None,
+                                    has_protected_content: None
+                                }),
+                                photo: None,
+                                pinned_message: None,
+                                message_auto_delete_time: None,
+                                has_hidden_members: false,
+                                has_aggressive_anti_spam_enabled: false,
+                                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                            }],
+                            winners_selection_date: DateTime::from_timestamp(1721162701, 0)
+                                .unwrap(),
+                            winner_count: 1,
+                            only_new_members: false,
+                            has_public_winners: true,
+                            prize_description: None,
+                            country_codes: None,
+                            premium_subscription_month_count: Some(6)
+                        }
+                    })
+                }))
+            }
+        )
+    }
+
+    #[test]
+    fn giveaway_winners() {
+        let json = r#"{
+            "message_id": 28,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162702,
+            "reply_to_message": {
+                "message_id": 27,
+                "sender_chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "date": 1721162577,
+                "giveaway": {
+                    "chats": [
+                        {
+                            "id": -1002236736395,
+                            "title": "Test",
+                            "type": "channel"
+                        }
+                    ],
+                    "winners_selection_date": 1721162701,
+                    "winner_count": 1,
+                    "has_public_winners": true,
+                    "premium_subscription_month_count": 6
+                }
+            },
+            "giveaway_winners": {
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "giveaway_message_id": 27,
+                "winners_selection_date": 1721162701,
+                "premium_subscription_month_count": 6,
+                "winner_count": 1,
+                "winners": [
+                    {
+                        "id": 1459074222,
+                        "is_bot": false,
+                        "first_name": "shadowchain",
+                        "username": "shdwchn10"
+                    }
+                ]
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway_winners().expect("Failed to get GiveawayWinners from Message!"),
+            &GiveawayWinners {
+                chat: Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None
+                    }),
+                    photo: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                },
+                giveaway_message_id: MessageId(27),
+                winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
+                winner_count: 1,
+                winners: vec![User {
+                    id: UserId(1459074222),
+                    is_bot: false,
+                    first_name: "shadowchain".to_owned(),
+                    last_name: None,
+                    username: Some("shdwchn10".to_owned()),
+                    language_code: None,
+                    is_premium: false,
+                    added_to_attachment_menu: false
+                }],
+                additional_chat_count: None,
+                premium_subscription_month_count: Some(6),
+                unclaimed_prize_count: None,
+                only_new_members: false,
+                was_refunded: false,
+                prize_description: None
+            }
+        )
     }
 }
