@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Message, User};
+use crate::types::{MaybeInaccessibleMessage, Message, User};
 
 /// This object represents an incoming callback query from a callback button in
 /// an [inline keyboard].
@@ -24,10 +24,9 @@ pub struct CallbackQuery {
     /// A sender.
     pub from: User,
 
-    /// A message with the callback button that originated the query. Note that
-    /// message content and message date will not be available if the message
-    /// is too old.
-    pub message: Option<Message>,
+    /// Message sent by the bot with the callback button that originated the
+    /// query
+    pub message: Option<MaybeInaccessibleMessage>,
 
     /// An identifier of the message sent via the bot in inline mode, that
     /// originated the query.
@@ -58,7 +57,13 @@ impl CallbackQuery {
         use crate::util::flatten;
         use std::iter::once;
 
-        once(&self.from).chain(flatten(self.message.as_ref().map(Message::mentioned_users)))
+        once(&self.from).chain(flatten(
+            self.message
+                .as_ref()
+                // If we can access the message
+                .and_then(|maybe| maybe.message())
+                .map(Message::mentioned_users),
+        ))
     }
 }
 

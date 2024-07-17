@@ -116,7 +116,8 @@ async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Erro
         bot.answer_callback_query(q.id).await?;
 
         // Edit text of the message to which the buttons were attached
-        if let Some(Message { id, chat, .. }) = q.message {
+        if let Some(maybe_message) = q.message {
+            let (chat, id) = maybe_message.chat_and_id();
             bot.edit_message_text(chat.id, id, text).await?;
         } else if let Some(id) = q.inline_message_id {
             bot.edit_message_text_inline(id, text).await?;

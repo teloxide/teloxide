@@ -16,7 +16,7 @@ impl GetChatId for Message {
 
 impl GetChatId for CallbackQuery {
     fn chat_id(&self) -> Option<ChatId> {
-        self.message.as_ref().map(|mes| mes.chat.id)
+        self.message.as_ref().map(|mes| mes.chat().id)
     }
 }
 

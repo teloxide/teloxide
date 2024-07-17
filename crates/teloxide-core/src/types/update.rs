@@ -220,7 +220,7 @@ impl Update {
 
         let chat = match &self.kind {
             Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => &m.chat,
-            CallbackQuery(q) => &q.message.as_ref()?.chat,
+            CallbackQuery(q) => q.message.as_ref()?.chat(),
             ChatMember(m) => &m.chat,
             MyChatMember(m) => &m.chat,
             ChatJoinRequest(c) => &c.chat,

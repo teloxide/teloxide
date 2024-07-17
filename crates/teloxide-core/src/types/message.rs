@@ -8,10 +8,11 @@ use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
-    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
-    ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
-    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
+    MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
+    Story, SuccessfulPayment, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -245,7 +246,7 @@ pub struct MessagePinned {
     /// field will not contain further `reply_to_message` fields even if it
     /// is itself a reply.
     #[serde(rename = "pinned_message")]
-    pub pinned: Box<Message>,
+    pub pinned: Box<MaybeInaccessibleMessage>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -627,14 +628,14 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, MediaAnimation, MediaAudio,
-        MediaContact, MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll,
-        MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
-        Message, MessageChannelChatCreated, MessageChatShared, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
-        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin,
-        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, MaybeInaccessibleMessage,
+        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
+        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue,
+        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated,
+        MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
+        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
+        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
+        MessageOrigin, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
         MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
         MessageVideoChatParticipantsInvited, PhotoSize, User,
     };
@@ -1208,7 +1209,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn pinned_message(&self) -> Option<&Message> {
+        pub fn pinned_message(&self) -> Option<&MaybeInaccessibleMessage> {
             match &self.kind {
                 Pinned(MessagePinned { pinned }) => Some(pinned),
                 _ => None,
