@@ -39,7 +39,7 @@ pub use crate::payloads::{
     SetChatMenuButtonSetters as _, SetChatPermissionsSetters as _, SetChatPhotoSetters as _,
     SetChatStickerSetSetters as _, SetChatTitleSetters as _,
     SetCustomEmojiStickerSetThumbnailSetters as _, SetGameScoreInlineSetters as _,
-    SetGameScoreSetters as _, SetMyCommandsSetters as _,
+    SetGameScoreSetters as _, SetMessageReactionSetters as _, SetMyCommandsSetters as _,
     SetMyDefaultAdministratorRightsSetters as _, SetMyDescriptionSetters as _,
     SetMyNameSetters as _, SetMyShortDescriptionSetters as _, SetPassportDataErrorsSetters as _,
     SetStickerEmojiListSetters as _, SetStickerKeywordsSetters as _,

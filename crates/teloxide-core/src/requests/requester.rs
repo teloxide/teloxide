@@ -413,6 +413,17 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type SetMessageReaction: Request<Payload = SetMessageReaction, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMessageReaction`].
+    fn set_message_reaction<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>;
+
     type GetUserProfilePhotos: Request<Payload = GetUserProfilePhotos, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetUserProfilePhotos`].
@@ -1307,6 +1318,7 @@ macro_rules! forward_all {
             send_poll,
             send_dice,
             send_chat_action,
+            set_message_reaction,
             get_user_profile_photos,
             get_file,
             kick_chat_member,

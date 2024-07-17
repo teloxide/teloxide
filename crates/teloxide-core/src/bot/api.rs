@@ -309,6 +309,18 @@ impl Requester for Bot {
         Self::SendChatAction::new(self.clone(), payloads::SendChatAction::new(chat_id, action))
     }
 
+    type SetMessageReaction = JsonRequest<payloads::SetMessageReaction>;
+
+    fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>,
+    {
+        Self::SetMessageReaction::new(
+            self.clone(),
+            payloads::SetMessageReaction::new(chat_id, message_id),
+        )
+    }
+
     type GetUserProfilePhotos = JsonRequest<payloads::GetUserProfilePhotos>;
 
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos {

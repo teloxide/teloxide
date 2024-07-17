@@ -197,6 +197,7 @@ where
         send_contact,
         send_dice,
         send_chat_action,
+        set_message_reaction,
         get_user_profile_photos,
         get_file,
         kick_chat_member,

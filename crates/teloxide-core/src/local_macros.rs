@@ -667,6 +667,14 @@ macro_rules! requester_forward {
             $body!(send_chat_action this (chat_id: C, action: ChatAction))
         }
     };
+    (@method set_message_reaction $body:ident $ty:ident) => {
+        type SetMessageReaction = $ty![SetMessageReaction];
+
+        fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId))
+        }
+    };
     (@method get_user_profile_photos $body:ident $ty:ident) => {
         type GetUserProfilePhotos = $ty![GetUserProfilePhotos];
 
