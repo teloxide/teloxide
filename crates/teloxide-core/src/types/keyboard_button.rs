@@ -10,7 +10,7 @@ use crate::types::{
 /// text of the button.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct KeyboardButton {
     /// Text of the button. If none of the optional fields are used, it will
@@ -90,7 +90,7 @@ pub enum ButtonRequest {
 }
 
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize)]
 struct RawRequest {
     /// If `true`, the user's phone number will be sent as a contact

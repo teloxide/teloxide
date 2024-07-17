@@ -10,7 +10,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// content instead of the the voice message.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultvoice).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultVoice {
     /// Unique identifier for this result, 1-64 bytes.

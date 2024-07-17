@@ -12,7 +12,7 @@ use crate::types::{
 /// [The official docs](https://core.telegram.org/bots/api#update).
 ///
 /// [object]: https://core.telegram.org/bots/api#available-types
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Update {
     /// The update‘s unique identifier. Update identifiers start from a certain

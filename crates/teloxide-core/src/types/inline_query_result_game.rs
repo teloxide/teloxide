@@ -7,7 +7,7 @@ use crate::types::InlineKeyboardMarkup;
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultgame).
 ///
 /// [game]: https://core.telegram.org/bots/api#games
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultGame {
     /// Unique identifier for this result, 1-64 bytes.

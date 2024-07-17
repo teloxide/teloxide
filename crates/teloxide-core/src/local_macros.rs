@@ -124,7 +124,7 @@ macro_rules! impl_payload {
             )?
         }
     ) => {
-        #[serde_with_macros::skip_serializing_none]
+        #[serde_with::skip_serializing_none]
         #[must_use = "Requests do nothing unless sent"]
         $(
             #[ $($method_meta)* ]

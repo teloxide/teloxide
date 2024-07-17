@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// </div>
 ///
 /// [Telegram Login Widget]: https://core.telegram.org/widgets/login
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct LoginUrl {
     /// An HTTPS URL to be opened with user authorization data added to the

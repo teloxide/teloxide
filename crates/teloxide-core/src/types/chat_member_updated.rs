@@ -6,7 +6,7 @@ use crate::types::{Chat, ChatInviteLink, ChatMember, User};
 /// This object represents changes in the status of a chat member.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmemberupdated).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatMemberUpdated {
     /// Chat the user belongs to

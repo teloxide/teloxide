@@ -18,7 +18,7 @@ pub enum InputMessageContent {
 }
 /// Represents the content of a text message to be sent as the result of an
 /// inline query.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InputMessageContentText {
     /// Text of the message to be sent, 1-4096 characters.
@@ -84,7 +84,7 @@ impl InputMessageContentText {
 
 /// Represents the content of a location message to be sent as the result of an
 /// inline query.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InputMessageContentLocation {
     /// Latitude of the location in degrees.
@@ -144,7 +144,7 @@ impl InputMessageContentLocation {
 
 /// Represents the content of a venue message to be sent as the result of
 /// an inline query.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InputMessageContentVenue {
     /// Latitude of the venue in degrees.
@@ -241,7 +241,7 @@ impl InputMessageContentVenue {
 
 /// Represents the content of a contact message to be sent as the result of
 /// an inline query.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InputMessageContentContact {
     /// Contact's phone number.
@@ -311,7 +311,7 @@ impl InputMessageContentContact {
 /// an inline query.
 ///
 /// [content]: InputMessageContent
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InputMessageContentInvoice {
     /// Product name, 1-32 characters

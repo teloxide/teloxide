@@ -8,7 +8,7 @@ use crate::types::AllowedUpdate;
 /// Contains information about the current status of a webhook.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct WebhookInfo {
     /// Webhook URL, `None` if webhook is not set up.

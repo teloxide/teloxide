@@ -10,7 +10,7 @@ use crate::types::FileMeta;
 /// don't exceed 10MB.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportfile).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
 pub struct PassportFile {
     /// Metadata of the passport file.

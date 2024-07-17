@@ -6,7 +6,7 @@ use crate::types::{FileMeta, Seconds};
 /// This object represents a voice note.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#voice).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Voice {
     /// Metadata of the voice file.

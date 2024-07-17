@@ -9,7 +9,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// instead of the contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedvideo).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultContact {
     /// Unique identifier for this result, 1-64 Bytes.

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::User;
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ChatInviteLink {
     /// The invite link. If the link was created by another chat administrator,

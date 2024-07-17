@@ -10,7 +10,7 @@ use crate::types::KeyboardButton;
 ///
 /// [custom keyboard]: https://core.telegram.org/bots#keyboards
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
 pub struct KeyboardMarkup {
     /// Array of button rows, each represented by an Array of

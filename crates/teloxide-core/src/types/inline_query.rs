@@ -8,7 +8,7 @@ use crate::types::{ChatType, Location, User};
 /// trending results.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequery).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQuery {
     /// Unique identifier for this query.

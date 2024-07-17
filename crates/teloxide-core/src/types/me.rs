@@ -7,7 +7,7 @@ use crate::types::User;
 /// Returned only in [`GetMe`].
 ///
 /// [`GetMe`]: crate::payloads::GetMe
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Me {
     #[serde(flatten)]
