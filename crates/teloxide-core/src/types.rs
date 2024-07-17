@@ -85,6 +85,7 @@ pub use message::*;
 pub use message_auto_delete_timer_changed::*;
 pub use message_entity::*;
 pub use message_id::*;
+pub use message_origin::*;
 pub use order_info::*;
 pub use parse_mode::*;
 pub use passport_data::*;
@@ -191,6 +192,7 @@ mod message;
 mod message_auto_delete_timer_changed;
 mod message_entity;
 mod message_id;
+mod message_origin;
 mod order_info;
 mod parse_mode;
 mod photo_size;
@@ -403,6 +405,7 @@ pub(crate) mod option_url_from_string {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) mod option_msg_id_as_int {
     use crate::types::MessageId;
 

@@ -8,9 +8,9 @@ use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
-    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
-    PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, ThreadId, True,
-    User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
+    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
+    ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
     VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
@@ -101,9 +101,8 @@ pub struct MessageCommon {
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
 
-    /// For forwarded messages, information about the forward
-    #[serde(flatten)]
-    pub forward: Option<Forward>,
+    /// Information about the original message for forwarded messages
+    pub forward_origin: Option<MessageOrigin>,
 
     /// For replies, the original message. Note that the Message object in this
     /// field will not contain further `reply_to_message` fields even if it
@@ -297,52 +296,6 @@ pub struct MessageConnectedWebsite {
 pub struct MessagePassportData {
     /// Telegram Passport data.
     pub passport_data: PassportData,
-}
-
-/// Information about forwarded message.
-#[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Forward {
-    /// Date the original message was sent in Unix time.
-    #[serde(rename = "forward_date")]
-    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub date: DateTime<Utc>,
-
-    /// The entity that sent the original message.
-    #[serde(flatten)]
-    pub from: ForwardedFrom,
-
-    /// For messages forwarded from channels, signature of the post author if
-    /// present. For messages forwarded from anonymous admins, authors title, if
-    /// present.
-    #[serde(rename = "forward_signature")]
-    pub signature: Option<String>,
-
-    /// For messages forwarded from channels, identifier of the original message
-    /// in the channel
-    #[serde(
-        rename = "forward_from_message_id",
-        with = "crate::types::option_msg_id_as_int",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub message_id: Option<MessageId>,
-}
-
-/// The entity that sent the original message that later was forwarded.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum ForwardedFrom {
-    /// The message was sent by a user.
-    #[serde(rename = "forward_from")]
-    User(User),
-    /// The message was sent by an anonymous user on behalf of a group or
-    /// channel.
-    #[serde(rename = "forward_from_chat")]
-    Chat(Chat),
-    /// The message was sent by a user who disallow adding a link to their
-    /// account in forwarded messages.
-    #[serde(rename = "forward_sender_name")]
-    SenderName(String),
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -674,13 +627,13 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
-        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
-        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue,
-        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated,
-        MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
-        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
-        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, MediaAnimation, MediaAudio,
+        MediaContact, MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll,
+        MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
+        Message, MessageChannelChatCreated, MessageChatShared, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
+        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
+        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin,
         MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
         MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
         MessageVideoChatParticipantsInvited, PhotoSize, User,
@@ -725,52 +678,63 @@ mod getters {
         }
 
         #[must_use]
-        pub fn forward(&self) -> Option<&Forward> {
-            self.common().and_then(|m| m.forward.as_ref())
+        pub fn forward_origin(&self) -> Option<&MessageOrigin> {
+            match &self.kind {
+                Common(MessageCommon { forward_origin, .. }) => forward_origin.as_ref(),
+                _ => None,
+            }
         }
 
         #[must_use]
         pub fn forward_date(&self) -> Option<DateTime<Utc>> {
-            self.forward().map(|f| f.date)
-        }
-
-        #[must_use]
-        pub fn forward_from(&self) -> Option<&ForwardedFrom> {
-            self.forward().map(|f| &f.from)
+            self.forward_origin().map(|f| f.date())
         }
 
         #[must_use]
         pub fn forward_from_user(&self) -> Option<&User> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::User(user) => Some(user),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::User { sender_user, .. } => Some(sender_user),
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_chat(&self) -> Option<&Chat> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::Chat(chat) => Some(chat),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Chat { sender_chat, .. } => Some(sender_chat),
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_sender_name(&self) -> Option<&str> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::SenderName(sender_name) => Some(&**sender_name),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::HiddenUser { sender_user_name, .. } => {
+                    Some(sender_user_name.as_str())
+                }
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_message_id(&self) -> Option<MessageId> {
-            self.forward().and_then(|f| f.message_id)
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Channel { message_id, .. } => Some(*message_id),
+                _ => None,
+            })
         }
 
         #[must_use]
-        pub fn forward_signature(&self) -> Option<&str> {
-            self.forward().and_then(|f| f.signature.as_deref())
+        pub fn forward_author_signature(&self) -> Option<&str> {
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Chat { author_signature, .. } => {
+                    author_signature.as_ref().map(|a| a.as_str())
+                }
+                MessageOrigin::Channel { author_signature, .. } => {
+                    author_signature.as_ref().map(|a| a.as_str())
+                }
+                _ => None,
+            })
         }
 
         #[must_use]
@@ -1974,14 +1938,17 @@ mod tests {
                 "title": "a",
                 "type": "supergroup"
             },
-            "date": 1640359576,
-            "forward_from_chat": {
-                "id": -1001160242915,
-                "title": "a",
-                "type": "supergroup"
+            "forward_origin": {
+                "type": "chat",
+                "date": 1640359544,
+                "sender_chat": {
+                    "id": -1001160242915,
+                    "title": "a",
+                    "type": "supergroup"
+                },
+                "author_signature": "TITLE"
             },
-            "forward_signature": "TITLE",
-            "forward_date": 1640359544,
+            "date": 1640359576,
             "text": "text"
         }"#;
 
@@ -2024,7 +1991,7 @@ mod tests {
         assert_eq!(message.sender_chat().unwrap(), &group);
         assert_eq!(&message.chat, &group);
         assert_eq!(message.forward_from_chat().unwrap(), &group);
-        assert_eq!(message.forward_signature().unwrap(), "TITLE");
+        assert_eq!(message.forward_author_signature().unwrap(), "TITLE");
         assert!(message.forward_date().is_some());
         assert_eq!(message.text().unwrap(), "text");
     }
