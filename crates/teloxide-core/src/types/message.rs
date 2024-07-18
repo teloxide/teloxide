@@ -10,9 +10,9 @@ use crate::types::{
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
     MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
-    Story, SuccessfulPayment, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
+    Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
+    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -109,6 +109,10 @@ pub struct MessageCommon {
     /// field will not contain further `reply_to_message` fields even if it
     /// itself is a reply.
     pub reply_to_message: Option<Box<Message>>,
+
+    /// For replies that quote part of the original message, the quoted part of
+    /// the message
+    pub quote: Option<TextQuote>,
 
     /// Date the message was last edited in Unix time.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
@@ -637,7 +641,7 @@ mod getters {
         MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
         MessageOrigin, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
         MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
-        MessageVideoChatParticipantsInvited, PhotoSize, User,
+        MessageVideoChatParticipantsInvited, PhotoSize, TextQuote, User,
     };
 
     use super::{
@@ -682,6 +686,14 @@ mod getters {
         pub fn forward_origin(&self) -> Option<&MessageOrigin> {
             match &self.kind {
                 Common(MessageCommon { forward_origin, .. }) => forward_origin.as_ref(),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn quote(&self) -> Option<&TextQuote> {
+            match &self.kind {
+                Common(MessageCommon { quote, .. }) => quote.as_ref(),
                 _ => None,
             }
         }

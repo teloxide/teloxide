@@ -456,6 +456,7 @@ mod test {
                     }),
                     reply_to_message: None,
                     forward_origin: None,
+                    quote: None,
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),
