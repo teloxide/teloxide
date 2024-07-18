@@ -271,14 +271,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -445,14 +440,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -471,9 +461,8 @@ Schema(
             names: ("copyMessages", "CopyMessages", "copy_messages"),
             return_ty: ArrayOf(RawTy("MessageId")),
             doc: Doc(
-                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [poll] can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
                 md_links: {
-                    "poll": "https://core.telegram.org/bots/api#poll",
                     "forwardMessages": "https://core.telegram.org/bots/api#forwardmessages",
                     "MessageId": "https://core.telegram.org/bots/api#messageid"
                 },
@@ -586,14 +575,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -694,14 +678,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -789,14 +768,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -907,14 +881,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1018,14 +987,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1104,14 +1068,9 @@ Schema(
                     )
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1189,14 +1148,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1251,14 +1205,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
             ],
         ),
@@ -1329,14 +1278,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1607,14 +1551,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1686,14 +1625,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1805,14 +1739,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1866,14 +1795,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -3697,14 +3621,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4168,14 +4087,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4419,14 +4333,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",

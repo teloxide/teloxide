@@ -3,7 +3,11 @@
 
 use rand::Rng;
 
-use teloxide::{prelude::*, types::Dice, utils::command::BotCommands};
+use teloxide::{
+    prelude::*,
+    types::{Dice, ReplyParameters},
+    utils::command::BotCommands,
+};
 
 #[tokio::main]
 async fn main() {
@@ -60,7 +64,7 @@ async fn main() {
             // filter only messages with dices.
             Message::filter_dice().endpoint(|bot: Bot, msg: Message, dice: Dice| async move {
                 bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
-                    .reply_to_message_id(msg.id)
+                    .reply_parameters(ReplyParameters::new(msg.id))
                     .await?;
                 Ok(())
             }),

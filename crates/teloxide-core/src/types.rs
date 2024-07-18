@@ -102,6 +102,7 @@ pub use proximity_alert_triggered::*;
 pub use reply_keyboard_markup::*;
 pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
+pub use reply_parameters::*;
 pub use response_parameters::*;
 pub use sent_web_app_message::*;
 pub use shipping_address::*;
@@ -208,6 +209,7 @@ mod proximity_alert_triggered;
 mod reply_keyboard_markup;
 mod reply_keyboard_remove;
 mod reply_markup;
+mod reply_parameters;
 mod response_parameters;
 mod sent_web_app_message;
 mod shipping_address;
@@ -285,8 +287,6 @@ pub use chat_id::*;
 pub use recipient::*;
 pub use seconds::*;
 pub use user_id::*;
-
-use serde::Serialize;
 
 /// Converts an `i64` timestamp to a `choro::DateTime`, producing serde error
 /// for invalid timestamps
@@ -444,16 +444,6 @@ pub(crate) mod option_msg_id_as_int {
             assert_eq!(serde_json::to_string(&id).unwrap(), json.to_owned());
         }
     }
-}
-
-pub(crate) fn serialize_reply_to_message_id<S>(
-    this: &Option<MessageId>,
-    serializer: S,
-) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    this.map(|MessageId(id)| id).serialize(serializer)
 }
 
 pub(crate) mod serde_rgb {

@@ -5,10 +5,9 @@ use serde::Serialize;
 use crate::types::{MessageId, Recipient, ThreadId};
 
 impl_payload! {
-    /// Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [`Poll`] can be copied only if the value of the field _correct\_option\_id_ is known to the bot. The method is analogous to the method [`ForwardMessages`], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [`MessageId`] of the sent messages is returned.
+    /// Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field _correct\_option\_id_ is known to the bot. The method is analogous to the method [`ForwardMessages`], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [`MessageId`] of the sent messages is returned.
     ///
     /// [`MessageId`]: crate::types::MessageId
-    /// [`Poll`]: crate::payloads::Poll
     /// [`ForwardMessages`]: crate::payloads::ForwardMessages
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub CopyMessages (CopyMessagesSetters) => Vec<MessageId> {
