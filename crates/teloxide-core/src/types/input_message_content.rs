@@ -1,7 +1,7 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Currency, LabeledPrice, MessageEntity, ParseMode};
+use crate::types::{Currency, LabeledPrice, LinkPreviewOptions, MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -35,6 +35,9 @@ pub struct InputMessageContentText {
     /// List of special entities that appear in message text, which can be
     /// specified instead of `parse_mode`.
     pub entities: Option<Vec<MessageEntity>>,
+
+    /// Link preview generation options for the message
+    pub link_preview_options: Option<LinkPreviewOptions>,
 }
 
 impl InputMessageContentText {
@@ -42,7 +45,12 @@ impl InputMessageContentText {
     where
         S: Into<String>,
     {
-        Self { message_text: message_text.into(), parse_mode: None, entities: None }
+        Self {
+            message_text: message_text.into(),
+            parse_mode: None,
+            entities: None,
+            link_preview_options: None,
+        }
     }
 
     pub fn message_text<S>(mut self, val: S) -> Self
@@ -64,6 +72,12 @@ impl InputMessageContentText {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.entities = Some(val.into_iter().collect());
+        self
+    }
+
+    #[must_use]
+    pub fn link_preview_options(mut self, val: LinkPreviewOptions) -> Self {
+        self.link_preview_options = Some(val);
         self
     }
 }
@@ -569,11 +583,19 @@ mod tests {
 
     #[test]
     fn text_serialize() {
-        let expected_json = r#"{"message_text":"text"}"#;
+        let expected_json =
+            r#"{"message_text":"text","link_preview_options":{"is_disabled":true}}"#;
         let text_content = InputMessageContent::Text(InputMessageContentText {
             message_text: String::from("text"),
             parse_mode: None,
             entities: None,
+            link_preview_options: Some(LinkPreviewOptions {
+                is_disabled: Some(true),
+                url: None,
+                prefer_small_media: None,
+                prefer_large_media: None,
+                show_above_text: None,
+            }),
         });
 
         let actual_json = serde_json::to_string(&text_content).unwrap();

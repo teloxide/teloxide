@@ -428,10 +428,11 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic, MediaKind, MediaText,
-        Message, MessageCommon, MessageId, MessageKind, MessageReactionCountUpdated,
-        MessageReactionUpdated, PublicChatChannel, PublicChatKind, PublicChatSupergroup,
-        ReactionCount, ReactionType, ReactionTypeKind, Update, UpdateId, UpdateKind, User, UserId,
+        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic, LinkPreviewOptions,
+        MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind,
+        MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel, PublicChatKind,
+        PublicChatSupergroup, ReactionCount, ReactionType, ReactionTypeKind, Update, UpdateId,
+        UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
@@ -460,7 +461,8 @@ mod test {
                     "type":"private"
                 },
                "date":1569518342,
-               "text":"hello there"
+               "text":"hello there",
+               "link_preview_options":{"is_disabled":true}
             }
         }"#;
 
@@ -507,6 +509,13 @@ mod test {
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),
                         entities: vec![],
+                        link_preview_options: Some(LinkPreviewOptions {
+                            is_disabled: Some(true),
+                            url: None,
+                            prefer_small_media: None,
+                            prefer_large_media: None,
+                            show_above_text: None,
+                        }),
                     }),
                     reply_markup: None,
                     sender_chat: None,

@@ -2,7 +2,10 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, Message, MessageEntity, MessageId, ParseMode, Recipient};
+use crate::types::{
+    InlineKeyboardMarkup, LinkPreviewOptions, Message, MessageEntity, MessageId, ParseMode,
+    Recipient,
+};
 
 impl_payload! {
     /// Use this method to edit text and [games] messages. On success, the edited Message is returned.
@@ -28,6 +31,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in message text, which can be specified instead of _parse\_mode_
             pub entities: Vec<MessageEntity> [collect],
+            /// Link preview generation options for the message
+            pub link_preview_options: LinkPreviewOptions,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

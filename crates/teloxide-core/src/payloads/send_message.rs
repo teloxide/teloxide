@@ -3,7 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    Message, MessageEntity, ParseMode, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    LinkPreviewOptions, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup, ReplyParameters,
+    ThreadId,
 };
 
 impl_payload! {
@@ -27,6 +28,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the message text, which can be specified instead of _parse\_mode_
             pub entities: Vec<MessageEntity> [collect],
+            /// Link preview generation options for the message
+            pub link_preview_options: LinkPreviewOptions,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

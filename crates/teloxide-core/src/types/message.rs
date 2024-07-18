@@ -8,7 +8,7 @@ use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted,
-    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, Location,
+    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
     MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
     MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
     Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
@@ -476,6 +476,10 @@ pub struct MediaText {
     /// commands, etc. that appear in the text.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub entities: Vec<MessageEntity>,
+
+    /// Options used for link preview generation for the message, if it is a
+    /// text message and link preview options were changed
+    pub link_preview_options: Option<LinkPreviewOptions>,
 }
 
 #[serde_with::skip_serializing_none]
