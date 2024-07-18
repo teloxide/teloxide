@@ -31,7 +31,7 @@ pub struct KeyboardButtonRequestUsers {
 }
 
 impl KeyboardButtonRequestUsers {
-    /// Creates a new [`KeyboardButtonRequestUser`].
+    /// Creates a new [`KeyboardButtonRequestUsers`].
     pub fn new(request_id: i32) -> Self {
         Self { request_id, user_is_bot: None, user_is_premium: None, max_quantity: 1 }
     }
