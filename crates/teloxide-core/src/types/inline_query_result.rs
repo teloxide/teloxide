@@ -303,13 +303,12 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
             caption_entities: None,
         });
 
-        let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"audio","id":"id","audio_file_id":"audio_file_id","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -351,7 +350,6 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
             caption_entities: None,
@@ -359,7 +357,7 @@ mod tests {
             audio_duration: Some(Seconds::from_seconds(1)),
         });
 
-        let expected_json = r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title","caption":"caption","parse_mode":"HTML","performer":"performer","audio_duration":1,"reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"audio","id":"id","audio_url":"http://audio_url/","title":"title","caption":"caption","parse_mode":"HTML","performer":"performer","audio_duration":1,"reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -400,13 +398,12 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
             caption_entities: None,
         });
 
-        let expected_json = r#"{"type":"document","id":"id","title":"title","document_file_id":"document_file_id","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"document","id":"id","title":"title","document_file_id":"document_file_id","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -453,7 +450,6 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
             thumbnail_url: Some(reqwest::Url::parse("http://thumb_url/").unwrap()),
@@ -461,7 +457,7 @@ mod tests {
             thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"document","id":"id","title":"title","caption":"caption","parse_mode":"HTML","document_url":"http://document_url/","mime_type":"application/pdf","description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
+        let expected_json = r#"{"type":"document","id":"id","title":"title","caption":"caption","parse_mode":"HTML","document_url":"http://document_url/","mime_type":"application/pdf","description":"description","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"},"thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -501,12 +497,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"gif","id":"id","gif_file_id":"gif_file_id","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"gif","id":"id","gif_file_id":"gif_file_id","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -556,12 +551,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","gif_width":1,"gif_height":1,"gif_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"gif","id":"id","gif_url":"http://gif_url/","gif_width":1,"gif_height":1,"gif_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -601,12 +595,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_file_id":"mpeg4_file_id","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_file_id":"mpeg4_file_id","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -656,12 +649,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","mpeg4_width":1,"mpeg4_height":1,"mpeg4_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"mpeg4_gif","id":"id","mpeg4_url":"http://mpeg4_url/","mpeg4_width":1,"mpeg4_height":1,"mpeg4_duration":1,"thumbnail_url":"http://thumb_url/","title":"title","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -703,12 +695,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"photo","id":"id","photo_file_id":"photo_file_id","title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"photo","id":"id","photo_file_id":"photo_file_id","title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -756,12 +747,11 @@ mod tests {
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
                 entities: None,
             })),
         });
 
-        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumbnail_url":"http://thumb_url/","photo_width":1,"photo_height":1,"title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"photo","id":"id","photo_url":"http://photo_url/","thumbnail_url":"http://thumb_url/","photo_width":1,"photo_height":1,"title":"title","description":"description","caption":"caption","parse_mode":"HTML","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -794,11 +784,10 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: Some(ParseMode::MarkdownV2),
-                disable_web_page_preview: Some(true),
             })),
         });
 
-        let expected_json = r#"{"type":"sticker","id":"id","sticker_file_id":"sticker_file_id","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2","disable_web_page_preview":true}}"#;
+        let expected_json = r#"{"type":"sticker","id":"id","sticker_file_id":"sticker_file_id","reply_markup":{"inline_keyboard":[]},"input_message_content":{"message_text":"message_text","parse_mode":"MarkdownV2"}}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
@@ -1029,7 +1018,6 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: None,
-                disable_web_page_preview: None,
             }),
             reply_markup: None,
             url: None,
@@ -1056,7 +1044,6 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: None,
-                disable_web_page_preview: None,
             }),
             reply_markup: Some(InlineKeyboardMarkup::default()),
             url: Some(Url::parse("http://url/").unwrap()),
@@ -1109,7 +1096,6 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: None,
-                disable_web_page_preview: None,
             })),
             thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
             thumbnail_width: Some(1),
@@ -1195,7 +1181,6 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: None,
-                disable_web_page_preview: None,
             })),
             thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
             thumbnail_width: Some(1),
@@ -1252,7 +1237,6 @@ mod tests {
                 message_text: String::from("message_text"),
                 entities: None,
                 parse_mode: None,
-                disable_web_page_preview: None,
             })),
             thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
             thumbnail_width: Some(1),

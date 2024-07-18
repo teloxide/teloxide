@@ -253,11 +253,6 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the message text, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
-                ),
-                Param(
                     name: "disable_notification",
                     ty: Option(bool), 
                     descr: Doc(
@@ -3272,11 +3267,6 @@ Schema(
                     name: "entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in message text, which can be specified instead of _parse\\_mode_"),
-                ),
-                Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
                 ),
                 Param(
                     name: "reply_markup",

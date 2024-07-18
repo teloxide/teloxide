@@ -35,9 +35,6 @@ pub struct InputMessageContentText {
     /// List of special entities that appear in message text, which can be
     /// specified instead of `parse_mode`.
     pub entities: Option<Vec<MessageEntity>>,
-
-    /// Disables link previews for links in the sent message.
-    pub disable_web_page_preview: Option<bool>,
 }
 
 impl InputMessageContentText {
@@ -45,12 +42,7 @@ impl InputMessageContentText {
     where
         S: Into<String>,
     {
-        Self {
-            message_text: message_text.into(),
-            parse_mode: None,
-            disable_web_page_preview: None,
-            entities: None,
-        }
+        Self { message_text: message_text.into(), parse_mode: None, entities: None }
     }
 
     pub fn message_text<S>(mut self, val: S) -> Self
@@ -72,12 +64,6 @@ impl InputMessageContentText {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.entities = Some(val.into_iter().collect());
-        self
-    }
-
-    #[must_use]
-    pub fn disable_web_page_preview(mut self, val: bool) -> Self {
-        self.disable_web_page_preview = Some(val);
         self
     }
 }
@@ -587,7 +573,6 @@ mod tests {
         let text_content = InputMessageContent::Text(InputMessageContentText {
             message_text: String::from("text"),
             parse_mode: None,
-            disable_web_page_preview: None,
             entities: None,
         });
 
