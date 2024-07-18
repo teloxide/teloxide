@@ -1712,7 +1712,7 @@ Schema(
             names: ("sendPoll", "SendPoll", "send_poll"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send phone contacts. On success, the sent [Message] is returned.",
+                md: "Use this method to send a native poll. On success, the sent [Message] is returned.",
                 md_links: {"Message": "https://core.telegram.org/bots/api#message"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendpoll",

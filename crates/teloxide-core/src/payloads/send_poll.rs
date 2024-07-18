@@ -8,7 +8,7 @@ use crate::types::{
 };
 
 impl_payload! {
-    /// Use this method to send phone contacts. On success, the sent [`Message`] is returned.
+    /// Use this method to send a native poll. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
