@@ -6,7 +6,7 @@ use crate::types::WebAppInfo;
 /// must use exactly one of the optional fields.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultsbutton)
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultsButton {
     /// Label text on the button

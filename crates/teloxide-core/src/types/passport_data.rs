@@ -6,7 +6,7 @@ use super::{EncryptedCredentials, EncryptedPassportElement};
 /// user.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#passportdata).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PassportData {
     /// Array with information about documents and other Telegram Passport

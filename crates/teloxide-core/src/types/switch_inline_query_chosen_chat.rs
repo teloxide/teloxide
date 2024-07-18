@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#switchinlinequerychosenchat)
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SwitchInlineQueryChosenChat {
     /// The default inline query to be inserted in the input field. If left

@@ -6,7 +6,7 @@ use crate::types::FileMeta;
 ///
 /// [file]: crate::types::Document
 /// [sticker]: crate::types::Sticker
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PhotoSize {
     /// Metadata of the photo file.

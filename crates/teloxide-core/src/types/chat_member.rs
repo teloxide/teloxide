@@ -7,7 +7,7 @@ use crate::types::{UntilDate, User};
 /// This object contains information about one member of the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ChatMember {
     /// Information about the user.
@@ -33,7 +33,7 @@ pub enum ChatMemberKind {
 }
 
 /// Owner of the group. This struct is part of the [`ChatMemberKind`] enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Owner {
     /// Custom title for this user.
@@ -45,7 +45,7 @@ pub struct Owner {
 
 /// Administrator of the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Administrator {
     /// Custom title for this user.
@@ -107,7 +107,7 @@ pub struct Administrator {
 
 /// User, restricted in the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Restricted {
     /// Date when restrictions will be lifted for this user.
@@ -166,7 +166,7 @@ pub struct Restricted {
 
 /// User that was banned in the chat and can't return to it or view chat
 /// messages. This struct is part of the [`ChatMemberKind`] enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Banned {
     /// Date when restrictions will be lifted for this user.

@@ -7,7 +7,7 @@ use crate::types::{
 /// This object represents a chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chat).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chat {
     /// A unique identifier for this chat.
@@ -52,7 +52,7 @@ pub struct Chat {
     pub chat_full_info: ChatFullInfo,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
@@ -60,7 +60,7 @@ pub enum ChatKind {
     Private(ChatPrivate),
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
@@ -94,7 +94,7 @@ pub struct ChatPublic {
     pub has_protected_content: Option<True>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(from = "serde_helper::ChatPrivate", into = "serde_helper::ChatPrivate")]
 pub struct ChatPrivate {
@@ -135,7 +135,7 @@ pub struct ChatPrivate {
     pub has_restricted_voice_and_video_messages: Option<True>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
@@ -145,7 +145,7 @@ pub enum PublicChatKind {
     Supergroup(PublicChatSupergroup),
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
@@ -158,7 +158,7 @@ pub struct PublicChatChannel {
     pub linked_chat_id: Option<i64>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
@@ -168,7 +168,7 @@ pub struct PublicChatGroup {
     pub permissions: Option<ChatPermissions>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if

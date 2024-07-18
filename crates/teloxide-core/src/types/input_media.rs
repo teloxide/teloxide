@@ -21,7 +21,7 @@ pub enum InputMedia {
 /// Represents a photo to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaPhoto {
     /// File to send.
@@ -90,7 +90,7 @@ impl InputMediaPhoto {
 /// Represents a video to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaVideo {
     // File to send.
@@ -215,7 +215,7 @@ impl InputMediaVideo {
 /// sound) to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAnimation {
     /// File to send.
@@ -331,7 +331,7 @@ impl InputMediaAnimation {
 /// Represents an audio file to be treated as music to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAudio {
     /// File to send.
@@ -439,7 +439,7 @@ impl InputMediaAudio {
 /// Represents a general file to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaDocument {
     /// File to send.

@@ -4,7 +4,7 @@ use crate::types::User;
 
 /// This object represents the content of a service message, sent whenever a
 /// user in the chat triggers a proximity alert set by another user.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ProximityAlertTriggered {
     /// User that triggered the alert.

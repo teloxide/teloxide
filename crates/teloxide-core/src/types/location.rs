@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::Seconds;
 
 /// This object represents a point on the map.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Location {
     /// Longitude as defined by sender.

@@ -9,7 +9,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// message with specified content instead of the animation.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultcachedgif).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultCachedGif {
     /// Unique identifier for this result, 1-64 bytes.

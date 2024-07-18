@@ -5,7 +5,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// Represents a link to an article or web page.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultarticle).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultArticle {
     /// Unique identifier for this result, 1-64 Bytes.

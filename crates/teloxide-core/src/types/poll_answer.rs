@@ -2,7 +2,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::types::{Chat, User};
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PollAnswer {
     /// Unique poll identifier.

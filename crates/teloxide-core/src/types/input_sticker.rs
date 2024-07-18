@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::types::{InputFile, MaskPosition};
 
 /// This object describes a sticker to be added to a sticker set.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputSticker {
     /// The added sticker. Pass a file_id as a String to send a file that

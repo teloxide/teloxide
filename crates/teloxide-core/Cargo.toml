@@ -63,7 +63,7 @@ log = "0.4"
 
 serde = { version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.55"
-serde_with_macros = "1.5.2"
+serde_with = "1.5.2"
 uuid = { version = "1.1.0", features = ["v4"] }        # for attaching input files
 
 derive_more = "0.99.9"
