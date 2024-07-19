@@ -88,6 +88,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 6.9 ([#1095](pr1095))
   - Add `can_post_stories`, `can_edit_stories` and `can_delete_stories` fields to `ChatMemberKind::Administrator`, `ChatAdministratorRights` and `PromoteChatMember`
   - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
+- Support for TBA 7.0
+  - Reactions:
+    - Add `ReactionType`, `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
+    - Add `MessageReaction` and `MessageReactionCount` variants to `UpdateKind` enum
+    - Add `filter_message_reaction_updated` and `filter_message_reaction_count_updated` filters to `UpdateFilterExt` trait
+    - Add `set_message_reaction` TBA method to `Requester` trait
+    - Add `available_reactions` field to `Chat` struct
+  - Link Preview Customization
+    - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
+    - Add `LinkPreviewOptions` struct
+    - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
+    - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
+  - Chat Boost
+    - Add `ChatBoost`, `ChatBoostSource`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
+    - Add `ChatBoost` and `RemovedChatBoost` variants to `UpdateKind` enum
+    - Add `filter_chat_boost` and `filter_removed_chat_boost` filters to `UpdateFilterExt` trait
+    - Add `get_user_chat_boosts` TBA method to `Requester` trait
+  - Giveaway:
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` structs
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` variants to `MessageKind` enum
+    - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message` struct
+    - Add `filter_giveaway`, `filter_giveaway_completed`, `filter_giveaway_created` and `filter_giveaway_winners` filters to `MessageFilterExt` trait
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
