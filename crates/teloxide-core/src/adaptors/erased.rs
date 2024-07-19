@@ -260,6 +260,7 @@ where
         unhide_general_forum_topic,
         unpin_all_general_forum_topic_messages,
         answer_callback_query,
+        get_user_chat_boosts,
         set_my_commands,
         get_my_commands,
         set_my_name,
@@ -737,6 +738,12 @@ trait ErasableRequester<'a> {
         &self,
         callback_query_id: String,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err>;
+
+    fn get_user_chat_boosts(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserChatBoosts, Self::Err>;
 
     fn set_my_commands(
         &self,
@@ -1578,6 +1585,14 @@ where
         callback_query_id: String,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err> {
         Requester::answer_callback_query(self, callback_query_id).erase()
+    }
+
+    fn get_user_chat_boosts(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserChatBoosts, Self::Err> {
+        Requester::get_user_chat_boosts(self, chat_id, user_id).erase()
     }
 
     fn set_my_commands(

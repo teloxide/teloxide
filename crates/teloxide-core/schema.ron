@@ -2932,6 +2932,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("getUserChatBoosts", "GetUserChatBoosts", "get_user_chat_boosts"),
+            return_ty: RawTy("UserChatBoosts"),
+            doc: Doc(
+                md: "Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a [UserChatBoosts] object.",
+                md_links: {"UserChatBoosts": "https://core.telegram.org/bots/api#userchatboosts"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getuserchatboosts",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat or username of the channel (in the format @channelusername)"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ],
+        ),
+        Method(
             names: ("setMyCommands", "SetMyCommands", "set_my_commands"),
             return_ty: True,
             doc: Doc(md: "Use this method to change the list of the bot's commands. Returns _True_ on success."),

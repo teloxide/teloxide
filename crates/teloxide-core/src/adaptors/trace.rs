@@ -190,6 +190,7 @@ where
         unhide_general_forum_topic,
         unpin_all_general_forum_topic_messages,
         answer_callback_query,
+        get_user_chat_boosts,
         set_my_commands,
         get_my_commands,
         set_my_name,

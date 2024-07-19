@@ -817,6 +817,13 @@ pub trait Requester {
     where
         C: Into<String>;
 
+    type GetUserChatBoosts: Request<Payload = GetUserChatBoosts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetUserChatBoosts`].
+    fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts
+    where
+        C: Into<Recipient>;
+
     type SetMyCommands: Request<Payload = SetMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetMyCommands`].
@@ -1363,6 +1370,7 @@ macro_rules! forward_all {
             unhide_general_forum_topic,
             unpin_all_general_forum_topic_messages,
             answer_callback_query,
+            get_user_chat_boosts,
             set_my_commands,
             get_my_commands,
             set_my_name,

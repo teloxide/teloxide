@@ -1053,6 +1053,14 @@ macro_rules! requester_forward {
             $body!(answer_callback_query this (callback_query_id: C))
         }
     };
+    (@method get_user_chat_boosts $body:ident $ty:ident) => {
+        type GetUserChatBoosts = $ty![GetUserChatBoosts];
+
+        fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts where C: Into<Recipient> {
+            let this = self;
+            $body!(get_user_chat_boosts this (chat_id: C, user_id: UserId))
+        }
+    };
     (@method set_my_commands $body:ident $ty:ident) => {
         type SetMyCommands = $ty![SetMyCommands];
 

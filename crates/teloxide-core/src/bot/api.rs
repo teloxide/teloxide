@@ -860,6 +860,18 @@ impl Requester for Bot {
         )
     }
 
+    type GetUserChatBoosts = JsonRequest<payloads::GetUserChatBoosts>;
+
+    fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts
+    where
+        C: Into<Recipient>,
+    {
+        Self::GetUserChatBoosts::new(
+            self.clone(),
+            payloads::GetUserChatBoosts::new(chat_id, user_id),
+        )
+    }
+
     type SetMyCommands = JsonRequest<payloads::SetMyCommands>;
 
     fn set_my_commands<C>(&self, commands: C) -> Self::SetMyCommands
