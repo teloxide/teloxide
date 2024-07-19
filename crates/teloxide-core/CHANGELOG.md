@@ -85,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `PollAnswer::voter` to support anonymous poll answers in chats
     - `emoji_status_expiration_date` to `Chat` as part of the future `ChatFullInfo` type TBA type
   - Add the `unpin_all_general_forum_topic_messages` method
+- Support for TBA 6.9 ([#1095](pr1095))
+  - Add `can_post_stories`, `can_edit_stories` and `can_delete_stories` fields to `ChatMemberKind::Administrator`, `ChatAdministratorRights` and `PromoteChatMember`
+  - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -93,6 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1040]: https://github.com/teloxide/teloxide/pull/1040
 [pr1086]: https://github.com/teloxide/teloxide/pull/1086
 [pr1087]: https://github.com/teloxide/teloxide/pull/1087
+[pr1095]: https://github.com/teloxide/teloxide/pull/1095
 
 ### Fixed
 

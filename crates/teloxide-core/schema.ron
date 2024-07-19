@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.8", date: "August 18, 2023"),
+    api_version: ApiVersion(ver: "6.9", date: "September 22, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -2040,6 +2040,21 @@ Schema(
                     name: "can_delete_messages",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True, if the administrator can delete messages of other users")
+                ),
+                Param(
+                    name: "can_post_stories",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can post stories in the channel, channels only")
+                ),
+                Param(
+                    name: "can_edit_stories",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can edit stories posted by other users, channels only")
+                ),
+                Param(
+                    name: "can_delete_stories",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the administrator can delete stories posted by other users, channels only")
                 ),
                 Param(
                     name: "can_manage_video_chats",
