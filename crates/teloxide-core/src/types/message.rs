@@ -2390,7 +2390,7 @@ mod tests {
                     message_auto_delete_time: None,
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                    chat_full_info: ChatFullInfo::default()
                 }],
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
                 winner_count: 1,
@@ -2499,7 +2499,7 @@ mod tests {
                         message_auto_delete_time: None,
                         has_hidden_members: false,
                         has_aggressive_anti_spam_enabled: false,
-                        chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                        chat_full_info: ChatFullInfo::default()
                     },
                     via_bot: None,
                     kind: MessageKind::Giveaway(MessageGiveaway {
@@ -2522,7 +2522,7 @@ mod tests {
                                 message_auto_delete_time: None,
                                 has_hidden_members: false,
                                 has_aggressive_anti_spam_enabled: false,
-                                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                                chat_full_info: ChatFullInfo::default()
                             }],
                             winners_selection_date: DateTime::from_timestamp(1721162701, 0)
                                 .unwrap(),
@@ -2623,7 +2623,7 @@ mod tests {
                     message_auto_delete_time: None,
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                    chat_full_info: ChatFullInfo::default()
                 },
                 giveaway_message_id: MessageId(27),
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
