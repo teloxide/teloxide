@@ -19,4 +19,6 @@ pub enum AllowedUpdate {
     MyChatMember,
     ChatMember,
     ChatJoinRequest,
+    ChatBoost,
+    RemovedChatBoost,
 }

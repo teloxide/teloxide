@@ -3,9 +3,9 @@ use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 
 use crate::types::{
-    CallbackQuery, Chat, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery,
-    Message, MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer,
-    PreCheckoutQuery, ShippingQuery, User,
+    CallbackQuery, Chat, ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated,
+    ChosenInlineResult, InlineQuery, Message, MessageReactionCountUpdated, MessageReactionUpdated,
+    Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -127,6 +127,14 @@ pub enum UpdateKind {
     /// updates.
     ChatJoinRequest(ChatJoinRequest),
 
+    /// A chat boost was added or changed. The bot must be an administrator in
+    /// the chat to receive these updates.
+    ChatBoost(ChatBoostUpdated),
+
+    /// A boost was removed from a chat. The bot must be an administrator in the
+    /// chat to receive these updates.
+    RemovedChatBoost(ChatBoostRemoved),
+
     /// An error that happened during deserialization.
     ///
     /// This allows `teloxide` to continue working even if telegram adds a new
@@ -160,6 +168,8 @@ impl Update {
 
             MyChatMember(m) | ChatMember(m) => &m.from,
             ChatJoinRequest(r) => &r.from,
+            ChatBoost(b) => return b.boost.source.user(),
+            RemovedChatBoost(b) => return b.source.user(),
 
             MessageReactionCount(_) | Poll(_) | Error(_) => return None,
         };
@@ -236,6 +246,20 @@ impl Update {
                 i4(member.mentioned_users())
             }
             UpdateKind::ChatJoinRequest(request) => i5(request.mentioned_users()),
+
+            UpdateKind::ChatBoost(b) => {
+                if let Some(user) = b.boost.source.user() {
+                    return i1(once(user));
+                }
+                i6(empty())
+            }
+            UpdateKind::RemovedChatBoost(b) => {
+                if let Some(user) = b.source.user() {
+                    return i1(once(user));
+                }
+                i6(empty())
+            }
+
             UpdateKind::MessageReactionCount(_) | UpdateKind::Error(_) => i6(empty()),
         }
     }
@@ -253,6 +277,8 @@ impl Update {
             ChatJoinRequest(c) => &c.chat,
             MessageReaction(r) => &r.chat,
             MessageReactionCount(r) => &r.chat,
+            ChatBoost(b) => &b.chat,
+            RemovedChatBoost(b) => &b.chat,
 
             InlineQuery(_)
             | ChosenInlineResult(_)
@@ -361,6 +387,13 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<ChatJoinRequest>()
                             .ok()
                             .map(UpdateKind::ChatJoinRequest),
+                        "chat_boost" => {
+                            map.next_value::<ChatBoostUpdated>().ok().map(UpdateKind::ChatBoost)
+                        }
+                        "removed_chat_boost" => map
+                            .next_value::<ChatBoostRemoved>()
+                            .ok()
+                            .map(UpdateKind::RemovedChatBoost),
                         _ => Some(empty_error()),
                     })
                     .unwrap_or_else(empty_error);
@@ -416,6 +449,10 @@ impl Serialize for UpdateKind {
             UpdateKind::ChatJoinRequest(v) => {
                 s.serialize_newtype_variant(name, 15, "chat_join_request", v)
             }
+            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 16, "chat_boost", v),
+            UpdateKind::RemovedChatBoost(v) => {
+                s.serialize_newtype_variant(name, 17, "removed_chat_boost", v)
+            }
             UpdateKind::Error(v) => v.serialize(s),
         }
     }
@@ -428,11 +465,12 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic, LinkPreviewOptions,
-        MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind,
-        MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel, PublicChatKind,
-        PublicChatSupergroup, ReactionCount, ReactionType, ReactionTypeKind, Update, UpdateId,
-        UpdateKind, User, UserId,
+        Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourceKind,
+        ChatBoostSourcePremium, ChatBoostUpdated, ChatFullInfo, ChatId, ChatKind, ChatPrivate,
+        ChatPublic, LinkPreviewOptions, MediaKind, MediaText, Message, MessageCommon, MessageId,
+        MessageKind, MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel,
+        PublicChatKind, PublicChatSupergroup, ReactionCount, ReactionType, ReactionTypeKind,
+        Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
@@ -942,6 +980,160 @@ mod test {
                         total_count: 1,
                     },
                 ],
+            }),
+        };
+
+        let actual = serde_json::from_str::<Update>(json).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn chat_boost_updated() {
+        let json = r#"
+        {
+            "update_id": 71651297,
+            "chat_boost": {
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "boost": {
+                    "boost_id": "4506e1b7e866e33fcbde78fe1746ec3a",
+                    "add_date": 1721399621,
+                    "expiration_date": 1745088963,
+                    "source": {
+                        "source": "premium",
+                        "user": {
+                            "id": 1459074222,
+                            "is_bot": false,
+                            "first_name": "shadowchain",
+                            "username": "shdwchn10",
+                            "language_code": "en",
+                            "is_premium": true
+                        }
+                    }
+                }
+            }
+        }
+        "#;
+
+        let expected = Update {
+            id: UpdateId(71651297),
+            kind: UpdateKind::ChatBoost(ChatBoostUpdated {
+                chat: Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None,
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None,
+                    }),
+                    photo: None,
+                    available_reactions: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+                },
+                boost: ChatBoost {
+                    boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
+                    add_date: DateTime::from_timestamp(1721399621, 0).unwrap(),
+                    expiration_date: DateTime::from_timestamp(1745088963, 0).unwrap(),
+                    source: ChatBoostSource {
+                        kind: ChatBoostSourceKind::Premium(ChatBoostSourcePremium {
+                            user: User {
+                                id: UserId(1459074222),
+                                is_bot: false,
+                                first_name: "shadowchain".to_owned(),
+                                last_name: None,
+                                username: Some("shdwchn10".to_owned()),
+                                language_code: Some("en".to_owned()),
+                                is_premium: true,
+                                added_to_attachment_menu: false,
+                            },
+                        }),
+                    },
+                },
+            }),
+        };
+
+        let actual = serde_json::from_str::<Update>(json).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn chat_boost_removed() {
+        let json = r#"
+        {
+            "update_id": 71651297,
+            "removed_chat_boost": {
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "boost_id": "4506e1b7e866e33fcbde78fe1746ec3a",
+                "remove_date": 1721999621,
+                "source": {
+                    "source": "premium",
+                    "user": {
+                        "id": 1459074222,
+                        "is_bot": false,
+                        "first_name": "shadowchain",
+                        "username": "shdwchn10",
+                        "language_code": "en",
+                        "is_premium": true
+                    }
+                }
+            }
+        }
+        "#;
+
+        let expected = Update {
+            id: UpdateId(71651297),
+            kind: UpdateKind::RemovedChatBoost(ChatBoostRemoved {
+                chat: Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None,
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None,
+                    }),
+                    photo: None,
+                    available_reactions: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+                },
+                boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
+                remove_date: DateTime::from_timestamp(1721999621, 0).unwrap(),
+                source: ChatBoostSource {
+                    kind: ChatBoostSourceKind::Premium(ChatBoostSourcePremium {
+                        user: User {
+                            id: UserId(1459074222),
+                            is_bot: false,
+                            first_name: "shadowchain".to_owned(),
+                            last_name: None,
+                            username: Some("shdwchn10".to_owned()),
+                            language_code: Some("en".to_owned()),
+                            is_premium: true,
+                            added_to_attachment_menu: false,
+                        },
+                    }),
+                },
             }),
         };
 

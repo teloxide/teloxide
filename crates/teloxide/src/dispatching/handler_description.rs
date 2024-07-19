@@ -77,6 +77,8 @@ impl EventKind for Kind {
             MyChatMember,
             ChatMember,
             ChatJoinRequest,
+            ChatBoost,
+            RemovedChatBoost,
         ]
         .into_iter()
         .map(Kind)
