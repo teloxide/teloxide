@@ -1,10 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use serde_with::with_prefix;
 
 use crate::types::{Chat, MessageId, User};
-
-with_prefix!(prefix_giveaway "giveaway_");
 
 /// This object represents a message about the completion of a giveaway with
 /// public winners.
@@ -15,7 +12,7 @@ pub struct GiveawayWinners {
     pub chat: Chat,
 
     /// Identifier of the messsage with the giveaway in the chat
-    #[serde(flatten, with = "prefix_giveaway")]
+    #[serde(flatten, with = "crate::types::prefix_giveaway_message_id")]
     pub giveaway_message_id: MessageId,
 
     /// Point in time (Unix timestamp) when winners of the giveaway were
