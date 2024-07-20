@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Support for TBA 7.1 ([#1131](pr1131))
+  - Updated docs for `can_post_stories`, `can_edit_stories` and `can_delete_stories` admin privileges
+  - Add `ChatBoostAdded` and `StoryId` structs
+  - Add `ChatBoostAdded` variant to `MessageKind` enum
+  - Add `sender_boost_count` and `reply_to_story` fields to `MessageCommon` struct
+  - Add `chat` and `id` fields to `Story` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` fields to `PublicChatSupergroup` struct
+  - Add `boost_added` and `reply_to_story` getters to `Message` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` getters to `Chat` struct
+
+[pr1131]: https://github.com/teloxide/teloxide/pull/1131
+
 ## 0.10.1 - 2024-08-17
 
 ### Fixed

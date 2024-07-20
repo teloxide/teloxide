@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Add `filter_boost_added` and `filter_reply_to_story` filters to `MessageFilterExt` trait
+
 ## 0.13.0 - 2024-08-16
 
 ### Added
