@@ -114,6 +114,7 @@ define_message_ext! {
     (filter_passport_data, Message::passport_data),
     (filter_dice, Message::dice),
     (filter_proximity_alert_triggered, Message::proximity_alert_triggered),
+    (filter_boost_added, Message::boost_added),
     (filter_forum_topic_created, Message::forum_topic_created),
     (filter_forum_topic_edited, Message::forum_topic_edited),
     (filter_forum_topic_closed, Message::forum_topic_closed),

@@ -5,15 +5,15 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
-    ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened,
-    Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted,
-    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
-    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
-    MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
-    Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
-    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData, WriteAccessAllowed,
+    Animation, Audio, BareChatId, Chat, ChatBoostAdded, ChatId, ChatShared, Contact, Dice,
+    Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited,
+    ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway,
+    GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
+    LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
+    MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
+    ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
+    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -84,6 +84,7 @@ pub enum MessageKind {
     PassportData(MessagePassportData),
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
+    ChatBoostAdded(MessageChatBoostAdded),
     ForumTopicCreated(MessageForumTopicCreated),
     ForumTopicEdited(MessageForumTopicEdited),
     ForumTopicClosed(MessageForumTopicClosed),
@@ -555,6 +556,13 @@ pub struct MessageProximityAlertTriggered {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChatBoostAdded {
+    /// Service message. User boosted the chat.
+    pub boost_added: ChatBoostAdded,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
     /// to write messages.
@@ -696,8 +704,8 @@ mod getters {
     };
 
     use super::{
-        MessageForumTopicClosed, MessageForumTopicCreated, MessageForumTopicEdited,
-        MessageForumTopicReopened, MessageGeneralForumTopicHidden,
+        MessageChatBoostAdded, MessageForumTopicClosed, MessageForumTopicCreated,
+        MessageForumTopicEdited, MessageForumTopicReopened, MessageGeneralForumTopicHidden,
         MessageGeneralForumTopicUnhidden, MessageGiveaway, MessageGiveawayCompleted,
         MessageGiveawayCreated, MessageGiveawayWinners, MessageMessageAutoDeleteTimerChanged,
         MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
@@ -1363,6 +1371,14 @@ mod getters {
                 ProximityAlertTriggered(MessageProximityAlertTriggered {
                     proximity_alert_triggered,
                 }) => Some(proximity_alert_triggered),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn boost_added(&self) -> Option<&types::ChatBoostAdded> {
+            match &self.kind {
+                ChatBoostAdded(MessageChatBoostAdded { boost_added }) => Some(boost_added),
                 _ => None,
             }
         }
@@ -2673,6 +2689,32 @@ mod tests {
                 was_refunded: false,
                 prize_description: None
             }
+        )
+    }
+
+    #[test]
+    fn chat_boost_added() {
+        let json = r#"{
+            "message_id": 28,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162702,
+            "boost_added": {
+                "boost_count": 4
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.boost_added().expect("Failed to get ChatBoostAdded from Message!"),
+            &ChatBoostAdded { boost_count: 4 }
         )
     }
 }
