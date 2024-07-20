@@ -54,6 +54,7 @@ mod tests {
                         can_set_sticker_set: None,
                         permissions: None,
                         slow_mode_delay: None,
+                        unrestrict_boost_count: None,
                         linked_chat_id: None,
                         location: None,
                         join_to_send_messages: None,

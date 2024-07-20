@@ -209,6 +209,13 @@ pub struct PublicChatSupergroup {
     /// [`GetChat`]: crate::payloads::GetChat
     pub slow_mode_delay: Option<Seconds>,
 
+    /// For supergroups, the minimum number of boosts that a non-administrator
+    /// user needs to add in order to ignore slow mode and chat permissions.
+    /// Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub unrestrict_boost_count: Option<u16>,
+
     /// Unique identifier for the linked chat, i.e. the discussion group
     /// identifier for a channel and vice versa. Returned only in [`GetChat`].
     ///
@@ -364,6 +371,21 @@ impl Chat {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
                 return this.slow_mode_delay;
+            }
+        }
+
+        None
+    }
+
+    /// Unique identifier for the linked chat, i.e. the discussion group
+    /// identifier for a channel and vice versa. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
+    pub fn unrestrict_boost_count(&self) -> Option<u16> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.unrestrict_boost_count;
             }
         }
 
