@@ -2098,17 +2098,17 @@ Schema(
                 Param(
                     name: "can_post_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can post stories in the channel, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can post stories to the chat")
                 ),
                 Param(
                     name: "can_edit_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can edit stories posted by other users, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can edit stories posted by other users")
                 ),
                 Param(
                     name: "can_delete_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can delete stories posted by other users, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can delete stories posted by other users")
                 ),
                 Param(
                     name: "can_manage_video_chats",

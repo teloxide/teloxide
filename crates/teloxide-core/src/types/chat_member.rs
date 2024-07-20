@@ -80,18 +80,15 @@ pub struct Administrator {
     /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
 
-    /// `true` if the administrator can post stories in the channel, channels
-    /// only.
+    /// `true` if the administrator can post stories to the chat.
     #[serde(default)]
     pub can_post_stories: bool,
 
-    /// `true` if the administrator can edit stories posted by other users,
-    /// channels only.
+    /// `true` if the administrator can edit stories posted by other users.
     #[serde(default)]
     pub can_edit_stories: bool,
 
-    /// `true` if the administrator can delete stories posted by other users,
-    /// channels only.
+    /// `true` if the administrator can delete stories posted by other users.
     #[serde(default)]
     pub can_delete_stories: bool,
 
@@ -447,8 +444,7 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can post stories in the channel, channels
-    /// only.
+    /// Returns `true` if the administrator can post stories to the chat.
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat (even if the chat is not a channel)
@@ -467,8 +463,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can edit stories posted by other users,
-    /// channels only.
+    /// Returns `true` if the administrator can edit stories posted by other
+    /// users.
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat (even if the chat is not a channel)
@@ -487,8 +483,8 @@ impl ChatMemberKind {
         }
     }
 
-    /// Returns `true` if the user can delete stories posted by other users,
-    /// channels only.
+    /// Returns `true` if the administrator can delete stories posted by other
+    /// users.
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat

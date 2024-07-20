@@ -47,16 +47,13 @@ pub struct ChatAdministratorRights {
     /// supergroups only
     pub can_pin_messages: Option<bool>,
 
-    /// `true`, if the administrator can post stories in the channel;
-    /// channels only
+    /// `true`, if the administrator can post stories to the chat
     pub can_post_stories: Option<bool>,
 
-    /// `true`, if the administrator can edit stories posted by other users;
-    /// channels only
+    /// `true`, if the administrator can edit stories posted by other users
     pub can_edit_stories: Option<bool>,
 
-    /// `true`, if the administrator can delete stories posted by other users;
-    /// channels only
+    /// `true`, if the administrator can delete stories posted by other users
     pub can_delete_stories: Option<bool>,
 
     /// `true`, if the user is allowed to create, rename, close, and reopen
