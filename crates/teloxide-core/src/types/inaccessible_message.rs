@@ -9,5 +9,6 @@ pub struct InaccessibleMessage {
     /// Chat the message belonged to
     pub chat: Chat,
     /// Unique message identifier inside the chat
+    #[serde(flatten)]
     pub message_id: MessageId,
 }

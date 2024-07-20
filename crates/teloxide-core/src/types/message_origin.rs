@@ -39,6 +39,7 @@ pub enum MessageOrigin {
         /// Channel chat to which the message was originally sent
         chat: Chat,
         /// Unique message identifier inside the chat
+        #[serde(flatten)]
         message_id: MessageId,
         /// Signature of the original post author
         author_signature: Option<String>,
