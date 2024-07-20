@@ -126,6 +126,7 @@ pub use shipping_query::*;
 pub use sticker::*;
 pub use sticker_set::*;
 pub use story::*;
+pub use story_id::*;
 pub use successful_payment::*;
 pub use switch_inline_query_chosen_chat::*;
 pub use target_message::*;
@@ -297,6 +298,7 @@ mod inline_query_result_photo;
 mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
+mod story_id;
 
 mod encrypted_credentials;
 mod encrypted_passport_element;
