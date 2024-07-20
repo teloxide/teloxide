@@ -14,6 +14,7 @@ pub use chat::*;
 pub use chat_action::*;
 pub use chat_administrator_rights::*;
 pub use chat_boost::*;
+pub use chat_boost_added::*;
 pub use chat_boost_removed::*;
 pub use chat_boost_source::*;
 pub use chat_boost_updated::*;
@@ -273,6 +274,7 @@ mod web_app_info;
 mod webhook_info;
 mod write_access_allowed;
 
+mod chat_boost_added;
 mod inline_query;
 mod inline_query_result;
 mod inline_query_result_article;
