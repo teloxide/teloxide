@@ -96,6 +96,7 @@ define_message_ext! {
     (filter_migration_to, Message::migrate_to_chat_id),
     (filter_reply_to_message, Message::reply_to_message),
     (filter_forward_origin, Message::forward_origin),
+    (filter_reply_to_story, Message::reply_to_story),
     // Rest variants of a MessageKind
     (filter_new_chat_members, Message::new_chat_members),
     (filter_left_chat_member, Message::left_chat_member),
