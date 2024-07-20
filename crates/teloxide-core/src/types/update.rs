@@ -548,6 +548,7 @@ mod test {
                     forward_origin: None,
                     external_reply: None,
                     quote: None,
+                    sender_boost_count: None,
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
                         text: String::from("hello there"),

@@ -128,6 +128,10 @@ pub struct MessageCommon {
     /// the message
     pub quote: Option<TextQuote>,
 
+    /// If the sender of the message boosted the chat, the number of boosts
+    /// added by the user
+    pub sender_boost_count: Option<u16>,
+
     /// Date the message was last edited in Unix time.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
     pub edit_date: Option<DateTime<Utc>>,
