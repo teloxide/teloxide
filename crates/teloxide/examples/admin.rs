@@ -79,7 +79,7 @@ async fn kick_user(bot: Bot, msg: Message) -> ResponseResult<()> {
     match msg.reply_to_message() {
         Some(replied) => {
             // bot.unban_chat_member can also kicks a user from a group chat.
-            bot.unban_chat_member(msg.chat.id, replied.from().unwrap().id).await?;
+            bot.unban_chat_member(msg.chat.id, replied.from.as_ref().unwrap().id).await?;
         }
         None => {
             bot.send_message(msg.chat.id, "Use this command in reply to another message").await?;
@@ -94,7 +94,7 @@ async fn ban_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()> 
         Some(replied) => {
             bot.kick_chat_member(
                 msg.chat.id,
-                replied.from().expect("Must be MessageKind::Common").id,
+                replied.from.as_ref().expect("Must be MessageKind::Common").id,
             )
             .until_date(msg.date + time)
             .await?;
@@ -113,7 +113,7 @@ async fn mute_user(bot: Bot, msg: Message, time: Duration) -> ResponseResult<()>
         Some(replied) => {
             bot.restrict_chat_member(
                 msg.chat.id,
-                replied.from().expect("Must be MessageKind::Common").id,
+                replied.from.as_ref().expect("Must be MessageKind::Common").id,
                 ChatPermissions::empty(),
             )
             .until_date(msg.date + time)

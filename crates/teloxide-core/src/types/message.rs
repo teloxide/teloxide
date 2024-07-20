@@ -31,12 +31,25 @@ pub struct Message {
     #[serde(rename = "message_thread_id")]
     pub thread_id: Option<ThreadId>,
 
+    /// Sender, empty for messages sent to channels.
+    pub from: Option<User>,
+
+    /// Sender of the message, sent on behalf of a chat. The channel itself for
+    /// channel messages. The supergroup itself for messages from anonymous
+    /// group administrators. The linked channel for messages automatically
+    /// forwarded to the discussion group
+    pub sender_chat: Option<Chat>,
+
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
 
     /// Conversation the message belongs to.
     pub chat: Chat,
+
+    /// `true`, if the message is sent to a forum topic.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_topic_message: bool,
 
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
@@ -94,15 +107,6 @@ pub enum MessageKind {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
-    /// Sender, empty for messages sent to channels.
-    pub from: Option<User>,
-
-    /// Sender of the message, sent on behalf of a chat. The channel itself for
-    /// channel messages. The supergroup itself for messages from anonymous
-    /// group administrators. The linked channel for messages automatically
-    /// forwarded to the discussion group
-    pub sender_chat: Option<Chat>,
-
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
@@ -129,12 +133,6 @@ pub struct MessageCommon {
     /// Inline keyboard attached to the message. `login_url` buttons are
     /// represented as ordinary `url` buttons.
     pub reply_markup: Option<InlineKeyboardMarkup>,
-
-    /// `true`, if the message is sent to a forum topic.
-    // FIXME: `is_topic_message` is included even in service messages, like ForumTopicCreated.
-    //        more this to `Message`
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub is_topic_message: bool,
 
     /// `true`, if the message is a channel post that was automatically
     /// forwarded to the connected discussion group.
@@ -708,12 +706,10 @@ mod getters {
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
         /// Returns the user who sent the message.
+        #[deprecated(since = "0.13.0", note = "use `.from` field instead")]
         #[must_use]
         pub fn from(&self) -> Option<&User> {
-            match &self.kind {
-                Common(MessageCommon { from, .. }) => from.as_ref(),
-                _ => None,
-            }
+            self.from.as_ref()
         }
 
         #[must_use]
@@ -724,12 +720,10 @@ mod getters {
             }
         }
 
+        #[deprecated(since = "0.13.0", note = "use `.sender_chat` field instead")]
         #[must_use]
         pub fn sender_chat(&self) -> Option<&Chat> {
-            match &self.kind {
-                Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
-                _ => None,
-            }
+            self.sender_chat.as_ref()
         }
 
         #[must_use]
@@ -1746,8 +1740,8 @@ impl Message {
 
         // Lets just hope we didn't forget something here...
 
-        self.from()
-            .into_iter()
+        self.from
+            .iter()
             .chain(self.via_bot.as_ref())
             .chain(self.chat.mentioned_users_rec())
             .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
@@ -1844,7 +1838,10 @@ mod tests {
             Message {
                 id: MessageId(198283),
                 thread_id: None,
+                from: None,
+                sender_chat: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
+                is_topic_message: false,
                 chat: Chat {
                     id: ChatId(250918540),
                     kind: ChatKind::Private(ChatPrivate {
@@ -2101,9 +2098,9 @@ mod tests {
             chat_full_info: ChatFullInfo::default(),
         };
 
-        assert!(message.from().unwrap().is_anonymous());
+        assert!(message.from.as_ref().unwrap().is_anonymous());
         assert_eq!(message.author_signature().unwrap(), "TITLE2");
-        assert_eq!(message.sender_chat().unwrap(), &group);
+        assert_eq!(message.sender_chat.as_ref().unwrap(), &group);
         assert_eq!(&message.chat, &group);
         assert_eq!(message.forward_from_chat().unwrap(), &group);
         assert_eq!(message.forward_author_signature().unwrap(), "TITLE");
@@ -2126,7 +2123,7 @@ mod tests {
         assert_eq!(message.migrate_to_chat_id(), Some(&new));
 
         // The user who initialized the migration
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // Migration from a common group
         let json = r#"{"chat":{"id":-1001555296434,"title":"test","type":"supergroup"},"date":1629404938,"from":{"first_name":"Group","id":1087968824,"is_bot":true,"username":"GroupAnonymousBot"},"message_id":1,"migrate_from_chat_id":-599075523,"sender_chat":{"id":-1001555296434,"title":"test","type":"supergroup"}}"#;
@@ -2137,10 +2134,10 @@ mod tests {
         assert_eq!(message.migrate_from_chat_id(), Some(&old));
 
         // Anonymous bot
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // The chat to which the group migrated
-        assert!(message.sender_chat().is_some());
+        assert!(message.sender_chat.is_some());
     }
 
     /// Regression test for <https://github.com/teloxide/teloxide/issues/481>
@@ -2296,7 +2293,9 @@ mod tests {
             "message_thread_id":4
         }"#;
 
-        let _: Message = serde_json::from_str(json).unwrap();
+        let message: Message = serde_json::from_str(json).unwrap();
+        // https://github.com/teloxide/teloxide/issues/945
+        assert!(message.from.is_some());
     }
 
     #[test]
@@ -2480,6 +2479,28 @@ mod tests {
                 giveaway_message: Some(Box::new(Message {
                     id: MessageId(24),
                     thread_id: None,
+                    from: None,
+                    sender_chat: Some(Chat {
+                        id: ChatId(-1002236736395),
+                        kind: ChatKind::Public(ChatPublic {
+                            title: Some("Test".to_owned()),
+                            kind: PublicChatKind::Channel(PublicChatChannel {
+                                linked_chat_id: None,
+                                username: None
+                            }),
+                            description: None,
+                            invite_link: None,
+                            has_protected_content: None
+                        }),
+                        chat_full_info: ChatFullInfo::default(),
+                        available_reactions: None,
+                        photo: None,
+                        has_aggressive_anti_spam_enabled: false,
+                        has_hidden_members: false,
+                        message_auto_delete_time: None,
+                        pinned_message: None
+                    }),
+                    is_topic_message: false,
                     date: DateTime::from_timestamp(1721161230, 0).unwrap(),
                     chat: Chat {
                         id: ChatId(-1002236736395),

@@ -1,4 +1,6 @@
 #![allow(clippy::redundant_closure_call)]
+// Required for the `filter_from` currently
+#![allow(deprecated)]
 
 use dptree::{di::DependencyMap, Handler};
 
@@ -68,6 +70,7 @@ macro_rules! define_message_ext {
     }
 }
 
+// FIXME: change macro so that we can filter things without getters
 // May be expanded in the future.
 define_message_ext! {
     // MessageCommon

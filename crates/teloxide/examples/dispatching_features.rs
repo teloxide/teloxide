@@ -34,7 +34,7 @@ async fn main() {
         .branch(
             // Filter a maintainer by a user ID.
             dptree::filter(|cfg: ConfigParameters, msg: Message| {
-                msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
+                msg.from.map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .filter_command::<MaintainerCommands>()
             .endpoint(|msg: Message, bot: Bot, cmd: MaintainerCommands| async move {
@@ -125,7 +125,7 @@ async fn simple_commands_handler(
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {
-            if msg.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from.unwrap().id == cfg.bot_maintainer {
                 format!(
                     "{}\n\n{}",
                     SimpleCommand::descriptions(),
@@ -138,7 +138,7 @@ async fn simple_commands_handler(
             }
         }
         SimpleCommand::Maintainer => {
-            if msg.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from.as_ref().unwrap().id == cfg.bot_maintainer {
                 "Maintainer is you!".into()
             } else if let Some(username) = cfg.maintainer_username {
                 format!("Maintainer is @{username}")
@@ -147,7 +147,7 @@ async fn simple_commands_handler(
             }
         }
         SimpleCommand::MyId => {
-            format!("{}", msg.from().unwrap().id)
+            format!("{}", msg.from.unwrap().id)
         }
     };
 

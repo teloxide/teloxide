@@ -156,7 +156,9 @@ impl Update {
         use UpdateKind::*;
 
         let from = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => m.from()?,
+            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => {
+                m.from.as_ref()?
+            }
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
@@ -510,6 +512,18 @@ mod test {
                 via_bot: None,
                 id: MessageId(6557),
                 thread_id: None,
+                from: Some(User {
+                    id: UserId(218_485_655),
+                    is_bot: false,
+                    first_name: String::from("Waffle"),
+                    last_name: None,
+                    username: Some(String::from("WaffleLapkin")),
+                    language_code: Some(String::from("en")),
+                    is_premium: false,
+                    added_to_attachment_menu: false,
+                }),
+                sender_chat: None,
+                is_topic_message: false,
                 date,
                 chat: Chat {
                     id: ChatId(218_485_655),
@@ -530,16 +544,6 @@ mod test {
                     chat_full_info: ChatFullInfo::default(),
                 },
                 kind: MessageKind::Common(MessageCommon {
-                    from: Some(User {
-                        id: UserId(218_485_655),
-                        is_bot: false,
-                        first_name: String::from("Waffle"),
-                        last_name: None,
-                        username: Some(String::from("WaffleLapkin")),
-                        language_code: Some(String::from("en")),
-                        is_premium: false,
-                        added_to_attachment_menu: false,
-                    }),
                     reply_to_message: None,
                     forward_origin: None,
                     quote: None,
@@ -556,9 +560,7 @@ mod test {
                         }),
                     }),
                     reply_markup: None,
-                    sender_chat: None,
                     author_signature: None,
-                    is_topic_message: false,
                     is_automatic_forward: false,
                     has_protected_content: false,
                 }),
