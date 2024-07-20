@@ -34,6 +34,7 @@ pub use dice_emoji::*;
 pub use document::*;
 pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
+pub use external_reply_info::*;
 pub use file::*;
 pub use force_reply::*;
 pub use forum_topic::*;
@@ -180,6 +181,7 @@ mod contact;
 mod dice;
 mod dice_emoji;
 mod document;
+mod external_reply_info;
 mod file;
 mod force_reply;
 mod forum_topic;
@@ -443,7 +445,6 @@ pub(crate) mod option_url_from_string {
     }
 }
 
-#[allow(dead_code)]
 pub(crate) mod option_msg_id_as_int {
     use crate::types::MessageId;
 

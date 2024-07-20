@@ -6,8 +6,8 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
-    ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
-    GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted,
+    ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened,
+    Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted,
     GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
     MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
     MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
@@ -118,6 +118,10 @@ pub struct MessageCommon {
     /// field will not contain further `reply_to_message` fields even if it
     /// itself is a reply.
     pub reply_to_message: Option<Box<Message>>,
+
+    /// Information about the message that is being replied to, which may come
+    /// from another chat or forum topic
+    pub external_reply: Option<ExternalReplyInfo>,
 
     /// For replies that quote part of the original message, the quoted part of
     /// the message

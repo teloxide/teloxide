@@ -546,6 +546,7 @@ mod test {
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
+                    external_reply: None,
                     quote: None,
                     edit_date: None,
                     media_kind: MediaKind::Text(MediaText {
