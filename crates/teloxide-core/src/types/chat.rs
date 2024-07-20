@@ -197,6 +197,13 @@ pub struct PublicChatSupergroup {
     /// [`GetChat`]: crate::payloads::GetChat
     pub can_set_sticker_set: Option<bool>,
 
+    /// For supergroups, the name of the group's custom emoji sticker set.
+    /// Custom emoji from this set can be used by all users and bots in the
+    /// group. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub custom_emoji_sticker_set_name: Option<String>,
+
     /// A default chat member permissions, for groups and supergroups.
     /// Returned only from [`GetChat`].
     ///
@@ -356,6 +363,22 @@ impl Chat {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
                 return this.can_set_sticker_set;
+            }
+        }
+
+        None
+    }
+
+    /// For supergroups, the name of the group's custom emoji sticker set.
+    /// Custom emoji from this set can be used by all users and bots in the
+    /// group. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
+    pub fn custom_emoji_sticker_set_name(&self) -> Option<&str> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.custom_emoji_sticker_set_name.as_deref();
             }
         }
 
