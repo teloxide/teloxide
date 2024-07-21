@@ -12,7 +12,7 @@ use crate::types::{
 /// [The official docs](https://core.telegram.org/bots/api#update).
 ///
 /// [object]: https://core.telegram.org/bots/api#available-types
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Update {
     /// The update‘s unique identifier. Update identifiers start from a certain
@@ -136,7 +136,7 @@ impl Update {
             InlineQuery(query) => &query.from,
             ShippingQuery(query) => &query.from,
             PreCheckoutQuery(query) => &query.from,
-            PollAnswer(answer) => &answer.user,
+            PollAnswer(answer) => return answer.voter.user(),
 
             MyChatMember(m) | ChatMember(m) => &m.from,
             ChatJoinRequest(r) => &r.from,
@@ -198,7 +198,12 @@ impl Update {
             UpdateKind::PreCheckoutQuery(query) => i1(once(&query.from)),
             UpdateKind::Poll(poll) => i3(poll.mentioned_users()),
 
-            UpdateKind::PollAnswer(answer) => i1(once(&answer.user)),
+            UpdateKind::PollAnswer(answer) => {
+                if let Some(user) = answer.voter.user() {
+                    return i1(once(user));
+                }
+                i6(empty())
+            }
 
             UpdateKind::MyChatMember(member) | UpdateKind::ChatMember(member) => {
                 i4(member.mentioned_users())
@@ -380,8 +385,8 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message, MessageCommon,
-        MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
+        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, MediaKind, MediaText, Message,
+        MessageCommon, MessageId, MessageKind, Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
@@ -437,6 +442,7 @@ mod test {
                     message_auto_delete_time: None,
                     has_hidden_members: false,
                     has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
                 },
                 kind: MessageKind::Common(MessageCommon {
                     from: Some(User {

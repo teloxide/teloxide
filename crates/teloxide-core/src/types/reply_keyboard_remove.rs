@@ -12,7 +12,7 @@ use crate::types::True;
 /// [The official docs](https://core.telegram.org/bots/api#replykeyboardremove).
 ///
 /// [`KeyboardMarkup`]: crate::types::KeyboardMarkup
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
 #[derive(Eq, Hash, PartialEq)]
 pub struct KeyboardRemove {

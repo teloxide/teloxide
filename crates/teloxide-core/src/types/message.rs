@@ -9,15 +9,15 @@ use crate::types::{
     ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
     GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
-    PhotoSize, Poll, ProximityAlertTriggered, Sticker, SuccessfulPayment, ThreadId, True, User,
-    UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, ThreadId, True,
+    User, UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#message).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Message {
     /// Unique message identifier inside this chat.
@@ -85,7 +85,7 @@ pub enum MessageKind {
     Empty {},
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
     /// Sender, empty for messages sent to channels.
@@ -137,7 +137,7 @@ pub struct MessageCommon {
     pub has_protected_content: bool,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageNewChatMembers {
     /// New members that were added to the group or supergroup and
@@ -146,7 +146,7 @@ pub struct MessageNewChatMembers {
     pub new_chat_members: Vec<User>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageLeftChatMember {
     /// A member was removed from the group, information about them (this
@@ -154,35 +154,35 @@ pub struct MessageLeftChatMember {
     pub left_chat_member: User,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageNewChatTitle {
     /// A chat title was changed to this value.
     pub new_chat_title: String,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageNewChatPhoto {
     /// A chat photo was change to this value.
     pub new_chat_photo: Vec<PhotoSize>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageDeleteChatPhoto {
     /// Service message: the chat photo was deleted.
     pub delete_chat_photo: True,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageGroupChatCreated {
     /// Service message: the group has been created.
     pub group_chat_created: True,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageSupergroupChatCreated {
     /// Service message: the supergroup has been created. This field can‘t
@@ -193,7 +193,7 @@ pub struct MessageSupergroupChatCreated {
     pub supergroup_chat_created: True,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct MessageChannelChatCreated {
     /// Service message: the channel has been created. This field can‘t be
@@ -204,7 +204,7 @@ pub struct MessageChannelChatCreated {
     pub channel_chat_created: True,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageMessageAutoDeleteTimerChanged {
     /// Service message: auto-delete timer settings changed in the chat.
@@ -239,7 +239,7 @@ pub enum ChatMigration {
     },
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessagePinned {
     /// Specified message was pinned. Note that the Message object in this
@@ -261,7 +261,7 @@ pub struct MessageUserShared {
     pub user_shared: UserShared,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageInvoice {
     /// Message is an invoice for a [payment], information about the
@@ -272,7 +272,7 @@ pub struct MessageInvoice {
     pub invoice: Invoice,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageSuccessfulPayment {
     /// Message is a service message about a successful payment,
@@ -282,7 +282,7 @@ pub struct MessageSuccessfulPayment {
     pub successful_payment: SuccessfulPayment,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageConnectedWebsite {
     /// The domain name of the website on which the user has logged in.
@@ -292,7 +292,7 @@ pub struct MessageConnectedWebsite {
     pub connected_website: String,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessagePassportData {
     /// Telegram Passport data.
@@ -300,7 +300,7 @@ pub struct MessagePassportData {
 }
 
 /// Information about forwarded message.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Forward {
     /// Date the original message was sent in Unix time.
@@ -366,6 +366,7 @@ pub enum MediaKind {
     Photo(MediaPhoto),
     Poll(MediaPoll),
     Sticker(MediaSticker),
+    Story(MediaStory),
     Text(MediaText),
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
@@ -373,7 +374,7 @@ pub enum MediaKind {
     Migration(ChatMigration),
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaAnimation {
     /// Message is an animation, information about the animation. For
@@ -395,7 +396,7 @@ pub struct MediaAnimation {
     // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaAudio {
     /// Message is an audio file, information about the file.
@@ -414,14 +415,14 @@ pub struct MediaAudio {
     pub media_group_id: Option<String>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
     pub contact: Contact,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaDocument {
     /// Message is a general file, information about the file.
@@ -440,7 +441,7 @@ pub struct MediaDocument {
     pub media_group_id: Option<String>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaGame {
     /// Message is a game, information about the game. [More
@@ -450,14 +451,14 @@ pub struct MediaGame {
     pub game: Game,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaLocation {
     /// Message is a shared location, information about the location.
     pub location: Location,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaPhoto {
     /// Message is a photo, available sizes of the photo.
@@ -480,21 +481,28 @@ pub struct MediaPhoto {
     pub media_group_id: Option<String>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaPoll {
     /// Message is a native poll, information about the poll.
     pub poll: Poll,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MediaStory {
+    /// Message is a forwarded story
+    pub story: Story,
+}
+
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaText {
     /// For text messages, the actual UTF-8 text of the message, 0-4096
@@ -507,7 +515,7 @@ pub struct MediaText {
     pub entities: Vec<MessageEntity>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaVideo {
     /// Message is a video, information about the video.
@@ -530,7 +538,7 @@ pub struct MediaVideo {
     pub media_group_id: Option<String>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaVideoNote {
     /// Message is a [video note], information about the video message.
@@ -539,7 +547,7 @@ pub struct MediaVideoNote {
     pub video_note: VideoNote,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaVoice {
     /// Message is a voice message, information about the file.
@@ -561,14 +569,14 @@ pub struct MediaVenue {
     // Note: for backward compatibility telegram also sends `location` field, but we ignore it
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageDice {
     /// Message is a dice with random value from 1 to 6.
     pub dice: Dice,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageProximityAlertTriggered {
     /// Service message. A user in the chat triggered another user's proximity
@@ -576,7 +584,7 @@ pub struct MessageProximityAlertTriggered {
     pub proximity_alert_triggered: ProximityAlertTriggered,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
@@ -584,77 +592,77 @@ pub struct MessageWriteAccessAllowed {
     pub write_access_allowed: WriteAccessAllowed,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicCreated {
     /// Service message: forum topic created.
     pub forum_topic_created: ForumTopicCreated,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicEdited {
     /// Service message: forum topic edited.
     pub forum_topic_edited: ForumTopicEdited,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicClosed {
     /// Service message: forum topic closed.
     pub forum_topic_closed: ForumTopicClosed,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageForumTopicReopened {
     /// Service message: forum topic reopened.
     pub forum_topic_reopened: ForumTopicReopened,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageGeneralForumTopicHidden {
     /// Service message: the 'General' forum topic hidden.
     pub general_forum_topic_hidden: GeneralForumTopicHidden,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageGeneralForumTopicUnhidden {
     /// Service message: the 'General' forum topic unhidden.
     pub general_forum_topic_unhidden: GeneralForumTopicUnhidden,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatScheduled {
     /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatStarted {
     /// Service message: video chat started.
     pub video_chat_started: VideoChatStarted,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatEnded {
     /// Service message: video chat ended.
     pub video_chat_ended: VideoChatEnded,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatParticipantsInvited {
     /// Service message: new participants invited to a video chat.
     pub video_chat_participants_invited: VideoChatParticipantsInvited,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWebAppData {
     /// Service message: data sent by a Web App.
@@ -668,14 +676,14 @@ mod getters {
     use crate::types::{
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
         MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
-        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaText, MediaVenue, MediaVideo,
-        MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageChatShared,
-        MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
-        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessagePassportData,
-        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
-        MessageSupergroupChatCreated, MessageUserShared, MessageVideoChatParticipantsInvited,
-        PhotoSize, User,
+        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue,
+        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated,
+        MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
+        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
+        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
+        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUserShared,
+        MessageVideoChatParticipantsInvited, PhotoSize, User,
     };
 
     use super::{
@@ -899,6 +907,7 @@ mod getters {
                     | MediaKind::Location(_)
                     | MediaKind::Poll(_)
                     | MediaKind::Sticker(_)
+                    | MediaKind::Story(_)
                     | MediaKind::Text(_)
                     | MediaKind::VideoNote(_)
                     | MediaKind::Voice(_)
@@ -974,6 +983,17 @@ mod getters {
         }
 
         #[must_use]
+        pub fn story(&self) -> Option<&types::Story> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Story(MediaStory { story, .. }),
+                    ..
+                }) => Some(story),
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn video(&self) -> Option<&types::Video> {
             match &self.kind {
                 Common(MessageCommon {
@@ -1009,17 +1029,16 @@ mod getters {
         #[must_use]
         pub fn caption(&self) -> Option<&str> {
             match &self.kind {
-                Common(MessageCommon { media_kind, .. }) => match media_kind {
-                    MediaKind::Animation(MediaAnimation { caption, .. })
-                    | MediaKind::Audio(MediaAudio { caption, .. })
-                    | MediaKind::Document(MediaDocument { caption, .. })
-                    | MediaKind::Photo(MediaPhoto { caption, .. })
-                    | MediaKind::Video(MediaVideo { caption, .. })
-                    | MediaKind::Voice(MediaVoice { caption, .. }) => {
-                        caption.as_ref().map(Deref::deref)
-                    }
-                    _ => None,
-                },
+                Common(MessageCommon {
+                    media_kind:
+                        MediaKind::Animation(MediaAnimation { caption, .. })
+                        | MediaKind::Audio(MediaAudio { caption, .. })
+                        | MediaKind::Document(MediaDocument { caption, .. })
+                        | MediaKind::Photo(MediaPhoto { caption, .. })
+                        | MediaKind::Video(MediaVideo { caption, .. })
+                        | MediaKind::Voice(MediaVoice { caption, .. }),
+                    ..
+                }) => caption.as_ref().map(Deref::deref),
                 _ => None,
             }
         }
@@ -1708,7 +1727,7 @@ mod tests {
             "width": 512,
             "height": 640,
             "mime_type": "video/mp4",
-            "thumb": {
+            "thumbnail": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
               "file_unique_id":"",
               "file_size": 10339,
@@ -1764,7 +1783,8 @@ mod tests {
                     has_aggressive_anti_spam_enabled: false,
                     pinned_message: None,
                     message_auto_delete_time: None,
-                    has_hidden_members: false
+                    has_hidden_members: false,
+                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
@@ -1800,7 +1820,7 @@ mod tests {
             "width": 512,
             "height": 640,
             "mime_type": "video/mp4",
-            "thumb": {
+            "thumbnail": {
               "file_id": "AAQCAAOmBAACBf2oS53pByA-I4CWWCObDwAEAQAHbQADMWcAAhYE",
               "file_unique_id":"",
               "file_size": 10339,
@@ -1870,7 +1890,7 @@ mod tests {
                 "is_animated": true,
                 "is_video": false,
                 "type": "regular",
-                "thumb": {
+                "thumbnail": {
                     "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
                     "file_unique_id": "AQADIwADsND4DHI",
                     "file_size": 4118,
@@ -1997,6 +2017,7 @@ mod tests {
             pinned_message: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
 
         assert!(message.from().unwrap().is_anonymous());

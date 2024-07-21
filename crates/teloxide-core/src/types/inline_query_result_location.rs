@@ -9,7 +9,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// instead of the location.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultlocation).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultLocation {
     /// Unique identifier for this result, 1-64 Bytes.
@@ -49,13 +49,13 @@ pub struct InlineQueryResultLocation {
     pub input_message_content: Option<InputMessageContent>,
 
     /// Url of the thumbnail for the result.
-    pub thumb_url: Option<reqwest::Url>,
+    pub thumbnail_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
-    pub thumb_width: Option<u32>,
+    pub thumbnail_width: Option<u32>,
 
     /// Thumbnail height.
-    pub thumb_height: Option<u32>,
+    pub thumbnail_height: Option<u32>,
 }
 
 impl InlineQueryResultLocation {
@@ -72,9 +72,9 @@ impl InlineQueryResultLocation {
             live_period: None,
             reply_markup: None,
             input_message_content: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
             horizontal_accuracy: None,
             heading: None,
             proximity_alert_radius: None,
@@ -146,20 +146,20 @@ impl InlineQueryResultLocation {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = Some(val);
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_width(mut self, val: u32) -> Self {
-        self.thumb_width = Some(val);
+    pub fn thumbnail_width(mut self, val: u32) -> Self {
+        self.thumbnail_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_height(mut self, val: u32) -> Self {
-        self.thumb_height = Some(val);
+    pub fn thumbnail_height(mut self, val: u32) -> Self {
+        self.thumbnail_height = Some(val);
         self
     }
 }

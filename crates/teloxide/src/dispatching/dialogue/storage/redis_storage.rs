@@ -96,7 +96,7 @@ where
         Box::pin(async move {
             let dialogue =
                 self.serializer.serialize(&dialogue).map_err(RedisStorageError::SerdeError)?;
-            self.pool.get().await?.set::<_, Vec<u8>, _>(chat_id, dialogue).await?;
+            () = self.pool.get().await?.set::<_, Vec<u8>, _>(chat_id, dialogue).await?;
             Ok(())
         })
     }

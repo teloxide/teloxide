@@ -9,7 +9,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// message with the specified content instead of the animation.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultgif).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultGif {
     /// Unique identifier for this result, 1-64 bytes.
@@ -21,14 +21,20 @@ pub struct InlineQueryResultGif {
     /// Width of the GIF.
     pub gif_width: Option<u32>,
 
-    /// Height of the GIFv.
+    /// Height of the GIF.
     pub gif_height: Option<u32>,
 
     /// Duration of the GIF.
     pub gif_duration: Option<Seconds>,
 
-    /// URL of the static thumbnail for the result (jpeg or gif).
-    pub thumb_url: reqwest::Url,
+    /// URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the
+    /// result
+    pub thumbnail_url: reqwest::Url,
+
+    // FIXME: maybe make dedicated enum for the mime type?
+    /// MIME type of the thumbnail, must be one of “image/jpeg”,
+    /// “image/gif”, or “video/mp4”. Defaults to “image/jpeg”
+    pub thumbnail_mime_type: Option<String>,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -58,7 +64,7 @@ pub struct InlineQueryResultGif {
 }
 
 impl InlineQueryResultGif {
-    pub fn new<S>(id: S, gif_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
+    pub fn new<S>(id: S, gif_url: reqwest::Url, thumbnail_url: reqwest::Url) -> Self
     where
         S: Into<String>,
     {
@@ -68,7 +74,8 @@ impl InlineQueryResultGif {
             gif_width: None,
             gif_height: None,
             gif_duration: None,
-            thumb_url,
+            thumbnail_url,
+            thumbnail_mime_type: None,
             title: None,
             caption: None,
             parse_mode: None,
@@ -111,8 +118,8 @@ impl InlineQueryResultGif {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = val;
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = val;
         self
     }
 

@@ -93,6 +93,17 @@ cargo test --features "full nightly"
 cargo docs
 ```
 
+### Bumping supported TBA version
+
+When you introduce changes that bump suppported Telegram Bot API version (e.g. 6.9 → 7.0), you must:
+
+- Specify your changes in [crates/teloxide-core/CHANGELOG.md](crates/teloxide-core/CHANGELOG.md) file
+- Change TBA version and it's announce date in `api_version: ApiVersion(ver: "7.0", date: "December 29, 2023"),` line in head of [crates/teloxide-core/schema.ron](crates/teloxide-core/schema.ron) file
+- Change TBA version in `(Currently, version … is supported)` line in head of [crates/teloxide-core/src/lib.rs](crates/teloxide-core/src/lib.rs) file
+- Change TBA version in `Currently, version … of` line in head of [crates/teloxide/src/lib.rs](crates/teloxide/src/lib.rs) file
+- Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [crates/teloxide-core/README.md](crates/teloxide-core/README.md) file
+- Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [README.md](README.md) file
+
 ## @teloxidebot
 
 `teloxide` uses @teloxidebot as a helper to manage PRs and issues. It is based on triagebot used by rustc developers, which docs can be found [here](https://forge.rust-lang.org/triagebot/index.html).

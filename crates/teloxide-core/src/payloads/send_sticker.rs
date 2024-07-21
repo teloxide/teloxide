@@ -22,6 +22,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Emoji associated with the sticker; only for just uploaded stickers
+            pub emoji: String [into],
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

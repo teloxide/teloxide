@@ -21,7 +21,7 @@ pub enum InputMedia {
 /// Represents a photo to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaphoto).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaPhoto {
     /// File to send.
@@ -90,7 +90,7 @@ impl InputMediaPhoto {
 /// Represents a video to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediavideo).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaVideo {
     // File to send.
@@ -101,7 +101,7 @@ pub struct InputMediaVideo {
     /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
     /// height should not exceed 320. Ignored if the file is not uploaded
     /// using multipart/form-data.
-    pub thumb: Option<InputFile>,
+    pub thumbnail: Option<InputFile>,
 
     /// Caption of the video to be sent, 0-1024 characters.
     pub caption: Option<String>,
@@ -139,7 +139,7 @@ impl InputMediaVideo {
     pub const fn new(media: InputFile) -> Self {
         Self {
             media,
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             caption_entities: None,
@@ -156,8 +156,8 @@ impl InputMediaVideo {
         self
     }
 
-    pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val);
+    pub fn thumbnail(mut self, val: InputFile) -> Self {
+        self.thumbnail = Some(val);
         self
     }
 
@@ -215,7 +215,7 @@ impl InputMediaVideo {
 /// sound) to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaanimation).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAnimation {
     /// File to send.
@@ -226,7 +226,7 @@ pub struct InputMediaAnimation {
     /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
     /// height should not exceed 320. Ignored if the file is not uploaded
     /// using multipart/form-data.
-    pub thumb: Option<InputFile>,
+    pub thumbnail: Option<InputFile>,
 
     /// Caption of the animation to be sent, 0-1024 characters.
     pub caption: Option<String>,
@@ -262,7 +262,7 @@ impl InputMediaAnimation {
     pub const fn new(media: InputFile) -> Self {
         Self {
             media,
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             width: None,
@@ -278,8 +278,8 @@ impl InputMediaAnimation {
         self
     }
 
-    pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val);
+    pub fn thumbnail(mut self, val: InputFile) -> Self {
+        self.thumbnail = Some(val);
         self
     }
 
@@ -331,7 +331,7 @@ impl InputMediaAnimation {
 /// Represents an audio file to be treated as music to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediaaudio).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaAudio {
     /// File to send.
@@ -342,7 +342,7 @@ pub struct InputMediaAudio {
     /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
     /// height should not exceed 320. Ignored if the file is not uploaded
     /// using multipart/form-data.
-    pub thumb: Option<InputFile>,
+    pub thumbnail: Option<InputFile>,
 
     /// Caption of the audio to be sent, 0-1024 characters.
     pub caption: Option<String>,
@@ -373,7 +373,7 @@ impl InputMediaAudio {
     pub const fn new(media: InputFile) -> Self {
         Self {
             media,
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             performer: None,
@@ -388,8 +388,8 @@ impl InputMediaAudio {
         self
     }
 
-    pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val);
+    pub fn thumbnail(mut self, val: InputFile) -> Self {
+        self.thumbnail = Some(val);
         self
     }
 
@@ -439,7 +439,7 @@ impl InputMediaAudio {
 /// Represents a general file to be sent.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmediadocument).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputMediaDocument {
     /// File to send.
@@ -450,7 +450,7 @@ pub struct InputMediaDocument {
     /// JPEG format and less than 200 kB in size. A thumbnail‘s width and
     /// height should not exceed 320. Ignored if the file is not uploaded
     /// using multipart/form-data.
-    pub thumb: Option<InputFile>,
+    pub thumbnail: Option<InputFile>,
 
     /// Caption of the document to be sent, 0-1024 characters.
     pub caption: Option<String>,
@@ -477,7 +477,7 @@ impl InputMediaDocument {
     pub const fn new(media: InputFile) -> Self {
         Self {
             media,
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             disable_content_type_detection: None,
@@ -490,8 +490,8 @@ impl InputMediaDocument {
         self
     }
 
-    pub fn thumb(mut self, val: InputFile) -> Self {
-        self.thumb = Some(val);
+    pub fn thumbnail(mut self, val: InputFile) -> Self {
+        self.thumbnail = Some(val);
         self
     }
 
@@ -534,30 +534,30 @@ impl InputMedia {
     pub(crate) fn files(&self) -> impl Iterator<Item = &InputFile> {
         use InputMedia::*;
 
-        let (media, thumb) = match self {
+        let (media, thumbnail) = match self {
             Photo(InputMediaPhoto { media, .. }) => (media, None),
-            Document(InputMediaDocument { media, thumb, .. })
-            | Audio(InputMediaAudio { media, thumb, .. })
-            | Animation(InputMediaAnimation { media, thumb, .. })
-            | Video(InputMediaVideo { media, thumb, .. }) => (media, thumb.as_ref()),
+            Document(InputMediaDocument { media, thumbnail, .. })
+            | Audio(InputMediaAudio { media, thumbnail, .. })
+            | Animation(InputMediaAnimation { media, thumbnail, .. })
+            | Video(InputMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_ref()),
         };
 
-        iter::once(media).chain(thumb)
+        iter::once(media).chain(thumbnail)
     }
 
     /// Returns an iterator of all files in this input media
     pub(crate) fn files_mut(&mut self) -> impl Iterator<Item = &mut InputFile> {
         use InputMedia::*;
 
-        let (media, thumb) = match self {
+        let (media, thumbnail) = match self {
             Photo(InputMediaPhoto { media, .. }) => (media, None),
-            Document(InputMediaDocument { media, thumb, .. })
-            | Audio(InputMediaAudio { media, thumb, .. })
-            | Animation(InputMediaAnimation { media, thumb, .. })
-            | Video(InputMediaVideo { media, thumb, .. }) => (media, thumb.as_mut()),
+            Document(InputMediaDocument { media, thumbnail, .. })
+            | Audio(InputMediaAudio { media, thumbnail, .. })
+            | Animation(InputMediaAnimation { media, thumbnail, .. })
+            | Video(InputMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_mut()),
         };
 
-        iter::once(media).chain(thumb)
+        iter::once(media).chain(thumbnail)
     }
 }
 
@@ -585,7 +585,7 @@ mod tests {
         let expected_json = r#"{"type":"video","media":"123456"}"#;
         let video = InputMedia::Video(InputMediaVideo {
             media: InputFile::file_id("123456"),
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             width: None,
@@ -605,7 +605,7 @@ mod tests {
         let expected_json = r#"{"type":"animation","media":"123456"}"#;
         let video = InputMedia::Animation(InputMediaAnimation {
             media: InputFile::file_id("123456"),
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             width: None,
@@ -624,7 +624,7 @@ mod tests {
         let expected_json = r#"{"type":"audio","media":"123456"}"#;
         let video = InputMedia::Audio(InputMediaAudio {
             media: InputFile::file_id("123456"),
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             duration: None,
@@ -642,7 +642,7 @@ mod tests {
         let expected_json = r#"{"type":"document","media":"123456"}"#;
         let video = InputMedia::Document(InputMediaDocument {
             media: InputFile::file_id("123456"),
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             caption_entities: None,

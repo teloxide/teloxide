@@ -9,7 +9,7 @@ use crate::types::{FileMeta, PhotoSize, Seconds};
 ///
 /// [video message]: https://telegram.org/blog/video-messages-and-telescope
 /// [v4.0]: https://telegram.org/blog/video-messages-and-telescope
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct VideoNote {
     /// Metadata of the video note file.
@@ -24,5 +24,5 @@ pub struct VideoNote {
     pub duration: Seconds,
 
     /// Video thumbnail.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 }

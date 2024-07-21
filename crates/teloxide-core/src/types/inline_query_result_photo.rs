@@ -9,7 +9,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// the specified content instead of the photo.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultphoto).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultPhoto {
     /// Unique identifier for this result, 1-64 bytes.
@@ -20,7 +20,7 @@ pub struct InlineQueryResultPhoto {
     pub photo_url: reqwest::Url,
 
     /// URL of the thumbnail for the photo.
-    pub thumb_url: reqwest::Url,
+    pub thumbnail_url: reqwest::Url,
 
     /// Width of the photo.
     pub photo_width: Option<u32>,
@@ -59,14 +59,14 @@ pub struct InlineQueryResultPhoto {
 }
 
 impl InlineQueryResultPhoto {
-    pub fn new<S>(id: S, photo_url: reqwest::Url, thumb_url: reqwest::Url) -> Self
+    pub fn new<S>(id: S, photo_url: reqwest::Url, thumbnail_url: reqwest::Url) -> Self
     where
         S: Into<String>,
     {
         Self {
             id: id.into(),
             photo_url,
-            thumb_url,
+            thumbnail_url,
             photo_width: None,
             photo_height: None,
             title: None,
@@ -94,8 +94,8 @@ impl InlineQueryResultPhoto {
     }
 
     #[must_use]
-    pub fn thumb_url<S>(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = val;
+    pub fn thumbnail_url<S>(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = val;
         self
     }
 

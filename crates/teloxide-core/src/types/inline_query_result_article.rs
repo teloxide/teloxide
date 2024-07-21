@@ -5,7 +5,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent};
 /// Represents a link to an article or web page.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultarticle).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQueryResultArticle {
     /// Unique identifier for this result, 1-64 Bytes.
@@ -31,13 +31,13 @@ pub struct InlineQueryResultArticle {
     pub description: Option<String>,
 
     /// Url of the thumbnail for the result.
-    pub thumb_url: Option<reqwest::Url>,
+    pub thumbnail_url: Option<reqwest::Url>,
 
     /// Thumbnail width.
-    pub thumb_width: Option<u32>,
+    pub thumbnail_width: Option<u32>,
 
     /// Thumbnail height.
-    pub thumb_height: Option<u32>,
+    pub thumbnail_height: Option<u32>,
 }
 
 impl InlineQueryResultArticle {
@@ -54,9 +54,9 @@ impl InlineQueryResultArticle {
             url: None,
             hide_url: None,
             description: None,
-            thumb_url: None,
-            thumb_width: None,
-            thumb_height: None,
+            thumbnail_url: None,
+            thumbnail_width: None,
+            thumbnail_height: None,
         }
     }
 
@@ -109,20 +109,20 @@ impl InlineQueryResultArticle {
     }
 
     #[must_use]
-    pub fn thumb_url(mut self, val: reqwest::Url) -> Self {
-        self.thumb_url = Some(val);
+    pub fn thumbnail_url(mut self, val: reqwest::Url) -> Self {
+        self.thumbnail_url = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_width(mut self, val: u32) -> Self {
-        self.thumb_width = Some(val);
+    pub fn thumbnail_width(mut self, val: u32) -> Self {
+        self.thumbnail_width = Some(val);
         self
     }
 
     #[must_use]
-    pub fn thumb_height(mut self, val: u32) -> Self {
-        self.thumb_height = Some(val);
+    pub fn thumbnail_height(mut self, val: u32) -> Self {
+        self.thumbnail_height = Some(val);
         self
     }
 }

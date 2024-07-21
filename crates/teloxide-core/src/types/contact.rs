@@ -5,7 +5,7 @@ use crate::types::UserId;
 /// This object represents a phone contact.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#contact).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Contact {
     /// A contact's phone number.

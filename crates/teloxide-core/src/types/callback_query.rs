@@ -15,7 +15,7 @@ use crate::types::{Message, User};
 ///
 /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
 /// [inline mode]: https://core.telegram.org/bots/api#inline-mode
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CallbackQuery {
     /// An unique identifier for this query.

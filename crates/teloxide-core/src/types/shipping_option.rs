@@ -5,7 +5,7 @@ use crate::types::LabeledPrice;
 /// This object represents one shipping option.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#shippingoption).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ShippingOption {
     /// Shipping option identifier.

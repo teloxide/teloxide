@@ -7,7 +7,7 @@ use crate::types::{UntilDate, User};
 /// This object contains information about one member of the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ChatMember {
     /// Information about the user.
@@ -33,7 +33,7 @@ pub enum ChatMemberKind {
 }
 
 /// Owner of the group. This struct is part of the [`ChatMemberKind`] enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Owner {
     /// Custom title for this user.
@@ -45,7 +45,7 @@ pub struct Owner {
 
 /// Administrator of the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Administrator {
     /// Custom title for this user.
@@ -80,6 +80,21 @@ pub struct Administrator {
     /// `true` if the administrator can delete messages of other users.
     pub can_delete_messages: bool,
 
+    /// `true` if the administrator can post stories in the channel, channels
+    /// only.
+    #[serde(default)]
+    pub can_post_stories: bool,
+
+    /// `true` if the administrator can edit stories posted by other users,
+    /// channels only.
+    #[serde(default)]
+    pub can_edit_stories: bool,
+
+    /// `true` if the administrator can delete stories posted by other users,
+    /// channels only.
+    #[serde(default)]
+    pub can_delete_stories: bool,
+
     /// `true` if the administrator can manage video chats.
     pub can_manage_video_chats: bool,
 
@@ -107,7 +122,7 @@ pub struct Administrator {
 
 /// User, restricted in the group. This struct is part of the [`ChatMemberKind`]
 /// enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Restricted {
     /// Date when restrictions will be lifted for this user.
@@ -166,7 +181,7 @@ pub struct Restricted {
 
 /// User that was banned in the chat and can't return to it or view chat
 /// messages. This struct is part of the [`ChatMemberKind`] enum.
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Banned {
     /// Date when restrictions will be lifted for this user.
@@ -361,6 +376,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has [`can_manage_chat`]
     ///   privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_chat`]: Administrator::can_manage_chat
@@ -379,6 +395,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has [`can_post_messages`]
     ///   privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_post_messages`]: Administrator::can_post_messages
@@ -398,6 +415,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has the
     ///   [`can_edit_messages`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_edit_messages`]: Administrator::can_edit_messages
@@ -416,6 +434,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_delete_messages`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_delete_messages`]: Administrator::can_delete_messages
@@ -428,12 +447,73 @@ impl ChatMemberKind {
         }
     }
 
+    /// Returns `true` if the user can post stories in the channel, channels
+    /// only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat (even if the chat is not a channel)
+    /// - is an administrator in the given chat and has [`can_post_stories`]
+    ///   privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_post_stories`]: Administrator::can_post_stories
+    #[must_use]
+    pub fn can_post_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_post_stories, .. }) => *can_post_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
+    /// Returns `true` if the user can edit stories posted by other users,
+    /// channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat (even if the chat is not a channel)
+    /// - is an administrator in the given chat and has the [`can_edit_stories`]
+    ///   privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_edit_stories`]: Administrator::can_edit_stories
+    #[must_use]
+    pub fn can_edit_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_edit_stories, .. }) => *can_edit_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
+    /// Returns `true` if the user can delete stories posted by other users,
+    /// channels only.
+    ///
+    /// I.e. returns `true` if the user
+    /// - is the owner of the chat
+    /// - is an administrator in the given chat and has the
+    ///   [`can_delete_stories`] privilege.
+    ///
+    /// Returns `false` otherwise.
+    ///
+    /// [`can_delete_stories`]: Administrator::can_delete_stories
+    #[must_use]
+    pub fn can_delete_stories(&self) -> bool {
+        match self {
+            Self::Owner(_) => true,
+            Self::Administrator(Administrator { can_delete_stories, .. }) => *can_delete_stories,
+            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+        }
+    }
+
     /// Returns `true` if the user can manage video chats.
     ///
     /// I.e. returns `true` if the user
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_manage_video_chats`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_manage_video_chats`]: Administrator::can_manage_video_chats
@@ -454,6 +534,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat
     /// - is an administrator in the given chat and has the
     ///   [`can_restrict_members`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_restrict_members`]: Administrator::can_restrict_members
@@ -477,6 +558,7 @@ impl ChatMemberKind {
     /// - is the owner of the chat (even if the chat is not a channel)
     /// - is an administrator in the given chat and has the
     ///   [`can_promote_members`] privilege.
+    ///
     /// Returns `false` otherwise.
     ///
     /// [`can_promote_members`]: Administrator::can_promote_members
@@ -632,6 +714,9 @@ mod tests {
                 can_post_messages: false,
                 can_edit_messages: false,
                 can_delete_messages: true,
+                can_post_stories: false,
+                can_edit_stories: false,
+                can_delete_stories: false,
                 can_manage_video_chats: true,
                 can_invite_users: true,
                 can_restrict_members: true,

@@ -418,14 +418,10 @@ impl InputFileLike for Option<InputFile> {
 
 impl InputFileLike for InputSticker {
     fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
-        let (Self::Png(input_file) | Self::Tgs(input_file) | Self::Webm(input_file)) = self;
-
-        input_file.copy_into(into)
+        self.sticker.copy_into(into)
     }
 
     fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
-        let (Self::Png(input_file) | Self::Tgs(input_file) | Self::Webm(input_file)) = self;
-
-        input_file.move_into(into)
+        self.sticker.move_into(into)
     }
 }

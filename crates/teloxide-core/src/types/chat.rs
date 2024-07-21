@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
+    ChatFullInfo, ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
 };
 
 /// This object represents a chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chat).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chat {
     /// A unique identifier for this chat.
@@ -47,9 +47,12 @@ pub struct Chat {
     /// [`GetChat`]: crate::payloads::GetChat
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_aggressive_anti_spam_enabled: bool,
+
+    #[serde(flatten)]
+    pub chat_full_info: ChatFullInfo,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
@@ -57,7 +60,7 @@ pub enum ChatKind {
     Private(ChatPrivate),
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
@@ -91,7 +94,7 @@ pub struct ChatPublic {
     pub has_protected_content: Option<True>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(from = "serde_helper::ChatPrivate", into = "serde_helper::ChatPrivate")]
 pub struct ChatPrivate {
@@ -132,7 +135,7 @@ pub struct ChatPrivate {
     pub has_restricted_voice_and_video_messages: Option<True>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
@@ -142,7 +145,7 @@ pub enum PublicChatKind {
     Supergroup(PublicChatSupergroup),
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatChannel {
     /// A username, for private chats, supergroups and channels if available.
@@ -155,7 +158,7 @@ pub struct PublicChatChannel {
     pub linked_chat_id: Option<i64>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatGroup {
     /// A default chat member permissions, for groups and supergroups. Returned
@@ -165,7 +168,7 @@ pub struct PublicChatGroup {
     pub permissions: Option<ChatPermissions>,
 }
 
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
@@ -615,6 +618,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
         let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
         assert_eq!(expected, actual);
@@ -639,6 +643,7 @@ mod tests {
                 message_auto_delete_time: None,
                 has_hidden_members: false,
                 has_aggressive_anti_spam_enabled: false,
+                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
             },
             from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
                 .unwrap()
@@ -663,6 +668,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
         };
 
         let json = to_string(&chat).unwrap();

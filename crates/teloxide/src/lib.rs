@@ -1,6 +1,7 @@
 //! A full-featured framework that empowers you to easily build [Telegram bots]
 //! using [Rust]. It handles all the difficult stuff so you can focus only on
-//! your business logic.
+//! your business logic. Currently, version `6.9` of [Telegram Bot API] is
+//! supported.
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
 //!
@@ -31,6 +32,7 @@
 //!   </kbd>
 //! </div>
 //!
+//! [Telegram Bot API]: https://core.telegram.org/bots/api
 //! [Telegram bots]: https://telegram.org/blog/bot-revolution
 //! [`async`/`.await`]: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
 //! [Rust]: https://www.rust-lang.org/

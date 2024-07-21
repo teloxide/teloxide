@@ -378,7 +378,7 @@ impl Serializer for PartSerializer {
 
     fn serialize_none(self) -> Result<Self::Ok, Self::Error> {
         unimplemented!(
-            "We use `#[serde_with_macros::skip_serializing_none]` everywhere so `None`s are not \
+            "We use `#[serde_with::skip_serializing_none]` everywhere so `None`s are not \
              serialized"
         )
     }

@@ -30,84 +30,67 @@ bitflags::bitflags! {
     /// assert!(permissions_v1.contains(ChatPermissions::INVITE_USERS));
     /// assert!(permissions_v1.contains(ChatPermissions::SEND_VIDEOS));
     ///
-    /// // Implied by `SEND_VIDEOS`
-    /// assert!(permissions_v1.contains(ChatPermissions::SEND_MESSAGES));
-    ///
     /// // Difference, remove permissions
     /// let permissions_v2 = permissions_v1 - ChatPermissions::SEND_VIDEOS;
     /// assert!(!permissions_v2.contains(ChatPermissions::SEND_VIDEOS));
-    ///
-    /// // Removing `SEND_VIDEOS` also removes `SEND_MESSAGES` and vice versa
-    /// // because `SEND_MESSAGES` is implied by `SEND_VIDEOS`
-    /// assert!(!permissions_v2.contains(ChatPermissions::SEND_MESSAGES));
-    ///
-    /// let permissions_v3 = permissions_v1 - ChatPermissions::SEND_MESSAGES;
-    /// assert!(!permissions_v3.contains(ChatPermissions::SEND_VIDEOS));
     /// ```
     #[derive(Serialize, Deserialize)]
     #[serde(from = "ChatPermissionsRaw", into = "ChatPermissionsRaw")]
     pub struct ChatPermissions: u16 {
         /// Set if the user is allowed to send text messages, contacts,
-        /// locations and venues.
+        /// giveaways, giveaway winners, invoices, locations and venues
         const SEND_MESSAGES = 1;
 
-        /// Set if the user is allowed to send polls, implies
-        /// `SEND_MESSAGES`.
-        const SEND_POLLS = (1 << 2) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send polls
+        const SEND_POLLS = 1 << 1;
 
         /// Set if the user is allowed to send animations, games, stickers and
-        /// use inline bots, implies `SEND_MEDIA_MESSAGES`.
-        const SEND_OTHER_MESSAGES = (1 << 3);
+        /// use inline bots.
+        const SEND_OTHER_MESSAGES = 1 << 2;
 
         /// Set if the user is allowed to add web page previews to
-        /// their messages, implies `SEND_MEDIA_MESSAGES`.
-        const ADD_WEB_PAGE_PREVIEWS = (1 << 4);
+        /// their messages.
+        const ADD_WEB_PAGE_PREVIEWS = 1 << 3;
 
         /// Set if the user is allowed to change the chat title, photo and
         /// other settings. Ignored in public supergroups.
-        const CHANGE_INFO = (1 << 5);
+        const CHANGE_INFO = 1 << 4;
 
         /// Set if the user is allowed to invite new users to the chat.
-        const INVITE_USERS = (1 << 6);
+        const INVITE_USERS = 1 << 5;
 
         /// Set if the user is allowed to pin messages. Ignored in public
         /// supergroups.
-        const PIN_MESSAGES = (1 << 7);
+        const PIN_MESSAGES = 1 << 6;
 
         /// Set if the user is allowed to create, rename, close, and reopen forum topics.
-        const MANAGE_TOPICS = (1 << 8);
+        const MANAGE_TOPICS = 1 << 7;
 
-        /// Set if the user is allowed to send audios. implies
-        /// `SEND_MESSAGES`.
-        const SEND_AUDIOS = (1 << 9) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send audios.
+        const SEND_AUDIOS = 1 << 8;
 
-        /// Set if the user is allowed to send documents. implies
-        /// `SEND_MESSAGES`.
-        const SEND_DOCUMENTS = (1 << 10) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send documents.
+        const SEND_DOCUMENTS = 1 << 9;
 
-        /// Set if the user is allowed to send photos. implies
-        /// `SEND_MESSAGES`.
-        const SEND_PHOTOS = (1 << 11) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send photos.
+        const SEND_PHOTOS = 1 << 10;
 
-        /// Set if the user is allowed to send videos. implies
-        /// `SEND_MESSAGES`.
-        const SEND_VIDEOS = (1 << 12) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send videos.
+        const SEND_VIDEOS = 1 << 11;
 
-        /// Set if the user is allowed to send video notes. implies
-        /// `SEND_MESSAGES`.
-        const SEND_VIDEO_NOTES = (1 << 13) | Self::SEND_MESSAGES.bits;
+        /// Set if the user is allowed to send video notes.
+        const SEND_VIDEO_NOTES = 1 << 12;
 
         /// Set if the user is allowed to send voice notes. implies
         /// `SEND_MESSAGES`.
-        const SEND_VOICE_NOTES = (1 << 14) | Self::SEND_MESSAGES.bits;
+        const SEND_VOICE_NOTES = 1 << 13;
 
         /// Set if the user is allowed to send audios, documents,
         /// photos, videos, video notes and voice notes, implies
-        /// `SEND_MESSAGES`, `SEND_AUDIOS`, `SEND_DOCUMENTS`,
-        /// `SEND_PHOTOS`, `SEND_VIDEOS`, `SEND_VIDEO_NOTES` and `SEND_VOICE_NOTES`.
+        /// `SEND_AUDIOS`, `SEND_DOCUMENTS`, `SEND_PHOTOS`,
+        /// `SEND_VIDEOS`, `SEND_VIDEO_NOTES` and `SEND_VOICE_NOTES`.
         /// Note: this is not a separate permission on it's own, this is just a alias for all the permissions mentioned.
-        const SEND_MEDIA_MESSAGES = Self::SEND_MESSAGES.bits
-                                            | Self::SEND_AUDIOS.bits
+        const SEND_MEDIA_MESSAGES = Self::SEND_AUDIOS.bits
                                             | Self::SEND_DOCUMENTS.bits
                                             | Self::SEND_PHOTOS.bits
                                             | Self::SEND_VIDEOS.bits
@@ -278,12 +261,12 @@ impl From<ChatPermissions> for ChatPermissionsRaw {
     fn from(this: ChatPermissions) -> Self {
         Self {
             can_send_messages: this.can_send_messages(),
-            can_send_audios: this.contains(ChatPermissions::SEND_AUDIOS),
-            can_send_documents: this.contains(ChatPermissions::SEND_DOCUMENTS),
-            can_send_photos: this.contains(ChatPermissions::SEND_PHOTOS),
-            can_send_videos: this.contains(ChatPermissions::SEND_VIDEOS),
-            can_send_video_notes: this.contains(ChatPermissions::SEND_VIDEO_NOTES),
-            can_send_voice_notes: this.contains(ChatPermissions::SEND_VOICE_NOTES),
+            can_send_audios: this.can_send_audios(),
+            can_send_documents: this.can_send_documents(),
+            can_send_photos: this.can_send_photos(),
+            can_send_videos: this.can_send_videos(),
+            can_send_video_notes: this.can_send_video_notes(),
+            can_send_voice_notes: this.can_send_voice_notes(),
             can_send_polls: this.can_send_polls(),
             can_send_other_messages: this.can_send_other_messages(),
             can_add_web_page_previews: this.can_add_web_page_previews(),
@@ -370,7 +353,9 @@ mod tests {
 
     #[test]
     fn serialization() {
-        let permissions = ChatPermissions::SEND_AUDIOS | ChatPermissions::PIN_MESSAGES;
+        let permissions = ChatPermissions::SEND_MESSAGES
+            | ChatPermissions::SEND_AUDIOS
+            | ChatPermissions::PIN_MESSAGES;
         let expected = r#"{"can_send_messages":true,"can_send_audios":true,"can_pin_messages":true,"can_manage_topics":false}"#;
         let actual = serde_json::to_string(&permissions).unwrap();
         assert_eq!(expected, actual);
@@ -379,8 +364,20 @@ mod tests {
     #[test]
     fn deserialization() {
         let json = r#"{"can_send_messages":true,"can_send_photos":true,"can_pin_messages":true}"#;
-        let expected = ChatPermissions::SEND_PHOTOS | ChatPermissions::PIN_MESSAGES;
+        let expected = ChatPermissions::SEND_MESSAGES
+            | ChatPermissions::SEND_PHOTOS
+            | ChatPermissions::PIN_MESSAGES;
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn modfiy_permission() {
+        let before = ChatPermissions::SEND_MESSAGES
+            | ChatPermissions::SEND_PHOTOS
+            | ChatPermissions::SEND_AUDIOS;
+        let after = before - ChatPermissions::SEND_MESSAGES;
+        let expected = ChatPermissions::SEND_PHOTOS | ChatPermissions::SEND_AUDIOS;
+        assert_eq!(after, expected);
     }
 }

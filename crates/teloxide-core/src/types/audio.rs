@@ -7,7 +7,7 @@ use crate::types::{FileMeta, PhotoSize, Seconds};
 /// clients.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#audio).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Audio {
     /// Metadata of the audio file.
@@ -31,7 +31,7 @@ pub struct Audio {
     pub mime_type: Option<Mime>,
 
     /// A thumbnail of the album cover to which the music file belongs.
-    pub thumb: Option<PhotoSize>,
+    pub thumbnail: Option<PhotoSize>,
 }
 
 #[cfg(test)]
@@ -48,7 +48,7 @@ mod tests {
             "title":"Title",
             "mime_type":"application/zip",
             "file_size":123456,
-            "thumb":{
+            "thumbnail":{
                 "file_id":"id",
                 "file_unique_id":"",
                 "width":320,
@@ -62,7 +62,7 @@ mod tests {
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("application/zip".parse().unwrap()),
-            thumb: Some(PhotoSize {
+            thumbnail: Some(PhotoSize {
                 file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
                 width: 320,
                 height: 320,

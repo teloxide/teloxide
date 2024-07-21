@@ -126,7 +126,7 @@ mod tests {
                     InputMediaAnimation::new(InputFile::read(
                         File::open("../../media/example.gif").await.unwrap(),
                     ))
-                    .thumb(InputFile::read(
+                    .thumbnail(InputFile::read(
                         File::open("../../media/teloxide-core-logo.png").await.unwrap(),
                     ))
                     .duration(17),
@@ -149,8 +149,15 @@ mod tests {
         to_form_ref(&payloads::AddStickerToSet::new(
             UserId(0),
             "name",
-            InputSticker::Png(InputFile::file("../../media/teloxide-core-logo.png")),
-            "✈️⚙️",
+            InputSticker {
+                sticker: InputFile::file(
+                    "../../media/
+                teloxide-core-logo.png",
+                ),
+                emoji_list: vec!["✈️⚙️".to_owned()],
+                keywords: vec![],
+                mask_position: None,
+            },
         ))
         .unwrap()
         .await;
@@ -164,7 +171,9 @@ mod tests {
                 InputFile::file("../../media/teloxide-core-logo.png"),
             )
             .caption_entities(entities())
-            .thumb(InputFile::read(File::open("../../media/teloxide-core-logo.png").await.unwrap()))
+            .thumbnail(InputFile::read(
+                File::open("../../media/teloxide-core-logo.png").await.unwrap(),
+            ))
             .allow_sending_without_reply(true),
         )
         .unwrap()

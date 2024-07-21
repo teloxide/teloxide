@@ -83,6 +83,7 @@ define_message_ext! {
     (filter_photo, Message::photo),
     (filter_poll, Message::poll),
     (filter_sticker, Message::sticker),
+    (filter_story, Message::story),
     (filter_text, Message::text),
     (filter_video, Message::video),
     (filter_video_note, Message::video_note),

@@ -39,6 +39,7 @@ mod delete_forum_topic;
 mod delete_message;
 mod delete_my_commands;
 mod delete_sticker_from_set;
+mod delete_sticker_set;
 mod delete_webhook;
 mod edit_chat_invite_link;
 mod edit_forum_topic;
@@ -68,6 +69,9 @@ mod get_game_high_scores;
 mod get_me;
 mod get_my_commands;
 mod get_my_default_administrator_rights;
+mod get_my_description;
+mod get_my_name;
+mod get_my_short_description;
 mod get_sticker_set;
 mod get_updates;
 mod get_user_profile_photos;
@@ -107,13 +111,21 @@ mod set_chat_permissions;
 mod set_chat_photo;
 mod set_chat_sticker_set;
 mod set_chat_title;
+mod set_custom_emoji_sticker_set_thumbnail;
 mod set_game_score;
 mod set_game_score_inline;
 mod set_my_commands;
 mod set_my_default_administrator_rights;
+mod set_my_description;
+mod set_my_name;
+mod set_my_short_description;
 mod set_passport_data_errors;
+mod set_sticker_emoji_list;
+mod set_sticker_keywords;
+mod set_sticker_mask_position;
 mod set_sticker_position_in_set;
-mod set_sticker_set_thumb;
+mod set_sticker_set_thumbnail;
+mod set_sticker_set_title;
 mod set_webhook;
 mod stop_message_live_location;
 mod stop_message_live_location_inline;
@@ -123,6 +135,7 @@ mod unban_chat_sender_chat;
 mod unhide_general_forum_topic;
 mod unpin_all_chat_messages;
 mod unpin_all_forum_topic_messages;
+mod unpin_all_general_forum_topic_messages;
 mod unpin_chat_message;
 mod upload_sticker_file;
 
@@ -150,6 +163,7 @@ pub use delete_forum_topic::{DeleteForumTopic, DeleteForumTopicSetters};
 pub use delete_message::{DeleteMessage, DeleteMessageSetters};
 pub use delete_my_commands::{DeleteMyCommands, DeleteMyCommandsSetters};
 pub use delete_sticker_from_set::{DeleteStickerFromSet, DeleteStickerFromSetSetters};
+pub use delete_sticker_set::{DeleteStickerSet, DeleteStickerSetSetters};
 pub use delete_webhook::{DeleteWebhook, DeleteWebhookSetters};
 pub use edit_chat_invite_link::{EditChatInviteLink, EditChatInviteLinkSetters};
 pub use edit_forum_topic::{EditForumTopic, EditForumTopicSetters};
@@ -187,6 +201,9 @@ pub use get_my_commands::{GetMyCommands, GetMyCommandsSetters};
 pub use get_my_default_administrator_rights::{
     GetMyDefaultAdministratorRights, GetMyDefaultAdministratorRightsSetters,
 };
+pub use get_my_description::{GetMyDescription, GetMyDescriptionSetters};
+pub use get_my_name::{GetMyName, GetMyNameSetters};
+pub use get_my_short_description::{GetMyShortDescription, GetMyShortDescriptionSetters};
 pub use get_sticker_set::{GetStickerSet, GetStickerSetSetters};
 pub use get_updates::{GetUpdates, GetUpdatesSetters};
 pub use get_user_profile_photos::{GetUserProfilePhotos, GetUserProfilePhotosSetters};
@@ -228,15 +245,25 @@ pub use set_chat_permissions::{SetChatPermissions, SetChatPermissionsSetters};
 pub use set_chat_photo::{SetChatPhoto, SetChatPhotoSetters};
 pub use set_chat_sticker_set::{SetChatStickerSet, SetChatStickerSetSetters};
 pub use set_chat_title::{SetChatTitle, SetChatTitleSetters};
+pub use set_custom_emoji_sticker_set_thumbnail::{
+    SetCustomEmojiStickerSetThumbnail, SetCustomEmojiStickerSetThumbnailSetters,
+};
 pub use set_game_score::{SetGameScore, SetGameScoreSetters};
 pub use set_game_score_inline::{SetGameScoreInline, SetGameScoreInlineSetters};
 pub use set_my_commands::{SetMyCommands, SetMyCommandsSetters};
 pub use set_my_default_administrator_rights::{
     SetMyDefaultAdministratorRights, SetMyDefaultAdministratorRightsSetters,
 };
+pub use set_my_description::{SetMyDescription, SetMyDescriptionSetters};
+pub use set_my_name::{SetMyName, SetMyNameSetters};
+pub use set_my_short_description::{SetMyShortDescription, SetMyShortDescriptionSetters};
 pub use set_passport_data_errors::{SetPassportDataErrors, SetPassportDataErrorsSetters};
+pub use set_sticker_emoji_list::{SetStickerEmojiList, SetStickerEmojiListSetters};
+pub use set_sticker_keywords::{SetStickerKeywords, SetStickerKeywordsSetters};
+pub use set_sticker_mask_position::{SetStickerMaskPosition, SetStickerMaskPositionSetters};
 pub use set_sticker_position_in_set::{SetStickerPositionInSet, SetStickerPositionInSetSetters};
-pub use set_sticker_set_thumb::{SetStickerSetThumb, SetStickerSetThumbSetters};
+pub use set_sticker_set_thumbnail::{SetStickerSetThumbnail, SetStickerSetThumbnailSetters};
+pub use set_sticker_set_title::{SetStickerSetTitle, SetStickerSetTitleSetters};
 pub use set_webhook::{SetWebhook, SetWebhookSetters};
 pub use stop_message_live_location::{StopMessageLiveLocation, StopMessageLiveLocationSetters};
 pub use stop_message_live_location_inline::{
@@ -249,6 +276,9 @@ pub use unhide_general_forum_topic::{UnhideGeneralForumTopic, UnhideGeneralForum
 pub use unpin_all_chat_messages::{UnpinAllChatMessages, UnpinAllChatMessagesSetters};
 pub use unpin_all_forum_topic_messages::{
     UnpinAllForumTopicMessages, UnpinAllForumTopicMessagesSetters,
+};
+pub use unpin_all_general_forum_topic_messages::{
+    UnpinAllGeneralForumTopicMessages, UnpinAllGeneralForumTopicMessagesSetters,
 };
 pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};

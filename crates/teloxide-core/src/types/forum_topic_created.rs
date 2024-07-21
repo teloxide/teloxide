@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 /// the chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#forumtopiccreated).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ForumTopicCreated {
     /// Name of the topic.

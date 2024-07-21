@@ -5,7 +5,7 @@ use crate::types::UserId;
 /// This object represents a Telegram user or bot.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#user).
-#[serde_with_macros::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct User {
     /// Unique identifier for this user or bot.
