@@ -243,6 +243,7 @@ where
 }
 
 #[must_use = "Requests are lazy and do nothing unless sent"]
+#[derive(Clone)]
 pub struct TraceRequest<R> {
     inner: R,
     settings: Settings,

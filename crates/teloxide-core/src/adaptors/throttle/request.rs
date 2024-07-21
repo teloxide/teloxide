@@ -19,6 +19,7 @@ use crate::{
 
 /// Request returned by [`Throttling`](crate::adaptors::Throttle) methods.
 #[must_use = "Requests are lazy and do nothing unless sent"]
+#[derive(Clone)]
 pub struct ThrottlingRequest<R: HasPayload> {
     pub(super) request: Arc<R>,
     pub(super) chat_id: fn(&R::Payload) -> ChatIdHash,
