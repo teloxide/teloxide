@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-### Fixed
-
-- type of chat_id in `send_game` should be `ChatId` not u32
-
-[pr1066]: https://github.com/teloxide/teloxide/pull/1066
-
 ### Added
 
 - `ChatPermission::can_*` helper functions ([#851][pr851])
@@ -108,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix roundtrip de/serialization of `InlineQueryResult` ([#990][pr990])
 - Deserialization of `ApiError::CantParseEntities` ([#839][pr839])
 - Deserialization of empty (content-less) messages that can sometimes appear as a part of callback query ([#850][pr850], issue [#873][issue873])
+- Type of `chat_id` in `send_game`: `u32` => `ChatId` ([#1066][pr1066])
 
 [pr839]: https://github.com/teloxide/teloxide/pull/839
 [pr879]: https://github.com/teloxide/teloxide/pull/879
@@ -115,6 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr854]: https://github.com/teloxide/teloxide/pull/854
 [pr936]: https://github.com/teloxide/teloxide/pull/936
 [pr990]: https://github.com/teloxide/teloxide/pull/990
+[pr990]: https://github.com/teloxide/teloxide/pull/990
+[pr1066]: https://github.com/teloxide/teloxide/pull/1066
 
 ### Changed
 
