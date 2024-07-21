@@ -117,9 +117,7 @@ tower = { version = "0.4.13", optional = true }
 tower-http = { version = "0.5.2", features = ["trace"], optional = true }
 rand = { version = "0.8.5", optional = true }
 
-# HACK: ahash 0.8.7 bumped MSRV to 1.72, to keep MVSR 1.68 we need to depend on an older version.
-#       this can be removed once our MSRV crosses 1.72.
-ahash = "=0.8.7"
+ahash = "0.8.11"
 
 [dev-dependencies]
 rand = "0.8.3"
