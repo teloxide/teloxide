@@ -1383,8 +1383,9 @@ impl Requester for Bot {
 
     type SendGame = JsonRequest<payloads::SendGame>;
 
-    fn send_game<G>(&self, chat_id: ChatId, game_short_name: G) -> Self::SendGame
+    fn send_game<C, G>(&self, chat_id: C, game_short_name: G) -> Self::SendGame
     where
+        C: Into<ChatId>,
         G: Into<String>,
     {
         Self::SendGame::new(self.clone(), payloads::SendGame::new(chat_id, game_short_name))
