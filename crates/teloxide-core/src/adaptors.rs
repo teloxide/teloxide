@@ -53,10 +53,10 @@ pub use parse_mode::DefaultParseMode;
     feature = "trace_adaptor",
     feature = "erased"
 ))]
-// Tests composition of all possible adaptors. The goal of this test is to 
+// Tests composition of all possible adaptors. The goal of this test is to
 // catch situations when wrapped by adaptor bot loses Requester trait bounds.
-// The problem occurs because Throttle adaptor holds queue of requests, thus 
-// introducing requirement for all requests to also implement Clone. 
+// The problem occurs because Throttle adaptor holds queue of requests, thus
+// introducing requirement for all requests to also implement Clone.
 mod composition_test {
     use crate::{requests::RequesterExt, types::ParseMode, Bot};
     use throttle::Limits;
@@ -69,7 +69,7 @@ mod composition_test {
     async fn composition() {
         let bot = Bot::new("TOKEN");
 
-        // Erased adaptor validates Requester trait bounds, so this should fail to 
+        // Erased adaptor validates Requester trait bounds, so this should fail to
         // compile whenever issue occurs.
         let _ = bot
             .throttle(Limits::default())
