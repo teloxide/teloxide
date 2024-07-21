@@ -65,12 +65,12 @@ where
         ChatId(chat_id): ChatId,
     ) -> BoxFuture<'static, Result<(), Self::Error>> {
         Box::pin(async move {
-            let mut pool = self.pool.get().await?;
+            let mut conn = self.pool.get().await?;
 
             let deleted_rows_count = redis::pipe()
                 .atomic()
                 .del(chat_id)
-                .query_async::<_, redis::Value>(&mut pool)
+                .query_async::<_, redis::Value>(&mut conn)
                 .await?;
 
             if let redis::Value::Bulk(values) = deleted_rows_count {
