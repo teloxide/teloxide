@@ -1189,8 +1189,9 @@ pub trait Requester {
     type SendGame: Request<Payload = SendGame, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendGame`].
-    fn send_game<G>(&self, chat_id: u32, game_short_name: G) -> Self::SendGame
+    fn send_game<C, G>(&self, chat_id: C, game_short_name: G) -> Self::SendGame
     where
+        C: Into<ChatId>,
         G: Into<String>;
 
     type SetGameScore: Request<Payload = SetGameScore, Err = Self::Err>;

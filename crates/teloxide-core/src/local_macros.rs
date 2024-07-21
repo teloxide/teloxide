@@ -1406,9 +1406,10 @@ macro_rules! requester_forward {
     (@method send_game $body:ident $ty:ident) => {
         type SendGame = $ty![SendGame];
 
-        fn send_game<G>(&self, chat_id: u32, game_short_name: G) -> Self::SendGame where G: Into<String> {
+        fn send_game<C, G>(&self, chat_id: C, game_short_name: G) -> Self::SendGame where C: Into<ChatId>,
+        G: Into<String> {
             let this = self;
-            $body!(send_game this (chat_id: u32, game_short_name: G))
+            $body!(send_game this (chat_id: C, game_short_name: G))
         }
     };
     (@method set_game_score $body:ident $ty:ident) => {
