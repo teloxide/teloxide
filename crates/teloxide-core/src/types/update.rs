@@ -477,6 +477,105 @@ mod test {
     }
 
     #[test]
+    fn issue_1107() {
+        let update = r#"{
+            "message": {
+                "chat": {
+                    "id": -1001293752024,
+                    "title": "CryptoInside Chat",
+                    "type": "supergroup",
+                    "username": "cryptoinside_talk"
+                },
+                "date": 1721592028,
+                "from": {
+                    "first_name": "Wert",
+                    "id": 6962620676,
+                    "is_bot": false, 
+                    "username": "WertCrypto"
+                },
+                "message_id": 134545,
+                "story": {
+                    "chat": {
+                        "id": -1002149282975,
+                        "title": "TON Spin",
+                        "type": "channel",
+                        "username": "TONSpinChannel"
+                    },
+                    "id": 2
+                }
+            },
+            "update_id": 439432599
+        }"#;
+
+        let Update { kind, .. } = serde_json::from_str::<Update>(update).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
+
+        let update = r#"{
+            "message": {
+                "chat": {
+                    "id": -1001293752024,
+                    "title": "CryptoInside Chat",
+                    "type": "supergroup",
+                    "username": "cryptoinside_talk"
+                },
+                "date": 1721592580,
+                "entities": [
+                    {
+                        "length": 7,
+                        "offset": 0,
+                        "type": "bot_command"
+                    }
+                ],
+                "from": {
+                    "first_name": "the Cable Guy",
+                    "id": 5964236329,
+                    "is_bot": false, 
+                    "language_code":"en",
+                    "username": "spacewhaleblues"
+                },
+                "message_id": 134546,
+                "message_thread_id": 134545,
+                "reply_to_message": {
+                    "chat": {
+                        "id": -1001293752024,
+                        "title": "CryptoInside Chat",
+                        "type": "supergroup",
+                        "username": "cryptoinside_talk"
+                    },
+                    "date": 1721592028,
+                    "from": {
+                        "first_name": "Wert",
+                        "id": 6962620676,
+                        "is_bot": false, 
+                        "username": "WertCrypto"
+                    },
+                    "message_id": 134545,
+                    "story": {
+                        "chat": {
+                            "id": -1002149282975,
+                            "title": "TON Spin",
+                            "type": "channel",
+                            "username": "TONSpinChannel"
+                        },
+                        "id": 2
+                    }
+                },
+                "text": "/report"
+            },
+            "update_id": 439432600
+        }"#;
+
+        let Update { kind, .. } = serde_json::from_str::<Update>(update).unwrap();
+        match kind {
+            UpdateKind::Message(_) => {}
+            _ => panic!("Expected `Message`"),
+        }
+    }
+
+    #[test]
     fn de_private_chat_text_message() {
         let text = r#"
   {
