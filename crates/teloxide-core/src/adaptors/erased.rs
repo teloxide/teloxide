@@ -4,6 +4,7 @@ use futures::{future::BoxFuture, FutureExt};
 use reqwest::Url;
 
 use crate::{
+    errors::AsResponseParameters,
     payloads::*,
     requests::{HasPayload, Output, Payload, Request, Requester},
     types::*,
@@ -176,7 +177,7 @@ macro_rules! fwd_erased {
 
 impl<'a, Err> Requester for ErasedRequester<'a, Err>
 where
-    Err: std::error::Error + Send,
+    Err: std::error::Error + Send + AsResponseParameters,
 {
     type Err = Err;
 

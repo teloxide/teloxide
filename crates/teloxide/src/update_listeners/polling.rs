@@ -13,6 +13,8 @@ use std::{
 use futures::{ready, stream::Stream};
 use tokio::time::{sleep, Sleep};
 
+use teloxide_core::errors::AsResponseParameters;
+
 use crate::{
     backoff::{exponential_backoff_strategy, BackoffStrategy},
     requests::{HasPayload, Request, Requester},
@@ -436,10 +438,22 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                     }
                 }
                 Err(err) => {
-                    // Prevents the CPU spike occuring at network connection lose: <https://github.com/teloxide/teloxide/issues/780>
-                    let backoff_strategy = &this.polling.backoff_strategy;
-                    this.eepy.set(Some(sleep(backoff_strategy(*this.error_count))));
-                    log::trace!("set {:?} reconnection delay", backoff_strategy(*this.error_count));
+                    /*
+                       In case of RetryAfter(..) error we pause the polling for the specified amount
+                       of seconds.
+
+                       Otherwise, in case of network connection lose (<https://github.com/teloxide/teloxide/issues/780>) we
+                       use the backoff strategy to prevent the high CPU usage due to multiple instant reconnections
+                    */
+                    if let Some(seconds) = err.retry_after() {
+                        log::info!("got `RetryAfter({})` error, polling paused", seconds);
+                        this.eepy.set(Some(sleep(seconds.duration())));
+                    } else {
+                        let delay = (this.polling.backoff_strategy)(*this.error_count);
+                        log::info!("retrying getting updates in {}s", delay.as_secs());
+                        this.eepy.set(Some(sleep(delay)));
+                    }
+
                     return Ready(Some(Err(err)));
                 }
             }
