@@ -450,7 +450,12 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                             *this.error_count = 0;
                             seconds.duration()
                         }
-                        None => (this.polling.backoff_strategy)(*this.error_count),
+                        None => {
+                            let delay = (this.polling.backoff_strategy)(*this.error_count);
+                            *this.error_count = this.error_count.saturating_add(1);
+                            log::trace!("current error count: {}", *this.error_count);
+                            delay
+                        }
                     };
                     log::info!("retrying getting updates in {}s", delay.as_secs());
                     this.eepy.set(Some(sleep(delay)));
@@ -462,9 +467,6 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
         // Poll eepy future until completion, needed for backoff strategy
         else if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
             ready!(eepy.poll(cx));
-            // As soon as delay is waited we increment the counter
-            *this.error_count = this.error_count.saturating_add(1);
-            log::trace!("current error count: {}", *this.error_count);
             log::trace!("backoff delay completed");
             this.eepy.as_mut().set(None);
         }
