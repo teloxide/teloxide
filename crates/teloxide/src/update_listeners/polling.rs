@@ -425,7 +425,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                     return Ready(Some(Err(err)));
                 }
                 Ok(updates) => {
-                    // Once we got the update hense the backoff reconnection strategy worked
+                    // Once we got the update the backoff reconnection strategy worked
                     *this.error_count = 0;
 
                     if let Some(upd) = updates.last() {
@@ -445,14 +445,15 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                        Otherwise, in case of network connection lose (<https://github.com/teloxide/teloxide/issues/780>) we
                        use the backoff strategy to prevent the high CPU usage due to multiple instant reconnections
                     */
-                    if let Some(seconds) = err.retry_after() {
-                        log::info!("got `RetryAfter({})` error, polling paused", seconds);
-                        this.eepy.set(Some(sleep(seconds.duration())));
-                    } else {
-                        let delay = (this.polling.backoff_strategy)(*this.error_count);
-                        log::info!("retrying getting updates in {}s", delay.as_secs());
-                        this.eepy.set(Some(sleep(delay)));
-                    }
+                    let delay = match err.retry_after() {
+                        Some(seconds) => {
+                            *this.error_count = 0;
+                            seconds.duration()
+                        }
+                        None => (this.polling.backoff_strategy)(*this.error_count),
+                    };
+                    log::info!("retrying getting updates in {}s", delay.as_secs());
+                    this.eepy.set(Some(sleep(delay)));
 
                     return Ready(Some(Err(err)));
                 }
