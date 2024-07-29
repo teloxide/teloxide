@@ -288,58 +288,9 @@ async fn receive_location(
 
 ## Testing
 
-A crate [`teloxide_tests`](https://github.com/LasterAlex/teloxide_tests) can be used to test your bots.
+A community made crate [`teloxide_tests`](https://github.com/LasterAlex/teloxide_tests) can be used to test your bots.
 
-An example of its usage:
-
-```rust,ignore
-use teloxide::{
-    dispatching::{dialogue::GetChatId, UpdateHandler},
-    prelude::*,
-};
-
-fn handler_tree() -> UpdateHandler<Box<dyn std::error::Error + Send + Sync + 'static>> {
-    dptree::entry().endpoint(|update: Update, bot: Bot| async move {
-        bot.send_message(update.chat_id().unwrap(), "Hello World!")
-            .await?;
-        Ok(())
-    })
-}
-
-#[tokio::main]
-async fn main() {
-    let bot = Bot::from_env();
-
-    Dispatcher::builder(bot, handler_tree())
-        .enable_ctrlc_handler()
-        .build()
-        .dispatch()
-        .await;
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use teloxide_tests::{MockBot, MockMessageText};
-
-    #[tokio::test]
-    async fn test_hello_world() {
-        let message = MockMessageText::new().text("Hi!");
-        let bot = MockBot::new(message, handler_tree());
-        // Sends the message as if it was from a user
-        bot.dispatch().await;  
-
-        let responses = bot.get_responses();
-        let message = responses
-            .sent_messages
-            .last()
-            .expect("No sent messages were detected!");
-        assert_eq!(message.text(), Some("Hello World!"));
-    }
-}
-```
-
-[More testing examples >>](https://github.com/LasterAlex/teloxide_tests/tree/master/examples)
+[Some testing examples >>](https://github.com/LasterAlex/teloxide_tests/tree/master/examples)
 
 ## Tutorials
 
