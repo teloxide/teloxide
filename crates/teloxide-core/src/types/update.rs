@@ -467,12 +467,12 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourceKind,
-        ChatBoostSourcePremium, ChatBoostUpdated, ChatFullInfo, ChatId, ChatKind, ChatPrivate,
-        ChatPublic, LinkPreviewOptions, MediaKind, MediaText, Message, MessageCommon, MessageId,
-        MessageKind, MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel,
-        PublicChatKind, PublicChatSupergroup, ReactionCount, ReactionType, ReactionTypeKind,
-        Update, UpdateId, UpdateKind, User, UserId,
+        Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourcePremium,
+        ChatBoostUpdated, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic,
+        LinkPreviewOptions, MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind,
+        MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel, PublicChatKind,
+        PublicChatSupergroup, ReactionCount, ReactionType, Update, UpdateId, UpdateKind, User,
+        UserId,
     };
 
     use chrono::DateTime;
@@ -901,9 +901,7 @@ mod test {
                 actor_chat: None,
                 date: DateTime::from_timestamp(1721306082, 0).unwrap(),
                 old_reaction: vec![],
-                new_reaction: vec![ReactionType {
-                    kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
-                }],
+                new_reaction: vec![ReactionType::Emoji { emoji: "🌭".to_owned() }],
             }),
         };
 
@@ -971,15 +969,11 @@ mod test {
                 date: DateTime::from_timestamp(1721306391, 0).unwrap(),
                 reactions: vec![
                     ReactionCount {
-                        r#type: ReactionType {
-                            kind: ReactionTypeKind::Emoji { emoji: "🗿".to_owned() },
-                        },
+                        r#type: ReactionType::Emoji { emoji: "🗿".to_owned() },
                         total_count: 2,
                     },
                     ReactionCount {
-                        r#type: ReactionType {
-                            kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
-                        },
+                        r#type: ReactionType::Emoji { emoji: "🌭".to_owned() },
                         total_count: 1,
                     },
                 ],
@@ -1048,20 +1042,18 @@ mod test {
                     boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
                     add_date: DateTime::from_timestamp(1721399621, 0).unwrap(),
                     expiration_date: DateTime::from_timestamp(1745088963, 0).unwrap(),
-                    source: ChatBoostSource {
-                        kind: ChatBoostSourceKind::Premium(ChatBoostSourcePremium {
-                            user: User {
-                                id: UserId(1459074222),
-                                is_bot: false,
-                                first_name: "shadowchain".to_owned(),
-                                last_name: None,
-                                username: Some("shdwchn10".to_owned()),
-                                language_code: Some("en".to_owned()),
-                                is_premium: true,
-                                added_to_attachment_menu: false,
-                            },
-                        }),
-                    },
+                    source: ChatBoostSource::Premium(ChatBoostSourcePremium {
+                        user: User {
+                            id: UserId(1459074222),
+                            is_bot: false,
+                            first_name: "shadowchain".to_owned(),
+                            last_name: None,
+                            username: Some("shdwchn10".to_owned()),
+                            language_code: Some("en".to_owned()),
+                            is_premium: true,
+                            added_to_attachment_menu: false,
+                        },
+                    }),
                 },
             }),
         };
@@ -1123,20 +1115,18 @@ mod test {
                 },
                 boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
                 remove_date: DateTime::from_timestamp(1721999621, 0).unwrap(),
-                source: ChatBoostSource {
-                    kind: ChatBoostSourceKind::Premium(ChatBoostSourcePremium {
-                        user: User {
-                            id: UserId(1459074222),
-                            is_bot: false,
-                            first_name: "shadowchain".to_owned(),
-                            last_name: None,
-                            username: Some("shdwchn10".to_owned()),
-                            language_code: Some("en".to_owned()),
-                            is_premium: true,
-                            added_to_attachment_menu: false,
-                        },
-                    }),
-                },
+                source: ChatBoostSource::Premium(ChatBoostSourcePremium {
+                    user: User {
+                        id: UserId(1459074222),
+                        is_bot: false,
+                        first_name: "shadowchain".to_owned(),
+                        last_name: None,
+                        username: Some("shdwchn10".to_owned()),
+                        language_code: Some("en".to_owned()),
+                        is_premium: true,
+                        added_to_attachment_menu: false,
+                    },
+                }),
             }),
         };
 

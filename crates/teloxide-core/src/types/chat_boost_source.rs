@@ -5,16 +5,9 @@ use crate::types::{MessageId, User};
 /// This object describes the source of a chat boost.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChatBoostSource {
-    #[serde(flatten)]
-    pub kind: ChatBoostSourceKind,
-}
-
-#[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "source")]
-pub enum ChatBoostSourceKind {
+pub enum ChatBoostSource {
     Premium(ChatBoostSourcePremium),
     GiftCode(ChatBoostSourceGiftCode),
     Giveaway(ChatBoostSourceGiveaway),
@@ -62,10 +55,10 @@ pub struct ChatBoostSourceGiveaway {
 impl ChatBoostSource {
     #[must_use]
     pub fn user(&self) -> Option<&User> {
-        Some(match &self.kind {
-            ChatBoostSourceKind::Premium(premium) => &premium.user,
-            ChatBoostSourceKind::GiftCode(gift_code) => &gift_code.user,
-            ChatBoostSourceKind::Giveaway(giveaway) => return giveaway.user.as_ref(),
+        Some(match &self {
+            Self::Premium(premium) => &premium.user,
+            Self::GiftCode(gift_code) => &gift_code.user,
+            Self::Giveaway(giveaway) => return giveaway.user.as_ref(),
         })
     }
 }

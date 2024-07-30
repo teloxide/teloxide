@@ -609,9 +609,7 @@ mod tests {
                 has_protected_content: None,
             }),
             photo: None,
-            available_reactions: Some(vec![ReactionType {
-                kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
-            }]),
+            available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
             pinned_message: None,
             message_auto_delete_time: None,
             has_hidden_members: false,
@@ -649,9 +647,7 @@ mod tests {
                     has_restricted_voice_and_video_messages: None,
                 }),
                 photo: None,
-                available_reactions: Some(vec![ReactionType {
-                    kind: ReactionTypeKind::Emoji { emoji: "🌭".to_owned() },
-                }]),
+                available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
                 pinned_message: None,
                 message_auto_delete_time: None,
                 has_hidden_members: false,
