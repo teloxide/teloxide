@@ -286,6 +286,12 @@ async fn receive_location(
 
 [More examples >>](crates/teloxide/examples/)
 
+## Testing
+
+A community made crate [`teloxide_tests`](https://github.com/LasterAlex/teloxide_tests) can be used to test your bots.
+
+[Some testing examples >>](https://github.com/LasterAlex/teloxide_tests/tree/master/examples)
+
 ## Tutorials
 
  - [_"Migrating my family finance bot from Python to Rust (teloxide) because I am tired of exceptions (part 1)"_](https://trkohler.com/posts/i-migrated-my-family-finance-bot-from-python-to-rust-because-i-am-tired-of-exceptions/) by Troy Köhler.
