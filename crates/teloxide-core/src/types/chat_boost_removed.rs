@@ -10,6 +10,7 @@ pub struct ChatBoostRemoved {
     /// Chat which was boosted
     pub chat: Chat,
 
+    // FIXME: BoostId
     /// Unique identifier of the boost
     pub boost_id: String,
 
