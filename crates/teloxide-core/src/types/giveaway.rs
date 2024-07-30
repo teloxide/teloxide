@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Chat;
+use crate::types::{Chat, CountryCode};
 
 /// This object represents a message about a scheduled giveaway.
 #[serde_with::skip_serializing_none]
@@ -37,7 +37,7 @@ pub struct Giveaway {
     /// empty, then all users can participate in the giveaway. Users with a
     /// phone number that was bought on Fragment can always participate in
     /// giveaways.
-    pub country_codes: Option<Vec<String>>,
+    pub country_codes: Option<Vec<CountryCode>>,
 
     /// The number of months the Telegram Premium subscription won from the
     /// giveaway will be active for
