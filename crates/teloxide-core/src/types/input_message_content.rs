@@ -590,11 +590,11 @@ mod tests {
             parse_mode: None,
             entities: None,
             link_preview_options: Some(LinkPreviewOptions {
-                is_disabled: Some(true),
+                is_disabled: true,
                 url: None,
-                prefer_small_media: None,
-                prefer_large_media: None,
-                show_above_text: None,
+                prefer_small_media: false,
+                prefer_large_media: false,
+                show_above_text: false,
             }),
         });
 
