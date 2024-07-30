@@ -583,5 +583,6 @@ fn custom_result() {
     type Result = ();
 
     #[derive(BotCommands, Debug, PartialEq)]
+    #[allow(dead_code)]
     enum DefaultCommands {}
 }
