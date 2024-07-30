@@ -90,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
 - Support for TBA 7.0 ([#1101](pr1101))
   - Reactions:
-    - Add `ReactionType`, `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
+    - Add `ReactionType` enum
+    - Add `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
     - Add `MessageReaction` and `MessageReactionCount` variants to `UpdateKind` enum
     - Add `filter_message_reaction_updated` and `filter_message_reaction_count_updated` filters to `UpdateFilterExt` trait
     - Add `set_message_reaction` TBA method to `Requester` trait
@@ -106,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Multiple Message Actions
     - Add TBA methods `delete_messages`, `forward_messages` and `copy_messages` to `Requester` trait
   - Chat Boost
-    - Add `ChatBoost`, `ChatBoostSource`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
+    - Add `ChatBoostSource` enum
+    - Add `ChatBoost`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
     - Add `ChatBoost` and `RemovedChatBoost` variants to `UpdateKind` enum
     - Add `filter_chat_boost` and `filter_removed_chat_boost` filters to `UpdateFilterExt` trait
     - Add `get_user_chat_boosts` TBA method to `Requester` trait
