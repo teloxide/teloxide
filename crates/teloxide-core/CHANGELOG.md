@@ -98,10 +98,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replies 2.0
     - Add the fields `MessageCommon::{external_reply, quote}` of types `ExternalReplyInfo` and `TextQuote` respectively
   - Link Preview Customization
-    - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
-    - Add `LinkPreviewOptions` struct
-    - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
-    - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
+    - `disable_web_page_preview` replaced with `link_preview_options`:
+      - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
+      - Add `LinkPreviewOptions` struct
+      - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
+      - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
   - Multiple Message Actions
     - Add TBA methods `delete_messages`, `forward_messages` and `copy_messages` to `Requester` trait
   - Chat Boost
