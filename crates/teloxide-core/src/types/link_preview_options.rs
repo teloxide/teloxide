@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub struct LinkPreviewOptions {
     /// `true`, if the link preview is disabled
-    pub is_disabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_disabled: bool,
 
     /// URL to use for the link preview. If empty, then the first URL found in
     /// the message text will be used
@@ -14,16 +15,19 @@ pub struct LinkPreviewOptions {
     /// `true`, if the media in the link preview is suppposed to be shrunk;
     /// ignored if the URL isn't explicitly specified or media size change isn't
     /// supported for the preview
-    pub prefer_small_media: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub prefer_small_media: bool,
 
     /// `true`, if the media in the link preview is suppposed to be enlarged;
     /// ignored if the URL isn't explicitly specified or media size change isn't
     /// supported for the preview
-    pub prefer_large_media: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub prefer_large_media: bool,
 
     /// `true`, if the link preview must be shown above the message text;
     /// otherwise, the link preview will be shown below the message text
-    pub show_above_text: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_above_text: bool,
 }
 
 #[cfg(test)]
