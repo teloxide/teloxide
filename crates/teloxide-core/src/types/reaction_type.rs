@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum ReactionType {
-    /// "emoji" or "custom_emoji" reaction
+    /// Emoji reaction.
     Emoji {
         /// Reaction emoji. Currently, it can be one of "👍", "👎", "❤", "🔥",
         /// "🥰", "👏", "😁", "🤔", "🤯", "😱", "🤬", "😢", "🎉", "🤩",
@@ -17,7 +17,7 @@ pub enum ReactionType {
         /// "💊", "🙊", "😎", "👾", "🤷‍♂", "🤷", "🤷‍♀", "😡"
         emoji: String,
     },
-    /// Custom emoji sticker.
+    /// Custom emoji reaction.
     CustomEmoji {
         /// Custom emoji identifier.
         custom_emoji_id: String,
