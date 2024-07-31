@@ -219,7 +219,7 @@ pub fn axum_no_setup(
     let (stop_token, stop_flag) = mk_stop_token();
 
     let app = axum::Router::new()
-        .route(options.url.path(), post(telegram_request))
+        .route(&options.path, post(telegram_request))
         .layer(TraceLayer::new_for_http())
         .with_state(WebhookState {
             tx: ClosableSender::new(tx),
