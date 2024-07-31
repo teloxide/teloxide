@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::RequestId;
+
 /// This object defines the criteria used to request a suitable users. The
 /// identifiers of the selected users will be shared with the bot when the
 /// corresponding button is pressed. More about requesting users »
@@ -12,7 +14,7 @@ pub struct KeyboardButtonRequestUsers {
     /// [`UsersShared`] object. Must be unique within the message.
     ///
     /// [`UsersShared`]: crate::types::UsersShared
-    pub request_id: i32,
+    pub request_id: RequestId,
 
     /// Pass `true` to request a bot, pass `false` to request a regular user. If
     /// not specified, no additional restrictions are applied.
@@ -26,13 +28,13 @@ pub struct KeyboardButtonRequestUsers {
     pub user_is_premium: Option<bool>,
 
     /// The maximum number of users to be selected; 1-10. Defaults to 1.
-    #[serde(default = "de_max_quantity_default")]
+    #[serde(default = "one", skip_serializing_if = "is_one")]
     pub max_quantity: u8,
 }
 
 impl KeyboardButtonRequestUsers {
     /// Creates a new [`KeyboardButtonRequestUsers`].
-    pub fn new(request_id: i32) -> Self {
+    pub fn new(request_id: RequestId) -> Self {
         Self { request_id, user_is_bot: None, user_is_premium: None, max_quantity: 1 }
     }
 
@@ -57,6 +59,10 @@ impl KeyboardButtonRequestUsers {
     }
 }
 
-fn de_max_quantity_default() -> u8 {
+fn one() -> u8 {
     1
+}
+
+fn is_one(value: &u8) -> bool {
+    *value == 1
 }

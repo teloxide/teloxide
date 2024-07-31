@@ -198,6 +198,8 @@ impl Serialize for ButtonRequest {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::RequestId;
+
     use super::*;
 
     #[test]
@@ -221,7 +223,10 @@ mod tests {
     fn serialize_chat_request() {
         let button = KeyboardButton {
             text: String::from(""),
-            request: Some(ButtonRequest::RequestChat(KeyboardButtonRequestChat::new(0, false))),
+            request: Some(ButtonRequest::RequestChat(KeyboardButtonRequestChat::new(
+                RequestId(0),
+                false,
+            ))),
         };
         let expected = r#"{"text":"","request_chat":{"request_id":0,"chat_is_channel":false}}"#;
         let actual = serde_json::to_string(&button).unwrap();

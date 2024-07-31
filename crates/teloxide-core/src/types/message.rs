@@ -1865,7 +1865,10 @@ mod tests {
                     chat_full_info: ChatFullInfo::default()
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
-                    chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
+                    chat_shared: ChatShared {
+                        request_id: RequestId(348349),
+                        chat_id: ChatId(384939)
+                    }
                 }),
                 via_bot: None
             }
