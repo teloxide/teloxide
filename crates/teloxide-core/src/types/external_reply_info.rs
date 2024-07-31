@@ -6,9 +6,11 @@ use crate::types::{
     Video, VideoNote, Voice,
 };
 
+/// This object contains information about a message that is being replied to,
+/// which may come from another chat or forum topic.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ExternalReplyInfo {
-    /// Origin of the message replied to by the given message
+    /// Origin of the message replied to by the given message.
     pub origin: MessageOrigin,
     /// Chat the original message belongs to. Available only if the chat is a
     /// supergroup or a channel.
