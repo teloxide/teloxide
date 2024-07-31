@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([PR 996][https://github.com/teloxide/teloxide/pull/996])
 - `axum` was bumped to `0.7`, along with related libraries used for webhooks ([PR 1093][https://github.com/teloxide/teloxide/pull/1093])
 - `Polling`'s exponential backoff now results in 64 seconds maximum delay instead of 17 minutes ([PR 1113][https://github.com/teloxide/teloxide/pull/1113])
-- `filter_forward_from` was removed ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
+- `filter_forward_from` was renamed to `filter_forward_origin` and now returns `MessageOrigin` instead of `ForwardFrom` ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
 
 ### Removed
 

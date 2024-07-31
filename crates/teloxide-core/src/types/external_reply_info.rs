@@ -20,9 +20,9 @@ pub struct ExternalReplyInfo {
     #[serde(with = "crate::types::option_msg_id_as_int")]
     pub message_id: Option<MessageId>,
     /// Options used for link preview generation for the original message, if it
-    /// is a text message
+    /// is a text message.
     pub link_preview_options: Option<LinkPreviewOptions>,
-    /// _true_, if the message media is covered by a spoiler animation
+    /// _true_, if the message media is covered by a spoiler animation.
     #[serde(default)]
     pub has_media_spoiler: bool,
 
@@ -38,7 +38,7 @@ pub enum ExternalReplyInfoKind {
     // - `Animation` must be in front of `Document`
     //
     // This is needed so serde doesn't parse `Venue` as `Location` or `Animation` as `Document`
-    // (for backward compatability telegram duplicates some fields)
+    // (for backward compatability telegram duplicates some fields).
     //
     // See <https://github.com/teloxide/teloxide/issues/481>
     Animation(Animation),
