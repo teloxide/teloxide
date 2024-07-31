@@ -68,7 +68,7 @@ impl CallbackQuery {
         self.message
             .as_ref()
             // If we can access the message
-            .and_then(|maybe| maybe.message())
+            .and_then(|maybe| maybe.regular_message())
     }
 }
 
