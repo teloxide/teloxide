@@ -25,7 +25,10 @@ pub struct CallbackQuery {
     pub from: User,
 
     /// Message sent by the bot with the callback button that originated the
-    /// query
+    /// query.
+    ///
+    /// Note: if the message is too old, it will be
+    /// [`MaybeInaccessibleMessage::Inaccessible`].
     pub message: Option<MaybeInaccessibleMessage>,
 
     /// An identifier of the message sent via the bot in inline mode, that
