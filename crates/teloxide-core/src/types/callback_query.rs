@@ -60,13 +60,15 @@ impl CallbackQuery {
         use crate::util::flatten;
         use std::iter::once;
 
-        once(&self.from).chain(flatten(
-            self.message
-                .as_ref()
-                // If we can access the message
-                .and_then(|maybe| maybe.message())
-                .map(Message::mentioned_users),
-        ))
+        once(&self.from).chain(flatten(self.regular_message().map(Message::mentioned_users)))
+    }
+
+    #[must_use]
+    pub fn regular_message(&self) -> Option<&Message> {
+        self.message
+            .as_ref()
+            // If we can access the message
+            .and_then(|maybe| maybe.message())
     }
 }
 
