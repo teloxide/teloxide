@@ -2,6 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Chat, InaccessibleMessage, Message, MessageId};
 
+/// This object describes a message that can be inaccessible to the bot. It can
+/// be one of:
+/// - [Message]
+/// - [InaccessibleMessage]
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum MaybeInaccessibleMessage {
