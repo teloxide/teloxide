@@ -249,6 +249,7 @@ pub enum MessageEntityKind {
     Email,
     PhoneNumber,
     Bold,
+    Blockquote,
     Italic,
     Underline,
     Strikethrough,
@@ -282,6 +283,18 @@ mod tests {
                 r#"{"type":"text_link","url":"https://example.com","offset":1,"length":2}"#
             )
             .unwrap()
+        );
+    }
+
+    // https://github.com/teloxide/teloxide/issues/1062
+    #[test]
+    fn blockquote() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity { kind: MessageEntityKind::Blockquote, offset: 32, length: 92 },
+            from_str::<MessageEntity>(r#"{"type": "blockquote", "offset": 32, "length": 92}"#)
+                .unwrap()
         );
     }
 

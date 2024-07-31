@@ -173,8 +173,7 @@ mod tests {
             .caption_entities(entities())
             .thumbnail(InputFile::read(
                 File::open("../../media/teloxide-core-logo.png").await.unwrap(),
-            ))
-            .allow_sending_without_reply(true),
+            )),
         )
         .unwrap()
         .await;

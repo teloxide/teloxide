@@ -203,6 +203,20 @@ pub trait Requester {
         C: Into<Recipient>,
         F: Into<Recipient>;
 
+    type ForwardMessages: Request<Payload = ForwardMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ForwardMessages`].
+    fn forward_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::ForwardMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
+
     type CopyMessage: Request<Payload = CopyMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`CopyMessage`].
@@ -215,6 +229,20 @@ pub trait Requester {
     where
         C: Into<Recipient>,
         F: Into<Recipient>;
+
+    type CopyMessages: Request<Payload = CopyMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`CopyMessages`].
+    fn copy_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::CopyMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
 
     type SendPhoto: Request<Payload = SendPhoto, Err = Self::Err>;
 
@@ -382,6 +410,17 @@ pub trait Requester {
 
     /// For Telegram documentation see [`SendChatAction`].
     fn send_chat_action<C>(&self, chat_id: C, action: ChatAction) -> Self::SendChatAction
+    where
+        C: Into<Recipient>;
+
+    type SetMessageReaction: Request<Payload = SetMessageReaction, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetMessageReaction`].
+    fn set_message_reaction<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::SetMessageReaction
     where
         C: Into<Recipient>;
 
@@ -778,6 +817,13 @@ pub trait Requester {
     where
         C: Into<String>;
 
+    type GetUserChatBoosts: Request<Payload = GetUserChatBoosts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetUserChatBoosts`].
+    fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts
+    where
+        C: Into<Recipient>;
+
     type SetMyCommands: Request<Payload = SetMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetMyCommands`].
@@ -976,6 +1022,14 @@ pub trait Requester {
     fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage
     where
         C: Into<Recipient>;
+
+    type DeleteMessages: Request<Payload = DeleteMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteMessages`].
+    fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>;
 
     type SendSticker: Request<Payload = SendSticker, Err = Self::Err>;
 
@@ -1249,7 +1303,9 @@ macro_rules! forward_all {
             delete_webhook,
             get_webhook_info,
             forward_message,
+            forward_messages,
             copy_message,
+            copy_messages,
             send_message,
             send_photo,
             send_audio,
@@ -1269,6 +1325,7 @@ macro_rules! forward_all {
             send_poll,
             send_dice,
             send_chat_action,
+            set_message_reaction,
             get_user_profile_photos,
             get_file,
             kick_chat_member,
@@ -1313,6 +1370,7 @@ macro_rules! forward_all {
             unhide_general_forum_topic,
             unpin_all_general_forum_topic_messages,
             answer_callback_query,
+            get_user_chat_boosts,
             set_my_commands,
             get_my_commands,
             set_my_name,
@@ -1338,6 +1396,7 @@ macro_rules! forward_all {
             edit_message_reply_markup_inline,
             stop_poll,
             delete_message,
+            delete_messages,
             send_sticker,
             get_sticker_set,
             get_custom_emoji_stickers,

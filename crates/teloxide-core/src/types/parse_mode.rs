@@ -55,6 +55,11 @@ use serde::{Deserialize, Serialize};
 /// ```rust
 #[doc = "pre-formatted fixed-width code block written in the Rust programming language"]
 /// ```
+/// >Block quotation started
+/// >Block quotation continued
+/// >Block quotation continued
+/// >Block quotation continued
+/// >The last line of the block quotation
 /// ````
 ///
 /// Please note:
@@ -98,6 +103,8 @@ use serde::{Deserialize, Serialize};
 /// <pre>pre-formatted fixed-width code block</pre>
 #[doc = "<pre><code class=\"language-rust\">pre-formatted fixed-width code block written in the \
          Rust programming language</code></pre>"]
+/// <blockquote>Block quotation started\nBlock quotation continued\nThe last
+/// line of the block quotation</blockquote>
 /// ````
 /// 
 /// Please note:

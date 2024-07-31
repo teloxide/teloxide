@@ -1,7 +1,18 @@
 use serde::{Deserialize, Serialize};
 
 /// A unique message identifier.
-#[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Copy,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize
+)]
 #[serde(from = "MessageIdRaw", into = "MessageIdRaw")]
 pub struct MessageId(pub i32);
 

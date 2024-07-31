@@ -44,6 +44,7 @@ pub(crate) fn mentioned_users_from_entities(
         | Email
         | PhoneNumber
         | Bold
+        | Blockquote
         | Italic
         | Underline
         | Strikethrough

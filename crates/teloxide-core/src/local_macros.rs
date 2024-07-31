@@ -487,6 +487,16 @@ macro_rules! requester_forward {
             $body!(forward_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
         }
     };
+    (@method forward_messages $body:ident $ty:ident) => {
+        type ForwardMessages = $ty![ForwardMessages];
+
+        fn forward_messages<C, F, M>(&self, chat_id: C, from_chat_id: F, message_ids: M) -> Self::ForwardMessages where C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(forward_messages this (chat_id: C, from_chat_id: F, message_ids: M))
+        }
+    };
     (@method copy_message $body:ident $ty:ident) => {
         type CopyMessage = $ty![CopyMessage];
 
@@ -494,6 +504,16 @@ macro_rules! requester_forward {
         F: Into<Recipient> {
             let this = self;
             $body!(copy_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
+        }
+    };
+    (@method copy_messages $body:ident $ty:ident) => {
+        type CopyMessages = $ty![CopyMessages];
+
+        fn copy_messages<C, F, M>(&self, chat_id: C, from_chat_id: F, message_ids: M) -> Self::CopyMessages where C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(copy_messages this (chat_id: C, from_chat_id: F, message_ids: M))
         }
     };
     (@method send_photo $body:ident $ty:ident) => {
@@ -645,6 +665,14 @@ macro_rules! requester_forward {
         fn send_chat_action<C>(&self, chat_id: C, action: ChatAction) -> Self::SendChatAction where C: Into<Recipient> {
             let this = self;
             $body!(send_chat_action this (chat_id: C, action: ChatAction))
+        }
+    };
+    (@method set_message_reaction $body:ident $ty:ident) => {
+        type SetMessageReaction = $ty![SetMessageReaction];
+
+        fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId))
         }
     };
     (@method get_user_profile_photos $body:ident $ty:ident) => {
@@ -1025,6 +1053,14 @@ macro_rules! requester_forward {
             $body!(answer_callback_query this (callback_query_id: C))
         }
     };
+    (@method get_user_chat_boosts $body:ident $ty:ident) => {
+        type GetUserChatBoosts = $ty![GetUserChatBoosts];
+
+        fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts where C: Into<Recipient> {
+            let this = self;
+            $body!(get_user_chat_boosts this (chat_id: C, user_id: UserId))
+        }
+    };
     (@method set_my_commands $body:ident $ty:ident) => {
         type SetMyCommands = $ty![SetMyCommands];
 
@@ -1226,6 +1262,15 @@ macro_rules! requester_forward {
         fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage where C: Into<Recipient> {
             let this = self;
             $body!(delete_message this (chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_messages $body:ident $ty:ident) => {
+        type DeleteMessages = $ty![DeleteMessages];
+
+        fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages where C: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(delete_messages this (chat_id: C, message_ids: M))
         }
     };
     (@method send_sticker $body:ident $ty:ident) => {

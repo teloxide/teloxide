@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::ChatAdministratorRights;
+use crate::types::{ChatAdministratorRights, RequestId};
 
 /// This object defines the criteria used to request a suitable chat. The
 /// identifier of the selected chat will be shared with the bot when the
@@ -14,7 +14,7 @@ pub struct KeyboardButtonRequestChat {
     /// [`ChatShared`] object. Must be unique within the message.
     ///
     /// [`ChatShared`]: crate::types::ChatShared
-    pub request_id: i32,
+    pub request_id: RequestId,
 
     /// Pass `true` to request a channel chat, pass `false` to request a group
     /// or a supergroup chat.
@@ -57,7 +57,7 @@ pub struct KeyboardButtonRequestChat {
 
 impl KeyboardButtonRequestChat {
     /// Creates a new [`KeyboardButtonRequestChat`].
-    pub fn new(request_id: i32, chat_is_channel: bool) -> Self {
+    pub fn new(request_id: RequestId, chat_is_channel: bool) -> Self {
         Self {
             request_id,
             chat_is_channel,

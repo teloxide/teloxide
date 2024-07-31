@@ -169,6 +169,9 @@ macro_rules! fwd_erased {
     (@convert $m:ident, $arg:ident, emoji_list: $T:ty) => {
         $arg.into_iter().collect()
     };
+    (@convert $m:ident, $arg:ident, message_ids: $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert $m:ident, $arg:ident, $arg_:ident : $T:ty) => {
         $arg.into()
     };
@@ -189,7 +192,9 @@ where
         delete_webhook,
         get_webhook_info,
         forward_message,
+        forward_messages,
         copy_message,
+        copy_messages,
         send_message,
         send_photo,
         send_audio,
@@ -209,6 +214,7 @@ where
         send_poll,
         send_dice,
         send_chat_action,
+        set_message_reaction,
         get_user_profile_photos,
         get_file,
         kick_chat_member,
@@ -253,6 +259,7 @@ where
         unhide_general_forum_topic,
         unpin_all_general_forum_topic_messages,
         answer_callback_query,
+        get_user_chat_boosts,
         set_my_commands,
         get_my_commands,
         set_my_name,
@@ -278,6 +285,7 @@ where
         edit_message_reply_markup_inline,
         stop_poll,
         delete_message,
+        delete_messages,
         send_sticker,
         get_sticker_set,
         get_custom_emoji_stickers,
@@ -340,12 +348,26 @@ trait ErasableRequester<'a> {
         message_id: MessageId,
     ) -> ErasedRequest<'a, ForwardMessage, Self::Err>;
 
+    fn forward_messages(
+        &self,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, ForwardMessages, Self::Err>;
+
     fn copy_message(
         &self,
         chat_id: Recipient,
         from_chat_id: Recipient,
         message_id: MessageId,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err>;
+
+    fn copy_messages(
+        &self,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, CopyMessages, Self::Err>;
 
     fn send_photo(
         &self,
@@ -458,6 +480,12 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         action: ChatAction,
     ) -> ErasedRequest<'a, SendChatAction, Self::Err>;
+
+    fn set_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, SetMessageReaction, Self::Err>;
 
     fn get_user_profile_photos(
         &self,
@@ -710,6 +738,12 @@ trait ErasableRequester<'a> {
         callback_query_id: String,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err>;
 
+    fn get_user_chat_boosts(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserChatBoosts, Self::Err>;
+
     fn set_my_commands(
         &self,
         commands: Vec<BotCommand>,
@@ -814,6 +848,12 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         message_id: MessageId,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err>;
+
+    fn delete_messages(
+        &self,
+        chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteMessages, Self::Err>;
 
     fn send_sticker(
         &self,
@@ -1018,6 +1058,15 @@ where
         Requester::forward_message(self, chat_id, from_chat_id, message_id).erase()
     }
 
+    fn forward_messages(
+        &self,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, ForwardMessages, Self::Err> {
+        Requester::forward_messages(self, chat_id, from_chat_id, message_ids).erase()
+    }
+
     fn copy_message(
         &self,
         chat_id: Recipient,
@@ -1025,6 +1074,15 @@ where
         message_id: MessageId,
     ) -> ErasedRequest<'a, CopyMessage, Self::Err> {
         Requester::copy_message(self, chat_id, from_chat_id, message_id).erase()
+    }
+
+    fn copy_messages(
+        &self,
+        chat_id: Recipient,
+        from_chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, CopyMessages, Self::Err> {
+        Requester::copy_messages(self, chat_id, from_chat_id, message_ids).erase()
     }
 
     fn send_photo(
@@ -1175,6 +1233,14 @@ where
         action: ChatAction,
     ) -> ErasedRequest<'a, SendChatAction, Self::Err> {
         Requester::send_chat_action(self, chat_id, action).erase()
+    }
+
+    fn set_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, SetMessageReaction, Self::Err> {
+        Requester::set_message_reaction(self, chat_id, message_id).erase()
     }
 
     fn get_user_profile_photos(
@@ -1520,6 +1586,14 @@ where
         Requester::answer_callback_query(self, callback_query_id).erase()
     }
 
+    fn get_user_chat_boosts(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserChatBoosts, Self::Err> {
+        Requester::get_user_chat_boosts(self, chat_id, user_id).erase()
+    }
+
     fn set_my_commands(
         &self,
         commands: Vec<BotCommand>,
@@ -1673,6 +1747,14 @@ where
         message_id: MessageId,
     ) -> ErasedRequest<'a, DeleteMessage, Self::Err> {
         Requester::delete_message(self, chat_id, message_id).erase()
+    }
+
+    fn delete_messages(
+        &self,
+        chat_id: Recipient,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteMessages, Self::Err> {
+        Requester::delete_messages(self, chat_id, message_ids).erase()
     }
 
     fn send_sticker(

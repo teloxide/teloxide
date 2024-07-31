@@ -72,6 +72,24 @@ impl Requester for Bot {
         )
     }
 
+    type ForwardMessages = JsonRequest<payloads::ForwardMessages>;
+    fn forward_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::ForwardMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::ForwardMessages::new(
+            self.clone(),
+            payloads::ForwardMessages::new(chat_id, from_chat_id, message_ids),
+        )
+    }
+
     type SendPhoto = MultipartRequest<payloads::SendPhoto>;
 
     fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> Self::SendPhoto
@@ -289,6 +307,18 @@ impl Requester for Bot {
         C: Into<Recipient>,
     {
         Self::SendChatAction::new(self.clone(), payloads::SendChatAction::new(chat_id, action))
+    }
+
+    type SetMessageReaction = JsonRequest<payloads::SetMessageReaction>;
+
+    fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction
+    where
+        C: Into<Recipient>,
+    {
+        Self::SetMessageReaction::new(
+            self.clone(),
+            payloads::SetMessageReaction::new(chat_id, message_id),
+        )
     }
 
     type GetUserProfilePhotos = JsonRequest<payloads::GetUserProfilePhotos>;
@@ -830,6 +860,18 @@ impl Requester for Bot {
         )
     }
 
+    type GetUserChatBoosts = JsonRequest<payloads::GetUserChatBoosts>;
+
+    fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts
+    where
+        C: Into<Recipient>,
+    {
+        Self::GetUserChatBoosts::new(
+            self.clone(),
+            payloads::GetUserChatBoosts::new(chat_id, user_id),
+        )
+    }
+
     type SetMyCommands = JsonRequest<payloads::SetMyCommands>;
 
     fn set_my_commands<C>(&self, commands: C) -> Self::SetMyCommands
@@ -1084,6 +1126,15 @@ impl Requester for Bot {
         C: Into<Recipient>,
     {
         Self::DeleteMessage::new(self.clone(), payloads::DeleteMessage::new(chat_id, message_id))
+    }
+
+    type DeleteMessages = JsonRequest<payloads::DeleteMessages>;
+    fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::DeleteMessages::new(self.clone(), payloads::DeleteMessages::new(chat_id, message_ids))
     }
 
     type SendSticker = MultipartRequest<payloads::SendSticker>;
@@ -1462,6 +1513,24 @@ impl Requester for Bot {
         Self::CopyMessage::new(
             self.clone(),
             payloads::CopyMessage::new(chat_id, from_chat_id, message_id),
+        )
+    }
+
+    type CopyMessages = JsonRequest<payloads::CopyMessages>;
+    fn copy_messages<C, F, M>(
+        &self,
+        chat_id: C,
+        from_chat_id: F,
+        message_ids: M,
+    ) -> Self::CopyMessages
+    where
+        C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::CopyMessages::new(
+            self.clone(),
+            payloads::CopyMessages::new(chat_id, from_chat_id, message_ids),
         )
     }
 

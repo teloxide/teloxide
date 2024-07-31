@@ -3,7 +3,11 @@
 
 use rand::Rng;
 
-use teloxide::{prelude::*, types::Dice, utils::command::BotCommands};
+use teloxide::{
+    prelude::*,
+    types::{Dice, ReplyParameters},
+    utils::command::BotCommands,
+};
 
 #[tokio::main]
 async fn main() {
@@ -30,7 +34,7 @@ async fn main() {
         .branch(
             // Filter a maintainer by a user ID.
             dptree::filter(|cfg: ConfigParameters, msg: Message| {
-                msg.from().map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
+                msg.from.map(|user| user.id == cfg.bot_maintainer).unwrap_or_default()
             })
             .filter_command::<MaintainerCommands>()
             .endpoint(|msg: Message, bot: Bot, cmd: MaintainerCommands| async move {
@@ -60,7 +64,7 @@ async fn main() {
             // filter only messages with dices.
             Message::filter_dice().endpoint(|bot: Bot, msg: Message, dice: Dice| async move {
                 bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
-                    .reply_to_message_id(msg.id)
+                    .reply_parameters(ReplyParameters::new(msg.id))
                     .await?;
                 Ok(())
             }),
@@ -121,7 +125,7 @@ async fn simple_commands_handler(
 ) -> Result<(), teloxide::RequestError> {
     let text = match cmd {
         SimpleCommand::Help => {
-            if msg.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from.unwrap().id == cfg.bot_maintainer {
                 format!(
                     "{}\n\n{}",
                     SimpleCommand::descriptions(),
@@ -134,7 +138,7 @@ async fn simple_commands_handler(
             }
         }
         SimpleCommand::Maintainer => {
-            if msg.from().unwrap().id == cfg.bot_maintainer {
+            if msg.from.as_ref().unwrap().id == cfg.bot_maintainer {
                 "Maintainer is you!".into()
             } else if let Some(username) = cfg.maintainer_username {
                 format!("Maintainer is @{username}")
@@ -143,7 +147,7 @@ async fn simple_commands_handler(
             }
         }
         SimpleCommand::MyId => {
-            format!("{}", msg.from().unwrap().id)
+            format!("{}", msg.from.unwrap().id)
         }
     };
 

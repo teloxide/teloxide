@@ -13,6 +13,10 @@ pub use callback_query::*;
 pub use chat::*;
 pub use chat_action::*;
 pub use chat_administrator_rights::*;
+pub use chat_boost::*;
+pub use chat_boost_removed::*;
+pub use chat_boost_source::*;
+pub use chat_boost_updated::*;
 pub use chat_full_info::*;
 pub use chat_invite_link::*;
 pub use chat_join_request::*;
@@ -30,6 +34,7 @@ pub use dice_emoji::*;
 pub use document::*;
 pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
+pub use external_reply_info::*;
 pub use file::*;
 pub use force_reply::*;
 pub use forum_topic::*;
@@ -41,6 +46,11 @@ pub use game::*;
 pub use game_high_score::*;
 pub use general_forum_topic_hidden::*;
 pub use general_forum_topic_unhidden::*;
+pub use giveaway::*;
+pub use giveaway_completed::*;
+pub use giveaway_created::*;
+pub use giveaway_winners::*;
+pub use inaccessible_message::*;
 pub use inline_keyboard_button::*;
 pub use inline_keyboard_markup::*;
 pub use inline_query::*;
@@ -74,17 +84,22 @@ pub use invoice::*;
 pub use keyboard_button::*;
 pub use keyboard_button_poll_type::*;
 pub use keyboard_button_request_chat::*;
-pub use keyboard_button_request_user::*;
+pub use keyboard_button_request_users::*;
 pub use label_price::*;
+pub use link_preview_options::*;
 pub use location::*;
 pub use login_url::*;
 pub use mask_position::*;
+pub use maybe_inaccessible_message::*;
 pub use me::*;
 pub use menu_button::*;
 pub use message::*;
 pub use message_auto_delete_timer_changed::*;
 pub use message_entity::*;
 pub use message_id::*;
+pub use message_origin::*;
+pub use message_reaction_count_updated::*;
+pub use message_reaction_updated::*;
 pub use order_info::*;
 pub use parse_mode::*;
 pub use passport_data::*;
@@ -96,9 +111,12 @@ pub use poll_answer::*;
 pub use poll_type::*;
 pub use pre_checkout_query::*;
 pub use proximity_alert_triggered::*;
+pub use reaction_type::*;
 pub use reply_keyboard_markup::*;
 pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
+pub use reply_parameters::*;
+pub use request_id::*;
 pub use response_parameters::*;
 pub use sent_web_app_message::*;
 pub use shipping_address::*;
@@ -110,13 +128,15 @@ pub use story::*;
 pub use successful_payment::*;
 pub use switch_inline_query_chosen_chat::*;
 pub use target_message::*;
+pub use text_quote::*;
 pub use thread_id::*;
 pub use unit_false::*;
 pub use unit_true::*;
 pub use update::*;
 pub use user::*;
+pub use user_chat_boosts::*;
 pub use user_profile_photos::*;
-pub use user_shared::*;
+pub use users_shared::*;
 pub use venue::*;
 pub use video::*;
 pub use video_chat_ended::*;
@@ -143,6 +163,10 @@ mod callback_query;
 mod chat;
 mod chat_action;
 mod chat_administrator_rights;
+mod chat_boost;
+mod chat_boost_removed;
+mod chat_boost_source;
+mod chat_boost_updated;
 mod chat_full_info;
 mod chat_invite_link;
 mod chat_join_request;
@@ -158,6 +182,7 @@ mod contact;
 mod dice;
 mod dice_emoji;
 mod document;
+mod external_reply_info;
 mod file;
 mod force_reply;
 mod forum_topic;
@@ -169,6 +194,11 @@ mod game;
 mod game_high_score;
 mod general_forum_topic_hidden;
 mod general_forum_topic_unhidden;
+mod giveaway;
+mod giveaway_completed;
+mod giveaway_created;
+mod giveaway_winners;
+mod inaccessible_message;
 mod inline_keyboard_button;
 mod inline_keyboard_markup;
 mod inline_query_results_button;
@@ -180,17 +210,22 @@ mod invoice;
 mod keyboard_button;
 mod keyboard_button_poll_type;
 mod keyboard_button_request_chat;
-mod keyboard_button_request_user;
+mod keyboard_button_request_users;
 mod label_price;
+mod link_preview_options;
 mod location;
 mod login_url;
 mod mask_position;
+mod maybe_inaccessible_message;
 mod me;
 mod menu_button;
 mod message;
 mod message_auto_delete_timer_changed;
 mod message_entity;
 mod message_id;
+mod message_origin;
+mod message_reaction_count_updated;
+mod message_reaction_updated;
 mod order_info;
 mod parse_mode;
 mod photo_size;
@@ -199,9 +234,12 @@ mod poll_answer;
 mod poll_type;
 mod pre_checkout_query;
 mod proximity_alert_triggered;
+mod reaction_type;
 mod reply_keyboard_markup;
 mod reply_keyboard_remove;
 mod reply_markup;
+mod reply_parameters;
+mod request_id;
 mod response_parameters;
 mod sent_web_app_message;
 mod shipping_address;
@@ -213,13 +251,15 @@ mod story;
 mod successful_payment;
 mod switch_inline_query_chosen_chat;
 mod target_message;
+mod text_quote;
 mod thread_id;
 mod unit_false;
 mod unit_true;
 mod update;
 mod user;
+mod user_chat_boosts;
 mod user_profile_photos;
-mod user_shared;
+mod users_shared;
 mod venue;
 mod video;
 mod video_chat_ended;
@@ -280,7 +320,11 @@ pub use recipient::*;
 pub use seconds::*;
 pub use user_id::*;
 
-use serde::Serialize;
+use serde_with::with_prefix;
+
+// Deserialization prefix for giveaway_message_id field used in GiveawayWinners
+// and ChatBoostSourceGiveaway
+with_prefix!(prefix_giveaway_message_id "giveaway_");
 
 /// Converts an `i64` timestamp to a `choro::DateTime`, producing serde error
 /// for invalid timestamps
@@ -437,16 +481,6 @@ pub(crate) mod option_msg_id_as_int {
             assert_eq!(serde_json::to_string(&id).unwrap(), json.to_owned());
         }
     }
-}
-
-pub(crate) fn serialize_reply_to_message_id<S>(
-    this: &Option<MessageId>,
-    serializer: S,
-) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    this.map(|MessageId(id)| id).serialize(serializer)
 }
 
 pub(crate) mod serde_rgb {

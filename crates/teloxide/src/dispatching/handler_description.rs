@@ -65,6 +65,8 @@ impl EventKind for Kind {
             EditedMessage,
             ChannelPost,
             EditedChannelPost,
+            MessageReaction,
+            MessageReactionCount,
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
@@ -75,6 +77,8 @@ impl EventKind for Kind {
             MyChatMember,
             ChatMember,
             ChatJoinRequest,
+            ChatBoost,
+            RemovedChatBoost,
         ]
         .into_iter()
         .map(Kind)
