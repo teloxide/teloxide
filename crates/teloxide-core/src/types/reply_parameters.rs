@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MessageId, Recipient};
+use crate::types::{MessageEntity, MessageId, Recipient};
 
 /// Describes reply parameters for the message that is being sent.
 #[serde_with::skip_serializing_none]
@@ -24,6 +24,16 @@ pub struct ReplyParameters {
     /// _spoiler_, and _custom_emoji_ entities. The message will fail to send if
     /// the quote isn't found in the original message.
     pub quote: Option<String>,
+    /// Mode for parsing entities in the quote. See [formatting options] for
+    /// more details.
+    ///
+    /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
+    pub quote_parse_mode: Option<String>,
+    /// A JSON-serialized list of special entities that appear in the quote. It
+    /// can be specified instead of quote_parse_mode.
+    pub quote_entities: Option<Vec<MessageEntity>>,
+    /// Position of the quote in the original message in UTF-16 code units
+    pub quote_position: Option<u32>,
 }
 
 impl ReplyParameters {
