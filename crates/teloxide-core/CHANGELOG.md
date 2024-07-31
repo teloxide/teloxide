@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `shared_chat` method to `Message`
   - Add `KeyboardButtonRequestUser` and `UserShared` types
   - Add `RequestUser` variant to `ButtonRequest`
-  - Add  `UserShared` variant to `MessageKind`
+  - Add `UserShared` variant to `MessageKind`
   - Add `shared_user` method to `Message`
 - Support for TBA 6.6 ([#1040](pr1040))
   - Add methods for working with bot's description:
@@ -118,6 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message` 
   - Other Changes
     - Add fields `ChafFullInfo::{has_visible_history, accent_color_id, background_custom_emoji_id, profile_accent_color_id, profile_background_custom_emoji_id}`
+  - Add `RequestId` type
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -232,6 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Message::pinned_message` and `CallbackQuery::message` now have `MaybeInaccessibleMessage` type
     - Field `emoji_status_custom_emoji_id` is allowed in non-private chats (moved to the `ChatFullInfo`)
     - Struct `Forward` was replaced by `MessageOrigin` in `MessageCommon`
+  - `RequestId` replaces `i32` in `ChatShared` and `KeyboardButtonRequestChat` structs
     
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
