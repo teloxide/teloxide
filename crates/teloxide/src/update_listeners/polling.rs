@@ -13,6 +13,8 @@ use std::{
 use futures::{ready, stream::Stream};
 use tokio::time::{sleep, Sleep};
 
+use teloxide_core::errors::AsResponseParameters;
+
 use crate::{
     backoff::{exponential_backoff_strategy, BackoffStrategy},
     requests::{HasPayload, Request, Requester},
@@ -423,7 +425,7 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                     return Ready(Some(Err(err)));
                 }
                 Ok(updates) => {
-                    // Once we got the update hense the backoff reconnection strategy worked
+                    // Once we got the update the backoff reconnection strategy worked
                     *this.error_count = 0;
 
                     if let Some(upd) = updates.last() {
@@ -436,10 +438,28 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
                     }
                 }
                 Err(err) => {
-                    // Prevents the CPU spike occuring at network connection lose: <https://github.com/teloxide/teloxide/issues/780>
-                    let backoff_strategy = &this.polling.backoff_strategy;
-                    this.eepy.set(Some(sleep(backoff_strategy(*this.error_count))));
-                    log::trace!("set {:?} reconnection delay", backoff_strategy(*this.error_count));
+                    /*
+                       In case of RetryAfter(..) error we pause the polling for the specified amount
+                       of seconds.
+
+                       Otherwise, in case of network connection lose (<https://github.com/teloxide/teloxide/issues/780>) we
+                       use the backoff strategy to prevent the high CPU usage due to multiple instant reconnections
+                    */
+                    let delay = match err.retry_after() {
+                        Some(seconds) => {
+                            *this.error_count = 0;
+                            seconds.duration()
+                        }
+                        None => {
+                            let delay = (this.polling.backoff_strategy)(*this.error_count);
+                            *this.error_count = this.error_count.saturating_add(1);
+                            log::trace!("current error count: {}", *this.error_count);
+                            delay
+                        }
+                    };
+                    log::info!("retrying getting updates in {}s", delay.as_secs());
+                    this.eepy.set(Some(sleep(delay)));
+
                     return Ready(Some(Err(err)));
                 }
             }
@@ -447,9 +467,6 @@ impl<B: Requester> Stream for PollingStream<'_, B> {
         // Poll eepy future until completion, needed for backoff strategy
         else if let Some(eepy) = this.eepy.as_mut().as_pin_mut() {
             ready!(eepy.poll(cx));
-            // As soon as delay is waited we increment the counter
-            *this.error_count = this.error_count.saturating_add(1);
-            log::trace!("current error count: {}", *this.error_count);
             log::trace!("backoff delay completed");
             this.eepy.as_mut().set(None);
         }

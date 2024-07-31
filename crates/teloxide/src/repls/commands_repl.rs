@@ -1,3 +1,8 @@
+use std::fmt::Debug;
+
+use dptree::di::{DependencyMap, Injectable};
+use futures::future::BoxFuture;
+
 use crate::{
     dispatching::{HandlerExt, UpdateFilterExt},
     error_handlers::LoggingErrorHandler,
@@ -6,9 +11,6 @@ use crate::{
     update_listeners::{self, UpdateListener},
     utils::command::BotCommands,
 };
-use dptree::di::{DependencyMap, Injectable};
-use futures::future::BoxFuture;
-use std::fmt::Debug;
 
 /// A [REPL] for commands.
 ///
