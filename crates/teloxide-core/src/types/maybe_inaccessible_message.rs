@@ -21,17 +21,15 @@ impl MaybeInaccessibleMessage {
         }
     }
 
-    pub fn message(&self) -> Option<&Message> {
+    #[must_use]
+    pub fn regular_message(&self) -> Option<&Message> {
         match self {
             Self::Regular(message) => Some(message),
             Self::Inaccessible(_) => None,
         }
     }
 
-    pub fn chat_and_id(&self) -> (&Chat, MessageId) {
-        (self.chat(), self.id())
-    }
-
+    #[must_use]
     pub fn chat(&self) -> &Chat {
         match self {
             Self::Regular(message) => &message.chat,
