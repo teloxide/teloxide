@@ -23,6 +23,13 @@ pub struct Options {
     /// [addr]: (self::Options.address)
     pub url: url::Url,
 
+    /// Server-internal path to listen for requests on.
+    ///
+    /// This can differ from the path in `url` when you use a reverse proxy.
+    ///
+    /// Default - the URL path is reused.
+    pub path: String,
+
     /// Upload your public key certificate so that the root certificate in use
     /// can be checked. See Telegram's [self-signed guide] for details.
     ///
@@ -57,14 +64,23 @@ impl Options {
     /// Construct a new webhook options, see [`Options::address`] and
     /// [`Options::url`] for details.
     pub fn new(address: SocketAddr, url: url::Url) -> Self {
+        let path = url.path().to_owned();
         Self {
             address,
             url,
+            path,
             certificate: None,
             max_connections: None,
             drop_pending_updates: false,
             secret_token: None,
         }
+    }
+
+    /// Specify a custom routing path. This can be useful when the server is
+    /// behind a reverse proxy. By default, the path will be taken from the
+    /// public URL.
+    pub fn path(self, path: String) -> Self {
+        Self { path, ..self }
     }
 
     /// Upload your public key certificate so that the root certificate in use
