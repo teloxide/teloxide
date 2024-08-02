@@ -1,8 +1,44 @@
+/*
+    This example demonstrates how to split the dialogue state into substates represented by separated enums.
+
+    Imagine that your dialogue state is really complex and logically it can be represented as
+    separate stages, say `user setup` and `do stuff`.
+
+    Instead of inflate the single state enum:
+    ```
+    #[derive(Clone, Default)]
+    pub enum State {
+        #[default]
+        Unconfigured,
+        ReceiveFullName,
+        ReceiveAge { full_name: String },
+        ...many more state variants...
+        Idle
+    }
+    ```
+    You rather should do the following:
+    ```
+    #[derive(Clone, Default)]
+    pub enum GlobalState {
+        #[default]
+        Unconfigured,
+        UserSetup(UserSetup),
+        ...many more stages, each of which is represented by a separate enum...
+        Idle
+    }
+
+    #[derive(Clone)]
+    enum UserSetup {
+        ReceiveFullName,
+        ReceiveAge { full_name: String },
+    }
+    ```
+*/
+
 use teloxide::{
     dispatching::{dialogue::InMemStorage, MessageFilterExt},
     prelude::*,
     types::{ChatId, Message},
-    utils::command::BotCommands,
 };
 
 type Bot = teloxide::Bot;
@@ -45,7 +81,7 @@ struct IdsBundle {
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!(r#"Starting the "composite_state" example"#);
+    log::info!("Starting the \"composite_state\" example");
 
     let bot = Bot::from_env();
 
@@ -60,7 +96,7 @@ fn schema() -> UpdateHandler {
     Update::filter_message()
         /*
            Currently the size of the `Message` struct (for TBA 6.9) is 1936 bytes, it's insane to copy it entirely in every handler's stack.
-           So, here I introduce the `IdsBundle` which is 8 bytes in size, because all we need are ids.
+           So, here I introduce the `IdsBundle` which is 8 bytes in size, because all we need is a `chat_id`.
            The similar thing can be applied to the `CallbackQuery` struct which is
            even bigger..
            Take a look at this issue: https://github.com/teloxide/teloxide/issues/1118, maybe there will be
@@ -77,11 +113,11 @@ fn schema() -> UpdateHandler {
                 .branch(dptree::case![GlobalState::Idle].endpoint(handle_configured_user_message))
                 .branch(
                     /*
-                       It's essential not to use `dptree::case![GlobalState::UserSetup(UserSetup::ReceiveFullName)]` directly, this won't work.
+                       Its essential not to use `dptree::case![GlobalState::UserSetup(UserSetup::ReceiveFullName)]` directly, this won't work.
 
                        Each nested enum requires it's own `branch` scope.
-                       Actually, each `dptree::case![..]` introduces the inner enum values to the `DependencyMap`, so there is an option
-                       to branch on the inner structs freely.
+                       Actually, each `dptree::case![..]` introduces the inner enum value to the `DependencyMap`, so there is an option
+                       to branch on the inner values freely.
                     */
                     dptree::case![GlobalState::UserSetup(_state)]
                         .branch(dptree::case![UserSetup::ReceiveFullName].endpoint(ask_age))
