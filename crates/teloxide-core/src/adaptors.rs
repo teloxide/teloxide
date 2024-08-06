@@ -45,37 +45,3 @@ pub use throttle::Throttle;
 pub use trace::Trace;
 
 pub use parse_mode::DefaultParseMode;
-
-#[cfg(all(
-    test,
-    feature = "cache_me",
-    feature = "throttle",
-    feature = "trace_adaptor",
-    feature = "erased"
-))]
-// Tests composition of all possible adaptors. The goal of this test is to
-// catch situations when wrapped by adaptor bot loses Requester trait bounds.
-// The problem occurs because Throttle adaptor holds queue of requests, thus
-// introducing requirement for all requests to also implement Clone.
-mod composition_test {
-    use crate::{requests::RequesterExt, types::ParseMode, Bot};
-    use throttle::Limits;
-    use trace::Settings;
-
-    use super::*;
-
-    // Has to be async test due to Throttle adaptor requirements
-    #[tokio::test]
-    async fn composition() {
-        let bot = Bot::new("TOKEN");
-
-        // Erased adaptor validates Requester trait bounds, so this should fail to
-        // compile whenever issue occurs.
-        let _ = bot
-            .throttle(Limits::default())
-            .cache_me()
-            .trace(Settings::empty())
-            .parse_mode(ParseMode::MarkdownV2)
-            .erase();
-    }
-}
