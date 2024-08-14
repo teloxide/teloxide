@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for this project
 title: 'Feature Request: <feature>'
 labels: K-feature-request
-assignees: Hirrolot, WaffleLapkin
+assignees: Hirrolot
 
 ---
 
