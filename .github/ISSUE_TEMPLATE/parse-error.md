@@ -3,7 +3,6 @@ name: Parse error
 about: Report issue with `teloxide` parsing of telegram response
 title: 'Parse Error: <type or error description>'
 labels: K-bug, FIXME, C-core
-assignees: WaffleLapkin
 
 ---
 
