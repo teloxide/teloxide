@@ -1,5 +1,3 @@
-> [v0.11 -> v0.12 migration guide >>](MIGRATION_GUIDE.md#011---012)
-
 <div align="center">
   <img src="./media/teloxide-logo.png" width="250"/>
   <h1><code>teloxide</code></h1>
@@ -72,7 +70,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.12", features = ["macros"] }
+teloxide = { version = "0.13", features = ["macros"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -356,7 +354,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [1600+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
+See [1900+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 
