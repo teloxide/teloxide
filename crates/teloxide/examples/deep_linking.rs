@@ -22,8 +22,9 @@ pub enum State {
 #[command(rename_rule = "lowercase")]
 pub enum StartCommand {
     #[command()]
-    Start(String), /* Because deep linking (links like https://t.me/some_bot?start=123456789) is the
-                    * same as sending "/start 123456789", we can treat it as just an argument to a command
+    Start(String), /* Because deep linking (links like https://t.me/some_bot?start=123456789)
+                    * is the same as sending "/start 123456789",
+                    * we can treat it as just an argument to a command
                     *
                     * https://core.telegram.org/bots/features#deep-linking */
 }
