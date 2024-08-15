@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.13.0 - 2024-08-16
+
 ### Added
 
 - Documentation regarding the way captions work for the official clients on `SendMediaGroup` ([PR 992](https://github.com/teloxide/teloxide/pull/992))
