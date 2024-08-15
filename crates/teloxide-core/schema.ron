@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.9", date: "September 22, 2023"),
+    api_version: ApiVersion(ver: "7.0", date: "December 29, 2023"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -253,9 +253,9 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the message text, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
+                    name: "link_preview_options",
+                    ty: Option(RawTy("LinkPreviewOptions")),
+                    descr: Doc(md: "Link preview generation options for the message"),
                 ),
                 Param(
                     name: "disable_notification",
@@ -271,14 +271,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -335,6 +330,51 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"), 
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
+                ),
+            ],
+        ),
+        Method(
+            names: ("forwardMessages", "ForwardMessages", "forward_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped. Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {"MessageId": "https://core.telegram.org/bots/api#messageid"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#forwardmessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(md: "A JSON-serialized list of 1-100 identifiers of messages in the chat _from\\_chat\\_id_ to forward. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool), 
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
             ],
         ),
@@ -400,14 +440,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -420,6 +455,59 @@ Schema(
                         },
                     ),
                 ),
+            ],
+        ),
+        Method(
+            names: ("copyMessages", "CopyMessages", "copy_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {
+                    "forwardMessages": "https://core.telegram.org/bots/api#forwardmessages",
+                    "MessageId": "https://core.telegram.org/bots/api#messageid"
+                },
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#copymessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")), 
+                    descr: Doc(md: "Identifiers of 1-100 messages in the chat _from\\_chat\\_id_ to copy. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool), 
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "remove_caption",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _True_ to copy the messages without their captions")
+                )
             ],
         ),
         Method(
@@ -487,14 +575,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -595,14 +678,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -690,14 +768,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -808,14 +881,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -919,14 +987,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1005,14 +1068,9 @@ Schema(
                     )
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1090,14 +1148,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1152,14 +1205,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
             ],
         ),
@@ -1230,14 +1278,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1508,14 +1551,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1587,14 +1625,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1613,7 +1646,7 @@ Schema(
             names: ("sendPoll", "SendPoll", "send_poll"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send phone contacts. On success, the sent [Message] is returned.",
+                md: "Use this method to send a native poll. On success, the sent [Message] is returned.",
                 md_links: {"Message": "https://core.telegram.org/bots/api#message"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendpoll",
@@ -1706,14 +1739,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1767,14 +1795,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -1825,6 +1848,37 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread; supergroups only")
+                ),
+            ],
+        ),
+        Method(
+            names: ("setMessageReaction", "SetMessageReaction", "set_message_reaction"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to change the chosen reactions on a message. Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same available reactions as messages in the channel. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setmessagereaction",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format @channelusername)")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of the target message. If the message belongs to a media group, the reaction is set to the first non-deleted message in the group instead.")
+                ),
+                Param(
+                    name: "reaction",
+                    ty: Option(ArrayOf(RawTy("ReactionType"))),
+                    descr: Doc(md: "New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message. A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators.")
+                ),
+                Param(
+                    name: "is_big",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True to set the reaction with a big animation")
                 ),
             ],
         ),
@@ -2878,6 +2932,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("getUserChatBoosts", "GetUserChatBoosts", "get_user_chat_boosts"),
+            return_ty: RawTy("UserChatBoosts"),
+            doc: Doc(
+                md: "Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a [UserChatBoosts] object.",
+                md_links: {"UserChatBoosts": "https://core.telegram.org/bots/api#userchatboosts"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getuserchatboosts",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat or username of the channel (in the format @channelusername)"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ],
+        ),
+        Method(
             names: ("setMyCommands", "SetMyCommands", "set_my_commands"),
             return_ty: True,
             doc: Doc(md: "Use this method to change the list of the bot's commands. Returns _True_ on success."),
@@ -3220,9 +3296,9 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in message text, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
+                    name: "link_preview_options",
+                    ty: Option(RawTy("LinkPreviewOptions")),
+                    descr: Doc(md: "Link preview generation options for the message"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -3530,6 +3606,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("deleteMessages", "DeleteMessages", "delete_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped. Returns _True_ on success."),
+            tg_doc: "https://core.telegram.org/bots/api#delete_messages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "Identifiers of 1-100 messages to delete. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
+                ),  
+            ],
+        ),
+        Method(
             names: ("sendSticker", "SendSticker", "send_sticker"),
             return_ty: RawTy("Message"),
             doc: Doc(
@@ -3576,14 +3674,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4047,14 +4140,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4298,14 +4386,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",

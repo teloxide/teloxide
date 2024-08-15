@@ -7,6 +7,8 @@ pub enum AllowedUpdate {
     EditedMessage,
     ChannelPost,
     EditedChannelPost,
+    MessageReaction,
+    MessageReactionCount,
     InlineQuery,
     ChosenInlineResult,
     CallbackQuery,
@@ -17,4 +19,6 @@ pub enum AllowedUpdate {
     MyChatMember,
     ChatMember,
     ChatJoinRequest,
+    ChatBoost,
+    RemovedChatBoost,
 }

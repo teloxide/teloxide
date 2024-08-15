@@ -6,12 +6,14 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, Chat, ChatId, ChatShared, Contact, Dice, Document,
-    ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
-    GeneralForumTopicHidden, GeneralForumTopicUnhidden, InlineKeyboardMarkup, Invoice, Location,
-    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, PassportData,
-    PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, ThreadId, True,
-    User, UserShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
-    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened,
+    Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted,
+    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
+    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
+    MessageId, MessageOrigin, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker,
+    Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
+    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -29,12 +31,25 @@ pub struct Message {
     #[serde(rename = "message_thread_id")]
     pub thread_id: Option<ThreadId>,
 
+    /// Sender, empty for messages sent to channels.
+    pub from: Option<User>,
+
+    /// Sender of the message, sent on behalf of a chat. The channel itself for
+    /// channel messages. The supergroup itself for messages from anonymous
+    /// group administrators. The linked channel for messages automatically
+    /// forwarded to the discussion group
+    pub sender_chat: Option<Chat>,
+
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
 
     /// Conversation the message belongs to.
     pub chat: Chat,
+
+    /// `true`, if the message is sent to a forum topic.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_topic_message: bool,
 
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
@@ -61,7 +76,7 @@ pub enum MessageKind {
     MessageAutoDeleteTimerChanged(MessageMessageAutoDeleteTimerChanged),
     Pinned(MessagePinned),
     ChatShared(MessageChatShared),
-    UserShared(MessageUserShared),
+    UsersShared(MessageUsersShared),
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
     ConnectedWebsite(MessageConnectedWebsite),
@@ -75,6 +90,10 @@ pub enum MessageKind {
     ForumTopicReopened(MessageForumTopicReopened),
     GeneralForumTopicHidden(MessageGeneralForumTopicHidden),
     GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
+    Giveaway(MessageGiveaway),
+    GiveawayCompleted(MessageGiveawayCompleted),
+    GiveawayCreated(MessageGiveawayCreated),
+    GiveawayWinners(MessageGiveawayWinners),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -88,27 +107,25 @@ pub enum MessageKind {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
-    /// Sender, empty for messages sent to channels.
-    pub from: Option<User>,
-
-    /// Sender of the message, sent on behalf of a chat. The channel itself for
-    /// channel messages. The supergroup itself for messages from anonymous
-    /// group administrators. The linked channel for messages automatically
-    /// forwarded to the discussion group
-    pub sender_chat: Option<Chat>,
-
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
 
-    /// For forwarded messages, information about the forward
-    #[serde(flatten)]
-    pub forward: Option<Forward>,
+    /// Information about the original message for forwarded messages
+    pub forward_origin: Option<MessageOrigin>,
 
     /// For replies, the original message. Note that the Message object in this
     /// field will not contain further `reply_to_message` fields even if it
     /// itself is a reply.
     pub reply_to_message: Option<Box<Message>>,
+
+    /// Information about the message that is being replied to, which may come
+    /// from another chat or forum topic
+    pub external_reply: Option<ExternalReplyInfo>,
+
+    /// For replies that quote part of the original message, the quoted part of
+    /// the message
+    pub quote: Option<TextQuote>,
 
     /// Date the message was last edited in Unix time.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
@@ -120,12 +137,6 @@ pub struct MessageCommon {
     /// Inline keyboard attached to the message. `login_url` buttons are
     /// represented as ordinary `url` buttons.
     pub reply_markup: Option<InlineKeyboardMarkup>,
-
-    /// `true`, if the message is sent to a forum topic.
-    // FIXME: `is_topic_message` is included even in service messages, like ForumTopicCreated.
-    //        more this to `Message`
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub is_topic_message: bool,
 
     /// `true`, if the message is a channel post that was automatically
     /// forwarded to the connected discussion group.
@@ -246,7 +257,7 @@ pub struct MessagePinned {
     /// field will not contain further `reply_to_message` fields even if it
     /// is itself a reply.
     #[serde(rename = "pinned_message")]
-    pub pinned: Box<Message>,
+    pub pinned: Box<MaybeInaccessibleMessage>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -256,9 +267,9 @@ pub struct MessageChatShared {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MessageUserShared {
-    /// A chat was shared with the bot.
-    pub user_shared: UserShared,
+pub struct MessageUsersShared {
+    /// Users were shared with the bot
+    pub users_shared: UsersShared,
 }
 
 #[serde_with::skip_serializing_none]
@@ -297,52 +308,6 @@ pub struct MessageConnectedWebsite {
 pub struct MessagePassportData {
     /// Telegram Passport data.
     pub passport_data: PassportData,
-}
-
-/// Information about forwarded message.
-#[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Forward {
-    /// Date the original message was sent in Unix time.
-    #[serde(rename = "forward_date")]
-    #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
-    pub date: DateTime<Utc>,
-
-    /// The entity that sent the original message.
-    #[serde(flatten)]
-    pub from: ForwardedFrom,
-
-    /// For messages forwarded from channels, signature of the post author if
-    /// present. For messages forwarded from anonymous admins, authors title, if
-    /// present.
-    #[serde(rename = "forward_signature")]
-    pub signature: Option<String>,
-
-    /// For messages forwarded from channels, identifier of the original message
-    /// in the channel
-    #[serde(
-        rename = "forward_from_message_id",
-        with = "crate::types::option_msg_id_as_int",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub message_id: Option<MessageId>,
-}
-
-/// The entity that sent the original message that later was forwarded.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum ForwardedFrom {
-    /// The message was sent by a user.
-    #[serde(rename = "forward_from")]
-    User(User),
-    /// The message was sent by an anonymous user on behalf of a group or
-    /// channel.
-    #[serde(rename = "forward_from_chat")]
-    Chat(Chat),
-    /// The message was sent by a user who disallow adding a link to their
-    /// account in forwarded messages.
-    #[serde(rename = "forward_sender_name")]
-    SenderName(String),
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -513,6 +478,10 @@ pub struct MediaText {
     /// commands, etc. that appear in the text.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub entities: Vec<MessageEntity>,
+
+    /// Options used for link preview generation for the message, if it is a
+    /// text message and link preview options were changed
+    pub link_preview_options: Option<LinkPreviewOptions>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -636,6 +605,46 @@ pub struct MessageGeneralForumTopicUnhidden {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveaway {
+    /// Message is giveaway, information about a scheduled giveaway. [More about
+    /// giveaways »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway: Giveaway,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveawayCompleted {
+    /// Service message: a 'Giveaway' completed. [More about giveaways
+    /// »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway_completed: GiveawayCompleted,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveawayCreated {
+    /// Service message: a scheduled 'Giveaway' created. [More about giveaways
+    /// »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway_created: GiveawayCreated,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiveawayWinners {
+    /// Message is giveaway winners, information about the completion of a
+    /// giveaway with public winners. [More about giveaways »]
+    ///
+    /// [More about giveaways »]: https://core.telegram.org/api#giveaways-amp-gifts
+    pub giveaway_winners: GiveawayWinners,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatScheduled {
     /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
@@ -674,22 +683,23 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, Forward, ForwardedFrom,
-        MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind,
-        MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue,
-        MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated,
-        MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
-        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
-        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
-        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUserShared,
-        MessageVideoChatParticipantsInvited, PhotoSize, User,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, LinkPreviewOptions,
+        MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
+        MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory,
+        MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
+        MessageChannelChatCreated, MessageChatShared, MessageCommon, MessageConnectedWebsite,
+        MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated, MessageId,
+        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
+        MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
+        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
+        MessageUsersShared, MessageVideoChatParticipantsInvited, PhotoSize, TextQuote, User,
     };
 
     use super::{
         MessageForumTopicClosed, MessageForumTopicCreated, MessageForumTopicEdited,
         MessageForumTopicReopened, MessageGeneralForumTopicHidden,
-        MessageGeneralForumTopicUnhidden, MessageMessageAutoDeleteTimerChanged,
+        MessageGeneralForumTopicUnhidden, MessageGiveaway, MessageGiveawayCompleted,
+        MessageGiveawayCreated, MessageGiveawayWinners, MessageMessageAutoDeleteTimerChanged,
         MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
         MessageWebAppData, MessageWriteAccessAllowed,
     };
@@ -700,12 +710,10 @@ mod getters {
     /// [telegram docs]: https://core.telegram.org/bots/api#message
     impl Message {
         /// Returns the user who sent the message.
+        #[deprecated(since = "0.13.0", note = "use `.from` field instead")]
         #[must_use]
         pub fn from(&self) -> Option<&User> {
-            match &self.kind {
-                Common(MessageCommon { from, .. }) => from.as_ref(),
-                _ => None,
-            }
+            self.from.as_ref()
         }
 
         #[must_use]
@@ -716,61 +724,78 @@ mod getters {
             }
         }
 
+        #[deprecated(since = "0.13.0", note = "use `.sender_chat` field instead")]
         #[must_use]
         pub fn sender_chat(&self) -> Option<&Chat> {
+            self.sender_chat.as_ref()
+        }
+
+        #[must_use]
+        pub fn forward_origin(&self) -> Option<&MessageOrigin> {
             match &self.kind {
-                Common(MessageCommon { sender_chat, .. }) => sender_chat.as_ref(),
+                Common(MessageCommon { forward_origin, .. }) => forward_origin.as_ref(),
                 _ => None,
             }
         }
 
         #[must_use]
-        pub fn forward(&self) -> Option<&Forward> {
-            self.common().and_then(|m| m.forward.as_ref())
+        pub fn quote(&self) -> Option<&TextQuote> {
+            match &self.kind {
+                Common(MessageCommon { quote, .. }) => quote.as_ref(),
+                _ => None,
+            }
         }
 
         #[must_use]
         pub fn forward_date(&self) -> Option<DateTime<Utc>> {
-            self.forward().map(|f| f.date)
-        }
-
-        #[must_use]
-        pub fn forward_from(&self) -> Option<&ForwardedFrom> {
-            self.forward().map(|f| &f.from)
+            self.forward_origin().map(|f| f.date())
         }
 
         #[must_use]
         pub fn forward_from_user(&self) -> Option<&User> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::User(user) => Some(user),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::User { sender_user, .. } => Some(sender_user),
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_chat(&self) -> Option<&Chat> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::Chat(chat) => Some(chat),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Chat { sender_chat, .. } => Some(sender_chat),
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_sender_name(&self) -> Option<&str> {
-            self.forward_from().and_then(|from| match from {
-                ForwardedFrom::SenderName(sender_name) => Some(&**sender_name),
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::HiddenUser { sender_user_name, .. } => {
+                    Some(sender_user_name.as_str())
+                }
                 _ => None,
             })
         }
 
         #[must_use]
         pub fn forward_from_message_id(&self) -> Option<MessageId> {
-            self.forward().and_then(|f| f.message_id)
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Channel { message_id, .. } => Some(*message_id),
+                _ => None,
+            })
         }
 
         #[must_use]
-        pub fn forward_signature(&self) -> Option<&str> {
-            self.forward().and_then(|f| f.signature.as_deref())
+        pub fn forward_author_signature(&self) -> Option<&str> {
+            self.forward_origin().and_then(|origin| match origin {
+                MessageOrigin::Chat { author_signature, .. } => {
+                    author_signature.as_ref().map(|a| a.as_str())
+                }
+                MessageOrigin::Channel { author_signature, .. } => {
+                    author_signature.as_ref().map(|a| a.as_str())
+                }
+                _ => None,
+            })
         }
 
         #[must_use]
@@ -839,6 +864,17 @@ mod getters {
                     media_kind: MediaKind::Text(MediaText { entities, .. }),
                     ..
                 }) => Some(entities),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn link_preview_options(&self) -> Option<&LinkPreviewOptions> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Text(MediaText { link_preview_options, .. }),
+                    ..
+                }) => link_preview_options.as_ref(),
                 _ => None,
             }
         }
@@ -1244,7 +1280,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn pinned_message(&self) -> Option<&Message> {
+        pub fn pinned_message(&self) -> Option<&MaybeInaccessibleMessage> {
             match &self.kind {
                 Pinned(MessagePinned { pinned }) => Some(pinned),
                 _ => None,
@@ -1306,9 +1342,9 @@ mod getters {
         }
 
         #[must_use]
-        pub fn shared_user(&self) -> Option<&types::UserShared> {
+        pub fn shared_users(&self) -> Option<&types::UsersShared> {
             match &self.kind {
-                UserShared(MessageUserShared { user_shared }) => Some(user_shared),
+                UsersShared(MessageUsersShared { users_shared }) => Some(users_shared),
                 _ => None,
             }
         }
@@ -1387,6 +1423,44 @@ mod getters {
                 GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden {
                     general_forum_topic_unhidden,
                 }) => Some(general_forum_topic_unhidden),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway(&self) -> Option<&types::Giveaway> {
+            match &self.kind {
+                Giveaway(MessageGiveaway { giveaway }) => Some(giveaway),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_completed(&self) -> Option<&types::GiveawayCompleted> {
+            match &self.kind {
+                GiveawayCompleted(MessageGiveawayCompleted { giveaway_completed }) => {
+                    Some(giveaway_completed)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_created(&self) -> Option<&types::GiveawayCreated> {
+            match &self.kind {
+                GiveawayCreated(MessageGiveawayCreated { giveaway_created }) => {
+                    Some(giveaway_created)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn giveaway_winners(&self) -> Option<&types::GiveawayWinners> {
+            match &self.kind {
+                GiveawayWinners(MessageGiveawayWinners { giveaway_winners }) => {
+                    Some(giveaway_winners)
+                }
                 _ => None,
             }
         }
@@ -1670,8 +1744,8 @@ impl Message {
 
         // Lets just hope we didn't forget something here...
 
-        self.from()
-            .into_iter()
+        self.from
+            .iter()
             .chain(self.via_bot.as_ref())
             .chain(self.chat.mentioned_users_rec())
             .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
@@ -1697,6 +1771,7 @@ impl Message {
 
 #[cfg(test)]
 mod tests {
+    use chrono::DateTime;
     use cool_asserts::assert_matches;
     use serde_json::from_str;
 
@@ -1767,7 +1842,10 @@ mod tests {
             Message {
                 id: MessageId(198283),
                 thread_id: None,
+                from: None,
+                sender_chat: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
+                is_topic_message: false,
                 chat: Chat {
                     id: ChatId(250918540),
                     kind: ChatKind::Private(ChatPrivate {
@@ -1775,19 +1853,22 @@ mod tests {
                         last_name: Some("Власов".to_string()),
                         username: Some("aka_dude".to_string()),
                         bio: None,
-                        emoji_status_custom_emoji_id: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None
                     }),
                     photo: None,
+                    available_reactions: None,
                     has_aggressive_anti_spam_enabled: false,
                     pinned_message: None,
                     message_auto_delete_time: None,
                     has_hidden_members: false,
-                    chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                    chat_full_info: ChatFullInfo::default()
                 },
                 kind: MessageKind::ChatShared(MessageChatShared {
-                    chat_shared: ChatShared { request_id: 348349, chat_id: ChatId(384939) }
+                    chat_shared: ChatShared {
+                        request_id: RequestId(348349),
+                        chat_id: ChatId(384939)
+                    }
                 }),
                 via_bot: None
             }
@@ -1975,14 +2056,17 @@ mod tests {
                 "title": "a",
                 "type": "supergroup"
             },
-            "date": 1640359576,
-            "forward_from_chat": {
-                "id": -1001160242915,
-                "title": "a",
-                "type": "supergroup"
+            "forward_origin": {
+                "type": "chat",
+                "date": 1640359544,
+                "sender_chat": {
+                    "id": -1001160242915,
+                    "title": "a",
+                    "type": "supergroup"
+                },
+                "author_signature": "TITLE"
             },
-            "forward_signature": "TITLE",
-            "forward_date": 1640359544,
+            "date": 1640359576,
             "text": "text"
         }"#;
 
@@ -2014,18 +2098,19 @@ mod tests {
             }),
             message_auto_delete_time: None,
             photo: None,
+            available_reactions: None,
             pinned_message: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
 
-        assert!(message.from().unwrap().is_anonymous());
+        assert!(message.from.as_ref().unwrap().is_anonymous());
         assert_eq!(message.author_signature().unwrap(), "TITLE2");
-        assert_eq!(message.sender_chat().unwrap(), &group);
+        assert_eq!(message.sender_chat.as_ref().unwrap(), &group);
         assert_eq!(&message.chat, &group);
         assert_eq!(message.forward_from_chat().unwrap(), &group);
-        assert_eq!(message.forward_signature().unwrap(), "TITLE");
+        assert_eq!(message.forward_author_signature().unwrap(), "TITLE");
         assert!(message.forward_date().is_some());
         assert_eq!(message.text().unwrap(), "text");
     }
@@ -2045,7 +2130,7 @@ mod tests {
         assert_eq!(message.migrate_to_chat_id(), Some(&new));
 
         // The user who initialized the migration
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // Migration from a common group
         let json = r#"{"chat":{"id":-1001555296434,"title":"test","type":"supergroup"},"date":1629404938,"from":{"first_name":"Group","id":1087968824,"is_bot":true,"username":"GroupAnonymousBot"},"message_id":1,"migrate_from_chat_id":-599075523,"sender_chat":{"id":-1001555296434,"title":"test","type":"supergroup"}}"#;
@@ -2056,10 +2141,10 @@ mod tests {
         assert_eq!(message.migrate_from_chat_id(), Some(&old));
 
         // Anonymous bot
-        assert!(message.from().is_some());
+        assert!(message.from.is_some());
 
         // The chat to which the group migrated
-        assert!(message.sender_chat().is_some());
+        assert!(message.sender_chat.is_some());
     }
 
     /// Regression test for <https://github.com/teloxide/teloxide/issues/481>
@@ -2215,7 +2300,9 @@ mod tests {
             "message_thread_id":4
         }"#;
 
-        let _: Message = serde_json::from_str(json).unwrap();
+        let message: Message = serde_json::from_str(json).unwrap();
+        // https://github.com/teloxide/teloxide/issues/945
+        assert!(message.from.is_some());
     }
 
     #[test]
@@ -2256,5 +2343,336 @@ mod tests {
         }"#;
 
         let _: Message = serde_json::from_str(json).unwrap();
+    }
+
+    #[test]
+    fn giveaway() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway": {
+                "chats": [
+                    {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    }
+                ],
+                "winners_selection_date": 1721162701,
+                "winner_count": 1,
+                "has_public_winners": true,
+                "premium_subscription_month_count": 6
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway().unwrap(),
+            &Giveaway {
+                chats: vec![Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None
+                    }),
+                    photo: None,
+                    available_reactions: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo::default()
+                }],
+                winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
+                winner_count: 1,
+                only_new_members: false,
+                has_public_winners: true,
+                prize_description: None,
+                country_codes: None,
+                premium_subscription_month_count: Some(6)
+            }
+        )
+    }
+
+    #[test]
+    fn giveaway_created() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway_created": {}
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.giveaway_created().unwrap(), &GiveawayCreated {})
+    }
+
+    #[test]
+    fn giveaway_completed() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "giveaway_completed": {
+                "winner_count": 0,
+                "unclaimed_prize_count": 1,
+                "giveaway_message": {
+                    "message_id": 24,
+                    "sender_chat": {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    },
+                    "chat": {
+                        "id": -1002236736395,
+                        "title": "Test",
+                        "type": "channel"
+                    },
+                    "date": 1721161230,
+                    "giveaway": {
+                        "chats": [
+                            {
+                                "id": -1002236736395,
+                                "title": "Test",
+                                "type": "channel"
+                            }
+                        ],
+                        "winners_selection_date": 1721162701,
+                        "winner_count": 1,
+                        "has_public_winners": true,
+                        "premium_subscription_month_count": 6
+                    }
+                }
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway_completed().unwrap(),
+            &GiveawayCompleted {
+                winner_count: 0,
+                unclaimed_prize_count: Some(1),
+                giveaway_message: Some(Box::new(Message {
+                    id: MessageId(24),
+                    thread_id: None,
+                    from: None,
+                    sender_chat: Some(Chat {
+                        id: ChatId(-1002236736395),
+                        kind: ChatKind::Public(ChatPublic {
+                            title: Some("Test".to_owned()),
+                            kind: PublicChatKind::Channel(PublicChatChannel {
+                                linked_chat_id: None,
+                                username: None
+                            }),
+                            description: None,
+                            invite_link: None,
+                            has_protected_content: None
+                        }),
+                        chat_full_info: ChatFullInfo::default(),
+                        available_reactions: None,
+                        photo: None,
+                        has_aggressive_anti_spam_enabled: false,
+                        has_hidden_members: false,
+                        message_auto_delete_time: None,
+                        pinned_message: None
+                    }),
+                    is_topic_message: false,
+                    date: DateTime::from_timestamp(1721161230, 0).unwrap(),
+                    chat: Chat {
+                        id: ChatId(-1002236736395),
+                        kind: ChatKind::Public(ChatPublic {
+                            title: Some("Test".to_owned()),
+                            kind: PublicChatKind::Channel(PublicChatChannel {
+                                username: None,
+                                linked_chat_id: None
+                            }),
+                            description: None,
+                            invite_link: None,
+                            has_protected_content: None
+                        }),
+                        photo: None,
+                        available_reactions: None,
+                        pinned_message: None,
+                        message_auto_delete_time: None,
+                        has_hidden_members: false,
+                        has_aggressive_anti_spam_enabled: false,
+                        chat_full_info: ChatFullInfo::default()
+                    },
+                    via_bot: None,
+                    kind: MessageKind::Giveaway(MessageGiveaway {
+                        giveaway: Giveaway {
+                            chats: vec![Chat {
+                                id: ChatId(-1002236736395),
+                                kind: ChatKind::Public(ChatPublic {
+                                    title: Some("Test".to_owned()),
+                                    kind: PublicChatKind::Channel(PublicChatChannel {
+                                        username: None,
+                                        linked_chat_id: None
+                                    }),
+                                    description: None,
+                                    invite_link: None,
+                                    has_protected_content: None
+                                }),
+                                photo: None,
+                                available_reactions: None,
+                                pinned_message: None,
+                                message_auto_delete_time: None,
+                                has_hidden_members: false,
+                                has_aggressive_anti_spam_enabled: false,
+                                chat_full_info: ChatFullInfo::default()
+                            }],
+                            winners_selection_date: DateTime::from_timestamp(1721162701, 0)
+                                .unwrap(),
+                            winner_count: 1,
+                            only_new_members: false,
+                            has_public_winners: true,
+                            prize_description: None,
+                            country_codes: None,
+                            premium_subscription_month_count: Some(6)
+                        }
+                    })
+                }))
+            }
+        )
+    }
+
+    #[test]
+    fn giveaway_winners() {
+        let json = r#"{
+            "message_id": 28,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162702,
+            "reply_to_message": {
+                "message_id": 27,
+                "sender_chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "date": 1721162577,
+                "giveaway": {
+                    "chats": [
+                        {
+                            "id": -1002236736395,
+                            "title": "Test",
+                            "type": "channel"
+                        }
+                    ],
+                    "winners_selection_date": 1721162701,
+                    "winner_count": 1,
+                    "has_public_winners": true,
+                    "premium_subscription_month_count": 6
+                }
+            },
+            "giveaway_winners": {
+                "chat": {
+                    "id": -1002236736395,
+                    "title": "Test",
+                    "type": "channel"
+                },
+                "giveaway_message_id": 27,
+                "winners_selection_date": 1721162701,
+                "premium_subscription_month_count": 6,
+                "winner_count": 1,
+                "winners": [
+                    {
+                        "id": 1459074222,
+                        "is_bot": false,
+                        "first_name": "shadowchain",
+                        "username": "shdwchn10"
+                    }
+                ]
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.giveaway_winners().expect("Failed to get GiveawayWinners from Message!"),
+            &GiveawayWinners {
+                chat: Chat {
+                    id: ChatId(-1002236736395),
+                    kind: ChatKind::Public(ChatPublic {
+                        title: Some("Test".to_owned()),
+                        kind: PublicChatKind::Channel(PublicChatChannel {
+                            username: None,
+                            linked_chat_id: None
+                        }),
+                        description: None,
+                        invite_link: None,
+                        has_protected_content: None
+                    }),
+                    photo: None,
+                    available_reactions: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo::default()
+                },
+                giveaway_message_id: MessageId(27),
+                winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
+                winner_count: 1,
+                winners: vec![User {
+                    id: UserId(1459074222),
+                    is_bot: false,
+                    first_name: "shadowchain".to_owned(),
+                    last_name: None,
+                    username: Some("shdwchn10".to_owned()),
+                    language_code: None,
+                    is_premium: false,
+                    added_to_attachment_menu: false
+                }],
+                additional_chat_count: None,
+                premium_subscription_month_count: Some(6),
+                unclaimed_prize_count: None,
+                only_new_members: false,
+                was_refunded: false,
+                prize_description: None
+            }
+        )
     }
 }

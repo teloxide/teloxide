@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use [deadpool-redis](https://crates.io/crates/deadpool-redis) for Redis connection pooling ([PR 1081](https://github.com/teloxide/teloxide/pull/1081)).
 - Add `MessageExt::filter_story` method for the corresponding `MediaKind::Story` variant ([PR 1087](https://github.com/teloxide/teloxide/pull/1087)).
 - Add `update_listeners::webhooks::Options::path`, an option to make the webhook server listen on a different path, which can be useful behind a reverse proxy.
+- Add `filter_giveaway`, `filter_giveaway_completed`, `filter_giveaway_created` and `filter_giveaway_winners` filters to `MessageFilterExt` trait ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
 
 ### Fixed
 
@@ -69,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([PR 996][https://github.com/teloxide/teloxide/pull/996])
 - `axum` was bumped to `0.7`, along with related libraries used for webhooks ([PR 1093][https://github.com/teloxide/teloxide/pull/1093])
 - `Polling`'s exponential backoff now results in 64 seconds maximum delay instead of 17 minutes ([PR 1113][https://github.com/teloxide/teloxide/pull/1113])
+- `filter_forward_from` was renamed to `filter_forward_origin` and now returns `MessageOrigin` instead of `ForwardFrom` ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
 
 ### Removed
 

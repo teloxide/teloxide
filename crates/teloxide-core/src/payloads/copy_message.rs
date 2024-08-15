@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ThreadId};
+use crate::types::{
+    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to copy messages of any kind. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the [`MessageId`] of the sent message on success.
@@ -36,11 +38,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
-            /// If the message is a reply, ID of the original message
-            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
-            pub reply_to_message_id: MessageId,
-            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
-            pub allow_sending_without_reply: bool,
+            /// Description of the message to reply to
+            pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
