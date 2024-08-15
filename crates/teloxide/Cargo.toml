@@ -195,6 +195,10 @@ required-features = [
 ]
 
 [[example]]
+name = "deep_linking"
+required-features = ["macros", "ctrlc_handler"]
+
+[[example]]
 name = "dialogue"
 required-features = ["macros", "ctrlc_handler"]
 
