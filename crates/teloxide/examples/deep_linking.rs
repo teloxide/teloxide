@@ -22,10 +22,10 @@ pub enum State {
 #[command(rename_rule = "lowercase")]
 pub enum StartCommand {
     #[command()]
-    Start(String), // Because deep linking (links like https://t.me/some_bot?start=123456789) is the
-                   // same as sending "/start 123456789", we can treat it as just an argument to a command
-                   //
-                   // https://core.telegram.org/bots/features#deep-linking
+    Start(String), /* Because deep linking (links like https://t.me/some_bot?start=123456789) is the
+                    * same as sending "/start 123456789", we can treat it as just an argument to a command
+                    *
+                    * https://core.telegram.org/bots/features#deep-linking */
 }
 
 #[tokio::main]
@@ -61,7 +61,7 @@ pub async fn start(
     cmd: StartCommand,
     me: Me,
 ) -> HandlerResult {
-    // If you have multiple commands, this will need to become a match, not just a let
+    // If you have multiple commands, this will need to become a match
     let StartCommand::Start(arg) = cmd;
 
     if arg.is_empty() {
@@ -103,10 +103,7 @@ pub async fn send_message(
         Some(text) => {
             // Trying to send a message to the user
             let sent_result = bot
-                .send_message(
-                    ChatId(id),
-                    format!("You have a new message!\n\n<i>{text}</i>"),
-                )
+                .send_message(ChatId(id), format!("You have a new message!\n\n<i>{text}</i>"))
                 .parse_mode(teloxide::types::ParseMode::Html)
                 .await;
 
@@ -122,17 +119,13 @@ pub async fn send_message(
                 )
                 .await?;
             } else {
-                bot.send_message(
-                    msg.chat.id,
-                    "Error sending message! Maybe user blocked the bot?",
-                )
-                .await?;
+                bot.send_message(msg.chat.id, "Error sending message! Maybe user blocked the bot?")
+                    .await?;
             }
             dialogue.exit().await?;
         }
         None => {
-            bot.send_message(msg.chat.id, "This bot can send only text.")
-                .await?;
+            bot.send_message(msg.chat.id, "This bot can send only text.").await?;
         }
     };
     Ok(())
