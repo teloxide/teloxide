@@ -15,7 +15,7 @@ use teloxide::{
     dispatching::dialogue::{self, InMemStorage},
     macros::BotCommands,
     prelude::*,
-    types::Me,
+    types::{Me, ParseMode},
 };
 
 pub type MyDialogue = Dialogue<State, InMemStorage<State>>;
@@ -33,7 +33,6 @@ pub enum State {
 #[derive(BotCommands, Clone, Debug)]
 #[command(rename_rule = "lowercase")]
 pub enum StartCommand {
-    #[command()]
     Start(String),
 }
 
@@ -111,7 +110,7 @@ pub async fn send_message(
             // Trying to send a message to the user
             let sent_result = bot
                 .send_message(id, format!("You have a new message!\n\n<i>{text}</i>"))
-                .parse_mode(teloxide::types::ParseMode::Html)
+                .parse_mode(ParseMode::Html)
                 .await;
 
             // And if no error is returned, success!
