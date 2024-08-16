@@ -3,8 +3,8 @@
 //!
 //! Deep linking (links like https://t.me/some_bot?start=123456789)
 //! is handled by telegram in the same way as just sending /start {argument}.
-//! So, in the StartCommand enum we need to write Start(String) to get the argument,
-//! just as in command.rs example.
+//! So, in the StartCommand enum we need to write Start(String)
+//! to get the argument, just like in command.rs example.
 //!
 //! Also, deep linking is only supported with /start command!
 //! "https://t.me/some_bot?argument=123456789" will not work
