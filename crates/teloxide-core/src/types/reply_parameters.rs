@@ -8,7 +8,8 @@ use crate::types::{MessageEntity, MessageId, Recipient};
 pub struct ReplyParameters {
     /// Identifier of the message that will be replied to in the current chat,
     /// or in the chat _chat\_id_ if it is specified
-    #[serde(flatten)]
+    // Issue https://github.com/teloxide/teloxide/issues/1135
+    #[serde(with = "crate::types::msg_id_as_int")]
     pub message_id: MessageId,
     /// If the message to be replied to is from a different chat, unique
     /// identifier for the chat or username of the channel (in the format
