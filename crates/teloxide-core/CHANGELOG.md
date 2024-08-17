@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.10.1 - 2024-08-17
+
 ### Fixed
 - Issue, when using `ReplyParameters` and multipart-requests involving file-sending it failed with `unimplemented error` ([#1136][pr1136], issue [#1135][issue1135])
 
