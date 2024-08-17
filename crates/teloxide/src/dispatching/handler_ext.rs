@@ -23,6 +23,18 @@ pub trait HandlerExt<Output> {
     where
         C: BotCommands + Send + Sync + 'static;
 
+    /// Returns a handler that accepts a parsed command `C` if the command
+    /// contains a bot mention, for example `/start@my_bot`.
+    ///
+    /// ## Dependency requirements
+    ///
+    ///  - [`crate::types::Message`]
+    ///  - [`crate::types::Me`]
+    #[must_use]
+    fn filter_mention_command<C>(self) -> Self
+    where
+        C: BotCommands + Send + Sync + 'static;
+
     /// Passes [`Dialogue<D, S>`] and `D` as handler dependencies.
     ///
     /// It does so by the following steps:
@@ -61,6 +73,13 @@ where
         self.chain(filter_command::<C, Output>())
     }
 
+    fn filter_mention_command<C>(self) -> Self
+    where
+        C: BotCommands + Send + Sync + 'static,
+    {
+        self.chain(filter_mention_command::<C, Output>())
+    }
+
     fn enter_dialogue<Upd, S, D>(self) -> Self
     where
         S: Storage<D> + ?Sized + Send + Sync + 'static,
@@ -91,5 +110,40 @@ where
     dptree::filter_map(move |message: Message, me: Me| {
         let bot_name = me.user.username.expect("Bots must have a username");
         message.text().and_then(|text| C::parse(text, &bot_name).ok())
+    })
+}
+
+/// Returns a handler that accepts a parsed command `C` if the command
+/// contains a bot mention, for example `/start@my_bot`.
+///
+/// A call to this function is the same as
+/// `dptree::entry().filter_mention_command()`.
+///
+/// See [`HandlerExt::filter_mention_command`].
+///
+/// ## Dependency requirements
+///
+///  - [`crate::types::Message`]
+///  - [`crate::types::Me`]
+#[must_use]
+pub fn filter_mention_command<C, Output>(
+) -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+where
+    C: BotCommands + Send + Sync + 'static,
+    Output: Send + Sync + 'static,
+{
+    dptree::filter_map(move |message: Message, me: Me| {
+        let bot_name = me.user.username.expect("Bots must have a username");
+
+        let command = message.text().and_then(|text| C::parse(text, &bot_name).ok());
+        // If the parsing succeeds with a bot_name,
+        // but fails without - there is a mention
+        let is_username_required =
+            message.text().and_then(|text| C::parse(text, "").ok()).is_none();
+
+        if !is_username_required {
+            return None;
+        }
+        command
     })
 }
