@@ -2231,7 +2231,8 @@ mod tests {
   "venue": {
    "location": {
     "latitude": 0.0,
-    "longitude": 0.0
+    "longitude": 0.0,
+    "live_period": 900
    },
    "title": "Title",
    "address": "Address",
@@ -2247,7 +2248,7 @@ mod tests {
                     longitude: 0.0,
                     latitude: 0.0,
                     horizontal_accuracy: None,
-                    live_period: None,
+                    live_period: Some(LivePeriod::from_u32(900)),
                     heading: None,
                     proximity_alert_radius: None
                 },
