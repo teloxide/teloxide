@@ -1303,9 +1303,9 @@ Schema(
                 ),
                 Param(
                     name: "live_period",
-                    ty: Option(u32),
+                    ty: Option(RawTy("LivePeriod")),
                     descr: Doc(
-                        md: "Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400.",
+                        md: "Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.",
                         md_links: {"Live Locations": "https://telegram.org/blog/live-locations"}
                     )
                 ),
