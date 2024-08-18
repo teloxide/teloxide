@@ -62,7 +62,7 @@ async fn main() {
                         |bot: Bot, msg: Message, cmd: GroupCommand| async move {
                             match cmd {
                                 GroupCommand::Repeat { text } => {
-                                    bot.send_message(msg.chat.id, "You said: ".to_owned() + &text)
+                                    bot.send_message(msg.chat.id, format!("You said: {text}"))
                                         .await?;
                                     Ok(())
                                 }
