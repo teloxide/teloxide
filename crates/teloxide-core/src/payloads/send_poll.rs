@@ -27,6 +27,12 @@ impl_payload! {
             pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Mode for parsing entities in the question. See [formatting options] for more details. Currently, only custom emoji entities are allowed
+            ///
+            /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
+            pub question_parse_mode: ParseMode,
+            /// A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of _question\_parse\_mode_
+            pub question_entities: Vec<MessageEntity> [collect],
             /// True, if the poll needs to be anonymous, defaults to True
             pub is_anonymous: bool,
             /// Poll type, “quiz” or “regular”, defaults to “regular”
