@@ -147,3 +147,152 @@ where
         command
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{self as teloxide, dispatching::UpdateFilterExt, utils::command::BotCommands};
+    use chrono::DateTime;
+    use dptree::deps;
+    use teloxide_core::types::{
+        Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate, LinkPreviewOptions, Me, MediaKind,
+        MediaText, Message, MessageCommon, MessageId, MessageKind, Update, UpdateId, UpdateKind,
+        User, UserId,
+    };
+
+    use super::HandlerExt;
+
+    #[cfg(feature = "macros")]
+    #[derive(BotCommands, Clone)]
+    #[command(rename_rule = "lowercase")]
+    enum Cmd {
+        Test,
+    }
+
+    fn make_update(text: String) -> Update {
+        let timestamp = 1_569_518_829;
+        let date = DateTime::from_timestamp(timestamp, 0).unwrap();
+        Update {
+            id: UpdateId(326_170_274),
+            kind: UpdateKind::Message(Message {
+                via_bot: None,
+                id: MessageId(5042),
+                thread_id: None,
+                from: Some(User {
+                    id: UserId(109_998_024),
+                    is_bot: false,
+                    first_name: String::from("Laster"),
+                    last_name: None,
+                    username: Some(String::from("laster_alex")),
+                    language_code: Some(String::from("en")),
+                    is_premium: false,
+                    added_to_attachment_menu: false,
+                }),
+                sender_chat: None,
+                is_topic_message: false,
+                date,
+                chat: Chat {
+                    id: ChatId(109_998_024),
+                    kind: ChatKind::Private(ChatPrivate {
+                        username: Some(String::from("Laster")),
+                        first_name: Some(String::from("laster_alex")),
+                        last_name: None,
+                        bio: None,
+                        has_private_forwards: None,
+                        has_restricted_voice_and_video_messages: None,
+                    }),
+                    photo: None,
+                    available_reactions: None,
+                    pinned_message: None,
+                    message_auto_delete_time: None,
+                    has_hidden_members: false,
+                    has_aggressive_anti_spam_enabled: false,
+                    chat_full_info: ChatFullInfo::default(),
+                },
+                kind: MessageKind::Common(MessageCommon {
+                    reply_to_message: None,
+                    forward_origin: None,
+                    external_reply: None,
+                    quote: None,
+                    edit_date: None,
+                    media_kind: MediaKind::Text(MediaText {
+                        text,
+                        entities: vec![],
+                        link_preview_options: Some(LinkPreviewOptions {
+                            is_disabled: true,
+                            url: None,
+                            prefer_small_media: false,
+                            prefer_large_media: false,
+                            show_above_text: false,
+                        }),
+                    }),
+                    reply_markup: None,
+                    author_signature: None,
+                    is_automatic_forward: false,
+                    has_protected_content: false,
+                    reply_to_story: None,
+                    sender_boost_count: None,
+                }),
+            }),
+        }
+    }
+
+    fn make_me() -> Me {
+        Me {
+            user: User {
+                id: UserId(42),
+                is_bot: true,
+                first_name: "First".to_owned(),
+                last_name: None,
+                username: Some("SomethingSomethingBot".to_owned()),
+                language_code: None,
+                is_premium: false,
+                added_to_attachment_menu: false,
+            },
+            can_join_groups: false,
+            can_read_all_group_messages: false,
+            supports_inline_queries: false,
+        }
+    }
+
+    #[tokio::test]
+    #[cfg(feature = "macros")]
+    async fn test_filter_command() {
+        let h = dptree::entry().branch(
+            Update::filter_message().filter_command::<Cmd>().endpoint(|| async {}),
+        );
+        let me = make_me();
+
+        let update = make_update("/test@".to_owned() + me.username());
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_break());
+
+        let update = make_update("/test@".to_owned() + "SomeOtherBot");
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_continue());
+
+        let update = make_update("/test".to_owned());
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_break());
+    }
+
+    #[tokio::test]
+    #[cfg(feature = "macros")]
+    async fn test_filter_mention_command() {
+        let h = dptree::entry().branch(
+            Update::filter_message().filter_mention_command::<Cmd>().endpoint(|| async {}),
+        );
+        let me = make_me();
+
+        let update = make_update("/test@".to_owned() + me.username());
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_break());
+
+        let update = make_update("/test@".to_owned() + "SomeOtherBot");
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_continue());
+
+        let update = make_update("/test".to_owned());
+        let result = h.dispatch(deps![update, me.clone()]).await;
+        assert!(result.is_continue());
+    }
+}
