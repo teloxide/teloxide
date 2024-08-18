@@ -4,6 +4,7 @@
 use rand::Rng;
 
 use teloxide::{
+    dispatching::HandlerExt,
     prelude::*,
     types::{Dice, ReplyParameters},
     utils::command::BotCommands,
@@ -52,12 +53,31 @@ async fn main() {
         .branch(
             // Filtering allow you to filter updates by some condition.
             dptree::filter(|msg: Message| msg.chat.is_group() || msg.chat.is_supergroup())
-                // An endpoint is the last update handler.
-                .endpoint(|msg: Message, bot: Bot| async move {
-                    log::info!("Received a message from a group chat.");
-                    bot.send_message(msg.chat.id, "This is a group chat.").await?;
-                    respond(())
-                }),
+                .branch(
+                    // Filtering by mention allows to filter only `/repeat@my_bot` commands.
+                    // Use if you want to make sure that users refer specifically to your bot.
+                    // Same as filter_command, the next handlers will receive a parsed
+                    // `GroupCommand`.
+                    dptree::entry().filter_mention_command::<GroupCommand>().endpoint(
+                        |bot: Bot, msg: Message, cmd: GroupCommand| async move {
+                            match cmd {
+                                GroupCommand::Repeat { text } => {
+                                    bot.send_message(msg.chat.id, format!("You said: {text}"))
+                                        .await?;
+                                    Ok(())
+                                }
+                            }
+                        },
+                    ),
+                )
+                .branch(
+                    // An endpoint is the last update handler.
+                    dptree::endpoint(|msg: Message, bot: Bot| async move {
+                        log::info!("Received a message from a group chat.");
+                        bot.send_message(msg.chat.id, "This is a group chat.").await?;
+                        respond(())
+                    }),
+                ),
         )
         .branch(
             // There are some extension filtering functions on `Message`. The following filter will
@@ -114,6 +134,14 @@ enum MaintainerCommands {
     /// Generate a number within range
     #[command(parse_with = "split")]
     Rand { from: u64, to: u64 },
+}
+
+/// Group commands
+#[derive(BotCommands, Clone)]
+#[command(rename_rule = "lowercase")]
+enum GroupCommand {
+    /// Repeats a message
+    Repeat { text: String },
 }
 
 async fn simple_commands_handler(

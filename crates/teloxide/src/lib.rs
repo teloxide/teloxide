@@ -149,7 +149,7 @@ pub use teloxide_core::*;
 #[cfg(feature = "macros")]
 pub use teloxide_macros as macros;
 
-pub use dispatching::filter_command;
+pub use dispatching::{filter_command, filter_mention_command};
 pub use dptree::{self, case as handler};
 
 #[cfg(all(feature = "nightly", doctest))]
