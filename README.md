@@ -72,7 +72,7 @@ $ rustup override set nightly
 [dependencies]
 teloxide = { version = "0.13", features = ["macros"] }
 log = "0.4"
-pretty_env_logger = "0.4"
+pretty_env_logger = "0.5"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ```
 
