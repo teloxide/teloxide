@@ -149,6 +149,7 @@ where
 }
 
 #[cfg(test)]
+#[cfg(feature = "macros")]
 mod tests {
     use crate::{self as teloxide, dispatching::UpdateFilterExt, utils::command::BotCommands};
     use chrono::DateTime;
@@ -161,7 +162,6 @@ mod tests {
 
     use super::HandlerExt;
 
-    #[cfg(feature = "macros")]
     #[derive(BotCommands, Clone)]
     #[command(rename_rule = "lowercase")]
     enum Cmd {
@@ -255,11 +255,9 @@ mod tests {
     }
 
     #[tokio::test]
-    #[cfg(feature = "macros")]
     async fn test_filter_command() {
-        let h = dptree::entry().branch(
-            Update::filter_message().filter_command::<Cmd>().endpoint(|| async {}),
-        );
+        let h = dptree::entry()
+            .branch(Update::filter_message().filter_command::<Cmd>().endpoint(|| async {}));
         let me = make_me();
 
         let update = make_update("/test@".to_owned() + me.username());
@@ -276,11 +274,9 @@ mod tests {
     }
 
     #[tokio::test]
-    #[cfg(feature = "macros")]
     async fn test_filter_mention_command() {
-        let h = dptree::entry().branch(
-            Update::filter_message().filter_mention_command::<Cmd>().endpoint(|| async {}),
-        );
+        let h = dptree::entry()
+            .branch(Update::filter_message().filter_mention_command::<Cmd>().endpoint(|| async {}));
         let me = make_me();
 
         let update = make_update("/test@".to_owned() + me.username());
