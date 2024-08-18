@@ -1743,6 +1743,19 @@ Schema(
                     descr: Doc(md: "Poll question, 1-300 characters"),
                 ),
                 Param(
+                    name: "question_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the question. See [formatting options] for more details. Currently, only custom emoji entities are allowed",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "question_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of _question\\_parse\\_mode_"),
+                ),
+                Param(
                     name: "options",
                     ty: ArrayOf(String),
                     descr: Doc(md: "A JSON-serialized list of answer options, 2-10 strings 1-100 characters each"),
