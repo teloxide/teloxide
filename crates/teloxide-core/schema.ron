@@ -1757,8 +1757,8 @@ Schema(
                 ),
                 Param(
                     name: "options",
-                    ty: ArrayOf(String),
-                    descr: Doc(md: "A JSON-serialized list of answer options, 2-10 strings 1-100 characters each"),
+                    ty: ArrayOf(RawTy("InputPollOption")),
+                    descr: Doc(md: "A JSON-serialized list of 2-10 answer options"),
                 ),
                 Param(
                     name: "is_anonymous",
