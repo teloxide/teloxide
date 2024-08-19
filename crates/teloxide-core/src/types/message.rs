@@ -1890,7 +1890,8 @@ mod tests {
                         username: Some("aka_dude".to_string()),
                         bio: None,
                         has_private_forwards: None,
-                        has_restricted_voice_and_video_messages: None
+                        has_restricted_voice_and_video_messages: None,
+                        personal_chat: None,
                     }),
                     photo: None,
                     available_reactions: None,

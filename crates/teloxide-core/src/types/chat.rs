@@ -133,6 +133,12 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub has_restricted_voice_and_video_messages: Option<True>,
+
+    /// For private chats, the personal channel of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub personal_chat: Option<Box<Chat>>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -584,6 +590,7 @@ mod serde_helper {
         bio: Option<String>,
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
+        personal_chat: Option<Box<super::Chat>>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -596,6 +603,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -605,6 +613,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
             }
         }
     }
@@ -618,6 +627,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -628,6 +638,7 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
             }
         }
     }
@@ -690,6 +701,7 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
+                    personal_chat: None,
                 }),
                 photo: None,
                 available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
@@ -728,6 +740,7 @@ mod tests {
                 bio: None,
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
+                personal_chat: None,
             }),
             photo: None,
             available_reactions: None,
