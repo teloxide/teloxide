@@ -3,6 +3,7 @@
 pub use allowed_update::*;
 pub use animation::*;
 pub use audio::*;
+pub use background_fill::*;
 pub use birthdate::*;
 pub use bot_command::*;
 pub use bot_command_scope::*;
@@ -168,6 +169,7 @@ pub use write_access_allowed::*;
 mod allowed_update;
 mod animation;
 mod audio;
+mod background_fill;
 mod birthdate;
 mod bot_command;
 mod bot_command_scope;
