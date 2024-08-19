@@ -4,8 +4,8 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, Message, MessageEntity, ParseMode, PollType, Recipient, ReplyMarkup,
-    ReplyParameters, ThreadId,
+    BusinessConnectionId, InputPollOption, Message, MessageEntity, ParseMode, PollType, Recipient,
+    ReplyMarkup, ReplyParameters, ThreadId,
 };
 
 impl_payload! {
@@ -19,8 +19,8 @@ impl_payload! {
             pub chat_id: Recipient [into],
             /// Poll question, 1-300 characters
             pub question: String [into],
-            /// A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
-            pub options: Vec<String> [collect],
+            /// A JSON-serialized list of 2-10 answer options
+            pub options: Vec<InputPollOption> [collect],
         }
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
