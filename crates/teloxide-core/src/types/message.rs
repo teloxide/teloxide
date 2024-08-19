@@ -154,6 +154,11 @@ pub struct MessageCommon {
     /// `true`, if the message can't be forwarded.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_protected_content: bool,
+
+    /// `true`, if the message was sent by an implicit action, for example, as
+    /// an away or a greeting business message, or as a scheduled message
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_from_offline: bool,
 }
 
 #[serde_with::skip_serializing_none]

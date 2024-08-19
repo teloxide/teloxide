@@ -567,6 +567,7 @@ mod test {
                     author_signature: None,
                     is_automatic_forward: false,
                     has_protected_content: false,
+                    is_from_offline: false,
                 }),
             }),
         };
@@ -589,7 +590,7 @@ mod test {
                 "from": {
                     "first_name": "Wert",
                     "id": 6962620676,
-                    "is_bot": false, 
+                    "is_bot": false,
                     "username": "WertCrypto"
                 },
                 "message_id": 134545,
@@ -631,7 +632,7 @@ mod test {
                 "from": {
                     "first_name": "the Cable Guy",
                     "id": 5964236329,
-                    "is_bot": false, 
+                    "is_bot": false,
                     "language_code":"en",
                     "username": "spacewhaleblues"
                 },
@@ -648,7 +649,7 @@ mod test {
                     "from": {
                         "first_name": "Wert",
                         "id": 6962620676,
-                        "is_bot": false, 
+                        "is_bot": false,
                         "username": "WertCrypto"
                     },
                     "message_id": 134545,
