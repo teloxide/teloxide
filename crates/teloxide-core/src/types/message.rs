@@ -5,15 +5,16 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBoostAdded, ChatId, ChatShared,
-    Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
-    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
-    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
-    LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
-    MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
-    ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
-    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
+    ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
+    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
+    GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
+    InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
+    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
+    TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -90,6 +91,7 @@ pub enum MessageKind {
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
     ChatBoostAdded(MessageChatBoostAdded),
+    ChatBackground(MessageChatBackground),
     ForumTopicCreated(MessageForumTopicCreated),
     ForumTopicEdited(MessageForumTopicEdited),
     ForumTopicClosed(MessageForumTopicClosed),
@@ -586,6 +588,13 @@ pub struct MessageChatBoostAdded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChatBackground {
+    /// Service message. Chat background set.
+    pub chat_background_set: ChatBackground,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
     /// to write messages.
@@ -727,12 +736,12 @@ mod getters {
     };
 
     use super::{
-        MessageChatBoostAdded, MessageForumTopicClosed, MessageForumTopicCreated,
-        MessageForumTopicEdited, MessageForumTopicReopened, MessageGeneralForumTopicHidden,
-        MessageGeneralForumTopicUnhidden, MessageGiveaway, MessageGiveawayCompleted,
-        MessageGiveawayCreated, MessageGiveawayWinners, MessageMessageAutoDeleteTimerChanged,
-        MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
-        MessageWebAppData, MessageWriteAccessAllowed,
+        MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
+        MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
+        MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
+        MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
+        MessageMessageAutoDeleteTimerChanged, MessageVideoChatEnded, MessageVideoChatScheduled,
+        MessageVideoChatStarted, MessageWebAppData, MessageWriteAccessAllowed,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -1418,6 +1427,16 @@ mod getters {
         pub fn boost_added(&self) -> Option<&types::ChatBoostAdded> {
             match &self.kind {
                 ChatBoostAdded(MessageChatBoostAdded { boost_added }) => Some(boost_added),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn chat_background_set(&self) -> Option<&types::ChatBackground> {
+            match &self.kind {
+                ChatBackground(MessageChatBackground { chat_background_set }) => {
+                    Some(chat_background_set)
+                }
                 _ => None,
             }
         }
