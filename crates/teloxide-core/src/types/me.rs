@@ -23,6 +23,10 @@ pub struct Me {
 
     /// `true`, if the bot supports inline queries.
     pub supports_inline_queries: bool,
+
+    /// `true`, if the bot can be connected to a Telegram Business account to
+    /// receive its messages.
+    pub can_connect_to_business: bool,
 }
 
 impl Me {
@@ -73,6 +77,7 @@ mod tests {
             can_join_groups: false,
             can_read_all_group_messages: false,
             supports_inline_queries: false,
+            can_connect_to_business: false,
         };
 
         assert_eq!(me.username(), "SomethingSomethingBot");
