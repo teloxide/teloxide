@@ -269,6 +269,7 @@ where
         add_sticker_to_set,
         set_sticker_position_in_set,
         delete_sticker_from_set,
+        replace_sticker_in_set,
         set_sticker_set_thumbnail,
         set_custom_emoji_sticker_set_thumbnail,
         set_sticker_set_title,

@@ -1244,6 +1244,30 @@ impl Requester for Bot {
         Self::DeleteStickerFromSet::new(self.clone(), payloads::DeleteStickerFromSet::new(sticker))
     }
 
+    type ReplaceStickerInSet = JsonRequest<payloads::ReplaceStickerInSet>;
+
+    fn replace_sticker_in_set<N, O>(
+        &self,
+        user_id: UserId,
+        name: N,
+        old_sticker: O,
+        sticker: InputSticker,
+    ) -> Self::ReplaceStickerInSet
+    where
+        N: Into<String>,
+        O: Into<String>,
+    {
+        Self::ReplaceStickerInSet::new(
+            self.clone(),
+            payloads::ReplaceStickerInSet {
+                user_id,
+                name: name.into(),
+                old_sticker: old_sticker.into(),
+                sticker,
+            },
+        )
+    }
+
     type SetStickerSetThumbnail = MultipartRequest<payloads::SetStickerSetThumbnail>;
 
     fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail

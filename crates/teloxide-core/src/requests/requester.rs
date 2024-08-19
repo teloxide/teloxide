@@ -1108,6 +1108,20 @@ pub trait Requester {
     where
         S: Into<String>;
 
+    type ReplaceStickerInSet: Request<Payload = ReplaceStickerInSet, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReplaceStickerInSet`].
+    fn replace_sticker_in_set<N, O>(
+        &self,
+        user_id: UserId,
+        name: N,
+        old_sticker: O,
+        sticker: InputSticker,
+    ) -> Self::ReplaceStickerInSet
+    where
+        N: Into<String>,
+        O: Into<String>;
+
     type SetStickerSetThumbnail: Request<Payload = SetStickerSetThumbnail, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetStickerSetThumbnail`].
@@ -1405,6 +1419,7 @@ macro_rules! forward_all {
             add_sticker_to_set,
             set_sticker_position_in_set,
             delete_sticker_from_set,
+            replace_sticker_in_set,
             set_sticker_set_thumbnail,
             set_custom_emoji_sticker_set_thumbnail,
             set_sticker_set_title,

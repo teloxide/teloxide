@@ -1339,6 +1339,15 @@ macro_rules! requester_forward {
             $body!(delete_sticker_from_set this (sticker: S))
         }
     };
+    (@method replace_sticker_in_set $body:ident $ty:ident) => {
+        type ReplaceStickerInSet = $ty![ReplaceStickerInSet];
+
+        fn replace_sticker_in_set<N, O>(&self, user_id: UserId, name: N, old_sticker: O, sticker: InputSticker) -> Self::ReplaceStickerInSet where N: Into<String>,
+        O: Into<String> {
+            let this = self;
+            $body!(replace_sticker_in_set this (user_id: UserId, name: N, old_sticker: O, sticker: InputSticker))
+        }
+    };
     (@method set_sticker_set_thumbnail $body:ident $ty:ident) => {
         type SetStickerSetThumbnail = $ty![SetStickerSetThumbnail];
 
