@@ -5,6 +5,8 @@ use crate::types::{
     True, User,
 };
 
+use super::Birthdate;
+
 /// This object represents a chat.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chat).
@@ -139,6 +141,12 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub personal_chat: Option<Box<Chat>>,
+
+    /// For private chats, the date of birth of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub birthdate: Option<Birthdate>,
 }
 
 #[serde_with::skip_serializing_none]
