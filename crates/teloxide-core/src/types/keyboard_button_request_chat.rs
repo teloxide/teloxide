@@ -2,9 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{ChatAdministratorRights, RequestId};
 
-/// This object defines the criteria used to request a suitable chat. The
-/// identifier of the selected chat will be shared with the bot when the
-/// corresponding button is pressed. [More about requesting chats »]
+/// This object defines the criteria used to request a suitable chat.
+/// Information about the selected chat will be shared with the bot when the
+/// corresponding button is pressed. The bot will be granted requested rights in
+/// the chat if appropriate. [More about requesting chats »]
 ///
 /// [More about requesting chats »]: https://core.telegram.org/bots/features#chat-and-user-selection
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -53,6 +54,18 @@ pub struct KeyboardButtonRequestChat {
     /// additional restrictions are applied.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub bot_is_member: bool,
+
+    /// Pass `true` to request the chat's title.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_title: bool,
+
+    /// Pass `true` to request the chat's username.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_username: bool,
+
+    /// Pass `true` to request the chat's photos.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_photo: bool,
 }
 
 impl KeyboardButtonRequestChat {
@@ -67,6 +80,9 @@ impl KeyboardButtonRequestChat {
             user_administrator_rights: None,
             bot_administrator_rights: None,
             bot_is_member: false,
+            request_title: false,
+            request_username: false,
+            request_photo: false,
         }
     }
 
@@ -109,6 +125,27 @@ impl KeyboardButtonRequestChat {
     #[must_use]
     pub fn bot_is_member(mut self, value: bool) -> Self {
         self.bot_is_member = value;
+        self
+    }
+
+    /// Setter for `request_title` field.
+    #[must_use]
+    pub fn request_title(mut self, value: bool) -> Self {
+        self.request_title = value;
+        self
+    }
+
+    /// Setter for `request_username` field.
+    #[must_use]
+    pub fn request_username(mut self, value: bool) -> Self {
+        self.request_username = value;
+        self
+    }
+
+    /// Setter for `request_photo` field.
+    #[must_use]
+    pub fn request_photo(mut self, value: bool) -> Self {
+        self.request_photo = value;
         self
     }
 }
