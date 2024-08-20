@@ -30,6 +30,8 @@ impl_payload! {
             pub action: ChatAction,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the action will be sent
+            pub business_connection_id: String [into],
             /// Unique identifier for the target message thread; supergroups only
             pub message_thread_id: ThreadId,
         }

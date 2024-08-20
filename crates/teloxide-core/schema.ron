@@ -225,6 +225,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -521,6 +526,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -605,6 +615,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendaudio",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -706,6 +721,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
@@ -798,6 +818,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendvideo",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -910,6 +935,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
@@ -1019,6 +1049,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
@@ -1099,6 +1134,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
@@ -1177,6 +1217,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -1221,6 +1266,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendlocation",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1485,6 +1535,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -1579,6 +1634,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -1652,6 +1712,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendpoll",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1767,6 +1832,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -1822,6 +1892,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendchataction",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the action will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -3638,6 +3713,11 @@ Schema(
             tg_category: "Stickers",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
@@ -4393,6 +4473,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendgame",
             tg_category: "Games",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("ChatId"),

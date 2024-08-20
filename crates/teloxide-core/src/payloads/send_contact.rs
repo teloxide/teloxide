@@ -19,6 +19,8 @@ impl_payload! {
             pub first_name: String [into],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: String [into],
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Contact's last name

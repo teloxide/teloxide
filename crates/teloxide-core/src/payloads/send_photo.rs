@@ -22,6 +22,8 @@ impl_payload! {
             pub photo: InputFile,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: String [into],
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Photo caption (may also be used when resending photos by _file\_id_), 0-1024 characters after entities parsing

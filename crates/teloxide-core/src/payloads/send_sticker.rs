@@ -6,7 +6,7 @@ use crate::types::{InputFile, Message, Recipient, ReplyMarkup, ReplyParameters, 
 
 impl_payload! {
     @[multipart = sticker]
-    /// Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.
+    /// Use this method to send static .WEBP, .TGS or .WEBM stickers. On success, the sent Message is returned.
     ///
     /// [animated]: https://telegram.org/blog/animated-stickers
     #[derive(Debug, Clone, Serialize)]
@@ -20,6 +20,8 @@ impl_payload! {
             pub sticker: InputFile,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: String [into],
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Emoji associated with the sticker; only for just uploaded stickers
