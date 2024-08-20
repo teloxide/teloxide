@@ -59,18 +59,21 @@ impl KeyboardButtonRequestUsers {
     }
 
     /// Setter for `user_is_bot` field
+    #[must_use]
     pub fn user_is_bot(mut self, value: bool) -> Self {
         self.user_is_bot = Some(value);
         self
     }
 
     /// Setter for `user_is_premium` field
+    #[must_use]
     pub fn user_is_premium(mut self, value: bool) -> Self {
         self.user_is_premium = Some(value);
         self
     }
 
     /// Setter for `max_quantity` field, the value must be in the range 1..=10
+    #[must_use]
     pub fn max_quantity(mut self, value: u8) -> Self {
         assert!((1..=10).contains(&value));
 
@@ -79,18 +82,21 @@ impl KeyboardButtonRequestUsers {
     }
 
     /// Setter for `request_name` field
+    #[must_use]
     pub fn request_name(mut self, value: bool) -> Self {
         self.request_name = Some(value);
         self
     }
 
     /// Setter for `request_username` field
+    #[must_use]
     pub fn request_username(mut self, value: bool) -> Self {
         self.request_username = Some(value);
         self
     }
 
     /// Setter for `request_photo` field
+    #[must_use]
     pub fn request_photo(mut self, value: bool) -> Self {
         self.request_photo = Some(value);
         self
