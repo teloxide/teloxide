@@ -63,7 +63,7 @@ pub struct KeyboardButtonRequestChat {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub request_username: bool,
 
-    /// Pass `true` to request the chat's photos.
+    /// Pass `true` to request the chat's photo.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub request_photo: bool,
 }
