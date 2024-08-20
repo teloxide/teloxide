@@ -156,6 +156,7 @@ define_update_ext! {
     (filter_channel_post, UpdateKind::ChannelPost, ChannelPost),
     (filter_edited_channel_post, UpdateKind::EditedChannelPost, EditedChannelPost),
     (filter_business_connection, UpdateKind::BusinessConnection, BusinessConnection),
+    (filter_business_message, UpdateKind::BusinessMessage, BusinessMessage),
     (filter_message_reaction_updated, UpdateKind::MessageReaction, MessageReaction),
     (filter_message_reaction_count_updated, UpdateKind::MessageReactionCount, MessageReactionCount),
     (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),
