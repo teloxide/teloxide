@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::RequestId;
 
-/// This object defines the criteria used to request a suitable users. The
-/// identifiers of the selected users will be shared with the bot when the
+/// This object defines the criteria used to request a suitable users.
+/// Information about the selected users will be shared with the bot when the
 /// corresponding button is pressed. More about requesting users »
 ///
 /// [More about requesting users »]: https://core.telegram.org/bots/features#chat-and-user-selection
@@ -30,12 +30,32 @@ pub struct KeyboardButtonRequestUsers {
     /// The maximum number of users to be selected; 1-10. Defaults to 1.
     #[serde(default = "one", skip_serializing_if = "is_one")]
     pub max_quantity: u8,
+
+    /// Pass `true` to request the users' first and last names
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_name: Option<bool>,
+
+    /// Pass `true` to request the users' username
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_username: Option<bool>,
+
+    /// Pass `true` to request the users' photos
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_photo: Option<bool>,
 }
 
 impl KeyboardButtonRequestUsers {
     /// Creates a new [`KeyboardButtonRequestUsers`].
     pub fn new(request_id: RequestId) -> Self {
-        Self { request_id, user_is_bot: None, user_is_premium: None, max_quantity: 1 }
+        Self {
+            request_id,
+            user_is_bot: None,
+            user_is_premium: None,
+            max_quantity: 1,
+            request_name: None,
+            request_username: None,
+            request_photo: None,
+        }
     }
 
     /// Setter for `user_is_bot` field
@@ -55,6 +75,24 @@ impl KeyboardButtonRequestUsers {
         assert!((1..=10).contains(&value));
 
         self.max_quantity = value;
+        self
+    }
+
+    /// Setter for `request_name` field
+    pub fn request_name(mut self, value: bool) -> Self {
+        self.request_name = Some(value);
+        self
+    }
+
+    /// Setter for `request_username` field
+    pub fn request_username(mut self, value: bool) -> Self {
+        self.request_username = Some(value);
+        self
+    }
+
+    /// Setter for `request_photo` field
+    pub fn request_photo(mut self, value: bool) -> Self {
+        self.request_photo = Some(value);
         self
     }
 }
