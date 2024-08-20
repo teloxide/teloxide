@@ -54,6 +54,17 @@ pub struct Message {
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
 
+    /// The bot that actually sent the message on behalf of the business
+    /// account. Available only for outgoing messages sent on behalf of the
+    /// connected business account.
+    pub sender_business_bot: Option<User>,
+
+    /// Unique identifier of the business connection from which the message was
+    /// received. If non-empty, the message belongs to a chat of the
+    /// corresponding business account that is independent from any potential
+    /// bot chat which might share the same identifier.
+    pub business_connection_id: Option<String>,
+
     #[serde(flatten)]
     pub kind: MessageKind,
 }
@@ -1902,6 +1913,8 @@ mod tests {
                     has_hidden_members: false,
                     chat_full_info: ChatFullInfo::default()
                 },
+                sender_business_bot: None,
+                business_connection_id: None,
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared {
                         request_id: RequestId(348349),
@@ -2573,6 +2586,8 @@ mod tests {
                         chat_full_info: ChatFullInfo::default()
                     },
                     via_bot: None,
+                    sender_business_bot: None,
+                    business_connection_id: None,
                     kind: MessageKind::Giveaway(MessageGiveaway {
                         giveaway: Giveaway {
                             chats: vec![Chat {

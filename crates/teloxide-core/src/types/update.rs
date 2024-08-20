@@ -546,6 +546,8 @@ mod test {
                     has_aggressive_anti_spam_enabled: false,
                     chat_full_info: ChatFullInfo::default(),
                 },
+                sender_business_bot: None,
+                business_connection_id: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
