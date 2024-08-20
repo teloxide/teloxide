@@ -1905,7 +1905,10 @@ mod tests {
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared {
                         request_id: RequestId(348349),
-                        chat_id: ChatId(384939)
+                        chat_id: ChatId(384939),
+                        title: None,
+                        username: None,
+                        photo: None,
                     }
                 }),
                 via_bot: None
