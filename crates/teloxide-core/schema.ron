@@ -3631,7 +3631,7 @@ Schema(
             names: ("sendSticker", "SendSticker", "send_sticker"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.",
+                md: "Use this method to send static .WEBP, .TGS or .WEBM stickers. On success, the sent Message is returned.",
                 md_links: {"animated": "https://telegram.org/blog/animated-stickers"}
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendsticker",
