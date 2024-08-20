@@ -90,7 +90,7 @@ mod tests {
         types::{
             ChatId, InputFile, InputMedia, InputMediaAnimation, InputMediaAudio,
             InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity,
-            MessageEntityKind, ParseMode, UserId,
+            MessageEntityKind, ParseMode, StickerFormat, UserId,
         },
     };
 
@@ -157,6 +157,7 @@ mod tests {
                 emoji_list: vec!["✈️⚙️".to_owned()],
                 keywords: vec![],
                 mask_position: None,
+                format: StickerFormat::Static,
             },
         ))
         .unwrap()
