@@ -536,6 +536,7 @@ mod test {
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None,
                         personal_chat: None,
+                        birthdate: None,
                     }),
                     photo: None,
                     available_reactions: None,

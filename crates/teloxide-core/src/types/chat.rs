@@ -577,6 +577,7 @@ impl Chat {
 }
 
 mod serde_helper {
+    use super::Birthdate;
     use crate::types::True;
     use serde::{Deserialize, Serialize};
 
@@ -599,6 +600,7 @@ mod serde_helper {
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
         personal_chat: Option<Box<super::Chat>>,
+        birthdate: Option<Birthdate>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -612,6 +614,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                birthdate,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -622,6 +625,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                birthdate,
             }
         }
     }
@@ -636,6 +640,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                birthdate,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -647,6 +652,7 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                birthdate,
             }
         }
     }
@@ -710,6 +716,7 @@ mod tests {
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
                     personal_chat: None,
+                    birthdate: None,
                 }),
                 photo: None,
                 available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
@@ -749,6 +756,7 @@ mod tests {
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
                 personal_chat: None,
+                birthdate: None,
             }),
             photo: None,
             available_reactions: None,
