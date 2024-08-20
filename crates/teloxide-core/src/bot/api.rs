@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId, UserId,
+        InputSticker, LabeledPrice, MessageId, Recipient, ThreadId, UserId,
     },
     Bot,
 };
@@ -1189,7 +1189,6 @@ impl Requester for Bot {
         name: N,
         title: T,
         stickers: S,
-        sticker_format: StickerFormat,
     ) -> Self::CreateNewStickerSet
     where
         N: Into<String>,
@@ -1198,7 +1197,7 @@ impl Requester for Bot {
     {
         Self::CreateNewStickerSet::new(
             self.clone(),
-            payloads::CreateNewStickerSet::new(user_id, name, title, stickers, sticker_format),
+            payloads::CreateNewStickerSet::new(user_id, name, title, stickers),
         )
     }
 

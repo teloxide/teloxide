@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InputSticker, StickerFormat, StickerType, True, UserId};
+use crate::types::{InputSticker, StickerType, True, UserId};
 
 impl_payload! {
     /// Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. Returns True on success.
@@ -17,8 +17,6 @@ impl_payload! {
             pub title: String [into],
             /// A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
             pub stickers: Vec<InputSticker> [collect],
-            /// Format of the sticker, must be one of “static”, “animated”, “video”
-            pub sticker_format: StickerFormat,
         }
         optional {
             /// Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.

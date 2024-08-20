@@ -1308,11 +1308,11 @@ macro_rules! requester_forward {
     (@method create_new_sticker_set $body:ident $ty:ident) => {
         type CreateNewStickerSet = $ty![CreateNewStickerSet];
 
-        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat) -> Self::CreateNewStickerSet where N: Into<String>,
+        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S) -> Self::CreateNewStickerSet where N: Into<String>,
         T: Into<String>,
         S: IntoIterator<Item = InputSticker> {
             let this = self;
-            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat))
+            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S))
         }
     };
     (@method add_sticker_to_set $body:ident $ty:ident) => {

@@ -1071,7 +1071,6 @@ pub trait Requester {
         name: N,
         title: T,
         stickers: S,
-        sticker_format: StickerFormat,
     ) -> Self::CreateNewStickerSet
     where
         N: Into<String>,
