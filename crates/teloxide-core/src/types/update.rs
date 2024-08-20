@@ -3,9 +3,9 @@ use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 
 use crate::types::{
-    CallbackQuery, Chat, ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated,
-    ChosenInlineResult, InlineQuery, Message, MessageReactionCountUpdated, MessageReactionUpdated,
-    Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    BusinessConnection, CallbackQuery, Chat, ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest,
+    ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, MessageReactionCountUpdated,
+    MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -59,6 +59,10 @@ pub enum UpdateKind {
 
     /// New version of a channel post that is known to the bot and was edited.
     EditedChannelPost(Message),
+
+    /// The bot was connected to or disconnected from a business account, or a
+    /// user edited an existing connection with the bot
+    BusinessConnection(BusinessConnection),
 
     /// A reaction to a message was changed by a user. The bot must be an
     /// administrator in the chat and must explicitly specify
@@ -159,6 +163,8 @@ impl Update {
             Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => {
                 m.from.as_ref()?
             }
+
+            BusinessConnection(conn) => &conn.user,
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
@@ -262,7 +268,9 @@ impl Update {
                 i6(empty())
             }
 
-            UpdateKind::MessageReactionCount(_) | UpdateKind::Error(_) => i6(empty()),
+            UpdateKind::MessageReactionCount(_)
+            | UpdateKind::BusinessConnection(_)
+            | UpdateKind::Error(_) => i6(empty()),
         }
     }
 
@@ -283,6 +291,7 @@ impl Update {
             RemovedChatBoost(b) => &b.chat,
 
             InlineQuery(_)
+            | BusinessConnection(_)
             | ChosenInlineResult(_)
             | ShippingQuery(_)
             | PreCheckoutQuery(_)
@@ -350,6 +359,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
                         "edited_channel_post" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedChannelPost)
                         }
+                        "business_connection" => map
+                            .next_value::<BusinessConnection>()
+                            .ok()
+                            .map(UpdateKind::BusinessConnection),
                         "message_reaction" => map
                             .next_value::<MessageReactionUpdated>()
                             .ok()
@@ -423,37 +436,40 @@ impl Serialize for UpdateKind {
             UpdateKind::EditedChannelPost(v) => {
                 s.serialize_newtype_variant(name, 3, "edited_channel_post", v)
             }
+            UpdateKind::BusinessConnection(b) => {
+                s.serialize_newtype_variant(name, 4, "business_connection", b)
+            }
             UpdateKind::MessageReaction(v) => {
-                s.serialize_newtype_variant(name, 4, "message_reaction", v)
+                s.serialize_newtype_variant(name, 5, "message_reaction", v)
             }
             UpdateKind::MessageReactionCount(v) => {
-                s.serialize_newtype_variant(name, 5, "message_reaction_count", v)
+                s.serialize_newtype_variant(name, 6, "message_reaction_count", v)
             }
-            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 6, "inline_query", v),
+            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 7, "inline_query", v),
             UpdateKind::ChosenInlineResult(v) => {
-                s.serialize_newtype_variant(name, 7, "chosen_inline_result", v)
+                s.serialize_newtype_variant(name, 8, "chosen_inline_result", v)
             }
             UpdateKind::CallbackQuery(v) => {
-                s.serialize_newtype_variant(name, 8, "callback_query", v)
+                s.serialize_newtype_variant(name, 9, "callback_query", v)
             }
             UpdateKind::ShippingQuery(v) => {
-                s.serialize_newtype_variant(name, 9, "shipping_query", v)
+                s.serialize_newtype_variant(name, 10, "shipping_query", v)
             }
             UpdateKind::PreCheckoutQuery(v) => {
-                s.serialize_newtype_variant(name, 10, "pre_checkout_query", v)
+                s.serialize_newtype_variant(name, 11, "pre_checkout_query", v)
             }
-            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 11, "poll", v),
-            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 12, "poll_answer", v),
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 12, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 13, "poll_answer", v),
             UpdateKind::MyChatMember(v) => {
-                s.serialize_newtype_variant(name, 13, "my_chat_member", v)
+                s.serialize_newtype_variant(name, 14, "my_chat_member", v)
             }
-            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 14, "chat_member", v),
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 15, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
-                s.serialize_newtype_variant(name, 15, "chat_join_request", v)
+                s.serialize_newtype_variant(name, 16, "chat_join_request", v)
             }
-            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 16, "chat_boost", v),
+            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 17, "chat_boost", v),
             UpdateKind::RemovedChatBoost(v) => {
-                s.serialize_newtype_variant(name, 17, "removed_chat_boost", v)
+                s.serialize_newtype_variant(name, 18, "removed_chat_boost", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }

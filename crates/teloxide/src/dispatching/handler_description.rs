@@ -65,6 +65,7 @@ impl EventKind for Kind {
             EditedMessage,
             ChannelPost,
             EditedChannelPost,
+            BusinessConnection,
             MessageReaction,
             MessageReactionCount,
             InlineQuery,
