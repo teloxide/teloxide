@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    BusinessIntro, BusinessLocation, ChatFullInfo, ChatId, ChatLocation, ChatPermissions,
-    ChatPhoto, Message, ReactionType, Seconds, True, User,
+    Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, ChatFullInfo, ChatId,
+    ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, True, User,
 };
-
-use super::Birthdate;
 
 /// This object represents a chat.
 ///
@@ -159,6 +157,12 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub business_location: Option<BusinessLocation>,
+
+    /// For private chats with business accounts, the opening hours of the
+    /// business. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_opening_hours: Option<BusinessOpeningHours>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -589,7 +593,7 @@ impl Chat {
 }
 
 mod serde_helper {
-    use crate::types::{Birthdate, BusinessIntro, BusinessLocation, True};
+    use crate::types::{Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, True};
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -614,6 +618,7 @@ mod serde_helper {
         birthdate: Option<Birthdate>,
         business_intro: Option<BusinessIntro>,
         business_location: Option<BusinessLocation>,
+        business_opening_hours: Option<BusinessOpeningHours>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -630,6 +635,7 @@ mod serde_helper {
                 birthdate,
                 business_intro,
                 business_location,
+                business_opening_hours,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -643,6 +649,7 @@ mod serde_helper {
                 birthdate,
                 business_intro,
                 business_location,
+                business_opening_hours,
             }
         }
     }
@@ -660,6 +667,7 @@ mod serde_helper {
                 birthdate,
                 business_intro,
                 business_location,
+                business_opening_hours,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -674,6 +682,7 @@ mod serde_helper {
                 birthdate,
                 business_intro,
                 business_location,
+                business_opening_hours,
             }
         }
     }
@@ -740,6 +749,7 @@ mod tests {
                     birthdate: None,
                     business_intro: None,
                     business_location: None,
+                    business_opening_hours: None,
                 }),
                 photo: None,
                 available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
@@ -782,6 +792,7 @@ mod tests {
                 birthdate: None,
                 business_intro: None,
                 business_location: None,
+                business_opening_hours: None,
             }),
             photo: None,
             available_reactions: None,

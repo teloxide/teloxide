@@ -539,6 +539,7 @@ mod test {
                         birthdate: None,
                         business_intro: None,
                         business_location: None,
+                        business_opening_hours: None,
                     }),
                     photo: None,
                     available_reactions: None,
