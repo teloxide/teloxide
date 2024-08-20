@@ -9,6 +9,7 @@ pub enum AllowedUpdate {
     EditedChannelPost,
     BusinessConnection,
     BusinessMessage,
+    EditedBusinessMessage,
     MessageReaction,
     MessageReactionCount,
     InlineQuery,
