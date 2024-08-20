@@ -3915,6 +3915,11 @@ Schema(
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
+                Param(
+                    name: "format",
+                    ty: RawTy("StickerFormat"),
+                    descr: Doc(md: "Format of the thumbnail, must be one of \"static\" for a .WEBP or .PNG image, \"animated\" for a .TGS animation, or \"video\" for a WEBM video")
+                )
             ],
         ),
         Method(

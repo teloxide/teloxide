@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, ThreadId, UserId,
+        InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
@@ -1173,7 +1173,7 @@ impl Requester for Bot {
         &self,
         user_id: UserId,
         sticker: InputFile,
-        sticker_format: crate::types::StickerFormat,
+        sticker_format: StickerFormat,
     ) -> Self::UploadStickerFile {
         Self::UploadStickerFile::new(
             self.clone(),
@@ -1269,13 +1269,18 @@ impl Requester for Bot {
 
     type SetStickerSetThumbnail = MultipartRequest<payloads::SetStickerSetThumbnail>;
 
-    fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail
+    fn set_sticker_set_thumbnail<N>(
+        &self,
+        name: N,
+        user_id: UserId,
+        format: StickerFormat,
+    ) -> Self::SetStickerSetThumbnail
     where
         N: Into<String>,
     {
         Self::SetStickerSetThumbnail::new(
             self.clone(),
-            payloads::SetStickerSetThumbnail::new(name, user_id),
+            payloads::SetStickerSetThumbnail::new(name, user_id, format),
         )
     }
 

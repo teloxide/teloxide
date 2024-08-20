@@ -1351,9 +1351,9 @@ macro_rules! requester_forward {
     (@method set_sticker_set_thumbnail $body:ident $ty:ident) => {
         type SetStickerSetThumbnail = $ty![SetStickerSetThumbnail];
 
-        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail where N: Into<String> {
+        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId, format: StickerFormat) -> Self::SetStickerSetThumbnail where N: Into<String> {
             let this = self;
-            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId))
+            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId, format: StickerFormat))
         }
     };
     (@method set_custom_emoji_sticker_set_thumbnail $body:ident $ty:ident) => {

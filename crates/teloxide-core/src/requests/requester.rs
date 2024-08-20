@@ -1128,6 +1128,7 @@ pub trait Requester {
         &self,
         name: N,
         user_id: UserId,
+        format: StickerFormat,
     ) -> Self::SetStickerSetThumbnail
     where
         N: Into<String>;
