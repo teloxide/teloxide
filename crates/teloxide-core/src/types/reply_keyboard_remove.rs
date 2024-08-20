@@ -34,7 +34,7 @@ pub struct KeyboardRemove {
     /// showing the keyboard with poll options to users who haven't voted yet.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub selective: bool,
 }
 
@@ -50,5 +50,21 @@ impl KeyboardRemove {
     #[must_use]
     pub const fn selective(self) -> Self {
         Self { selective: true, ..self }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "remove_keyboard": true,
+            "selective": false
+        }
+        "#;
+        serde_json::from_str::<KeyboardRemove>(data).unwrap();
     }
 }
