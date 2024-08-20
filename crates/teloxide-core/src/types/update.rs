@@ -537,6 +537,7 @@ mod test {
                         has_restricted_voice_and_video_messages: None,
                         personal_chat: None,
                         birthdate: None,
+                        business_intro: None,
                     }),
                     photo: None,
                     available_reactions: None,
