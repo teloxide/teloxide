@@ -1905,6 +1905,7 @@ mod tests {
                         personal_chat: None,
                         birthdate: None,
                         business_intro: None,
+                        business_location: None,
                     }),
                     photo: None,
                     available_reactions: None,
