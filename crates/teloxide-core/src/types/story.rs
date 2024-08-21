@@ -44,7 +44,7 @@ mod tests {
         let story = Story {
             chat: Chat {
                 id: ChatId(-1001389841361),
-                kind: ChatKind::Public(ChatPublic {
+                kind: ChatKind::Public(Box::new(ChatPublic {
                     title: Some("GNOME".to_owned()),
                     kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                         username: Some("gnome_ru".to_owned()),
@@ -64,7 +64,7 @@ mod tests {
                     description: None,
                     invite_link: None,
                     has_protected_content: None,
-                }),
+                })),
                 photo: None,
                 available_reactions: None,
                 pinned_message: None,

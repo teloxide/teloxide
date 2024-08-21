@@ -930,7 +930,7 @@ mod test {
             kind: UpdateKind::MessageReaction(MessageReactionUpdated {
                 chat: Chat {
                     id: ChatId(-1002184233434),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                             username: None,
@@ -950,7 +950,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -1090,7 +1090,7 @@ mod test {
             kind: UpdateKind::MessageReactionCount(MessageReactionCountUpdated {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1099,7 +1099,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -1163,7 +1163,7 @@ mod test {
             kind: UpdateKind::ChatBoost(ChatBoostUpdated {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1172,7 +1172,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -1238,7 +1238,7 @@ mod test {
             kind: UpdateKind::RemovedChatBoost(ChatBoostRemoved {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1247,7 +1247,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,

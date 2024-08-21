@@ -59,6 +59,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
+### Breaking Changes
+
+- Support for TBA 7.2 ([#1146](pr1146))
+  - Wrap `Public` variant of `ChatKind` in `Box`
+
+[pr1146]: https://github.com/teloxide/teloxide/pull/1146
+
 ## 0.10.1 - 2024-08-17
 
 ### Fixed

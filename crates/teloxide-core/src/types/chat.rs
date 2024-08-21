@@ -63,7 +63,7 @@ pub struct Chat {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
-    Public(ChatPublic),
+    Public(Box<ChatPublic>),
     Private(ChatPrivate),
 }
 
@@ -286,20 +286,29 @@ impl Chat {
 
     #[must_use]
     pub fn is_group(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Group(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
-        )
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_channel(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Channel(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
@@ -698,7 +707,7 @@ mod tests {
     fn channel_de() {
         let expected = Chat {
             id: ChatId(-1),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: None,
                 kind: PublicChatKind::Channel(PublicChatChannel {
                     username: Some("channel_name".into()),
@@ -707,7 +716,7 @@ mod tests {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             photo: None,
             available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
             pinned_message: None,

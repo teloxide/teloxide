@@ -2134,7 +2134,7 @@ mod tests {
 
         let group = Chat {
             id: ChatId(-1001160242915),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: Some("a".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
@@ -2154,7 +2154,7 @@ mod tests {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             message_auto_delete_time: None,
             photo: None,
             available_reactions: None,
@@ -2439,7 +2439,7 @@ mod tests {
             &Giveaway {
                 chats: vec![Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -2448,7 +2448,7 @@ mod tests {
                         description: None,
                         invite_link: None,
                         has_protected_content: None
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -2548,7 +2548,7 @@ mod tests {
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
+                        kind: ChatKind::Public(Box::new(ChatPublic {
                             title: Some("Test".to_owned()),
                             kind: PublicChatKind::Channel(PublicChatChannel {
                                 linked_chat_id: None,
@@ -2557,7 +2557,7 @@ mod tests {
                             description: None,
                             invite_link: None,
                             has_protected_content: None
-                        }),
+                        })),
                         chat_full_info: ChatFullInfo::default(),
                         available_reactions: None,
                         photo: None,
@@ -2570,7 +2570,7 @@ mod tests {
                     date: DateTime::from_timestamp(1721161230, 0).unwrap(),
                     chat: Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
+                        kind: ChatKind::Public(Box::new(ChatPublic {
                             title: Some("Test".to_owned()),
                             kind: PublicChatKind::Channel(PublicChatChannel {
                                 username: None,
@@ -2579,7 +2579,7 @@ mod tests {
                             description: None,
                             invite_link: None,
                             has_protected_content: None
-                        }),
+                        })),
                         photo: None,
                         available_reactions: None,
                         pinned_message: None,
@@ -2595,7 +2595,7 @@ mod tests {
                         giveaway: Giveaway {
                             chats: vec![Chat {
                                 id: ChatId(-1002236736395),
-                                kind: ChatKind::Public(ChatPublic {
+                                kind: ChatKind::Public(Box::new(ChatPublic {
                                     title: Some("Test".to_owned()),
                                     kind: PublicChatKind::Channel(PublicChatChannel {
                                         username: None,
@@ -2604,7 +2604,7 @@ mod tests {
                                     description: None,
                                     invite_link: None,
                                     has_protected_content: None
-                                }),
+                                })),
                                 photo: None,
                                 available_reactions: None,
                                 pinned_message: None,
@@ -2696,7 +2696,7 @@ mod tests {
             &GiveawayWinners {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -2705,7 +2705,7 @@ mod tests {
                         description: None,
                         invite_link: None,
                         has_protected_content: None
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
