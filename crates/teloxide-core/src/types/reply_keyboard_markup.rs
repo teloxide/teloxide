@@ -22,14 +22,14 @@ pub struct KeyboardMarkup {
     /// Requests clients to always show the keyboard when the regular keyboard
     /// is hidden. Defaults to `false`, in which case the custom keyboard
     /// can be hidden and opened with a keyboard icon.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_persistent: bool,
 
     /// Requests clients to resize the keyboard vertically for optimal fit
     /// (e.g., make the keyboard smaller if there are just two rows of
     /// buttons). Defaults to `false`, in which case the custom keyboard is
     /// always of the same height as the app's standard keyboard.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub resize_keyboard: bool,
 
     /// Requests clients to hide the keyboard as soon as it's been used. The
@@ -37,12 +37,12 @@ pub struct KeyboardMarkup {
     /// display the usual letter-keyboard in the chat – the user can press a
     /// special button in the input field to see the custom keyboard again.
     /// Defaults to `false`.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub one_time_keyboard: bool,
 
     /// The placeholder to be shown in the input field when the keyboard is
     /// active; 1-64 characters.
-    #[serde(skip_serializing_if = "str::is_empty")]
+    #[serde(default, skip_serializing_if = "str::is_empty")]
     pub input_field_placeholder: String,
 
     /// Use this parameter if you want to show the keyboard to specific users
@@ -55,7 +55,7 @@ pub struct KeyboardMarkup {
     /// in the group don’t see the keyboard.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub selective: bool,
 }
 
@@ -127,5 +127,25 @@ impl KeyboardMarkup {
     /// [`selective`]: KeyboardMarkup::selective
     pub fn selective<T>(self) -> Self {
         Self { selective: true, ..self }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "keyboard": [[{"text": "a"}, {"text": "b"}], [{"text": "c"}, {"text": "d"}]],
+            "input_field_placeholder": "",
+            "is_persistent": true,
+            "one_time_keyboard": false,
+            "resize_keyboard": true,
+            "selective": false
+        }
+        "#;
+        serde_json::from_str::<KeyboardMarkup>(data).unwrap();
     }
 }
