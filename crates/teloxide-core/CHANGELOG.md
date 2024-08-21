@@ -19,13 +19,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `boost_added` and `reply_to_story` getters to `Message` struct
   - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` getters to `Chat` struct
 
+- Support for TBA 7.2 ([#1146](pr1146))
+  - Update documentation of `SendSticker` method
+  - Add `is_from_offline` field to `MessageCommon` struct
+  - Add `can_connect_to_business` field to `Me` struct
+  - Add `personal_chat` field to `ChatPrivate` struct
+  - Add `ReplaceStickerInSet` and `GetBusinessConnection` methods
+  - Add `Birthdate` struct and corresponding field `birthdate` in `ChatPrivate`
+  - Add `request_name`, `request_username` and `request_photo` fields to `KeyboardButtonRequestUsers` struct
+  - Add `request_title`, `request_username` and `request_photo` fields to `KeyboardButtonRequestChat` struct
+  - Add `SharedUser` struct and add corresponding field `users` to `UsersShared` struct
+  - Add `title`, `username` and `photo` fields to `ChatShared` struct
+  - Add `format` field to `InputSticker` struct
+  - Add `format` parameter to `SetStickerSetThumbnail` method
+  - Add `business_connection_id` parameter to `SendMessage`, `SendPhoto`, `SendVideo`, `SendAnimation`, `SendAudio`, `SendDocument`, `SendSticker`, `SendVideoNote`, `SendVoice`, `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`, `SendGame`, and `SendMediaGroup` methods
+  - Add `sender_business_bot` and `business_connection_id` fields to `Message` struct
+  - Add `BusinessIntro` struct and corresponding field `business_intro` to `ChatPrivate` struct
+  - Add `BusinessLocation` struct and corresponding field `business_location` to `ChatPrivate` struct
+  - Add `BusinessOpeningHoursInterval` and `BusinessOpeningHours` structs and corresponding field `business_opening_hours` to `ChatPrivate` struct
+  - Add `BusinessConnection` struct
+  - Add `BusinessMessagesDeleted` struct
+  - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
+
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
+[pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
 ### Changed
 
 - `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
 
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
+
+### Removed
+
+- Support for TBA 7.2 ([#1146](pr1146))
+  - Remove `flags` field from `StickerSet` struct
+  - Remove `sticker_format` parameter from `CreateNewStickerSet` method
+
+[pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
 ## 0.10.1 - 2024-08-17
 
