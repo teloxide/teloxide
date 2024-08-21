@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ChatId::as_user` ([#905][pr905])
 - Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
 - `ChatId::{MIN, MAX}` ([#905][pr905])
-- Missing `Message` getters ([#982][pr982]): 
+- Missing `Message` getters ([#982][pr982]):
   - `message_auto_delete_timer_changed`
   - `write_access_allowed`
   - `forum_topic_created`
@@ -61,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `video_chat_scheduled`
   - `video_chat_started`
   - `video_chat_ended`
-  - `web_app_data` 
+  - `web_app_data`
 - `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
 - Support for TBA 6.5  ([#954][pr954])
   - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add parameter `emoji` to the `send_sticker` method to specify an emoji for just uploaded stickers
   - Add support for the creation of custom emoji sticker sets in `create_new_sticker_set`
   - Add parameter `needs_repainting` to the `create_new_sticker_set` methodto automatically change the color of emoji based on context (e.g., use text color in messages, accent color in statuses, etc.)
-  - Add field `needs_repainting` to the `Sticker` struct 
+  - Add field `needs_repainting` to the `Sticker` struct
   - Add support for the creation of sticker sets with multiple initial stickers in `create_new_sticker_set` by replacing the parameters `sticker`, `emojis` and `mask_position` with the parameters `stickers` and `sticker_format`.
   - Add support for .WEBP files in `create_new_sticker_set` and `add_sticker_to_set`
   - Add support for .WEBP, .TGS, and .WEBM files in `upload_sticker_file` by replacing the parameter `png_sticker` with the parameters `sticker` and `sticker_format`
@@ -145,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Giveaway:
     - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` structs
     - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` variants to `MessageKind` enum
-    - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message` 
+    - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message`
   - Other Changes
     - Add fields `ChafFullInfo::{has_visible_history, accent_color_id, background_custom_emoji_id, profile_accent_color_id, profile_background_custom_emoji_id}`
   - Add `RequestId` type
@@ -197,7 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `InlineQueryResultLocation::live_period`
   - `Location::live_period`
   - `MessageAutoDeleteTimerChanged::message_auto_delete_time`
-  - `Poll::open_period` 
+  - `Poll::open_period`
   - `Video::duration`
   - `VideoNote::duration`
   - `Voice::duration`
@@ -260,12 +260,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Struct `KeyboardButtonRequestUser` was renamed to `KeyboardButtonRequestUsers` + added field `max_quantity` to it
     - Field `KeyboardButton::request_user` was renamed to `request_users`
     - `MessageUserShared` was renamed to `MessageUsersShared`
-  - Other Changes 
+  - Other Changes
     - `Message::pinned_message` and `CallbackQuery::message` now have `MaybeInaccessibleMessage` type
     - Field `emoji_status_custom_emoji_id` is allowed in non-private chats (moved to the `ChatFullInfo`)
     - Struct `Forward` was replaced by `MessageOrigin` in `MessageCommon`
   - `RequestId` replaces `i32` in `ChatShared` and `KeyboardButtonRequestChat` structs
-    
+
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
@@ -308,7 +308,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.9.1 - 2023-02-15
 
-### Fixed 
+### Fixed
 
 - `Update::user` now handles channel posts, chat member changes and chat join request updates correctly ([#835][pr835])
 - In cases when `teloxide` can't deserialize an update, error now includes the full json value ([#826][pr826])
