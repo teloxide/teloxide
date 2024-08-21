@@ -189,6 +189,8 @@ mod tests {
                 }),
                 sender_chat: None,
                 is_topic_message: false,
+                sender_business_bot: None,
+                business_connection_id: None,
                 date,
                 chat: Chat {
                     id: ChatId(109_998_024),
@@ -199,6 +201,11 @@ mod tests {
                         bio: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None,
+                        business_intro: None,
+                        business_location: None,
+                        business_opening_hours: None,
+                        birthdate: None,
+                        personal_chat: None,
                     }),
                     photo: None,
                     available_reactions: None,
@@ -231,6 +238,7 @@ mod tests {
                     has_protected_content: false,
                     reply_to_story: None,
                     sender_boost_count: None,
+                    is_from_offline: false,
                 }),
             }),
         }
@@ -251,6 +259,7 @@ mod tests {
             can_join_groups: false,
             can_read_all_group_messages: false,
             supports_inline_queries: false,
+            can_connect_to_business: false,
         }
     }
 

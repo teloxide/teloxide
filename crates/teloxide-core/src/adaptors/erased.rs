@@ -889,7 +889,6 @@ trait ErasableRequester<'a> {
         name: String,
         title: String,
         stickers: Vec<InputSticker>,
-        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err>;
 
     fn add_sticker_to_set(
@@ -910,10 +909,19 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, DeleteStickerFromSet, Self::Err>;
 
+    fn replace_sticker_in_set(
+        &self,
+        user_id: UserId,
+        name: String,
+        old_sticker: String,
+        sticker: InputSticker,
+    ) -> ErasedRequest<'a, ReplaceStickerInSet, Self::Err>;
+
     fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
+        format: StickerFormat,
     ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err>;
 
     fn set_custom_emoji_sticker_set_thumbnail(
@@ -1806,10 +1814,8 @@ where
         name: String,
         title: String,
         stickers: Vec<InputSticker>,
-        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err> {
-        Requester::create_new_sticker_set(self, user_id, name, title, stickers, sticker_format)
-            .erase()
+        Requester::create_new_sticker_set(self, user_id, name, title, stickers).erase()
     }
 
     fn add_sticker_to_set(
@@ -1836,12 +1842,23 @@ where
         Requester::delete_sticker_from_set(self, sticker).erase()
     }
 
+    fn replace_sticker_in_set(
+        &self,
+        user_id: UserId,
+        name: String,
+        old_sticker: String,
+        sticker: InputSticker,
+    ) -> ErasedRequest<'a, ReplaceStickerInSet, Self::Err> {
+        Requester::replace_sticker_in_set(self, user_id, name, old_sticker, sticker).erase()
+    }
+
     fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
+        format: StickerFormat,
     ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err> {
-        Requester::set_sticker_set_thumbnail(self, name, user_id).erase()
+        Requester::set_sticker_set_thumbnail(self, name, user_id, format).erase()
     }
 
     fn set_custom_emoji_sticker_set_thumbnail(
