@@ -3053,6 +3053,20 @@ Schema(
             ],
         ),
         Method(
+            names: ("getBusinessConnection", "GetBusinessConnection", "get_business_connection"),
+            return_ty: RawTy("BusinessConnection"),
+            doc: Doc(md: "Use this method to get information about the connection of the bot with a business account. Returns a BusinessConnection object on success."),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessconnection",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: String,
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+            ],
+        ),
+        Method(
             names: ("getMyCommands", "GetMyCommands", "get_my_commands"),
             return_ty: ArrayOf(RawTy("BotCommand")),
             doc: Doc(

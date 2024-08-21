@@ -881,6 +881,18 @@ impl Requester for Bot {
         Self::SetMyCommands::new(self.clone(), payloads::SetMyCommands::new(commands))
     }
 
+    type GetBusinessConnection = JsonRequest<payloads::GetBusinessConnection>;
+
+    fn get_business_connection<B>(&self, business_connection_id: B) -> Self::GetBusinessConnection
+    where
+        B: Into<String>,
+    {
+        Self::GetBusinessConnection::new(
+            self.clone(),
+            payloads::GetBusinessConnection::new(business_connection_id),
+        )
+    }
+
     type GetMyCommands = JsonRequest<payloads::GetMyCommands>;
 
     fn get_my_commands(&self) -> Self::GetMyCommands {

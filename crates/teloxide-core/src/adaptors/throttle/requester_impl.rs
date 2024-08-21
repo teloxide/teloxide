@@ -146,6 +146,7 @@ where
         answer_callback_query,
         get_user_chat_boosts,
         set_my_commands,
+        get_business_connection,
         get_my_commands,
         set_my_name,
         get_my_name,

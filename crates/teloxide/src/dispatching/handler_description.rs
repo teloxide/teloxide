@@ -168,10 +168,28 @@ mod tests {
         for update in allowed_updates_reference {
             match update {
                 // CAUTION: Don't forget to add new `UpdateKind` to `allowed_updates_reference`!
-                Message | EditedMessage | ChannelPost | EditedChannelPost | MessageReaction
-                | MessageReactionCount | InlineQuery | ChosenInlineResult | CallbackQuery
-                | ShippingQuery | PreCheckoutQuery | Poll | PollAnswer | MyChatMember
-                | ChatMember | ChatJoinRequest | ChatBoost | RemovedChatBoost => {
+                Message
+                | EditedMessage
+                | ChannelPost
+                | EditedChannelPost
+                | MessageReaction
+                | MessageReactionCount
+                | InlineQuery
+                | ChosenInlineResult
+                | CallbackQuery
+                | ShippingQuery
+                | PreCheckoutQuery
+                | Poll
+                | PollAnswer
+                | MyChatMember
+                | ChatMember
+                | ChatJoinRequest
+                | ChatBoost
+                | RemovedChatBoost
+                | BusinessMessage
+                | BusinessConnection
+                | EditedBusinessMessage
+                | DeletedBusinessMessages => {
                     assert!(full_set.contains(&Kind(update)))
                 }
             }

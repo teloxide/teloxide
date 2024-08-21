@@ -1069,6 +1069,14 @@ macro_rules! requester_forward {
             $body!(set_my_commands this (commands: C))
         }
     };
+    (@method get_business_connection $body:ident $ty:ident) => {
+        type GetBusinessConnection = $ty![GetBusinessConnection];
+
+        fn get_business_connection<BCI>(&self, business_connection_id: BCI) -> Self::GetBusinessConnection where BCI: Into<String> {
+            let this = self;
+            $body!(get_business_connection this (business_connection_id: BCI))
+        }
+    };
     (@method get_my_commands $body:ident $ty:ident) => {
         type GetMyCommands = $ty![GetMyCommands];
 
@@ -1524,7 +1532,7 @@ fn codegen_requester_forward() {
 
             convert_params.sort_unstable();
 
-            let prefixes: IndexMap<_, _> = convert_params
+            let mut prefixes: IndexMap<_, _> = convert_params
                 .iter()
                 .copied()
                 // Workaround to output the last type as the first letter
@@ -1532,6 +1540,18 @@ fn codegen_requester_forward() {
                 .tuple_windows()
                 .map(|(l, r)| (l, min_prefix(l, r)))
                 .collect();
+
+            // FIXME: This hard-coded value has been set to avoid conflicting generic
+            // parameter 'B' with impl<B> Requester... in all the adaptors and other places
+            //
+            // One fix could be to take full abbrevation for all the parameters instead of
+            // just the first character. Other fix is to change the generic parameter name
+            // in all the impl blocks to something like 'Z' because that is very less likely
+            // to conflict in future.
+            if prefixes.contains_key("business_connection_id") {
+                prefixes["business_connection_id"] = "BCI";
+            }
+            let prefixes = prefixes;
 
             let args = m
                 .params

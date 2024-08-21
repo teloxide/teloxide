@@ -262,6 +262,7 @@ where
         answer_callback_query,
         get_user_chat_boosts,
         set_my_commands,
+        get_business_connection,
         get_my_commands,
         set_my_name,
         get_my_name,
@@ -750,6 +751,11 @@ trait ErasableRequester<'a> {
         &self,
         commands: Vec<BotCommand>,
     ) -> ErasedRequest<'a, SetMyCommands, Self::Err>;
+
+    fn get_business_connection(
+        &self,
+        business_connection_id: String,
+    ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err>;
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err>;
 
@@ -1601,6 +1607,13 @@ where
         commands: Vec<BotCommand>,
     ) -> ErasedRequest<'a, SetMyCommands, Self::Err> {
         Requester::set_my_commands(self, commands).erase()
+    }
+
+    fn get_business_connection(
+        &self,
+        business_connection_id: String,
+    ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err> {
+        Requester::get_business_connection(self, business_connection_id).erase()
     }
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err> {

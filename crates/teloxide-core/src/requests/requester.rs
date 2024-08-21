@@ -831,6 +831,13 @@ pub trait Requester {
     where
         C: IntoIterator<Item = BotCommand>;
 
+    type GetBusinessConnection: Request<Payload = GetBusinessConnection, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetBusinessConnection`].
+    fn get_business_connection<B>(&self, business_connection_id: B) -> Self::GetBusinessConnection
+    where
+        B: Into<String>;
+
     type GetMyCommands: Request<Payload = GetMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetMyCommands`].
@@ -1386,6 +1393,7 @@ macro_rules! forward_all {
             answer_callback_query,
             get_user_chat_boosts,
             set_my_commands,
+            get_business_connection,
             get_my_commands,
             set_my_name,
             get_my_name,

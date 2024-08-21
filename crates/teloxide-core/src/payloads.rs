@@ -59,6 +59,7 @@ mod edit_message_text_inline;
 mod export_chat_invite_link;
 mod forward_message;
 mod forward_messages;
+mod get_business_connection;
 mod get_chat;
 mod get_chat_administrators;
 mod get_chat_member;
@@ -193,6 +194,7 @@ pub use edit_message_text_inline::{EditMessageTextInline, EditMessageTextInlineS
 pub use export_chat_invite_link::{ExportChatInviteLink, ExportChatInviteLinkSetters};
 pub use forward_message::{ForwardMessage, ForwardMessageSetters};
 pub use forward_messages::{ForwardMessages, ForwardMessagesSetters};
+pub use get_business_connection::{GetBusinessConnection, GetBusinessConnectionSetters};
 pub use get_chat::{GetChat, GetChatSetters};
 pub use get_chat_administrators::{GetChatAdministrators, GetChatAdministratorsSetters};
 pub use get_chat_member::{GetChatMember, GetChatMemberSetters};
